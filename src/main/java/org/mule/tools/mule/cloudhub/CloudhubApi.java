@@ -10,11 +10,13 @@ import org.mule.tools.mule.AbstractMuleApi;
 import org.mule.tools.mule.ApiException;
 
 import java.io.File;
+import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -106,6 +108,26 @@ public class CloudhubApi extends AbstractMuleApi
         }
     }
 
+    public List<Application> getApplications()
+    {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(URI).path(APPLICATIONS_PATH);
+
+        Response response = target.
+                request(MediaType.APPLICATION_JSON_TYPE).
+                headers(authorizationHeader()).get();
+
+        if (response.getStatus() == 200)
+        {
+            return response.readEntity(new GenericType<List<Application>>() { } );
+        }
+        else
+        {
+            String message = response.readEntity(String.class);
+            throw new ApiException(message, response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
+        }
+
+    }
     public void uploadFile(String appName, File file)
     {
         Client client = ClientBuilder.newClient().register(MultiPartFeature.class);

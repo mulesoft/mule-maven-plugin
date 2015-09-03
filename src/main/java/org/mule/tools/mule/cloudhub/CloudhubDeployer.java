@@ -64,15 +64,23 @@ public class CloudhubDeployer extends AbstractDeployer
             }
             else
             {
-                if (redeploy)
+                if (applicationBelongsToCurrentUser(appName))
                 {
-                    log.info("Application " + appName + " already exists, redeploying");
-                    cloudhubApi.updateApplication(appName, region, muleVersion, workers, workerType);
+                    if (redeploy)
+                    {
+                        log.info("Application " + appName + " already exists, redeploying");
+                        cloudhubApi.updateApplication(appName, region, muleVersion, workers, workerType);
+                    }
+                    else
+                    {
+                        log.error("Application " + appName + " already exists, but redeploy=false. Aborting.");
+                        throw new DeploymentException("Application " + appName + " already exists");
+                    }
                 }
                 else
                 {
-                    log.error("Application " + appName + " already exists, but redeploy=false. Aborting.");
-                    throw new DeploymentException("Application " + appName + " already exists");
+                    log.error("Domain " + appName + " is not available. Aborting.");
+                    throw new DeploymentException("Domain " + appName + " is not available. Aborting.");
                 }
             }
 
@@ -89,6 +97,18 @@ public class CloudhubDeployer extends AbstractDeployer
         }
 
         return appName;
+    }
+
+    private boolean applicationBelongsToCurrentUser(String appName)
+    {
+        for (Application app : cloudhubApi.getApplications())
+        {
+            if (appName.equals(app.domain))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

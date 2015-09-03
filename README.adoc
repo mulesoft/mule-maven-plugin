@@ -16,7 +16,7 @@ Maven plugin to deploy Mule applications to different kind of servers: Standalon
 <plugin>
   <groupId>org.mule.tools</groupId>
   <artifactId>mule-maven-plugin</artifactId>
-  <version>2.0</version>
+  <version>2.0-RC1</version>
 </plugin>
 ----
 
@@ -34,7 +34,7 @@ Add https://repository.mulesoft.org/nexus/content/repositories/releases[this] re
 </pluginRepositories>
 ----
 
-You can download the jar file manually from https://repository.mulesoft.org/nexus/content/repositories/releases/org/mule/tools/mule-maven-plugin/2.0[here] or get if from Maven Central Repository.
+You can download the jar file manually from https://repository.mulesoft.org/nexus/content/repositories/releases/org/mule/tools/mule-maven-plugin/2.0-RC1[here] or get if from Maven Central Repository.
 
 == A simple example
 
@@ -52,7 +52,7 @@ In the most simple scenario the plugin will download and install a Mule Standalo
     <plugin>
         <groupId>org.mule.tools</groupId>
         <artifactId>mule-maven-plugin</artifactId>
-        <version>2.0</version>
+        <version>2.0-RC1</version>
         <configuration>
             <deployment>
                 <type>standalone</type>
@@ -90,7 +90,7 @@ You can deploy your application to a running ARM server, serverGroup or cluster.
     <plugin>
         <groupId>org.mule.tools</groupId>
         <artifactId>mule-maven-plugin</artifactId>
-        <version>2.0</version>
+        <version>2.0-RC1</version>
         <configuration>
             <deployment>
                 <type>arm</type>
@@ -131,7 +131,7 @@ To deploy your application to CloudHub:
     <plugin>
         <groupId>org.mule.toos</groupId>
         <artifactId>mule-maven-plugin</artifactId>
-        <version>2.0</version>
+        <version>2.0-RC1</version>
         <configuration>
             <deployment>
                 <type>cloudhub</type>
@@ -171,7 +171,7 @@ You can make the plugin deploy to an existing Mule server instead of downloading
     <plugin>
         <groupId>org.mule.tools</groupId>
         <artifactId>mule-maven-plugin</artifactId>
-        <version>2.0</version>
+        <version>2.0-RC1</version>
         <configuration>
             <deployment>
                 <type>standalone</type>
@@ -207,7 +207,7 @@ You can make the plugin deploy to an existing Mule server, using the API provide
     <plugin>
         <groupId>org.mule.toos</groupId>
         <artifactId>mule-maven-plugin</artifactId>
-        <version>2.0</version>
+        <version>2.0-RC1</version>
         <configuration>
             <deployment>
                 <type>agent</type>
@@ -247,7 +247,7 @@ Basically you will configure maven-mule-plugin to pack your project in Mule app 
             <plugin>
                 <groupId>org.mule.tools</groupId>
                 <artifactId>mule-maven-plugin</artifactId>
-                <version>2.0</version>
+                <version>2.0-RC1</version>
                 <configuration>
                     <deployment>
                         <type>standalone</type>
@@ -296,7 +296,7 @@ In this example you will see the plugin working for Standalone deployment, confi
 <plugin>
     <groupId>org.mule.tools</groupId>
     <artifactId>mule-maven-plugin</artifactId>
-    <version>2.0</version>
+    <version>2.0-RC1</version>
     <configuration>
         <muleVersion>3.7.0</muleVersion>                 <!--1-->
         <deployment>
@@ -352,7 +352,7 @@ In this example you will see the plugin working for Standalone deployment, confi
 <plugin>
     <groupId>org.mule.tools</groupId>
     <artifactId>mule-maven-plugin</artifactId>
-    <version>2.0</version>
+    <version>2.0-RC1</version>
     <configuration>
         <muleVersion>3.7.0</muleVersion>
         <deployment>
@@ -403,7 +403,7 @@ To deploy more than one application you need to configure one plugin execution f
 <plugin>
     <groupId>org.mule.tools</groupId>
     <artifactId>mule-maven-plugin</artifactId>
-    <version>2.0</version>
+    <version>2.0-RC1</version>
     <configuration>
         <muleVersion>3.7.0</muleVersion>
         <deployment>

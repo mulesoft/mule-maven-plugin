@@ -1,0 +1,1 @@
+new File(new File('.').absolutePath + "/target/mule-enterprise-standalone-" + System.getProperty('mule.version') + "/apps/default").deleteDir()

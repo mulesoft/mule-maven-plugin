@@ -1,0 +1,484 @@
+= mule-maven-plugin
+
+Maven plugin to deploy Mule applications to different kind of servers: Standalone (both Community and Enterprise), Clustered, Anypoint Runtime Manager and CloudHub. The main uses are to run integration tests and deploy applications to different environments.
+
+* Deploy a Mule application to a local Standalone server.
+* Run integration tests in a local Standalone deployment.
+* Supports both Community and Enterprise editions.
+* Deploy Mule applications to Anypoint Runtime Manager.
+* Deploy Mule applications to CloudHub.
+* Deploy Mule applications to a local Cluster.
+
+== Maven dependency
+
+[source,xml]
+----
+<plugin>
+  <groupId>org.mule.tools</groupId>
+  <artifactId>mule-maven-plugin</artifactId>
+  <version>2.0</version>
+</plugin>
+----
+
+== Maven repository
+
+Add https://repository.mulesoft.org/nexus/content/repositories/releases[this] repository to your project or your settings.xml like this:
+
+[source,xml]
+----
+<pluginRepositories>
+    <pluginRepository>
+        <id>mule-public</id>
+        <url>https://repository.mulesoft.org/nexus/content/repositories/releases</url>
+    </pluginRepository>
+</pluginRepositories>
+----
+
+You can download the jar file manually from https://repository.mulesoft.org/nexus/content/repositories/releases/org/mule/tools/mule-maven-plugin/2.0[here] or get if from Maven Central Repository.
+
+== A simple example
+
+In the most simple scenario the plugin will download and install a Mule Standalone server and deploy the result of the Maven build to it:
+
+[source,xml]
+----
+<plugins>    
+    <plugin>
+        <groupId>org.mule.tools.maven</groupId>
+        <artifactId>mule-app-maven-plugin</artifactId>
+        <version>1.1</version>
+        <extensions>true</extensions>
+    </plugin>
+    <plugin>
+        <groupId>org.mule.tools</groupId>
+        <artifactId>mule-maven-plugin</artifactId>
+        <version>2.0</version>
+        <configuration>
+            <deployment>
+                <type>standalone</type>
+            </deployment>
+            <muleVersion>3.7.0</muleVersion>
+        </configuration>
+        <executions>
+            <execution>
+                <id>deploy</id>
+                <phase>deploy</phase>
+                <goals>
+                    <goal>deploy</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+</plugins>
+----
+
+Note: you need to have configured in your settings.xml or in your pom.xml the repository where Mule is available.
+
+== Deploy to Anypoint Runtime Manager
+
+You can deploy your application to a running ARM server, serverGroup or cluster. You need to provide the ARM credentials and configure the target name.
+
+[source,xml]
+----
+<plugins>    
+    <plugin>
+        <groupId>org.mule.tools.maven</groupId>
+        <artifactId>mule-app-maven-plugin</artifactId>
+        <version>1.1</version>
+        <extensions>true</extensions>
+    </plugin>
+    <plugin>
+        <groupId>org.mule.tools</groupId>
+        <artifactId>mule-maven-plugin</artifactId>
+        <version>2.0</version>
+        <configuration>
+            <deployment>
+                <type>arm</type>
+            </deployment>
+            <muleVersion>3.7.0</muleVersion>
+            <username>myUsername</username>
+            <password>myPassword</password>
+            <target>server-name</target>
+            <targetType>server</targetType>             <!-- One of: server, serverGroup, cluster -->
+            <environment>Production</environment>
+        </configuration>
+        <executions>
+            <execution>
+                <id>deploy</id>
+                <phase>deploy</phase>
+                <goals>
+                    <goal>deploy</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+</plugins>
+----
+
+== Deploy to CloudHub
+
+To deploy your application to CloudHub:
+
+[source,xml]
+----
+<plugins>
+    <plugin>
+        <groupId>org.mule.tools.maven</groupId>
+        <artifactId>mule-app-maven-plugin</artifactId>
+        <version>1.1</version>
+        <extensions>true</extensions>
+    </plugin>
+    <plugin>
+        <groupId>org.mule.toos</groupId>
+        <artifactId>mule-maven-plugin</artifactId>
+        <version>2.0</version>
+        <configuration>
+            <deployment>
+                <type>cloudhub</type>
+            </deployment>
+            <muleVersion>3.7.0</muleVersion>
+            <username>myUsername</username>
+            <password>myPassword</password>
+            <redeploy>true</redeploy>
+            <environment>Production</environment>
+        </configuration>
+        <executions>
+            <execution>
+                <id>deploy</id>
+                <phase>deploy</phase>
+                <goals>
+                    <goal>deploy</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+</plugins>
+----
+
+== Using a Mule server instead of downloading Mule dependency
+
+You can make the plugin deploy to an existing Mule server instead of downloading an installing it. Just configure muleHome property like this:
+
+[source,xml]
+----
+<plugins>    
+    <plugin>
+        <groupId>org.mule.tools.maven</groupId>
+        <artifactId>mule-app-maven-plugin</artifactId>
+        <version>1.1</version>
+        <extensions>true</extensions>
+    </plugin>
+    <plugin>
+        <groupId>org.mule.tools</groupId>
+        <artifactId>mule-maven-plugin</artifactId>
+        <version>2.0</version>
+        <configuration>
+            <deployment>
+                <type>standalone</type>
+            </deployment>
+            <muleHome>/path/to/mule/server</muleHome>
+        </configuration>
+        <executions>
+            <execution>
+                <id>deploy</id>
+                <phase>deploy</phase>
+                <goals>
+                    <goal>deploy</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+</plugins>
+----
+
+== Deploy to Mule server using the Agent
+
+You can make the plugin deploy to an existing Mule server, using the API provided by the Mule Agent:
+
+[source,xml]
+----
+<plugins>
+    <plugin>
+        <groupId>org.mule.tools.maven</groupId>
+        <artifactId>mule-app-maven-plugin</artifactId>
+        <version>1.1</version>
+        <extensions>true</extensions>
+    </plugin>
+    <plugin>
+        <groupId>org.mule.toos</groupId>
+        <artifactId>mule-maven-plugin</artifactId>
+        <version>2.0</version>
+        <configuration>
+            <deployment>
+                <type>agent</type>
+            </deployment>
+            <uri>http://localhost:9999/</uri>
+        </configuration>
+        <executions>
+            <execution>
+                <id>deploy</id>
+                <phase>deploy</phase>
+                <goals>
+                    <goal>deploy</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+</plugins>
+----
+
+The uri parameter is the endpoint of the REST API of the Agent.
+
+== Running Integration Tests
+
+One of the most important uses for the plugin is to run integration tests on your integration application. You can see the working example in src/it/standalone/example-integration-tests.
+
+Basically you will configure maven-mule-plugin to pack your project in Mule app format, maven-failsafe-plugin to run integration-tests and report, and this plugin to deploy the project packaged application to a new Mule Server downloaded from a Maven repository. 
+
+[source,xml]
+----
+        <plugins>
+            <plugin>
+                <groupId>org.mule.tools.maven</groupId>
+                <artifactId>mule-app-maven-plugin</artifactId>
+                <version>1.1</version>
+                <extensions>true</extensions>
+            </plugin>
+            <plugin>
+                <groupId>org.mule.tools</groupId>
+                <artifactId>mule-maven-plugin</artifactId>
+                <version>2.0</version>
+                <configuration>
+                    <deployment>
+                        <type>standalone</type>
+                    </deployment>
+                    <muleVersion>3.7.0</muleVersion>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>deploy</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>undeploy</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>undeploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+----
+
+== Full example
+
+In this example you will see the plugin working for Standalone deployment, configuring one applications to be deployed, two external libs to be added to the server, a domain to be deployed, and a script to be ran just before starting the server.
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <version>2.0</version>
+    <configuration>
+        <muleVersion>3.7.0</muleVersion>                 <!--1-->
+        <deployment>
+            <type>standalone</type>
+        </deployment>
+        <applications>
+            <application>${app.location}</application>   <!--2-->
+        </applications>
+        <libs>
+          <lib>${basedir}/activemq-all-5.5.0.jar</lib>
+          <lib>${basedir}/activemq-core.jar</lib>        <!--3-->
+        </libs>
+        <arguments>
+            <argument>-M-Dport.1=1337</argument>
+            <argument>-M-Dport.2=1338</argument>         <!--4-->
+        </arguments>
+        <domain>${project.basedir}/domain</domain>       <!--5-->
+        <script>${basedir}/script.groovy</script>        <!--6-->
+        <community>false</community>                     <!--7-->
+    </configuration>
+    <executions>
+        <execution>
+            <id>deploy</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+                <goal>deploy</goal>                      <!--8-->
+            </goals>
+        </execution>
+        <execution>
+            <id>undeploy</id>
+            <phase>post-integration-test</phase>
+            <goals>
+                <goal>undeploy</goal>                    <!--9-->
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+<1> Configures Mule version.
+<2> Either point to a Mule application deployable zip, or an exploded Mule app folder. Defaults to the build generated artifact.
+<3> External libs to be added to Mule Standalone.
+<4> Mule arguments (optional).
+<5> Domain to deploy, to add your application to the domain you must configure your application manually (optional).
+<6> Optional Groovy script to be executed just before the deployment.
+<7> Use Enterprise Edition.
+<8> Use the **deploy** goal to download Mule, install it and deploy the domain and applications.
+<9> Use the **undeploy** goal to undeploy de applications and stop Mule server.
+
+== Deploying to a local Mule Cluster
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <version>2.0</version>
+    <configuration>
+        <muleVersion>3.7.0</muleVersion>
+        <deployment>
+            <type>cluster</type>
+        </deployment>
+        <size>2</size>                                          <!--1-->
+        <application>${app.1.location}</application>
+        <libs>
+          <lib>${basedir}/activemq-all-5.5.0.jar</lib>
+          <lib>${basedir}/activemq-core.jar</lib>        
+        </libs>
+        <arguments>
+            <argument>-M-Dport.1=1337</argument>
+            <argument>-M-Dport.2=1338</argument>         
+        </arguments>
+    </configuration>
+    <executions>
+        <execution>
+            <id>deploy</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+                <goal>deploy</goal>                              <!--2-->
+            </goals>
+        </execution>
+        <execution>
+            <id>undeploy</id>
+            <phase>post-integration-test</phase>
+            <goals>
+                <goal>undeploy</goal>                            <!--3-->
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+It's pretty much the same as before, but with the following differences:
+
+. Specify the number of nodes that'll be used to make the cluster. The plugin then'll make the cluster for you.
+. In order to start the cluster, you need to specify the **clusterDeploy** goal.
+. In order to stop the cluster, you need to specify the **clusterStop** goal.
+
+== Deploying multiple applications
+
+To deploy more than one application you need to configure one plugin execution for each application to deploy.
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <version>2.0</version>
+    <configuration>
+        <muleVersion>3.7.0</muleVersion>
+        <deployment>
+            <type>standalone</type>
+        </deployment>
+    </configuration>
+    <executions>
+        <execution>
+            <id>deploy1</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+                <goal>deploy</goal>
+            </goals>
+            <configuration>
+                <application>${app.1.location}</application>
+            </configuration>
+        </execution>
+        <execution>
+            <id>deploy2</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+                <goal>deploy</goal>
+            </goals>
+            <configuration>
+                <application>${app.2.location}</application>
+            </configuration>
+        </execution>
+        <execution>
+            <id>undeploy1</id>
+            <phase>post-integration-test</phase>
+            <goals>
+                <goal>undeploy</goal>
+            </goals>
+            <configuration>
+                <application>${app.1.location}</application>
+            </configuration>
+        </execution>
+        <execution>
+            <id>undeploy2</id>
+            <phase>post-integration-test</phase>
+            <goals>
+                <goal>undeploy</goal>
+            </goals>
+            <configuration>
+                <application>${app.2.location}</application>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+----
+
+== Skipping plugin execution
+
+**skip** when true makes plugin execution to be skipped. This property works with all plugin goals. The most common scenario is to configure its value to skipTests, so, when you don't want your tests to run, you also don't prepare your test infrastrcuture.
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <configuration>
+        <muleVersion>3.7.0</muleVersion>
+        <deployment>
+            <type>standalone</type>
+        </deployment>
+        <skip>${skipTests}</skip>
+    </configuration>
+    <executions>
+        <execution>
+            <id>deploy</id>
+            <phase>deploy</phase>
+            <goals>
+                <goal>deploy</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----

@@ -10,6 +10,7 @@ import org.mule.test.infrastructure.process.MuleProcessController;
 import org.mule.tools.mule.agent.AgentDeployer;
 import org.mule.tools.mule.arm.ArmDeployer;
 import org.mule.tools.mule.cloudhub.CloudhubDeployer;
+import org.mule.util.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -286,19 +287,9 @@ public class DeployMojo extends AbstractMuleMojo
             controllers.add(new MuleProcessController(home.getAbsolutePath(), timeout));
             muleHomes[i] = home;
         }
-        if (application == null)
-        {
-            try
-            {
-                File destApplication = new File(application.getParentFile(), applicationName + ".zip");
-                FileUtils.copyFile(application, destApplication);
-                application = destApplication;
-            }
-            catch (IOException e)
-            {
-                throw new MojoFailureException("Couldn't rename [" + application + "] to [" + applicationName + "]");
-            }
-        }
+
+        renameApplicationToApplicationName();
+
         if (null != script)
         {
             executeGroovyScript();
@@ -318,7 +309,23 @@ public class DeployMojo extends AbstractMuleMojo
     {
         File muleHome = installMule(new File(mavenProject.getBuild().getDirectory()));
         MuleProcessController mule = new MuleProcessController(muleHome.getAbsolutePath(), timeout);
-        if (application == null)
+
+        renameApplicationToApplicationName();
+
+        Deployer deployer = new Deployer(mule, getLog(), application, deploymentTimeout, arguments, DEFAULT_POLLING_DELAY)
+                .addLibraries(libs);
+        addDomain(deployer);
+        addDependencies(deployer);
+        if (null != script)
+        {
+            executeGroovyScript();
+        }
+        deployer.execute();
+    }
+
+    private void renameApplicationToApplicationName() throws MojoFailureException
+    {
+        if (!FilenameUtils.getBaseName(application.getName()).equals(applicationName))
         {
             try
             {
@@ -331,15 +338,6 @@ public class DeployMojo extends AbstractMuleMojo
                 throw new MojoFailureException("Couldn't rename [" + application + "] to [" + applicationName + "]");
             }
         }
-        Deployer deployer = new Deployer(mule, getLog(), application, deploymentTimeout, arguments, DEFAULT_POLLING_DELAY)
-                .addLibraries(libs);
-        addDomain(deployer);
-        addDependencies(deployer);
-        if (null != script)
-        {
-            executeGroovyScript();
-        }
-        deployer.execute();
     }
 
     private File installMule(File buildDirectory) throws MojoExecutionException, MojoFailureException

@@ -202,17 +202,25 @@ public abstract class AbstractMuleMojo extends AbstractMojo
 
     protected void initializeApplication() throws MojoFailureException
     {
-        Artifact artifact = resolveMavenProjectArtifact();
-
         if (application == null)
         {
-            application = artifact.getFile();
-            getLog().info("No application configured. Using project artifact: " + artifact.getFile());
-        }
+            Artifact artifact = resolveMavenProjectArtifact();
+            application = resolveMavenProjectArtifact().getFile();
+            getLog().info("No application configured. Using project artifact: " + application);
 
-        if (applicationName == null)
+            if (applicationName == null)
+            {
+                applicationName = artifact.getArtifactId();
+            }
+        }
+        else
         {
-            applicationName = artifact.getArtifactId();
+            // If an application is defined but no application name is provided, use the name of the file instead of
+            // the artifact ID (expected behavior in standalone deployment for example).
+            if (applicationName == null)
+            {
+                applicationName = application.getName();
+            }
         }
     }
 }

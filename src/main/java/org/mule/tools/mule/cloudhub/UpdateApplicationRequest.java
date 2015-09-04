@@ -21,7 +21,7 @@ public class UpdateApplicationRequest
     {
     }
 
-    public UpdateApplicationRequest(String region, String muleVersion, int workers, String workerType)
+    public UpdateApplicationRequest(String region, String muleVersion, Integer workers, String workerType)
     {
         this.region = region;
         this.muleVersion = new MuleVersion();
@@ -40,13 +40,13 @@ public class UpdateApplicationRequest
     private static class Workers
     {
         WorkerType type;
-        int amount;
+        Integer amount;
     }
 
     private static class WorkerType
     {
         String name;
-        int weight = 1;
+        //int weight = 1;
     }
 }
 

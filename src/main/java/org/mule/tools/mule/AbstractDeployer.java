@@ -8,44 +8,51 @@ package org.mule.tools.mule;
 
 import java.io.File;
 
+import org.apache.maven.plugin.logging.Log;
+
 
 public abstract class AbstractDeployer
 {
-    private final File application;
+    private final String applicationName;
+    private final File applicationFile;
+    private final Log log;
 
-    public AbstractDeployer(File application)
+    public AbstractDeployer(String applicationName, File applicationFile, Log log)
     {
-        this.application = application;
-    }
-
-    public void execute() throws DeploymentException
-    {
-        init();
-        try
-        {
-            deployApplication(application);
-        }
-        catch (Exception e)
-        {
-            throw new DeploymentException("Couldn't depploy app [" + application.getName() + "]", e);
-        }
+        this.applicationName = applicationName;
+        this.applicationFile = applicationFile;
+        this.log = log;
     }
 
     /**
-     * Initializes the deployer. This method will be called once before executing the deploy for all the apps.
+     * Deploys the application.
      */
-    protected void init()
+    public abstract void deploy() throws DeploymentException;
+
+    /**
+     * Logs an info message in the plugin.
+     */
+    protected void info(String message)
     {
+        log.info(message);
     }
 
     /**
-     * Deploys an application and returns an identification for it.
+     * Logs an error message in the plugin.
      */
-    protected abstract String deployApplication(File file) throws DeploymentException;
+    protected void error(String message)
+    {
+        log.error(message);
+    }
 
-    /**
-     * Undeploys an application given its id.
-     */
-    protected abstract void undeployApplication(String id);
+    public String getApplicationName()
+    {
+        return applicationName;
+    }
+
+    public File getApplicationFile()
+    {
+        return applicationFile;
+    }
 
 }

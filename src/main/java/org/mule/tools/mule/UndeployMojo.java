@@ -7,16 +7,14 @@
 package org.mule.tools.mule;
 
 import org.mule.test.infrastructure.process.MuleProcessController;
-import org.mule.tools.mule.arm.ArmApi;
-import org.mule.tools.mule.arm.Applications;
-import org.mule.tools.mule.arm.Data;
 import org.mule.tools.mule.agent.AgentApi;
+import org.mule.tools.mule.arm.Applications;
+import org.mule.tools.mule.arm.ArmApi;
+import org.mule.tools.mule.arm.Data;
 import org.mule.tools.mule.cloudhub.CloudhubApi;
-import org.mule.util.FilenameUtils;
 
 import java.io.File;
 
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -81,14 +79,6 @@ public class UndeployMojo extends AbstractMuleMojo
     private Deployment deployment;
 
     /**
-     * Application to be undeployed.
-     *
-     * @since 1.0
-     */
-    @Parameter(property = "mule.application")
-    private File application;
-
-    /**
      * Anypoint Platform URI, can be configured to use with On Premise platform..
      *
      * @since 2.0
@@ -104,31 +94,6 @@ public class UndeployMojo extends AbstractMuleMojo
     @Parameter(required = false, readonly = true, property = "anypoint.environment")
     protected String environment;
 
-    /**
-     * Trust store path then connecting through HTTPS.
-     *
-     * @since 2.0
-     */
-    @Parameter(readonly = true, property = "trustStorePath")
-    protected String trustStorePath;
-
-    /**
-     * Trust store password then connecting through HTTPS.
-     *
-     * @since 2.0
-     */
-    @Parameter(readonly = true, property = "trustStorePassword")
-    protected String trustStorePassword;
-
-    /**
-     * Trust store type then connecting through HTTPS.
-     *
-     * @since 2.0
-     */
-    @Parameter(readonly = true, property = "trustStoreType", defaultValue = "jks")
-    protected String trustStoreType;
-
-    private String applicationName;
 
     @Override
     protected void doExecute() throws MojoExecutionException, MojoFailureException
@@ -160,9 +125,8 @@ public class UndeployMojo extends AbstractMuleMojo
         CloudhubApi cloudhubApi = new CloudhubApi(username, password, environment);
         cloudhubApi.init();
         initializeApplication();
-        String appName = FilenameUtils.getBaseName(application.getName());
-        getLog().info("Undeploying and deleting application " + appName);
-        cloudhubApi.deleteApplication(appName);
+        getLog().info("Stopping application " + applicationName);
+        cloudhubApi.stopApplication(applicationName);
     }
 
     private void arm() throws MojoFailureException
@@ -176,7 +140,7 @@ public class UndeployMojo extends AbstractMuleMojo
 
     private void agent() throws MojoFailureException
     {
-        AgentApi agentApi = new AgentApi(uri, trustStorePath, trustStorePassword, trustStoreType);
+        AgentApi agentApi = new AgentApi(uri);
         initializeApplication();
         getLog().info("Undeploying application " + applicationName);
         agentApi.undeployApplication(applicationName);
@@ -223,18 +187,4 @@ public class UndeployMojo extends AbstractMuleMojo
 
     }
 
-    private void initializeApplication() throws MojoFailureException
-    {
-        if (application == null)
-        {
-            Artifact artifact = resolveMavenProjectArtifact();
-            applicationName = artifact.getArtifactId();
-            application = artifact.getFile();
-            getLog().info("No application configured. Using project artifact: " + artifact.getFile());
-        }
-        else
-        {
-            applicationName = application.getName();
-        }
-    }
 }

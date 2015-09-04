@@ -9,7 +9,6 @@ package org.mule.tools.mule.cloudhub;
 import org.mule.tools.mule.AbstractDeployer;
 import org.mule.tools.mule.ApiException;
 import org.mule.tools.mule.DeploymentException;
-import org.mule.util.FilenameUtils;
 
 import java.io.File;
 
@@ -19,84 +18,69 @@ public class CloudhubDeployer extends AbstractDeployer
 {
     private final CloudhubApi cloudhubApi;
 
-    private final boolean redeploy;
     private final String region;
     private final String muleVersion;
-    private final int workers;
+    private final Integer workers;
     private final String workerType;
 
-    private final Log log;
-
-    public CloudhubDeployer(String username, String password, String environment, File applications, boolean redeploy,
-                            String region, String muleVersion, int workers, String workerType, Log log)
+    public CloudhubDeployer(String username, String password, String environment, String applicationName,
+                            File application,
+                            String region, String muleVersion, Integer workers, String workerType, Log log)
     {
-        super(applications);
+        super(applicationName, application, log);
         this.cloudhubApi = new CloudhubApi(username, password, environment);
-        this.redeploy = redeploy;
         this.region = region;
         this.muleVersion = muleVersion;
         this.workers = workers;
         this.workerType = workerType;
-        this.log = log;
     }
 
     @Override
-    protected void init()
+    public void deploy() throws DeploymentException
     {
         cloudhubApi.init();
-    }
 
-    @Override
-    protected String deployApplication(File file) throws DeploymentException
-    {
-        String appName = FilenameUtils.getBaseName(file.getName());
+        info("Deploying application " + getApplicationName() + " to Cloudhub");
 
-        log.info("Deploying application " + appName + " to Cloudhub");
+        if (!getApplicationFile().exists())
+        {
+            throw new DeploymentException("Application file " + getApplicationFile() + " does not exist.");
+        }
 
         try
         {
-            boolean domainAvailable = cloudhubApi.isNameAvailable(appName);
+            boolean domainAvailable = cloudhubApi.isNameAvailable(getApplicationName());
 
             if (domainAvailable)
             {
-                log.info("Creating application " + appName);
-                cloudhubApi.createApplication(appName, region, muleVersion, workers, workerType);
+                info("Creating application " + getApplicationName());
+                cloudhubApi.createApplication(getApplicationName(), region, muleVersion, workers, workerType);
             }
             else
             {
-                if (applicationBelongsToCurrentUser(appName))
+                if (applicationBelongsToCurrentUser(getApplicationName()))
                 {
-                    if (redeploy)
-                    {
-                        log.info("Application " + appName + " already exists, redeploying");
-                        cloudhubApi.updateApplication(appName, region, muleVersion, workers, workerType);
-                    }
-                    else
-                    {
-                        log.error("Application " + appName + " already exists, but redeploy=false. Aborting.");
-                        throw new DeploymentException("Application " + appName + " already exists");
-                    }
+                    info("Application " + getApplicationName() + " already exists, redeploying");
+                    cloudhubApi.updateApplication(getApplicationName(), region, muleVersion, workers, workerType);
                 }
                 else
                 {
-                    log.error("Domain " + appName + " is not available. Aborting.");
-                    throw new DeploymentException("Domain " + appName + " is not available. Aborting.");
+                    error("Domain " + getApplicationName() + " is not available. Aborting.");
+                    throw new DeploymentException("Domain " + getApplicationName() + " is not available. Aborting.");
                 }
             }
 
-            log.info("Uploading application contents " + appName);
-            cloudhubApi.uploadFile(appName, file);
+            info("Uploading application contents " + getApplicationName());
+            cloudhubApi.uploadFile(getApplicationName(), getApplicationFile());
 
-            log.info("Starting application " + appName);
-            cloudhubApi.startApplication(appName);
+            info("Starting application " + getApplicationName());
+            cloudhubApi.startApplication(getApplicationName());
         }
         catch (ApiException e)
         {
-            log.error("Failed: " + e.getMessage());
-            throw e;
+            error("Failed: " + e.getMessage());
+            throw new DeploymentException("Failed to deploy application " + getApplicationName(), e);
         }
-
-        return appName;
     }
 
     private boolean applicationBelongsToCurrentUser(String appName)
@@ -109,12 +93,6 @@ public class CloudhubDeployer extends AbstractDeployer
             }
         }
         return false;
-    }
-
-    @Override
-    protected void undeployApplication(String id)
-    {
-        cloudhubApi.deleteApplication(id);
     }
 
 }

@@ -61,6 +61,24 @@ public abstract class AbstractMuleMojo extends AbstractMojo
     private List<ArtifactDescription> artifactItems = new ArrayList<ArtifactDescription>();
 
     /**
+     * Application file to be deployed.
+     *
+     * @since 1.0
+     */
+    @Parameter(property = "mule.application")
+    protected File application;
+
+    /**
+     * Name of the application to deploy/undeploy. If not specified, the artifact id will be used as
+     * the name. This parameter allows to override this behavior to specify a custom name.
+     *
+     * @since 2.0
+     */
+    @Parameter(readonly = true, property = "applicationName")
+    protected String applicationName;
+
+
+    /**
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     @Override
@@ -179,5 +197,22 @@ public abstract class AbstractMuleMojo extends AbstractMojo
         }
 
         return artifact;
+    }
+
+
+    protected void initializeApplication() throws MojoFailureException
+    {
+        Artifact artifact = resolveMavenProjectArtifact();
+
+        if (application == null)
+        {
+            application = artifact.getFile();
+            getLog().info("No application configured. Using project artifact: " + artifact.getFile());
+        }
+
+        if (applicationName == null)
+        {
+            applicationName = artifact.getArtifactId();
+        }
     }
 }

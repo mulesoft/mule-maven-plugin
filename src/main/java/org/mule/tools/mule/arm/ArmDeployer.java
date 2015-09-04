@@ -12,40 +12,28 @@ import org.mule.tools.mule.TargetType;
 
 import java.io.File;
 
+import org.apache.maven.plugin.logging.Log;
+
 public class ArmDeployer extends AbstractDeployer
 {
 
     private final TargetType targetType;
     private final String target;
-    private String applicationName;
     private final ArmApi armApi;
 
-    public ArmDeployer(String uri, String username, String password, String environment, TargetType targetType, String target, File application, String applicationName)
+    public ArmDeployer(String uri, String username, String password, String environment, TargetType targetType, String target, File application, String applicationName, Log log)
     {
-        super(application);
+        super(applicationName, application, log);
         this.targetType = targetType;
         this.target = target;
-        this.applicationName = applicationName;
         armApi = new ArmApi(uri, username, password, environment);
     }
 
     @Override
-    protected void init()
+    public void deploy() throws DeploymentException
     {
         armApi.init();
-    }
-
-    @Override
-    protected String deployApplication(File file) throws DeploymentException
-    {
-        int id = armApi.deployApplication(file, applicationName, targetType, target).data.id;
-        return String.valueOf(id);
-    }
-
-    @Override
-    protected void undeployApplication(String id)
-    {
-        armApi.undeployApplication(Integer.valueOf(id));
+        armApi.deployApplication(getApplicationFile(), getApplicationName(), targetType, target);
     }
 
 }

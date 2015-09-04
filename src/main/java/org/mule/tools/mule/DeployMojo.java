@@ -7,8 +7,8 @@
 package org.mule.tools.mule;
 
 import org.mule.test.infrastructure.process.MuleProcessController;
-import org.mule.tools.mule.arm.ArmDeployer;
 import org.mule.tools.mule.agent.AgentDeployer;
+import org.mule.tools.mule.arm.ArmDeployer;
 import org.mule.tools.mule.cloudhub.CloudhubDeployer;
 
 import java.io.File;
@@ -18,7 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
@@ -92,14 +91,6 @@ public class DeployMojo extends AbstractMuleMojo
      */
     @Parameter(readonly = true)
     private ArtifactDescription muleDistribution;
-
-    /**
-     * Application to be deployed. Full path to a zipped or exploded Mule application.
-     *
-     * @since 1.0
-     */
-    @Parameter(property = "mule.application")
-    private File application;
 
     /**
      * Deployment timeout in milliseconds.
@@ -196,67 +187,34 @@ public class DeployMojo extends AbstractMuleMojo
     protected String uri;
 
     /**
-     * Determines the behavior when deploying an app to Cloudhub that already exists. If false, the operation will fail. If
-     * true, the application will be deleted, created again and deployed.
-     *
-     * @since 2.0
-     */
-    @Parameter(readonly = true, defaultValue = "false")
-    protected boolean redeploy;
-
-    /**
      * Region to deploy the application in Cloudhub.
      *
      * @since 2.0
      */
-    @Parameter(readonly = true, property = "cloudhub.region", defaultValue = "us-east-1")
-    protected String region = "us-east-1";
+    @Parameter(readonly = true, property = "cloudhub.region")
+    protected String region;
 
     /**
      * Number of workers for the deployment of the application in Cloudhub.
      *
      * @since 2.0
      */
-    @Parameter(readonly = true, property = "cloudhub.workers", defaultValue = "1")
-    protected int workers = 1;
+    @Parameter(readonly = true, property = "cloudhub.workers")
+    protected Integer workers;
 
     /**
      * Type of workers for the deployment of the application in Cloudhub.
      *
      * @since 2.0
      */
-    @Parameter(readonly = true, property = "cloudhub.workerType", defaultValue = "Medium")
-    protected String workerType = "Medium";
-
-    /**
-     * Trust store path then connecting through HTTPS.
-     *
-     * @since 2.0
-     */
-    @Parameter(readonly = true, property = "trustStorePath")
-    protected String trustStorePath;
-
-    /**
-     * Trust store password then connecting through HTTPS.
-     *
-     * @since 2.0
-     */
-    @Parameter(readonly = true, property = "trustStorePassword")
-    protected String trustStorePassword;
-
-    /**
-     * Trust store type then connecting through HTTPS.
-     *
-     * @since 2.0
-     */
-    @Parameter(readonly = true, property = "trustStoreType", defaultValue = "jks")
-    protected String trustStoreType;
-
-    private String applicationName;
+    @Parameter(readonly = true, property = "cloudhub.workerType")
+    protected String workerType;
 
 
     public void doExecute() throws MojoExecutionException, MojoFailureException
     {
+        initializeApplication();
+
         Deployment.Type type = deployment.getType();
         switch (type)
         {
@@ -282,77 +240,36 @@ public class DeployMojo extends AbstractMuleMojo
 
     private void cloudhub() throws MojoFailureException, MojoExecutionException
     {
-        initializeApplication();
-
-        CloudhubDeployer deployer = new CloudhubDeployer(username, password, environment, application, redeploy,
+        CloudhubDeployer deployer = new CloudhubDeployer(username, password, environment, applicationName, application,
                                                          region, muleVersion, workers, workerType, getLog());
-
-        if (null != script)
-        {
-            executeGroovyScript();
-        }
-        try
-        {
-            deployer.execute();
-        }
-        catch (Exception e)
-        {
-            throw new MojoFailureException("Failed to deploy [" + application + "] " + e.getMessage());
-        }
+        deployWithDeployer(deployer);
     }
 
     private void arm() throws MojoFailureException, MojoExecutionException
     {
-        initializeApplication();
-
-        ArmDeployer deployer = new ArmDeployer(uri, username, password, environment, targetType, target, application, applicationName);
-
-        if (null != script)
-        {
-            executeGroovyScript();
-        }
-        try
-        {
-            deployer.execute();
-        }
-        catch (DeploymentException e)
-        {
-            throw new MojoFailureException("Failed to deploy [" + application + "]");
-        }
+        ArmDeployer deployer = new ArmDeployer(uri, username, password, environment, targetType, target, application, applicationName, getLog());
+        deployWithDeployer(deployer);
     }
 
     private void agent() throws MojoFailureException, MojoExecutionException
     {
-        initializeApplication();
+        AgentDeployer deployer = new AgentDeployer(getLog(), applicationName, application, uri);
+        deployWithDeployer(deployer);
+    }
 
-        AgentDeployer deployer = new AgentDeployer(getLog(), applicationName, application, uri, trustStorePath, trustStorePassword, trustStoreType);
-
+    private void deployWithDeployer(AbstractDeployer deployer) throws MojoExecutionException, MojoFailureException
+    {
         if (null != script)
         {
             executeGroovyScript();
         }
         try
         {
-            deployer.execute();
+            deployer.deploy();
         }
         catch (DeploymentException e)
         {
             throw new MojoFailureException("Failed to deploy [" + application + "]");
-        }
-    }
-
-    private void initializeApplication() throws MojoFailureException
-    {
-        if (application == null)
-        {
-            Artifact artifact = resolveMavenProjectArtifact();
-            applicationName = artifact.getArtifactId();
-            application = artifact.getFile();
-            getLog().info("No application configured. Using project artifact: " + artifact.getFile());
-        }
-        else
-        {
-            applicationName = application.getName();
         }
     }
 
@@ -371,7 +288,6 @@ public class DeployMojo extends AbstractMuleMojo
         }
         if (application == null)
         {
-            initializeApplication();
             try
             {
                 File destApplication = new File(application.getParentFile(), applicationName + ".zip");
@@ -382,10 +298,6 @@ public class DeployMojo extends AbstractMuleMojo
             {
                 throw new MojoFailureException("Couldn't rename [" + application + "] to [" + applicationName + "]");
             }
-        }
-        else
-        {
-            initializeApplication();
         }
         if (null != script)
         {
@@ -408,7 +320,6 @@ public class DeployMojo extends AbstractMuleMojo
         MuleProcessController mule = new MuleProcessController(muleHome.getAbsolutePath(), timeout);
         if (application == null)
         {
-            initializeApplication();
             try
             {
                 File destApplication = new File(application.getParentFile(), applicationName + ".zip");
@@ -419,10 +330,6 @@ public class DeployMojo extends AbstractMuleMojo
             {
                 throw new MojoFailureException("Couldn't rename [" + application + "] to [" + applicationName + "]");
             }
-        }
-        else
-        {
-            initializeApplication();
         }
         Deployer deployer = new Deployer(mule, getLog(), application, deploymentTimeout, arguments, DEFAULT_POLLING_DELAY)
                 .addLibraries(libs);

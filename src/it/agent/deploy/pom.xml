@@ -24,7 +24,6 @@
                     <deployment>
                         <type>agent</type>
                     </deployment>
-                    <muleVersion>${mule.version}</muleVersion>
                     <uri>http://localhost:9999/</uri>
                 </configuration>
                 <executions>

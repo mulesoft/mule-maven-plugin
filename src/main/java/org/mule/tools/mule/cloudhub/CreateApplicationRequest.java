@@ -9,10 +9,10 @@ package org.mule.tools.mule.cloudhub;
 public class CreateApplicationRequest
 {
     public String domain;
-    public String region = "us-east-1";
-    public String muleVersion; // = "3.6.0";
-    public int workers = 1;
-    public String workerType = "Medium";
+    public String region;
+    public String muleVersion;
+    public Integer workers;
+    public String workerType;
 
     // TODO: ask Dan
     public boolean persistentQueues;
@@ -22,7 +22,7 @@ public class CreateApplicationRequest
     {
     }
 
-    public CreateApplicationRequest(String domain, String region, String muleVersion, int workers, String workerType)
+    public CreateApplicationRequest(String domain, String region, String muleVersion, Integer workers, String workerType)
     {
         this.domain = domain;
         this.region = region;

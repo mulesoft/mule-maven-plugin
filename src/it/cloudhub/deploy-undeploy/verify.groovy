@@ -37,7 +37,7 @@ response = target.request(MediaType.APPLICATION_JSON_TYPE).
 def environments = new JsonSlurper().parseText(response).data
 def envId = (environments.find { it.name == 'Production'}).id
 
-// Assert that the application doesn't exist anymore.
+// Assert that the application is undeployed
 
 client = ClientBuilder.newClient();
 target = client.target(uri).path(APPLICATIONS);
@@ -48,4 +48,4 @@ response = target.request(MediaType.APPLICATION_JSON_TYPE).
 def applications = new JsonSlurper().parseText(response)
 application = applications.find { it.domain == 'maven-plugin-cloudhub-test' }
 
-assert application == null
+assert (application.status == 'UNDEPLOYED' || application.status == 'UNDEPLOYING')

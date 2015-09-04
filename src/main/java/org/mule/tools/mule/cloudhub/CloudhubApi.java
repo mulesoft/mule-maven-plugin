@@ -39,7 +39,7 @@ public class CloudhubApi extends AbstractMuleApi
         super(username, password, environment);
     }
 
-    public Application createApplication(String appName, String region, String muleVersion, int workers, String workerType)
+    public Application createApplication(String appName, String region, String muleVersion, Integer workers, String workerType)
     {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(URI).path(APPLICATIONS_PATH);
@@ -62,7 +62,7 @@ public class CloudhubApi extends AbstractMuleApi
         }
     }
 
-    public void updateApplication(String appName, String region, String muleVersion, int workers, String workerType)
+    public void updateApplication(String appName, String region, String muleVersion, Integer workers, String workerType)
     {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(URI).path(String.format(APPLICATION_UPDATE_PATH, appName));

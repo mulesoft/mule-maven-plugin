@@ -24,7 +24,7 @@ public class AgentApiTestCase
     @Before
     public void setup()
     {
-        agentApi = new AgentApi("http://localhost:9999/", null, null, null);
+        agentApi = new AgentApi("http://localhost:9999/");
     }
 
     @Test

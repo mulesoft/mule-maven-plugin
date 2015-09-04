@@ -9,7 +9,6 @@
     <packaging>mule</packaging>
 
     <build>
-        <finalName>maven-plugin-cloudhub-test</finalName>
         <plugins>
             <plugin>
                 <groupId>org.mule.tools.maven</groupId>
@@ -28,7 +27,7 @@
                     <muleVersion>${mule.version}</muleVersion>
                     <username>${username}</username>
                     <password>${password}</password>
-                    <redeploy>true</redeploy>
+                    <applicationName>maven-plugin-cloudhub-test</applicationName>
                     <environment>${environment}</environment>
                 </configuration>
                 <executions>

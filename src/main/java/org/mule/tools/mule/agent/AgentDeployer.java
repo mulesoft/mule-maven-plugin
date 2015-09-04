@@ -17,37 +17,26 @@ import org.apache.maven.plugin.logging.Log;
 public class AgentDeployer extends AbstractDeployer
 {
     private final AgentApi agentApi;
-    private final Log log;
-    private final String applicationName;
 
-    public AgentDeployer(Log log, String applicationName, File application, String uri, String trustStorePath, String trustStorePassword, String trustStoreType)
+    public AgentDeployer(Log log, String applicationName, File application, String uri)
     {
-        super(application);
-        this.applicationName = applicationName;
-        this.agentApi = new AgentApi(uri, trustStorePath, trustStorePassword, trustStoreType);
-        this.log = log;
+        super(applicationName, application, log);
+        this.agentApi = new AgentApi(uri);
     }
 
     @Override
-    protected String deployApplication(File file) throws DeploymentException
+    public void deploy() throws DeploymentException
     {
         try
         {
-            log.info("Deploying application " + file.getName() + " to Mule Agent");
-            agentApi.deployApplication(applicationName, file);
+            info("Deploying application " + getApplicationName() + " to Mule Agent");
+            agentApi.deployApplication(getApplicationName(), getApplicationFile());
         }
         catch (ApiException e)
         {
-            log.error("Failure: " + e.getMessage());
-            throw e;
+            error("Failure: " + e.getMessage());
+            throw new DeploymentException("Failed to deploy application " + getApplicationName(), e);
         }
-        return file.getName();
     }
 
-    @Override
-    protected void undeployApplication(String id)
-    {
-        log.info("Undeploying application " + id + " from Mule Agent");
-        agentApi.undeployApplication(id);
-    }
 }

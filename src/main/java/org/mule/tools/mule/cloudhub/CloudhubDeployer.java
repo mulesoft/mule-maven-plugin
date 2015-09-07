@@ -58,10 +58,18 @@ public class CloudhubDeployer extends AbstractDeployer
             }
             else
             {
-                if (applicationBelongsToCurrentUser(getApplicationName()))
+                Application app = findApplicationFromCurrentUser(getApplicationName());
+
+                if (app != null)
                 {
                     info("Application " + getApplicationName() + " already exists, redeploying");
-                    cloudhubApi.updateApplication(getApplicationName(), region, muleVersion, workers, workerType);
+
+                    String updateRegion = (region == null) ? app.region : region;
+                    String updateMuleVersion = (muleVersion == null) ? app.muleVersion : muleVersion;
+                    Integer updateWorkers = (workers == null) ? app.workers : workers;
+                    String updateWorkerType = (workerType == null) ? app.workerType : workerType;
+
+                    cloudhubApi.updateApplication(getApplicationName(), updateRegion, updateMuleVersion, updateWorkers, updateWorkerType);
                 }
                 else
                 {
@@ -83,16 +91,16 @@ public class CloudhubDeployer extends AbstractDeployer
         }
     }
 
-    private boolean applicationBelongsToCurrentUser(String appName)
+    private Application findApplicationFromCurrentUser(String appName)
     {
         for (Application app : cloudhubApi.getApplications())
         {
             if (appName.equals(app.domain))
             {
-                return true;
+                return app;
             }
         }
-        return false;
+        return null;
     }
 
 }

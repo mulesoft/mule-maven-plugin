@@ -13,10 +13,6 @@ public class UpdateApplicationRequest
     public MuleVersion muleVersion;
     public Workers workers;
 
-    // TODO: ask Dan
-    public boolean persistentQueues;
-    public boolean monitoringAutoRestart = true;
-
     public UpdateApplicationRequest()
     {
     }
@@ -32,20 +28,20 @@ public class UpdateApplicationRequest
         this.workers.amount = workers;
     }
 
-    private static class MuleVersion
+    public static class MuleVersion
     {
-        String version;
+        public String version;
     }
 
-    private static class Workers
+    public static class Workers
     {
-        WorkerType type;
-        Integer amount;
+        public WorkerType type;
+        public Integer amount;
     }
 
-    private static class WorkerType
+    public static class WorkerType
     {
-        String name;
+        public String name;
         //int weight = 1;
     }
 }

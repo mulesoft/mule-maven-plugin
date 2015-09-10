@@ -12,17 +12,13 @@ import org.mule.tools.mule.ApiException;
 import java.io.File;
 import java.util.List;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.maven.plugin.logging.Log;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 
 public class CloudhubApi extends AbstractMuleApi
@@ -34,22 +30,15 @@ public class CloudhubApi extends AbstractMuleApi
     public static final String APPLICATIONS_FILES_PATH = "/cloudhub/api/v2/applications/%s/files";
     public static final String DOMAINS_PATH = "/cloudhub/api/applications/domains/";
 
-    public CloudhubApi(String username, String password, String environment)
+    public CloudhubApi(Log log, String username, String password, String environment)
     {
-        super(username, password, environment);
+        super(log, username, password, environment);
     }
 
     public Application createApplication(String appName, String region, String muleVersion, Integer workers, String workerType)
     {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(URI).path(APPLICATIONS_PATH);
-
         CreateApplicationRequest application = new CreateApplicationRequest(appName, region, muleVersion, workers, workerType);
-
-        Response response = target.
-                request(MediaType.APPLICATION_JSON_TYPE).
-                headers(authorizationHeader()).
-                post(Entity.entity(application, MediaType.APPLICATION_JSON_TYPE));
+        Response response = post(URI, APPLICATIONS_PATH, application);
 
         if (response.getStatus() == 201) // Created
         {
@@ -57,27 +46,18 @@ public class CloudhubApi extends AbstractMuleApi
         }
         else
         {
-            String message = response.readEntity(String.class);
-            throw new ApiException(message, response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
+            throw new ApiException(response);
         }
     }
 
     public void updateApplication(String appName, String region, String muleVersion, Integer workers, String workerType)
     {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(URI).path(String.format(APPLICATION_UPDATE_PATH, appName));
-
         UpdateApplicationRequest application = new UpdateApplicationRequest(region, muleVersion, workers, workerType);
-
-        Response response = target.
-                request(MediaType.APPLICATION_JSON_TYPE).
-                headers(authorizationHeader()).
-                put(Entity.entity(application, MediaType.APPLICATION_JSON_TYPE));
+        Response response = put(URI, String.format(APPLICATION_UPDATE_PATH, appName), application);
 
         if (response.getStatus() != 200 && response.getStatus() != 301) // OK || Not modified
         {
-            String message = response.readEntity(String.class);
-            throw new ApiException(message, response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
+            throw new ApiException(response);
         }
     }
 
@@ -86,12 +66,7 @@ public class CloudhubApi extends AbstractMuleApi
      */
     public Application getApplication(String appName)
     {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(URI).path(APPLICATIONS_PATH + "/" + appName);
-
-        Response response = target.
-                request(MediaType.APPLICATION_JSON_TYPE).
-                headers(authorizationHeader()).get();
+        Response response = get(URI, APPLICATIONS_PATH + "/" + appName);
 
         if (response.getStatus() == 200)
         {
@@ -103,19 +78,13 @@ public class CloudhubApi extends AbstractMuleApi
         }
         else
         {
-            String message = response.readEntity(String.class);
-            throw new ApiException(message, response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
+            throw new ApiException(response);
         }
     }
 
     public List<Application> getApplications()
     {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(URI).path(APPLICATIONS_PATH);
-
-        Response response = target.
-                request(MediaType.APPLICATION_JSON_TYPE).
-                headers(authorizationHeader()).get();
+        Response response = get(URI, APPLICATIONS_PATH);
 
         if (response.getStatus() == 200)
         {
@@ -123,28 +92,20 @@ public class CloudhubApi extends AbstractMuleApi
         }
         else
         {
-            String message = response.readEntity(String.class);
-            throw new ApiException(message, response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
+            throw new ApiException(response);
         }
-
     }
+
     public void uploadFile(String appName, File file)
     {
-        Client client = ClientBuilder.newClient().register(MultiPartFeature.class);
-        WebTarget target = client.target(URI).path(String.format(APPLICATIONS_FILES_PATH, appName));
-        final FileDataBodyPart applicationPart = new FileDataBodyPart("file", file);
-        final MultiPart multipart = new FormDataMultiPart()
-                .bodyPart(applicationPart);
+        FileDataBodyPart applicationPart = new FileDataBodyPart("file", file);
+        MultiPart multipart = new FormDataMultiPart().bodyPart(applicationPart);
 
-        Response response = target.
-                request(MediaType.APPLICATION_JSON_TYPE).
-                headers(authorizationHeader()).
-                post(Entity.entity(multipart, multipart.getMediaType()));
+        Response response = post(URI, String.format(APPLICATIONS_FILES_PATH, appName), Entity.entity(multipart, multipart.getMediaType()));
 
         if (response.getStatus() != 200)
         {
-            String message = response.readEntity(String.class);
-            throw new ApiException(message, response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
+            throw new ApiException(response);
         }
     }
 
@@ -160,18 +121,12 @@ public class CloudhubApi extends AbstractMuleApi
 
     private void changeApplicationState(String appName, String state)
     {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(URI).path(APPLICATIONS_PATH + "/" + appName + "/status");
         Entity<String> json = Entity.json("{\"status\": \"" + state + "\"}");
-
-        Response response = target.request(MediaType.APPLICATION_JSON_TYPE).
-                headers(authorizationHeader()).
-                post(json);
+        Response response = post(URI, APPLICATIONS_PATH + "/" + appName + "/status", json);
 
         if (response.getStatus() != 200 && response.getStatus() != 304)
         {
-            String message = response.readEntity(String.class);
-            throw new ApiException(message, response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
+            throw new ApiException(response);
         }
 
     }
@@ -179,18 +134,11 @@ public class CloudhubApi extends AbstractMuleApi
 
     public void deleteApplication(String appName)
     {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(URI).path(APPLICATIONS_PATH + "/" + appName);
-
-        Response response = target.
-                request(MediaType.APPLICATION_JSON_TYPE).
-                headers(authorizationHeader()).
-                delete();
+        Response response = delete(URI, APPLICATIONS_PATH + "/" + appName);
 
         if (response.getStatus() != 200 && response.getStatus() != 204)
         {
-            String message = response.readEntity(String.class);
-            throw new ApiException(message, response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
+            throw new ApiException(response);
         }
 
     }
@@ -198,12 +146,7 @@ public class CloudhubApi extends AbstractMuleApi
 
     public boolean isNameAvailable(String appName)
     {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(URI).path(DOMAINS_PATH + appName);
-
-        Response response = target.
-                request(MediaType.APPLICATION_JSON_TYPE).
-                headers(authorizationHeader()).get();
+        Response response = get(URI, DOMAINS_PATH + appName);
 
         if (response.getStatus() == 200)
         {
@@ -212,8 +155,7 @@ public class CloudhubApi extends AbstractMuleApi
         }
         else
         {
-            String message = response.readEntity(String.class);
-            throw new ApiException(message, response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
+            throw new ApiException(response);
         }
 
     }

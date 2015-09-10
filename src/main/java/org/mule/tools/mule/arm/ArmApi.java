@@ -11,15 +11,12 @@ import org.mule.tools.mule.TargetType;
 
 import java.io.File;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import org.apache.maven.plugin.logging.Log;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 
 public class ArmApi extends AbstractMuleApi
@@ -32,9 +29,9 @@ public class ArmApi extends AbstractMuleApi
 
     private String uri;
 
-    public ArmApi(String uri, String username, String password, String environment)
+    public ArmApi(Log log, String uri, String username, String password, String environment)
     {
-        super(username, password, environment);
+        super(log, username, password, environment);
         this.uri = uri;
     }
 
@@ -46,39 +43,27 @@ public class ArmApi extends AbstractMuleApi
 
     public Application getApplicationStatus(int applicationId)
     {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(uri).path(APPLICATIONS + "/" + applicationId);
-        return target.
-                request(MediaType.APPLICATION_JSON_TYPE).
-                headers(authorizationHeader()).
-                get(Application.class);
+        return get(uri, APPLICATIONS + "/" + applicationId, Application.class);
     }
 
     public String undeployApplication(int applicationId)
     {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(uri).path(APPLICATIONS + "/" + applicationId);
-        return target.
-                request(MediaType.APPLICATION_JSON_TYPE).
-                headers(authorizationHeader()).
-                delete(String.class);
+        Response response = delete(uri, APPLICATIONS + "/" + applicationId);
+        return response.readEntity(String.class);
     }
 
     public Application deployApplication(File app, String appName, TargetType targetType, String target)
     {
         String id = getId(targetType, target);
-        Client client = ClientBuilder.newClient().register(MultiPartFeature.class);
-        WebTarget webTarget = client.target(uri).path(APPLICATIONS);
-        final FileDataBodyPart applicationPart = new FileDataBodyPart("file", app);
-        final MultiPart multipart = new FormDataMultiPart()
+
+        FileDataBodyPart applicationPart = new FileDataBodyPart("file", app);
+        MultiPart multipart = new FormDataMultiPart()
                 .field("artifactName", appName)
                 .field("targetId", id)
                 .bodyPart(applicationPart);
 
-        return webTarget.
-                request(MediaType.APPLICATION_JSON_TYPE).
-                headers(authorizationHeader()).
-                post(Entity.entity(multipart, multipart.getMediaType()), Application.class);
+        Response response = post(uri, APPLICATIONS, Entity.entity(multipart, multipart.getMediaType()));
+        return response.readEntity(Application.class);
     }
 
     private String getId(TargetType targetType, String target)
@@ -101,10 +86,7 @@ public class ArmApi extends AbstractMuleApi
 
     public Applications getApplications()
     {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(uri).path(APPLICATIONS);
-        return target.request(MediaType.APPLICATION_JSON_TYPE).
-                headers(authorizationHeader()).get(Applications.class);
+        return get(uri, APPLICATIONS, Applications.class);
     }
 
     public Target findServerByName(String name)
@@ -124,10 +106,8 @@ public class ArmApi extends AbstractMuleApi
 
     private Target findTargetByName(String name, String path)
     {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(uri).path(path);
-        Targets response = target.request(MediaType.APPLICATION_JSON_TYPE).
-                headers(authorizationHeader()).get(Targets.class);
+        Targets response = get(uri, path, Targets.class);
+
         for (int i = 0; i < response.data.length; i++)
         {
             if (name.equals(response.data[i].name))

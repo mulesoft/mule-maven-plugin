@@ -7,6 +7,8 @@
 package org.mule.tools.mule;
 
 
+import javax.ws.rs.core.Response;
+
 public class ApiException extends RuntimeException
 {
     private int statusCode;
@@ -19,6 +21,11 @@ public class ApiException extends RuntimeException
         this.statusCode = statusCode;
         this.reasonPhrase = reasonPhrase;
 
+    }
+
+    public ApiException(Response response)
+    {
+        this(response.readEntity(String.class), response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
     }
 
     public int getStatusCode()

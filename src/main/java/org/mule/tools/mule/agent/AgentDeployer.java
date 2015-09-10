@@ -21,7 +21,7 @@ public class AgentDeployer extends AbstractDeployer
     public AgentDeployer(Log log, String applicationName, File application, String uri)
     {
         super(applicationName, application, log);
-        this.agentApi = new AgentApi(uri);
+        this.agentApi = new AgentApi(log, uri);
     }
 
     @Override

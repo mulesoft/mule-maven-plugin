@@ -28,7 +28,7 @@ public class CloudhubDeployer extends AbstractDeployer
                             String region, String muleVersion, Integer workers, String workerType, Log log)
     {
         super(applicationName, application, log);
-        this.cloudhubApi = new CloudhubApi(username, password, environment);
+        this.cloudhubApi = new CloudhubApi(log, username, password, environment);
         this.region = region;
         this.muleVersion = muleVersion;
         this.workers = workers;

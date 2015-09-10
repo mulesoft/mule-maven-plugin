@@ -6,58 +6,47 @@
  */
 package org.mule.tools.mule.agent;
 
+import org.mule.tools.mule.AbstractApi;
 import org.mule.tools.mule.ApiException;
 
 import java.io.File;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-public class AgentApi
+import org.apache.maven.plugin.logging.Log;
+
+public class AgentApi extends AbstractApi
 {
 
     public static final String APPLICATIONS_PATH = "/mule/applications/";
 
     private final String uri;
 
-    public AgentApi(String uri)
+    public AgentApi(Log log, String uri)
     {
+        super(log);
         this.uri = uri;
     }
 
     public void deployApplication(String applicationName, File file)
     {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(uri).path(APPLICATIONS_PATH + applicationName);
-
-        Response response = target.
-                request(MediaType.APPLICATION_JSON_TYPE).
-                put(Entity.entity(file, MediaType.APPLICATION_OCTET_STREAM_TYPE));
+        Response response = put(uri, APPLICATIONS_PATH + applicationName, Entity.entity(file, MediaType.APPLICATION_OCTET_STREAM_TYPE));
 
         if (response.getStatus() != 202) // Created
         {
-            String message = response.readEntity(String.class);
-            throw new ApiException(message, response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
+            throw new ApiException(response);
         }
     }
 
     public void undeployApplication(String appName)
     {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(uri).path(APPLICATIONS_PATH + appName);
-
-        Response response = target.
-                request(MediaType.APPLICATION_JSON_TYPE).
-                delete();
+        Response response = delete(uri, APPLICATIONS_PATH + appName);
 
         if (response.getStatus() != 202)
         {
-            String message = response.readEntity(String.class);
-            throw new ApiException(message, response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
+            throw new ApiException(response);
         }
     }
 

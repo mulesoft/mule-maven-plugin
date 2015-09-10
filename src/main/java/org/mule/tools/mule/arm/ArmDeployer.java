@@ -26,7 +26,7 @@ public class ArmDeployer extends AbstractDeployer
         super(applicationName, application, log);
         this.targetType = targetType;
         this.target = target;
-        armApi = new ArmApi(uri, username, password, environment);
+        armApi = new ArmApi(log, uri, username, password, environment);
     }
 
     @Override

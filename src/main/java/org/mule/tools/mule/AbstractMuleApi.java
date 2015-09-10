@@ -11,15 +11,13 @@ import org.mule.tools.mule.arm.Environment;
 import org.mule.tools.mule.arm.Environments;
 import org.mule.tools.mule.arm.UserInfo;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.Response;
 
-public class AbstractMuleApi
+import org.apache.maven.plugin.logging.Log;
+
+public abstract class AbstractMuleApi extends AbstractApi
 {
 
     private static final String ME = "/accounts/api/me";
@@ -39,8 +37,9 @@ public class AbstractMuleApi
     private String envId;
     private String orgId;
 
-    public AbstractMuleApi(String username, String password, String environment)
+    public AbstractMuleApi(Log log, String username, String password, String environment)
     {
+        super(log);
         this.username = username;
         this.password = password;
         this.environment = environment;
@@ -53,40 +52,24 @@ public class AbstractMuleApi
         envId = findEnvironmentByName(environment).id;
     }
 
-
-    protected MultivaluedMap<String, Object> authorizationHeader()
+    private String getBearerToken(String username, String password)
     {
-        MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-        headers.add(AUTHORIZATION_HEADER, "bearer " + bearerToken);
-        headers.add(ENV_ID_HEADER, envId);
-        headers.add(ORG_ID_HEADER, orgId);
-        return headers;
-    }
-
-    public String getBearerToken(String username, String password)
-    {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(URI).path(LOGIN);
         Entity<String> json = Entity.json("{\"username\": \"" + username + "\", \"password\": \"" + password + "\"}");
-        AuthorizationResponse response = target.request(MediaType.TEXT_PLAIN).post(json, AuthorizationResponse.class);
-        return response.access_token;
+        Response response = post(URI, LOGIN, json);
+        AuthorizationResponse authorizationResponse = response.readEntity(AuthorizationResponse.class);
+        return authorizationResponse.access_token;
     }
 
     public String getOrgId()
     {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(URI).path(ME);
-        UserInfo response = target.request(MediaType.APPLICATION_JSON_TYPE).
-                header(AUTHORIZATION_HEADER, "bearer " + bearerToken).get(UserInfo.class);
+        UserInfo response = get(URI, ME, UserInfo.class);
         return response.user.organization.id;
     }
 
     public Environment findEnvironmentByName(String name)
     {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(URI).path(String.format(ENVIRONMENTS, orgId));
-        Environments response = target.request(MediaType.APPLICATION_JSON_TYPE).
-                header(AUTHORIZATION_HEADER, "bearer " + bearerToken).get(Environments.class);
+        Environments response = get(URI, String.format(ENVIRONMENTS, orgId), Environments.class);
+
         for (int i = 0 ; i < response.data.length ; i ++ )
         {
             if (name.equals(response.data[i].name))
@@ -97,4 +80,18 @@ public class AbstractMuleApi
         throw new RuntimeException("Couldn't find environment named [" + name + "]");
     }
 
+    @Override
+    protected void configureRequest(Invocation.Builder builder)
+    {
+        if (bearerToken != null)
+        {
+            builder.header(AUTHORIZATION_HEADER, "bearer " + bearerToken);
+        }
+
+        if (envId != null && orgId != null)
+        {
+            builder.header(ENV_ID_HEADER, envId);
+            builder.header(ORG_ID_HEADER, orgId);
+        }
+    }
 }

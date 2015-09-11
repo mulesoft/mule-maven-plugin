@@ -23,6 +23,11 @@ public class ApiException extends RuntimeException
 
     }
 
+    public ApiException(Response response, String uri)
+    {
+        this(uri, response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
+    }
+
     public ApiException(Response response)
     {
         this(response.readEntity(String.class), response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());

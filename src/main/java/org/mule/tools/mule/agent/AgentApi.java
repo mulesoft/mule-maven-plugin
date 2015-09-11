@@ -46,7 +46,7 @@ public class AgentApi extends AbstractApi
 
         if (response.getStatus() != 202)
         {
-            throw new ApiException(response, uri + APPLICATIONS_PATH + applicationName);
+            throw new ApiException(response, uri + APPLICATIONS_PATH + appName);
         }
     }
 

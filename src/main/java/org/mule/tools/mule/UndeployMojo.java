@@ -6,7 +6,6 @@
  */
 package org.mule.tools.mule;
 
-import org.mule.test.infrastructure.process.MuleProcessController;
 import org.mule.tools.mule.agent.AgentApi;
 import org.mule.tools.mule.arm.Applications;
 import org.mule.tools.mule.arm.ArmApi;
@@ -161,29 +160,32 @@ public class UndeployMojo extends AbstractMuleMojo
 
     private void cluster() throws MojoFailureException, MojoExecutionException
     {
-        MuleProcessController[] controllers = new MuleProcessController[size];
+        initializeApplication();
+
         File[] muleHomes = new File[size];
         for (int i = 0; i < size; i++)
         {
             File parentDir = new File(mavenProject.getBuild().getDirectory(), "mule" + i);
             muleHomes[i] = new File(parentDir, "mule-enterprise-standalone-" + muleVersion);
-            controllers[i] = new MuleProcessController(muleHomes[i].getAbsolutePath());
+
             if (!muleHomes[i].exists())
             {
                 throw new MojoFailureException(muleHomes[i].getAbsolutePath() + "directory does not exist.");
             }
         }
-        new Undeployer(getLog(), controllers).execute();
+        new Undeployer(getLog(), applicationName, muleHomes).execute();
     }
 
     public void standalone() throws MojoFailureException, MojoExecutionException
     {
+        initializeApplication();
+
         if (!muleHome.exists())
         {
             throw new MojoFailureException("MULE_HOME directory does not exist.");
         }
         getLog().info("Using MULE_HOME: " + muleHome);
-        new Undeployer(getLog(), new MuleProcessController(muleHome.getAbsolutePath())).execute();
+        new Undeployer(getLog(), applicationName, muleHome).execute();
 
     }
 

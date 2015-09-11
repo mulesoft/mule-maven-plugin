@@ -103,7 +103,7 @@ public class Deployer
 
     private void deployApplications() throws MojoFailureException
     {
-        log.debug("Deploying application [" + application + "]");
+        log.info("Deploying application [" + application + "]");
         try
         {
             mule.deploy(application.getAbsolutePath());
@@ -121,7 +121,7 @@ public class Deployer
         {
             try
             {
-                log.debug("Starting Mule ESB");
+                log.info("Starting Mule ESB");
                 if (arguments == null)
                 {
                     mule.start();

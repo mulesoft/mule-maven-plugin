@@ -117,7 +117,7 @@ public class ClusterDeployer
             {
                 throw new MojoFailureException("Application does not exists: " + application.getAbsolutePath());
             }
-            log.debug("Deploying application [" + application + "]");
+            log.info("Deploying application [" + application + "]");
             try
             {
                 m.deploy(application.getAbsolutePath());
@@ -138,7 +138,7 @@ public class ClusterDeployer
             {
                 try
                 {
-                    log.debug("Starting Mule ESB");
+                    log.info("Starting Mule ESB");
                     if (arguments == null)
                     {
                         m.start();

@@ -33,6 +33,7 @@ public class ArmDeployer extends AbstractDeployer
     public void deploy() throws DeploymentException
     {
         armApi.init();
+        info("Deploying application " + getApplicationName());
         armApi.deployApplication(getApplicationFile(), getApplicationName(), targetType, target);
     }
 

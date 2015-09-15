@@ -95,7 +95,6 @@ You can deploy your application to a running ARM server, serverGroup or cluster.
             <deployment>
                 <type>arm</type>
             </deployment>
-            <muleVersion>3.7.0</muleVersion>
             <username>myUsername</username>
             <password>myPassword</password>
             <target>server-name</target>

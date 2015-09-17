@@ -6,6 +6,7 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
+import org.mule.tools.maven.plugin.mule.ApiException;
 import org.mule.tools.maven.plugin.mule.DeploymentException;
 import org.mule.tools.maven.plugin.mule.AbstractDeployer;
 import org.mule.tools.maven.plugin.mule.TargetType;
@@ -32,9 +33,17 @@ public class ArmDeployer extends AbstractDeployer
     @Override
     public void deploy() throws DeploymentException
     {
-        armApi.init();
-        info("Deploying application " + getApplicationName());
-        armApi.deployApplication(getApplicationFile(), getApplicationName(), targetType, target);
+        try
+        {
+            armApi.init();
+            info("Deploying application " + getApplicationName());
+            armApi.deployApplication(getApplicationFile(), getApplicationName(), targetType, target);
+        }
+        catch (ApiException e)
+        {
+            error("Failed: " + e.getMessage());
+            throw new DeploymentException("Failed to deploy application " + getApplicationName(), e);
+        }
     }
 
 }

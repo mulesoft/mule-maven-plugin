@@ -6,7 +6,11 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
+import static javax.ws.rs.core.Response.Status.Family.SUCCESSFUL;
+import static javax.ws.rs.core.Response.Status.Family.familyOf;
+
 import org.mule.tools.maven.plugin.mule.AbstractMuleApi;
+import org.mule.tools.maven.plugin.mule.ApiException;
 import org.mule.tools.maven.plugin.mule.TargetType;
 
 import java.io.File;
@@ -14,6 +18,8 @@ import java.io.File;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
@@ -63,7 +69,14 @@ public class ArmApi extends AbstractMuleApi
                 .bodyPart(applicationPart);
 
         Response response = post(uri, APPLICATIONS, Entity.entity(multipart, multipart.getMediaType()));
-        return response.readEntity(Application.class);
+        if (familyOf(response.getStatus()) == SUCCESSFUL)
+        {
+            return response.readEntity(Application.class);
+        }
+        else
+        {
+            throw new ApiException(response);
+        }
     }
 
     private String getId(TargetType targetType, String target)
@@ -107,7 +120,10 @@ public class ArmApi extends AbstractMuleApi
     private Target findTargetByName(String name, String path)
     {
         Targets response = get(uri, path, Targets.class);
-
+        if (response.data == null) // Workaround because an empty array in the response is mapped as null
+        {
+            throw new RuntimeException("Couldn't find target named [" + name + "]");
+        }
         for (int i = 0; i < response.data.length; i++)
         {
             if (name.equals(response.data[i].name))

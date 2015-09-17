@@ -6,6 +6,8 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
+import static java.lang.System.*;
+
 import org.mule.tools.maven.plugin.mule.ApiException;
 import org.mule.tools.maven.plugin.mule.DeploymentException;
 import org.mule.tools.maven.plugin.mule.AbstractDeployer;
@@ -18,6 +20,9 @@ import org.apache.maven.plugin.logging.Log;
 public class ArmDeployer extends AbstractDeployer
 {
 
+    private static final int DEFAULT_UNDEPLOY_TIMEOUT = 60000;
+    private static final String TIMEOUT_PROPERTY = getProperty("mule.undeploy.TIMEOUT");
+    private static final long TIMEOUT = TIMEOUT_PROPERTY == null ? DEFAULT_UNDEPLOY_TIMEOUT : Long.parseLong(TIMEOUT_PROPERTY);
     private final TargetType targetType;
     private final String target;
     private final ArmApi armApi;
@@ -37,7 +42,30 @@ public class ArmDeployer extends AbstractDeployer
         {
             armApi.init();
             info("Deploying application " + getApplicationName());
-            armApi.deployApplication(getApplicationFile(), getApplicationName(), targetType, target);
+            Integer applicationId = armApi.findApplication(getApplicationName());
+            if (applicationId == null)
+            {
+                armApi.deployApplication(getApplicationFile(), getApplicationName(), targetType, target);
+            }
+            else
+            {
+                info("Found application " + getApplicationName() + ". Undeploying application...");
+                long start = currentTimeMillis();
+                armApi.undeployApplication(applicationId);
+                Application application = armApi.getApplicationStatus(applicationId);
+                String status = application.data == null ? "UNDEPLOYED" : application.data.lastReportedStatus;
+                while(!"UNDEPLOYED".equals(status))
+                {
+                    application = armApi.getApplicationStatus(applicationId);
+                    status = application.data == null? "UNDEPLOYED" : application.data.lastReportedStatus;
+                    if (currentTimeMillis() > start + TIMEOUT)
+                    {
+                        throw new DeploymentException("Failed to undeploy application");
+                    }
+                }
+                info("Deploying application... ");
+                armApi.deployApplication(getApplicationFile(), getApplicationName(), targetType, target);
+            }
         }
         catch (ApiException e)
         {

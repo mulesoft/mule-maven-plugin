@@ -122,4 +122,20 @@ public class ArmApi extends AbstractMuleApi
         throw new RuntimeException("Couldn't find target named [" + name + "]");
     }
 
+    public Integer findApplication(String name)
+    {
+        Data[] applications = getApplications().data;
+        if (applications == null)
+        {
+            return null;
+        }
+        for (int i = 0 ; i < applications.length ; i ++ )
+        {
+            if (name.equals(applications[i].artifact.name))
+            {
+                return applications[i].id;
+            }
+        }
+        return null;
+    }
 }

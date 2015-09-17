@@ -6,11 +6,7 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
-import static javax.ws.rs.core.Response.Status.Family.SUCCESSFUL;
-import static javax.ws.rs.core.Response.Status.Family.familyOf;
-
 import org.mule.tools.maven.plugin.mule.AbstractMuleApi;
-import org.mule.tools.maven.plugin.mule.ApiException;
 import org.mule.tools.maven.plugin.mule.TargetType;
 
 import java.io.File;
@@ -18,8 +14,6 @@ import java.io.File;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
@@ -69,14 +63,8 @@ public class ArmApi extends AbstractMuleApi
                 .bodyPart(applicationPart);
 
         Response response = post(uri, APPLICATIONS, Entity.entity(multipart, multipart.getMediaType()));
-        if (familyOf(response.getStatus()) == SUCCESSFUL)
-        {
-            return response.readEntity(Application.class);
-        }
-        else
-        {
-            throw new ApiException(response);
-        }
+        validateStatusSuccess(response);
+        return response.readEntity(Application.class);
     }
 
     private String getId(TargetType targetType, String target)

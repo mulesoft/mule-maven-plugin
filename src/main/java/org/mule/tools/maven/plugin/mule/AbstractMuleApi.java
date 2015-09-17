@@ -6,6 +6,9 @@
  */
 package org.mule.tools.maven.plugin.mule;
 
+import static javax.ws.rs.core.Response.Status.Family.SUCCESSFUL;
+import static javax.ws.rs.core.Response.Status.Family.familyOf;
+
 import org.mule.tools.maven.plugin.mule.arm.AuthorizationResponse;
 import org.mule.tools.maven.plugin.mule.arm.Environments;
 import org.mule.tools.maven.plugin.mule.arm.UserInfo;
@@ -56,8 +59,17 @@ public abstract class AbstractMuleApi extends AbstractApi
     {
         Entity<String> json = Entity.json("{\"username\": \"" + username + "\", \"password\": \"" + password + "\"}");
         Response response = post(URI, LOGIN, json);
+        validateStatusSuccess(response);
         AuthorizationResponse authorizationResponse = response.readEntity(AuthorizationResponse.class);
         return authorizationResponse.access_token;
+    }
+
+    protected void validateStatusSuccess(Response response)
+    {
+        if (familyOf(response.getStatus()) != SUCCESSFUL)
+        {
+            throw new ApiException(response);
+        }
     }
 
     public String getOrgId()

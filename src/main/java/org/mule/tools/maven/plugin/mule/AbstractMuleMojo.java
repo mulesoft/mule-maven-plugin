@@ -223,4 +223,13 @@ public abstract class AbstractMuleMojo extends AbstractMojo
             }
         }
     }
+
+    public enum DeploymentType
+    {
+        standalone,
+        cluster,
+        cloudhub,
+        arm,
+        agent
+    }
 }

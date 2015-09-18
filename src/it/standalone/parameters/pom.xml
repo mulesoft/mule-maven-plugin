@@ -14,9 +14,7 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <deployment>
-                        <type>standalone</type>
-                    </deployment>
+                    <deploymentType>standalone</deploymentType>
                     <muleVersion>${mule.version}</muleVersion>
                     <application>${basedir}/app2</application>
                     <arguments>

@@ -21,9 +21,7 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <deployment>
-                        <type>cloudhub</type>
-                    </deployment>
+                    <deploymentType>cloudhub</deploymentType>
                     <muleVersion>${mule.version}</muleVersion>
                     <username>${username}</username>
                     <password>${password}</password>

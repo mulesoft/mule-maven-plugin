@@ -23,9 +23,7 @@
                 <configuration>
                     <muleVersion>${mule.version}</muleVersion>
                     <community>true</community>
-                    <deployment>
-                        <type>standalone</type>
-                    </deployment>
+                    <deploymentType>standalone</deploymentType>
                 </configuration>
                 <executions>
                     <execution>

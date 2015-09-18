@@ -75,7 +75,7 @@ public class UndeployMojo extends AbstractMuleMojo
      * @since 1.0
      */
     @Parameter(required = true, readonly = true)
-    private Deployment deployment;
+    private DeploymentType deploymentType;
 
     /**
      * Anypoint Platform URI, can be configured to use with On Premise platform..
@@ -97,7 +97,7 @@ public class UndeployMojo extends AbstractMuleMojo
     @Override
     protected void doExecute() throws MojoExecutionException, MojoFailureException
     {
-        switch (deployment.getType())
+        switch (deploymentType)
         {
             case standalone:
                 standalone();
@@ -115,7 +115,7 @@ public class UndeployMojo extends AbstractMuleMojo
                 agent();
                 break;
             default:
-                throw new MojoFailureException("Unsupported deployment type: " + deployment.getType());
+                throw new MojoFailureException("Unsupported deployment type: " + deploymentType);
         }
     }
 

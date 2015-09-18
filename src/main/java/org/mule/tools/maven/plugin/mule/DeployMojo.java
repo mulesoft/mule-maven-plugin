@@ -138,7 +138,7 @@ public class DeployMojo extends AbstractMuleMojo
      * @since 1.0
      */
     @Parameter(required = true, readonly = true)
-    protected Deployment deployment;
+    protected DeploymentType deploymentType;
 
     /**
      * Anypoint environment name.
@@ -227,10 +227,9 @@ public class DeployMojo extends AbstractMuleMojo
         initializeApplication();
         if (properties == null)
         {
-            properties = new HashMap<String, String>();
+            properties = new HashMap();
         }
-        Deployment.Type type = deployment.getType();
-        switch (type)
+        switch (deploymentType)
         {
             case standalone:
                 standalone();
@@ -248,7 +247,7 @@ public class DeployMojo extends AbstractMuleMojo
                 agent();
                 break;
             default:
-                throw new MojoFailureException("Unsupported deployment type: " + type);
+                throw new MojoFailureException("Unsupported deployment type: " + deploymentType);
         }
     }
 
@@ -292,7 +291,7 @@ public class DeployMojo extends AbstractMuleMojo
     {
         validateSize();
         File[] muleHomes = new File[size];
-        List<MuleProcessController> controllers = new LinkedList<MuleProcessController>();
+        List<MuleProcessController> controllers = new LinkedList();
         for (int i = 0; i < size; i++)
         {
             File buildDirectory = new File(mavenProject.getBuild().getDirectory(), "mule" + i);
@@ -422,19 +421,11 @@ public class DeployMojo extends AbstractMuleMojo
         {
             unArchiver = archiverManager.getUnArchiver(type);
             getLog().debug("Found unArchiver by extension: " + unArchiver);
+            return unArchiver;
         }
         catch (NoSuchArchiverException e)
         {
             throw new MojoExecutionException("Couldn't find archiver for type: " + type);
-        }
-        return unArchiver;
-    }
-
-    private void verify(boolean exists, String message) throws MojoFailureException
-    {
-        if (!exists)
-        {
-            throw new MojoFailureException(message);
         }
     }
 

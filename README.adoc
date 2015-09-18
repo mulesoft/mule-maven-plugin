@@ -54,9 +54,7 @@ In the most simple scenario the plugin will download and install a Mule Standalo
         <artifactId>mule-maven-plugin</artifactId>
         <version>2.0-RC1</version>
         <configuration>
-            <deployment>
-                <type>standalone</type>
-            </deployment>
+            <deploymentType>standalone</deploymentType>
             <muleVersion>3.7.0</muleVersion>
         </configuration>
         <executions>
@@ -92,9 +90,7 @@ You can deploy your application to a running ARM server, serverGroup or cluster.
         <artifactId>mule-maven-plugin</artifactId>
         <version>2.0-RC1</version>
         <configuration>
-            <deployment>
-                <type>arm</type>
-            </deployment>
+            <deploymentType>arm</deploymentType>
             <username>myUsername</username>
             <password>myPassword</password>
             <target>server-name</target>
@@ -132,9 +128,7 @@ To deploy your application to CloudHub:
         <artifactId>mule-maven-plugin</artifactId>
         <version>2.0-RC1</version>
         <configuration>
-            <deployment>
-                <type>cloudhub</type>
-            </deployment>
+            <deploymentType>cloudhub</deploymentType>
             <muleVersion>3.7.0</muleVersion>
             <username>myUsername</username>
             <password>myPassword</password>
@@ -172,9 +166,7 @@ You can make the plugin deploy to an existing Mule server instead of downloading
         <artifactId>mule-maven-plugin</artifactId>
         <version>2.0-RC1</version>
         <configuration>
-            <deployment>
-                <type>standalone</type>
-            </deployment>
+            <deploymentType>standalone</deploymentType>
             <muleHome>/path/to/mule/server</muleHome>
         </configuration>
         <executions>
@@ -208,9 +200,7 @@ You can make the plugin deploy to an existing Mule server, using the API provide
         <artifactId>mule-maven-plugin</artifactId>
         <version>2.0-RC1</version>
         <configuration>
-            <deployment>
-                <type>agent</type>
-            </deployment>
+            <deploymentType>agent</deploymentType>
             <uri>http://localhost:9999/</uri>
         </configuration>
         <executions>
@@ -248,9 +238,7 @@ Basically you will configure maven-mule-plugin to pack your project in Mule app 
                 <artifactId>mule-maven-plugin</artifactId>
                 <version>2.0-RC1</version>
                 <configuration>
-                    <deployment>
-                        <type>standalone</type>
-                    </deployment>
+                    <deploymentType>standalone</deploymentType>
                     <muleVersion>3.7.0</muleVersion>
                 </configuration>
                 <executions>
@@ -298,9 +286,7 @@ In this example you will see the plugin working for Standalone deployment, confi
     <version>2.0-RC1</version>
     <configuration>
         <muleVersion>3.7.0</muleVersion>                 <!--1-->
-        <deployment>
-            <type>standalone</type>
-        </deployment>
+        <deploymentType>standalone</deploymentType>
         <applications>
             <application>${app.location}</application>   <!--2-->
         </applications>
@@ -354,9 +340,7 @@ In this example you will see the plugin working for Standalone deployment, confi
     <version>2.0-RC1</version>
     <configuration>
         <muleVersion>3.7.0</muleVersion>
-        <deployment>
-            <type>cluster</type>
-        </deployment>
+        <deploymentType>cluster</deploymentType>
         <size>2</size>                                          <!--1-->
         <application>${app.1.location}</application>
         <libs>
@@ -405,9 +389,7 @@ To deploy more than one application you need to configure one plugin execution f
     <version>2.0-RC1</version>
     <configuration>
         <muleVersion>3.7.0</muleVersion>
-        <deployment>
-            <type>standalone</type>
-        </deployment>
+        <deploymentType>standalone</deploymentType>
     </configuration>
     <executions>
         <execution>
@@ -465,9 +447,7 @@ To deploy more than one application you need to configure one plugin execution f
     <artifactId>mule-maven-plugin</artifactId>
     <configuration>
         <muleVersion>3.7.0</muleVersion>
-        <deployment>
-            <type>standalone</type>
-        </deployment>
+        <deploymentType>standalone</deploymentType>
         <skip>${skipTests}</skip>
     </configuration>
     <executions>

@@ -15,6 +15,8 @@ import org.mule.tools.maven.plugin.mule.cloudhub.Application;
 import org.mule.tools.maven.plugin.mule.cloudhub.CloudhubApi;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,6 +38,7 @@ public class CloudhubApiTestCase
     private static final String APP_NAME = "test-app-12345";
     private static final File APP = new File("/tmp/echo-test4.zip");
     private CloudhubApi cloudhubApi;
+    private Map<String, String> properties = new HashMap();
 
     @Before
     public void setup()
@@ -59,7 +62,7 @@ public class CloudhubApiTestCase
     {
         verifyAppDoesntExist(APP_NAME);
 
-        Application application = cloudhubApi.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE);
+        Application application = cloudhubApi.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE, properties);
         assertThat(application.domain, equalTo(APP_NAME));
 
         verifyAppExists(APP_NAME);
@@ -69,12 +72,12 @@ public class CloudhubApiTestCase
     public void createApplicationThatAlreadyExists() throws Exception
     {
         verifyAppDoesntExist(APP_NAME);
-        cloudhubApi.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE);
+        cloudhubApi.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE, properties);
         verifyAppExists(APP_NAME);
 
         try
         {
-            cloudhubApi.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE);
+            cloudhubApi.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE, properties);
             fail();
         }
         catch (ApiException e)
@@ -88,7 +91,7 @@ public class CloudhubApiTestCase
     public void uploadFile()
     {
         verifyAppDoesntExist(APP_NAME);
-        cloudhubApi.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE);
+        cloudhubApi.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE, properties);
         verifyAppExists(APP_NAME);
         cloudhubApi.uploadFile(APP_NAME, APP);
     }
@@ -97,7 +100,7 @@ public class CloudhubApiTestCase
     public void startApplication()
     {
         verifyAppDoesntExist(APP_NAME);
-        cloudhubApi.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE);
+        cloudhubApi.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE, properties);
         verifyAppExists(APP_NAME);
         cloudhubApi.uploadFile(APP_NAME, APP);
         cloudhubApi.startApplication(APP_NAME);
@@ -107,7 +110,7 @@ public class CloudhubApiTestCase
     public void deleteApplication()
     {
         //verifyAppDoesntExist(APP_NAME);
-        cloudhubApi.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE);
+        cloudhubApi.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE, properties);
         verifyAppExists(APP_NAME);
         cloudhubApi.deleteApplication(APP_NAME);
         verifyAppDoesntExist(APP_NAME);

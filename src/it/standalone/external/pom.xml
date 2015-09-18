@@ -44,9 +44,7 @@
                 <version>@project.version@</version>
                 <configuration>
                     <muleHome>target/dependency/mule-enterprise-standalone-${mule.version}</muleHome>
-                    <deployment>
-                        <type>standalone</type>
-                    </deployment>
+                    <deploymentType>standalone</deploymentType>
                 </configuration>
                 <executions>
                     <execution>

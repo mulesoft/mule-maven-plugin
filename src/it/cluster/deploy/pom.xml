@@ -21,9 +21,7 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <deployment>
-                        <type>cluster</type>
-                    </deployment>
+                    <deploymentType>cluster</deploymentType>
                     <size>2</size>
                     <muleVersion>${mule.version}</muleVersion>
                 </configuration>

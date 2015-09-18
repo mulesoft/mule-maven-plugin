@@ -20,9 +20,7 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <deployment>
-                        <type>standalone</type>
-                    </deployment>
+                    <deploymentType>standalone</deploymentType>
                     <muleVersion>${mule.version}</muleVersion>
                     <domain>${project.basedir}/domain</domain>
                     <application>${project.basedir}/app1</application>

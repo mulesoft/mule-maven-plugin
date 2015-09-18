@@ -15,8 +15,10 @@ import org.mule.util.FilenameUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -192,7 +194,7 @@ public class DeployMojo extends AbstractMuleMojo
      *
      * @since 2.0
      */
-    @Parameter(readonly = true, property = "cloudhub.region")
+    @Parameter(readonly = true, property = "cloudhub.region", defaultValue = "us-east-1")
     protected String region;
 
     /**
@@ -201,21 +203,32 @@ public class DeployMojo extends AbstractMuleMojo
      * @since 2.0
      */
     @Parameter(readonly = true, property = "cloudhub.workers")
-    protected Integer workers;
+    protected Integer workers = 1;
 
     /**
      * Type of workers for the deployment of the application in Cloudhub.
      *
      * @since 2.0
      */
-    @Parameter(readonly = true, property = "cloudhub.workerType")
+    @Parameter(defaultValue = "Medium", readonly = true, property = "cloudhub.workerType")
     protected String workerType;
+
+    /**
+     * CloudHub properties.
+     * @since 2.0
+     *
+     */
+    @Parameter(readonly = true)
+    protected Map<String, String> properties;
 
 
     public void doExecute() throws MojoExecutionException, MojoFailureException
     {
         initializeApplication();
-
+        if (properties == null)
+        {
+            properties = new HashMap<String, String>();
+        }
         Deployment.Type type = deployment.getType();
         switch (type)
         {
@@ -242,7 +255,7 @@ public class DeployMojo extends AbstractMuleMojo
     private void cloudhub() throws MojoFailureException, MojoExecutionException
     {
         CloudhubDeployer deployer = new CloudhubDeployer(username, password, environment, applicationName, application,
-                                                         region, muleVersion, workers, workerType, getLog());
+                                                         region, muleVersion, workers, workerType, getLog(), properties);
         deployWithDeployer(deployer);
     }
 

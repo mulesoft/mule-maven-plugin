@@ -11,6 +11,7 @@ import org.mule.tools.maven.plugin.mule.ApiException;
 import org.mule.tools.maven.plugin.mule.DeploymentException;
 
 import java.io.File;
+import java.util.Map;
 
 import org.apache.maven.plugin.logging.Log;
 
@@ -22,10 +23,12 @@ public class CloudhubDeployer extends AbstractDeployer
     private final String muleVersion;
     private final Integer workers;
     private final String workerType;
+    private final Map<String, String> properties;
 
     public CloudhubDeployer(String username, String password, String environment, String applicationName,
                             File application,
-                            String region, String muleVersion, Integer workers, String workerType, Log log)
+                            String region, String muleVersion, Integer workers, String workerType, Log log,
+                            Map<String, String> properties)
     {
         super(applicationName, application, log);
         this.cloudhubApi = new CloudhubApi(log, username, password, environment);
@@ -33,6 +36,7 @@ public class CloudhubDeployer extends AbstractDeployer
         this.muleVersion = muleVersion;
         this.workers = workers;
         this.workerType = workerType;
+        this.properties = properties;
     }
 
     @Override
@@ -54,7 +58,7 @@ public class CloudhubDeployer extends AbstractDeployer
             if (domainAvailable)
             {
                 info("Creating application " + getApplicationName());
-                cloudhubApi.createApplication(getApplicationName(), region, muleVersion, workers, workerType);
+                cloudhubApi.createApplication(getApplicationName(), region, muleVersion, workers, workerType, properties);
             }
             else
             {
@@ -69,7 +73,7 @@ public class CloudhubDeployer extends AbstractDeployer
                     Integer updateWorkers = (workers == null) ? app.workers : workers;
                     String updateWorkerType = (workerType == null) ? app.workerType : workerType;
 
-                    cloudhubApi.updateApplication(getApplicationName(), updateRegion, updateMuleVersion, updateWorkers, updateWorkerType);
+                    cloudhubApi.updateApplication(getApplicationName(), updateRegion, updateMuleVersion, updateWorkers, updateWorkerType, properties);
                 }
                 else
                 {

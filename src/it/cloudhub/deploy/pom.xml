@@ -29,6 +29,9 @@
                     <password>${password}</password>
                     <applicationName>maven-plugin-cloudhub-test</applicationName>
                     <environment>${environment}</environment>
+                    <properties>
+                        <key>value</key>
+                    </properties>
                 </configuration>
                 <executions>
                     <execution>

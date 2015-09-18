@@ -11,9 +11,14 @@ import org.mule.tools.maven.plugin.mule.AbstractMuleApi;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.maven.plugin.logging.Log;
@@ -29,17 +34,31 @@ public class CloudhubApi extends AbstractMuleApi
     public static final String APPLICATION_UPDATE_PATH = "/cloudhub/api/v2/applications/%s";
     public static final String APPLICATIONS_FILES_PATH = "/cloudhub/api/v2/applications/%s/files";
     public static final String DOMAINS_PATH = "/cloudhub/api/applications/domains/";
+    public static final String CREATE_REQUEST_TEMPLATE = "{" +
+                                                         "  \"domain\": \"%s\"," +
+                                                         "  \"region\": \"%s\"," +
+                                                         "  \"muleVersion\": \"%s\"," +
+                                                         "  \"workers\": %d," +
+                                                         "  \"workerType\": \"%s\",";
+    public static final String UPDATE_REQUEST_TEMPLATE = "{" +
+                                                         "  \"region\":\"%s\"," +
+                                                         "  \"muleVersion\": {\"version\": \"%s\"}," +
+                                                         "  \"workers\": {" +
+                                                         "    \"amount\": %d," +
+                                                         "    \"type\": {" +
+                                                         "        \"name\": \"%s\"" +
+                                                         "    }" +
+                                                         "  },";
 
     public CloudhubApi(Log log, String username, String password, String environment)
     {
         super(log, username, password, environment);
     }
 
-    public Application createApplication(String appName, String region, String muleVersion, Integer workers, String workerType)
+    public Application createApplication(String appName, String region, String muleVersion, Integer workers, String workerType, Map<String, String> properties)
     {
-        CreateApplicationRequest application = new CreateApplicationRequest(appName, region, muleVersion, workers, workerType);
-        Response response = post(URI, APPLICATIONS_PATH, application);
-
+        Entity<String> json = createApplicationRequest(appName, region, muleVersion, workers, workerType, properties);
+        Response response = post(URI, APPLICATIONS_PATH, json);
         if (response.getStatus() == 201) // Created
         {
             return response.readEntity(Application.class);
@@ -50,11 +69,40 @@ public class CloudhubApi extends AbstractMuleApi
         }
     }
 
-    public void updateApplication(String appName, String region, String muleVersion, Integer workers, String workerType)
+    private Entity<String> createApplicationRequest(String appName, String region, String muleVersion, Integer workers, String workerType, Map<String, String> properties)
     {
-        UpdateApplicationRequest application = new UpdateApplicationRequest(region, muleVersion, workers, workerType);
-        Response response = put(URI, String.format(APPLICATION_UPDATE_PATH, appName), application);
+        String json = String.format(CREATE_REQUEST_TEMPLATE, appName, region, muleVersion, workers, workerType);
+        json = addProperties(properties, json);
+        json = json + "}";
+        return Entity.json(json);
+    }
 
+    private Entity<String> updateApplicationRequest(String region, String muleVersion, Integer workers, String workerType, Map<String, String> properties)
+    {
+        String json = String.format(UPDATE_REQUEST_TEMPLATE, region, muleVersion, workers, workerType);
+        json = addProperties(properties, json);
+        json = json + "}";
+        return Entity.json(json);
+    }
+
+    private String addProperties(Map<String, String> properties, String json)
+    {
+        json = json + "  \"properties\": {";
+        for (Map.Entry<String, String> entry: properties.entrySet())
+        {
+            json = json + "    \"" + entry.getKey() + "\":\"" + entry.getValue() + "\",";
+        }
+        if (json.charAt(json.length() -1) == ',') {
+            json = json.substring(0, json.length() - 1);
+        }
+        json = json + "  }\n";
+        return json;
+    }
+
+    public void updateApplication(String appName, String region, String muleVersion, Integer workers, String workerType, Map<String, String> properties)
+    {
+        Entity<String> json = updateApplicationRequest(region, muleVersion, workers, workerType, properties);
+        Response response = put(URI, String.format(APPLICATION_UPDATE_PATH, appName), json);
         if (response.getStatus() != 200 && response.getStatus() != 301) // OK || Not modified
         {
             throw new ApiException(response);

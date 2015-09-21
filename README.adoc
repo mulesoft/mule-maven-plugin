@@ -14,7 +14,7 @@ Maven plugin to deploy Mule applications to different kind of servers: Standalon
 [source,xml]
 ----
 <plugin>
-  <groupId>org.mule.tools</groupId>
+  <groupId>org.mule.tools.maven</groupId>
   <artifactId>mule-maven-plugin</artifactId>
   <version>2.0</version>
 </plugin>

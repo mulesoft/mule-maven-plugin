@@ -126,7 +126,6 @@ To deploy your application to CloudHub:
         <muleVersion>3.7.0</muleVersion>               <!-- This is the runtime version as it appears on the CloudHub interface -->
         <username>myUsername</username>
         <password>myPassword</password>
-        <redeploy>true</redeploy>
         <environment>Production</environment>
     </configuration>
     <executions>

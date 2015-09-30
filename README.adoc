@@ -269,9 +269,7 @@ In this example you will see the plugin working for Standalone deployment, confi
     <configuration>
         <muleVersion>3.7.0</muleVersion>                 <!--1-->
         <deploymentType>standalone</deploymentType>
-        <applications>
-            <application>${app.location}</application>   <!--2-->
-        </applications>
+        <application>${app.location}</application>   <!--2-->
         <libs>
           <lib>${basedir}/activemq-all-5.5.0.jar</lib>
           <lib>${basedir}/activemq-core.jar</lib>        <!--3-->
@@ -325,7 +323,7 @@ In this example you will see the plugin working for Standalone deployment, confi
         <muleVersion>3.7.0</muleVersion>
         <deploymentType>cluster</deploymentType>
         <size>2</size>                                          <!--1-->
-        <application>${app.1.location}</application>
+        <application>${app.location}</application>
         <libs>
           <lib>${basedir}/activemq-all-5.5.0.jar</lib>
           <lib>${basedir}/activemq-core.jar</lib>        

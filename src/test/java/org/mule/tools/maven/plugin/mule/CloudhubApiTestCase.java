@@ -27,6 +27,7 @@ import org.junit.Test;
 public class CloudhubApiTestCase
 {
 
+    private static final String URI = "https://anypoint.mulesoft.com";
     private static final String USERNAME = System.getProperty("username");
     private static final String PASSWORD = System.getProperty("password");
     private static final String ENVIRONMENT = "Production";
@@ -43,7 +44,7 @@ public class CloudhubApiTestCase
     @Before
     public void setup()
     {
-        cloudhubApi = new CloudhubApi(null, USERNAME, PASSWORD, ENVIRONMENT);
+        cloudhubApi = new CloudhubApi(URI, null, USERNAME, PASSWORD, ENVIRONMENT);
         cloudhubApi.init();
     }
 

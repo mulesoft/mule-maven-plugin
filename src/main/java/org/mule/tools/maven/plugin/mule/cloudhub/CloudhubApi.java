@@ -13,12 +13,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.maven.plugin.logging.Log;
@@ -29,7 +25,6 @@ import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 public class CloudhubApi extends AbstractMuleApi
 {
 
-    public static final String URI = "https://anypoint.mulesoft.com";
     public static final String APPLICATIONS_PATH = "/cloudhub/api/applications";
     public static final String APPLICATION_UPDATE_PATH = "/cloudhub/api/v2/applications/%s";
     public static final String APPLICATIONS_FILES_PATH = "/cloudhub/api/v2/applications/%s/files";
@@ -50,15 +45,15 @@ public class CloudhubApi extends AbstractMuleApi
                                                          "    }" +
                                                          "  },";
 
-    public CloudhubApi(Log log, String username, String password, String environment)
+    public CloudhubApi(String uri, Log log, String username, String password, String environment)
     {
-        super(log, username, password, environment);
+        super(uri, log, username, password, environment);
     }
 
     public Application createApplication(String appName, String region, String muleVersion, Integer workers, String workerType, Map<String, String> properties)
     {
         Entity<String> json = createApplicationRequest(appName, region, muleVersion, workers, workerType, properties);
-        Response response = post(URI, APPLICATIONS_PATH, json);
+        Response response = post(uri, APPLICATIONS_PATH, json);
         if (response.getStatus() == 201) // Created
         {
             return response.readEntity(Application.class);
@@ -102,7 +97,7 @@ public class CloudhubApi extends AbstractMuleApi
     public void updateApplication(String appName, String region, String muleVersion, Integer workers, String workerType, Map<String, String> properties)
     {
         Entity<String> json = updateApplicationRequest(region, muleVersion, workers, workerType, properties);
-        Response response = put(URI, String.format(APPLICATION_UPDATE_PATH, appName), json);
+        Response response = put(uri, String.format(APPLICATION_UPDATE_PATH, appName), json);
         if (response.getStatus() != 200 && response.getStatus() != 301) // OK || Not modified
         {
             throw new ApiException(response);
@@ -114,7 +109,7 @@ public class CloudhubApi extends AbstractMuleApi
      */
     public Application getApplication(String appName)
     {
-        Response response = get(URI, APPLICATIONS_PATH + "/" + appName);
+        Response response = get(uri, APPLICATIONS_PATH + "/" + appName);
 
         if (response.getStatus() == 200)
         {
@@ -132,7 +127,7 @@ public class CloudhubApi extends AbstractMuleApi
 
     public List<Application> getApplications()
     {
-        Response response = get(URI, APPLICATIONS_PATH);
+        Response response = get(uri, APPLICATIONS_PATH);
 
         if (response.getStatus() == 200)
         {
@@ -149,7 +144,7 @@ public class CloudhubApi extends AbstractMuleApi
         FileDataBodyPart applicationPart = new FileDataBodyPart("file", file);
         MultiPart multipart = new FormDataMultiPart().bodyPart(applicationPart);
 
-        Response response = post(URI, String.format(APPLICATIONS_FILES_PATH, appName), Entity.entity(multipart, multipart.getMediaType()));
+        Response response = post(uri, String.format(APPLICATIONS_FILES_PATH, appName), Entity.entity(multipart, multipart.getMediaType()));
 
         if (response.getStatus() != 200)
         {
@@ -170,7 +165,7 @@ public class CloudhubApi extends AbstractMuleApi
     private void changeApplicationState(String appName, String state)
     {
         Entity<String> json = Entity.json("{\"status\": \"" + state + "\"}");
-        Response response = post(URI, APPLICATIONS_PATH + "/" + appName + "/status", json);
+        Response response = post(uri, APPLICATIONS_PATH + "/" + appName + "/status", json);
 
         if (response.getStatus() != 200 && response.getStatus() != 304)
         {
@@ -182,7 +177,7 @@ public class CloudhubApi extends AbstractMuleApi
 
     public void deleteApplication(String appName)
     {
-        Response response = delete(URI, APPLICATIONS_PATH + "/" + appName);
+        Response response = delete(uri, APPLICATIONS_PATH + "/" + appName);
 
         if (response.getStatus() != 200 && response.getStatus() != 204)
         {
@@ -194,7 +189,7 @@ public class CloudhubApi extends AbstractMuleApi
 
     public boolean isNameAvailable(String appName)
     {
-        Response response = get(URI, DOMAINS_PATH + appName);
+        Response response = get(uri, DOMAINS_PATH + appName);
 
         if (response.getStatus() == 200)
         {

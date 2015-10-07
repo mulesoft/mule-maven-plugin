@@ -25,13 +25,13 @@ public class CloudhubDeployer extends AbstractDeployer
     private final String workerType;
     private final Map<String, String> properties;
 
-    public CloudhubDeployer(String username, String password, String environment, String applicationName,
+    public CloudhubDeployer(String uri, String username, String password, String environment, String applicationName,
                             File application,
                             String region, String muleVersion, Integer workers, String workerType, Log log,
                             Map<String, String> properties)
     {
         super(applicationName, application, log);
-        this.cloudhubApi = new CloudhubApi(log, username, password, environment);
+        this.cloudhubApi = new CloudhubApi(uri, log, username, password, environment);
         this.region = region;
         this.muleVersion = muleVersion;
         this.workers = workers;

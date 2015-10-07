@@ -27,12 +27,9 @@ public class ArmApi extends AbstractMuleApi
     private static final String SERVER_GROUPS = "/hybrid/api/v1/serverGroups";
     private static final String CLUSTERS = "/hybrid/api/v1/clusters";
 
-    private String uri;
-
     public ArmApi(Log log, String uri, String username, String password, String environment)
     {
-        super(log, username, password, environment);
-        this.uri = uri;
+        super(uri, log, username, password, environment);
     }
 
     public Boolean isStarted(int applicationId)

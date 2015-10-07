@@ -253,7 +253,7 @@ public class DeployMojo extends AbstractMuleMojo
 
     private void cloudhub() throws MojoFailureException, MojoExecutionException
     {
-        CloudhubDeployer deployer = new CloudhubDeployer(username, password, environment, applicationName, application,
+        CloudhubDeployer deployer = new CloudhubDeployer(uri, username, password, environment, applicationName, application,
                                                          region, muleVersion, workers, workerType, getLog(), properties);
         deployWithDeployer(deployer);
     }

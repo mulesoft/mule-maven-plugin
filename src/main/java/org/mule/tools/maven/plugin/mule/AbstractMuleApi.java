@@ -24,7 +24,6 @@ public abstract class AbstractMuleApi extends AbstractApi
 {
 
     private static final String ME = "/accounts/api/me";
-    private static final String URI = "https://anypoint.mulesoft.com";
     private static final String LOGIN = "/accounts/login";
     private static final String ENVIRONMENTS = "/accounts/api/organizations/%s/environments";
 
@@ -32,6 +31,7 @@ public abstract class AbstractMuleApi extends AbstractApi
     private static final String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
     private static final String ORG_ID_HEADER = "X-ANYPNT-ORG-ID";
 
+    protected String uri;
     private String username;
     private String password;
     private String environment;
@@ -40,9 +40,10 @@ public abstract class AbstractMuleApi extends AbstractApi
     private String envId;
     private String orgId;
 
-    public AbstractMuleApi(Log log, String username, String password, String environment)
+    public AbstractMuleApi(String uri, Log log, String username, String password, String environment)
     {
         super(log);
+        this.uri = uri;
         this.username = username;
         this.password = password;
         this.environment = environment;
@@ -58,7 +59,7 @@ public abstract class AbstractMuleApi extends AbstractApi
     private String getBearerToken(String username, String password)
     {
         Entity<String> json = Entity.json("{\"username\": \"" + username + "\", \"password\": \"" + password + "\"}");
-        Response response = post(URI, LOGIN, json);
+        Response response = post(uri, LOGIN, json);
         validateStatusSuccess(response);
         AuthorizationResponse authorizationResponse = response.readEntity(AuthorizationResponse.class);
         return authorizationResponse.access_token;
@@ -74,13 +75,13 @@ public abstract class AbstractMuleApi extends AbstractApi
 
     public String getOrgId()
     {
-        UserInfo response = get(URI, ME, UserInfo.class);
+        UserInfo response = get(uri, ME, UserInfo.class);
         return response.user.organization.id;
     }
 
     public Environment findEnvironmentByName(String name)
     {
-        Environments response = get(URI, String.format(ENVIRONMENTS, orgId), Environments.class);
+        Environments response = get(uri, String.format(ENVIRONMENTS, orgId), Environments.class);
 
         for (int i = 0 ; i < response.data.length ; i ++ )
         {

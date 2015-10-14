@@ -63,7 +63,7 @@
         <junit.version>4.11</junit.version>
         <mockito.version>1.8.5</mockito.version>
         <jersey.client.version>2.19</jersey.client.version>
-        <awaitility.version>1.6.3</awaitility.version>
+        <awaitility.version>1.6.5</awaitility.version>
 
         <maven.plugin.api.version>2.0</maven.plugin.api.version>
         <maven.plugin.annotations.version>3.2</maven.plugin.annotations.version>
@@ -182,7 +182,7 @@
         </dependency>
         <dependency>
             <groupId>com.jayway.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
+            <artifactId>awaitility-groovy</artifactId>
             <version>${awaitility.version}</version>
             <scope>test</scope>
         </dependency>

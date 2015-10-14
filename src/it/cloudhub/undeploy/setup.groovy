@@ -13,9 +13,9 @@ String uri = 'https://anypoint.mulesoft.com'
 String ME = "/accounts/api/me";
 String LOGIN = "/accounts/login";
 String APPLICATIONS = "/cloudhub/api/applications";
-String APPLICATION_FILE = "/cloudhub/api/v2/applications/maven-plugin-cloudhub-test-1/files"
-String APPLICATION = "/cloudhub/api/v2/applications/maven-plugin-cloudhub-test-1"
-String STATUS = "/cloudhub/api/applications/maven-plugin-cloudhub-test-1/status"
+String APPLICATION_FILE = "/cloudhub/api/v2/applications/maven-plugin-cloudhub-undeploy/files"
+String APPLICATION = "/cloudhub/api/v2/applications/maven-plugin-cloudhub-undeploy"
+String STATUS = "/cloudhub/api/applications/maven-plugin-cloudhub-undeploy/status"
 String environmentsPath = "/accounts/api/organizations/%s/environments";
 String AUTHORIZATION_HEADER = "Authorization";
 String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
@@ -46,7 +46,7 @@ context.envId = envId
 // Deploy application
 
 String CREATE_REQUEST_TEMPLATE = '''{
-    "domain": "maven-plugin-cloudhub-test-1",
+    "domain": "maven-plugin-cloudhub-undeploy",
     "region": "us-east-1",
     "muleVersion": "3.7.0",
     "workers": 1,
@@ -84,8 +84,11 @@ while (repeat > 0 && !deployed )
             header(AUTHORIZATION_HEADER, "bearer " + bearerToken).header(ENV_ID_HEADER, envId).header(ORG_ID_HEADER, orgId).
             get();
     assert response.getStatus() == 200
+    println response
     def entity = response.readEntity(String.class)
+    println "status: $entity"
     deployed = (entity == 'DEPLOYED' || entity == 'STARTED')
+    Thread.sleep(1000)
     repeat --
 }
 assert deployed : 'Application was not deployed after 10 attempts'

@@ -10,10 +10,18 @@ import org.mule.tools.maven.plugin.mule.AbstractDeployer;
 import org.mule.tools.maven.plugin.mule.ApiException;
 import org.mule.tools.maven.plugin.mule.DeploymentException;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
+
 import java.io.File;
 import java.util.Map;
 
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.logging.Log;
+import org.json.JSONObject;
 
 public class CloudhubDeployer extends AbstractDeployer
 {
@@ -28,10 +36,10 @@ public class CloudhubDeployer extends AbstractDeployer
     public CloudhubDeployer(String uri, String username, String password, String environment, String applicationName,
                             File application,
                             String region, String muleVersion, Integer workers, String workerType, Log log,
-                            Map<String, String> properties)
+                            Map<String, String> properties, String businessGroup)
     {
         super(applicationName, application, log);
-        this.cloudhubApi = new CloudhubApi(uri, log, username, password, environment);
+        this.cloudhubApi = new CloudhubApi(uri, log, username, password, environment, businessGroup);
         this.region = region;
         this.muleVersion = muleVersion;
         this.workers = workers;

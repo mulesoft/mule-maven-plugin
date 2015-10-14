@@ -254,13 +254,13 @@ public class DeployMojo extends AbstractMuleMojo
     private void cloudhub() throws MojoFailureException, MojoExecutionException
     {
         CloudhubDeployer deployer = new CloudhubDeployer(uri, username, password, environment, applicationName, application,
-                                                         region, muleVersion, workers, workerType, getLog(), properties);
+                                                         region, muleVersion, workers, workerType, getLog(), properties, businessGroup);
         deployWithDeployer(deployer);
     }
 
     private void arm() throws MojoFailureException, MojoExecutionException
     {
-        ArmDeployer deployer = new ArmDeployer(uri, username, password, environment, targetType, target, application, applicationName, getLog());
+        ArmDeployer deployer = new ArmDeployer(uri, username, password, environment, targetType, target, application, applicationName, getLog(), businessGroup);
         deployWithDeployer(deployer);
     }
 

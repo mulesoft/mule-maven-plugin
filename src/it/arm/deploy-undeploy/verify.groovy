@@ -21,7 +21,7 @@ target = client.target(uri).path(SERVERS);
 response = target.request(MediaType.APPLICATION_JSON_TYPE).
         header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, context.envId).header(ORG_ID_HEADER, context.orgId).
         get(String.class);
-def serverId = (new JsonSlurper().parseText(response).data.find{ it.name = "server-name"}).id
+def serverId = (new JsonSlurper().parseText(response).data.find{ it.name == "server-name"}).id
 
 client = ClientBuilder.newClient();
 target = client.target(uri).path(SERVERS + "/$serverId");

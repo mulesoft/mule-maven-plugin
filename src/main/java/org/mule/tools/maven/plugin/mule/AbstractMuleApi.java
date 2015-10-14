@@ -14,11 +14,17 @@ import org.mule.tools.maven.plugin.mule.arm.Environments;
 import org.mule.tools.maven.plugin.mule.arm.UserInfo;
 import org.mule.tools.maven.plugin.mule.arm.Environment;
 
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.logging.Log;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public abstract class AbstractMuleApi extends AbstractApi
 {
@@ -35,18 +41,20 @@ public abstract class AbstractMuleApi extends AbstractApi
     private String username;
     private String password;
     private String environment;
+    private final String businessGroup;
 
     private String bearerToken;
     private String envId;
     private String orgId;
 
-    public AbstractMuleApi(String uri, Log log, String username, String password, String environment)
+    public AbstractMuleApi(String uri, Log log, String username, String password, String environment, String businessGroup)
     {
         super(log);
         this.uri = uri;
         this.username = username;
         this.password = password;
         this.environment = environment;
+        this.businessGroup = businessGroup;
     }
 
     public void init()
@@ -75,8 +83,7 @@ public abstract class AbstractMuleApi extends AbstractApi
 
     public String getOrgId()
     {
-        UserInfo response = get(uri, ME, UserInfo.class);
-        return response.user.organization.id;
+        return findBusinessGroup(businessGroup);
     }
 
     public Environment findEnvironmentByName(String name)
@@ -107,4 +114,43 @@ public abstract class AbstractMuleApi extends AbstractApi
             builder.header(ORG_ID_HEADER, orgId);
         }
     }
+
+    private JSONObject getHierarchy()
+    {
+        UserInfo response = get(uri, ME, UserInfo.class);
+        String rootOrgId = response.user.organization.id;
+        WebTarget target = ClientBuilder.newClient().target(uri).path("accounts/api/organizations/" + rootOrgId + "/hierarchy");
+        return new JSONObject(target.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "bearer " + bearerToken).get(String.class));
+    }
+
+    public String findBusinessGroup(String path)
+    {
+        String currentOrgId = null;
+        String[] groups = path.split("\\.");
+        JSONObject json = getHierarchy(); // Using JSON parsing because Jersey unmarshalling fails to create all business groups
+        JSONArray subOrganizations = (JSONArray) json.get("subOrganizations");
+        if (StringUtils.isEmpty(path) || groups.length == 0)
+        {
+            return (String) json.get("id");
+        }
+        for (int group = 0; group < groups.length; group++)
+        {
+            for (int organization = 0; organization < subOrganizations.length(); organization++)
+            {
+                JSONObject jsonObject = (JSONObject) subOrganizations.get(organization);
+                if (jsonObject.get("name").equals(groups[group]))
+                {
+                    currentOrgId = (String) jsonObject.get("id");
+                    subOrganizations = (JSONArray) jsonObject.get("subOrganizations");
+                }
+            }
+        }
+        if (currentOrgId == null)
+        {
+            throw new ArrayIndexOutOfBoundsException("Cannot find business group.");
+        }
+        return currentOrgId;
+    }
+
+
 }

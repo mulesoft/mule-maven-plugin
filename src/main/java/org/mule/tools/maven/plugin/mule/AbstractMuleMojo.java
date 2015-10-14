@@ -57,6 +57,14 @@ public abstract class AbstractMuleMojo extends AbstractMojo
     @Parameter(property = "mule.timeout", required = false)
     protected int timeout;
 
+    /**
+     * Business group for deployment, if it is a nested one its format should be first.second.
+     *
+     * @since 2.1
+     */
+    @Parameter(defaultValue = "", property = "anypoint.businessGroup")
+    protected String businessGroup = "";
+
     @Parameter
     private List<ArtifactDescription> artifactItems = new ArrayList<ArtifactDescription>();
 

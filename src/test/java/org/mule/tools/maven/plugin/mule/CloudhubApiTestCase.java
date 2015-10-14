@@ -44,7 +44,7 @@ public class CloudhubApiTestCase
     @Before
     public void setup()
     {
-        cloudhubApi = new CloudhubApi(URI, null, USERNAME, PASSWORD, ENVIRONMENT);
+        cloudhubApi = new CloudhubApi(URI, null, USERNAME, PASSWORD, ENVIRONMENT, "");
         cloudhubApi.init();
     }
 

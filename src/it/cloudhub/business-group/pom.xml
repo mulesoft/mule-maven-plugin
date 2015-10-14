@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.mulesoft.muleesb.it</groupId>
-    <artifactId>arm-deploy</artifactId>
-    <version>1.0</version>
+    <artifactId>cloudhub</artifactId>
+    <version>1.1</version>
     <packaging>mule</packaging>
 
     <build>
@@ -21,13 +21,13 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <deploymentType>arm</deploymentType>
+                    <deploymentType>cloudhub</deploymentType>
                     <muleVersion>${mule.version}</muleVersion>
                     <username>${username}</username>
                     <password>${password}</password>
-                    <target>${target}</target>
-                    <targetType>server</targetType>
+                    <applicationName>maven-plugin-cloudhub-test-1</applicationName>
                     <environment>${environment}</environment>
+                    <businessGroup>test.test</businessGroup>
                 </configuration>
                 <executions>
                     <execution>

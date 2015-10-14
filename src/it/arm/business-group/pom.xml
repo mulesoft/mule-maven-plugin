@@ -28,6 +28,7 @@
                     <target>${target}</target>
                     <targetType>server</targetType>
                     <environment>${environment}</environment>
+                    <businessGroup>test.test</businessGroup>
                 </configuration>
                 <executions>
                     <execution>

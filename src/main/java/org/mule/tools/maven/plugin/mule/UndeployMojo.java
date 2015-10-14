@@ -121,7 +121,7 @@ public class UndeployMojo extends AbstractMuleMojo
 
     private void cloudhub() throws MojoFailureException
     {
-        CloudhubApi cloudhubApi = new CloudhubApi(uri, getLog(), username, password, environment);
+        CloudhubApi cloudhubApi = new CloudhubApi(uri, getLog(), username, password, environment, businessGroup);
         cloudhubApi.init();
         initializeApplication();
         getLog().info("Stopping application " + applicationName);
@@ -130,7 +130,7 @@ public class UndeployMojo extends AbstractMuleMojo
 
     private void arm() throws MojoFailureException
     {
-        ArmApi arm = new ArmApi(getLog(), uri, username, password, environment);
+        ArmApi arm = new ArmApi(getLog(), uri, username, password, environment, businessGroup);
         arm.init();
         initializeApplication();
         Data app = this.findApplication(arm, applicationName);

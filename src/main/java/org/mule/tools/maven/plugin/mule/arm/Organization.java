@@ -9,4 +9,6 @@ package org.mule.tools.maven.plugin.mule.arm;
 public class Organization
 {
     public String id;
+    public String name;
+    public Organization[] subOrganizations;
 }

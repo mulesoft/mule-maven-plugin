@@ -45,9 +45,9 @@ public class CloudhubApi extends AbstractMuleApi
                                                          "    }" +
                                                          "  },";
 
-    public CloudhubApi(String uri, Log log, String username, String password, String environment)
+    public CloudhubApi(String uri, Log log, String username, String password, String environment, String businessGroup)
     {
-        super(uri, log, username, password, environment);
+        super(uri, log, username, password, environment, businessGroup);
     }
 
     public Application createApplication(String appName, String region, String muleVersion, Integer workers, String workerType, Map<String, String> properties)

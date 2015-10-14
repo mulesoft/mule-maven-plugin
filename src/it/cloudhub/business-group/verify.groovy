@@ -15,6 +15,8 @@ String environmentsPath = "/accounts/api/organizations/%s/environments";
 String AUTHORIZATION_HEADER = "Authorization";
 String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
 String ORG_ID_HEADER = "X-ANYPNT-ORG-ID";
+String BUSINESS_GROUP_ID = 'ca58c363-1f3b-4e8b-822b-1274aad454c9'
+String ENV_ID = '855bf5d8-e13c-44d6-bef8-1beadd20da86'
 
 // Login and get IDs for organization and environment.
 
@@ -35,11 +37,19 @@ response = target.request(MediaType.APPLICATION_JSON_TYPE).
 def environments = new JsonSlurper().parseText(response).data
 def envId = (environments.find { it.name == 'Production'}).id
 
+// Application was deployed.
+
+target = ClientBuilder.newClient().target(uri).path(APPLICATION);
+response = target.request(MediaType.APPLICATION_JSON_TYPE).
+        header(AUTHORIZATION_HEADER, "bearer " + bearerToken).header(ENV_ID_HEADER, ENV_ID).header(ORG_ID_HEADER, BUSINESS_GROUP_ID).
+        get();
+assert response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL
+
 // Delete the application.
 
 target = ClientBuilder.newClient().target(uri).path(APPLICATION);
 response = target.request(MediaType.APPLICATION_JSON_TYPE).
-        header(AUTHORIZATION_HEADER, "bearer " + bearerToken).header(ENV_ID_HEADER, envId).header(ORG_ID_HEADER, orgId).
+        header(AUTHORIZATION_HEADER, "bearer " + bearerToken).header(ENV_ID_HEADER, ENV_ID).header(ORG_ID_HEADER, BUSINESS_GROUP_ID).
         delete();
 assert response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL
 
@@ -51,7 +61,7 @@ while (repeat > 0 && !deleted)
 {
     target = ClientBuilder.newClient().target(uri).path(APPLICATION);
     response = target.request(MediaType.APPLICATION_JSON_TYPE).
-            header(AUTHORIZATION_HEADER, "bearer " + bearerToken).header(ENV_ID_HEADER, envId).header(ORG_ID_HEADER, orgId).
+            header(AUTHORIZATION_HEADER, "bearer " + bearerToken).header(ENV_ID_HEADER, ENV_ID).header(ORG_ID_HEADER, BUSINESS_GROUP_ID).
             get();
     println "response: ${response}"
     deleted = response.getStatus() == Response.Status.NOT_FOUND.statusCode

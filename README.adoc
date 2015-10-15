@@ -444,3 +444,34 @@ To deploy more than one application you need to configure one plugin execution f
     </executions>
 </plugin>
 ----
+
+== Business group selection
+
+In both CloudHub and Anypoint Runtime Manager deployment you can select a Business Group other than your root Organization. In the example below the plugin is configured to deploy to a business group **devops** which is under **engineering** business group. If your business group name includes a backslash you can escape it with backslash.
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools.maven</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <configuration>
+        <deploymentType>cloudhub</deploymentType>
+        <muleVersion>${mule.version}</muleVersion>
+        <username>${username}</username>
+        <password>${password}</password>
+        <applicationName>my-application</applicationName>
+        <environment>Production</environment>
+        <businessGroup>engineering\devops</businessGroup>
+    </configuration>
+    <executions>
+        <execution>
+            <id>deploy</id>
+            <phase>deploy</phase>
+            <goals>
+                <goal>deploy</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+

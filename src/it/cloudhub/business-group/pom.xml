@@ -27,7 +27,7 @@
                     <password>${password}</password>
                     <applicationName>maven-plugin-cloudhub-business-group</applicationName>
                     <environment>${environment}</environment>
-                    <businessGroup>test.test</businessGroup>
+                    <businessGroup>test\test</businessGroup>
                 </configuration>
                 <executions>
                     <execution>

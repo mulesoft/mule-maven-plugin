@@ -35,10 +35,11 @@ muleHome = "target/mule-enterprise-standalone-${muleVersion}"
 new File(muleHome + '/conf/mule-agent.jks').delete()
 new File(muleHome + '/conf/mule-agent.yml').delete()
 muleExecutable = muleHome + "/bin/mule"
-armExecutable = muleHome + "/bin/amc_setup"
-process = (armExecutable + " -H $token server-name").execute()
-process.waitFor()
-assert process.exitValue() == 0 : 'Couldn\'t register server'
+def arm = muleHome + "/bin/amc_setup" + " -H $token server-name"
+process = arm.execute()
+assert process.waitFor() == 0 : 'Couldn\'t register server'
+Thread.sleep(5000);
+println process.inputStream.text
 process = (muleExecutable + " start").execute()
 process.waitFor()
 assert process.exitValue() == 0 : 'Couldn\'t start Mule server'

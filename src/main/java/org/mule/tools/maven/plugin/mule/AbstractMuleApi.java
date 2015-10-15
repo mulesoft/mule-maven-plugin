@@ -14,6 +14,8 @@ import org.mule.tools.maven.plugin.mule.arm.Environments;
 import org.mule.tools.maven.plugin.mule.arm.UserInfo;
 import org.mule.tools.maven.plugin.mule.arm.Environment;
 
+import java.util.ArrayList;
+
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -83,7 +85,7 @@ public abstract class AbstractMuleApi extends AbstractApi
 
     public String getOrgId()
     {
-        return findBusinessGroup(businessGroup);
+        return findBusinessGroup();
     }
 
     public Environment findEnvironmentByName(String name)
@@ -123,13 +125,13 @@ public abstract class AbstractMuleApi extends AbstractApi
         return new JSONObject(target.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "bearer " + bearerToken).get(String.class));
     }
 
-    public String findBusinessGroup(String path)
+    public String findBusinessGroup()
     {
         String currentOrgId = null;
-        String[] groups = path.split("\\.");
+        String[] groups = createBusinessGroupPath();
         JSONObject json = getHierarchy(); // Using JSON parsing because Jersey unmarshalling fails to create all business groups
         JSONArray subOrganizations = (JSONArray) json.get("subOrganizations");
-        if (StringUtils.isEmpty(path) || groups.length == 0)
+        if (groups.length == 0)
         {
             return (String) json.get("id");
         }
@@ -150,6 +152,43 @@ public abstract class AbstractMuleApi extends AbstractApi
             throw new ArrayIndexOutOfBoundsException("Cannot find business group.");
         }
         return currentOrgId;
+    }
+
+    protected String[] createBusinessGroupPath()
+    {
+        if (StringUtils.isEmpty(businessGroup))
+        {
+            return new String[0];
+        }
+        ArrayList<String> groups = new ArrayList<>();
+        String group = "";
+        int i = 0;
+        for (; i < businessGroup.length() -1; i ++)
+        {
+            if (businessGroup.charAt(i) == '\\')
+            {
+                if (businessGroup.charAt(i+1) == '\\') // Double backslash maps to business group with one backslash
+                {
+                    group = group + "\\";
+                    i++; // For two backslashes we continue with the next character
+                }
+                else // Single backslash starts a new business group
+                {
+                    groups.add(group);
+                    group = "";
+                }
+            }
+            else // Non backslash characters are mapped to the group
+            {
+                group = group + businessGroup.charAt(i);
+            }
+        }
+        if (i < businessGroup.length()) // Do not end with backslash
+        {
+            group = group + businessGroup.charAt(businessGroup.length() - 1);
+        }
+        groups.add(group);
+        return groups.toArray(new String[0]);
     }
 
 

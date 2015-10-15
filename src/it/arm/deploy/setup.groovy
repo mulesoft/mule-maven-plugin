@@ -1,14 +1,18 @@
+import com.jayway.awaitility.Awaitility
 import groovy.json.JsonSlurper
 
 import javax.ws.rs.client.ClientBuilder
 import javax.ws.rs.client.Entity
 import javax.ws.rs.core.MediaType
+import java.util.concurrent.Callable
+import java.util.concurrent.TimeUnit
 
 String uri = 'https://anypoint.mulesoft.com'
 String ME = "/accounts/api/me";
 String LOGIN = "/accounts/login";
 String REGISTRATION = "/hybrid/api/v1/servers/registrationToken"
 String environmentsPath = "/accounts/api/organizations/%s/environments";
+String SERVERS = "/hybrid/api/v1/servers";
 String AUTHORIZATION_HEADER = "Authorization";
 String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
 String ORG_ID_HEADER = "X-ANYPNT-ORG-ID";
@@ -47,13 +51,26 @@ muleHome = "target/mule-enterprise-standalone-${muleVersion}"
 new File(muleHome + '/conf/mule-agent.jks').delete()
 new File(muleHome + '/conf/mule-agent.yml').delete()
 muleExecutable = muleHome + "/bin/mule"
-armExecutable = muleHome + "/bin/amc_setup"
-process = (armExecutable + " -H $token server-name").execute()
-process.waitFor()
-assert process.exitValue() == 0 : 'Couldn\'t register server'
-process = (muleExecutable + " start").execute()
-process.waitFor()
-assert process.exitValue() == 0 : 'Couldn\'t start Mule server'
+def start = muleExecutable + " start"
+process = (muleHome + "/bin/amc_setup -H $token server-name-deploy").execute()
+assert process.waitFor() == 0 : 'Couldn\'t register server'
+assert start.execute().waitFor() == 0 : 'Couldn\'t start Mule server'
 
+target = ClientBuilder.newClient().target(uri).path(SERVERS);
+response = target.request(MediaType.APPLICATION_JSON_TYPE).
+        header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, envId).header(ORG_ID_HEADER, orgId).
+        get(String.class)
+def serverId = (new JsonSlurper().parseText(response).data.find{ it.name == "server-name-deploy"}).id
+assert serverId != null : "Server not found"
 
-Thread.sleep(30000)
+serverIsRunning = new Callable<Boolean>() {
+        public Boolean call() throws Exception {
+                def target = ClientBuilder.newClient().target(uri).path(SERVERS + "/$serverId");
+                def response = target.request(MediaType.APPLICATION_JSON_TYPE).
+                        header(AUTHORIZATION_HEADER, "bearer " + bearerToken).header(ENV_ID_HEADER, envId).header(ORG_ID_HEADER, orgId).
+                        get(String.class);
+                return new JsonSlurper().parseText(response).data.status == 'RUNNING'
+        }
+}
+
+Awaitility.await().atMost(4, TimeUnit.MINUTES).until(serverIsRunning)

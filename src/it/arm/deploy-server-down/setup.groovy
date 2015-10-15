@@ -1,8 +1,11 @@
+import com.jayway.awaitility.Awaitility
 import groovy.json.JsonSlurper
 
 import javax.ws.rs.client.ClientBuilder
 import javax.ws.rs.client.Entity
 import javax.ws.rs.core.MediaType
+import java.util.concurrent.Callable
+import java.util.concurrent.TimeUnit
 
 String uri = 'https://anypoint.mulesoft.com'
 String ME = "/accounts/api/me";
@@ -10,6 +13,7 @@ String LOGIN = "/accounts/login";
 String REGISTRATION = "/hybrid/api/v1/servers/registrationToken"
 String environmentsPath = "/accounts/api/organizations/%s/environments";
 String AUTHORIZATION_HEADER = "Authorization";
+String SERVERS = "/hybrid/api/v1/servers";
 String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
 String ORG_ID_HEADER = "X-ANYPNT-ORG-ID";
 
@@ -46,9 +50,23 @@ def token = new JsonSlurper().parseText(response).data
 muleHome = "target/mule-enterprise-standalone-${muleVersion}"
 new File(muleHome + '/conf/mule-agent.jks').delete()
 new File(muleHome + '/conf/mule-agent.yml').delete()
-armExecutable = muleHome + "/bin/amc_setup"
-process = (armExecutable + " -H $token server-name").execute()
-process.waitFor()
-assert process.exitValue() == 0 : 'Couldn\'t register server'
+assert ("${muleHome}/bin/amc_setup -H $token server-name-down").execute().waitFor() == 0 : 'Couldn\'t register server'
 
-Thread.sleep(5000)
+target = ClientBuilder.newClient().target(uri).path(SERVERS);
+response = target.request(MediaType.APPLICATION_JSON_TYPE).
+        header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, envId).header(ORG_ID_HEADER, orgId).
+        get(String.class)
+def serverId = (new JsonSlurper().parseText(response).data.find{ it.name == "server-name-down"}).id
+assert serverId != null : "Server not found"
+
+serverIsRunning = new Callable<Boolean>() {
+        public Boolean call() throws Exception {
+                def target = ClientBuilder.newClient().target(uri).path(SERVERS + "/$serverId");
+                def response = target.request(MediaType.APPLICATION_JSON_TYPE).
+                        header(AUTHORIZATION_HEADER, "bearer " + bearerToken).header(ENV_ID_HEADER, envId).header(ORG_ID_HEADER, orgId).
+                        get(String.class);
+                return new JsonSlurper().parseText(response).data.status == 'CREATED'
+        }
+}
+
+Awaitility.await().atMost(4, TimeUnit.MINUTES).until(serverIsRunning)

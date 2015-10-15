@@ -27,7 +27,7 @@
                     <password>${password}</password>
                     <environment>${environment}</environment>
                     <targetType>server</targetType>
-                    <target>${target}</target>
+                    <target>server-name-deploy-undeploy</target>
                 </configuration>
                 <executions>
                     <execution>

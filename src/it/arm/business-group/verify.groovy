@@ -1,9 +1,12 @@
+import com.jayway.awaitility.Awaitility
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 import javax.ws.rs.client.ClientBuilder
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
+import java.util.concurrent.Callable
+import java.util.concurrent.TimeUnit
 
 String uri = 'https://anypoint.mulesoft.com'
 String APPLICATIONS = "/hybrid/api/v1/applications";
@@ -40,14 +43,14 @@ target = client.target(uri).path(SERVERS);
 response = target.request(MediaType.APPLICATION_JSON_TYPE).
         header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, ENV_ID).header(ORG_ID_HEADER, BUSINESS_GROUP_ID).
         get(String.class)
-def serverId = (new JsonSlurper().parseText(response).data.find{ it.name == "server-name"}).id
+def serverId = (new JsonSlurper().parseText(response).data.find{ it.name == "server-name-business-group"}).id
 assert serverId != null : "Server not found"
 
 target = client.target(uri).path(SERVERS + '/' + serverId);
 response = target.request(MediaType.APPLICATION_JSON_TYPE).
         header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, ENV_ID).header(ORG_ID_HEADER, BUSINESS_GROUP_ID).
         delete();
-assert response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL : "Failed to delete server ${serverId}\n${JsonOutput.prettyPrint(response.readEntity(String.class))}"
+assert response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL : "Failed to delete server ${serverId}\nStatus code: ${response.getStatus()}\n${JsonOutput.prettyPrint(response.readEntity(String.class))}"
 
 def deleted = false
 repeat = 60
@@ -61,10 +64,17 @@ while (repeat > 0 && !deleted )
     repeat --
 }
 
-muleHome = "target/mule-enterprise-standalone-${muleVersion}"
-muleExecutable = muleHome + "/bin/mule"
-process = (muleExecutable + " stop").execute()
-process.waitFor()
-assert process.exitValue() == 0 : 'Couldn\'t stop Mule server'
+def muleExecutable = "target/mule-enterprise-standalone-${muleVersion}/bin/mule"
+def status = muleExecutable + " status"
+def stop = muleExecutable + " stop"
+assert stop.execute().waitFor() == 0 : 'Couldn\'t stop Mule server'
 assert deployed : "Application was not deployed"
 assert deleted : "Server wasn' deleted"
+
+aCallable = new Callable<Boolean>() {
+    public Boolean call() throws Exception {
+        return status.execute().waitFor() == 1
+    }
+}
+
+Awaitility.await().atMost(2, TimeUnit.MINUTES).until(aCallable)

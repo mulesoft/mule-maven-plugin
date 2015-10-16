@@ -25,7 +25,7 @@
                     <muleVersion>${mule.version}</muleVersion>
                     <username>${username}</username>
                     <password>${password}</password>
-                    <target>${target}</target>
+                    <target>server-name-business-group</target>
                     <targetType>server</targetType>
                     <environment>${environment}</environment>
                     <businessGroup>test\test</businessGroup>

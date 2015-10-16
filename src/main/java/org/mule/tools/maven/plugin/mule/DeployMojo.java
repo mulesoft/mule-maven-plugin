@@ -55,23 +55,6 @@ public class DeployMojo extends AbstractMuleMojo
     @Component
     protected ArchiverManager archiverManager;
 
-    /**
-     * Version of the Mule ESB Enterprise distribution to download. If you need to use Community version use <code>muleDistribution</code> parameter.
-     * This parameter and <code>muleDistribution</code> are mutual exclusive.
-     *
-     * @since 1.0
-     */
-    @Parameter(readonly = true, property = "mule.version")
-    protected String muleVersion;
-
-    /**
-     * Path to a Mule Standalone server.
-     * This parameter and <code>muleDistribution</code> and <code>muleVersion</code> are mutual exclusive.
-     *
-     * @since 2.0
-     */
-    @Parameter(readonly = true, property = "mule.home")
-    protected File muleHome;
 
     /**
      * When set to true the plugin will use Mule Standalone Community Edition.
@@ -125,46 +108,6 @@ public class DeployMojo extends AbstractMuleMojo
     protected List<File> libs = new ArrayList<>();
 
     /**
-     * Number of cluster nodes.
-     *
-     * @since 1.0
-     */
-    @Parameter(defaultValue = "2", readonly = true, required = true)
-    protected Integer size;
-
-    /**
-     * Deployment information.
-     *
-     * @since 1.0
-     */
-    @Parameter(required = true, readonly = true)
-    protected DeploymentType deploymentType;
-
-    /**
-     * Anypoint environment name.
-     *
-     * @since 2.0
-     */
-    @Parameter(required = false, readonly = true, property = "anypoint.environment")
-    protected String environment;
-
-    /**
-     * Anypoint Platform username.
-     *
-     * @since 2.0
-     */
-    @Parameter(required = false, readonly = true, property = "anypoint.username")
-    protected String username;
-
-    /**
-     * Anypoint Platform password.
-     *
-     * @since 2.0
-     */
-    @Parameter(required = false, readonly = true, property = "anypoint.password")
-    protected String password;
-
-    /**
      * Anypoint Platform target name.
      *
      * @since 2.0
@@ -180,14 +123,6 @@ public class DeployMojo extends AbstractMuleMojo
      */
     @Parameter(readonly = true, property = "anypoint.target.type")
     protected TargetType targetType;
-
-    /**
-     * Anypoint Platform URI, can be configured to use with On Premise platform..
-     *
-     * @since 2.0
-     */
-    @Parameter(readonly = true, property = "anypoint.uri", defaultValue = "https://anypoint.mulesoft.com")
-    protected String uri;
 
     /**
      * Region to deploy the application in Cloudhub.

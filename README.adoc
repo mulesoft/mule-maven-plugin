@@ -97,6 +97,7 @@ You can deploy your application to a running ARM server, serverGroup or cluster.
         <target>server-name</target>
         <targetType>server</targetType>             <!-- One of: server, serverGroup, cluster -->
         <environment>Production</environment>
+        <url>https://anypoint.mulesoft.com</url>
     </configuration>
     <executions>
         <execution>
@@ -140,6 +141,35 @@ To deploy your application to CloudHub:
 </plugin>
 ----
 
+=== Business group selection
+
+In both CloudHub and Anypoint Runtime Manager deployment you can select a Business Group other than your root Organization. In the example below the plugin is configured to deploy to a business group called **devops** which is under the **engineering** business group. If your business group name includes a backslash, you can escape it with backslash.
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools.maven</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <configuration>
+        <deploymentType>cloudhub</deploymentType>
+        <muleVersion>${mule.version}</muleVersion>
+        <username>${username}</username>
+        <password>${password}</password>
+        <applicationName>my-application</applicationName>
+        <environment>Production</environment>
+        <businessGroup>engineering\devops</businessGroup>
+    </configuration>
+    <executions>
+        <execution>
+            <id>deploy</id>
+            <phase>deploy</phase>
+            <goals>
+                <goal>deploy</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
 
 == Using a Mule server instead of downloading Mule dependency
 
@@ -432,36 +462,6 @@ To deploy more than one application you need to configure one plugin execution f
         <muleVersion>3.7.0</muleVersion>
         <deploymentType>standalone</deploymentType>
         <skip>${skipTests}</skip>
-    </configuration>
-    <executions>
-        <execution>
-            <id>deploy</id>
-            <phase>deploy</phase>
-            <goals>
-                <goal>deploy</goal>
-            </goals>
-        </execution>
-    </executions>
-</plugin>
-----
-
-== Business group selection
-
-In both CloudHub and Anypoint Runtime Manager deployment you can select a Business Group other than your root Organization. In the example below the plugin is configured to deploy to a business group **devops** which is under **engineering** business group. If your business group name includes a backslash you can escape it with backslash.
-
-[source,xml]
-----
-<plugin>
-    <groupId>org.mule.tools.maven</groupId>
-    <artifactId>mule-maven-plugin</artifactId>
-    <configuration>
-        <deploymentType>cloudhub</deploymentType>
-        <muleVersion>${mule.version}</muleVersion>
-        <username>${username}</username>
-        <password>${password}</password>
-        <applicationName>my-application</applicationName>
-        <environment>Production</environment>
-        <businessGroup>engineering\devops</businessGroup>
     </configuration>
     <executions>
         <execution>

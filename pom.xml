@@ -62,9 +62,13 @@
         <license.plugin.version>2.6</license.plugin.version>
         <junit.version>4.11</junit.version>
         <mockito.version>1.8.5</mockito.version>
-        <jersey.client.version>2.19</jersey.client.version>
+        <jersey.version>2.19</jersey.version>
         <awaitility.version>1.6.5</awaitility.version>
-
+		<groovy.version>2.0.1</groovy.version>
+		<hamcrest.version>1.3</hamcrest.version>
+        <json.version>20140107</json.version>
+		
+        <maven.settings.version>3.0.4</maven.settings.version>
         <maven.plugin.api.version>2.0</maven.plugin.api.version>
         <maven.plugin.annotations.version>3.2</maven.plugin.annotations.version>
         <maven.dependency.plugin.version>2.8</maven.dependency.plugin.version>
@@ -86,7 +90,7 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-settings</artifactId>
-            <version>3.0.4</version>
+            <version>${maven.settings.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -117,8 +121,8 @@
         <dependency>
             <groupId>org.apache.maven.plugin-testing</groupId>
             <artifactId>maven-plugin-testing-harness</artifactId>
-            <scope>test</scope>
             <version>${maven.plugin.api.version}</version>
+			<scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
@@ -152,32 +156,32 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>2.0.1</version>
+            <version>${groovy.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
-            <version>${jersey.client.version}</version>
+            <version>${jersey.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-moxy</artifactId>
-            <version>2.15</version>
+            <version>${jersey.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-multipart</artifactId>
-            <version>${jersey.client.version}</version>
+            <version>${jersey.version}</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20140107</version>
+            <version>${json.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
-            <version>1.3</version>
+            <version>${hamcrest.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -388,6 +392,7 @@
                                 <goal>clean</goal>
                                 <goal>verify</goal>
                             </goals>
+							<skip>${skipTests}</skip>
                         </configuration>
                         <executions>
                             <execution>

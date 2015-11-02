@@ -10,17 +10,14 @@ import static javax.ws.rs.core.Response.Status.Family.SUCCESSFUL;
 import static javax.ws.rs.core.Response.Status.Family.familyOf;
 
 import org.mule.tools.maven.plugin.mule.arm.AuthorizationResponse;
+import org.mule.tools.maven.plugin.mule.arm.Environment;
 import org.mule.tools.maven.plugin.mule.arm.Environments;
 import org.mule.tools.maven.plugin.mule.arm.UserInfo;
-import org.mule.tools.maven.plugin.mule.arm.Environment;
 
 import java.util.ArrayList;
 
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
@@ -121,8 +118,7 @@ public abstract class AbstractMuleApi extends AbstractApi
     {
         UserInfo response = get(uri, ME, UserInfo.class);
         String rootOrgId = response.user.organization.id;
-        WebTarget target = ClientBuilder.newClient().target(uri).path("accounts/api/organizations/" + rootOrgId + "/hierarchy");
-        return new JSONObject(target.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "bearer " + bearerToken).get(String.class));
+        return new JSONObject(get(uri, "accounts/api/organizations/" + rootOrgId + "/hierarchy", String.class));
     }
 
     public String findBusinessGroup()

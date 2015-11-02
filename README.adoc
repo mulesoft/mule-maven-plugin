@@ -475,3 +475,37 @@ To deploy more than one application you need to configure one plugin execution f
 </plugin>
 ----
 
+== ARM On Prem TLS errors
+
+When trying to connect to a an On Prem installation the plugin will validate certificates for that server. If you haven't installed the server certificates in your trust store you will see an SSL error. To avoid that problem you can run the plugin in an insecure mode, this way, the security validations would be skipped. You can use the **armInsecure** tag or the **arm.insecure** system property. See the configuration example below:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools.maven</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <configuration>
+        <deploymentType>arm</deploymentType>
+        <muleVersion>${mule.version}</muleVersion>
+        <username>${username}</username>
+        <password>${password}</password>
+        <applicationName>my-application</applicationName>
+        <environment>Production</environment>
+        <uri>https://anypoint.mulesoft.local</uri>
+        <armInsecure>true</armInsecure>
+    </configuration>
+    <executions>
+        <execution>
+            <id>deploy</id>
+            <phase>deploy</phase>
+            <goals>
+                <goal>deploy</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+[WARNING]
+Enabling insecure connection is a very risky practice, you shouldn't use this except when you know what you are doing and your On Prem installation is isolated in a local network.
+

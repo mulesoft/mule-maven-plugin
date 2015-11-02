@@ -195,7 +195,7 @@ public class DeployMojo extends AbstractMuleMojo
 
     private void arm() throws MojoFailureException, MojoExecutionException
     {
-        ArmDeployer deployer = new ArmDeployer(uri, username, password, environment, targetType, target, application, applicationName, getLog(), businessGroup);
+        ArmDeployer deployer = new ArmDeployer(uri, username, password, environment, targetType, target, application, applicationName, getLog(), businessGroup, armInsecure);
         deployWithDeployer(deployer);
     }
 

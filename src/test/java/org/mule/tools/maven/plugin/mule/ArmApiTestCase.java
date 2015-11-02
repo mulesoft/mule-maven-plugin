@@ -33,7 +33,7 @@ public class ArmApiTestCase
     @Before
     public void setup()
     {
-        armApi = new ArmApi(null, "https://anypoint.mulesoft.com", USERNAME, PASSWORD, ENVIRONMENT, "");
+        armApi = new ArmApi(null, "https://anypoint.mulesoft.com", USERNAME, PASSWORD, ENVIRONMENT, "", false);
         armApi.init();
     }
 

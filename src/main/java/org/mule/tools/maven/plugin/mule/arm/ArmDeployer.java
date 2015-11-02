@@ -27,12 +27,12 @@ public class ArmDeployer extends AbstractDeployer
     private final String target;
     private final ArmApi armApi;
 
-    public ArmDeployer(String uri, String username, String password, String environment, TargetType targetType, String target, File application, String applicationName, Log log, String businessGroup)
+    public ArmDeployer(String uri, String username, String password, String environment, TargetType targetType, String target, File application, String applicationName, Log log, String businessGroup, boolean armInsecure)
     {
         super(applicationName, application, log);
         this.targetType = targetType;
         this.target = target;
-        armApi = new ArmApi(log, uri, username, password, environment, businessGroup);
+        armApi = new ArmApi(log, uri, username, password, environment, businessGroup, armInsecure);
     }
 
     @Override

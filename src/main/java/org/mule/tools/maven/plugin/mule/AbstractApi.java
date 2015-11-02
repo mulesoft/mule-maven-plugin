@@ -21,7 +21,8 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 public abstract class AbstractApi
 {
-    private final Log log;
+
+    protected final Log log;
 
     public AbstractApi(Log log)
     {
@@ -30,14 +31,20 @@ public abstract class AbstractApi
 
     protected WebTarget getTarget(String uri, String path)
     {
-        Client client = ClientBuilder.newClient().register(MultiPartFeature.class);
-
+        ClientBuilder builder = ClientBuilder.newBuilder();
+        configureSecurityContext(builder);
+        Client client = builder.build().register(MultiPartFeature.class);
         if (log != null && log.isDebugEnabled())
         {
             client.register(new ApiLoggingFilter(log));
         }
 
         return client.target(uri).path(path);
+    }
+
+    protected void configureSecurityContext(ClientBuilder builder)
+    {
+        // Implemented in concrete classes
     }
 
     protected Response post(String uri, String path, Entity entity)
@@ -86,7 +93,8 @@ public abstract class AbstractApi
     /**
      * Template method to allow subclasses to configure the request (adding headers for example).
      */
-    protected void configureRequest(Invocation.Builder builder) {
+    protected void configureRequest(Invocation.Builder builder)
+    {
 
     }
 

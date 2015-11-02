@@ -131,6 +131,14 @@ public abstract class AbstractMuleMojo extends AbstractMojo
     @Parameter(defaultValue = "", property = "anypoint.businessGroup")
     protected String businessGroup = "";
 
+    /**
+     * Use insecure mode for ARM deployment: do not validate certificates, nor hostname.
+     *
+     * @since 2.1
+     */
+    @Parameter(defaultValue = "Medium", readonly = true, property = "arm.insecure")
+    protected boolean armInsecure;
+
     @Parameter
     private List<ArtifactDescription> artifactItems = new ArrayList<ArtifactDescription>();
 

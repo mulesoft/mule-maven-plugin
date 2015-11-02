@@ -10,7 +10,17 @@ import org.mule.tools.maven.plugin.mule.AbstractMuleApi;
 import org.mule.tools.maven.plugin.mule.TargetType;
 
 import java.io.File;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
@@ -26,10 +36,12 @@ public class ArmApi extends AbstractMuleApi
     private static final String SERVERS = "/hybrid/api/v1/servers";
     private static final String SERVER_GROUPS = "/hybrid/api/v1/serverGroups";
     private static final String CLUSTERS = "/hybrid/api/v1/clusters";
+    private boolean armInsecure;
 
-    public ArmApi(Log log, String uri, String username, String password, String environment, String businessGroup)
+    public ArmApi(Log log, String uri, String username, String password, String environment, String businessGroup, boolean armInsecure)
     {
         super(uri, log, username, password, environment, businessGroup);
+        this.armInsecure = armInsecure;
     }
 
     public Boolean isStarted(int applicationId)
@@ -135,4 +147,53 @@ public class ArmApi extends AbstractMuleApi
         }
         return null;
     }
+
+    protected void configureSecurityContext(ClientBuilder builder)
+    {
+        if (armInsecure)
+        {
+            log.warn("Using insecure mode for connecting to ARM, please consider configuring your truststore with ARM certificates. This option is insecure and not intended for production use.");
+            try
+            {
+                SSLContext sslcontext = SSLContext.getInstance("TLS");
+                sslcontext.init(null, new TrustManager[] { new TrustAllManager() }, new java.security.SecureRandom());
+                builder.hostnameVerifier(new DummyHostnameVerifier()).sslContext(sslcontext);
+            }
+            catch (KeyManagementException | NoSuchAlgorithmException e)
+            {
+                throw new RuntimeException(e);
+            }
+
+        }
+    }
+
+    private static class DummyHostnameVerifier implements HostnameVerifier
+    {
+        public boolean verify(String s, SSLSession sslSession)
+        {
+            return true;
+        }
+    };
+
+    private static class TrustAllManager implements X509TrustManager
+    {
+        @Override
+        public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException
+        {
+
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException
+        {
+
+        }
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers()
+        {
+            return new X509Certificate[0];
+        }
+    };
+
 }

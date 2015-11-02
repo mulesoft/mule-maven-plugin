@@ -37,6 +37,20 @@ response = target.request(MediaType.APPLICATION_JSON_TYPE).
         delete()
 assert response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL : "Failed to delete application: ${application.id}\n${JsonOutput.prettyPrint(response.readEntity(String.class))}"
 
+// Begin Workaround, delete once CHHYBRID-987 is fixed
+def deleted = false
+repeat = 60
+while (repeat > 0 && !deleted)
+{
+    target = client.target(uri).path(APPLICATIONS + "/" + application.id);
+    response = target.request(MediaType.APPLICATION_JSON_TYPE).
+            header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, context.envId).header(ORG_ID_HEADER, context.orgId).
+            get();
+    deleted = response.getStatus() == Response.Status.NOT_FOUND.statusCode
+    repeat --
+}
+// Workaround end
+
 target = client.target(uri).path(SERVERS);
 response = target.request(MediaType.APPLICATION_JSON_TYPE).
         header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, context.envId).header(ORG_ID_HEADER, context.orgId).
@@ -50,7 +64,7 @@ response = target.request(MediaType.APPLICATION_JSON_TYPE).
         delete();
 assert response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL : "Failed to delete server ${serverId}\nStatus code: ${response.getStatus()}\n${JsonOutput.prettyPrint(response.readEntity(String.class))}"
 
-def deleted = false
+deleted = false
 repeat = 60
 while (repeat > 0 && !deleted )
 {

@@ -42,6 +42,11 @@ public class ArmApi extends AbstractMuleApi
     {
         super(uri, log, username, password, environment, businessGroup);
         this.armInsecure = armInsecure;
+        if (armInsecure)
+        {
+            log.warn("Using insecure mode for connecting to ARM, please consider configuring your truststore with ARM certificates. This option is insecure and not intended for production use.");
+
+        }
     }
 
     public Boolean isStarted(int applicationId)
@@ -152,7 +157,6 @@ public class ArmApi extends AbstractMuleApi
     {
         if (armInsecure)
         {
-            log.warn("Using insecure mode for connecting to ARM, please consider configuring your truststore with ARM certificates. This option is insecure and not intended for production use.");
             try
             {
                 SSLContext sslcontext = SSLContext.getInstance("TLS");

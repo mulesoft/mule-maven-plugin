@@ -91,8 +91,8 @@ public class DeployMojo extends AbstractMuleMojo
      * Adding a property to this list is the same that adding it to the command line when starting Mule using bin/mule.
      * If you want to add a Mule property don't forget to prepend <code>-M-D</code>.
      * If you want to add a System property for the Wrapper don't forget to prepend <code>-D</code>.
-     * <p/>
-     * Example: <code><arguments><argument>-M-Djdbc.url=jdbc:oracle:thin:@myhost:1521:orcl</argument></arguments></code>
+     * <p>
+     * Example: <code>&lt;arguments&gt;&lt;argument&gt;-M-Djdbc.url=jdbc:oracle:thin:@myhost:1521:orcl&lt;/argument&gt;&lt;/arguments&gt;</code>
      *
      * @since 1.0
      */

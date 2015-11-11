@@ -26,11 +26,13 @@ public abstract class AbstractDeployer
 
     /**
      * Deploys the application.
+     * @throws DeploymentException
      */
     public abstract void deploy() throws DeploymentException;
 
     /**
      * Logs an info message in the plugin.
+     * @param message The message to log.
      */
     protected void info(String message)
     {
@@ -39,6 +41,7 @@ public abstract class AbstractDeployer
 
     /**
      * Logs an error message in the plugin.
+     * @param message The message to log.
      */
     protected void error(String message)
     {

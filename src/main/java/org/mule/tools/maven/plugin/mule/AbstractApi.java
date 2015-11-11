@@ -92,6 +92,7 @@ public abstract class AbstractApi
 
     /**
      * Template method to allow subclasses to configure the request (adding headers for example).
+     * @param builder The invocation builder for the request.
      */
     protected void configureRequest(Invocation.Builder builder)
     {

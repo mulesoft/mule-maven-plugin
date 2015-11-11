@@ -105,7 +105,9 @@ public class CloudhubApi extends AbstractMuleApi
     }
 
     /**
-     * Returns the details of an application, or null if it doesn't exist.
+     * Looks up an application by its name.
+     * @param appName The application name to look up.
+     * @return The details of an application, or null if it doesn't exist.
      */
     public Application getApplication(String appName)
     {

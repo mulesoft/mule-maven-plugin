@@ -160,10 +160,7 @@ public class DeployMojo extends AbstractMuleMojo
     public void doExecute() throws MojoExecutionException, MojoFailureException
     {
         initializeApplication();
-        if (properties == null)
-        {
-            properties = new HashMap();
-        }
+        
         switch (deploymentType)
         {
             case standalone:

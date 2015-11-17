@@ -6,9 +6,6 @@
  */
 package org.mule.tools.maven.plugin.mule.cloudhub;
 
-import org.mule.tools.maven.plugin.mule.AbstractMuleApi;
-import org.mule.tools.maven.plugin.mule.ApiException;
-
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +18,8 @@ import org.apache.maven.plugin.logging.Log;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
+import org.mule.tools.maven.plugin.mule.AbstractMuleApi;
+import org.mule.tools.maven.plugin.mule.ApiException;
 
 public class CloudhubApi extends AbstractMuleApi
 {
@@ -34,7 +33,7 @@ public class CloudhubApi extends AbstractMuleApi
                                                          "  \"region\": \"%s\"," +
                                                          "  \"muleVersion\": \"%s\"," +
                                                          "  \"workers\": %d," +
-                                                         "  \"workerType\": \"%s\",";
+                                                         "  \"workerType\": \"%s\"";
     public static final String UPDATE_REQUEST_TEMPLATE = "{" +
                                                          "  \"region\":\"%s\"," +
                                                          "  \"muleVersion\": {\"version\": \"%s\"}," +
@@ -43,7 +42,7 @@ public class CloudhubApi extends AbstractMuleApi
                                                          "    \"type\": {" +
                                                          "        \"name\": \"%s\"" +
                                                          "    }" +
-                                                         "  },";
+                                                         "  }";
 
     public CloudhubApi(String uri, Log log, String username, String password, String environment, String businessGroup)
     {
@@ -82,7 +81,12 @@ public class CloudhubApi extends AbstractMuleApi
 
     private String addProperties(Map<String, String> properties, String json)
     {
-        json = json + "  \"properties\": {";
+    	if(properties == null) {
+    		return json;
+    	}
+    	
+    	json = json + ",";
+    	json = json + "  \"properties\": {";
         for (Map.Entry<String, String> entry: properties.entrySet())
         {
             json = json + "    \"" + entry.getKey() + "\":\"" + entry.getValue() + "\",";

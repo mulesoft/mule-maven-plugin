@@ -14,8 +14,8 @@ String AUTHORIZATION_HEADER = "Authorization";
 String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
 String ORG_ID_HEADER = "X-ANYPNT-ORG-ID";
 String SERVERS = "/hybrid/api/v1/servers";
-String BUSINESS_GROUP_ID = 'ca58c363-1f3b-4e8b-822b-1274aad454c9'
-String ENV_ID = '855bf5d8-e13c-44d6-bef8-1beadd20da86'
+String BUSINESS_GROUP_ID = '9028da8d-cf4a-4a5f-afeb-38776b836973'
+String ENV_ID = '60b01d86-2973-46b1-a788-63ee20cfa7ad'
 
 def repeat = 60
 def application = null

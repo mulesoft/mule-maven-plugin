@@ -10,7 +10,7 @@ import javax.ws.rs.core.Response
 String uri = 'https://anypoint.mulesoft.com'
 String ME = "/accounts/api/me";
 String LOGIN = "/accounts/login";
-String APPLICATION = "/cloudhub/api/applications/maven-plugin-cloudhub-deploy";
+String APPLICATION = "/cloudhub/api/applications/maven-plugin-cloudhub-deploy-test";
 String environmentsPath = "/accounts/api/organizations/%s/environments";
 String AUTHORIZATION_HEADER = "Authorization";
 String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";

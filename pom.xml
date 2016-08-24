@@ -49,7 +49,7 @@
     <properties>
         <licensePath>LICENSE_HEADER.txt</licensePath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mule.version>3.7.0</mule.version>
+        <mule.version>3.8.1</mule.version>
         <suite>standalone</suite>
 
         <environment>Production</environment>

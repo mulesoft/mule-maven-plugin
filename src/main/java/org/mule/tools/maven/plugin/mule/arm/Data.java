@@ -23,5 +23,6 @@ public class Data
     public int contextId;
     public String lastReportedStatus;
     public Artifact artifact;
+    public Target target;
 
 }

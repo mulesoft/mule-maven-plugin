@@ -17,6 +17,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
 import org.apache.maven.plugin.logging.Log;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 public abstract class AbstractApi
@@ -80,6 +81,13 @@ public abstract class AbstractApi
     protected <T> T get(String uri, String path, Class<T> clazz)
     {
         return get(uri, path).readEntity(clazz);
+    }
+
+    protected Response patch(String uri, String path, Entity entity)
+    {
+        Invocation.Builder builder = builder(uri, path);
+        builder.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
+        return builder.method("PATCH", entity);
     }
 
     private Invocation.Builder builder(String uri, String path)

@@ -60,25 +60,38 @@ public class ArmApi extends AbstractMuleApi
         return get(uri, APPLICATIONS + "/" + applicationId, Application.class);
     }
 
-    public String undeployApplication(int applicationId)
+    public Response undeployApplication(int applicationId)
     {
         Response response = delete(uri, APPLICATIONS + "/" + applicationId);
-        return response.readEntity(String.class);
+        validateStatusSuccess(response);
+        return response;
     }
 
     public Application deployApplication(File app, String appName, TargetType targetType, String target)
     {
-        String id = getId(targetType, target);
+        MultiPart body = buildRequestBody(app, appName, targetType, target);
+        Response response = post(uri, APPLICATIONS, Entity.entity(body, body.getMediaType()));
+        validateStatusSuccess(response);
+        return response.readEntity(Application.class);
+    }
 
+    public Application redeployApplication(int applicationId, File app, String appName, TargetType targetType, String target)
+    {
+        MultiPart body = buildRequestBody(app, appName, targetType, target);
+        Response response = patch(uri, APPLICATIONS + "/" + applicationId, Entity.entity(body, body.getMediaType()));
+        validateStatusSuccess(response);
+        return response.readEntity(Application.class);
+    }
+
+    private MultiPart buildRequestBody(File app, String appName, TargetType targetType, String target)
+    {
+        String id = getId(targetType, target);
         FileDataBodyPart applicationPart = new FileDataBodyPart("file", app);
-        MultiPart multipart = new FormDataMultiPart()
+        MultiPart body = new FormDataMultiPart()
                 .field("artifactName", appName)
                 .field("targetId", id)
                 .bodyPart(applicationPart);
-
-        Response response = post(uri, APPLICATIONS, Entity.entity(multipart, multipart.getMediaType()));
-        validateStatusSuccess(response);
-        return response.readEntity(Application.class);
+        return body;
     }
 
     private String getId(TargetType targetType, String target)
@@ -136,16 +149,18 @@ public class ArmApi extends AbstractMuleApi
         throw new RuntimeException("Couldn't find target named [" + name + "]");
     }
 
-    public Integer findApplication(String name)
+    public Integer findApplication(String name, TargetType targetType, String target)
     {
         Data[] applications = getApplications().data;
+        String targetId = getId(targetType, target);
+
         if (applications == null)
         {
             return null;
         }
         for (int i = 0 ; i < applications.length ; i ++ )
         {
-            if (name.equals(applications[i].artifact.name))
+            if (name.equals(applications[i].artifact.name) && targetId.equals(applications[i].target.id))
             {
                 return applications[i].id;
             }

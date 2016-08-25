@@ -13,9 +13,9 @@ String uri = 'https://anypoint.mulesoft.com'
 String ME = "/accounts/api/me";
 String LOGIN = "/accounts/login";
 String APPLICATIONS = "/cloudhub/api/applications";
-String APPLICATION_FILE = "/cloudhub/api/v2/applications/maven-plugin-cloudhub-undeploy/files"
-String APPLICATION = "/cloudhub/api/v2/applications/maven-plugin-cloudhub-undeploy"
-String STATUS = "/cloudhub/api/applications/maven-plugin-cloudhub-undeploy/status"
+String APPLICATION_FILE = "/cloudhub/api/v2/applications/maven-plugin-cloudhub-undeploy-test/files"
+String APPLICATION = "/cloudhub/api/v2/applications/maven-plugin-cloudhub-undeploy-test"
+String STATUS = "/cloudhub/api/applications/maven-plugin-cloudhub-undeploy-test/status"
 String environmentsPath = "/accounts/api/organizations/%s/environments";
 String AUTHORIZATION_HEADER = "Authorization";
 String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
@@ -46,9 +46,9 @@ context.envId = envId
 // Deploy application
 
 String CREATE_REQUEST_TEMPLATE = '''{
-    "domain": "maven-plugin-cloudhub-undeploy",
+    "domain": "maven-plugin-cloudhub-undeploy-test",
     "region": "us-east-1",
-    "muleVersion": "3.7.0",
+    "muleVersion": "3.8.0",
     "workers": 1,
     "workerType": "Micro",
     "properties": { }

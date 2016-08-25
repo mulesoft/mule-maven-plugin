@@ -25,9 +25,9 @@
                     <muleVersion>${mule.version}</muleVersion>
                     <username>${username}</username>
                     <password>${password}</password>
-                    <applicationName>maven-plugin-cloudhub-business-group</applicationName>
+                    <applicationName>maven-plugin-cloudhub-business-group-test</applicationName>
                     <environment>${environment}</environment>
-                    <businessGroup>test\test</businessGroup>
+                    <businessGroup>test1\test2</businessGroup>
                 </configuration>
                 <executions>
                     <execution>

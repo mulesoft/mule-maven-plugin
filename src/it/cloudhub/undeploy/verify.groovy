@@ -5,7 +5,7 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 String uri = 'https://anypoint.mulesoft.com'
-String APPLICATION = "/cloudhub/api/applications/maven-plugin-cloudhub-undeploy";
+String APPLICATION = "/cloudhub/api/applications/maven-plugin-cloudhub-undeploy-test";
 String APPLICATIONS = "/cloudhub/api/applications";
 String AUTHORIZATION_HEADER = "Authorization";
 String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
@@ -20,7 +20,7 @@ while (repeat > 0 && !undeployed)
             header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, context.envId).header(ORG_ID_HEADER, context.orgId).
             get(String.class);
     def applications = new JsonSlurper().parseText(response)
-    application = applications.find { it.domain == 'maven-plugin-cloudhub-undeploy' }
+    application = applications.find { it.domain == 'maven-plugin-cloudhub-undeploy-test' }
     undeployed = (application == null || application.status == 'UNDEPLOYED')
     repeat--
 }

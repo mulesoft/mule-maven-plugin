@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.mulesoft.muleesb.it</groupId>
-    <artifactId>arm-deploy</artifactId>
+    <artifactId>arm-deploy-business-group</artifactId>
     <version>1.0</version>
     <packaging>mule</packaging>
 
@@ -28,7 +28,7 @@
                     <target>server-name-business-group</target>
                     <targetType>server</targetType>
                     <environment>${environment}</environment>
-                    <businessGroup>test\test</businessGroup>
+                    <businessGroup>test1\test2</businessGroup>
                 </configuration>
                 <executions>
                     <execution>
@@ -36,6 +36,25 @@
                         <phase>pre-integration-test</phase>
                         <goals>
                             <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${maven.antrun.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>sleep-for-a-while</id>
+                        <phase>integration-test</phase>
+                        <configuration>
+                            <target>
+                                <sleep seconds="5" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
                         </goals>
                     </execution>
                 </executions>

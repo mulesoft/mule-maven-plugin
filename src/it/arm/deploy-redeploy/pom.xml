@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.mulesoft.muleesb.it</groupId>
-    <artifactId>arm-deploy-undeploy</artifactId>
+    <artifactId>arm-deploy-redeploy</artifactId>
     <version>1.0</version>
     <packaging>mule</packaging>
 
@@ -27,7 +27,7 @@
                     <password>${password}</password>
                     <environment>${environment}</environment>
                     <targetType>server</targetType>
-                    <target>server-name-deploy-undeploy</target>
+                    <target>server-name-deploy-redeploy</target>
                 </configuration>
                 <executions>
                     <execution>
@@ -38,9 +38,9 @@
                         <phase>pre-integration-test</phase>
                     </execution>
                     <execution>
-                        <id>undeploy</id>
+                        <id>redeploy</id>
                         <goals>
-                            <goal>undeploy</goal>
+                            <goal>deploy</goal>
                         </goals>
                         <phase>post-integration-test</phase>
                     </execution>
@@ -54,6 +54,18 @@
                     <execution>
                         <id>sleep-for-a-while</id>
                         <phase>integration-test</phase>
+                        <configuration>
+                            <target>
+                                <sleep seconds="5" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>sleep-for-another-while</id>
+                        <phase>post-integration-test</phase>
                         <configuration>
                             <target>
                                 <sleep seconds="5" />

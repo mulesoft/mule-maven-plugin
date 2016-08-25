@@ -108,23 +108,6 @@ public class DeployMojo extends AbstractMuleMojo
     protected List<File> libs = new ArrayList<>();
 
     /**
-     * Anypoint Platform target name.
-     *
-     * @since 2.0
-     * @see DeployMojo#targetType
-     */
-    @Parameter(readonly = true, property = "anypoint.target")
-    protected String target;
-
-    /**
-     * Anypoint Platform target type: server, serverGroup or cluster.
-     *
-     * @since 2.0
-     */
-    @Parameter(readonly = true, property = "anypoint.target.type")
-    protected TargetType targetType;
-
-    /**
      * Region to deploy the application in Cloudhub.
      *
      * @since 2.0

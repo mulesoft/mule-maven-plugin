@@ -14,8 +14,6 @@ String AUTHORIZATION_HEADER = "Authorization";
 String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
 String ORG_ID_HEADER = "X-ANYPNT-ORG-ID";
 String SERVERS = "/hybrid/api/v1/servers";
-String BUSINESS_GROUP_ID = '9028da8d-cf4a-4a5f-afeb-38776b836973'
-String ENV_ID = 'b9396529-7a09-4cb4-a962-cd8c9aec3266'
 
 def repeat = 60
 def application = null
@@ -26,17 +24,16 @@ while (repeat > 0 && (application == null || !deployed) )
     client = ClientBuilder.newClient();
     target = client.target(uri).path(APPLICATIONS);
     response = target.request(MediaType.APPLICATION_JSON_TYPE).
-            header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, ENV_ID).header(ORG_ID_HEADER, BUSINESS_GROUP_ID).
+            header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, context.envId).header(ORG_ID_HEADER, context.orgId).
             get(String.class);
     def applications = new JsonSlurper().parseText(response).data
-    application = applications.find { it.artifact.name == 'arm-deploy-business-group' }
+    application = applications.find { it.artifact.name == 'arm-deploy-redeploy' }
     deployed = application.desiredStatus == "STARTED"
     repeat --
 }
-
 target = client.target(uri).path(APPLICATIONS + "/" + application.id);
 response = target.request(MediaType.APPLICATION_JSON_TYPE).
-        header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, ENV_ID).header(ORG_ID_HEADER, BUSINESS_GROUP_ID).
+        header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, context.envId).header(ORG_ID_HEADER, context.orgId).
         delete()
 assert response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL : "Failed to delete application: ${application.id}\n${JsonOutput.prettyPrint(response.readEntity(String.class))}"
 
@@ -47,7 +44,7 @@ while (repeat > 0 && !deleted)
 {
     target = client.target(uri).path(APPLICATIONS + "/" + application.id);
     response = target.request(MediaType.APPLICATION_JSON_TYPE).
-            header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, ENV_ID).header(ORG_ID_HEADER, BUSINESS_GROUP_ID).
+            header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, context.envId).header(ORG_ID_HEADER, context.orgId).
             get();
     deleted = response.getStatus() == Response.Status.NOT_FOUND.statusCode
     repeat --
@@ -56,14 +53,14 @@ while (repeat > 0 && !deleted)
 
 target = client.target(uri).path(SERVERS);
 response = target.request(MediaType.APPLICATION_JSON_TYPE).
-        header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, ENV_ID).header(ORG_ID_HEADER, BUSINESS_GROUP_ID).
+        header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, context.envId).header(ORG_ID_HEADER, context.orgId).
         get(String.class)
-def serverId = (new JsonSlurper().parseText(response).data.find{ it.name == "server-name-business-group"}).id
+def serverId = (new JsonSlurper().parseText(response).data.find{ it.name == "server-name-deploy-redeploy"}).id
 assert serverId != null : "Server not found"
 
 target = client.target(uri).path(SERVERS + '/' + serverId);
 response = target.request(MediaType.APPLICATION_JSON_TYPE).
-        header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, ENV_ID).header(ORG_ID_HEADER, BUSINESS_GROUP_ID).
+        header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, context.envId).header(ORG_ID_HEADER, context.orgId).
         delete();
 assert response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL : "Failed to delete server ${serverId}\nStatus code: ${response.getStatus()}\n${JsonOutput.prettyPrint(response.readEntity(String.class))}"
 
@@ -73,7 +70,7 @@ while (repeat > 0 && !deleted )
 {
     target = client.target(uri).path(SERVERS + "/$serverId");
     response = target.request(MediaType.APPLICATION_JSON_TYPE).
-            header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, ENV_ID).header(ORG_ID_HEADER, BUSINESS_GROUP_ID).
+            header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, context.envId).header(ORG_ID_HEADER, context.orgId).
             get();
     deleted = response.getStatus() == Response.Status.NOT_FOUND.statusCode
     repeat --

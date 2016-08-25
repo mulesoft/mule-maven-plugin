@@ -1,22 +1,20 @@
 import groovy.json.JsonSlurper
 
-import javax.ws.rs.client.Client
 import javax.ws.rs.client.ClientBuilder
 import javax.ws.rs.client.Entity
-import javax.ws.rs.client.WebTarget
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 String uri = 'https://anypoint.mulesoft.com'
 String ME = "/accounts/api/me";
 String LOGIN = "/accounts/login";
-String APPLICATION = "/cloudhub/api/applications/maven-plugin-cloudhub-business-group";
+String APPLICATION = "/cloudhub/api/applications/maven-plugin-cloudhub-business-group-test";
 String environmentsPath = "/accounts/api/organizations/%s/environments";
 String AUTHORIZATION_HEADER = "Authorization";
 String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
 String ORG_ID_HEADER = "X-ANYPNT-ORG-ID";
-String BUSINESS_GROUP_ID = 'ca58c363-1f3b-4e8b-822b-1274aad454c9'
-String ENV_ID = '855bf5d8-e13c-44d6-bef8-1beadd20da86'
+String BUSINESS_GROUP_ID = '9028da8d-cf4a-4a5f-afeb-38776b836973'
+String ENV_ID = 'b9396529-7a09-4cb4-a962-cd8c9aec3266'
 
 // Login and get IDs for organization and environment.
 

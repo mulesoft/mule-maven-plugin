@@ -81,7 +81,7 @@ def status = muleExecutable + " status"
 def stop = muleExecutable + " stop"
 assert stop.execute().waitFor() == 0 : 'Couldn\'t stop Mule server'
 assert deployed : "Application was not deployed"
-assert deleted : "Server wasn' deleted"
+assert deleted : "Server wasn't deleted"
 
 aCallable = new Callable<Boolean>() {
     public Boolean call() throws Exception {

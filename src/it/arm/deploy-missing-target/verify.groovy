@@ -39,5 +39,5 @@ response = target.request(MediaType.APPLICATION_JSON_TYPE).
         header(AUTHORIZATION_HEADER, "bearer " + bearerToken).header(ENV_ID_HEADER, envId).header(ORG_ID_HEADER, orgId).get(String.class);
 def applications = new JsonSlurper().parseText(response).data
 
-def application = applications.find { it.artifact.name == 'arm' }
-assert application == null : 'Application was depoyed.'
+def application = applications.find { it.artifact.name == 'arm-deploy-missing-target' }
+assert application == null : 'Application was deployed.'

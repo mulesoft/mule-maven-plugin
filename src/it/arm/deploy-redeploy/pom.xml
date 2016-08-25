@@ -64,7 +64,7 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>sleep-for-a-while</id>
+                        <id>sleep-for-another-while</id>
                         <phase>post-integration-test</phase>
                         <configuration>
                             <target>

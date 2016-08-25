@@ -44,7 +44,8 @@ public class ArmDeployer extends AbstractDeployer
             }
             else
             {
-                info("Found application " + getApplicationName() + ". Redeploying application...");
+                String alreadyExistsMessage = "Found application %s on %s %s. Redeploying application...";
+                info(String.format(alreadyExistsMessage, getApplicationName(), targetType.toString(), target));
                 armApi.redeployApplication(applicationId, getApplicationFile(), getApplicationName(), targetType, target);
             }
         }

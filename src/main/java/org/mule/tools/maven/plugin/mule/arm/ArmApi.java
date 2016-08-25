@@ -20,6 +20,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
@@ -45,7 +46,6 @@ public class ArmApi extends AbstractMuleApi
         if (armInsecure)
         {
             log.warn("Using insecure mode for connecting to ARM, please consider configuring your truststore with ARM certificates. This option is insecure and not intended for production use.");
-
         }
     }
 
@@ -69,7 +69,12 @@ public class ArmApi extends AbstractMuleApi
 
     public String undeployApplication(String appName, TargetType targetType, String target)
     {
-        int applicationId = findApplication(appName, targetType, target);
+        Integer applicationId = findApplication(appName, targetType, target);
+        if (applicationId == null)
+        {
+            String appNotFoundMessage = "Application %s does not exist on %s %s.";
+            throw new NotFoundException(String.format(appNotFoundMessage, appName, targetType.toString(), target));
+        }
         return undeployApplication(applicationId);
     }
 

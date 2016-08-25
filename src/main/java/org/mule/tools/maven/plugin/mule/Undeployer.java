@@ -50,8 +50,6 @@ public class Undeployer
         }
     }
 
-
-
     private void undeploy(File muleHome) throws MojoExecutionException
     {
         File appsDir = new File(muleHome + "/apps/");

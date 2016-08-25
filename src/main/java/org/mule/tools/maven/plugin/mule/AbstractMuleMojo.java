@@ -159,6 +159,22 @@ public abstract class AbstractMuleMojo extends AbstractMojo
     @Parameter(readonly = true, property = "applicationName")
     protected String applicationName;
 
+    /**
+     * Anypoint Platform target name.
+     *
+     * @since 2.0
+     * @see DeployMojo#targetType
+     */
+    @Parameter(readonly = true, property = "anypoint.target")
+    protected String target;
+
+    /**
+     * Anypoint Platform target type: server, serverGroup or cluster.
+     *
+     * @since 2.0
+     */
+    @Parameter(readonly = true, property = "anypoint.target.type")
+    protected TargetType targetType;
 
     /**
      * @see org.apache.maven.plugin.Mojo#execute()

@@ -65,11 +65,11 @@ public class UndeployMojo extends AbstractMuleMojo
 
     private void arm() throws MojoFailureException
     {
-        ArmApi arm = new ArmApi(getLog(), uri, username, password, environment, businessGroup, armInsecure);
-        arm.init();
+        ArmApi armApi = new ArmApi(getLog(), uri, username, password, environment, businessGroup, armInsecure);
+        armApi.init();
         initializeApplication();
-        Data app = this.findApplication(arm, applicationName);
-        arm.undeployApplication(app.id);
+        getLog().info("Undeploying application " + applicationName);
+        armApi.undeployApplication(applicationName, targetType, target);
     }
 
     private void agent() throws MojoFailureException
@@ -78,19 +78,6 @@ public class UndeployMojo extends AbstractMuleMojo
         initializeApplication();
         getLog().info("Undeploying application " + applicationName);
         agentApi.undeployApplication(applicationName);
-    }
-
-    private Data findApplication(ArmApi arm, String applicationName) throws MojoFailureException
-    {
-        Applications apps = arm.getApplications();
-        for (int i = 0; i < apps.data.length; i++)
-        {
-            if (apps.data[i].artifact.name.equals(applicationName))
-            {
-                return apps.data[i];
-            }
-        }
-        throw new MojoFailureException("Couldn't find appliation [" + applicationName + "]");
     }
 
     private void cluster() throws MojoFailureException, MojoExecutionException

@@ -67,6 +67,12 @@ public class ArmApi extends AbstractMuleApi
         return response;
     }
 
+    public Response undeployApplication(String appName, TargetType targetType, String target)
+    {
+        int applicationId = findApplication(appName, targetType, target);
+        return undeployApplication(applicationId);
+    }
+
     public Application deployApplication(File app, String appName, TargetType targetType, String target)
     {
         MultiPart body = buildRequestBody(app, appName, targetType, target);

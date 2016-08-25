@@ -371,6 +371,7 @@
                             </scriptVariables>
                             <properties>
                                 <mule.version>${mule.version}</mule.version>
+                                <maven.antrun.plugin.version>${maven.antrun.plugin.version}</maven.antrun.plugin.version>
                                 <username>${username}</username>
                                 <password>${password}</password>
                                 <environment>${environment}</environment>

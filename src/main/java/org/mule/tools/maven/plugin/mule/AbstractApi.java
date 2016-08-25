@@ -8,6 +8,7 @@ package org.mule.tools.maven.plugin.mule;
 
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static org.glassfish.jersey.client.HttpUrlConnectorProvider.SET_METHOD_WORKAROUND;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -17,7 +18,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
 import org.apache.maven.plugin.logging.Log;
-import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 public abstract class AbstractApi
@@ -86,7 +86,7 @@ public abstract class AbstractApi
     protected Response patch(String uri, String path, Entity entity)
     {
         Invocation.Builder builder = builder(uri, path);
-        builder.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
+        builder.property(SET_METHOD_WORKAROUND, true);
         return builder.method("PATCH", entity);
     }
 

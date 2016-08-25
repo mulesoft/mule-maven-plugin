@@ -60,14 +60,14 @@ public class ArmApi extends AbstractMuleApi
         return get(uri, APPLICATIONS + "/" + applicationId, Application.class);
     }
 
-    public Response undeployApplication(int applicationId)
+    public String undeployApplication(int applicationId)
     {
         Response response = delete(uri, APPLICATIONS + "/" + applicationId);
         validateStatusSuccess(response);
-        return response;
+        return response.readEntity(String.class);
     }
 
-    public Response undeployApplication(String appName, TargetType targetType, String target)
+    public String undeployApplication(String appName, TargetType targetType, String target)
     {
         int applicationId = findApplication(appName, targetType, target);
         return undeployApplication(applicationId);

@@ -6,13 +6,14 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
-import org.apache.maven.plugin.logging.Log;
 import org.mule.tools.maven.plugin.mule.AbstractDeployer;
 import org.mule.tools.maven.plugin.mule.ApiException;
 import org.mule.tools.maven.plugin.mule.DeploymentException;
 import org.mule.tools.maven.plugin.mule.TargetType;
 
 import java.io.File;
+
+import org.apache.maven.plugin.logging.Log;
 
 public class ArmDeployer extends AbstractDeployer
 {

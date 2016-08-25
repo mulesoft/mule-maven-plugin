@@ -15,7 +15,7 @@ String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
 String ORG_ID_HEADER = "X-ANYPNT-ORG-ID";
 String SERVERS = "/hybrid/api/v1/servers";
 String BUSINESS_GROUP_ID = '9028da8d-cf4a-4a5f-afeb-38776b836973'
-String ENV_ID = '60b01d86-2973-46b1-a788-63ee20cfa7ad'
+String ENV_ID = 'b9396529-7a09-4cb4-a962-cd8c9aec3266'
 
 def repeat = 60
 def application = null
@@ -84,7 +84,7 @@ def status = muleExecutable + " status"
 def stop = muleExecutable + " stop"
 assert stop.execute().waitFor() == 0 : 'Couldn\'t stop Mule server'
 assert deployed : "Application was not deployed"
-assert deleted : "Server wasn' deleted"
+assert deleted : "Server wasn't deleted"
 
 aCallable = new Callable<Boolean>() {
     public Boolean call() throws Exception {

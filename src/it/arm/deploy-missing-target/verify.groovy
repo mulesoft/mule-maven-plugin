@@ -40,4 +40,4 @@ response = target.request(MediaType.APPLICATION_JSON_TYPE).
 def applications = new JsonSlurper().parseText(response).data
 
 def application = applications.find { it.artifact.name == 'arm' }
-assert application == null : 'Application was depoyed.'
+assert application == null : 'Application was deployed.'

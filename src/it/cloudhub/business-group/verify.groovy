@@ -14,7 +14,7 @@ String AUTHORIZATION_HEADER = "Authorization";
 String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
 String ORG_ID_HEADER = "X-ANYPNT-ORG-ID";
 String BUSINESS_GROUP_ID = '9028da8d-cf4a-4a5f-afeb-38776b836973'
-String ENV_ID = '60b01d86-2973-46b1-a788-63ee20cfa7ad'
+String ENV_ID = 'b9396529-7a09-4cb4-a962-cd8c9aec3266'
 
 // Login and get IDs for organization and environment.
 

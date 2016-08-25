@@ -28,7 +28,7 @@
                     <target>server-name-business-group</target>
                     <targetType>server</targetType>
                     <environment>${environment}</environment>
-                    <businessGroup>test\test</businessGroup>
+                    <businessGroup>test1\test2</businessGroup>
                 </configuration>
                 <executions>
                     <execution>

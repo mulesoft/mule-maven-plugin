@@ -33,7 +33,7 @@ target.request(MediaType.APPLICATION_JSON_TYPE).
         delete(String.class);
 
 def muleHome = "target/mule-enterprise-standalone-${muleVersion}"
-def application = applications.find { it.artifact.name == 'arm' }
+def application = applications.find { it.artifact.name == 'arm-deploy-undeploy' }
 assert (muleHome + "/bin/mule stop").execute().waitFor() == 0 : 'Couldn\'t stop Mule server'
 assert application == null || application.desiredStatus == 'UNDEPLOYED' : 'Application was not deleted or undeployed.'
 

@@ -29,7 +29,7 @@ while (repeat > 0 && (application == null || !deployed) )
             header(AUTHORIZATION_HEADER, "bearer " + context.bearerToken).header(ENV_ID_HEADER, ENV_ID).header(ORG_ID_HEADER, BUSINESS_GROUP_ID).
             get(String.class);
     def applications = new JsonSlurper().parseText(response).data
-    application = applications.find { it.artifact.name == 'arm-deploy' }
+    application = applications.find { it.artifact.name == 'arm-deploy-business-group' }
     deployed = application.desiredStatus == "STARTED"
     repeat --
 }

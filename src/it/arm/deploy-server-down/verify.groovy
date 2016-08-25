@@ -27,7 +27,7 @@ response = target.request(MediaType.APPLICATION_JSON_TYPE).
         get(String.class);
 def serverId = (new JsonSlurper().parseText(response).data.find{ it.name == "server-name-down"}).id
 
-def application = applications.find { it.artifact.name == 'arm' }
+def application = applications.find { it.artifact.name == 'arm-deploy-server-down' }
 assert application == null || application.desiredStatus == 'UNDEPLOYED' : 'Application was deployed.'
 
 client = ClientBuilder.newClient();

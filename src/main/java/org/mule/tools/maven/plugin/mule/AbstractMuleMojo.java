@@ -29,9 +29,13 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.settings.Settings;
 
 public abstract class AbstractMuleMojo extends AbstractMojo
 {
+
+    @Component
+    protected Settings settings;
 
     @Component
     protected MavenProject mavenProject;
@@ -56,6 +60,14 @@ public abstract class AbstractMuleMojo extends AbstractMojo
 
     @Parameter(property = "mule.timeout", required = false)
     protected int timeout;
+
+    /**
+     * Anypoint Platform username.
+     *
+     * @since 2.2
+     */
+    @Parameter(required = false, readonly = true, property = "maven.server")
+    protected String server;
 
     /**
      * Anypoint Platform username.

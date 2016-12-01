@@ -6,6 +6,8 @@
  */
 package org.mule.tools.maven.plugin.mule;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.settings.Server;
 import org.mule.test.infrastructure.process.MuleProcessController;
 import org.mule.tools.maven.plugin.mule.agent.AgentDeployer;
 import org.mule.tools.maven.plugin.mule.arm.ArmDeployer;
@@ -143,7 +145,7 @@ public class DeployMojo extends AbstractMuleMojo
     public void doExecute() throws MojoExecutionException, MojoFailureException
     {
         initializeApplication();
-        
+        initializeEnvironment();
         switch (deploymentType)
         {
             case standalone:
@@ -163,6 +165,25 @@ public class DeployMojo extends AbstractMuleMojo
                 break;
             default:
                 throw new MojoFailureException("Unsupported deployment type: " + deploymentType);
+        }
+    }
+
+    private void initializeEnvironment() throws MojoExecutionException
+    {
+        if (server != null)
+        {
+            Server serverObject = this.settings.getServer(server);
+            if (serverObject == null)
+            {
+                getLog().error("Server [" + server + "] not found in settings file.");
+                throw new MojoExecutionException("Server [" + server + "] not found in settings file.");
+            }
+            if (StringUtils.isNotEmpty(username) || StringUtils.isNotEmpty(password))
+            {
+                getLog().warn("Both server and credentials are configured. Using settings.xml server configuration.");
+            }
+            username = serverObject.getUsername();
+            password = serverObject.getPassword();
         }
     }
 

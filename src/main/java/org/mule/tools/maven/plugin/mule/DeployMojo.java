@@ -180,10 +180,13 @@ public class DeployMojo extends AbstractMuleMojo
             }
             if (StringUtils.isNotEmpty(username) || StringUtils.isNotEmpty(password))
             {
-                getLog().warn("Both server and credentials are configured. Using settings.xml server configuration.");
+                getLog().warn("Both server and credentials are configured. Using plugin configuration credentials.");
             }
-            username = serverObject.getUsername();
-            password = serverObject.getPassword();
+            else
+            {
+                username = serverObject.getUsername();
+                password = serverObject.getPassword();
+            }
         }
     }
 

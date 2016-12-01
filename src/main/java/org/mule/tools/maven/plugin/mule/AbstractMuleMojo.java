@@ -62,7 +62,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo
     protected int timeout;
 
     /**
-     * Anypoint Platform username.
+     * Maven server with Anypoint Platform credentials.
      *
      * @since 2.2
      */

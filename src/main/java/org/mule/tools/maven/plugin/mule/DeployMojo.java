@@ -6,32 +6,30 @@
  */
 package org.mule.tools.maven.plugin.mule;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.settings.Server;
-import org.mule.test.infrastructure.process.MuleProcessController;
-import org.mule.tools.maven.plugin.mule.agent.AgentDeployer;
-import org.mule.tools.maven.plugin.mule.arm.ArmDeployer;
-import org.mule.tools.maven.plugin.mule.cloudhub.CloudhubDeployer;
-import org.mule.util.FilenameUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.settings.Server;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
+import org.mule.test.infrastructure.process.MuleProcessController;
+import org.mule.tools.maven.plugin.mule.agent.AgentDeployer;
+import org.mule.tools.maven.plugin.mule.arm.ArmDeployer;
+import org.mule.tools.maven.plugin.mule.cloudhub.CloudhubDeployer;
+import org.mule.util.FilenameUtils;
 
 /**
  * Maven plugin to deploy Mule applications to different kind of servers: Standalone (both Community and Enterprise), Clustered, Anypoint Runtime Manager and CloudHub.

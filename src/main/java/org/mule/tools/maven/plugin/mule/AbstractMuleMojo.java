@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import groovy.lang.GroovyShell;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -30,12 +29,18 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
+import org.apache.maven.settings.crypto.SettingsDecrypter;
+
+import groovy.lang.GroovyShell;
 
 public abstract class AbstractMuleMojo extends AbstractMojo
 {
 
     @Component
     protected Settings settings;
+
+    @Component
+    protected SettingsDecrypter decrypter;
 
     @Component
     protected MavenProject mavenProject;

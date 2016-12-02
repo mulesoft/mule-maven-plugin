@@ -21,6 +21,9 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Server;
+import org.apache.maven.settings.crypto.DefaultSettingsDecrypter;
+import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
+import org.apache.maven.settings.crypto.SettingsDecryptionResult;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
@@ -176,6 +179,8 @@ public class DeployMojo extends AbstractMuleMojo
                 getLog().error("Server [" + server + "] not found in settings file.");
                 throw new MojoExecutionException("Server [" + server + "] not found in settings file.");
             }
+            // Decrypting Maven server, in case of plain text passwords returns the same
+            serverObject = decrypter.decrypt(new DefaultSettingsDecryptionRequest(serverObject)).getServer();
             if (StringUtils.isNotEmpty(username) || StringUtils.isNotEmpty(password))
             {
                 getLog().warn("Both server and credentials are configured. Using plugin configuration credentials.");

@@ -509,3 +509,74 @@ When trying to connect to a an On Prem installation the plugin will validate cer
 [WARNING]
 Enabling insecure connection is a very risky practice, you shouldn't use this except when you know what you are doing and your On Prem installation is isolated in a local network.
 
+== Anypoint Platform credentials
+
+To configure your Anypoint Platform credentials you have two options: configure a server in your ```settings.xml``` or configure the username and password attributes.
+
+=== Server configuration
+
+You can create a Maven server with username and password in your ```settings.xml``` and refer to that server in the server attribute in the plugin configuration. This works even with passwords encrypted like shown https://maven.apache.org/guides/mini/guide-encryption.html[here].
+
+==== settings.xml
+
+[source,xml]
+----
+    <servers>
+        <server>
+            <id>anypoint</id>
+            <username>alejandro.sequeira</username>
+            <password>mysuperdifficultpassword</password> <!-- This can be encrypted -->
+        </server>
+    </servers>
+----
+
+==== pom.xml
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools.maven</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <configuration>
+        <server>anypoint</server>
+        ...
+    </configuration>
+    <executions>
+        ...
+    </executions>
+</plugin>
+----
+
+=== Credentials configuration
+
+You can configure your credentials straight in your ```pom.xml``` putting your credentials there, or you can use Maven properties.
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools.maven</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <configuration>
+        <username>${username}</username>
+        <password>${password}</password>
+        ...
+    </configuration>
+    <executions>
+        ...
+    </executions>
+</plugin>
+----
+
+In this example, username and password properties can as Maven properties in your ```pom.xml```:
+
+[source,xml]
+----
+<properties>
+    <username>alejandro.sequeira</username>
+    <password>mysuperdifficultpassword</password>
+        ...
+</properties>
+----
+
+Or you can configure the credentials or overwrite them in the command line:
+```mvn deploy -Dusername=alejandro.sequeira -Dpassword=mysuperdifficultpassword```

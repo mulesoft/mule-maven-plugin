@@ -89,7 +89,7 @@ public class Deployer
         catch (AssertionError e)
         {
             log.error("Couldn't deploy application [" + app + "] after [" + timeout
-                      + "] miliseconds. Check Mule ESB log");
+                      + "] miliseconds. Check Mule Runtime log");
             throw new MojoFailureException("Application deployment timeout.");
         }
     }
@@ -110,18 +110,18 @@ public class Deployer
         }
         catch (MuleControllerException e)
         {
-            log.error("Couldn't deploy application: " + application + ". Check Mule ESB logs");
+            log.error("Couldn't deploy application: " + application + ". Check Mule Runtime logs");
         }
     }
 
     private void startMuleIfStopped()
     {
-        log.debug("Checking if Mule ESB is running.");
+        log.debug("Checking if Mule Runtime is running.");
         if (!mule.isRunning())
         {
             try
             {
-                log.info("Starting Mule ESB");
+                log.info("Starting Mule Runtime");
                 if (arguments == null)
                 {
                     mule.start();
@@ -133,7 +133,7 @@ public class Deployer
             }
             catch (MuleControllerException e)
             {
-                log.error("Couldn't start Mule ESB. Check Mule ESB logs");
+                log.error("Couldn't start Mule Runtime. Check Mule Runtime logs.");
             }
         }
     }

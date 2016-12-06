@@ -124,7 +124,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo
     protected File muleHome;
 
     /**
-     * Version of the Mule ESB Enterprise distribution to download. If you need to use Community version use <code>muleDistribution</code> parameter.
+     * Version of the Mule Runtime Enterprise distribution to download. If you need to use Community version use <code>muleDistribution</code> parameter.
      * This parameter and <code>muleDistribution</code> are mutual exclusive.
      *
      * @since 1.0

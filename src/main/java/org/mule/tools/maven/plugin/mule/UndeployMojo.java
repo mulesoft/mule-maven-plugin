@@ -7,9 +7,7 @@
 package org.mule.tools.maven.plugin.mule;
 
 import org.mule.tools.maven.plugin.mule.agent.AgentApi;
-import org.mule.tools.maven.plugin.mule.arm.Applications;
 import org.mule.tools.maven.plugin.mule.arm.ArmApi;
-import org.mule.tools.maven.plugin.mule.arm.Data;
 import org.mule.tools.maven.plugin.mule.cloudhub.CloudhubApi;
 
 import java.io.File;
@@ -19,7 +17,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 
 /**
- * Undeploys all the applications on a Mule ESB Standalone server, regardless of whether it was started using start or deploy goals.
+ * Undeploys all the applications on a Mule Runtime Standalone server, regardless of whether it was started using start or deploy goals.
  *
  * @author <a href="mailto:asequeira@gmail.com">Ale Sequeira</a>
  * @see DeployMojo

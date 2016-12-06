@@ -23,6 +23,7 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 public abstract class AbstractApi
 {
 
+    protected static final String LOGIN = "/accounts/login";
     protected final Log log;
 
     public AbstractApi(Log log)
@@ -35,12 +36,17 @@ public abstract class AbstractApi
         ClientBuilder builder = ClientBuilder.newBuilder();
         configureSecurityContext(builder);
         Client client = builder.build().register(MultiPartFeature.class);
-        if (log != null && log.isDebugEnabled())
+        if (log != null && log.isDebugEnabled() && !isLoginRequest(path))
         {
             client.register(new ApiLoggingFilter(log));
         }
 
         return client.target(uri).path(path);
+    }
+
+    protected boolean isLoginRequest(String path)
+    {
+        return LOGIN.equals(path);
     }
 
     protected void configureSecurityContext(ClientBuilder builder)

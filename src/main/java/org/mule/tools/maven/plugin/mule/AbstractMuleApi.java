@@ -29,7 +29,6 @@ public abstract class AbstractMuleApi extends AbstractApi
 {
 
     private static final String ME = "/accounts/api/me";
-    private static final String LOGIN = "/accounts/login";
     private static final String ENVIRONMENTS = "/accounts/api/organizations/%s/environments";
 
     private static final String AUTHORIZATION_HEADER = "Authorization";

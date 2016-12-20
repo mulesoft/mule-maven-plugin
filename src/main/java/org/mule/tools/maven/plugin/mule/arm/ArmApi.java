@@ -67,13 +67,18 @@ public class ArmApi extends AbstractMuleApi
         return response.readEntity(String.class);
     }
 
-    public String undeployApplication(String appName, TargetType targetType, String target)
+    public String undeployApplication(String appName, TargetType targetType, String target) {
+        return undeployApplication(appName, targetType, target, true);
+    }
+
+    public String undeployApplication(String appName, TargetType targetType, String target, boolean failIfNotExists)
     {
         Integer applicationId = findApplication(appName, targetType, target);
         if (applicationId == null)
         {
             String appNotFoundMessage = "Application %s does not exist on %s %s.";
-            throw new NotFoundException(String.format(appNotFoundMessage, appName, targetType.toString(), target));
+            if (failIfNotExists)
+                throw new NotFoundException(String.format(appNotFoundMessage, appName, targetType.toString(), target));
         }
         return undeployApplication(applicationId);
     }

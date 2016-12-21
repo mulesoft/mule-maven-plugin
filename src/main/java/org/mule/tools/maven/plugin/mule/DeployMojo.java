@@ -21,9 +21,7 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Server;
-import org.apache.maven.settings.crypto.DefaultSettingsDecrypter;
 import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
-import org.apache.maven.settings.crypto.SettingsDecryptionResult;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
@@ -68,7 +66,7 @@ public class DeployMojo extends AbstractMuleMojo
     protected boolean community;
 
     /**
-     * Maven coordinates for the Mule ESB distribution to download.
+     * Maven coordinates for the Mule Runtime distribution to download.
      * You need to specify:
      * <li>groupId</li>
      * <li>artifactId</li>
@@ -90,7 +88,7 @@ public class DeployMojo extends AbstractMuleMojo
     protected Long deploymentTimeout;
 
     /**
-     * List of Mule ESB Standalone command line arguments.
+     * List of Mule Runtime Standalone command line arguments.
      * Adding a property to this list is the same that adding it to the command line when starting Mule using bin/mule.
      * If you want to add a Mule property don't forget to prepend <code>-M-D</code>.
      * If you want to add a System property for the Wrapper don't forget to prepend <code>-D</code>.

@@ -6,6 +6,7 @@
  */
 package org.mule.tools.maven.plugin.mule;
 
+import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.maven.plugin.mule.agent.AgentApi;
 import org.mule.tools.maven.plugin.mule.arm.ArmApi;
 import org.mule.tools.maven.plugin.mule.cloudhub.CloudhubApi;
@@ -26,6 +27,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 @Mojo(name = "undeploy", requiresProject = true)
 public class UndeployMojo extends AbstractMuleMojo
 {
+
+    @Parameter(defaultValue = "true")
+    private boolean failIfNotExists;
 
     @Override
     protected void doExecute() throws MojoExecutionException, MojoFailureException
@@ -58,7 +62,7 @@ public class UndeployMojo extends AbstractMuleMojo
         cloudhubApi.init();
         initializeApplication();
         getLog().info("Stopping application " + applicationName);
-        cloudhubApi.stopApplication(applicationName);
+        cloudhubApi.stopApplication(applicationName, isFailIfNotExists());
     }
 
     private void arm() throws MojoFailureException
@@ -67,7 +71,7 @@ public class UndeployMojo extends AbstractMuleMojo
         armApi.init();
         initializeApplication();
         getLog().info("Undeploying application " + applicationName);
-        armApi.undeployApplication(applicationName, targetType, target);
+        armApi.undeployApplication(applicationName, targetType, target, isFailIfNotExists());
     }
 
     private void agent() throws MojoFailureException
@@ -75,7 +79,7 @@ public class UndeployMojo extends AbstractMuleMojo
         AgentApi agentApi = new AgentApi(getLog(), uri);
         initializeApplication();
         getLog().info("Undeploying application " + applicationName);
-        agentApi.undeployApplication(applicationName);
+        agentApi.undeployApplication(applicationName, isFailIfNotExists());
     }
 
     private void cluster() throws MojoFailureException, MojoExecutionException
@@ -88,25 +92,32 @@ public class UndeployMojo extends AbstractMuleMojo
             File parentDir = new File(mavenProject.getBuild().getDirectory(), "mule" + i);
             muleHomes[i] = new File(parentDir, "mule-enterprise-standalone-" + muleVersion);
 
-            if (!muleHomes[i].exists())
+            if (!muleHomes[i].exists() && isFailIfNotExists())
             {
                 throw new MojoFailureException(muleHomes[i].getAbsolutePath() + "directory does not exist.");
             }
         }
-        new Undeployer(getLog(), applicationName, muleHomes).execute();
+        new Undeployer(getLog(), applicationName, muleHomes).execute(isFailIfNotExists());
     }
 
     public void standalone() throws MojoFailureException, MojoExecutionException
     {
         initializeApplication();
 
-        if (!muleHome.exists())
+        if (!muleHome.exists() && isFailIfNotExists())
         {
             throw new MojoFailureException("MULE_HOME directory does not exist.");
         }
         getLog().info("Using MULE_HOME: " + muleHome);
-        new Undeployer(getLog(), applicationName, muleHome).execute();
+        new Undeployer(getLog(), applicationName, muleHome).execute(isFailIfNotExists());
 
     }
 
+    public boolean isFailIfNotExists() {
+        return failIfNotExists;
+    }
+
+    public void setFailIfNotExists(boolean failIfNotExists) {
+        this.failIfNotExists = failIfNotExists;
+    }
 }

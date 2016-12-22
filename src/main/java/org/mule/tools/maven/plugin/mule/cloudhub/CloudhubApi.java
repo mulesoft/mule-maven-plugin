@@ -165,15 +165,24 @@ public class CloudhubApi extends AbstractMuleApi
 
     public void stopApplication(String appName)
     {
-        changeApplicationState(appName, "STOP");
+        stopApplication("STOP", true);
     }
 
-    private void changeApplicationState(String appName, String state)
+    public void stopApplication(String appName, boolean failIfNotExists)
+    {
+        changeApplicationState(appName, "STOP", failIfNotExists);
+    }
+
+    private void changeApplicationState(String appName, String state) {
+        changeApplicationState(appName, state, true);
+    }
+
+    private void changeApplicationState(String appName, String state, boolean failIfNotExists)
     {
         Entity<String> json = Entity.json("{\"status\": \"" + state + "\"}");
         Response response = post(uri, APPLICATIONS_PATH + "/" + appName + "/status", json);
 
-        if (response.getStatus() != 200 && response.getStatus() != 304)
+        if (response.getStatus() != 200 && response.getStatus() != 304 && failIfNotExists)
         {
             throw new ApiException(response);
         }

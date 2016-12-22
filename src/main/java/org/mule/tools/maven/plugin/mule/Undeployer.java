@@ -35,7 +35,11 @@ public class Undeployer
         this.log = log;
     }
 
-    public void execute() throws MojoFailureException, MojoExecutionException
+    public void execute() throws MojoFailureException, MojoExecutionException {
+        execute(true);
+    }
+
+    public void execute(boolean failIfNotExists) throws MojoFailureException, MojoExecutionException
     {
         for (File muleHome : muleHomes)
         {
@@ -50,7 +54,11 @@ public class Undeployer
         }
     }
 
-    private void undeploy(File muleHome) throws MojoExecutionException
+    private void undeploy(File muleHome) throws MojoExecutionException {
+        undeploy(muleHome, true);
+    }
+
+    private void undeploy(File muleHome, boolean failIfNotExists) throws MojoExecutionException
     {
         File appsDir = new File(muleHome + "/apps/");
 
@@ -67,11 +75,13 @@ public class Undeployer
                 catch (IOException e)
                 {
                     log.error("Could not delete " + file.getAbsolutePath());
-                    throw new MojoExecutionException("Could not delete directory [" + file.getAbsolutePath() + "]", e);
+                    if (failIfNotExists)
+                        throw new MojoExecutionException("Could not delete directory [" + file.getAbsolutePath() + "]", e);
                 }
             }
         }
 
-        throw new MojoExecutionException("Application " + applicationName + " not found.");
+        if (failIfNotExists)
+            throw new MojoExecutionException("Application " + applicationName + " not found.");
     }
 }

@@ -40,11 +40,15 @@ public class AgentApi extends AbstractApi
         }
     }
 
-    public void undeployApplication(String appName)
+    public void undeployApplication(String appName) {
+        undeployApplication(appName, true);
+    }
+
+    public void undeployApplication(String appName, boolean failIfNotExists)
     {
         Response response = delete(uri, APPLICATIONS_PATH + appName);
 
-        if (response.getStatus() != 202)
+        if (response.getStatus() != 202 && failIfNotExists)
         {
             throw new ApiException(response, uri + APPLICATIONS_PATH + appName);
         }

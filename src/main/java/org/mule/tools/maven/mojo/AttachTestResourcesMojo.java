@@ -8,22 +8,22 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.plugin.app;
+package org.mule.tools.maven.mojo;
 
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-/**
- * @phase validate
- * @goal attach-test-resources
- */
-public class AttachTestResourcesMojo extends AbstractMuleMojo
-{
-    public void execute() throws MojoExecutionException, MojoFailureException
-    {
+///**
+// * @phase validate
+// * @goal attach-test-resources
+// */
+@Deprecated
+public class AttachTestResourcesMojo extends AbstractMuleMojo {
+
+    public void execute() throws MojoExecutionException, MojoFailureException {
         String appFolder = this.appDirectory.getAbsolutePath();
-        
+
         getLog().info("attaching test resource " + appFolder);
 
         Resource appFolderResource = new Resource();

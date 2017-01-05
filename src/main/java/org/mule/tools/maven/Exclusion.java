@@ -8,13 +8,12 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.plugin.app;
+package org.mule.tools.maven;
 
-public class Exclusion extends org.apache.maven.model.Exclusion
-{
+public class Exclusion extends org.apache.maven.model.Exclusion {
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder buf = new StringBuilder(128);
         buf.append("<");
         buf.append(getClass().getSimpleName());
@@ -26,8 +25,7 @@ public class Exclusion extends org.apache.maven.model.Exclusion
         return buf.toString();
     }
 
-    public String asFilter()
-    {
+    public String asFilter() {
         StringBuilder buf = new StringBuilder(128);
         buf.append(getGroupId());
         buf.append(":");

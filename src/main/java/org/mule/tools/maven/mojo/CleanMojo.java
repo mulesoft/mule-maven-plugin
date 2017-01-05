@@ -8,39 +8,36 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.plugin.app;
-
-import java.io.File;
+package org.mule.tools.maven.mojo;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+
+import java.io.File;
 
 /**
  * Clean the build path for a Mule application
- * 
- * @execute lifecycle="mule-package" phase="package"
- * @goal clean
- * @requiresDependencyResolution runtime
+ *
  */
-public class MuleCleanMojo extends AbstractMuleMojo
-{
-    public void execute() throws MojoExecutionException, MojoFailureException
-    {
+@Mojo(name = "clean",
+    defaultPhase = LifecyclePhase.PACKAGE,
+    requiresDependencyResolution = ResolutionScope.RUNTIME)
+@Deprecated
+public class CleanMojo extends AbstractMuleMojo {
+
+    public void execute() throws MojoExecutionException, MojoFailureException {
         File app = new File(this.outputDirectory, this.finalName);
-        if (app.exists())
-        {
+        if (app.exists()) {
             final boolean success = app.delete();
-            if (success)
-            {
+            if (success) {
                 getLog().info("Deleted Mule App: " + app);
-            }
-            else
-            {
+            } else {
                 getLog().info("Failed to delete Mule App: " + app);
             }
-        }
-        else
-        {
+        } else {
             getLog().info("Nothing to clean");
         }
     }

@@ -8,9 +8,8 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.plugin.app;
-
-public class Inclusion extends Exclusion
-{
+package org.mule.tools.maven;
+// TODO why
+public class Inclusion extends Exclusion {
     // no custom methods so far
 }

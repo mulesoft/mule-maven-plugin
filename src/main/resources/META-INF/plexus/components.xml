@@ -10,15 +10,23 @@
                         <id>default</id>
                         <phases>
                             <validate>
-                                org.mule.tools.maven:mule-app-maven-plugin:attach-test-resources
+                                org.mule.tools.maven:mule-maven-plugin:validate
                             </validate>
+                            <initialize>
+                                org.mule.tools.maven:mule-maven-plugin:initialize
+                            </initialize>
+                            <generate-sources>
+                                org.mule.tools.maven:mule-maven-plugin:generate-sources
+                            </generate-sources>
                             <process-resources>
-                                org.apache.maven.plugins:maven-resources-plugin:resources,
-                                org.mule.tools.maven:mule-app-maven-plugin:filter-resources
+                                org.apache.maven.plugins:maven-resources-plugin:resources
                             </process-resources>
                             <compile>
                                 org.apache.maven.plugins:maven-compiler-plugin:compile
                             </compile>
+                            <generate-test-sources>
+                                org.mule.tools.maven:mule-maven-plugin:generate-test-sources
+                            </generate-test-sources>
                             <process-test-resources>
                                 org.apache.maven.plugins:maven-resources-plugin:testResources
                             </process-test-resources>
@@ -29,11 +37,11 @@
                                 org.apache.maven.plugins:maven-surefire-plugin:test
                             </test>
                             <package>
-                                org.mule.tools.maven:mule-app-maven-plugin:mule
+                                org.mule.tools.maven:mule-maven-plugin:package
                             </package>
                             <install>
                                 org.apache.maven.plugins:maven-install-plugin:install,
-                                org.mule.tools.maven:mule-app-maven-plugin:install
+                                org.mule.tools.maven:mule-maven-plugin:install
                             </install>
                             <deploy>
                                 org.apache.maven.plugins:maven-deploy-plugin:deploy

@@ -26,6 +26,7 @@ import java.util.Set;
 @Mojo(name = "install",
     defaultPhase = LifecyclePhase.INSTALL,
     requiresDependencyResolution = ResolutionScope.RUNTIME)
+@Deprecated
 public class InstallMojo extends AbstractMuleMojo {
 
     /**

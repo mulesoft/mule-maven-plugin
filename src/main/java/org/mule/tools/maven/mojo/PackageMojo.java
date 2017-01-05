@@ -12,10 +12,7 @@ package org.mule.tools.maven.mojo;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.mule.tools.artifact.archiver.api.PackageBuilder;
@@ -34,6 +31,9 @@ public class PackageMojo extends AbstractMuleMojo {
     @Component
     private MavenProjectHelper projectHelper;
 
+    @Parameter(defaultValue = "${attachMuleSources}")
+    protected boolean attachMuleSources = false;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             createMuleApp();
@@ -51,12 +51,15 @@ public class PackageMojo extends AbstractMuleMojo {
                 .withDestinationFile(destinationFile)
                 .withClasses(new File(targetFolder + File.separator + CLASSES))
                 .withLib(new File(targetFolder + File.separator + LIB))
-                .withMetaInf(new File(targetFolder + File.separator + META_INF))
                 .withMule(new File(targetFolder + File.separator + MULE))
                 .withPlugins(new File(targetFolder + File.separator + PLUGINS))
                 .withMuleAppProperties(new File(targetFolder + File.separator + MULE_APP_PROPERTIES))
                 .withMuleDeployProperties(new File(targetFolder + File.separator + MULE_DEPLOY_PROPERTIES))
                 .withPom(new File(targetFolder + File.separator + POM_XML));
+
+            if (attachMuleSources) {
+                builder.withMetaInf(new File(targetFolder + File.separator + META_INF));
+            }
 
             builder.createDeployableFile();
         } catch (IOException e) {

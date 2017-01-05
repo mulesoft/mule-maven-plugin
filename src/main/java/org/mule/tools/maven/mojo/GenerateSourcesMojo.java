@@ -1,8 +1,8 @@
 /**
  * Mule ESB Maven Tools
- *
+ * <p>
  * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
- *
+ * <p>
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
@@ -10,12 +10,13 @@
 
 package org.mule.tools.maven.mojo;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.mule.tools.maven.CopyFileVisitor;
+import org.mule.tools.maven.mojo.util.CopyFileVisitor;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Copy resource to the proper places
@@ -54,14 +56,42 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
     }
 
     private void createLibFolderContent() throws IOException {
+        addJarsFromProjectCompileDependencies();
+        addJarsFromProjectLibFolder();
+    }
+
+    private void addJarsFromProjectCompileDependencies() throws IOException {
+        List<Artifact> dependencies = project.getArtifacts().stream()
+            .filter(d -> d.getType().equals("jar"))
+            .filter(d -> d.getScope().equals("compile"))
+            .collect(Collectors.toList());
+
+        for (File f : dependencies.stream().map(a -> a.getFile()).collect(Collectors.toList())) {
+            File targetFolder = Paths.get(project.getBuild().getDirectory(), LIB).toFile();
+            Path sourceFilePath = f.toPath();
+            Path targetFilePath = new File(targetFolder.toPath().toString() + File.separator + f.getName()).toPath();
+            Files.copy(sourceFilePath, targetFilePath, StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    private void addJarsFromProjectLibFolder() throws IOException {
         File targetFolder = Paths.get(project.getBuild().getDirectory(), LIB).toFile();
         Files.walkFileTree(libFolder.toPath(), new CopyFileVisitor(libFolder, targetFolder));
     }
 
     private void createPluginsFolderContent() throws IOException {
-        //TODO pom magic
-        File targetFolder = Paths.get(project.getBuild().getDirectory(), PLUGINS).toFile();
-        Files.walkFileTree(pluginsFolder.toPath(), new CopyFileVisitor(pluginsFolder, targetFolder));
+        //TODO plugin validation
+        List<Artifact> muleModuleArtifacts = project.getArtifacts().stream()
+            .filter(d -> d.getType().equals("zip"))
+            .filter(d -> d.getScope().equals("compile"))
+            .collect(Collectors.toList());
+
+        for (File f : muleModuleArtifacts.stream().map(a -> a.getFile()).collect(Collectors.toList())) {
+            File targetFolder = Paths.get(project.getBuild().getDirectory(), PLUGINS).toFile();
+            Path sourceFilePath = f.toPath();
+            Path targetFilePath = new File(targetFolder.toPath().toString() + File.separator + f.getName()).toPath();
+            Files.copy(sourceFilePath, targetFilePath, StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
     private void createMuleSourceFolderContent() throws IOException {

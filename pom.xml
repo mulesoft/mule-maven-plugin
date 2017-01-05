@@ -89,6 +89,7 @@
                     <excludes>
                         <exclude>target/**</exclude>
                         <exclude>.gitignore</exclude>
+                        <exclude>LICENSE_HEADER</exclude>
                         <exclude>**/*.txt</exclude>
                         <exclude>**/*.ftl</exclude>
                         <exclude>**/build-number.txt</exclude>
@@ -97,9 +98,16 @@
                         <exclude>**/*.xsd</exclude>
                         <exclude>**/*.properties</exclude>
                         <exclude>**/*.xml</exclude>
+                        <exclude>**/*.md</exclude>
                         <exclude>**/archetype-resources/**</exclude>
                         <exclude>**/src/main/java/package.html</exclude>
                     </excludes>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                    <mapping>
+                        <java>SLASHSTAR_STYLE</java>
+                    </mapping>
                 </configuration>
                 <executions>
                     <execution>

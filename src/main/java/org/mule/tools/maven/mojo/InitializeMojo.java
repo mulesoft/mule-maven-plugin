@@ -1,8 +1,8 @@
-/**
+/*
  * Mule ESB Maven Tools
- *
+ * <p>
  * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
- *
+ * <p>
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
@@ -34,6 +34,8 @@ public class InitializeMojo extends AbstractMuleMojo {
         createFolderIfNecessary(targetFolder);
         createFolderIfNecessary(targetFolder + File.separator + LIB);
         createFolderIfNecessary(targetFolder + File.separator + MULE);
+        createFolderIfNecessary(targetFolder + File.separator + TEST_MULE);
+        createFolderIfNecessary(targetFolder + File.separator + TEST_MULE + File.separator + MUNIT);
         createFolderIfNecessary(targetFolder + File.separator + PLUGINS);
         createFolderIfNecessary(targetFolder + File.separator + META_INF);
         createFolderIfNecessary(targetFolder + File.separator + META_INF + File.separator + MULE_SRC);

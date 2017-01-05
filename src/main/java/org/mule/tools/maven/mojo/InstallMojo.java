@@ -1,8 +1,8 @@
-/**
+/*
  * Mule ESB Maven Tools
- *
+ * <p>
  * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
- *
+ * <p>
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
@@ -31,8 +31,6 @@ public class InstallMojo extends AbstractMuleMojo {
     /**
      * If set to <code>true</code> attempt to copy the domain of this Mule application to mule.home/domains or $MULE_HOME/domains
      */
-    //     * @parameter alias="installDomain" expression="${installDomain}" default-value="false"
-    //     * @required
     // TODO review this and disable till domain is supported
     @Parameter(property = "installDomain", required = true)
     protected boolean installDomain;
@@ -41,8 +39,6 @@ public class InstallMojo extends AbstractMuleMojo {
      * If the mule app belongs to a domain you can set this value with the domain dependency information groupId:artifactId:version so during
      * install phase the mule domain maven plugin can deploy the domain before deploying the application.
      */
-    //     * @parameter alias="domainDependency" expression="${domainDependency}" default-value="empty"
-    //     * @required
     // TODO review this and disable till domain is supported
     @Parameter(property = "domainDependency", required = true)
     protected String domainDependency;
@@ -50,8 +46,6 @@ public class InstallMojo extends AbstractMuleMojo {
     /**
      * If set to <code>true</code> attempt to copy the Mule application zip to mule.home/apps or $MULE_HOME/apps
      */
-    //     * @parameter alias="copyToAppsDirectory" expression="${copyToAppsDirectory}" default-value="false"
-    //     * @required
     // TODO review this and disable till domain is supported
     @Parameter(property = "copyToAppsDirectory", required = true)
     protected boolean copyToAppsDirectory;

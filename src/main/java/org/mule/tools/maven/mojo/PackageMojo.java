@@ -1,4 +1,4 @@
-/**
+/*
  * Mule ESB Maven Tools
  * <p>
  * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com

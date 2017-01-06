@@ -55,7 +55,6 @@ public class ValidateMojo extends AbstractMuleMojo {
             throw new MojoExecutionException(message);
         }
 
-        // TODO validate this or mule-config
         if (!muleDeployPropertiesFile.exists() && !muleConfigFile.exists()) {
             String message =
                 String.format("Invalid Mule project. Either %s or %s files must be present in the root of application",

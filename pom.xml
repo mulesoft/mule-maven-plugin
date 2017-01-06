@@ -12,7 +12,6 @@
     <name>Mule Maven Plugin</name>
 
 
-
     <properties>
         <javaVersion>1.8</javaVersion>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -145,19 +144,19 @@
           </plugins> -->
         </plugins>
         <!-- todo REVIEW THIS -->
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>src/test/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>**/*.xml</include>
-                </includes>
-            </resource>
-        </resources>
+        <!--<resources>-->
+        <!--<resource>-->
+        <!--<directory>src/main/resources</directory>-->
+        <!--<filtering>true</filtering>-->
+        <!--</resource>-->
+        <!--<resource>-->
+        <!--<directory>src/test/resources</directory>-->
+        <!--<filtering>true</filtering>-->
+        <!--<includes>-->
+        <!--<include>**/*.xml</include>-->
+        <!--</includes>-->
+        <!--</resource>-->
+        <!--</resources>-->
     </build>
     <dependencies>
         <dependency>
@@ -165,32 +164,6 @@
             <artifactId>mule-artifact-archiver</artifactId>
             <version>${mule.artifact.archiver.version}</version>
         </dependency>
-
-        <!-- TODO why we use this -->
-        <!--<dependency>-->
-            <!--<groupId>org.jfrog.maven.annomojo</groupId>-->
-            <!--<artifactId>maven-plugin-tools-anno</artifactId>-->
-            <!--<version>1.4.0</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.codehaus.plexus</groupId>-->
-            <!--<artifactId>plexus-archiver</artifactId>-->
-            <!--<version>2.0.1</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.maven.shared</groupId>-->
-            <!--<artifactId>maven-filtering</artifactId>-->
-            <!--<version>1.0</version>-->
-        <!--</dependency>-->
-
-        <!-- TODO why we use this -->
-        <!--<dependency>-->
-            <!--<groupId>org.slf4j</groupId>-->
-            <!--<artifactId>slf4j-simple</artifactId>-->
-            <!--<version>1.6.6</version>-->
-        <!--</dependency>-->
-
-
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
@@ -228,7 +201,6 @@
             <version>${maven.shared.utils.version}</version>
         </dependency>
 
-
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
@@ -255,6 +227,29 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- TODO why we use this -->
+        <!--<dependency>-->
+        <!--<groupId>org.jfrog.maven.annomojo</groupId>-->
+        <!--<artifactId>maven-plugin-tools-anno</artifactId>-->
+        <!--<version>1.4.0</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--<groupId>org.codehaus.plexus</groupId>-->
+        <!--<artifactId>plexus-archiver</artifactId>-->
+        <!--<version>2.0.1</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--<groupId>org.apache.maven.shared</groupId>-->
+        <!--<artifactId>maven-filtering</artifactId>-->
+        <!--<version>1.0</version>-->
+        <!--</dependency>-->
+
+        <!-- TODO why we use this -->
+        <!--<dependency>-->
+        <!--<groupId>org.slf4j</groupId>-->
+        <!--<artifactId>slf4j-simple</artifactId>-->
+        <!--<version>1.6.6</version>-->
+        <!--</dependency>-->
 
         <!--<dependency>-->
         <!--<groupId>org.hamcrest</groupId>-->
@@ -357,17 +352,17 @@
                         <version>${maven.plugin.version}</version>
                         <dependencies>
                             <!--<dependency>-->
-                                <!--<groupId>org.jfrog.maven.annomojo</groupId>-->
-                                <!--<artifactId>maven-plugin-tools-anno</artifactId>-->
-                                <!--<version>${maven.plugin.tools.anno.version}</version>-->
-                                <!--<scope>runtime</scope>-->
+                            <!--<groupId>org.jfrog.maven.annomojo</groupId>-->
+                            <!--<artifactId>maven-plugin-tools-anno</artifactId>-->
+                            <!--<version>${maven.plugin.tools.anno.version}</version>-->
+                            <!--<scope>runtime</scope>-->
                             <!--</dependency>-->
                             <!--<dependency>-->
-                                <!--<groupId>com.sun</groupId>-->
-                                <!--<artifactId>tools</artifactId>-->
-                                <!--<version>${java.version}</version>-->
-                                <!--<scope>system</scope>-->
-                                <!--<systemPath>${java.home}/../lib/tools.jar</systemPath>-->
+                            <!--<groupId>com.sun</groupId>-->
+                            <!--<artifactId>tools</artifactId>-->
+                            <!--<version>${java.version}</version>-->
+                            <!--<scope>system</scope>-->
+                            <!--<systemPath>${java.home}/../lib/tools.jar</systemPath>-->
                             <!--</dependency>-->
                         </dependencies>
                     </plugin>

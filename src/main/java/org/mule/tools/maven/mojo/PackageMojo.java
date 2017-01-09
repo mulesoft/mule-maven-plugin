@@ -31,6 +31,9 @@ public class PackageMojo extends AbstractMuleMojo {
     @Component
     private MavenProjectHelper projectHelper;
 
+    @Parameter(defaultValue = "${finalName}")
+    protected String finalName;
+
     @Parameter(defaultValue = "${attachMuleSources}")
     protected boolean attachMuleSources = false;
 
@@ -44,7 +47,7 @@ public class PackageMojo extends AbstractMuleMojo {
 
     protected void createMuleApp() throws MojoExecutionException, ArchiverException {
         String targetFolder = project.getBuild().getDirectory();
-        File destinationFile = new File(targetFolder, project.getArtifactId() + ".zip");
+        File destinationFile = new File(targetFolder, getFinalName() + ".zip");
 
         try {
             PackageBuilder builder = new PackageBuilder()
@@ -65,6 +68,14 @@ public class PackageMojo extends AbstractMuleMojo {
         } catch (IOException e) {
             throw new MojoExecutionException("Cannot create archive");
         }
+    }
+
+    private String getFinalName() {
+        if (finalName == null) {
+            finalName = project.getArtifactId() + "-" + project.getVersion();
+        }
+        getLog().debug("Using final name: " + finalName);
+        return finalName;
     }
 
 }

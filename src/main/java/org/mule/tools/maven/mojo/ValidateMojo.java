@@ -10,6 +10,7 @@
 
 package org.mule.tools.maven.mojo;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -18,6 +19,8 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * It creates all the required folders in the project.build.directory
@@ -32,6 +35,7 @@ public class ValidateMojo extends AbstractMuleMojo {
 
         validateMandatoryFolders();
         validateMandatoryDescriptors();
+//        validateMulePluginDependencies();
 
         getLog().debug("Validating Mule application done");
     }
@@ -61,7 +65,20 @@ public class ValidateMojo extends AbstractMuleMojo {
                               MULE_DEPLOY_PROPERTIES, MULE_CONFIG_XML);
             throw new MojoExecutionException(message);
         }
+    }
 
+    private void validateMulePluginDependencies() {
+        List<Artifact> mulePluginsArtifacts = project.getArtifacts().stream()
+            .filter(d -> d.getType().equals("zip"))
+            .filter(d -> d.getScope().equals("compile"))
+            .filter(d -> d.getClassifier().equals("mule-plugin"))
+            .collect(Collectors.toList());
+
+
+        List<List<String>> l = mulePluginsArtifacts.stream()
+            .map(a -> a.getDependencyTrail()).collect(Collectors.toList());
+
+        System.out.println(l);
     }
 
 }

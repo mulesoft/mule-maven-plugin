@@ -34,6 +34,9 @@ public class PackageMojo extends AbstractMuleMojo {
     @Parameter(defaultValue = "${finalName}")
     protected String finalName;
 
+    @Parameter(defaultValue = "${onlyMuleSources}")
+    protected boolean onlyMuleSources = false;
+
     @Parameter(defaultValue = "${attachMuleSources}")
     protected boolean attachMuleSources = false;
 
@@ -50,17 +53,22 @@ public class PackageMojo extends AbstractMuleMojo {
         File destinationFile = new File(targetFolder, getFinalName() + ".zip");
 
         try {
-            PackageBuilder builder = new PackageBuilder()
-                .withDestinationFile(destinationFile)
-                .withClasses(new File(targetFolder + File.separator + CLASSES))
-                .withLib(new File(targetFolder + File.separator + LIB))
-                .withMule(new File(targetFolder + File.separator + MULE))
-                .withPlugins(new File(targetFolder + File.separator + PLUGINS))
-                .withMuleAppProperties(new File(targetFolder + File.separator + MULE_APP_PROPERTIES))
-                .withMuleDeployProperties(new File(targetFolder + File.separator + MULE_DEPLOY_PROPERTIES))
-                .withPom(new File(targetFolder + File.separator + POM_XML));
+            PackageBuilder builder = new PackageBuilder().withDestinationFile(destinationFile);
 
-            if (attachMuleSources) {
+            if (!onlyMuleSources) {
+                builder
+                    .withClasses(new File(targetFolder + File.separator + CLASSES))
+                    .withLib(new File(targetFolder + File.separator + LIB))
+                    .withMule(new File(targetFolder + File.separator + MULE))
+                    .withPlugins(new File(targetFolder + File.separator + PLUGINS))
+                    .withMuleAppProperties(new File(targetFolder + File.separator + MULE_APP_PROPERTIES))
+                    .withMuleDeployProperties(new File(targetFolder + File.separator + MULE_DEPLOY_PROPERTIES))
+                    .withPom(new File(targetFolder + File.separator + POM_XML));
+
+                if (attachMuleSources) {
+                    builder.withMetaInf(new File(targetFolder + File.separator + META_INF));
+                }
+            } else {
                 builder.withMetaInf(new File(targetFolder + File.separator + META_INF));
             }
 

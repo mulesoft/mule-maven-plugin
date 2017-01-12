@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.mojo.util;
+package org.mule.tools.maven.util;
 
 import java.io.File;
 import java.io.IOException;

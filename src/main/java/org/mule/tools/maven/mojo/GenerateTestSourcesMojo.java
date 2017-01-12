@@ -15,7 +15,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.mule.tools.maven.mojo.util.CopyFileVisitor;
+import org.mule.tools.maven.util.CopyFileVisitor;
 
 import java.io.File;
 import java.io.IOException;

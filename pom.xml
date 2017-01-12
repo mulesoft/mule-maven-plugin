@@ -29,6 +29,14 @@
         <maven.shared.utils.version>3.1.0</maven.shared.utils.version>
         <maven.plugin.annotations.version>3.4</maven.plugin.annotations.version>
 
+        <!--<aether.version>1.0.2.v20150114</aether.version>-->
+        <!--<aetherProviderVersion>3.3.9</aetherProviderVersion>-->
+        <junit.version>4.8.2</junit.version>
+        <mockito.all.version>1.9.0</mockito.all.version>
+        <maven.verifier.version>1.3</maven.verifier.version>
+        <maven.plugin.testing.harness.version>1.2</maven.plugin.testing.harness.version>
+
+
         <!-- TODO review this versions -->
         <maven.plugin.tools.anno.version>1.4.0</maven.plugin.tools.anno.version>
         <mule.artifact.archiver.version>2.0.0-SNAPSHOT</mule.artifact.archiver.version>
@@ -40,7 +48,6 @@
         <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
         <maven.license.plugin.version>1.8.0</maven.license.plugin.version>
         <formatter.maven.plugin.version>1.8.0</formatter.maven.plugin.version>
-
 
     </properties>
 
@@ -124,40 +131,27 @@
             <!-- TODO add formatting plugin -->
 
             <!-- TODO review this -->
-            <!--    <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-gpg-plugin</artifactId>
-                  <version>1.5</version>
-                  <executions>
-                      <execution>
-                          <id>sign-artifacts</id>
-                          <phase>verify</phase>
-                          <goals>
-                              <goal>sign</goal>
-                          </goals>
-                      </execution>
-                  </executions>
-                  <configuration>
-                      <skip>${skipGpg}</skip>
-                  </configuration>
-              </plugin>
-          </plugins> -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <skip>${skipGpg}</skip>
+                </configuration>
+            </plugin>
+
         </plugins>
-        <!-- todo REVIEW THIS -->
-        <!--<resources>-->
-        <!--<resource>-->
-        <!--<directory>src/main/resources</directory>-->
-        <!--<filtering>true</filtering>-->
-        <!--</resource>-->
-        <!--<resource>-->
-        <!--<directory>src/test/resources</directory>-->
-        <!--<filtering>true</filtering>-->
-        <!--<includes>-->
-        <!--<include>**/*.xml</include>-->
-        <!--</includes>-->
-        <!--</resource>-->
-        <!--</resources>-->
     </build>
+
     <dependencies>
         <dependency>
             <groupId>org.mule.tools</groupId>
@@ -205,74 +199,27 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.2</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-verifier</artifactId>
-            <version>1.3</version>
+            <version>${maven.verifier.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-testing</groupId>
             <artifactId>maven-plugin-testing-harness</artifactId>
-            <version>1.2</version>
+            <version>${maven.plugin.testing.harness.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>1.9.0</version>
+            <version>${mockito.all.version}</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- TODO why we use this -->
-        <!--<dependency>-->
-        <!--<groupId>org.jfrog.maven.annomojo</groupId>-->
-        <!--<artifactId>maven-plugin-tools-anno</artifactId>-->
-        <!--<version>1.4.0</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.codehaus.plexus</groupId>-->
-        <!--<artifactId>plexus-archiver</artifactId>-->
-        <!--<version>2.0.1</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.apache.maven.shared</groupId>-->
-        <!--<artifactId>maven-filtering</artifactId>-->
-        <!--<version>1.0</version>-->
-        <!--</dependency>-->
-
-        <!-- TODO why we use this -->
-        <!--<dependency>-->
-        <!--<groupId>org.slf4j</groupId>-->
-        <!--<artifactId>slf4j-simple</artifactId>-->
-        <!--<version>1.6.6</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>org.hamcrest</groupId>-->
-        <!--<artifactId>hamcrest-all</artifactId>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.apache.maven.plugin-testing</groupId>-->
-        <!--<artifactId>maven-plugin-testing-harness</artifactId>-->
-        <!--<version>${maven.test.version}</version>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.apache.maven</groupId>-->
-        <!--<artifactId>maven-compat</artifactId>-->
-        <!--<version>${maven.version}</version>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.mockito</groupId>-->
-        <!--<artifactId>mockito-all</artifactId>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>-->
     </dependencies>
 
 
@@ -305,6 +252,7 @@
                 </plugins>
             </build>
         </profile>
+
         <profile>
             <id>windows_profile</id>
             <activation>

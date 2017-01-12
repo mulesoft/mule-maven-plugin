@@ -10,32 +10,49 @@
 
 package org.mule.tools.maven.mojo;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.annotations.*;
+import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.repository.RepositorySystem;
+import org.mule.tools.maven.resolver.MulePluginResolver;
+import org.mule.tools.maven.util.MulePluginsCompatibilityValidator;
 
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * It creates all the required folders in the project.build.directory
  */
 @Mojo(name = "validate",
     defaultPhase = LifecyclePhase.VALIDATE,
-    requiresDependencyResolution = ResolutionScope.RUNTIME)
+    requiresDependencyResolution = ResolutionScope.TEST)
 public class ValidateMojo extends AbstractMuleMojo {
+
+    @Component
+    private RepositorySystem repositorySystem;
+
+    @Component
+    private ProjectBuilder projectBuilder;
+
+    @Parameter(readonly = true, required = true, defaultValue = "${session}")
+    private MavenSession session;
+
+    @Parameter(readonly = true, required = true, defaultValue = "${project.remoteArtifactRepositories}")
+    private List<ArtifactRepository> remoteArtifactRepositories;
+
+    @Parameter(readonly = true, required = true, defaultValue = "${localRepository}")
+    private ArtifactRepository localRepository;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().debug("Validating Mule application...");
 
         validateMandatoryFolders();
         validateMandatoryDescriptors();
-//        validateMulePluginDependencies();
+        validateMulePluginDependencies();
 
         getLog().debug("Validating Mule application done");
     }
@@ -67,18 +84,10 @@ public class ValidateMojo extends AbstractMuleMojo {
         }
     }
 
-    private void validateMulePluginDependencies() {
-        List<Artifact> mulePluginsArtifacts = project.getArtifacts().stream()
-            .filter(d -> d.getType().equals("zip"))
-            .filter(d -> d.getScope().equals("compile"))
-            .filter(d -> d.getClassifier().equals("mule-plugin"))
-            .collect(Collectors.toList());
+    private void validateMulePluginDependencies() throws MojoExecutionException {
+        MulePluginResolver resolver = new MulePluginResolver(getLog(), session, projectBuilder, repositorySystem, localRepository,
+                                                             remoteArtifactRepositories);
 
-
-        List<List<String>> l = mulePluginsArtifacts.stream()
-            .map(a -> a.getDependencyTrail()).collect(Collectors.toList());
-
-        System.out.println(l);
+        new MulePluginsCompatibilityValidator().validate(resolver.resolveMulePlugins(project));
     }
-
 }

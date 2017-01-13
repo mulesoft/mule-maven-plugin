@@ -11,11 +11,15 @@
 package org.mule.tools.maven.mojo;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.ProjectBuildingException;
+import org.mule.tools.maven.dependency.ApplicationDependencySelector;
+import org.mule.tools.maven.dependency.resolver.MulePluginResolver;
 import org.mule.tools.maven.util.CopyFileVisitor;
 
 import java.io.File;
@@ -36,16 +40,19 @@ import java.util.stream.Collectors;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class GenerateSourcesMojo extends AbstractMuleMojo {
 
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().debug("Creating target content with Mule source code...");
 
         try {
             createLibFolderContent();
             createMuleFolderContent();
+
             createPluginsFolderContent();
+
             createDescriptorFilesContent();
             createMuleSourceFolderContent();
-        } catch (IOException e) {
+        } catch (IOException | ProjectBuildingException e) {
             throw new MojoFailureException("Fail to generate sources", e);
         }
     }
@@ -64,6 +71,8 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
         List<Artifact> dependencies = project.getArtifacts().stream()
             .filter(d -> d.getType().equals("jar"))
             .filter(d -> d.getScope().equals("compile"))
+            .filter(d -> d.getClassifier() == null || !d.getClassifier().equals("mule-plugin"))
+
             .collect(Collectors.toList());
 
         for (File f : dependencies.stream().map(a -> a.getFile()).collect(Collectors.toList())) {
@@ -79,14 +88,18 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
         Files.walkFileTree(libFolder.toPath(), new CopyFileVisitor(libFolder, targetFolder));
     }
 
-    private void createPluginsFolderContent() throws IOException {
-        //TODO plugin validation
-        List<Artifact> muleModuleArtifacts = project.getArtifacts().stream()
-            .filter(d -> d.getType().equals("zip"))
-            .filter(d -> d.getScope().equals("compile"))
+    private void createPluginsFolderContent() throws IOException, MojoExecutionException, ProjectBuildingException {
+                List<Dependency> mulePluginDependencies =
+            new MulePluginResolver(getLog(), session, projectBuilder, repositorySystem, localRepository,
+                                   remoteArtifactRepositories).resolveMulePlugins(project);
+
+        List<Dependency> selectedMulePlugins = new ApplicationDependencySelector().select(mulePluginDependencies);
+
+        List<File> selectedMulePluginFiles = selectedMulePlugins.stream()
+            .map(smp -> localRepository.find(repositorySystem.createDependencyArtifact(smp)).getFile())
             .collect(Collectors.toList());
 
-        for (File f : muleModuleArtifacts.stream().map(a -> a.getFile()).collect(Collectors.toList())) {
+        for (File f : selectedMulePluginFiles) {
             File targetFolder = Paths.get(project.getBuild().getDirectory(), PLUGINS).toFile();
             Path sourceFilePath = f.toPath();
             Path targetFilePath = new File(targetFolder.toPath().toString() + File.separator + f.getName()).toPath();

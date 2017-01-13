@@ -8,12 +8,14 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.util;
+package org.mule.tools.maven.dependency;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -22,6 +24,8 @@ import java.util.stream.Collectors;
  */
 public class MulePluginsCompatibilityValidator {
 
+    private final DependencyMapBuilder dependencyMapBuilder = new DependencyMapBuilder();
+
     /**
      * Validates a list of dependencies to check for incompatibilities
      *
@@ -29,7 +33,7 @@ public class MulePluginsCompatibilityValidator {
      * @throws MojoExecutionException if the list of mule plugins contains incompatibilities
      */
     public void validate(List<Dependency> mulePlugins) throws MojoExecutionException {
-        for (Map.Entry<String, List<Dependency>> entry : buildDependencyMap(mulePlugins).entrySet()) {
+        for (Map.Entry<String, List<Dependency>> entry : dependencyMapBuilder.build(mulePlugins).entrySet()) {
             if (entry.getValue().size() > 1) {
 
                 if (!areMulePluginVersionCompatible(entry.getValue())) {
@@ -46,21 +50,6 @@ public class MulePluginsCompatibilityValidator {
         }
     }
 
-    private Map<String, List<Dependency>> buildDependencyMap(List<Dependency> dependencyList) {
-        Map<String, List<Dependency>> dependencyMap = new HashMap<>();
-
-        for (Dependency plugin : dependencyList) {
-            String key = plugin.getGroupId() + ":" + plugin.getArtifactId();
-
-            if (dependencyMap.get(key) == null) {
-                dependencyMap.put(key, Arrays.asList(plugin));
-            } else {
-                dependencyMap.get(key).add(plugin);
-            }
-        }
-
-        return dependencyMap;
-    }
 
     private boolean areMulePluginVersionCompatible(List<Dependency> dependencies) {
         Set<String> majors = dependencies.stream()

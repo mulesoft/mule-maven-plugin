@@ -10,11 +10,17 @@
 
 package org.mule.tools.maven.mojo;
 
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.repository.RepositorySystem;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Base Mojo
@@ -36,6 +42,20 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
     public static final String MULE_SRC = "mule-src";
     public static final String META_INF = "META-INF";
 
+    @Component
+    protected RepositorySystem repositorySystem;
+
+    @Component
+    protected ProjectBuilder projectBuilder;
+
+    @Parameter(readonly = true, required = true, defaultValue = "${session}")
+    protected MavenSession session;
+
+    @Parameter(readonly = true, required = true, defaultValue = "${project.remoteArtifactRepositories}")
+    protected List<ArtifactRepository> remoteArtifactRepositories;
+
+    @Parameter(readonly = true, required = true, defaultValue = "${localRepository}")
+    protected ArtifactRepository localRepository;
 
     @Parameter(property = "project", required = true)
     protected MavenProject project;

@@ -12,7 +12,7 @@ package org.mule.tools.maven.dependency;
 
 import org.apache.maven.model.Dependency;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,11 +29,8 @@ public class DependencyMapBuilder {
         for (Dependency plugin : dependencyList) {
             String key = plugin.getGroupId() + ":" + plugin.getArtifactId();
 
-            if (dependencyMap.get(key) == null) {
-                dependencyMap.put(key, Arrays.asList(plugin));
-            } else {
-                dependencyMap.get(key).add(plugin);
-            }
+            dependencyMap.computeIfAbsent(key, k -> new ArrayList<>());
+            dependencyMap.get(key).add(plugin);
         }
 
         return dependencyMap;

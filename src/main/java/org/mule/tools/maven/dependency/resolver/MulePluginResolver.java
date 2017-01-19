@@ -79,13 +79,12 @@ public class MulePluginResolver {
             .collect(Collectors.toList());
 
 
-        if (!mulePluginDependencies.isEmpty()) {
-            for (Dependency d : mulePluginDependencies) {
-                MavenProject mavenProject = buildMavenProject(d.getGroupId(), d.getArtifactId(), d.getVersion());
-                mulePluginDependencies.addAll(getAllMulePluginDependencies(mavenProject));
-            }
+        List<Dependency> effectiveMulePluginDependencies = new ArrayList<>(mulePluginDependencies);
+        for (Dependency d : mulePluginDependencies) {
+            MavenProject mavenProject = buildMavenProject(d.getGroupId(), d.getArtifactId(), d.getVersion());
+            effectiveMulePluginDependencies.addAll(getAllMulePluginDependencies(mavenProject));
         }
-        return mulePluginDependencies;
+        return effectiveMulePluginDependencies;
     }
 
 

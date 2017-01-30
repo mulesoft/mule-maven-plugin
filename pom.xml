@@ -1,91 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- TODO review group id -->
     <groupId>org.mule.tools.maven</groupId>
-    <artifactId>mule-maven-plugin</artifactId>
+    <artifactId>mule-maven-plugins</artifactId>
+    <packaging>pom</packaging>
     <version>3.0.0-SNAPSHOT</version>
-    <packaging>maven-plugin</packaging>
-    <name>Mule Maven Plugin</name>
-
+    <name>Mule Maven Plugins</name>
+    <modules>
+        <module>mule-maven-plugin</module>
+        <module>mule-maven-plugin-integration-tests</module>
+    </modules>
 
     <properties>
         <javaVersion>1.8</javaVersion>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-
-        <skipGpg>true</skipGpg>
-        <skipVerifications>false</skipVerifications>
-
-        <license.path>LICENSE_HEADER</license.path>
-        <formatterConfigPath>formatter.xml</formatterConfigPath>
-
-        <!-- Dependency Versions -->
-        <maven.version>3.3.9</maven.version>
-        <maven.project.version>2.2.1</maven.project.version>
-        <maven.shared.utils.version>3.1.0</maven.shared.utils.version>
-        <maven.plugin.annotations.version>3.4</maven.plugin.annotations.version>
-
-        <!--<aether.version>1.0.2.v20150114</aether.version>-->
-        <!--<aetherProviderVersion>3.3.9</aetherProviderVersion>-->
         <junit.version>4.8.2</junit.version>
-        <mockito.all.version>1.9.0</mockito.all.version>
-        <maven.verifier.version>1.3</maven.verifier.version>
-        <maven.plugin.testing.harness.version>1.2</maven.plugin.testing.harness.version>
-
-
-        <!-- TODO review this versions -->
-        <maven.plugin.tools.anno.version>1.4.0</maven.plugin.tools.anno.version>
-        <mule.artifact.archiver.version>2.0.0-SNAPSHOT</mule.artifact.archiver.version>
-
-        <maven.test.version>3.3.0</maven.test.version>
-
-        <!-- Plugin Versions -->
-        <maven.plugin.version>3.4</maven.plugin.version>
-        <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
+        <license.path>LICENSE_HEADER</license.path>
+        <maven.verifier.version>1.6</maven.verifier.version>
         <maven.license.plugin.version>1.8.0</maven.license.plugin.version>
-        <formatter.maven.plugin.version>1.8.0</formatter.maven.plugin.version>
-
     </properties>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-plugin-plugin</artifactId>
-                <version>${maven.plugin.version}</version>
-                <configuration>
-                    <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>mojo-descriptor</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>descriptor</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!--<plugin>-->
-            <!--<groupId>org.apache.maven.plugins</groupId>-->
-            <!--<artifactId>maven-plugin-plugin</artifactId>-->
-            <!--<version>${maven.plugin.version}</version>-->
-            <!--<dependencies>-->
-
-            <!--<dependency>-->
-            <!--<groupId>org.jfrog.maven.annomojo</groupId>-->
-            <!--<artifactId>maven-plugin-tools-anno</artifactId>-->
-            <!--<version>${maven.plugin.tools.anno.version}</version>-->
-            <!--<scope>runtime</scope>-->
-            <!--</dependency>-->
-            <!--</dependencies>-->
-            <!--</plugin>-->
-
-            <!-- Formatting plugins -->
             <plugin>
                 <groupId>com.mycila.maven-license-plugin</groupId>
                 <artifactId>maven-license-plugin</artifactId>
@@ -123,347 +61,24 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${checkstyle.plugin.version}</version>
-            </plugin>
-            <!-- TODO add formatting plugin -->
-
-            <!-- TODO review this -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <skip>${skipGpg}</skip>
-                </configuration>
-            </plugin>
-
         </plugins>
     </build>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.mule.tools</groupId>
-            <artifactId>mule-artifact-archiver</artifactId>
-            <version>${mule.artifact.archiver.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-plugin-api</artifactId>
-            <version>${maven.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.maven</groupId>
-                    <artifactId>maven-model</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.maven</groupId>
-                    <artifactId>maven-artifact</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.sisu</groupId>
-                    <artifactId>org.eclipse.sisu.plexus</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-core</artifactId>
-            <version>${maven.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.plugin-tools</groupId>
-            <artifactId>maven-plugin-annotations</artifactId>
-            <scope>provided</scope>
-            <version>${maven.plugin.annotations.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-shared-utils</artifactId>
-            <version>${maven.shared.utils.version}</version>
-        </dependency>
-
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-verifier</artifactId>
-            <version>${maven.verifier.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.plugin-testing</groupId>
-            <artifactId>maven-plugin-testing-harness</artifactId>
-            <version>${maven.plugin.testing.harness.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito.all.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
-
-    <profiles>
-
-        <!-- TODO review this profiles -->
-        <profile>
-            <id>ci</id>
-            <activation>
-                <property>
-                    <name>env</name>
-                    <value>ci</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>2.1.2</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>windows_profile</id>
-            <activation>
-                <os>
-                    <family>Windows</family>
-                </os>
-            </activation>
-            <properties>
-                <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
-            </properties>
-        </profile>
-        <profile>
-            <id>linux_profile</id>
-            <activation>
-                <os>
-                    <name>linux</name>
-                </os>
-            </activation>
-            <properties>
-                <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
-            </properties>
-        </profile>
-        <profile>
-            <id>osx_profile</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-            <properties>
-                <toolsjar>${java.home}/../Classes/classes.jar</toolsjar>
-            </properties>
-        </profile>
-        <profile>
-            <id>mac</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-plugin-plugin</artifactId>
-                        <version>${maven.plugin.version}</version>
-                        <dependencies>
-                            <!--<dependency>-->
-                            <!--<groupId>org.jfrog.maven.annomojo</groupId>-->
-                            <!--<artifactId>maven-plugin-tools-anno</artifactId>-->
-                            <!--<version>${maven.plugin.tools.anno.version}</version>-->
-                            <!--<scope>runtime</scope>-->
-                            <!--</dependency>-->
-                            <!--<dependency>-->
-                            <!--<groupId>com.sun</groupId>-->
-                            <!--<artifactId>tools</artifactId>-->
-                            <!--<version>${java.version}</version>-->
-                            <!--<scope>system</scope>-->
-                            <!--<systemPath>${java.home}/../lib/tools.jar</systemPath>-->
-                            <!--</dependency>-->
-                        </dependencies>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
-
-    <!-- TODO review this -->
-    <!--     <description>
-          Maven tools for working with mule artifacts (Mule Applications and Mule Domains).
-      </description>
-      <url>http://github.com/mulesoft/mule-esb-maven-tools</url>
-      <inceptionYear>2014</inceptionYear>
-      <licenses>
-          <license>
-              <name>CPAL v1.0</name>
-              <url>http://www.mulesoft.com/CPAL</url>
-          </license>
-      </licenses>
-
-      <organization>
-          <name>MuleSoft, Inc.</name>
-          <url>https://www.mulesoft.com</url>
-      </organization>
-
-      <mailingLists>
-          <mailingList>
-              <name>developers</name>
-              <post>mule-esb@mulesoft.com</post>
-          </mailingList>
-      </mailingLists>
-
-      <developers>
-          <developer>
-              <id>rrinaudo</id>
-              <name>Ramiro Rinaudo</name>
-              <email>ramiro.rinaudo@mulesoft.com</email>
-              <roles>
-                  <role>Project Manager</role>
-              </roles>
-          </developer>
-          <developer>
-              <id>dfeist</id>
-              <name>Daniel Feist</name>
-          </developer>
-          <developer>
-              <id>afelisatti</id>
-              <name>Ana Felisatti</name>
-          </developer>
-          <developer>
-              <id>andresgregoire</id>
-              <name>Andres Gregoire</name>
-          </developer>
-          <developer>
-              <id>LucianoGandini</id>
-              <name>Luciano Gandini</name>
-          </developer>
-          <developer>
-              <id>marianogonzalez</id>
-              <name>Mariano Gonzalez</name>
-          </developer>
-          <developer>
-              <id>pablokraan</id>
-              <name>Pablo Kraan</name>
-          </developer>
-          <developer>
-              <id>pablolagreca</id>
-              <name>Pablo La Greca</name>
-          </developer>
-          <developer>
-              <id>marcosnc</id>
-              <name>Marcos Nunez Cortes</name>
-          </developer>
-          <developer>
-              <id>asequeira</id>
-              <name>Alejandro Sequeira</name>
-          </developer>
-          <developer>
-              <id>aiannucci</id>
-              <name>Alejandro Iannucci</name>
-          </developer>
-          <developer>
-              <id>anosenzo</id>
-              <name>Alejandro Nosenzo</name>
-          </developer>
-      </developers> -->
-
-    <repositories>
-
-
-        <repository>
-            <id>mule-releases</id>
-            <name>MuleSoft Releases</name>
-            <url>https://repository.mulesoft.org/nexus/content/repositories/releases</url>
-        </repository>
-        <repository>
-            <id>mule-snapshots</id>
-            <name>MuleSoft Snapshot Repository</name>
-            <url>https://repository.mulesoft.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-
-        <!-- TODO why the heck we use this -->
-        <repository>
-            <id>jfrog</id>
-            <name>jfrog repository</name>
-            <layout>default</layout>
-            <url>http://repo.jfrog.org/artifactory/plugins-releases-local</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>mule-releases</id>
-            <name>MuleSoft Release Repository</name>
-            <url>https://repository.mulesoft.org/nexus/content/repositories/releases</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>mule-snapshots</id>
-            <name>MuleSoft Snapshot Repository</name>
-            <url>https://repository.mulesoft.org/nexus/content/repositories/snapshots/</url>
-        </pluginRepository>
-
-        <!-- TODO why the heck we use this -->
-
-        <pluginRepository>
-            <id>jfrog</id>
-            <name>jfrog repository</name>
-            <layout>default</layout>
-            <url>http://repo.jfrog.org/artifactory/plugins-releases-local</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
-    <!-- TODO review this when the repo is firm -->
-    <distributionManagement>
-        <repository>
-            <id>mule-releases</id>
-            <name>Mule Release Repository</name>
-            <url>https://repository-master.mulesoft.org/nexus/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>mule-snapshots</id>
-            <name>Mule Snapshot Repository</name>
-            <url>https://repository-master.mulesoft.org/nexus/content/repositories/snapshots</url>
-            <uniqueVersion>false</uniqueVersion>
-        </snapshotRepository>
-    </distributionManagement>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.maven.shared</groupId>
+                <artifactId>maven-verifier</artifactId>
+                <version>${maven.verifier.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>

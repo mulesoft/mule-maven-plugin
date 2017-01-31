@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Properties;
 
 
 public class ValidateMojoTest extends MojoTest {

@@ -12,6 +12,7 @@ package org.mule.tools.maven.mojo;
 
 import org.apache.maven.model.Build;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
@@ -45,9 +46,11 @@ public class AbstractMuleMojoTest {
     protected Build buildMock;
     protected File munitFolder;
     protected File testMuleFolder;
+    protected File destinationFile;
     protected File munitSourceFolder;
     protected MavenProject projectMock;
     protected File muleSourceFolderMock;
+    protected MavenProjectHelper projectHelper;
     protected PackageBuilder packageBuilderMock;
 
     @Rule

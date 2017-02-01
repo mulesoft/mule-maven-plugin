@@ -11,8 +11,6 @@
 package org.mule.tools.maven.mojo;
 
 import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.util.ResourceExtractor;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,28 +23,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class PackageMojoTest extends MojoTest {
     private static final String PACKAGE = "package";
-    private static final String EXPECTED_STRUCTURE_RELATIVE_PATH = "/expected-package-structure";
 
     public PackageMojoTest() {
-        super("empty-package-project");
+        this.goal = PACKAGE;
     }
 
     @Before
     public void before() throws IOException, VerificationException {
-        initializeContext();
         clearResources();
     }
 
-    @After
-    public void after() {
-        verifier.resetStreams();
-    }
-
     @Test
-    public void testGenerateSources() throws IOException, VerificationException {
+    public void testPackage() throws IOException, VerificationException {
         verifier.executeGoal(PACKAGE);
 
-        File expectedStructure = ResourceExtractor.simpleExtractResources(getClass(), EXPECTED_STRUCTURE_RELATIVE_PATH);
+        File expectedStructure = getExpectedStructure();
 
         assertThat("The directory structure is different from the expected", targetFolder, hasSameTreeStructure(expectedStructure));
 

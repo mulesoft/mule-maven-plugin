@@ -41,6 +41,11 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
     public static final String CLASSES = "classes";
     public static final String MULE_SRC = "mule-src";
     public static final String META_INF = "META-INF";
+    public static final String MAVEN = "maven";
+    public static final String MULE_APP_JSON = "mule-app.json";
+    public static final String MULE_ARTIFACT = "mule-artifact";
+    public static final String REPOSITORY = "repository";
+    public static final String POM_PROPERTIES = "pom.properties";
 
     @Component
     protected RepositorySystem repositorySystem;
@@ -70,18 +75,11 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.basedir}")
     protected File projectBaseFolder;
 
-    @Parameter(defaultValue = "${project.basedir}/plugins")
-    protected File pluginsFolder;
-
     @Parameter(defaultValue = "${project.basedir}/src/main/mule/")
     protected File muleSourceFolder;
 
     @Parameter(defaultValue = "${project.basedir}/src/test/munit/")
     protected File munitSourceFolder;
-
-    // TODO remove this
-    @Parameter(defaultValue = "${project.basedir}/lib", required = false)
-    protected File libFolder;
 
     // TODO change this to mule directory
     @Parameter(defaultValue = "${project.basedir}/src/main/app", required = true)

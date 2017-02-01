@@ -20,6 +20,9 @@ import org.mule.tools.maven.dependency.MulePluginsCompatibilityValidator;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * It creates all the required folders in the project.build.directory
@@ -50,22 +53,14 @@ public class ValidateMojo extends AbstractMuleMojo {
     }
 
     private void validateMandatoryDescriptors() throws MojoExecutionException {
-        File muleConfigFile = Paths.get(projectBaseFolder.toString(), MULE_CONFIG_XML).toFile();
-        File muleAppPropertiesFile = Paths.get(projectBaseFolder.toString(), MULE_APP_PROPERTIES).toFile();
-        File muleDeployPropertiesFile = Paths.get(projectBaseFolder.toString(), MULE_DEPLOY_PROPERTIES).toFile();
+        isPresent("Invalid Mule project. Missing %s file, it must be present in the root of application", MULE_APP_PROPERTIES);
+        isPresent("Invalid Mule project. Either %s or %s files must be present in the root of application", MULE_DEPLOY_PROPERTIES, MULE_CONFIG_XML);
+    }
 
-        if (!muleAppPropertiesFile.exists()) {
-            String message =
-                String.format("Invalid Mule project. Missing %s file, it must be present in the root of application",
-                              MULE_APP_PROPERTIES);
-            throw new MojoExecutionException(message);
-        }
-
-        if (!muleDeployPropertiesFile.exists() && !muleConfigFile.exists()) {
-            String message =
-                String.format("Invalid Mule project. Either %s or %s files must be present in the root of application",
-                              MULE_DEPLOY_PROPERTIES, MULE_CONFIG_XML);
-            throw new MojoExecutionException(message);
+    private void isPresent(String message, String... fileName) throws MojoExecutionException {
+        List<File> files = Arrays.stream(fileName).map(name -> Paths.get(projectBaseFolder.toString(), name).toFile()).collect(Collectors.toList());
+        if(files.stream().allMatch(file -> !file.exists())) {
+            throw new MojoExecutionException(String.format(message, fileName));
         }
     }
 

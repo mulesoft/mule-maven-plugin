@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.apache.maven.plugin.my.unit</groupId>
-    <artifactId>empty-package-project</artifactId>
+    <artifactId>empty-generate-sources-project</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Test MyMojo</name>
@@ -41,13 +41,6 @@
                         <phase>generate-test-sources</phase>
                         <goals>
                             <goal>generate-test-sources</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>execution5</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>package</goal>
                         </goals>
                     </execution>
                 </executions>

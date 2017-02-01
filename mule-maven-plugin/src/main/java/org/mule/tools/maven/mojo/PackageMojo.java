@@ -37,7 +37,7 @@ public class PackageMojo extends AbstractMuleMojo {
     private static final String TYPE = "zip";
 
     @Component
-    private ArtifactHandlerManager handlerManager;
+    protected ArtifactHandlerManager handlerManager;
 
     @Parameter(defaultValue = "${finalName}")
     protected String finalName;
@@ -74,17 +74,11 @@ public class PackageMojo extends AbstractMuleMojo {
         initializePackageBuilder();
         try {
             PackageBuilder builder = packageBuilder.withDestinationFile(destinationFile);
-
             if (!onlyMuleSources) {
                 builder
                     .withClasses(new File(targetFolder + File.separator + CLASSES))
-                    .withLib(new File(targetFolder + File.separator + LIB))
                     .withMule(new File(targetFolder + File.separator + MULE))
-                    .withPlugins(new File(targetFolder + File.separator + PLUGINS))
-                    .withMuleAppProperties(new File(targetFolder + File.separator + MULE_APP_PROPERTIES))
-                    .withMuleDeployProperties(new File(targetFolder + File.separator + MULE_DEPLOY_PROPERTIES))
-                    .withPom(new File(targetFolder + File.separator + POM_XML));
-
+                    .withRepository(new File(targetFolder + File.separator + REPOSITORY));
                 if (attachMuleSources) {
                     builder.withMetaInf(new File(targetFolder + File.separator + META_INF));
                 }

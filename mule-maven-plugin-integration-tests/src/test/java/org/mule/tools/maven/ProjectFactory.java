@@ -19,22 +19,14 @@ import java.util.*;
 
 public class ProjectFactory {
 
-    public static final String POM_XML = "pom.xml";
     public static final String MULE_CONFIG_XML = "mule-config.xml";
     public static final String MULE_APP_PROPERTIES = "mule-app.properties";
     public static final String MULE_DEPLOY_PROPERTIES = "mule-deploy.properties";
 
-    public static final String LIB = "lib";
     public static final String MULE = "mule";
-    public static final String TEST_MULE = "test-mule";
-    public static final String MUNIT = "munit";
-    public static final String TARGET = "target";
-    public static final String PLUGINS = "plugins";
-    public static final String CLASSES = "classes";
-    public static final String MULE_SRC = "mule-src";
-    public static final String META_INF = "META-INF";
     private static final String SRC = "src";
     private static final String MAIN = "main";
+    private static final String MULE_APP_JSON = "mule-app.json";
 
     Set<String> excludes = new HashSet<>();
 
@@ -44,7 +36,7 @@ public class ProjectFactory {
     }
 
     public static File createProjectBaseDir(String projectName, Class clazz) throws IOException {
-        File emptyProject = ResourceExtractor.simpleExtractResources(clazz, "/empty-validate-project");
+        File emptyProject = ResourceExtractor.simpleExtractResources(clazz, "/empty-project");
         File projectBaseDir = new File(emptyProject.getParentFile().getAbsolutePath(), projectName);
         if(projectBaseDir.exists()) {
             projectBaseDir.delete();
@@ -55,7 +47,7 @@ public class ProjectFactory {
 
     public void createProjectStructureOfValidateGoal(File root) throws IOException {
         FileUtils.cleanDirectory(root);
-        File emptyProject = new File(root.getParentFile().getAbsolutePath(), "empty-validate-project");
+        File emptyProject = new File(root.getParentFile().getAbsolutePath(), "empty-project");
         FileUtils.copyDirectory(emptyProject, root);
         Node rootDirectory = new DirectoryNode("");
         Node srcFolder = new DirectoryNode(SRC);
@@ -64,6 +56,7 @@ public class ProjectFactory {
         Node muleConfigXml = new FileNode(MULE_CONFIG_XML);
         Node muleAppProperties = new FileNode(MULE_APP_PROPERTIES);
         Node muleDeployProperties = new FileNode(MULE_DEPLOY_PROPERTIES);
+        Node muleAppJson = new FileNode(MULE_DEPLOY_PROPERTIES);
 
         if(!excludes.contains(SRC)) {
             rootDirectory.addChildren(srcFolder);
@@ -82,6 +75,9 @@ public class ProjectFactory {
         }
         if(!excludes.contains(MULE_DEPLOY_PROPERTIES)) {
             rootDirectory.addChildren(muleDeployProperties);
+        }
+        if(!excludes.contains(MULE_APP_JSON)) {
+            rootDirectory.addChildren(muleAppJson);
         }
         StructureBuilder builder = new StructureBuilder();
         builder.buildStructure(root.getAbsolutePath(), rootDirectory);

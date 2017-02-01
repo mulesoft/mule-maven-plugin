@@ -20,7 +20,6 @@ import org.mule.tools.artifact.archiver.api.PackageBuilder;
 
 import java.io.File;
 import java.io.IOException;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -38,6 +37,7 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
         when(projectMock.getBuild()).thenReturn(buildMock);
         mojo.project = projectMock;
         mojo.finalName = PACKAGE_NAME;
+        destinationFile = new File(buildTemporaryFolder.getRoot().getAbsolutePath(), PACKAGE_NAME + ".zip");
         when(packageBuilderMock.withDestinationFile(any())).thenReturn(packageBuilderMock);
         when(packageBuilderMock.withClasses(any())).thenReturn(packageBuilderMock);
         when(packageBuilderMock.withLib(any())).thenReturn(packageBuilderMock);
@@ -49,7 +49,7 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     }
     @After
     public void after() throws MojoExecutionException {
-        mojo.createMuleApp();
+        mojo.createMuleApp(destinationFile, buildTemporaryFolder.getRoot().getAbsolutePath());
         verify(packageBuilderMock, times(1)).withDestinationFile(any());
         File metaInfFolder = buildTemporaryFolder.newFolder(META_INF);
         verifyPackageBuilderMockInteraction(metaInfFolder);

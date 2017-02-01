@@ -10,10 +10,16 @@
 
 package org.mule.tools.maven.mojo;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.handler.DefaultArtifactHandler;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
+import org.apache.maven.project.DefaultMavenProjectHelper;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.project.artifact.AttachedArtifact;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.mule.tools.artifact.archiver.api.PackageBuilder;
 
@@ -28,8 +34,10 @@ import java.io.IOException;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class PackageMojo extends AbstractMuleMojo {
 
+    private static final String TYPE = "zip";
+
     @Component
-    private MavenProjectHelper projectHelper;
+    private ArtifactHandlerManager handlerManager;
 
     @Parameter(defaultValue = "${finalName}")
     protected String finalName;
@@ -41,19 +49,29 @@ public class PackageMojo extends AbstractMuleMojo {
     protected boolean attachMuleSources = false;
     protected PackageBuilder packageBuilder;
 
+
+
     public void execute() throws MojoExecutionException, MojoFailureException {
+        String targetFolder = project.getBuild().getDirectory();
+        File destinationFile = new File(targetFolder, getFinalName() + "." + TYPE);
         try {
-            createMuleApp();
+            createMuleApp(destinationFile, targetFolder);
         } catch (ArchiverException e) {
             throw new MojoExecutionException("Exception creating the Mule App", e);
         }
+        setProjectArtifactTypeToZip(destinationFile);
     }
 
-    protected void createMuleApp() throws MojoExecutionException, ArchiverException {
-        initializePackageBuilder();
-        String targetFolder = project.getBuild().getDirectory();
-        File destinationFile = new File(targetFolder, getFinalName() + ".zip");
+    protected void setProjectArtifactTypeToZip(File destinationFile) {
+        ArtifactHandler handler = handlerManager.getArtifactHandler(TYPE);
+        Artifact artifact = new AttachedArtifact(this.project.getArtifact(), TYPE, handler);
+        artifact.setFile(destinationFile);
+        artifact.setResolved(true);
+        this.project.setArtifact(artifact);
+    }
 
+    protected void createMuleApp(File destinationFile, String targetFolder) throws MojoExecutionException, ArchiverException {
+        initializePackageBuilder();
         try {
             PackageBuilder builder = packageBuilder.withDestinationFile(destinationFile);
 

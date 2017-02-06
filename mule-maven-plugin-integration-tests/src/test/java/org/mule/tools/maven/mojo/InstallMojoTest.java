@@ -34,8 +34,9 @@ public class InstallMojoTest extends MojoTest {
     }
 
     @Test
-    public void testGenerateSources() throws IOException, VerificationException {
-        verifier.addCliOption("-DattachMuleSources=true");
+    public void testInstall() throws IOException, VerificationException {
+        //verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=y");
+        verifier.addCliOption ("-DattachMuleSources=true");
         verifier.deleteArtifact(ORG_ID, NAME, VERSION, EXT);
         verifier.assertArtifactNotPresent(ORG_ID, NAME, VERSION, EXT);
 

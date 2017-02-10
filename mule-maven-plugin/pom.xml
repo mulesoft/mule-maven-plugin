@@ -39,7 +39,7 @@
 
         <!-- TODO review this versions -->
         <maven.plugin.tools.anno.version>1.4.0</maven.plugin.tools.anno.version>
-        <mule.artifact.archiver.version>2.0.0-SNAPSHOT</mule.artifact.archiver.version>
+        <mule.artifact.archiver.version>2.0.0-M1</mule.artifact.archiver.version>
 
         <maven.test.version>3.3.0</maven.test.version>
 

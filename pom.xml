@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.mule.tools.maven</groupId>
     <artifactId>mule-maven-plugins</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0-M1</version>
     <name>Mule Maven Plugins</name>
     <modules>
         <module>mule-maven-plugin</module>
@@ -88,6 +86,7 @@
             scm:git:git@github.com:mulesoft-labs/mule-maven-plugin.git
         </developerConnection>
         <url>http://github.com/mulesoft-labs/mule-maven-plugin</url>
-    </scm>
+      <tag>3.0.0-Milestone1</tag>
+  </scm>
 
 </project>

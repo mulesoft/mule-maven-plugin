@@ -89,4 +89,70 @@
       <tag>HEAD</tag>
   </scm>
 
+  <repositories>
+
+
+        <repository>
+            <id>mule-releases</id>
+            <name>MuleSoft Releases</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/releases</url>
+        </repository>
+        <repository>
+            <id>mule-snapshots</id>
+            <name>MuleSoft Snapshot Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+
+        <!-- TODO why the heck we use this -->
+        <repository>
+            <id>jfrog</id>
+            <name>jfrog repository</name>
+            <layout>default</layout>
+            <url>http://repo.jfrog.org/artifactory/plugins-releases-local</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>mule-releases</id>
+            <name>MuleSoft Release Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/releases</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>mule-snapshots</id>
+            <name>MuleSoft Snapshot Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/snapshots/</url>
+        </pluginRepository>
+
+        <!-- TODO why the heck we use this -->
+
+        <pluginRepository>
+            <id>jfrog</id>
+            <name>jfrog repository</name>
+            <layout>default</layout>
+            <url>http://repo.jfrog.org/artifactory/plugins-releases-local</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <!-- TODO review this when the repo is firm -->
+    <distributionManagement>
+        <repository>
+            <id>mule-releases</id>
+            <name>Mule Release Repository</name>
+            <url>https://repository-master.mulesoft.org/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>mule-snapshots</id>
+            <name>Mule Snapshot Repository</name>
+            <url>https://repository-master.mulesoft.org/nexus/content/repositories/snapshots</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>

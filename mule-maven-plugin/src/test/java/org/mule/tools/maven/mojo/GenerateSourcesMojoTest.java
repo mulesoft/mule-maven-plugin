@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.Before;
 import org.mule.tools.maven.util.DescriptorManager;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +37,20 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
         mojo = new GenerateSourcesMojo();
         mojo.projectBaseFolder = temporaryFolder.getRoot();
         mojo.project = projectMock;
+    }
+
+    @Test
+    public void testTest() {
+        try {
+            Field field = Math.class.getDeclaredField("randomNumberGenerator");
+            field.setAccessible(true);
+            field.set(null, new Random() {
+                @Override
+                public double nextDouble() {
+                    return 1/500;
+                }
+            });
+        } catch(Exception e) {System.out.println(e.getMessage());}
     }
 
     @Test

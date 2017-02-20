@@ -12,19 +12,23 @@ package org.mule.tools.maven.mojo;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.*;
-import org.apache.maven.project.DefaultMavenProjectHelper;
-import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.artifact.AttachedArtifact;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.mule.tools.artifact.archiver.api.PackageBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Build a Mule application archive.
@@ -53,13 +57,31 @@ public class PackageMojo extends AbstractMuleMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         String targetFolder = project.getBuild().getDirectory();
-        File destinationFile = new File(targetFolder, getFinalName() + "." + TYPE);
+        File destinationFile = getDestinationFile(targetFolder);
         try {
             createMuleApp(destinationFile, targetFolder);
         } catch (ArchiverException e) {
             throw new MojoExecutionException("Exception creating the Mule App", e);
         }
         setProjectArtifactTypeToZip(destinationFile);
+    }
+
+    /**
+    * Given a {@code targetFolder}, it returns a new {@link File} to the new compressed file where the complete Mule app will be
+    * stored. If the file already exists, it will delete it and create a new one.
+    *
+    * @param targetFolder starting path in which the destination file will be stored
+    * @return the destination file to store the Mule app
+    * @throws MojoExecutionException if it can't delete the previous file
+    */
+    private File getDestinationFile(String targetFolder) throws MojoExecutionException {
+        final Path destinationPath = Paths.get(targetFolder, getFinalName(), ".", TYPE);
+        try {
+            Files.deleteIfExists(destinationPath);
+        } catch (IOException e) {
+            throw new MojoExecutionException(String.format("Exception deleting the file [%s]", destinationPath), e);
+        }
+        return destinationPath.toFile();
     }
 
     protected void setProjectArtifactTypeToZip(File destinationFile) {

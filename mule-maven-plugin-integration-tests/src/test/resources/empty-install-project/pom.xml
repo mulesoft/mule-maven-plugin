@@ -47,6 +47,13 @@
                         <id>execution5</id>
                         <phase>package</phase>
                         <goals>
+                            <goal>repository-mirror</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>execution6</id>
+                        <phase>package</phase>
+                        <goals>
                             <goal>package</goal>
                         </goals>
                     </execution>

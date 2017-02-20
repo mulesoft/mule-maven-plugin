@@ -183,6 +183,11 @@
             <version>${mockito.all.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-shared-utils</artifactId>
+            <version>${maven.shared.utils.version}</version>
+        </dependency>
     </dependencies>
 
 

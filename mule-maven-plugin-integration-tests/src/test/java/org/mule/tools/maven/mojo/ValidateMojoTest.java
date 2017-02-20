@@ -12,41 +12,19 @@ package org.mule.tools.maven.mojo;
 
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.Properties;
-
-
 public class ValidateMojoTest extends MojoTest {
-
-    private static final String MULE_CONFIG_XML = "mule-config.xml";
-    private static final String MULE_APP_PROPERTIES = "mule-app.properties";
-    private static final String MULE_DEPLOY_PROPERTIES = "mule-deploy.properties";
-    private static final String VALIDATE = "validate";
-    private static final String EMPTY_PROJECT_NAME = "empty-validate-project";
+    protected static final String VALIDATE = "validate";
 
     public ValidateMojoTest() {
-        super("validate-goal-project");
-    }
-
-    @Before
-    public void before() throws IOException, VerificationException {
-        initializeContext();
-    }
-
-    @After
-    public void after() throws IOException {
-        verifier.resetStreams();
+        this.goal = VALIDATE;
     }
 
     @Test
     public void testFailOnEmptyProject() throws Exception {
         projectBaseDirectory = builder.createProjectBaseDir(EMPTY_PROJECT_NAME, this.getClass());
         verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
-
         try {
             verifier.executeGoal(VALIDATE);
         } catch (VerificationException e) {
@@ -66,7 +44,7 @@ public class ValidateMojoTest extends MojoTest {
 
     @Test
     public void testFailWhenDoesNotContainsConfigNeitherDeployProperties() throws Exception {
-        builder.exclude(MULE_CONFIG_XML).exclude(MULE_DEPLOY_PROPERTIES).createProjectStructureOfValidateGoal(projectBaseDirectory);
+        builder.exclude(MULE_CONFIG_XML).exclude(MULE_DEPLOY_PROPERTIES).exclude(MULE_APP_JSON).createProjectStructureOfValidateGoal(projectBaseDirectory);
         try {
             verifier.executeGoal(VALIDATE);
         } catch(VerificationException e) {}

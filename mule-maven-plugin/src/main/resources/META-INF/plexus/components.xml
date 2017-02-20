@@ -37,6 +37,7 @@
                                 org.apache.maven.plugins:maven-surefire-plugin:test
                             </test>
                             <package>
+                                org.mule.tools.maven:mule-maven-plugin:repository-mirror
                                 org.mule.tools.maven:mule-maven-plugin:package
                             </package>
                             <install>

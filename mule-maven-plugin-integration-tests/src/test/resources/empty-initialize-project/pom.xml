@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.apache.maven.plugin.my.unit</groupId>
-    <artifactId>empty-generate-sources-project</artifactId>
+    <artifactId>initialize-goal-project</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging> <!--should be changed to mule-->
     <name>Test MyMojo</name>
@@ -14,6 +14,8 @@
                 <groupId>org.mule.tools.maven</groupId>
                 <artifactId>mule-maven-plugin</artifactId>
                 <version>3.0.0-SNAPSHOT</version>
+                <configuration>
+                </configuration>
                 <executions>
                     <execution>
                         <id>execution1</id>
@@ -27,13 +29,6 @@
                         <phase>initialize</phase>
                         <goals>
                             <goal>initialize</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>execution3</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate-sources</goal>
                         </goals>
                     </execution>
                 </executions>

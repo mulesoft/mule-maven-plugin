@@ -4,20 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.apache.maven.plugin.my.unit</groupId>
-    <artifactId>initialize-goal-project</artifactId>
+    <artifactId>validate-goal-project</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging> <!--should be changed to mule-->
     <name>Test MyMojo</name>
-
-    <!--<dependencies>-->
-        <!--<dependency>-->
-            <!--<groupId>junit</groupId>-->
-            <!--<artifactId>junit</artifactId>-->
-            <!--<version>3.8.1</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-    <!--</dependencies>-->
-
     <build>
         <plugins>
             <plugin>
@@ -28,9 +18,9 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>initialize</phase>
+                        <phase>validate</phase>
                         <goals>
-                            <goal>initialize</goal>
+                            <goal>validate</goal>
                         </goals>
                     </execution>
                 </executions>

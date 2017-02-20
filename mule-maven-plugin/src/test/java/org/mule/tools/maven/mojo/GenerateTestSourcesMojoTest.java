@@ -10,10 +10,8 @@
 
 package org.mule.tools.maven.mojo;
 
-import org.apache.maven.model.Build;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,7 +20,6 @@ import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
@@ -31,23 +28,25 @@ public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
 
     @Before
     public void before() throws IOException {
-        buildTemporaryFolder.create();
-        projectMock = mock(MavenProject.class);
-        buildMock = mock(Build.class);
-        mojo = new GenerateTestSourcesMojo();
         testMuleFolder = buildTemporaryFolder.newFolder(TEST_MULE);
         munitFolder = new File(testMuleFolder.getAbsolutePath(), MUNIT);
         munitFolder.mkdir();
+
         munitSourceFolder = temporaryFolder.getRoot();
+
+        mojo = new GenerateTestSourcesMojo();
         mojo.munitSourceFolder = munitSourceFolder;
         mojo.project = projectMock;
     }
+
     @Test
     public void createTestMuleFolderContentWithoutTestThrowsExceptionTest() throws IOException, MojoFailureException, MojoExecutionException {
         expectedEx.expect(MojoFailureException.class);
         expectedEx.expectMessage(EXPECTED_EXCEPTION_MESSAGE_FAIL_GENERATE_SOURCES);
+
         when(buildMock.getDirectory()).thenReturn(temporaryFolder.getRoot().getAbsolutePath());
         when(projectMock.getBuild()).thenReturn(buildMock);
+
         mojo.execute();
     }
 
@@ -55,14 +54,12 @@ public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
     public void createTestMuleFolderContentTest() throws IOException, MojoFailureException, MojoExecutionException {
         when(buildMock.getDirectory()).thenReturn(buildTemporaryFolder.getRoot().getAbsolutePath());
         when(projectMock.getBuild()).thenReturn(buildMock);
-
         File munitTestFile = temporaryFolder.newFile(MUNIT_TEST_FILE_NAME);
-        munitFolder.createNewFile();
 
         mojo.execute();
 
         File[] filesInMunitFolder = munitFolder.listFiles();
-        assertThat("The munit folder should contain one file", filesInMunitFolder.length == 1 && filesInMunitFolder[0].isFile());
+        assertThat("The munit folder should contain only one file", filesInMunitFolder.length == 1 && filesInMunitFolder[0].isFile());
         assertThat("The file in the munit folder is not the expected", filesInMunitFolder[0].getName(), equalTo(munitTestFile.getName()));
     }
 }

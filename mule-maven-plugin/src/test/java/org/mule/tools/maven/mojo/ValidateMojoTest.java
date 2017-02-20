@@ -18,9 +18,9 @@ import org.junit.Test;
 import org.mule.tools.maven.dependency.MulePluginsCompatibilityValidator;
 import org.mule.tools.maven.dependency.resolver.MulePluginResolver;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,7 +36,6 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
 
     @Before
     public void before() throws IOException {
-        muleSourceFolderMock = mock(File.class);
         mojo.muleSourceFolder = muleSourceFolderMock;
         mojo.projectBaseFolder = temporaryFolder.getRoot();
     }
@@ -45,7 +44,9 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     public void validateMandatoryFoldersFailsWhenMuleSourceFolderDoesNotExistTest() throws MojoFailureException, MojoExecutionException {
         expectedEx.expect(MojoExecutionException.class);
         expectedEx.expectMessage(EXPECTED_EXCEPTION_MESSAGE_VALIDATE_MANDATORY_FOLDERS);
+
         when(muleSourceFolderMock.exists()).thenReturn(false);
+
         mojo.execute();
     }
 
@@ -53,7 +54,9 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     public void validateMandatoryFoldersFailsWhenMuleAppPropertiesFileDoesNotExistTest() throws MojoFailureException, MojoExecutionException, IOException {
         expectedEx.expect(MojoExecutionException.class);
         expectedEx.expectMessage(EXPECTED_EXCEPTION_MESSAGE_VALIDATE_MULE_APP_PROPERTIES);
+
         when(muleSourceFolderMock.exists()).thenReturn(true);
+
         mojo.execute();
     }
 
@@ -61,20 +64,24 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     public void validateMandatoryFoldersFailsWhenMuleDeployPropertiesFileAndMuleConfigFileDoNotExistTest() throws MojoFailureException, MojoExecutionException, IOException {
         expectedEx.expect(MojoExecutionException.class);
         expectedEx.expectMessage(EXPECTED_EXCEPTION_MESSAGE_VALIDATE_OTHER_DESCRIPTORS);
+
         when(muleSourceFolderMock.exists()).thenReturn(true);
+
         temporaryFolder.newFile(MULE_APP_PROPERTIES);
+
         mojo.execute();
     }
 
     @Test
     public void validateGoalSucceedTest() throws MojoFailureException, MojoExecutionException, IOException {
         when(muleSourceFolderMock.exists()).thenReturn(true);
+
         temporaryFolder.newFile(MULE_APP_PROPERTIES);
         temporaryFolder.newFile(MULE_CONFIG_XML);
 
         MulePluginResolver resolverMock = mock(MulePluginResolver.class);
         MulePluginsCompatibilityValidator validatorMock = mock(MulePluginsCompatibilityValidator.class);
-        when(resolverMock.resolveMulePlugins(any())).thenReturn(new ArrayList<Dependency>());
+        when(resolverMock.resolveMulePlugins(any())).thenReturn(Collections.emptyList());
 
         class ValidateMojoWithMockedResolverAndValidate extends ValidateMojo {
             @Override

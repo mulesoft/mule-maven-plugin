@@ -40,7 +40,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
     public static final String MULE_SRC = "mule-src";
     public static final String META_INF = "META-INF";
     public static final String MAVEN = "maven";
-    public static final String MULE_APP_JSON = "mule-app.json";
+    public static final String MULE_APPLICATION_JSON = "mule-application.json";
     public static final String MULE_ARTIFACT = "mule-artifact";
     public static final String REPOSITORY = "repository";
     public static final String POM_PROPERTIES = "pom.properties";

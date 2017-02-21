@@ -37,23 +37,29 @@ public class InitializeMojo extends AbstractMuleMojo {
         String targetFolder = project.getBuild().getDirectory();
 
         createFolderIfNecessary(targetFolder);
+        createFolderIfNecessary(targetFolder, MULE);
+
         createFolderIfNecessary(targetFolder, TEST_MULE);
         createFolderIfNecessary(targetFolder, TEST_MULE, MUNIT);
-        createFolderIfNecessary(targetFolder, MULE);
+
         createFolderIfNecessary(targetFolder, META_INF);
+
         createFolderIfNecessary(targetFolder, META_INF, MULE_SRC);
         createFolderIfNecessary(targetFolder, META_INF, MULE_SRC, artifactId);
+
         createFolderIfNecessary(targetFolder, META_INF, MAVEN);
         createFolderIfNecessary(targetFolder, META_INF, MAVEN, groupId);
         createFolderIfNecessary(targetFolder, META_INF, MAVEN, groupId, artifactId);
+
         createFolderIfNecessary(targetFolder, META_INF, MULE_ARTIFACT);
+
         createFolderIfNecessary(targetFolder, REPOSITORY);
 
-        try {
-            createFileIfNecessary(targetFolder, MULE_APP_JSON);
-        } catch (IOException e) {
-            throw new MojoFailureException("Cannot create mule-app.json file", e);
-        }
+        //        try {
+        //            createFileIfNecessary(targetFolder, MULE_APPLICATION_JSON);
+        //        } catch (IOException e) {
+        //            throw new MojoFailureException("Cannot create mule-app.json file", e);
+        //        }
         getLog().debug("Mule Maven Plugin Initialize done");
     }
 

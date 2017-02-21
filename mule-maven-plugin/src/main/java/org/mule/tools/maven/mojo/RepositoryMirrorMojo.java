@@ -10,10 +10,6 @@
 
 package org.mule.tools.maven.mojo;
 
-import static java.io.File.separatorChar;
-import static java.lang.String.format;
-import static java.util.Collections.sort;
-import static org.apache.commons.io.FileUtils.copyFile;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
@@ -21,17 +17,8 @@ import org.apache.maven.model.building.ModelProblem;
 import org.apache.maven.model.building.ModelProblem.Severity;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.project.DefaultProjectBuildingRequest;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.ProjectBuilder;
-import org.apache.maven.project.ProjectBuildingException;
-import org.apache.maven.project.ProjectBuildingRequest;
-import org.apache.maven.project.ProjectBuildingResult;
+import org.apache.maven.plugins.annotations.*;
+import org.apache.maven.project.*;
 import org.apache.maven.repository.RepositorySystem;
 
 import java.io.File;
@@ -43,7 +30,14 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@Mojo(name = "repository-mirror", defaultPhase = LifecyclePhase.VERIFY, requiresDependencyResolution = ResolutionScope.RUNTIME)
+import static java.io.File.separatorChar;
+import static java.lang.String.format;
+import static java.util.Collections.sort;
+import static org.apache.commons.io.FileUtils.copyFile;
+
+@Mojo(name = "repository-mirror",
+    defaultPhase = LifecyclePhase.PACKAGE,
+    requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class RepositoryMirrorMojo extends AbstractMuleMojo {
 
     public static final String REPOSITORY_FOLDER = "repository";
@@ -70,7 +64,8 @@ public class RepositoryMirrorMojo extends AbstractMuleMojo {
         getLog().info(format("Mirroring repository for [%s]", this.project.toString()));
         try {
             initializeProjectBuildingRequest();
-            final File repositoryFile = new File(outputDirectory, REPOSITORY_FOLDER);
+
+            File repositoryFile = new File(outputDirectory, REPOSITORY_FOLDER);
             if (!repositoryFile.exists()) {
                 repositoryFile.mkdirs();
             }
@@ -90,10 +85,11 @@ public class RepositoryMirrorMojo extends AbstractMuleMojo {
     }
 
     private void addThirdPartyParentPomArtifacts(Set<Artifact> artifacts, Artifact dep) throws MojoExecutionException {
-        final MavenProject project = buildProjectFromArtifact(dep);
+        MavenProject project = buildProjectFromArtifact(dep);
         addParentDependencyPomArtifacts(project, artifacts);
-        final Artifact pomArtifact =
-                repositorySystem.createProjectArtifact(dep.getGroupId(), dep.getArtifactId(), dep.getVersion());
+
+        Artifact pomArtifact =
+            repositorySystem.createProjectArtifact(dep.getGroupId(), dep.getArtifactId(), dep.getVersion());
         artifacts.add(getResolvedArtifactUsingLocalRepository(pomArtifact));
     }
 
@@ -106,9 +102,10 @@ public class RepositoryMirrorMojo extends AbstractMuleMojo {
             try {
                 markerFile.createNewFile();
             } catch (IOException e) {
-                throw new MojoExecutionException(format("The current repository has no artifacts to install, and trying to create [%s] failed",
-                        markerFile.toString()),
-                        e);
+                throw new MojoExecutionException(
+                    format("The current repository has no artifacts to install, and trying to create [%s] failed",
+                           markerFile.toString()),
+                    e);
             }
         }
         for (Artifact artifact : sortedArtifacts) {
@@ -118,13 +115,13 @@ public class RepositoryMirrorMojo extends AbstractMuleMojo {
 
     private void initializeProjectBuildingRequest() {
         projectBuildingRequest =
-                new DefaultProjectBuildingRequest(session.getProjectBuildingRequest());
+            new DefaultProjectBuildingRequest(session.getProjectBuildingRequest());
         projectBuildingRequest.setLocalRepository(localRepository);
         projectBuildingRequest.setRemoteRepositories(remoteArtifactRepositories);
         if (getLog().isDebugEnabled()) {
             getLog().debug(format("Local repository [%s]", projectBuildingRequest.getLocalRepository().getBasedir()));
             projectBuildingRequest.getRemoteRepositories().stream().forEach(artifactRepository -> getLog()
-                    .debug(format("Remote repository ID [%s], URL [%s]", artifactRepository.getId(), artifactRepository.getUrl())));
+                .debug(format("Remote repository ID [%s], URL [%s]", artifactRepository.getId(), artifactRepository.getUrl())));
         }
     }
 
@@ -138,44 +135,49 @@ public class RepositoryMirrorMojo extends AbstractMuleMojo {
         final File destinationArtifactFile = new File(artifactFolderDestination, artifactFilename);
         try {
             getLog().info(format("Adding artifact <%s%s>",
-                    REPOSITORY_FOLDER,
-                    destinationArtifactFile.getAbsolutePath().replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
-                            "")));
+                                 REPOSITORY_FOLDER,
+                                 destinationArtifactFile.getAbsolutePath()
+                                     .replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
+                                                   "")));
             copyFile(artifact.getFile(), destinationArtifactFile);
         } catch (IOException e) {
-            throw new MojoExecutionException(format("There was a problem while copying the artifact [%s] file [%s] to the destination [%s]",
-                    artifact.toString(), artifact.getFile().getAbsolutePath(),
-                    destinationArtifactFile.getAbsolutePath()),
-                    e);
+            throw new MojoExecutionException(
+                format("There was a problem while copying the artifact [%s] file [%s] to the destination [%s]",
+                       artifact.toString(), artifact.getFile().getAbsolutePath(),
+                       destinationArtifactFile.getAbsolutePath()),
+                e);
         }
     }
 
     private MavenProject buildProjectFromArtifact(Artifact artifact)
-            throws MojoExecutionException {
+        throws MojoExecutionException {
         MavenProject mavenProject;
         Artifact projectArtifact =
-                repositorySystem.createProjectArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion());
+            repositorySystem.createProjectArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion());
         try {
             mavenProject = projectBuilder.build(projectArtifact, projectBuildingRequest).getProject();
         } catch (ProjectBuildingException e) {
             getLog()
-                    .warn(format("The artifact [%s] seems to have some warnings, enable logs for more information", artifact.toString()));
+                .warn(format("The artifact [%s] seems to have some warnings, enable logs for more information",
+                             artifact.toString()));
             if (getLog().isDebugEnabled()) {
                 getLog().warn(format("The artifact [%s] had the following issue ", artifact.toString()), e);
             }
             if (e.getResults() == null || e.getResults().size() != 1) {
-                throw new MojoExecutionException(format("There was an issue while trying to create a maven project from the artifact [%s]",
-                        artifact.toString()),
-                        e);
+                throw new MojoExecutionException(
+                    format("There was an issue while trying to create a maven project from the artifact [%s]",
+                           artifact.toString()),
+                    e);
             }
             final ProjectBuildingResult projectBuildingResult = e.getResults().get(0);
             final List<ModelProblem> collect = projectBuildingResult.getProblems().stream()
-                    .filter(modelProblem -> modelProblem.getSeverity().equals(Severity.FATAL)).collect(
-                            Collectors.toList());
+                .filter(modelProblem -> modelProblem.getSeverity().equals(Severity.FATAL)).collect(
+                    Collectors.toList());
             if (!collect.isEmpty()) {
-                throw new MojoExecutionException(format("There was an issue while trying to create a maven project from the artifact [%s], several FATAL errors were found",
-                        artifact.toString()),
-                        e);
+                throw new MojoExecutionException(format(
+                    "There was an issue while trying to create a maven project from the artifact [%s], several FATAL errors were found",
+                    artifact.toString()),
+                                                 e);
             }
             mavenProject = projectBuildingResult.getProject();
         }
@@ -183,7 +185,7 @@ public class RepositoryMirrorMojo extends AbstractMuleMojo {
     }
 
     private void addParentDependencyPomArtifacts(MavenProject projectDependency, Set<Artifact> artifacts)
-            throws MojoExecutionException {
+        throws MojoExecutionException {
         MavenProject currentProject = projectDependency;
         while (currentProject.hasParent()) {
             currentProject = currentProject.getParent();
@@ -195,7 +197,7 @@ public class RepositoryMirrorMojo extends AbstractMuleMojo {
     }
 
     private void addParentPomArtifacts(Set<Artifact> artifacts)
-            throws MojoExecutionException {
+        throws MojoExecutionException {
         MavenProject currentProject = project;
         boolean projectParent = true;
         while (currentProject.hasParent() && projectParent) {
@@ -225,12 +227,14 @@ public class RepositoryMirrorMojo extends AbstractMuleMojo {
 
     private void validatePomArtifactFile(Artifact resolvedPomArtifact) throws MojoExecutionException {
         if (resolvedPomArtifact.getFile() == null) {
-            throw new MojoExecutionException(format("There was a problem trying to resolve the artifact's file location for [%s], file was null",
-                    resolvedPomArtifact.toString()));
+            throw new MojoExecutionException(
+                format("There was a problem trying to resolve the artifact's file location for [%s], file was null",
+                       resolvedPomArtifact.toString()));
         }
         if (!resolvedPomArtifact.getFile().exists()) {
-            throw new MojoExecutionException(format("There was a problem trying to resolve the artifact's file location for [%s], file [%s] doesn't exists",
-                    resolvedPomArtifact.toString(), resolvedPomArtifact.getFile().getAbsolutePath()));
+            throw new MojoExecutionException(
+                format("There was a problem trying to resolve the artifact's file location for [%s], file [%s] doesn't exists",
+                       resolvedPomArtifact.toString(), resolvedPomArtifact.getFile().getAbsolutePath()));
         }
     }
 

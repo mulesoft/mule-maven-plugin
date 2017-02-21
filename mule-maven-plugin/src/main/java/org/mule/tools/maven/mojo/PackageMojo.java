@@ -15,11 +15,7 @@ import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.artifact.AttachedArtifact;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.mule.tools.artifact.archiver.api.PackageBuilder;
@@ -51,9 +47,8 @@ public class PackageMojo extends AbstractMuleMojo {
 
     @Parameter(defaultValue = "${attachMuleSources}")
     protected boolean attachMuleSources = false;
+
     protected PackageBuilder packageBuilder;
-
-
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         String targetFolder = project.getBuild().getDirectory();
@@ -67,15 +62,15 @@ public class PackageMojo extends AbstractMuleMojo {
     }
 
     /**
-    * Given a {@code targetFolder}, it returns a new {@link File} to the new compressed file where the complete Mule app will be
-    * stored. If the file already exists, it will delete it and create a new one.
-    *
-    * @param targetFolder starting path in which the destination file will be stored
-    * @return the destination file to store the Mule app
-    * @throws MojoExecutionException if it can't delete the previous file
-    */
+     * Given a {@code targetFolder}, it returns a new {@link File} to the new compressed file where the complete Mule app will be
+     * stored. If the file already exists, it will delete it and create a new one.
+     *
+     * @param targetFolder starting path in which the destination file will be stored
+     * @return the destination file to store the Mule app
+     * @throws MojoExecutionException if it can't delete the previous file
+     */
     private File getDestinationFile(String targetFolder) throws MojoExecutionException {
-        final Path destinationPath = Paths.get(targetFolder, getFinalName(), ".", TYPE);
+        final Path destinationPath = Paths.get(targetFolder, getFinalName() + "." + TYPE);
         try {
             Files.deleteIfExists(destinationPath);
         } catch (IOException e) {
@@ -122,6 +117,7 @@ public class PackageMojo extends AbstractMuleMojo {
         return finalName;
     }
 
+    // TODO find a better way to inject this to make it testable
     protected void initializePackageBuilder() {
         packageBuilder = new PackageBuilder();
     }

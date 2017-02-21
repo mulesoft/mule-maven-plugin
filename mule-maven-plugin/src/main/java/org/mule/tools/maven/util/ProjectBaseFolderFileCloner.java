@@ -19,17 +19,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-public class DescriptorManager {
+public class ProjectBaseFolderFileCloner {
+
     private Path sourceFilePath;
     private MavenProject project;
     private File projectBaseFolder;
 
-    public DescriptorManager(MavenProject project, File projectBaseFolder) {
+    public ProjectBaseFolderFileCloner(MavenProject project) {
         this.project = project;
-        this.projectBaseFolder = projectBaseFolder;
+        this.projectBaseFolder = project.getBasedir();
     }
 
-    public DescriptorManager copyDescriptor(String descriptorName) throws IOException {
+    public ProjectBaseFolderFileCloner clone(String descriptorName) throws IOException {
         sourceFilePath = new File(projectBaseFolder.getCanonicalPath() + File.separator + descriptorName).toPath();
         return this;
     }

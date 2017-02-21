@@ -18,8 +18,10 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.repository.RepositorySystem;
+import org.apache.maven.shared.utils.StringUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -83,6 +85,9 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.basedir}/src/main/app", required = true)
     protected File appDirectory;
 
+    @Parameter(defaultValue = "${lightwayPackage}")
+    protected boolean lightwayPackage = false;
+
 
     protected File getMuleAppZipFile() {
         return new File(this.outputDirectory, this.finalName + ".zip");
@@ -91,5 +96,21 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
     // TODO omg why
     protected File getFilteredAppDirectory() {
         return new File(outputDirectory, "app");
+    }
+
+    protected void createFileIfNecessary(String... filePath) throws IOException {
+        String path = StringUtils.join(filePath, File.separator);
+        File file = new File(path);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+    }
+
+    protected void createFolderIfNecessary(String... folderPath) {
+        String path = StringUtils.join(folderPath, File.separator);
+        File folder = new File(path);
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
     }
 }

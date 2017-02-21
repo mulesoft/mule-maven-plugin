@@ -16,7 +16,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.tools.maven.util.CopyFileVisitor;
-import org.mule.tools.maven.util.DescriptorManager;
+import org.mule.tools.maven.util.ProjectBaseFolderFileCloner;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,11 +35,11 @@ import java.util.List;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class GenerateSourcesMojo extends AbstractMuleMojo {
 
-    DescriptorManager descriptorManager;
+    protected ProjectBaseFolderFileCloner projectBaseFolderFileCloner;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().debug("Creating target content with Mule source code...");
-        descriptorManager = new DescriptorManager(project, projectBaseFolder);
+        projectBaseFolderFileCloner = new ProjectBaseFolderFileCloner(project);
         try {
             createMuleFolderContent();
             createMuleSourceFolderContent();
@@ -66,27 +66,24 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
     }
 
     private void createDescriptors() throws IOException, MojoExecutionException {
-        createDescriptorFilesContent();
         createPomProperties();
+        createDescriptorFilesContent();
     }
 
     protected void createDescriptorFilesContent() throws IOException {
-        descriptorManager.copyDescriptor(POM_XML).toPath(META_INF, MAVEN, project.getGroupId(), project.getArtifactId());
-        descriptorManager.copyDescriptor(MULE_APP_PROPERTIES).toPath(META_INF, MULE_ARTIFACT);
-        descriptorManager.copyDescriptor(MULE_DEPLOY_PROPERTIES).toPath(META_INF, MULE_ARTIFACT);
-        descriptorManager.copyDescriptor(MULE_APPLICATION_JSON).toPath(META_INF, MULE_ARTIFACT);
+        projectBaseFolderFileCloner.clone(POM_XML)
+            .toPath(META_INF, MAVEN, project.getGroupId(), project.getArtifactId());
+        projectBaseFolderFileCloner.clone(MULE_APP_PROPERTIES).toPath(META_INF, MULE_ARTIFACT);
+        projectBaseFolderFileCloner.clone(MULE_DEPLOY_PROPERTIES).toPath(META_INF, MULE_ARTIFACT);
+        projectBaseFolderFileCloner.clone(MULE_APPLICATION_JSON).toPath(META_INF, MULE_ARTIFACT);
     }
 
     protected void createPomProperties() throws IOException, MojoExecutionException {
-        File targetFolder =
-            Paths.get(project.getBuild().getDirectory(), META_INF, MAVEN, project.getGroupId(), project.getArtifactId()).toFile();
-        Path targetFilePath = new File(targetFolder.toPath().toString() + File.separator + POM_PROPERTIES).toPath();
-        writeToFile(targetFilePath);
-    }
-
-    private void writeToFile(Path targetFilePath) throws MojoExecutionException {
+        Path pomPropertiesFilePath =
+            Paths.get(project.getBuild().getDirectory(), META_INF, MAVEN, project.getGroupId(), project.getArtifactId(),
+                      POM_PROPERTIES);
         try {
-            PrintWriter writer = new PrintWriter(targetFilePath.toString(), "UTF-8");
+            PrintWriter writer = new PrintWriter(pomPropertiesFilePath.toString(), "UTF-8");
             writer.println("version=" + this.project.getVersion());
             writer.println("groupId=" + this.project.getGroupId());
             writer.println("artifactId=" + this.project.getArtifactId());
@@ -95,4 +92,6 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
             throw new MojoExecutionException("Could not create pom.properties", e);
         }
     }
+
+
 }

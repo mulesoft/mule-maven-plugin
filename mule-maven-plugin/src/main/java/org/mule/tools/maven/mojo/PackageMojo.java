@@ -94,8 +94,11 @@ public class PackageMojo extends AbstractMuleMojo {
             if (!onlyMuleSources) {
                 builder
                     .withClasses(new File(targetFolder + File.separator + CLASSES))
-                    .withMule(new File(targetFolder + File.separator + MULE))
-                    .withRepository(new File(targetFolder + File.separator + REPOSITORY));
+                    .withMule(new File(targetFolder + File.separator + MULE));
+
+                if (!lightwayPackage) {
+                    builder.withRepository(new File(targetFolder + File.separator + REPOSITORY));
+                }
                 if (attachMuleSources) {
                     builder.withMetaInf(new File(targetFolder + File.separator + META_INF));
                 }

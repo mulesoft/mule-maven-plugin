@@ -18,6 +18,9 @@
                             <generate-sources>
                                 org.mule.tools.maven:mule-maven-plugin:generate-sources
                             </generate-sources>
+                            <process-sources>
+                                org.mule.tools.maven:mule-maven-plugin:process-sources
+                            </process-sources>
                             <process-resources>
                                 org.apache.maven.plugins:maven-resources-plugin:resources
                             </process-resources>
@@ -37,7 +40,6 @@
                                 org.apache.maven.plugins:maven-surefire-plugin:test
                             </test>
                             <package>
-                                org.mule.tools.maven:mule-maven-plugin:repository-mirror,
                                 org.mule.tools.maven:mule-maven-plugin:package
                             </package>
                             <install>

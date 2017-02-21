@@ -53,12 +53,12 @@ public class ValidateMojo extends AbstractMuleMojo {
     }
 
     private void validateMandatoryDescriptors() throws MojoExecutionException {
-        isPresent("Invalid Mule project. Missing %s file, it must be present in the root of application", MULE_APP_PROPERTIES);
-        isPresent("Invalid Mule project. Missing %s file, it must be present in the root of application", MULE_APPLICATION_JSON);
-        isPresent("Invalid Mule project. Either %s or %s files must be present in the root of application", MULE_DEPLOY_PROPERTIES, MULE_CONFIG_XML);
+        isFilePresent("Invalid Mule project. Missing %s file, it must be present in the root of application", MULE_APP_PROPERTIES);
+        isFilePresent("Invalid Mule project. Missing %s file, it must be present in the root of application", MULE_APPLICATION_JSON);
+        isFilePresent("Invalid Mule project. Either %s or %s files must be present in the root of application", MULE_DEPLOY_PROPERTIES, MULE_CONFIG_XML);
     }
 
-    private void isPresent(String message, String... fileName) throws MojoExecutionException {
+    private void isFilePresent(String message, String... fileName) throws MojoExecutionException {
         List<File> files = Arrays.stream(fileName).map(name -> Paths.get(projectBaseFolder.toString(), name).toFile()).collect(Collectors.toList());
         if(files.stream().allMatch(file -> !file.exists())) {
             throw new MojoExecutionException(String.format(message, fileName));

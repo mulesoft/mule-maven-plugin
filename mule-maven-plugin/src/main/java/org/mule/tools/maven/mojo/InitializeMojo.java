@@ -16,10 +16,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.shared.utils.StringUtils;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * It creates all the required folders in the project.build.directory
@@ -43,39 +39,16 @@ public class InitializeMojo extends AbstractMuleMojo {
         createFolderIfNecessary(targetFolder, TEST_MULE, MUNIT);
 
         createFolderIfNecessary(targetFolder, META_INF);
-
         createFolderIfNecessary(targetFolder, META_INF, MULE_SRC);
         createFolderIfNecessary(targetFolder, META_INF, MULE_SRC, artifactId);
-
         createFolderIfNecessary(targetFolder, META_INF, MAVEN);
         createFolderIfNecessary(targetFolder, META_INF, MAVEN, groupId);
         createFolderIfNecessary(targetFolder, META_INF, MAVEN, groupId, artifactId);
-
         createFolderIfNecessary(targetFolder, META_INF, MULE_ARTIFACT);
 
         createFolderIfNecessary(targetFolder, REPOSITORY);
 
-        //        try {
-        //            createFileIfNecessary(targetFolder, MULE_APPLICATION_JSON);
-        //        } catch (IOException e) {
-        //            throw new MojoFailureException("Cannot create mule-app.json file", e);
-        //        }
         getLog().debug("Mule Maven Plugin Initialize done");
     }
 
-    private void createFileIfNecessary(String... filePath) throws IOException {
-        String path = StringUtils.join(filePath, File.separator);
-        File file = new File(path);
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-    }
-
-    private void createFolderIfNecessary(String... folderPath) {
-        String path = StringUtils.join(folderPath, File.separator);
-        File folder = new File(path);
-        if (!folder.exists()) {
-            folder.mkdir();
-        }
-    }
 }

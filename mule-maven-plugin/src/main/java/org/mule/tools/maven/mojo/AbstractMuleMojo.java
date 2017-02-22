@@ -48,29 +48,28 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
     public static final String POM_PROPERTIES = "pom.properties";
 
     @Component
-    protected RepositorySystem repositorySystem;
+    protected ProjectBuilder projectBuilder;
 
     @Component
-    protected ProjectBuilder projectBuilder;
+    protected RepositorySystem repositorySystem;
 
     @Parameter(readonly = true, required = true, defaultValue = "${session}")
     protected MavenSession session;
 
+    @Parameter(readonly = true, required = true, defaultValue = "${localRepository}")
+    protected ArtifactRepository localRepository;
+
     @Parameter(readonly = true, required = true, defaultValue = "${project.remoteArtifactRepositories}")
     protected List<ArtifactRepository> remoteArtifactRepositories;
 
-    @Parameter(readonly = true, required = true, defaultValue = "${localRepository}")
-    protected ArtifactRepository localRepository;
+    @Parameter(defaultValue = "${project.build.finalName}", required = true)
+    protected String finalName;
 
     @Parameter(property = "project", required = true)
     protected MavenProject project;
 
-    // TODO remove this as is part of the maven project and it should be on the target
     @Parameter(property = "project.build.directory", required = true)
     protected File outputDirectory;
-
-    @Parameter(defaultValue = "${project.build.finalName}", required = true)
-    protected String finalName;
 
     @Parameter(defaultValue = "${project.basedir}")
     protected File projectBaseFolder;
@@ -81,10 +80,6 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.basedir}/src/test/munit/")
     protected File munitSourceFolder;
 
-    // TODO change this to mule directory
-    @Parameter(defaultValue = "${project.basedir}/src/main/app", required = true)
-    protected File appDirectory;
-
     @Parameter(defaultValue = "${lightwayPackage}")
     protected boolean lightwayPackage = false;
 
@@ -93,10 +88,6 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
         return new File(this.outputDirectory, this.finalName + ".zip");
     }
 
-    // TODO omg why
-    protected File getFilteredAppDirectory() {
-        return new File(outputDirectory, "app");
-    }
 
     protected void createFileIfNecessary(String... filePath) throws IOException {
         String path = StringUtils.join(filePath, File.separator);

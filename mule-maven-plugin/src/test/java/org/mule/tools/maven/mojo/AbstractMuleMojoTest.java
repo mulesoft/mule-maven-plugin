@@ -12,7 +12,6 @@ package org.mule.tools.maven.mojo;
 
 import org.apache.maven.model.Build;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectHelper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
@@ -28,6 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class AbstractMuleMojoTest {
+
     protected static final String MULE = "mule";
     protected static final String MAVEN = "maven";
     protected static final String MUNIT = "munit";
@@ -56,17 +56,18 @@ public class AbstractMuleMojoTest {
     protected File muleSourceFolderMock;
     protected PackageBuilder packageBuilderMock;
 
+    @Rule
+    public TemporaryFolder projectRootFolder = new TemporaryFolder();
 
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
     @Rule
     public TemporaryFolder buildTemporaryFolder = new TemporaryFolder();
 
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Before
     public void beforeTest() throws IOException {
-        temporaryFolder.create();
+        projectRootFolder.create();
         buildTemporaryFolder.create();
         metaInfFolder = buildTemporaryFolder.newFolder(META_INF);
 

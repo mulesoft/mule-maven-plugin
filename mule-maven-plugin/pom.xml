@@ -15,7 +15,6 @@
     <packaging>maven-plugin</packaging>
     <name>Mule Maven Plugin</name>
 
-
     <properties>
         <javaVersion>1.8</javaVersion>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -27,7 +26,6 @@
         <formatterConfigPath>formatter.xml</formatterConfigPath>
 
         <!-- Dependency Versions -->
-        <guava.version>18.0</guava.version>
         <maven.version>3.3.9</maven.version>
         <log4j.version>1.2.17</log4j.version>
         <commons.io.version>2.5</commons.io.version>
@@ -56,14 +54,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <includeEmptyDirs>true</includeEmptyDirs>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
                 <version>${maven.plugin.version}</version>
                 <configuration>
@@ -79,31 +69,14 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--<plugin>-->
-            <!--<groupId>org.apache.maven.plugins</groupId>-->
-            <!--<artifactId>maven-plugin-plugin</artifactId>-->
-            <!--<version>${maven.plugin.version}</version>-->
-            <!--<dependencies>-->
-
-            <!--<dependency>-->
-            <!--<groupId>org.jfrog.maven.annomojo</groupId>-->
-            <!--<artifactId>maven-plugin-tools-anno</artifactId>-->
-            <!--<version>${maven.plugin.tools.anno.version}</version>-->
-            <!--<scope>runtime</scope>-->
-            <!--</dependency>-->
-            <!--</dependencies>-->
-            <!--</plugin>-->
-
-            <!-- Formatting plugins -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${checkstyle.plugin.version}</version>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <includeEmptyDirs>true</includeEmptyDirs>
+                </configuration>
             </plugin>
-
-            <!-- TODO add formatting plugin -->
-
-            <!-- TODO review this -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -122,14 +95,34 @@
                 </configuration>
             </plugin>
 
+            <!-- Formatting plugins -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${checkstyle.plugin.version}</version>
+            </plugin>
+
+            <!--<plugin>-->
+            <!--<groupId>org.apache.maven.plugins</groupId>-->
+            <!--<artifactId>maven-plugin-plugin</artifactId>-->
+            <!--<version>${maven.plugin.version}</version>-->
+            <!--<dependencies>-->
+            <!--<dependency>-->
+            <!--<groupId>org.jfrog.maven.annomojo</groupId>-->
+            <!--<artifactId>maven-plugin-tools-anno</artifactId>-->
+            <!--<version>${maven.plugin.tools.anno.version}</version>-->
+            <!--<scope>runtime</scope>-->
+            <!--</dependency>-->
+            <!--</dependencies>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 
     <dependencies>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>${commons.logging.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -142,19 +135,9 @@
             <version>${commons.cli.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-archiver</artifactId>
             <version>${plexus.archiver.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>${commons.logging.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -212,6 +195,12 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>${mockito.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${log4j.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -21,10 +21,8 @@ import org.mule.tools.maven.util.ProjectBaseFolderFileCloner;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,36 +33,19 @@ import static org.mockito.Mockito.when;
 
 public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
 
-    GenerateSourcesMojo mojo = new GenerateSourcesMojo();
+    private GenerateSourcesMojo mojo = new GenerateSourcesMojo();
 
     @Before
     public void before() throws IOException {
         mojo = new GenerateSourcesMojo();
-        mojo.projectBaseFolder = temporaryFolder.getRoot();
+        mojo.projectBaseFolder = projectRootFolder.getRoot();
         mojo.project = projectMock;
-    }
-
-    @Test
-    public void testTest() {
-        try {
-            Field field = Math.class.getDeclaredField("randomNumberGenerator");
-            field.setAccessible(true);
-            field.set(null, new Random() {
-
-                @Override
-                public double nextDouble() {
-                    return 1 / 500;
-                }
-            });
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
     }
 
     @Test
     public void createMuleFolderContentTest() throws IOException, MojoFailureException, MojoExecutionException {
         muleSourceFolderMock =
-            new File(temporaryFolder.getRoot().getAbsolutePath(), "src" + File.separator + "main" + File.separator + "mule");
+            new File(projectRootFolder.getRoot().getAbsolutePath(), "src" + File.separator + "main" + File.separator + "mule");
         muleSourceFolderMock.mkdirs();
 
         File fileToBeCopied1 = new File(muleSourceFolderMock.getAbsolutePath(), "file1");
@@ -88,59 +69,61 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
 
     @Test
     public void createMuleSourceFolderContentTest() throws IOException {
-        File metaInfFolder = buildTemporaryFolder.newFolder(META_INF);
-        File muleSource = new File(metaInfFolder.getAbsolutePath(), MULE_SRC);
-        File targetFolder = new File(muleSource.getAbsolutePath(), PROJECT_ARTIFACT_ID);
+        File muleSourceFolder = new File(metaInfFolder.getAbsolutePath(), MULE_SRC);
+        File projectArtifactIdFolder = new File(muleSourceFolder.getAbsolutePath(), PROJECT_ARTIFACT_ID);
 
         metaInfFolder.mkdir();
-        muleSource.mkdir();
-        targetFolder.mkdir();
+        muleSourceFolder.mkdir();
+        projectArtifactIdFolder.mkdir();
 
-        when(projectMock.getArtifactId()).thenReturn(PROJECT_ARTIFACT_ID);
-
-        File fileToBeCopied1 = new File(temporaryFolder.getRoot().getAbsolutePath(), "file1");
-        File fileToBeCopied2 = new File(temporaryFolder.getRoot().getAbsolutePath(), "file2");
+        File fileToBeCopied1 = new File(projectRootFolder.getRoot().getAbsolutePath(), "file1");
         fileToBeCopied1.createNewFile();
+        File fileToBeCopied2 = new File(projectRootFolder.getRoot().getAbsolutePath(), "file2");
         fileToBeCopied2.createNewFile();
 
+        when(projectMock.getArtifactId()).thenReturn(PROJECT_ARTIFACT_ID);
         mojo.createMuleSourceFolderContent();
 
-        assertThat("There should be 2 files in the target folder", targetFolder.listFiles().length, equalTo(2));
-        File actualCopiedFile1 = targetFolder.listFiles()[0];
-        File actualCopiedFile2 = targetFolder.listFiles()[1];
+        assertThat("There should be 2 files in the target folder", projectArtifactIdFolder.listFiles().length, equalTo(2));
+
+        File actualCopiedFile1 = projectArtifactIdFolder.listFiles()[0];
         assertThat("The mule folder content is different from the expected",
-                   StringUtils.equals(actualCopiedFile1.getName(), fileToBeCopied1.getName()) && StringUtils
-                       .equals(actualCopiedFile2.getName(), fileToBeCopied2.getName()));
+                   actualCopiedFile1.getName().equals(fileToBeCopied1.getName()));
+
+
+        File actualCopiedFile2 = projectArtifactIdFolder.listFiles()[1];
+        assertThat("The mule folder content is different from the expected",
+                   actualCopiedFile2.getName().equals(fileToBeCopied2.getName()));
     }
 
     @Test
     public void createDescriptorFilesContentTest() throws IOException {
-        File pomDestinationFolder = new File(temporaryFolder.getRoot().getAbsolutePath(),
+        File pomDestinationFolder = new File(projectRootFolder.getRoot().getAbsolutePath(),
                                              META_INF + File.separator + MAVEN + File.separator + GROUP_ID + File.separator
                                                  + ARTIFACT_ID);
         pomDestinationFolder.mkdirs();
+
         File propertiesDestinationFolder =
-            new File(temporaryFolder.getRoot().getAbsolutePath(), META_INF + File.separator + MULE_ARTIFACT);
+            new File(projectRootFolder.getRoot().getAbsolutePath(), META_INF + File.separator + MULE_ARTIFACT);
         propertiesDestinationFolder.mkdirs();
 
-        File pom = temporaryFolder.newFile(POM_XML);
-        File muleAppPropertiesFile = temporaryFolder.newFile(MULE_APP_PROPERTIES);
-        File muleDeployPropertiesFile = temporaryFolder.newFile(MULE_DEPLOY_PROPERTIES);
-
-        projectMock = mock(MavenProject.class);
-        buildMock = mock(Build.class);
-        when(buildMock.getDirectory()).thenReturn(temporaryFolder.getRoot().getAbsolutePath());
-        when(projectMock.getBuild()).thenReturn(buildMock);
-        when(projectMock.getBuild()).thenReturn(buildMock);
-        when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
-        when(projectMock.getGroupId()).thenReturn(GROUP_ID);
-        when(projectMock.getBasedir()).thenReturn(temporaryFolder.getRoot());
-        mojo.projectBaseFolderFileCloner = new ProjectBaseFolderFileCloner(projectMock);
-        mojo.project = projectMock;
-
+        File pom = projectRootFolder.newFile(POM_XML);
         pom.createNewFile();
+        File muleAppPropertiesFile = projectRootFolder.newFile(MULE_APP_PROPERTIES);
         muleAppPropertiesFile.createNewFile();
+        File muleDeployPropertiesFile = projectRootFolder.newFile(MULE_DEPLOY_PROPERTIES);
         muleDeployPropertiesFile.createNewFile();
+
+        buildMock = mock(Build.class);
+        projectMock = mock(MavenProject.class);
+        when(buildMock.getDirectory()).thenReturn(projectRootFolder.getRoot().getAbsolutePath());
+        when(projectMock.getBuild()).thenReturn(buildMock);
+        when(projectMock.getGroupId()).thenReturn(GROUP_ID);
+        when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
+        when(projectMock.getBasedir()).thenReturn(projectRootFolder.getRoot());
+
+        mojo.project = projectMock;
+        mojo.projectBaseFolderFileCloner = new ProjectBaseFolderFileCloner(projectMock);
 
         mojo.createDescriptorFilesContent();
 

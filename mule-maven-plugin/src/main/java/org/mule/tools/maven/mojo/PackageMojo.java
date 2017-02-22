@@ -79,6 +79,14 @@ public class PackageMojo extends AbstractMuleMojo {
         return destinationPath.toFile();
     }
 
+    private String getFinalName() {
+        if (finalName == null) {
+            finalName = project.getArtifactId() + "-" + project.getVersion();
+        }
+        getLog().debug("Using final name: " + finalName);
+        return finalName;
+    }
+
     protected void setProjectArtifactTypeToZip(File destinationFile) {
         ArtifactHandler handler = handlerManager.getArtifactHandler(TYPE);
         Artifact artifact = new AttachedArtifact(this.project.getArtifact(), TYPE, handler);
@@ -112,15 +120,6 @@ public class PackageMojo extends AbstractMuleMojo {
         }
     }
 
-    private String getFinalName() {
-        if (finalName == null) {
-            finalName = project.getArtifactId() + "-" + project.getVersion();
-        }
-        getLog().debug("Using final name: " + finalName);
-        return finalName;
-    }
-
-    // TODO find a better way to inject this to make it testable
     protected void initializePackageBuilder() {
         packageBuilder = new PackageBuilder();
     }

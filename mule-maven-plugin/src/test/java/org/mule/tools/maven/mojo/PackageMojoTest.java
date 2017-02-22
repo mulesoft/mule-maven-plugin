@@ -25,9 +25,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class PackageMojoTest extends AbstractMuleMojoTest {
-    private static final String JAR_TYPE = "jar";
     private static final String VERSION = "1.0";
     private static final String ZIP_TYPE = "zip";
+    private static final String JAR_TYPE = "jar";
 
     protected PackageMojo mojo = new PackageMojo();
 

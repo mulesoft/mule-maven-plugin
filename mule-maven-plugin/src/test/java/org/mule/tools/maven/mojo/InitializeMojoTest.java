@@ -35,14 +35,14 @@ public class InitializeMojoTest extends AbstractMuleMojoTest {
         mojo = new InitializeMojo();
         when(projectMock.getGroupId()).thenReturn(GROUP_ID);
         when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
-        when(buildMock.getDirectory()).thenReturn(temporaryFolder.getRoot().getAbsolutePath());
+        when(buildMock.getDirectory()).thenReturn(projectRootFolder.getRoot().getAbsolutePath());
         mojo.project = projectMock;
     }
 
     @After
     public void after() throws IOException {
         File rootOfExpectedStructure = ResourceExtractor.simpleExtractResources(getClass(), EXPECTED_STRUCTURE_RELATIVE_PATH);
-        assertThat("The target folder directory does not have the expected structure", temporaryFolder.getRoot(), FileTreeMatcher.hasSameTreeStructure(rootOfExpectedStructure));
+        assertThat("The target folder directory does not have the expected structure", projectRootFolder.getRoot(), FileTreeMatcher.hasSameTreeStructure(rootOfExpectedStructure));
         assertThat("Initialize goal message was not the expected", INITIALIZE_GOAL_DEBUG_MESSAGE, equalTo(outContent.toString()));
     }
 
@@ -53,9 +53,9 @@ public class InitializeMojoTest extends AbstractMuleMojoTest {
 
     @Test
     public void initializeWhenTargetFolderAlreadyHasSomeFoldersOfExpectedStructureTest() throws MojoFailureException, MojoExecutionException, IOException {
-        temporaryFolder.newFolder(META_INF + File.separator + MULE);
-        temporaryFolder.newFolder(MULE);
-        temporaryFolder.newFolder(REPOSITORY);
+        projectRootFolder.newFolder(META_INF + File.separator + MULE);
+        projectRootFolder.newFolder(MULE);
+        projectRootFolder.newFolder(REPOSITORY);
 
         mojo.execute();
     }

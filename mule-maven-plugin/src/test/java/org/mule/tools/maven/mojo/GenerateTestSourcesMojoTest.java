@@ -32,7 +32,7 @@ public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
         munitFolder = new File(testMuleFolder.getAbsolutePath(), MUNIT);
         munitFolder.mkdir();
 
-        munitSourceFolder = temporaryFolder.getRoot();
+        munitSourceFolder = projectRootFolder.getRoot();
 
         mojo = new GenerateTestSourcesMojo();
         mojo.munitSourceFolder = munitSourceFolder;
@@ -41,10 +41,10 @@ public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
 
     @Test
     public void createTestMuleFolderContentWithoutTestThrowsExceptionTest() throws IOException, MojoFailureException, MojoExecutionException {
-        expectedEx.expect(MojoFailureException.class);
-        expectedEx.expectMessage(EXPECTED_EXCEPTION_MESSAGE_FAIL_GENERATE_SOURCES);
+        expectedException.expect(MojoFailureException.class);
+        expectedException.expectMessage(EXPECTED_EXCEPTION_MESSAGE_FAIL_GENERATE_SOURCES);
 
-        when(buildMock.getDirectory()).thenReturn(temporaryFolder.getRoot().getAbsolutePath());
+        when(buildMock.getDirectory()).thenReturn(projectRootFolder.getRoot().getAbsolutePath());
         when(projectMock.getBuild()).thenReturn(buildMock);
 
         mojo.execute();
@@ -54,7 +54,7 @@ public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
     public void createTestMuleFolderContentTest() throws IOException, MojoFailureException, MojoExecutionException {
         when(buildMock.getDirectory()).thenReturn(buildTemporaryFolder.getRoot().getAbsolutePath());
         when(projectMock.getBuild()).thenReturn(buildMock);
-        File munitTestFile = temporaryFolder.newFile(MUNIT_TEST_FILE_NAME);
+        File munitTestFile = projectRootFolder.newFile(MUNIT_TEST_FILE_NAME);
 
         mojo.execute();
 

@@ -107,9 +107,12 @@ public class PackageMojo extends AbstractMuleMojo {
                 if (!lightwayPackage) {
                     builder.withRepository(new File(targetFolder + File.separator + REPOSITORY));
                 }
-                if (attachMuleSources) {
-                    builder.withMetaInf(new File(targetFolder + File.separator + META_INF));
-                }
+                builder.withMetaInf(new File(targetFolder + File.separator + META_INF));
+                // TODO  review this api so we can add mule sources at will
+                //                if (attachMuleSources) {
+                //                    builder.withMetaInf(new File(targetFolder + File.separator + META_INF));
+                //                }
+
             } else {
                 builder.withMetaInf(new File(targetFolder + File.separator + META_INF));
             }

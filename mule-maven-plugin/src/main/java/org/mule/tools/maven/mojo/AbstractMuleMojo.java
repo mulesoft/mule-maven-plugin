@@ -19,6 +19,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.utils.StringUtils;
+import org.mule.tools.maven.mojo.model.SharedLibraryDependency;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,6 +83,9 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${lightwayPackage}")
     protected boolean lightwayPackage = false;
+
+    @Parameter(property = "shared.libraries", required = false)
+    protected List<SharedLibraryDependency> sharedLibraries;
 
 
     protected File getMuleAppZipFile() {

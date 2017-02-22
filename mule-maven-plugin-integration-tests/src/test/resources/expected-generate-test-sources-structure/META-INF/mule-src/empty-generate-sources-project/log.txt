@@ -307,18 +307,18 @@ OS name: "mac os x", version: "10.11.6", arch: "x86_64", family: "mac"
 [DEBUG] Skipping non-existing directory /Users/ms0374/Documents/projects/mule-maven-plugin-project/integration-tests/target/test-classes/empty-generate-test-sources-project/target/site
 [INFO] 
 [INFO] --- mule-maven-plugin:3.0.0-SNAPSHOT:validate (execution1) @ empty-generate-sources-project ---
-[DEBUG] Skipped remote request for org.mule.tools:mule-artifact-archiver:2.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
-[DEBUG] Skipped remote request for org.mule.tools:mule-artifact-archiver:2.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
-[DEBUG] Failure to find org.mule.tools:mule-artifact-archiver:2.0.0-SNAPSHOT/maven-metadata.xml in https://repository.mulesoft.org/nexus/content/repositories/releases was cached in the local repository, resolution will not be reattempted until the update interval of mule-releases has elapsed or updates are forced
-[DEBUG] Skipped remote request for org.mule.tools:mule-artifact-archiver:2.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
-[DEBUG] Skipped remote request for org.mule.tools:mule-artifact-archiver:2.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
-[DEBUG] Skipped remote request for org.mule.tools:mule-artifact-archiver:2.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
-[DEBUG] Failure to find org.mule.tools:mule-artifact-archiver:2.0.0-SNAPSHOT/maven-metadata.xml in https://repository.mulesoft.org/nexus/content/repositories/releases was cached in the local repository, resolution will not be reattempted until the update interval of mule-releases has elapsed or updates are forced
-[DEBUG] Skipped remote request for org.mule.tools:mule-artifact-archiver:2.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule.tools:mule-artifact-org.mule.tools.artifact.org.mule.tools.artifact.archiver:2.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule.tools:mule-artifact-org.mule.tools.artifact.org.mule.tools.artifact.archiver:2.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Failure to find org.mule.tools:mule-artifact-org.mule.tools.artifact.org.mule.tools.artifact.archiver:2.0.0-SNAPSHOT/maven-metadata.xml in https://repository.mulesoft.org/nexus/content/repositories/releases was cached in the local repository, resolution will not be reattempted until the update interval of mule-releases has elapsed or updates are forced
+[DEBUG] Skipped remote request for org.mule.tools:mule-artifact-org.mule.tools.artifact.org.mule.tools.artifact.archiver:2.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule.tools:mule-artifact-org.mule.tools.artifact.org.mule.tools.artifact.archiver:2.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule.tools:mule-artifact-org.mule.tools.artifact.org.mule.tools.artifact.archiver:2.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Failure to find org.mule.tools:mule-artifact-org.mule.tools.artifact.org.mule.tools.artifact.archiver:2.0.0-SNAPSHOT/maven-metadata.xml in https://repository.mulesoft.org/nexus/content/repositories/releases was cached in the local repository, resolution will not be reattempted until the update interval of mule-releases has elapsed or updates are forced
+[DEBUG] Skipped remote request for org.mule.tools:mule-artifact-org.mule.tools.artifact.org.mule.tools.artifact.archiver:2.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
 [DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=0, ConflictMarker.markTime=0, ConflictMarker.nodeCount=22, ConflictIdSorter.graphTime=0, ConflictIdSorter.topsortTime=0, ConflictIdSorter.conflictIdCount=20, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=5, ConflictResolver.conflictItemCount=22, DefaultDependencyCollector.collectTime=324, DefaultDependencyCollector.transformTime=6}
 [DEBUG] org.mule.tools.maven:mule-maven-plugin:jar:3.0.0-SNAPSHOT:
-[DEBUG]    org.mule.tools:mule-artifact-archiver:jar:2.0.0-SNAPSHOT:compile
-[DEBUG]       org.codehaus.plexus:plexus-archiver:jar:2.0.1:compile
+[DEBUG]    org.mule.tools:mule-artifact-org.mule.tools.artifact.org.mule.tools.artifact.archiver:jar:2.0.0-SNAPSHOT:compile
+[DEBUG]       org.codehaus.plexus:plexus-org.mule.tools.artifact.org.mule.tools.artifact.archiver:jar:2.0.1:compile
 [DEBUG]          org.codehaus.plexus:plexus-container-default:jar:1.0-alpha-9-stable-1:compile
 [DEBUG]             junit:junit:jar:3.8.1:compile
 [DEBUG]             classworlds:classworlds:jar:1.1-alpha-2:compile
@@ -341,8 +341,8 @@ OS name: "mac os x", version: "10.11.6", arch: "x86_64", family: "mac"
 [DEBUG]   Imported:  < maven.api
 [DEBUG] Populating class realm plugin>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT
 [DEBUG]   Included: org.mule.tools.maven:mule-maven-plugin:jar:3.0.0-SNAPSHOT
-[DEBUG]   Included: org.mule.tools:mule-artifact-archiver:jar:2.0.0-SNAPSHOT
-[DEBUG]   Included: org.codehaus.plexus:plexus-archiver:jar:2.0.1
+[DEBUG]   Included: org.mule.tools:mule-artifact-org.mule.tools.artifact.org.mule.tools.artifact.archiver:jar:2.0.0-SNAPSHOT
+[DEBUG]   Included: org.codehaus.plexus:plexus-org.mule.tools.artifact.org.mule.tools.artifact.archiver:jar:2.0.1
 [DEBUG]   Included: junit:junit:jar:3.8.1
 [DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:3.0
 [DEBUG]   Included: org.codehaus.plexus:plexus-io:jar:2.0.1

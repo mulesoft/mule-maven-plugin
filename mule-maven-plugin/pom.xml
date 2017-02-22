@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>mule-maven-plugins</artifactId>
         <groupId>org.mule.tools.maven</groupId>
@@ -23,31 +24,32 @@
         <skipGpg>true</skipGpg>
         <skipVerifications>false</skipVerifications>
 
-
         <formatterConfigPath>formatter.xml</formatterConfigPath>
 
         <!-- Dependency Versions -->
+        <guava.version>18.0</guava.version>
         <maven.version>3.3.9</maven.version>
+        <log4j.version>1.2.17</log4j.version>
+        <commons.io.version>2.5</commons.io.version>
+        <maven.test.version>3.3.0</maven.test.version>
+        <commons.cli.version>1.3.1</commons.cli.version>
+        <hamcrest.all.version>1.3</hamcrest.all.version>
+        <mockito.core.version>2.5.6</mockito.core.version>
         <maven.project.version>2.2.1</maven.project.version>
+        <commons.logging.version>1.2</commons.logging.version>
+        <plexus.archiver.version>2.0.1</plexus.archiver.version>
         <maven.shared.utils.version>3.1.0</maven.shared.utils.version>
         <maven.plugin.annotations.version>3.4</maven.plugin.annotations.version>
 
-        <!--<aether.version>1.0.2.v20150114</aether.version>-->
-        <!--<aetherProviderVersion>3.3.9</aetherProviderVersion>-->
-        <mockito.all.version>1.9.0</mockito.all.version>
-
         <!-- TODO review this versions -->
         <maven.plugin.tools.anno.version>1.4.0</maven.plugin.tools.anno.version>
-        <mule.artifact.archiver.version>2.0.0-SNAPSHOT</mule.artifact.archiver.version>
-
-        <maven.test.version>3.3.0</maven.test.version>
 
         <!-- Plugin Versions -->
         <maven.plugin.version>3.4</maven.plugin.version>
         <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
+        <maven.license.plugin.version>1.8.0</maven.license.plugin.version>
         <formatter.maven.plugin.version>1.8.0</formatter.maven.plugin.version>
         <license.path>../LICENSE_HEADER</license.path>
-
     </properties>
 
     <build>
@@ -93,7 +95,6 @@
             <!--</plugin>-->
 
             <!-- Formatting plugins -->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
@@ -126,10 +127,41 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.mule.tools</groupId>
-            <artifactId>mule-artifact-archiver</artifactId>
-            <version>${mule.artifact.archiver.version}</version>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${log4j.version}</version>
         </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons.io.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>${commons.cli.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-archiver</artifactId>
+            <version>${plexus.archiver.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>${commons.logging.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>${hamcrest.all.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
@@ -165,7 +197,6 @@
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-shared-utils</artifactId>
             <version>${maven.shared.utils.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- Test dependencies -->
@@ -179,14 +210,8 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito.all.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-shared-utils</artifactId>
-            <version>${maven.shared.utils.version}</version>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.core.version}</version>
         </dependency>
     </dependencies>
 

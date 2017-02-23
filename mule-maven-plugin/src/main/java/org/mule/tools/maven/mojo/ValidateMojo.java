@@ -53,8 +53,6 @@ public class ValidateMojo extends AbstractMuleMojo {
     }
 
     private void validateMandatoryDescriptors() throws MojoExecutionException {
-        //        TODO validate that this file is in src/main/resources
-        //        isFilePresent("Invalid Mule project. Missing %s file, it must be present in the root of application", MULE_APP_PROPERTIES);
         isFilePresent("Invalid Mule project. Missing %s file, it must be present in the root of application",
                       MULE_APPLICATION_JSON);
     }

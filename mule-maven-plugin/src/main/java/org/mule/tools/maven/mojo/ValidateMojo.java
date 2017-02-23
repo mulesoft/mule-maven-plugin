@@ -15,8 +15,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.mule.tools.maven.dependency.resolver.MulePluginResolver;
 import org.mule.tools.maven.dependency.MulePluginsCompatibilityValidator;
+import org.mule.tools.maven.dependency.resolver.MulePluginResolver;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -53,13 +53,16 @@ public class ValidateMojo extends AbstractMuleMojo {
     }
 
     private void validateMandatoryDescriptors() throws MojoExecutionException {
-        isFilePresent("Invalid Mule project. Missing %s file, it must be present in the root of application", MULE_APP_PROPERTIES);
-        isFilePresent("Invalid Mule project. Missing %s file, it must be present in the root of application", MULE_APPLICATION_JSON);
+        //        TODO validate that this file is in src/main/resources
+        //        isFilePresent("Invalid Mule project. Missing %s file, it must be present in the root of application", MULE_APP_PROPERTIES);
+        isFilePresent("Invalid Mule project. Missing %s file, it must be present in the root of application",
+                      MULE_APPLICATION_JSON);
     }
 
     private void isFilePresent(String message, String... fileName) throws MojoExecutionException {
-        List<File> files = Arrays.stream(fileName).map(name -> Paths.get(projectBaseFolder.toString(), name).toFile()).collect(Collectors.toList());
-        if(files.stream().allMatch(file -> !file.exists())) {
+        List<File> files = Arrays.stream(fileName).map(name -> Paths.get(projectBaseFolder.toString(), name).toFile())
+            .collect(Collectors.toList());
+        if (files.stream().allMatch(file -> !file.exists())) {
             throw new MojoExecutionException(String.format(message, fileName));
         }
     }
@@ -72,7 +75,7 @@ public class ValidateMojo extends AbstractMuleMojo {
 
     protected void initializeResolver() {
         resolver = new MulePluginResolver(getLog(), session, projectBuilder, repositorySystem, localRepository,
-                remoteArtifactRepositories);
+                                          remoteArtifactRepositories);
     }
 
     protected void initializeValidator() {

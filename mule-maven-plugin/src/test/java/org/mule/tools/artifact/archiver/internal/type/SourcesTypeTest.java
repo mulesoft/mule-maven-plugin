@@ -25,27 +25,27 @@ import static org.mockito.Mockito.*;
 
 public class SourcesTypeTest {
 
-    private PackagingType packagingType = PackagingType.SOURCES;
+  private PackagingType packagingType = PackagingType.SOURCES;
 
-    @Test
-    public void validateListDirectories() {
-        assertThat("Directories set should not be null", packagingType.listDirectories(), notNullValue());
-        assertThat("Directories set is not as expected", packagingType.listDirectories(),
-                   containsInAnyOrder(PackageBuilder.MULE_SRC_FOLDER));
-    }
+  @Test
+  public void validateListDirectories() {
+    assertThat("Directories set should not be null", packagingType.listDirectories(), notNullValue());
+    assertThat("Directories set is not as expected", packagingType.listDirectories(),
+               containsInAnyOrder(PackageBuilder.MULE_SRC_FOLDER));
+  }
 
-    @Test
-    public void applyPackagingTest() {
-        PackageBuilder packageBuilderMock = mock(PackageBuilder.class);
+  @Test
+  public void applyPackagingTest() {
+    PackageBuilder packageBuilderMock = mock(PackageBuilder.class);
 
-        //        when(packageBuilderMock.withMetaInf(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
+    //        when(packageBuilderMock.withMetaInf(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
 
-        Map<String, File> fileMapMock = mock(Map.class);
+    Map<String, File> fileMapMock = mock(Map.class);
 
-        packagingType.applyPackaging(packageBuilderMock, fileMapMock);
+    packagingType.applyPackaging(packageBuilderMock, fileMapMock);
 
-        verify(packageBuilderMock, never()).withClasses(ArgumentMatchers.any());
-        verify(packageBuilderMock, never()).withMule(ArgumentMatchers.any());
-        //        verify(packageBuilderMock, times(1)).withMetaInf(ArgumentMatchers.any());
-    }
-} 
+    verify(packageBuilderMock, never()).withClasses(ArgumentMatchers.any());
+    verify(packageBuilderMock, never()).withMule(ArgumentMatchers.any());
+    //        verify(packageBuilderMock, times(1)).withMetaInf(ArgumentMatchers.any());
+  }
+}

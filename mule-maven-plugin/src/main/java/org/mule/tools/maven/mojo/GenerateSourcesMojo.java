@@ -35,61 +35,61 @@ import java.util.List;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class GenerateSourcesMojo extends AbstractMuleMojo {
 
-    protected ProjectBaseFolderFileCloner projectBaseFolderFileCloner;
+  protected ProjectBaseFolderFileCloner projectBaseFolderFileCloner;
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        getLog().debug("Creating target content with Mule source code...");
-        projectBaseFolderFileCloner = new ProjectBaseFolderFileCloner(project);
-        try {
-            createMuleFolderContent();
-            createMuleSourceFolderContent();
-            createDescriptors();
-        } catch (IOException e) {
-            throw new MojoFailureException("Fail to generate sources", e);
-        }
+  public void execute() throws MojoExecutionException, MojoFailureException {
+    getLog().debug("Creating target content with Mule source code...");
+    projectBaseFolderFileCloner = new ProjectBaseFolderFileCloner(project);
+    try {
+      createMuleFolderContent();
+      createMuleSourceFolderContent();
+      createDescriptors();
+    } catch (IOException e) {
+      throw new MojoFailureException("Fail to generate sources", e);
     }
+  }
 
-    protected void createMuleFolderContent() throws IOException {
-        File targetFolder = Paths.get(project.getBuild().getDirectory(), MULE).toFile();
-        Files.walkFileTree(muleSourceFolder.toPath(), new CopyFileVisitor(muleSourceFolder, targetFolder));
+  protected void createMuleFolderContent() throws IOException {
+    File targetFolder = Paths.get(project.getBuild().getDirectory(), MULE).toFile();
+    Files.walkFileTree(muleSourceFolder.toPath(), new CopyFileVisitor(muleSourceFolder, targetFolder));
+  }
+
+  protected void createMuleSourceFolderContent() throws IOException {
+    //TODO create ignore concept for things like .settings
+
+    File targetFolder = Paths.get(project.getBuild().getDirectory(), META_INF, MULE_SRC, project.getArtifactId()).toFile();
+    CopyFileVisitor visitor = new CopyFileVisitor(projectBaseFolder, targetFolder);
+    List<Path> exclusions = new ArrayList<>();
+    exclusions.add(Paths.get(projectBaseFolder.toPath().toString(), TARGET));
+    visitor.setExclusions(exclusions);
+    Files.walkFileTree(projectBaseFolder.toPath(), visitor);
+  }
+
+  private void createDescriptors() throws IOException, MojoExecutionException {
+    createPomProperties();
+    createDescriptorFilesContent();
+  }
+
+  protected void createDescriptorFilesContent() throws IOException {
+    projectBaseFolderFileCloner.clone(POM_XML)
+        .toPath(META_INF, MAVEN, project.getGroupId(), project.getArtifactId());
+    projectBaseFolderFileCloner.clone(MULE_APPLICATION_JSON).toPath(META_INF, MULE_ARTIFACT);
+  }
+
+  protected void createPomProperties() throws IOException, MojoExecutionException {
+    Path pomPropertiesFilePath =
+        Paths.get(project.getBuild().getDirectory(), META_INF, MAVEN, project.getGroupId(), project.getArtifactId(),
+                  POM_PROPERTIES);
+    try {
+      PrintWriter writer = new PrintWriter(pomPropertiesFilePath.toString(), "UTF-8");
+      writer.println("version=" + this.project.getVersion());
+      writer.println("groupId=" + this.project.getGroupId());
+      writer.println("artifactId=" + this.project.getArtifactId());
+      writer.close();
+    } catch (IOException e) {
+      throw new MojoExecutionException("Could not create pom.properties", e);
     }
-
-    protected void createMuleSourceFolderContent() throws IOException {
-        //TODO create ignore concept for things like .settings
-
-        File targetFolder = Paths.get(project.getBuild().getDirectory(), META_INF, MULE_SRC, project.getArtifactId()).toFile();
-        CopyFileVisitor visitor = new CopyFileVisitor(projectBaseFolder, targetFolder);
-        List<Path> exclusions = new ArrayList<>();
-        exclusions.add(Paths.get(projectBaseFolder.toPath().toString(), TARGET));
-        visitor.setExclusions(exclusions);
-        Files.walkFileTree(projectBaseFolder.toPath(), visitor);
-    }
-
-    private void createDescriptors() throws IOException, MojoExecutionException {
-        createPomProperties();
-        createDescriptorFilesContent();
-    }
-
-    protected void createDescriptorFilesContent() throws IOException {
-        projectBaseFolderFileCloner.clone(POM_XML)
-            .toPath(META_INF, MAVEN, project.getGroupId(), project.getArtifactId());
-        projectBaseFolderFileCloner.clone(MULE_APPLICATION_JSON).toPath(META_INF, MULE_ARTIFACT);
-    }
-
-    protected void createPomProperties() throws IOException, MojoExecutionException {
-        Path pomPropertiesFilePath =
-            Paths.get(project.getBuild().getDirectory(), META_INF, MAVEN, project.getGroupId(), project.getArtifactId(),
-                      POM_PROPERTIES);
-        try {
-            PrintWriter writer = new PrintWriter(pomPropertiesFilePath.toString(), "UTF-8");
-            writer.println("version=" + this.project.getVersion());
-            writer.println("groupId=" + this.project.getGroupId());
-            writer.println("artifactId=" + this.project.getArtifactId());
-            writer.close();
-        } catch (IOException e) {
-            throw new MojoExecutionException("Could not create pom.properties", e);
-        }
-    }
+  }
 
 
 }

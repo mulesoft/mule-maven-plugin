@@ -30,82 +30,82 @@ import java.util.List;
  */
 public abstract class AbstractMuleMojo extends AbstractMojo {
 
-    public static final String POM_XML = "pom.xml";
-    public static final String MULE_CONFIG_XML = "mule-config.xml";
-    public static final String MULE_APP_PROPERTIES = "mule-app.properties";
-    public static final String MULE_DEPLOY_PROPERTIES = "mule-deploy.properties";
+  public static final String POM_XML = "pom.xml";
+  public static final String MULE_CONFIG_XML = "mule-config.xml";
+  public static final String MULE_APP_PROPERTIES = "mule-app.properties";
+  public static final String MULE_DEPLOY_PROPERTIES = "mule-deploy.properties";
 
-    public static final String MULE = "mule";
-    public static final String TEST_MULE = "test-mule";
-    public static final String MUNIT = "munit";
-    public static final String TARGET = "target";
-    public static final String CLASSES = "classes";
-    public static final String MULE_SRC = "mule-src";
-    public static final String META_INF = "META-INF";
-    public static final String MAVEN = "maven";
-    public static final String MULE_APPLICATION_JSON = "mule-application.json";
-    public static final String MULE_ARTIFACT = "mule-artifact";
-    public static final String REPOSITORY = "repository";
-    public static final String POM_PROPERTIES = "pom.properties";
+  public static final String MULE = "mule";
+  public static final String TEST_MULE = "test-mule";
+  public static final String MUNIT = "munit";
+  public static final String TARGET = "target";
+  public static final String CLASSES = "classes";
+  public static final String MULE_SRC = "mule-src";
+  public static final String META_INF = "META-INF";
+  public static final String MAVEN = "maven";
+  public static final String MULE_APPLICATION_JSON = "mule-application.json";
+  public static final String MULE_ARTIFACT = "mule-artifact";
+  public static final String REPOSITORY = "repository";
+  public static final String POM_PROPERTIES = "pom.properties";
 
-    @Component
-    protected ProjectBuilder projectBuilder;
+  @Component
+  protected ProjectBuilder projectBuilder;
 
-    @Component
-    protected RepositorySystem repositorySystem;
+  @Component
+  protected RepositorySystem repositorySystem;
 
-    @Parameter(readonly = true, required = true, defaultValue = "${session}")
-    protected MavenSession session;
+  @Parameter(readonly = true, required = true, defaultValue = "${session}")
+  protected MavenSession session;
 
-    @Parameter(readonly = true, required = true, defaultValue = "${localRepository}")
-    protected ArtifactRepository localRepository;
+  @Parameter(readonly = true, required = true, defaultValue = "${localRepository}")
+  protected ArtifactRepository localRepository;
 
-    @Parameter(readonly = true, required = true, defaultValue = "${project.remoteArtifactRepositories}")
-    protected List<ArtifactRepository> remoteArtifactRepositories;
+  @Parameter(readonly = true, required = true, defaultValue = "${project.remoteArtifactRepositories}")
+  protected List<ArtifactRepository> remoteArtifactRepositories;
 
-    @Parameter(defaultValue = "${project.build.finalName}", required = true)
-    protected String finalName;
+  @Parameter(defaultValue = "${project.build.finalName}", required = true)
+  protected String finalName;
 
-    @Parameter(property = "project", required = true)
-    protected MavenProject project;
+  @Parameter(property = "project", required = true)
+  protected MavenProject project;
 
-    @Parameter(property = "project.build.directory", required = true)
-    protected File outputDirectory;
+  @Parameter(property = "project.build.directory", required = true)
+  protected File outputDirectory;
 
-    @Parameter(defaultValue = "${project.basedir}")
-    protected File projectBaseFolder;
+  @Parameter(defaultValue = "${project.basedir}")
+  protected File projectBaseFolder;
 
-    @Parameter(defaultValue = "${project.basedir}/src/main/mule/")
-    protected File muleSourceFolder;
+  @Parameter(defaultValue = "${project.basedir}/src/main/mule/")
+  protected File muleSourceFolder;
 
-    @Parameter(defaultValue = "${project.basedir}/src/test/munit/")
-    protected File munitSourceFolder;
+  @Parameter(defaultValue = "${project.basedir}/src/test/munit/")
+  protected File munitSourceFolder;
 
-    @Parameter(defaultValue = "${lightwayPackage}")
-    protected boolean lightwayPackage = false;
+  @Parameter(defaultValue = "${lightwayPackage}")
+  protected boolean lightwayPackage = false;
 
-    @Parameter(property = "shared.libraries", required = false)
-    protected List<SharedLibraryDependency> sharedLibraries;
+  @Parameter(property = "shared.libraries", required = false)
+  protected List<SharedLibraryDependency> sharedLibraries;
 
 
-    protected File getMuleAppZipFile() {
-        return new File(this.outputDirectory, this.finalName + ".zip");
+  protected File getMuleAppZipFile() {
+    return new File(this.outputDirectory, this.finalName + ".zip");
+  }
+
+
+  protected void createFileIfNecessary(String... filePath) throws IOException {
+    String path = StringUtils.join(filePath, File.separator);
+    File file = new File(path);
+    if (!file.exists()) {
+      file.createNewFile();
     }
+  }
 
-
-    protected void createFileIfNecessary(String... filePath) throws IOException {
-        String path = StringUtils.join(filePath, File.separator);
-        File file = new File(path);
-        if (!file.exists()) {
-            file.createNewFile();
-        }
+  protected void createFolderIfNecessary(String... folderPath) {
+    String path = StringUtils.join(folderPath, File.separator);
+    File folder = new File(path);
+    if (!folder.exists()) {
+      folder.mkdir();
     }
-
-    protected void createFolderIfNecessary(String... folderPath) {
-        String path = StringUtils.join(folderPath, File.separator);
-        File folder = new File(path);
-        if (!folder.exists()) {
-            folder.mkdir();
-        }
-    }
+  }
 }

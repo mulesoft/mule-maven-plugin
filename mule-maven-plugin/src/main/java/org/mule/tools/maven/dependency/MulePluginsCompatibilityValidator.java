@@ -24,44 +24,44 @@ import java.util.stream.Collectors;
  */
 public class MulePluginsCompatibilityValidator {
 
-    private final DependencyMapBuilder dependencyMapBuilder = new DependencyMapBuilder();
+  private final DependencyMapBuilder dependencyMapBuilder = new DependencyMapBuilder();
 
-    /**
-     * Validates a list of dependencies to check for incompatibilities
-     *
-     * @param mulePlugins
-     * @throws MojoExecutionException if the list of mule plugins contains incompatibilities
-     */
-    public void validate(List<Dependency> mulePlugins) throws MojoExecutionException {
-        for (Map.Entry<String, List<Dependency>> entry : dependencyMapBuilder.build(mulePlugins).entrySet()) {
-            if (entry.getValue().size() > 1) {
+  /**
+   * Validates a list of dependencies to check for incompatibilities
+   *
+   * @param mulePlugins
+   * @throws MojoExecutionException if the list of mule plugins contains incompatibilities
+   */
+  public void validate(List<Dependency> mulePlugins) throws MojoExecutionException {
+    for (Map.Entry<String, List<Dependency>> entry : dependencyMapBuilder.build(mulePlugins).entrySet()) {
+      if (entry.getValue().size() > 1) {
 
-                if (!areMulePluginVersionCompatible(entry.getValue())) {
-                    StringBuilder message = new StringBuilder()
-                        .append("There are incompatible versions of the same mule plugin in the application dependency graph.")
-                        .append("This application can not be package as it will fail to deploy.")
-                        .append("Offending mule plugin: ").append(entry.getKey())
-                        .append("Versions: ");
-                    entry.getValue().forEach(d -> message.append(d.getVersion()).append(","));
+        if (!areMulePluginVersionCompatible(entry.getValue())) {
+          StringBuilder message = new StringBuilder()
+              .append("There are incompatible versions of the same mule plugin in the application dependency graph.")
+              .append("This application can not be package as it will fail to deploy.")
+              .append("Offending mule plugin: ").append(entry.getKey())
+              .append("Versions: ");
+          entry.getValue().forEach(d -> message.append(d.getVersion()).append(","));
 
-                    throw new MojoExecutionException(message.toString());
-                }
-            }
+          throw new MojoExecutionException(message.toString());
         }
+      }
     }
+  }
 
 
-    private boolean areMulePluginVersionCompatible(List<Dependency> dependencies) {
-        Set<String> majors = dependencies.stream()
-            .map(d -> d.getVersion())
-            .map(v -> v.substring(0, v.indexOf(".")))
-            .collect(Collectors.toSet());
+  private boolean areMulePluginVersionCompatible(List<Dependency> dependencies) {
+    Set<String> majors = dependencies.stream()
+        .map(d -> d.getVersion())
+        .map(v -> v.substring(0, v.indexOf(".")))
+        .collect(Collectors.toSet());
 
-        if (majors.size() > 1) {
-            return false;
-        }
-        return true;
-
+    if (majors.size() > 1) {
+      return false;
     }
+    return true;
 
-} 
+  }
+
+}

@@ -19,47 +19,47 @@ import java.util.List;
 
 public class CopyFileVisitor implements FileVisitor<Path> {
 
-    private final File fromFolder;
-    private final File targetFolder;
+  private final File fromFolder;
+  private final File targetFolder;
 
-    private List<Path> exclusions = Collections.emptyList();
+  private List<Path> exclusions = Collections.emptyList();
 
-    public CopyFileVisitor(File fromFolder, File targetFolder) {
-        this.fromFolder = fromFolder;
-        this.targetFolder = targetFolder;
+  public CopyFileVisitor(File fromFolder, File targetFolder) {
+    this.fromFolder = fromFolder;
+    this.targetFolder = targetFolder;
+  }
+
+  public void setExclusions(List<Path> exclusions) {
+    this.exclusions = exclusions;
+  }
+
+  @Override
+  public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+    if (exclusions.contains(dir)) {
+      return FileVisitResult.SKIP_SUBTREE;
     }
 
-    public void setExclusions(List<Path> exclusions) {
-        this.exclusions = exclusions;
+    Path targetPath = targetFolder.toPath().resolve(fromFolder.toPath().relativize(dir));
+    if (!Files.exists(targetPath)) {
+      Files.createDirectory(targetPath);
     }
+    return FileVisitResult.CONTINUE;
+  }
 
-    @Override
-    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-        if (exclusions.contains(dir)) {
-            return FileVisitResult.SKIP_SUBTREE;
-        }
+  @Override
+  public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+    Files
+        .copy(file, targetFolder.toPath().resolve(fromFolder.toPath().relativize(file)), StandardCopyOption.REPLACE_EXISTING);
+    return FileVisitResult.CONTINUE;
+  }
 
-        Path targetPath = targetFolder.toPath().resolve(fromFolder.toPath().relativize(dir));
-        if (!Files.exists(targetPath)) {
-            Files.createDirectory(targetPath);
-        }
-        return FileVisitResult.CONTINUE;
-    }
+  @Override
+  public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+    return FileVisitResult.CONTINUE;
+  }
 
-    @Override
-    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        Files
-            .copy(file, targetFolder.toPath().resolve(fromFolder.toPath().relativize(file)), StandardCopyOption.REPLACE_EXISTING);
-        return FileVisitResult.CONTINUE;
-    }
-
-    @Override
-    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-        return FileVisitResult.CONTINUE;
-    }
-
-    @Override
-    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-        return FileVisitResult.CONTINUE;
-    }
-} 
+  @Override
+  public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+    return FileVisitResult.CONTINUE;
+  }
+}

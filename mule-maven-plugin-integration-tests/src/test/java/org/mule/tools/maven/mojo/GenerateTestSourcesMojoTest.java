@@ -22,24 +22,25 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 
 public class GenerateTestSourcesMojoTest extends MojoTest {
-    private static final String GENERATE_TEST_SOURCES = "generate-test-sources";
 
-    public GenerateTestSourcesMojoTest() {
-        this.goal = GENERATE_TEST_SOURCES;
-    }
+  private static final String GENERATE_TEST_SOURCES = "generate-test-sources";
 
-    @Before
-    public void before() throws IOException, VerificationException {
-        clearResources();
-    }
+  public GenerateTestSourcesMojoTest() {
+    this.goal = GENERATE_TEST_SOURCES;
+  }
 
-    @Test
-    public void testGenerateTestSources() throws IOException, VerificationException {
-        verifier.executeGoal(GENERATE_TEST_SOURCES);
-        File expectedStructure = getExpectedStructure();
+  @Before
+  public void before() throws IOException, VerificationException {
+    clearResources();
+  }
 
-        assertThat("The directory structure is different from the expected", targetFolder, hasSameTreeStructure(expectedStructure));
+  @Test
+  public void testGenerateTestSources() throws IOException, VerificationException {
+    verifier.executeGoal(GENERATE_TEST_SOURCES);
+    File expectedStructure = getExpectedStructure();
 
-        verifier.verifyErrorFreeLog();
-    }
+    assertThat("The directory structure is different from the expected", targetFolder, hasSameTreeStructure(expectedStructure));
+
+    verifier.verifyErrorFreeLog();
+  }
 }

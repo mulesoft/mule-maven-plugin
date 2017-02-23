@@ -19,85 +19,91 @@ import java.io.File;
 import java.util.*;
 
 public class FileTreeMatcher {
-    private static String PADDING = "    ";
-    public static final String HORIZONTAL_LINE = StringUtils.repeat("-", PADDING.length() - 1);
-    public static Matcher<File> hasSameTreeStructure(final File root) {
-        return new BaseMatcher<File>() {
-            @Override
-            public boolean matches(Object item) {
-                if(root == null) {
-                    throw new IllegalArgumentException("Do not use this matcher to compare against null");
-                }
-                if(item == null) {
-                    return false;
-                }
-                final File otherRoot = (File) item;
-                return root.isDirectory() && otherRoot.isDirectory() && sameTreeSructure(root, otherRoot);
-            }
 
-            @Override
-            public void describeTo(Description description) {
-                String treeRepresentation = generateTreeRepresentation(root, PADDING.length()).toString();
-                description.appendText("hasSameTreeStructure was expecting the following directory structure: \n\n").appendText(StringUtils.isEmpty(treeRepresentation) ? PADDING + "<empty>\n" : treeRepresentation);
-            }
+  private static String PADDING = "    ";
+  public static final String HORIZONTAL_LINE = StringUtils.repeat("-", PADDING.length() - 1);
 
-            @Override
-            public void describeMismatch(final Object item, final Description description) {
-                String treeRepresentation = item != null ? generateTreeRepresentation((File) item, PADDING.length()).toString() : "null";
-                description.appendText("was \n\n").appendText(StringUtils.isEmpty(treeRepresentation) ? PADDING + "<empty>\n" : treeRepresentation);
-            }
+  public static Matcher<File> hasSameTreeStructure(final File root) {
+    return new BaseMatcher<File>() {
 
-            private StringBuilder generateTreeRepresentation(File root, int padding) {
-                StringBuilder treeRepresentation = new StringBuilder("");
-                if(root.isFile()) {
-                    return treeRepresentation;
-                }
-                for(File child : root.listFiles()) {
-                    treeRepresentation.append(generateLeftPadding(padding) + child.getName() + ((child.isDirectory()) ? "/\n" : "\n"));
-                    treeRepresentation.append(generateTreeRepresentation(child, padding + PADDING.length()));
-                }
-                return treeRepresentation;
-            }
+      @Override
+      public boolean matches(Object item) {
+        if (root == null) {
+          throw new IllegalArgumentException("Do not use this matcher to compare against null");
+        }
+        if (item == null) {
+          return false;
+        }
+        final File otherRoot = (File) item;
+        return root.isDirectory() && otherRoot.isDirectory() && sameTreeSructure(root, otherRoot);
+      }
 
-            private String generateLeftPadding(int padding) {
-                if(padding == PADDING.length()) { // element in root directory
-                    return PADDING;
-                }
-                return StringUtils.repeat(" ", padding-PADDING.length()) + "\u2514" + HORIZONTAL_LINE;
+      @Override
+      public void describeTo(Description description) {
+        String treeRepresentation = generateTreeRepresentation(root, PADDING.length()).toString();
+        description.appendText("hasSameTreeStructure was expecting the following directory structure: \n\n")
+            .appendText(StringUtils.isEmpty(treeRepresentation) ? PADDING + "<empty>\n" : treeRepresentation);
+      }
 
-            }
+      @Override
+      public void describeMismatch(final Object item, final Description description) {
+        String treeRepresentation = item != null ? generateTreeRepresentation((File) item, PADDING.length()).toString() : "null";
+        description.appendText("was \n\n")
+            .appendText(StringUtils.isEmpty(treeRepresentation) ? PADDING + "<empty>\n" : treeRepresentation);
+      }
 
-            private boolean sameTreeSructure(File root, File otherRoot) {
-                if(root.listFiles() == null || otherRoot.listFiles() == null) {
-                    return !(root.listFiles() == null ^ otherRoot.listFiles() == null);
-                }
-                Set<File> rootChildren = new TreeSet<>(Arrays.asList(root.listFiles()));
-                Set<File> otherRootChildren = new TreeSet<>(Arrays.asList(otherRoot.listFiles()));
-                if(rootChildren.size() != otherRootChildren.size()) {
-                    return false;
-                }
-                Iterator<File> rootChildrenIterator = rootChildren.iterator();
-                Iterator<File> otherRootChildrenIterator = otherRootChildren.iterator();
-                while(rootChildrenIterator.hasNext() && otherRootChildrenIterator.hasNext()) {
-                    File rootChild = rootChildrenIterator.next();
-                    File otherRootChild = otherRootChildrenIterator.next();
-                    if(!areSameFile(rootChild, otherRootChild) || !sameTreeSructure(rootChild, otherRootChild)) {
-                        return false;
-                    }
-                }
-                return true;
-            }
+      private StringBuilder generateTreeRepresentation(File root, int padding) {
+        StringBuilder treeRepresentation = new StringBuilder("");
+        if (root.isFile()) {
+          return treeRepresentation;
+        }
+        for (File child : root.listFiles()) {
+          treeRepresentation.append(generateLeftPadding(padding) + child.getName() + ((child.isDirectory()) ? "/\n" : "\n"));
+          treeRepresentation.append(generateTreeRepresentation(child, padding + PADDING.length()));
+        }
+        return treeRepresentation;
+      }
 
-            private boolean areSameFile(File file, File otherFile) {
-                return StringUtils.equals(file.getName(), otherFile.getName()) && (file.isFile() == otherFile.isFile());
-            }
+      private String generateLeftPadding(int padding) {
+        if (padding == PADDING.length()) { // element in root directory
+          return PADDING;
+        }
+        return StringUtils.repeat(" ", padding - PADDING.length()) + "\u2514" + HORIZONTAL_LINE;
+
+      }
+
+      private boolean sameTreeSructure(File root, File otherRoot) {
+        if (root.listFiles() == null || otherRoot.listFiles() == null) {
+          return !(root.listFiles() == null ^ otherRoot.listFiles() == null);
+        }
+        Set<File> rootChildren = new TreeSet<>(Arrays.asList(root.listFiles()));
+        Set<File> otherRootChildren = new TreeSet<>(Arrays.asList(otherRoot.listFiles()));
+        if (rootChildren.size() != otherRootChildren.size()) {
+          return false;
+        }
+        Iterator<File> rootChildrenIterator = rootChildren.iterator();
+        Iterator<File> otherRootChildrenIterator = otherRootChildren.iterator();
+        while (rootChildrenIterator.hasNext() && otherRootChildrenIterator.hasNext()) {
+          File rootChild = rootChildrenIterator.next();
+          File otherRootChild = otherRootChildrenIterator.next();
+          if (!areSameFile(rootChild, otherRootChild) || !sameTreeSructure(rootChild, otherRootChild)) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      private boolean areSameFile(File file, File otherFile) {
+        return StringUtils.equals(file.getName(), otherFile.getName()) && (file.isFile() == otherFile.isFile());
+      }
 
 
-        };
-    }
-    @Override
-    public String toString() {
-        return "FileTreeMatcher";
-    }
+    };
+  }
+
+  @Override
+  public String toString() {
+    return "FileTreeMatcher";
+  }
 
 }

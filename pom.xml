@@ -18,9 +18,40 @@
         <license.path>LICENSE_HEADER</license.path>
         <maven.verifier.version>1.6</maven.verifier.version>
         <maven.license.plugin.version>1.8.0</maven.license.plugin.version>
+        <maven.java.formatter.version>1.8.0</maven.java.formatter.version>
+        <formatter.path>formatter.xml</formatter.path>
+        <formatterGoal>validate</formatterGoal>
+        <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     </properties>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.marvinformatics.formatter</groupId>
+                    <artifactId>formatter-maven-plugin</artifactId>
+                    <version>${maven.java.formatter.version}</version>
+                    <configuration>
+                        <compilerCompliance>${javaVersion}</compilerCompliance>
+                        <compilerSource>${javaVersion}</compilerSource>
+                        <compilerTargetPlatform>${javaVersion}</compilerTargetPlatform>
+                        <configFile>${basedir}/${formatter.path}</configFile>
+                        <configJsFile>${basedir}/${formatter.path}</configJsFile>
+                        <lineEnding>LF</lineEnding>
+                        <aggregator>false</aggregator>
+                        <executionRoot>true</executionRoot>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>${formatterGoal}</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>com.mycila.maven-license-plugin</groupId>
@@ -58,6 +89,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.marvinformatics.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>${maven.java.formatter.version}</version>
             </plugin>
         </plugins>
     </build>

@@ -22,43 +22,44 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.tools.maven.FileTreeMatcher.hasSameTreeStructure;
 
 public class RepositoryMirrorMojoTest extends MojoTest {
-    private static final String REPOSITORY_MIRROR = "repository-mirror";
-    private static final String INSTALL = "install";
-    private static final String DEPENDENCY_ORG_ID = "org.apache.maven.plugin.my.dependency";
-    private static final String DEPENDENCY_NAME = "dependency-repository-mirror-project";
-    private static final String DEPENDENCY_VERSION = "1.0-SNAPSHOT";
-    private static final String DEPENDENCY_TYPE = "jar";
-    private static final String DEPENDENCY_PROJECT_NAME = "dependency-repository-mirror-test";
 
-    public RepositoryMirrorMojoTest() {
-        this.goal = REPOSITORY_MIRROR;
-    }
+  private static final String REPOSITORY_MIRROR = "repository-mirror";
+  private static final String INSTALL = "install";
+  private static final String DEPENDENCY_ORG_ID = "org.apache.maven.plugin.my.dependency";
+  private static final String DEPENDENCY_NAME = "dependency-repository-mirror-project";
+  private static final String DEPENDENCY_VERSION = "1.0-SNAPSHOT";
+  private static final String DEPENDENCY_TYPE = "jar";
+  private static final String DEPENDENCY_PROJECT_NAME = "dependency-repository-mirror-test";
 
-    @Before
-    public void before() throws IOException, VerificationException {
-        clearResources();
-    }
+  public RepositoryMirrorMojoTest() {
+    this.goal = REPOSITORY_MIRROR;
+  }
 
-    @Test
-    public void testRepositoryMirror() throws IOException, VerificationException {
-        installThirdPartyArtifact();
+  @Before
+  public void before() throws IOException, VerificationException {
+    clearResources();
+  }
 
-        verifier.executeGoal("org.mule.tools.maven:mule-maven-plugin:" + REPOSITORY_MIRROR);
+  @Test
+  public void testRepositoryMirror() throws IOException, VerificationException {
+    installThirdPartyArtifact();
 
-        File expectedStructure = getExpectedStructure();
+    verifier.executeGoal("org.mule.tools.maven:mule-maven-plugin:" + REPOSITORY_MIRROR);
 
-        assertThat("The directory structure is different from the expected", targetFolder, hasSameTreeStructure(expectedStructure));
+    File expectedStructure = getExpectedStructure();
 
-        verifier.verifyErrorFreeLog();
-    }
+    assertThat("The directory structure is different from the expected", targetFolder, hasSameTreeStructure(expectedStructure));
 
-    private void installThirdPartyArtifact() throws IOException, VerificationException {
-        File dependencyProjectRootFolder = builder.createProjectBaseDir(DEPENDENCY_PROJECT_NAME, this.getClass());
-        Verifier auxVerifier = new Verifier(dependencyProjectRootFolder.getAbsolutePath());
-        auxVerifier.deleteArtifact(DEPENDENCY_ORG_ID, DEPENDENCY_NAME, DEPENDENCY_VERSION, DEPENDENCY_TYPE);
-        auxVerifier.assertArtifactNotPresent(DEPENDENCY_ORG_ID, DEPENDENCY_NAME, DEPENDENCY_VERSION, DEPENDENCY_TYPE);
-        auxVerifier.executeGoal(INSTALL);
-        auxVerifier.assertArtifactPresent(DEPENDENCY_ORG_ID, DEPENDENCY_NAME, DEPENDENCY_VERSION, DEPENDENCY_TYPE);
-        auxVerifier.verifyErrorFreeLog();
-    }
+    verifier.verifyErrorFreeLog();
+  }
+
+  private void installThirdPartyArtifact() throws IOException, VerificationException {
+    File dependencyProjectRootFolder = builder.createProjectBaseDir(DEPENDENCY_PROJECT_NAME, this.getClass());
+    Verifier auxVerifier = new Verifier(dependencyProjectRootFolder.getAbsolutePath());
+    auxVerifier.deleteArtifact(DEPENDENCY_ORG_ID, DEPENDENCY_NAME, DEPENDENCY_VERSION, DEPENDENCY_TYPE);
+    auxVerifier.assertArtifactNotPresent(DEPENDENCY_ORG_ID, DEPENDENCY_NAME, DEPENDENCY_VERSION, DEPENDENCY_TYPE);
+    auxVerifier.executeGoal(INSTALL);
+    auxVerifier.assertArtifactPresent(DEPENDENCY_ORG_ID, DEPENDENCY_NAME, DEPENDENCY_VERSION, DEPENDENCY_TYPE);
+    auxVerifier.verifyErrorFreeLog();
+  }
 }

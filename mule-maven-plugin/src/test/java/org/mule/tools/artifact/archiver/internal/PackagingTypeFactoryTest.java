@@ -20,35 +20,35 @@ import static org.mule.tools.artifact.archiver.internal.packaging.PackagingType.
 
 public class PackagingTypeFactoryTest {
 
-    private static final String UNKNOWN_PACKAGING = "unknownPackaging";
-    private static final String BINARIES_AND_SOURCES_NAME = "binariesAndSources";
+  private static final String UNKNOWN_PACKAGING = "unknownPackaging";
+  private static final String BINARIES_AND_SOURCES_NAME = "binariesAndSources";
 
-    @Test
-    public void getDefaultPackagingTest() {
-        PackagingType actualPackagingType = PackagingTypeFactory.getDefaultPackaging();
+  @Test
+  public void getDefaultPackagingTest() {
+    PackagingType actualPackagingType = PackagingTypeFactory.getDefaultPackaging();
 
-        assertThat("Actual packaging type is not the expected", actualPackagingType, instanceOf(BINARIES.getDeclaringClass()));
-    }
+    assertThat("Actual packaging type is not the expected", actualPackagingType, instanceOf(BINARIES.getDeclaringClass()));
+  }
 
-    @Test
-    public void getPackagingTest() {
-        PackagingType binariesAndSourcesPackagingType = PackagingTypeFactory.getPackaging(BINARIES_AND_SOURCES_NAME);
-        PackagingType binariesPackagingType = PackagingTypeFactory.getPackaging(BINARIES.name());
-        PackagingType sourcesPackagingType = PackagingTypeFactory.getPackaging(SOURCES.name());
+  @Test
+  public void getPackagingTest() {
+    PackagingType binariesAndSourcesPackagingType = PackagingTypeFactory.getPackaging(BINARIES_AND_SOURCES_NAME);
+    PackagingType binariesPackagingType = PackagingTypeFactory.getPackaging(BINARIES.name());
+    PackagingType sourcesPackagingType = PackagingTypeFactory.getPackaging(SOURCES.name());
 
-        assertThat("Actual packaging type is not the expected", binariesAndSourcesPackagingType,
-                   instanceOf(BINARIES_AND_SOURCES.getDeclaringClass()));
-        assertThat("Actual packaging type is not the expected", binariesPackagingType, instanceOf(BINARIES.getDeclaringClass()));
-        assertThat("Actual packaging type is not the expected", sourcesPackagingType, instanceOf(SOURCES.getDeclaringClass()));
-    }
+    assertThat("Actual packaging type is not the expected", binariesAndSourcesPackagingType,
+               instanceOf(BINARIES_AND_SOURCES.getDeclaringClass()));
+    assertThat("Actual packaging type is not the expected", binariesPackagingType, instanceOf(BINARIES.getDeclaringClass()));
+    assertThat("Actual packaging type is not the expected", sourcesPackagingType, instanceOf(SOURCES.getDeclaringClass()));
+  }
 
-    @Test
-    public void getDefaultPackagingIfPackagingTypeIsUnknownTest() {
-        PackagingType actualDefaultPackagingType = PackagingTypeFactory.getPackaging(UNKNOWN_PACKAGING);
+  @Test
+  public void getDefaultPackagingIfPackagingTypeIsUnknownTest() {
+    PackagingType actualDefaultPackagingType = PackagingTypeFactory.getPackaging(UNKNOWN_PACKAGING);
 
-        PackagingType expectedDefaultPackagingType = PackagingTypeFactory.getDefaultPackaging();
+    PackagingType expectedDefaultPackagingType = PackagingTypeFactory.getDefaultPackaging();
 
-        assertThat("Actual packaging type is not the expected", actualDefaultPackagingType,
-                   instanceOf(expectedDefaultPackagingType.getClass()));
-    }
+    assertThat("Actual packaging type is not the expected", actualDefaultPackagingType,
+               instanceOf(expectedDefaultPackagingType.getClass()));
+  }
 }

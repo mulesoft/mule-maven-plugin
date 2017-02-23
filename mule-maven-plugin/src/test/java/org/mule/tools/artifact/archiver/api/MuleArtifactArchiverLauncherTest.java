@@ -24,62 +24,63 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
 
 public class MuleArtifactArchiverLauncherTest {
-    private static final String TARGET_OPTION = "--target";
-    private static final String ABSOLUTE_PATH = "/tmp";
-    private static final String UNKNOWN_OPTION = "--unknown";
-    private static final String PACKAGE_OPTION = "--packageName";
-    private static final String NAME = "app";
-    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-    private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
 
-    @Before
-    public void setUpStreams() {
-        System.setOut(new PrintStream(outContent));
-        System.setErr(new PrintStream(errContent));
-    }
+  private static final String TARGET_OPTION = "--target";
+  private static final String ABSOLUTE_PATH = "/tmp";
+  private static final String UNKNOWN_OPTION = "--unknown";
+  private static final String PACKAGE_OPTION = "--packageName";
+  private static final String NAME = "app";
+  private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+  private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
 
-    @Test
-    public void mainWithoutPackageNameArgumentTest() throws IOException {
-        MuleArtifactArchiverLauncher launcher = new MuleArtifactArchiverLauncher();
-        String[] args = new String[2];
-        args[0] = TARGET_OPTION;
-        args[1] = ABSOLUTE_PATH;
-        launcher.main(args);
-        assertThat("Printed message was not the expected", getHelpMessage(), equalTo(outContent.toString()));
-    }
+  @Before
+  public void setUpStreams() {
+    System.setOut(new PrintStream(outContent));
+    System.setErr(new PrintStream(errContent));
+  }
 
-    @Test
-    public void mainWithUnknownOptionTest() throws IOException {
-        MuleArtifactArchiverLauncher launcher = new MuleArtifactArchiverLauncher();
-        String[] args = new String[3];
-        args[0] = UNKNOWN_OPTION;
-        args[1] = PACKAGE_OPTION;
-        args[2] = NAME;
-        launcher.main(args);
-        assertThat("Printed message was not the expected", getHelpMessage(), equalTo(outContent.toString()));
-    }
+  @Test
+  public void mainWithoutPackageNameArgumentTest() throws IOException {
+    MuleArtifactArchiverLauncher launcher = new MuleArtifactArchiverLauncher();
+    String[] args = new String[2];
+    args[0] = TARGET_OPTION;
+    args[1] = ABSOLUTE_PATH;
+    launcher.main(args);
+    assertThat("Printed message was not the expected", getHelpMessage(), equalTo(outContent.toString()));
+  }
 
-    @Test
-    public void mainMinimumOptionsTest() throws IOException {
-        MuleArtifactArchiverLauncher launcher = new MuleArtifactArchiverLauncher();
-        PackageBuilder packageBuilderMock = mock(PackageBuilder.class);
-        launcher.setPackageBuilder(packageBuilderMock);
-        String[] args = new String[2];
-        args[0] = PACKAGE_OPTION;
-        args[1] = NAME;
-        launcher.main(args);
-        verify(packageBuilderMock, times(1)).generateArtifact(ArgumentMatchers.any(), ArgumentMatchers.any());
-    }
+  @Test
+  public void mainWithUnknownOptionTest() throws IOException {
+    MuleArtifactArchiverLauncher launcher = new MuleArtifactArchiverLauncher();
+    String[] args = new String[3];
+    args[0] = UNKNOWN_OPTION;
+    args[1] = PACKAGE_OPTION;
+    args[2] = NAME;
+    launcher.main(args);
+    assertThat("Printed message was not the expected", getHelpMessage(), equalTo(outContent.toString()));
+  }
 
-    private String getHelpMessage() {
-        return  "usage: muleArtifactArchiver [--artifactContent <content type>]\n" +
-                "       --packageName <name> [--target <absolute path>]\n" +
-                "Create package containing binaries and/or sources.\n" +
-                "\n" +
-                "    --artifactContent <content type>   define if package contains binaries\n" +
-                "                                       and/or sources\n" +
-                "    --packageName <name>               file name for generated file\n" +
-                "    --target <absolute path>           path of source package structure\n" +
-                "                                       root folder\n";
-    }
+  @Test
+  public void mainMinimumOptionsTest() throws IOException {
+    MuleArtifactArchiverLauncher launcher = new MuleArtifactArchiverLauncher();
+    PackageBuilder packageBuilderMock = mock(PackageBuilder.class);
+    launcher.setPackageBuilder(packageBuilderMock);
+    String[] args = new String[2];
+    args[0] = PACKAGE_OPTION;
+    args[1] = NAME;
+    launcher.main(args);
+    verify(packageBuilderMock, times(1)).generateArtifact(ArgumentMatchers.any(), ArgumentMatchers.any());
+  }
+
+  private String getHelpMessage() {
+    return "usage: muleArtifactArchiver [--artifactContent <content type>]\n" +
+        "       --packageName <name> [--target <absolute path>]\n" +
+        "Create package containing binaries and/or sources.\n" +
+        "\n" +
+        "    --artifactContent <content type>   define if package contains binaries\n" +
+        "                                       and/or sources\n" +
+        "    --packageName <name>               file name for generated file\n" +
+        "    --target <absolute path>           path of source package structure\n" +
+        "                                       root folder\n";
+  }
 }

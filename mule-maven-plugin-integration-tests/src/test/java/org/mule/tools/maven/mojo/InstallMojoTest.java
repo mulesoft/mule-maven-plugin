@@ -18,31 +18,32 @@ import java.io.IOException;
 
 
 public class InstallMojoTest extends MojoTest {
-    private static final String INSTALL = "install";
-    private static final String ORG_ID = "org.apache.maven.plugin.my.unit";
-    private static final String NAME = "empty-install-project";
-    private static final String VERSION = "1.0-SNAPSHOT";
-    private static final String EXT = "zip";
 
-    public InstallMojoTest() {
-        this.goal = INSTALL;
-    }
+  private static final String INSTALL = "install";
+  private static final String ORG_ID = "org.apache.maven.plugin.my.unit";
+  private static final String NAME = "empty-install-project";
+  private static final String VERSION = "1.0-SNAPSHOT";
+  private static final String EXT = "zip";
 
-    @Before
-    public void before() throws IOException, VerificationException {
-        clearResources();
-    }
+  public InstallMojoTest() {
+    this.goal = INSTALL;
+  }
 
-    @Test
-    public void testInstall() throws IOException, VerificationException {
-        //verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=y");
-        verifier.addCliOption ("-DattachMuleSources=true");
-        verifier.deleteArtifact(ORG_ID, NAME, VERSION, EXT);
-        verifier.assertArtifactNotPresent(ORG_ID, NAME, VERSION, EXT);
+  @Before
+  public void before() throws IOException, VerificationException {
+    clearResources();
+  }
 
-        verifier.executeGoal(INSTALL);
+  @Test
+  public void testInstall() throws IOException, VerificationException {
+    //verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=y");
+    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.deleteArtifact(ORG_ID, NAME, VERSION, EXT);
+    verifier.assertArtifactNotPresent(ORG_ID, NAME, VERSION, EXT);
 
-        verifier.verifyErrorFreeLog();
-        verifier.assertArtifactPresent(ORG_ID, NAME, VERSION, EXT);
-    }
+    verifier.executeGoal(INSTALL);
+
+    verifier.verifyErrorFreeLog();
+    verifier.assertArtifactPresent(ORG_ID, NAME, VERSION, EXT);
+  }
 }

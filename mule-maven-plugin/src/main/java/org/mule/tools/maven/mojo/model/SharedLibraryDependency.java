@@ -11,22 +11,23 @@
 package org.mule.tools.maven.mojo.model;
 
 public class SharedLibraryDependency {
-    private String groupId;
-    private String artifactId;
 
-    public String getGroupId() {
-        return groupId;
-    }
+  private String groupId;
+  private String artifactId;
 
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
-    }
+  public String getGroupId() {
+    return groupId;
+  }
 
-    public String getArtifactId() {
-        return artifactId;
-    }
+  public void setGroupId(String groupId) {
+    this.groupId = groupId;
+  }
 
-    public void setArtifactId(String artifactId) {
-        this.artifactId = artifactId;
-    }
+  public String getArtifactId() {
+    return artifactId;
+  }
+
+  public void setArtifactId(String artifactId) {
+    this.artifactId = artifactId;
+  }
 }

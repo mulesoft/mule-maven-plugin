@@ -34,96 +34,96 @@ import java.nio.file.Paths;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class PackageMojo extends AbstractMuleMojo {
 
-    private static final String TYPE = "zip";
+  private static final String TYPE = "zip";
 
-    @Component
-    protected ArtifactHandlerManager handlerManager;
+  @Component
+  protected ArtifactHandlerManager handlerManager;
 
-    @Parameter(defaultValue = "${finalName}")
-    protected String finalName;
+  @Parameter(defaultValue = "${finalName}")
+  protected String finalName;
 
-    @Parameter(defaultValue = "${onlyMuleSources}")
-    protected boolean onlyMuleSources = false;
+  @Parameter(defaultValue = "${onlyMuleSources}")
+  protected boolean onlyMuleSources = false;
 
-    @Parameter(defaultValue = "${attachMuleSources}")
-    protected boolean attachMuleSources = false;
+  @Parameter(defaultValue = "${attachMuleSources}")
+  protected boolean attachMuleSources = false;
 
-    protected PackageBuilder packageBuilder;
+  protected PackageBuilder packageBuilder;
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        String targetFolder = project.getBuild().getDirectory();
-        File destinationFile = getDestinationFile(targetFolder);
-        try {
-            createMuleApp(destinationFile, targetFolder);
-        } catch (ArchiverException e) {
-            throw new MojoExecutionException("Exception creating the Mule App", e);
+  public void execute() throws MojoExecutionException, MojoFailureException {
+    String targetFolder = project.getBuild().getDirectory();
+    File destinationFile = getDestinationFile(targetFolder);
+    try {
+      createMuleApp(destinationFile, targetFolder);
+    } catch (ArchiverException e) {
+      throw new MojoExecutionException("Exception creating the Mule App", e);
+    }
+    setProjectArtifactTypeToZip(destinationFile);
+  }
+
+  /**
+   * Given a {@code targetFolder}, it returns a new {@link File} to the new compressed file where the complete Mule app will be
+   * stored. If the file already exists, it will delete it and create a new one.
+   *
+   * @param targetFolder starting path in which the destination file will be stored
+   * @return the destination file to store the Mule app
+   * @throws MojoExecutionException if it can't delete the previous file
+   */
+  private File getDestinationFile(String targetFolder) throws MojoExecutionException {
+    final Path destinationPath = Paths.get(targetFolder, getFinalName() + "." + TYPE);
+    try {
+      Files.deleteIfExists(destinationPath);
+    } catch (IOException e) {
+      throw new MojoExecutionException(String.format("Exception deleting the file [%s]", destinationPath), e);
+    }
+    return destinationPath.toFile();
+  }
+
+  private String getFinalName() {
+    if (finalName == null) {
+      finalName = project.getArtifactId() + "-" + project.getVersion();
+    }
+    getLog().debug("Using final name: " + finalName);
+    return finalName;
+  }
+
+  protected void setProjectArtifactTypeToZip(File destinationFile) {
+    ArtifactHandler handler = handlerManager.getArtifactHandler(TYPE);
+    Artifact artifact = new AttachedArtifact(this.project.getArtifact(), TYPE, handler);
+    artifact.setFile(destinationFile);
+    artifact.setResolved(true);
+    this.project.setArtifact(artifact);
+  }
+
+  protected void createMuleApp(File destinationFile, String targetFolder) throws MojoExecutionException, ArchiverException {
+    initializePackageBuilder();
+    try {
+      PackageBuilder builder = packageBuilder.withDestinationFile(destinationFile);
+      if (!onlyMuleSources) {
+        builder
+            .withClasses(new File(targetFolder + File.separator + CLASSES))
+            .withMule(new File(targetFolder + File.separator + MULE))
+            .withMaven(new File(targetFolder + File.separator + META_INF + File.separator + MAVEN))
+            .withMuleArtifact(new File(targetFolder + File.separator + META_INF + File.separator + MULE_ARTIFACT));
+
+        if (!lightwayPackage) {
+          builder.withRepository(new File(targetFolder + File.separator + REPOSITORY));
         }
-        setProjectArtifactTypeToZip(destinationFile);
-    }
 
-    /**
-     * Given a {@code targetFolder}, it returns a new {@link File} to the new compressed file where the complete Mule app will be
-     * stored. If the file already exists, it will delete it and create a new one.
-     *
-     * @param targetFolder starting path in which the destination file will be stored
-     * @return the destination file to store the Mule app
-     * @throws MojoExecutionException if it can't delete the previous file
-     */
-    private File getDestinationFile(String targetFolder) throws MojoExecutionException {
-        final Path destinationPath = Paths.get(targetFolder, getFinalName() + "." + TYPE);
-        try {
-            Files.deleteIfExists(destinationPath);
-        } catch (IOException e) {
-            throw new MojoExecutionException(String.format("Exception deleting the file [%s]", destinationPath), e);
+        if (attachMuleSources) {
+          builder.withMuleSrc(new File(targetFolder + File.separator + META_INF + File.separator + MULE_SRC));
         }
-        return destinationPath.toFile();
+      } else {
+        builder.withMuleSrc(new File(targetFolder + File.separator + META_INF + File.separator + MULE_SRC));
+      }
+
+      builder.createDeployableFile();
+    } catch (IOException e) {
+      throw new MojoExecutionException("Cannot create archive");
     }
+  }
 
-    private String getFinalName() {
-        if (finalName == null) {
-            finalName = project.getArtifactId() + "-" + project.getVersion();
-        }
-        getLog().debug("Using final name: " + finalName);
-        return finalName;
-    }
-
-    protected void setProjectArtifactTypeToZip(File destinationFile) {
-        ArtifactHandler handler = handlerManager.getArtifactHandler(TYPE);
-        Artifact artifact = new AttachedArtifact(this.project.getArtifact(), TYPE, handler);
-        artifact.setFile(destinationFile);
-        artifact.setResolved(true);
-        this.project.setArtifact(artifact);
-    }
-
-    protected void createMuleApp(File destinationFile, String targetFolder) throws MojoExecutionException, ArchiverException {
-        initializePackageBuilder();
-        try {
-            PackageBuilder builder = packageBuilder.withDestinationFile(destinationFile);
-            if (!onlyMuleSources) {
-                builder
-                    .withClasses(new File(targetFolder + File.separator + CLASSES))
-                    .withMule(new File(targetFolder + File.separator + MULE))
-                    .withMaven(new File(targetFolder + File.separator + META_INF + File.separator + MAVEN))
-                    .withMuleArtifact(new File(targetFolder + File.separator + META_INF + File.separator + MULE_ARTIFACT));
-
-                if (!lightwayPackage) {
-                    builder.withRepository(new File(targetFolder + File.separator + REPOSITORY));
-                }
-
-                if (attachMuleSources) {
-                    builder.withMuleSrc(new File(targetFolder + File.separator + META_INF + File.separator + MULE_SRC));
-                }
-            } else {
-                builder.withMuleSrc(new File(targetFolder + File.separator + META_INF + File.separator + MULE_SRC));
-            }
-
-            builder.createDeployableFile();
-        } catch (IOException e) {
-            throw new MojoExecutionException("Cannot create archive");
-        }
-    }
-
-    protected void initializePackageBuilder() {
-        packageBuilder = new PackageBuilder();
-    }
+  protected void initializePackageBuilder() {
+    packageBuilder = new PackageBuilder();
+  }
 }

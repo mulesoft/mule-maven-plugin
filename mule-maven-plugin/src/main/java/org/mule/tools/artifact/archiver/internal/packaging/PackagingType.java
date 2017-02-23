@@ -23,52 +23,57 @@ import static com.google.common.collect.Sets.newHashSet;
 
 public enum PackagingType {
 
-    SOURCES {
-        @Override
-        public Set<String> listDirectories() {
-            return newHashSet(PackageBuilder.MULE_SRC_FOLDER);
-        }
+  SOURCES {
 
-        @Override
-        public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
-            return packageBuilder.withMuleSrc(fileMap.get(PackageBuilder.MULE_SRC_FOLDER));
-        }
-    }, BINARIES {
-        @Override
-        public Set<String> listDirectories() {
-            return newHashSet(PackageBuilder.MULE_FOLDER, PackageBuilder.CLASSES_FOLDER, PackageBuilder.REPOSITORY_FOLDER);
-        }
-
-        @Override
-        public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
-            return packageBuilder
-                .withMule(fileMap.get(PackageBuilder.MULE_FOLDER))
-                .withClasses(fileMap.get(PackageBuilder.CLASSES_FOLDER))
-                .withRepository(fileMap.get(PackageBuilder.REPOSITORY_FOLDER));
-        }
-    }, BINARIES_AND_SOURCES {
-        @Override
-        public Set<String> listDirectories() {
-            return newHashSet(Iterables.concat(SOURCES.listDirectories(), BINARIES.listDirectories()));
-
-        }
-
-        @Override
-        public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
-            return packageBuilder
-                .withClasses(fileMap.get(PackageBuilder.CLASSES_FOLDER))
-                .withMule(fileMap.get(PackageBuilder.MULE_FOLDER));
-            //                .withMetaInf(fileMap.get(PackageBuilder.METAINF_FOLDER));
-        }
-    };
-
-    public abstract Set<String> listDirectories();
-
-    public abstract PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap);
-
-    public static PackagingType fromString(String name) {
-        String packagingName = LOWER_HYPHEN.to(LOWER_CAMEL, name);
-        return valueOf(packagingName);
+    @Override
+    public Set<String> listDirectories() {
+      return newHashSet(PackageBuilder.MULE_SRC_FOLDER);
     }
+
+    @Override
+    public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
+      return packageBuilder.withMuleSrc(fileMap.get(PackageBuilder.MULE_SRC_FOLDER));
+    }
+  },
+  BINARIES {
+
+    @Override
+    public Set<String> listDirectories() {
+      return newHashSet(PackageBuilder.MULE_FOLDER, PackageBuilder.CLASSES_FOLDER, PackageBuilder.REPOSITORY_FOLDER);
+    }
+
+    @Override
+    public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
+      return packageBuilder
+          .withMule(fileMap.get(PackageBuilder.MULE_FOLDER))
+          .withClasses(fileMap.get(PackageBuilder.CLASSES_FOLDER))
+          .withRepository(fileMap.get(PackageBuilder.REPOSITORY_FOLDER));
+    }
+  },
+  BINARIES_AND_SOURCES {
+
+    @Override
+    public Set<String> listDirectories() {
+      return newHashSet(Iterables.concat(SOURCES.listDirectories(), BINARIES.listDirectories()));
+
+    }
+
+    @Override
+    public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
+      return packageBuilder
+          .withClasses(fileMap.get(PackageBuilder.CLASSES_FOLDER))
+          .withMule(fileMap.get(PackageBuilder.MULE_FOLDER));
+      //                .withMetaInf(fileMap.get(PackageBuilder.METAINF_FOLDER));
+    }
+  };
+
+  public abstract Set<String> listDirectories();
+
+  public abstract PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap);
+
+  public static PackagingType fromString(String name) {
+    String packagingName = LOWER_HYPHEN.to(LOWER_CAMEL, name);
+    return valueOf(packagingName);
+  }
 
 }

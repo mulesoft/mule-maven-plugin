@@ -21,23 +21,23 @@ import java.nio.file.StandardCopyOption;
 
 public class ProjectBaseFolderFileCloner {
 
-    private Path sourceFilePath;
-    private MavenProject project;
-    private File projectBaseFolder;
+  private Path sourceFilePath;
+  private MavenProject project;
+  private File projectBaseFolder;
 
-    public ProjectBaseFolderFileCloner(MavenProject project) {
-        this.project = project;
-        this.projectBaseFolder = project.getBasedir();
-    }
+  public ProjectBaseFolderFileCloner(MavenProject project) {
+    this.project = project;
+    this.projectBaseFolder = project.getBasedir();
+  }
 
-    public ProjectBaseFolderFileCloner clone(String descriptorName) throws IOException {
-        sourceFilePath = new File(projectBaseFolder.getCanonicalPath() + File.separator + descriptorName).toPath();
-        return this;
-    }
+  public ProjectBaseFolderFileCloner clone(String descriptorName) throws IOException {
+    sourceFilePath = new File(projectBaseFolder.getCanonicalPath() + File.separator + descriptorName).toPath();
+    return this;
+  }
 
-    public void toPath(String... destinationPath) throws IOException {
-        File targetFolder = Paths.get(project.getBuild().getDirectory(), destinationPath).toFile();
-        Path targetFilePath = new File(targetFolder.toPath().toString(), sourceFilePath.toFile().getName()).toPath();
-        Files.copy(sourceFilePath, targetFilePath, StandardCopyOption.REPLACE_EXISTING);
-    }
+  public void toPath(String... destinationPath) throws IOException {
+    File targetFolder = Paths.get(project.getBuild().getDirectory(), destinationPath).toFile();
+    Path targetFilePath = new File(targetFolder.toPath().toString(), sourceFilePath.toFile().getName()).toPath();
+    Files.copy(sourceFilePath, targetFilePath, StandardCopyOption.REPLACE_EXISTING);
+  }
 }

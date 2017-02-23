@@ -49,6 +49,7 @@
         <maven.license.plugin.version>1.8.0</maven.license.plugin.version>
         <formatter.maven.plugin.version>1.8.0</formatter.maven.plugin.version>
         <license.path>../LICENSE_HEADER</license.path>
+        <formatter.path>../formatter.xml</formatter.path>
     </properties>
 
     <build>

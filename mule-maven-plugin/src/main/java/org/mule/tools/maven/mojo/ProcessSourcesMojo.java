@@ -27,36 +27,36 @@ import java.util.List;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class ProcessSourcesMojo extends AbstractMuleMojo {
 
-    @Component
-    private RepositorySystem repositorySystem;
+  @Component
+  private RepositorySystem repositorySystem;
 
-    @Component
-    private ProjectBuilder projectBuilder;
+  @Component
+  private ProjectBuilder projectBuilder;
 
-    @Parameter(readonly = true, required = true, defaultValue = "${session}")
-    private MavenSession session;
+  @Parameter(readonly = true, required = true, defaultValue = "${session}")
+  private MavenSession session;
 
-    @Parameter(readonly = true, required = true, defaultValue = "${project.remoteArtifactRepositories}")
-    private List<ArtifactRepository> remoteArtifactRepositories;
+  @Parameter(readonly = true, required = true, defaultValue = "${project.remoteArtifactRepositories}")
+  private List<ArtifactRepository> remoteArtifactRepositories;
 
-    @Parameter(readonly = true, required = true, defaultValue = "${localRepository}")
-    private ArtifactRepository localRepository;
+  @Parameter(readonly = true, required = true, defaultValue = "${localRepository}")
+  private ArtifactRepository localRepository;
 
-    private ProjectBuildingRequest projectBuildingRequest;
+  private ProjectBuildingRequest projectBuildingRequest;
 
-    @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        if (!lightwayPackage) {
-            RepositoryGenerator repositoryGenerator = new RepositoryGenerator(session,
-                                                                              project,
-                                                                              projectBuilder,
-                                                                              repositorySystem,
-                                                                              localRepository,
-                                                                              remoteArtifactRepositories,
-                                                                              outputDirectory,
-                                                                              getLog());
-            repositoryGenerator.generate();
-        }
-
+  @Override
+  public void execute() throws MojoExecutionException, MojoFailureException {
+    if (!lightwayPackage) {
+      RepositoryGenerator repositoryGenerator = new RepositoryGenerator(session,
+                                                                        project,
+                                                                        projectBuilder,
+                                                                        repositorySystem,
+                                                                        localRepository,
+                                                                        remoteArtifactRepositories,
+                                                                        outputDirectory,
+                                                                        getLog());
+      repositoryGenerator.generate();
     }
+
+  }
 }

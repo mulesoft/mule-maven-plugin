@@ -25,65 +25,65 @@ import static org.mule.tools.maven.repository.RepositoryGenerator.REPOSITORY_FOL
 
 public class ArtifactInstaller {
 
-    private Log log;
+  private Log log;
 
-    public ArtifactInstaller(Log log) {
-        this.log = log;
+  public ArtifactInstaller(Log log) {
+    this.log = log;
+  }
+
+  public void installArtifact(File repositoryFile, Artifact artifact) throws MojoExecutionException {
+    String artifactFilename = getFormattedFileName(artifact);
+    File artifactFolderDestination = getFormattedOutputDirectory(repositoryFile, artifact);
+
+    if (!artifactFolderDestination.exists()) {
+      artifactFolderDestination.mkdirs();
     }
 
-    public void installArtifact(File repositoryFile, Artifact artifact) throws MojoExecutionException {
-        String artifactFilename = getFormattedFileName(artifact);
-        File artifactFolderDestination = getFormattedOutputDirectory(repositoryFile, artifact);
-
-        if (!artifactFolderDestination.exists()) {
-            artifactFolderDestination.mkdirs();
-        }
-
-        File destinationArtifactFile = new File(artifactFolderDestination, artifactFilename);
-        try {
-            log.info(format("Adding artifact <%s%s>",
-                            REPOSITORY_FOLDER,
-                            destinationArtifactFile.getAbsolutePath()
-                                .replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
-                                              "")));
-            copyFile(artifact.getFile(), destinationArtifactFile);
-        } catch (IOException e) {
-            throw new MojoExecutionException(
-                format("There was a problem while copying the artifact [%s] file [%s] to the destination [%s]",
-                       artifact.toString(), artifact.getFile().getAbsolutePath(),
-                       destinationArtifactFile.getAbsolutePath()),
-                e);
-        }
+    File destinationArtifactFile = new File(artifactFolderDestination, artifactFilename);
+    try {
+      log.info(format("Adding artifact <%s%s>",
+                      REPOSITORY_FOLDER,
+                      destinationArtifactFile.getAbsolutePath()
+                          .replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
+                                        "")));
+      copyFile(artifact.getFile(), destinationArtifactFile);
+    } catch (IOException e) {
+      throw new MojoExecutionException(
+                                       format("There was a problem while copying the artifact [%s] file [%s] to the destination [%s]",
+                                              artifact.toString(), artifact.getFile().getAbsolutePath(),
+                                              destinationArtifactFile.getAbsolutePath()),
+                                       e);
     }
+  }
 
-    private String getFormattedFileName(Artifact artifact) {
-        StringBuilder destFileName = new StringBuilder();
-        String versionString = "-" + getNormalizedVersion(artifact);
-        String classifierString = "";
+  private String getFormattedFileName(Artifact artifact) {
+    StringBuilder destFileName = new StringBuilder();
+    String versionString = "-" + getNormalizedVersion(artifact);
+    String classifierString = "";
 
-        if (artifact.getClassifier() != null && !artifact.getClassifier().isEmpty()) {
-            classifierString = "-" + artifact.getClassifier();
-        }
-        destFileName.append(artifact.getArtifactId()).append(versionString);
-        destFileName.append(classifierString).append(".");
-        destFileName.append(artifact.getArtifactHandler().getExtension());
-
-        return destFileName.toString();
+    if (artifact.getClassifier() != null && !artifact.getClassifier().isEmpty()) {
+      classifierString = "-" + artifact.getClassifier();
     }
+    destFileName.append(artifact.getArtifactId()).append(versionString);
+    destFileName.append(classifierString).append(".");
+    destFileName.append(artifact.getArtifactHandler().getExtension());
 
-    private String getNormalizedVersion(Artifact artifact) {
-        if (artifact.isSnapshot() && !artifact.getVersion().equals(artifact.getBaseVersion())) {
-            return artifact.getBaseVersion();
-        }
-        return artifact.getVersion();
+    return destFileName.toString();
+  }
+
+  private String getNormalizedVersion(Artifact artifact) {
+    if (artifact.isSnapshot() && !artifact.getVersion().equals(artifact.getBaseVersion())) {
+      return artifact.getBaseVersion();
     }
+    return artifact.getVersion();
+  }
 
-    private static File getFormattedOutputDirectory(File outputDirectory, Artifact artifact) {
-        StringBuilder sb = new StringBuilder(128);
-        sb.append(artifact.getGroupId().replace('.', separatorChar)).append(separatorChar);
-        sb.append(artifact.getArtifactId()).append(separatorChar);
-        sb.append(artifact.getBaseVersion()).append(separatorChar);
+  private static File getFormattedOutputDirectory(File outputDirectory, Artifact artifact) {
+    StringBuilder sb = new StringBuilder(128);
+    sb.append(artifact.getGroupId().replace('.', separatorChar)).append(separatorChar);
+    sb.append(artifact.getArtifactId()).append(separatorChar);
+    sb.append(artifact.getBaseVersion()).append(separatorChar);
 
-        return new File(outputDirectory, sb.toString());
-    }
-} 
+    return new File(outputDirectory, sb.toString());
+  }
+}

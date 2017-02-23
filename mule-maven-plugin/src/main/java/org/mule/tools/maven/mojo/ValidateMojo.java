@@ -32,51 +32,51 @@ import java.util.stream.Collectors;
     requiresDependencyResolution = ResolutionScope.TEST)
 public class ValidateMojo extends AbstractMuleMojo {
 
-    protected MulePluginResolver resolver;
-    protected MulePluginsCompatibilityValidator validator;
+  protected MulePluginResolver resolver;
+  protected MulePluginsCompatibilityValidator validator;
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        getLog().debug("Validating Mule application...");
+  public void execute() throws MojoExecutionException, MojoFailureException {
+    getLog().debug("Validating Mule application...");
 
-        validateMandatoryFolders();
-        validateMandatoryDescriptors();
-        validateMulePluginDependencies();
+    validateMandatoryFolders();
+    validateMandatoryDescriptors();
+    validateMulePluginDependencies();
 
-        getLog().debug("Validating Mule application done");
+    getLog().debug("Validating Mule application done");
+  }
+
+  private void validateMandatoryFolders() throws MojoExecutionException {
+    if (!muleSourceFolder.exists()) {
+      String message = String.format("Invalid Mule project. Missing src/main/mule folder. This folder is mandatory");
+      throw new MojoExecutionException(message);
     }
+  }
 
-    private void validateMandatoryFolders() throws MojoExecutionException {
-        if (!muleSourceFolder.exists()) {
-            String message = String.format("Invalid Mule project. Missing src/main/mule folder. This folder is mandatory");
-            throw new MojoExecutionException(message);
-        }
-    }
+  private void validateMandatoryDescriptors() throws MojoExecutionException {
+    isFilePresent("Invalid Mule project. Missing %s file, it must be present in the root of application",
+                  MULE_APPLICATION_JSON);
+  }
 
-    private void validateMandatoryDescriptors() throws MojoExecutionException {
-        isFilePresent("Invalid Mule project. Missing %s file, it must be present in the root of application",
-                      MULE_APPLICATION_JSON);
+  private void isFilePresent(String message, String... fileName) throws MojoExecutionException {
+    List<File> files = Arrays.stream(fileName).map(name -> Paths.get(projectBaseFolder.toString(), name).toFile())
+        .collect(Collectors.toList());
+    if (files.stream().allMatch(file -> !file.exists())) {
+      throw new MojoExecutionException(String.format(message, fileName));
     }
+  }
 
-    private void isFilePresent(String message, String... fileName) throws MojoExecutionException {
-        List<File> files = Arrays.stream(fileName).map(name -> Paths.get(projectBaseFolder.toString(), name).toFile())
-            .collect(Collectors.toList());
-        if (files.stream().allMatch(file -> !file.exists())) {
-            throw new MojoExecutionException(String.format(message, fileName));
-        }
-    }
+  private void validateMulePluginDependencies() throws MojoExecutionException {
+    initializeResolver();
+    initializeValidator();
+    validator.validate(resolver.resolveMulePlugins(project));
+  }
 
-    private void validateMulePluginDependencies() throws MojoExecutionException {
-        initializeResolver();
-        initializeValidator();
-        validator.validate(resolver.resolveMulePlugins(project));
-    }
+  protected void initializeResolver() {
+    resolver = new MulePluginResolver(getLog(), session, projectBuilder, repositorySystem, localRepository,
+                                      remoteArtifactRepositories);
+  }
 
-    protected void initializeResolver() {
-        resolver = new MulePluginResolver(getLog(), session, projectBuilder, repositorySystem, localRepository,
-                                          remoteArtifactRepositories);
-    }
-
-    protected void initializeValidator() {
-        validator = new MulePluginsCompatibilityValidator();
-    }
+  protected void initializeValidator() {
+    validator = new MulePluginsCompatibilityValidator();
+  }
 }

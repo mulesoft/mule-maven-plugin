@@ -28,57 +28,57 @@ import static org.mockito.Mockito.when;
 
 public class AbstractMuleMojoTest {
 
-    protected static final String MULE = "mule";
-    protected static final String MAVEN = "maven";
-    protected static final String MUNIT = "munit";
-    protected static final String POM_XML = "pom.xml";
-    protected static final String META_INF = "META-INF";
-    protected static final String MULE_SRC = "mule-src";
-    protected static final String GROUP_ID = "group-id";
-    protected static final String TEST_MULE = "test-mule";
-    protected static final String REPOSITORY = "repository";
-    protected static final String ARTIFACT_ID = "artifact-id";
-    protected static final String PACKAGE_NAME = "packageName";
-    protected static final String MULE_ARTIFACT = "mule-artifact";
-    protected static final String MULE_CONFIG_XML = "mule-config.xml";
-    protected static final String MUNIT_TEST_FILE_NAME = "munit-test.xml";
-    protected static final String MULE_APP_PROPERTIES = "mule-app.properties";
-    protected static final String PROJECT_ARTIFACT_ID = "project-artifact-id";
-    protected static final String MULE_DEPLOY_PROPERTIES = "mule-deploy.properties";
-    protected final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-    protected Build buildMock;
-    protected File munitFolder;
-    protected File metaInfFolder;
-    protected File testMuleFolder;
-    protected File destinationFile;
-    protected File munitSourceFolder;
-    protected MavenProject projectMock;
-    protected File muleSourceFolderMock;
-    protected PackageBuilder packageBuilderMock;
+  protected static final String MULE = "mule";
+  protected static final String MAVEN = "maven";
+  protected static final String MUNIT = "munit";
+  protected static final String POM_XML = "pom.xml";
+  protected static final String META_INF = "META-INF";
+  protected static final String MULE_SRC = "mule-src";
+  protected static final String GROUP_ID = "group-id";
+  protected static final String TEST_MULE = "test-mule";
+  protected static final String REPOSITORY = "repository";
+  protected static final String ARTIFACT_ID = "artifact-id";
+  protected static final String PACKAGE_NAME = "packageName";
+  protected static final String MULE_ARTIFACT = "mule-artifact";
+  protected static final String MULE_CONFIG_XML = "mule-config.xml";
+  protected static final String MUNIT_TEST_FILE_NAME = "munit-test.xml";
+  protected static final String MULE_APP_PROPERTIES = "mule-app.properties";
+  protected static final String PROJECT_ARTIFACT_ID = "project-artifact-id";
+  protected static final String MULE_DEPLOY_PROPERTIES = "mule-deploy.properties";
+  protected final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+  protected Build buildMock;
+  protected File munitFolder;
+  protected File metaInfFolder;
+  protected File testMuleFolder;
+  protected File destinationFile;
+  protected File munitSourceFolder;
+  protected MavenProject projectMock;
+  protected File muleSourceFolderMock;
+  protected PackageBuilder packageBuilderMock;
 
-    @Rule
-    public TemporaryFolder projectRootFolder = new TemporaryFolder();
+  @Rule
+  public TemporaryFolder projectRootFolder = new TemporaryFolder();
 
-    @Rule
-    public TemporaryFolder buildTemporaryFolder = new TemporaryFolder();
+  @Rule
+  public TemporaryFolder buildTemporaryFolder = new TemporaryFolder();
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
-    @Before
-    public void beforeTest() throws IOException {
-        projectRootFolder.create();
-        buildTemporaryFolder.create();
-        metaInfFolder = buildTemporaryFolder.newFolder(META_INF);
+  @Before
+  public void beforeTest() throws IOException {
+    projectRootFolder.create();
+    buildTemporaryFolder.create();
+    metaInfFolder = buildTemporaryFolder.newFolder(META_INF);
 
-        System.setOut(new PrintStream(outContent));
+    System.setOut(new PrintStream(outContent));
 
-        projectMock = mock(MavenProject.class);
-        buildMock = mock(Build.class);
-        packageBuilderMock = mock(PackageBuilder.class);
-        muleSourceFolderMock = mock(File.class);
+    projectMock = mock(MavenProject.class);
+    buildMock = mock(Build.class);
+    packageBuilderMock = mock(PackageBuilder.class);
+    muleSourceFolderMock = mock(File.class);
 
-        when(buildMock.getDirectory()).thenReturn(buildTemporaryFolder.getRoot().getAbsolutePath());
-        when(projectMock.getBuild()).thenReturn(buildMock);
-    }
+    when(buildMock.getDirectory()).thenReturn(buildTemporaryFolder.getRoot().getAbsolutePath());
+    when(projectMock.getBuild()).thenReturn(buildMock);
+  }
 }

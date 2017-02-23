@@ -21,24 +21,25 @@ import static org.mule.tools.maven.FileTreeMatcher.hasSameTreeStructure;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class GenerateSourcesMojoTest extends MojoTest {
-    private static final String GENERATE_SOURCES = "generate-sources";
 
-    public GenerateSourcesMojoTest() {
-        this.goal = GENERATE_SOURCES;
-    }
+  private static final String GENERATE_SOURCES = "generate-sources";
 
-    @Before
-    public void before() throws IOException, VerificationException {
-        clearResources();
-    }
+  public GenerateSourcesMojoTest() {
+    this.goal = GENERATE_SOURCES;
+  }
 
-    @Test
-    public void testGenerateSources() throws IOException, VerificationException {
-        verifier.executeGoal(GENERATE_SOURCES);
+  @Before
+  public void before() throws IOException, VerificationException {
+    clearResources();
+  }
 
-        File expectedStructure = getExpectedStructure();
+  @Test
+  public void testGenerateSources() throws IOException, VerificationException {
+    verifier.executeGoal(GENERATE_SOURCES);
 
-        assertThat("The directory structure is different from the expected", targetFolder, hasSameTreeStructure(expectedStructure));
-        verifier.verifyErrorFreeLog();
-    }
+    File expectedStructure = getExpectedStructure();
+
+    assertThat("The directory structure is different from the expected", targetFolder, hasSameTreeStructure(expectedStructure));
+    verifier.verifyErrorFreeLog();
+  }
 }

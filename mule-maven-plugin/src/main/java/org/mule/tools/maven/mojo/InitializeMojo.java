@@ -25,30 +25,30 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class InitializeMojo extends AbstractMuleMojo {
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        getLog().debug("Initializing Mule Maven Plugin...");
+  public void execute() throws MojoExecutionException, MojoFailureException {
+    getLog().debug("Initializing Mule Maven Plugin...");
 
-        String groupId = project.getGroupId();
-        String artifactId = project.getArtifactId();
-        String targetFolder = project.getBuild().getDirectory();
+    String groupId = project.getGroupId();
+    String artifactId = project.getArtifactId();
+    String targetFolder = project.getBuild().getDirectory();
 
-        createFolderIfNecessary(targetFolder);
-        createFolderIfNecessary(targetFolder, MULE);
+    createFolderIfNecessary(targetFolder);
+    createFolderIfNecessary(targetFolder, MULE);
 
-        createFolderIfNecessary(targetFolder, TEST_MULE);
-        createFolderIfNecessary(targetFolder, TEST_MULE, MUNIT);
+    createFolderIfNecessary(targetFolder, TEST_MULE);
+    createFolderIfNecessary(targetFolder, TEST_MULE, MUNIT);
 
-        createFolderIfNecessary(targetFolder, META_INF);
-        createFolderIfNecessary(targetFolder, META_INF, MULE_SRC);
-        createFolderIfNecessary(targetFolder, META_INF, MULE_SRC, artifactId);
-        createFolderIfNecessary(targetFolder, META_INF, MAVEN);
-        createFolderIfNecessary(targetFolder, META_INF, MAVEN, groupId);
-        createFolderIfNecessary(targetFolder, META_INF, MAVEN, groupId, artifactId);
-        createFolderIfNecessary(targetFolder, META_INF, MULE_ARTIFACT);
+    createFolderIfNecessary(targetFolder, META_INF);
+    createFolderIfNecessary(targetFolder, META_INF, MULE_SRC);
+    createFolderIfNecessary(targetFolder, META_INF, MULE_SRC, artifactId);
+    createFolderIfNecessary(targetFolder, META_INF, MAVEN);
+    createFolderIfNecessary(targetFolder, META_INF, MAVEN, groupId);
+    createFolderIfNecessary(targetFolder, META_INF, MAVEN, groupId, artifactId);
+    createFolderIfNecessary(targetFolder, META_INF, MULE_ARTIFACT);
 
-        createFolderIfNecessary(targetFolder, REPOSITORY);
+    createFolderIfNecessary(targetFolder, REPOSITORY);
 
-        getLog().debug("Mule Maven Plugin Initialize done");
-    }
+    getLog().debug("Mule Maven Plugin Initialize done");
+  }
 
 }

@@ -26,49 +26,55 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PackageStructureValidatorTest {
-    @Test
-    public void hasExpectedStructureTest() {
-        PackageStructureValidator applicationPackageStructure = new PackageStructureValidator(PackagingTypeFactory.getDefaultPackaging());
 
-        File[] defaultFileStructure = getDefaultFileStructure();
+  @Test
+  public void hasExpectedStructureTest() {
+    PackageStructureValidator applicationPackageStructure =
+        new PackageStructureValidator(PackagingTypeFactory.getDefaultPackaging());
 
-        assertThat("This file structure should match the expected structure", applicationPackageStructure.hasExpectedStructure(defaultFileStructure));
+    File[] defaultFileStructure = getDefaultFileStructure();
 
-        List<File> wrongExpectedStructure = Arrays.asList(defaultFileStructure).subList(0,2);
+    assertThat("This file structure should match the expected structure",
+               applicationPackageStructure.hasExpectedStructure(defaultFileStructure));
 
-        assertThat("This file structure should not match the expected structure:", not(applicationPackageStructure.hasExpectedStructure(wrongExpectedStructure.toArray(new File[0]))));
-    }
+    List<File> wrongExpectedStructure = Arrays.asList(defaultFileStructure).subList(0, 2);
 
-    @Test
-    public void hasExpectedStructureWithNullArgumentTest() {
-        PackageStructureValidator applicationPackageStructure = new PackageStructureValidator(PackagingTypeFactory.getDefaultPackaging());
+    assertThat("This file structure should not match the expected structure:",
+               not(applicationPackageStructure.hasExpectedStructure(wrongExpectedStructure.toArray(new File[0]))));
+  }
 
-        assertThat("This file structure should match the expected structure", not(applicationPackageStructure.hasExpectedStructure(null)));
-    }
+  @Test
+  public void hasExpectedStructureWithNullArgumentTest() {
+    PackageStructureValidator applicationPackageStructure =
+        new PackageStructureValidator(PackagingTypeFactory.getDefaultPackaging());
 
-    private File[] getDefaultFileStructure() {
-        List<File> expectedStructure = new ArrayList<>();
+    assertThat("This file structure should match the expected structure",
+               not(applicationPackageStructure.hasExpectedStructure(null)));
+  }
 
-        File classesFolderMock = mock(File.class);
-        when(classesFolderMock.exists()).thenReturn(true);
-        when(classesFolderMock.isDirectory()).thenReturn(true);
-        when(classesFolderMock.getName()).thenReturn("classes");
+  private File[] getDefaultFileStructure() {
+    List<File> expectedStructure = new ArrayList<>();
 
-        File muleFolderMock = mock(File.class);
-        when(muleFolderMock.exists()).thenReturn(true);
-        when(muleFolderMock.isDirectory()).thenReturn(true);
-        when(muleFolderMock.getName()).thenReturn("mule");
+    File classesFolderMock = mock(File.class);
+    when(classesFolderMock.exists()).thenReturn(true);
+    when(classesFolderMock.isDirectory()).thenReturn(true);
+    when(classesFolderMock.getName()).thenReturn("classes");
 
-        File repositoryFolderMock = mock(File.class);
-        when(repositoryFolderMock.exists()).thenReturn(true);
-        when(repositoryFolderMock.isDirectory()).thenReturn(true);
-        when(repositoryFolderMock.getName()).thenReturn("repository");
+    File muleFolderMock = mock(File.class);
+    when(muleFolderMock.exists()).thenReturn(true);
+    when(muleFolderMock.isDirectory()).thenReturn(true);
+    when(muleFolderMock.getName()).thenReturn("mule");
 
-        expectedStructure.add(classesFolderMock);
-        expectedStructure.add(muleFolderMock);
-        expectedStructure.add(repositoryFolderMock);
-        return expectedStructure.toArray(new File[0]);
-    }
+    File repositoryFolderMock = mock(File.class);
+    when(repositoryFolderMock.exists()).thenReturn(true);
+    when(repositoryFolderMock.isDirectory()).thenReturn(true);
+    when(repositoryFolderMock.getName()).thenReturn("repository");
+
+    expectedStructure.add(classesFolderMock);
+    expectedStructure.add(muleFolderMock);
+    expectedStructure.add(repositoryFolderMock);
+    return expectedStructure.toArray(new File[0]);
+  }
 
 
 }

@@ -26,37 +26,41 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 public class InitializeMojoTest extends AbstractMuleMojoTest {
-    private static final String INITIALIZE_GOAL_DEBUG_MESSAGE = "[debug] Initializing Mule Maven Plugin...\n[debug] Mule Maven Plugin Initialize done\n";
-    private static final String EXPECTED_STRUCTURE_RELATIVE_PATH = "/expected-initialize-structure";
-    private AbstractMuleMojo mojo;
 
-    @Before
-    public void before() throws IOException {
-        mojo = new InitializeMojo();
-        when(projectMock.getGroupId()).thenReturn(GROUP_ID);
-        when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
-        when(buildMock.getDirectory()).thenReturn(projectRootFolder.getRoot().getAbsolutePath());
-        mojo.project = projectMock;
-    }
+  private static final String INITIALIZE_GOAL_DEBUG_MESSAGE =
+      "[debug] Initializing Mule Maven Plugin...\n[debug] Mule Maven Plugin Initialize done\n";
+  private static final String EXPECTED_STRUCTURE_RELATIVE_PATH = "/expected-initialize-structure";
+  private AbstractMuleMojo mojo;
 
-    @After
-    public void after() throws IOException {
-        File rootOfExpectedStructure = ResourceExtractor.simpleExtractResources(getClass(), EXPECTED_STRUCTURE_RELATIVE_PATH);
-        assertThat("The target folder directory does not have the expected structure", projectRootFolder.getRoot(), FileTreeMatcher.hasSameTreeStructure(rootOfExpectedStructure));
-        assertThat("Initialize goal message was not the expected", INITIALIZE_GOAL_DEBUG_MESSAGE, equalTo(outContent.toString()));
-    }
+  @Before
+  public void before() throws IOException {
+    mojo = new InitializeMojo();
+    when(projectMock.getGroupId()).thenReturn(GROUP_ID);
+    when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
+    when(buildMock.getDirectory()).thenReturn(projectRootFolder.getRoot().getAbsolutePath());
+    mojo.project = projectMock;
+  }
 
-    @Test
-    public void initializeWhenTargetFolderIsEmptyTest() throws MojoFailureException, MojoExecutionException, IOException {
-        mojo.execute();
-    }
+  @After
+  public void after() throws IOException {
+    File rootOfExpectedStructure = ResourceExtractor.simpleExtractResources(getClass(), EXPECTED_STRUCTURE_RELATIVE_PATH);
+    assertThat("The target folder directory does not have the expected structure", projectRootFolder.getRoot(),
+               FileTreeMatcher.hasSameTreeStructure(rootOfExpectedStructure));
+    assertThat("Initialize goal message was not the expected", INITIALIZE_GOAL_DEBUG_MESSAGE, equalTo(outContent.toString()));
+  }
 
-    @Test
-    public void initializeWhenTargetFolderAlreadyHasSomeFoldersOfExpectedStructureTest() throws MojoFailureException, MojoExecutionException, IOException {
-        projectRootFolder.newFolder(META_INF + File.separator + MULE);
-        projectRootFolder.newFolder(MULE);
-        projectRootFolder.newFolder(REPOSITORY);
+  @Test
+  public void initializeWhenTargetFolderIsEmptyTest() throws MojoFailureException, MojoExecutionException, IOException {
+    mojo.execute();
+  }
 
-        mojo.execute();
-    }
+  @Test
+  public void initializeWhenTargetFolderAlreadyHasSomeFoldersOfExpectedStructureTest()
+      throws MojoFailureException, MojoExecutionException, IOException {
+    projectRootFolder.newFolder(META_INF + File.separator + MULE);
+    projectRootFolder.newFolder(MULE);
+    projectRootFolder.newFolder(REPOSITORY);
+
+    mojo.execute();
+  }
 }

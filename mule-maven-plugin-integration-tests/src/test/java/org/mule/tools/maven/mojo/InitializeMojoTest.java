@@ -21,28 +21,29 @@ import static org.mule.tools.maven.FileTreeMatcher.hasSameTreeStructure;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class InitializeMojoTest extends MojoTest {
-    private static final String INITIALIZE = "initialize";
 
-    public InitializeMojoTest() {
-        this.goal = INITIALIZE;
-    }
+  private static final String INITIALIZE = "initialize";
 
-    @Before
-    public void before() throws IOException, VerificationException {
-        clearResources();
-        verifier.setSystemProperty(PROJECT_BASE_DIR_PROPERTY, projectBaseDirectory.getAbsolutePath());
-        verifier.setSystemProperty(PROJECT_BUILD_DIRECTORY_PROPERTY, targetFolder.getAbsolutePath());
-    }
+  public InitializeMojoTest() {
+    this.goal = INITIALIZE;
+  }
 
-    @Test
-    public void testInitializeOnEmptyProject()
-            throws Exception {
-        verifier.executeGoal(INITIALIZE);
+  @Before
+  public void before() throws IOException, VerificationException {
+    clearResources();
+    verifier.setSystemProperty(PROJECT_BASE_DIR_PROPERTY, projectBaseDirectory.getAbsolutePath());
+    verifier.setSystemProperty(PROJECT_BUILD_DIRECTORY_PROPERTY, targetFolder.getAbsolutePath());
+  }
 
-        File expectedStructure = getExpectedStructure();
+  @Test
+  public void testInitializeOnEmptyProject()
+      throws Exception {
+    verifier.executeGoal(INITIALIZE);
 
-        assertThat("The directory structure is different from the expected", targetFolder, hasSameTreeStructure(expectedStructure));
+    File expectedStructure = getExpectedStructure();
 
-        verifier.verifyErrorFreeLog();
-    }
+    assertThat("The directory structure is different from the expected", targetFolder, hasSameTreeStructure(expectedStructure));
+
+    verifier.verifyErrorFreeLog();
+  }
 }

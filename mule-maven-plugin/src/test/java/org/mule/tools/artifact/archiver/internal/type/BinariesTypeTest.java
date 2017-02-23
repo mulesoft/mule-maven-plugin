@@ -25,31 +25,31 @@ import static org.mockito.Mockito.*;
 
 public class BinariesTypeTest {
 
-    private PackagingType packagingType = PackagingType.BINARIES;
+  private PackagingType packagingType = PackagingType.BINARIES;
 
-    @Test
-    public void binariesStructureListDirectoriesTest() {
-        assertThat("Directories set should not be null", packagingType.listDirectories(), notNullValue());
-        assertThat("Directories set is not as expected", packagingType.listDirectories(),
-                   containsInAnyOrder(PackageBuilder.MULE_FOLDER, PackageBuilder.CLASSES_FOLDER,
-                                      PackageBuilder.REPOSITORY_FOLDER));
-    }
+  @Test
+  public void binariesStructureListDirectoriesTest() {
+    assertThat("Directories set should not be null", packagingType.listDirectories(), notNullValue());
+    assertThat("Directories set is not as expected", packagingType.listDirectories(),
+               containsInAnyOrder(PackageBuilder.MULE_FOLDER, PackageBuilder.CLASSES_FOLDER,
+                                  PackageBuilder.REPOSITORY_FOLDER));
+  }
 
-    @Test
-    public void binariesTypeApplyPackagingTest() {
+  @Test
+  public void binariesTypeApplyPackagingTest() {
 
-        PackageBuilder packageBuilderMock = mock(PackageBuilder.class);
+    PackageBuilder packageBuilderMock = mock(PackageBuilder.class);
 
-        when(packageBuilderMock.withClasses(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
-        when(packageBuilderMock.withMule(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
+    when(packageBuilderMock.withClasses(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
+    when(packageBuilderMock.withMule(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
 
-        Map<String, File> fileMapMock = mock(Map.class);
+    Map<String, File> fileMapMock = mock(Map.class);
 
-        packagingType.applyPackaging(packageBuilderMock, fileMapMock);
+    packagingType.applyPackaging(packageBuilderMock, fileMapMock);
 
-        verify(packageBuilderMock).withClasses(ArgumentMatchers.any());
-        verify(packageBuilderMock).withMule(ArgumentMatchers.any());
-        //        verify(packageBuilderMock, times(0)).withMetaInf(ArgumentMatchers.any());
-    }
+    verify(packageBuilderMock).withClasses(ArgumentMatchers.any());
+    verify(packageBuilderMock).withMule(ArgumentMatchers.any());
+    //        verify(packageBuilderMock, times(0)).withMetaInf(ArgumentMatchers.any());
+  }
 
-} 
+}

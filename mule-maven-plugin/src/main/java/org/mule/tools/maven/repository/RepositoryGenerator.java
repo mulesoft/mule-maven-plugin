@@ -33,103 +33,102 @@ import static java.util.Collections.sort;
 
 public class RepositoryGenerator {
 
-    public static final String REPOSITORY_FOLDER = "repository";
+  public static final String REPOSITORY_FOLDER = "repository";
 
-    private Log log;
+  private Log log;
 
-    private MavenSession session;
-    private MavenProject project;
-    private ProjectBuilder projectBuilder;
-    private RepositorySystem repositorySystem;
-    private ArtifactRepository localRepository;
-    private List<ArtifactRepository> remoteArtifactRepositories;
+  private MavenSession session;
+  private MavenProject project;
+  private ProjectBuilder projectBuilder;
+  private RepositorySystem repositorySystem;
+  private ArtifactRepository localRepository;
+  private List<ArtifactRepository> remoteArtifactRepositories;
 
-    protected File outputDirectory;
-    private ProjectBuildingRequest projectBuildingRequest;
+  protected File outputDirectory;
+  private ProjectBuildingRequest projectBuildingRequest;
 
-    public RepositoryGenerator(MavenSession session,
-                               MavenProject project,
-                               ProjectBuilder projectBuilder,
-                               RepositorySystem repositorySystem,
-                               ArtifactRepository localRepository,
-                               List<ArtifactRepository> remoteArtifactRepositories,
-                               File outputDirectory, Log log) {
+  public RepositoryGenerator(MavenSession session,
+                             MavenProject project,
+                             ProjectBuilder projectBuilder,
+                             RepositorySystem repositorySystem,
+                             ArtifactRepository localRepository,
+                             List<ArtifactRepository> remoteArtifactRepositories,
+                             File outputDirectory, Log log) {
 
-        // TODO all this is mandatory
-        this.log = log;
-        this.session = session;
-        this.project = project;
-        this.projectBuilder = projectBuilder;
-        this.repositorySystem = repositorySystem;
-        this.localRepository = localRepository;
-        this.remoteArtifactRepositories = remoteArtifactRepositories;
-        this.outputDirectory = outputDirectory;
+    // TODO all this is mandatory
+    this.log = log;
+    this.session = session;
+    this.project = project;
+    this.projectBuilder = projectBuilder;
+    this.repositorySystem = repositorySystem;
+    this.localRepository = localRepository;
+    this.remoteArtifactRepositories = remoteArtifactRepositories;
+    this.outputDirectory = outputDirectory;
+  }
+
+
+  public void generate() throws MojoExecutionException, MojoFailureException {
+    log.info(format("Mirroring repository for [%s]", project.toString()));
+    try {
+      initializeProjectBuildingRequest();
+
+      ArtifactLocator artifactLocator =
+          new ArtifactLocator(log, project, projectBuilder, repositorySystem, localRepository, projectBuildingRequest);
+      Set<Artifact> artifacts = artifactLocator.getArtifacts();
+
+      File repositoryFolder = getRepositoryFolder();
+
+      installArtifacts(repositoryFolder, artifacts);
+    } catch (Exception e) {
+      log.debug(format("There was an exception while building [%s]", project.toString()), e);
+      throw e;
+    }
+  }
+
+  private void initializeProjectBuildingRequest() {
+    projectBuildingRequest = new DefaultProjectBuildingRequest(session.getProjectBuildingRequest());
+    projectBuildingRequest.setLocalRepository(localRepository);
+    projectBuildingRequest.setRemoteRepositories(remoteArtifactRepositories);
+
+
+    log.debug(format("Local repository [%s]", projectBuildingRequest.getLocalRepository().getBasedir()));
+    projectBuildingRequest.getRemoteRepositories().stream()
+        .forEach(artifactRepository -> log.debug(format("Remote repository ID [%s], URL [%s]", artifactRepository.getId(),
+                                                        artifactRepository.getUrl())));
+  }
+
+  private File getRepositoryFolder() {
+    File repositoryFolder = new File(outputDirectory, REPOSITORY_FOLDER);
+    if (!repositoryFolder.exists()) {
+      repositoryFolder.mkdirs();
+    }
+    return repositoryFolder;
+  }
+
+  private void installArtifacts(File repositoryFile, Set<Artifact> artifacts) throws MojoExecutionException {
+    List<Artifact> sortedArtifacts = new ArrayList<>(artifacts);
+    sort(sortedArtifacts);
+    if (sortedArtifacts.isEmpty()) {
+      generateMarkerFileInRepositoryFolder(repositoryFile, sortedArtifacts);
     }
 
-
-    public void generate() throws MojoExecutionException, MojoFailureException {
-        log.info(format("Mirroring repository for [%s]", project.toString()));
-        try {
-            initializeProjectBuildingRequest();
-
-            ArtifactLocator artifactLocator =
-                new ArtifactLocator(log, project, projectBuilder, repositorySystem, localRepository, projectBuildingRequest);
-            Set<Artifact> artifacts = artifactLocator.getArtifacts();
-
-            File repositoryFolder = getRepositoryFolder();
-
-            installArtifacts(repositoryFolder, artifacts);
-        } catch (Exception e) {
-            log.debug(format("There was an exception while building [%s]", project.toString()), e);
-            throw e;
-        }
+    ArtifactInstaller installer = new ArtifactInstaller(log);
+    for (Artifact artifact : sortedArtifacts) {
+      installer.installArtifact(repositoryFile, artifact);
     }
+  }
 
-    private void initializeProjectBuildingRequest() {
-        projectBuildingRequest = new DefaultProjectBuildingRequest(session.getProjectBuildingRequest());
-        projectBuildingRequest.setLocalRepository(localRepository);
-        projectBuildingRequest.setRemoteRepositories(remoteArtifactRepositories);
-
-
-        log.debug(format("Local repository [%s]", projectBuildingRequest.getLocalRepository().getBasedir()));
-        projectBuildingRequest.getRemoteRepositories().stream()
-            .forEach(artifactRepository ->
-                         log.debug(format("Remote repository ID [%s], URL [%s]", artifactRepository.getId(),
-                                          artifactRepository.getUrl())));
+  private void generateMarkerFileInRepositoryFolder(File repositoryFile, List<Artifact> sortedArtifacts)
+      throws MojoExecutionException {
+    File markerFile = new File(repositoryFile, ".marker");
+    log.info(format("No artifacts to add, adding marker file <%s/%s>", REPOSITORY_FOLDER, markerFile.getName()));
+    try {
+      markerFile.createNewFile();
+    } catch (IOException e) {
+      throw new MojoExecutionException(
+                                       format("The current repository has no artifacts to install, and trying to create [%s] failed",
+                                              markerFile.toString()),
+                                       e);
     }
-
-    private File getRepositoryFolder() {
-        File repositoryFolder = new File(outputDirectory, REPOSITORY_FOLDER);
-        if (!repositoryFolder.exists()) {
-            repositoryFolder.mkdirs();
-        }
-        return repositoryFolder;
-    }
-
-    private void installArtifacts(File repositoryFile, Set<Artifact> artifacts) throws MojoExecutionException {
-        List<Artifact> sortedArtifacts = new ArrayList<>(artifacts);
-        sort(sortedArtifacts);
-        if (sortedArtifacts.isEmpty()) {
-            generateMarkerFileInRepositoryFolder(repositoryFile, sortedArtifacts);
-        }
-
-        ArtifactInstaller installer = new ArtifactInstaller(log);
-        for (Artifact artifact : sortedArtifacts) {
-            installer.installArtifact(repositoryFile, artifact);
-        }
-    }
-
-    private void generateMarkerFileInRepositoryFolder(File repositoryFile, List<Artifact> sortedArtifacts)
-        throws MojoExecutionException {
-        File markerFile = new File(repositoryFile, ".marker");
-        log.info(format("No artifacts to add, adding marker file <%s/%s>", REPOSITORY_FOLDER, markerFile.getName()));
-        try {
-            markerFile.createNewFile();
-        } catch (IOException e) {
-            throw new MojoExecutionException(
-                format("The current repository has no artifacts to install, and trying to create [%s] failed",
-                       markerFile.toString()),
-                e);
-        }
-    }
+  }
 }

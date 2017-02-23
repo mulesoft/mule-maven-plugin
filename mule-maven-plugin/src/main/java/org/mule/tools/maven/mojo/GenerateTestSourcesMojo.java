@@ -30,20 +30,20 @@ import java.nio.file.Paths;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class GenerateTestSourcesMojo extends AbstractMuleMojo {
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        getLog().debug("Creating target content with Test Mule source code...");
+  public void execute() throws MojoExecutionException, MojoFailureException {
+    getLog().debug("Creating target content with Test Mule source code...");
 
-        try {
-            createTestMuleFolderContent();
-        } catch (IOException e) {
-            throw new MojoFailureException("Fail to generate sources", e);
-        }
+    try {
+      createTestMuleFolderContent();
+    } catch (IOException e) {
+      throw new MojoFailureException("Fail to generate sources", e);
     }
+  }
 
-    private void createTestMuleFolderContent() throws IOException {
-        File targetFolder = Paths.get(project.getBuild().getDirectory(), TEST_MULE, MUNIT).toFile();
-        Files.walkFileTree(munitSourceFolder.toPath(), new CopyFileVisitor(munitSourceFolder, targetFolder));
-    }
+  private void createTestMuleFolderContent() throws IOException {
+    File targetFolder = Paths.get(project.getBuild().getDirectory(), TEST_MULE, MUNIT).toFile();
+    Files.walkFileTree(munitSourceFolder.toPath(), new CopyFileVisitor(munitSourceFolder, targetFolder));
+  }
 
 
 }

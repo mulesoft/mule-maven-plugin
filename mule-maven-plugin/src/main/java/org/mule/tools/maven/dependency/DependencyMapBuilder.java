@@ -19,20 +19,20 @@ import java.util.Map;
 
 public class DependencyMapBuilder {
 
-    public DependencyMapBuilder() {
+  public DependencyMapBuilder() {
 
+  }
+
+  public Map<String, List<Dependency>> build(List<Dependency> dependencyList) {
+    Map<String, List<Dependency>> dependencyMap = new HashMap<>();
+
+    for (Dependency plugin : dependencyList) {
+      String key = plugin.getGroupId() + ":" + plugin.getArtifactId();
+
+      dependencyMap.computeIfAbsent(key, k -> new ArrayList<>());
+      dependencyMap.get(key).add(plugin);
     }
 
-    public Map<String, List<Dependency>> build(List<Dependency> dependencyList) {
-        Map<String, List<Dependency>> dependencyMap = new HashMap<>();
-
-        for (Dependency plugin : dependencyList) {
-            String key = plugin.getGroupId() + ":" + plugin.getArtifactId();
-
-            dependencyMap.computeIfAbsent(key, k -> new ArrayList<>());
-            dependencyMap.get(key).add(plugin);
-        }
-
-        return dependencyMap;
-    }
+    return dependencyMap;
+  }
 }

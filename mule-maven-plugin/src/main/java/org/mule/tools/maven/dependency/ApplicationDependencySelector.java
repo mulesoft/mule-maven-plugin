@@ -22,34 +22,35 @@ import java.util.stream.Collectors;
  */
 public class ApplicationDependencySelector {
 
-    public List<Dependency> select(List<Dependency> mulePlugins) {
-        List<Dependency> selectedDependencies = new ArrayList<>();
+  public List<Dependency> select(List<Dependency> mulePlugins) {
+    List<Dependency> selectedDependencies = new ArrayList<>();
 
-        Map<String, List<Dependency>> dependencyMap = new DependencyMapBuilder().build(mulePlugins);
-        selectedDependencies.addAll(
-            dependencyMap.entrySet().stream().map(entry -> getNewerPluginFile(entry.getValue())).collect(Collectors.toList()));
+    Map<String, List<Dependency>> dependencyMap = new DependencyMapBuilder().build(mulePlugins);
+    selectedDependencies.addAll(
+                                dependencyMap.entrySet().stream().map(entry -> getNewerPluginFile(entry.getValue()))
+                                    .collect(Collectors.toList()));
 
-        return selectedDependencies;
+    return selectedDependencies;
+  }
+
+  /**
+   * Given a list of dependencies all representing the same artifact, different versions it will select the newer version and return the file of that one.
+   *
+   * @param dependencyVersions list of dependencies, all the same artifact different versions
+   * @return returns the file of th newer version of the dependencies list
+   */
+  private Dependency getNewerPluginFile(List<Dependency> dependencyVersions) {
+    if (dependencyVersions.size() == 1) {
+      return dependencyVersions.get(0);
     }
 
-    /**
-     * Given a list of dependencies all representing the same artifact, different versions it will select the newer version and return the file of that one.
-     *
-     * @param dependencyVersions list of dependencies, all the same artifact different versions
-     * @return returns the file of th newer version of the dependencies list
-     */
-    private Dependency getNewerPluginFile(List<Dependency> dependencyVersions) {
-        if (dependencyVersions.size() == 1) {
-            return dependencyVersions.get(0);
-        }
-
-        Dependency newerDependency = dependencyVersions.get(0);
-        for (Dependency dependency : dependencyVersions) {
-            if (dependency.getVersion().compareTo(newerDependency.getVersion()) > 1) {
-                newerDependency = dependency;
-            }
-        }
-        return newerDependency;
+    Dependency newerDependency = dependencyVersions.get(0);
+    for (Dependency dependency : dependencyVersions) {
+      if (dependency.getVersion().compareTo(newerDependency.getVersion()) > 1) {
+        newerDependency = dependency;
+      }
     }
+    return newerDependency;
+  }
 
-} 
+}

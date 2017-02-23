@@ -15,15 +15,15 @@ package org.mule.tools.artifact.archiver.internal.packaging;
  */
 public class PackagingTypeFactory {
 
-    public static PackagingType getDefaultPackaging() {
-        return PackagingType.BINARIES;
-    }
+  public static PackagingType getDefaultPackaging() {
+    return PackagingType.BINARIES;
+  }
 
-    public static PackagingType getPackaging(String packagingTypeName) {
-        try {
-            return PackagingType.fromString(packagingTypeName);
-        } catch (IllegalArgumentException e) {
-            return getDefaultPackaging();
-        }
+  public static PackagingType getPackaging(String packagingTypeName) {
+    try {
+      return PackagingType.fromString(packagingTypeName);
+    } catch (IllegalArgumentException e) {
+      return getDefaultPackaging();
     }
+  }
 }

@@ -22,25 +22,26 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 
 public class PackageMojoTest extends MojoTest {
-    private static final String PACKAGE = "package";
 
-    public PackageMojoTest() {
-        this.goal = PACKAGE;
-    }
+  private static final String PACKAGE = "package";
 
-    @Before
-    public void before() throws IOException, VerificationException {
-        clearResources();
-    }
+  public PackageMojoTest() {
+    this.goal = PACKAGE;
+  }
 
-    @Test
-    public void testPackage() throws IOException, VerificationException {
-        verifier.executeGoal(PACKAGE);
+  @Before
+  public void before() throws IOException, VerificationException {
+    clearResources();
+  }
 
-        File expectedStructure = getExpectedStructure();
+  @Test
+  public void testPackage() throws IOException, VerificationException {
+    verifier.executeGoal(PACKAGE);
 
-        assertThat("The directory structure is different from the expected", targetFolder, hasSameTreeStructure(expectedStructure));
+    File expectedStructure = getExpectedStructure();
 
-        verifier.verifyErrorFreeLog();
-    }
+    assertThat("The directory structure is different from the expected", targetFolder, hasSameTreeStructure(expectedStructure));
+
+    verifier.verifyErrorFreeLog();
+  }
 }

@@ -12,6 +12,7 @@ package org.mule.tools.artifact.archiver.api;
 
 
 import org.apache.commons.cli.*;
+import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 import org.mule.tools.artifact.archiver.internal.packaging.PackagingTypeFactory;
 import org.mule.tools.artifact.archiver.internal.packaging.type.PackagingType;
 

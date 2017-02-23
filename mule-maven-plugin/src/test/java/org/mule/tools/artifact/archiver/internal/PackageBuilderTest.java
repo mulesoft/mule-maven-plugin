@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.artifact.archiver.api;
+package org.mule.tools.artifact.archiver.internal;
 
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
@@ -20,7 +20,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mule.tools.artifact.archiver.internal.MuleArchiver;
 import org.mule.tools.artifact.archiver.internal.packaging.PackageStructureValidator;
 
 import java.io.File;
@@ -42,7 +41,7 @@ public class PackageBuilderTest {
     private static final String EXPECTED_EMPTY_DIRECTORY_MESSAGE = "The provided target folder is empty, no file will be generated";
     private static final String EXPECTED_WRONG_DIRECTORY_STRUCTURE_MESSAGE = "The provided target folder does not have the expected structure";
     private  File destinationFileMock;
-    private  PackageBuilder packageBuilder;
+    private PackageBuilder packageBuilder;
 
     @Mock AppenderSkeleton appender;
     @Captor ArgumentCaptor<LoggingEvent> logCaptor;

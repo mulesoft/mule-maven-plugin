@@ -8,11 +8,10 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.artifact.archiver.api;
+package org.mule.tools.artifact.archiver.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.tools.artifact.archiver.internal.MuleArchiver;
 import org.mule.tools.artifact.archiver.internal.packaging.PackageStructureValidator;
 import org.mule.tools.artifact.archiver.internal.packaging.PackagingTypeFactory;
 import org.mule.tools.artifact.archiver.internal.packaging.type.PackagingType;

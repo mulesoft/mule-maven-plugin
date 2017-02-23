@@ -12,7 +12,7 @@ package org.mule.tools.artifact.archiver.internal.type;
 
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
-import org.mule.tools.artifact.archiver.api.PackageBuilder;
+import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 import org.mule.tools.artifact.archiver.internal.packaging.type.PackagingType;
 import org.mule.tools.artifact.archiver.internal.packaging.type.SourcesType;
 

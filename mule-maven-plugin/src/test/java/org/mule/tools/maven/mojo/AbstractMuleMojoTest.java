@@ -16,7 +16,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.mule.tools.artifact.archiver.api.PackageBuilder;
+import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

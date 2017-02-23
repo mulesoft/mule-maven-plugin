@@ -18,7 +18,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.artifact.AttachedArtifact;
 import org.codehaus.plexus.archiver.ArchiverException;
-import org.mule.tools.artifact.archiver.api.PackageBuilder;
+import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 
 import java.io.File;
 import java.io.IOException;

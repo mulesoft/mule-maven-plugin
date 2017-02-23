@@ -10,7 +10,7 @@
 
 package org.mule.tools.artifact.archiver.internal.packaging.type;
 
-import org.mule.tools.artifact.archiver.api.PackageBuilder;
+import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 
 import java.io.File;
 import java.util.Map;

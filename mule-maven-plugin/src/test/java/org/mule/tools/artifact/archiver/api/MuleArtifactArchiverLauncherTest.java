@@ -13,6 +13,7 @@ package org.mule.tools.artifact.archiver.api;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

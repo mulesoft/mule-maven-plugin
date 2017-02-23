@@ -41,8 +41,8 @@ public class PackageBuilderTest {
     private static final String MULE_APP_PROPERTIES_FILE_CORRECT_NAME = "mule-app.properties";
     private static final String EXPECTED_EMPTY_DIRECTORY_MESSAGE = "The provided target folder is empty, no file will be generated";
     private static final String EXPECTED_WRONG_DIRECTORY_STRUCTURE_MESSAGE = "The provided target folder does not have the expected structure";
-    private static File destinationFileMock;
-    private static PackageBuilder packageBuilder;
+    private  File destinationFileMock;
+    private  PackageBuilder packageBuilder;
 
     @Mock AppenderSkeleton appender;
     @Captor ArgumentCaptor<LoggingEvent> logCaptor;

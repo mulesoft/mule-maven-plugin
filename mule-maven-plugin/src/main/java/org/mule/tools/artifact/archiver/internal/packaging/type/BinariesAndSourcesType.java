@@ -21,15 +21,9 @@ import java.util.Set;
  * Packaging type that knows how to build a package containing binaries and source files.
  */
 public class BinariesAndSourcesType implements PackagingType {
-    private final PackagingType binariesType = new BinariesType();
-    private final PackagingType sourcesType = new SourcesType();
 
-    @Override
-    public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
-        return packageBuilder.withClasses(fileMap.get(PackageBuilder.CLASSES_FOLDER))
-                .withMule(fileMap.get(PackageBuilder.MULE_FOLDER))    ;
-//                .withMetaInf(fileMap.get(PackageBuilder.METAINF_FOLDER));
-    }
+    private final PackagingType sourcesType = new SourcesType();
+    private final PackagingType binariesType = new BinariesType();
 
     @Override
     public Set<String> listFiles() {
@@ -45,5 +39,13 @@ public class BinariesAndSourcesType implements PackagingType {
         files.addAll(binariesType.listDirectories());
         files.addAll(sourcesType.listDirectories());
         return files;
+    }
+
+    @Override
+    public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
+        return packageBuilder
+            .withClasses(fileMap.get(PackageBuilder.CLASSES_FOLDER))
+            .withMule(fileMap.get(PackageBuilder.MULE_FOLDER));
+        //                .withMetaInf(fileMap.get(PackageBuilder.METAINF_FOLDER));
     }
 }

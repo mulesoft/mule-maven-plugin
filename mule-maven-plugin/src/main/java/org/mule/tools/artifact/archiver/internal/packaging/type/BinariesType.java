@@ -22,14 +22,14 @@ import java.util.Set;
  * Packaging type that knows how to build a package containing only binaries.
  */
 public class BinariesType implements PackagingType {
-    private final Set<String> files = listDefaultFiles();
-    private final Set<String> directories = listDefaultDirectories();
 
-    @Override
-    public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
-        return packageBuilder.withClasses(fileMap.get(PackageBuilder.CLASSES_FOLDER))
-                .withMule(fileMap.get(PackageBuilder.MULE_FOLDER))
-                .withRepository(fileMap.get(PackageBuilder.REPOSITORY_FOLDER));
+    private final Set<String> files = Collections.emptySet();
+    private final Set<String> directories = new HashSet<>();
+
+    public BinariesType() {
+        directories.add(PackageBuilder.MULE_FOLDER);
+        directories.add(PackageBuilder.CLASSES_FOLDER);
+        directories.add(PackageBuilder.REPOSITORY_FOLDER);
     }
 
     @Override
@@ -42,16 +42,12 @@ public class BinariesType implements PackagingType {
         return this.directories;
     }
 
-    private Set<String> listDefaultDirectories() {
-        Set<String> defaultDirectories = new HashSet<>();
-        defaultDirectories.add(PackageBuilder.CLASSES_FOLDER);
-        defaultDirectories.add(PackageBuilder.MULE_FOLDER);
-        defaultDirectories.add(PackageBuilder.REPOSITORY_FOLDER);
-        return defaultDirectories;
+    @Override
+    public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
+        return packageBuilder
+            .withMule(fileMap.get(PackageBuilder.MULE_FOLDER))
+            .withClasses(fileMap.get(PackageBuilder.CLASSES_FOLDER))
+            .withRepository(fileMap.get(PackageBuilder.REPOSITORY_FOLDER));
     }
 
-
-    private Set<String> listDefaultFiles() {
-        return Collections.emptySet();
-    }
 }

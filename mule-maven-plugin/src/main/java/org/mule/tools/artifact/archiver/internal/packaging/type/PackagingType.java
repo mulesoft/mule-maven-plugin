@@ -20,7 +20,7 @@ import java.util.Set;
  * Packaging type that knows how to generate a specific type of package given a package structure.
  */
 public interface PackagingType {
-    PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap);
     Set<String> listFiles();
     Set<String> listDirectories();
+    PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap);
 }

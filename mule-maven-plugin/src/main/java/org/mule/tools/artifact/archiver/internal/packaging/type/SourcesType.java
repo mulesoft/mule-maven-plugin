@@ -13,6 +13,7 @@ package org.mule.tools.artifact.archiver.internal.packaging.type;
 import org.mule.tools.artifact.archiver.api.PackageBuilder;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -22,12 +23,11 @@ import java.util.Set;
  */
 public class SourcesType implements PackagingType {
 
-    private final Set<String> files = new HashSet<>();
-    private final Set<String> directories = listDefaultDirectories();
+    private final Set<String> files = Collections.emptySet();
+    private final Set<String> directories = new HashSet<>();
 
-    @Override
-    public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
-        return packageBuilder.withMuleSrc(fileMap.get(PackageBuilder.MULE_SRC_FOLDER));
+    public SourcesType() {
+        this.directories.add(PackageBuilder.MULE_SRC_FOLDER);
     }
 
     @Override
@@ -40,9 +40,9 @@ public class SourcesType implements PackagingType {
         return directories;
     }
 
-    private Set<String> listDefaultDirectories() {
-        Set<String> defaultDirectories = new HashSet<>();
-        defaultDirectories.add(PackageBuilder.MULE_SRC_FOLDER);
-        return defaultDirectories;
+    @Override
+    public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
+        return packageBuilder
+            .withMuleSrc(fileMap.get(PackageBuilder.MULE_SRC_FOLDER));
     }
 }

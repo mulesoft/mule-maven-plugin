@@ -73,8 +73,6 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
     protected void createDescriptorFilesContent() throws IOException {
         projectBaseFolderFileCloner.clone(POM_XML)
             .toPath(META_INF, MAVEN, project.getGroupId(), project.getArtifactId());
-        projectBaseFolderFileCloner.clone(MULE_APP_PROPERTIES).toPath(META_INF, MULE_ARTIFACT);
-        projectBaseFolderFileCloner.clone(MULE_DEPLOY_PROPERTIES).toPath(META_INF, MULE_ARTIFACT);
         projectBaseFolderFileCloner.clone(MULE_APPLICATION_JSON).toPath(META_INF, MULE_ARTIFACT);
     }
 

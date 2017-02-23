@@ -10,11 +10,8 @@
 
 package org.mule.tools.artifact.archiver.internal;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.mule.tools.artifact.archiver.internal.packaging.PackageStructureValidator;
-import org.mule.tools.artifact.archiver.internal.packaging.PackagingType;
-import org.mule.tools.artifact.archiver.internal.packaging.PackagingTypeFactory;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +22,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.mule.tools.artifact.archiver.internal.packaging.PackagingType;
+import org.mule.tools.artifact.archiver.internal.packaging.PackagingTypeFactory;
 
 /**
  * Builder for Mule Application archives.
@@ -55,8 +54,6 @@ public class PackageBuilder {
 
   private File destinationFile;
   private MuleArchiver archiver = null;
-
-  private PackageStructureValidator applicationStructureValidator;
 
   public PackageBuilder(PackagingType packagingType) {
     this.packagingType = packagingType;
@@ -88,43 +85,43 @@ public class PackageBuilder {
    * @return builder
    */
   public PackageBuilder withClasses(File folder) {
-    checkNotNull(folder, "The folder must not be null");
+    checkArgument(folder != null, "The folder must not be null");
     classesFolder = folder;
     return this;
   }
 
   public PackageBuilder withMule(File folder) {
-    checkNotNull(folder);
+    checkArgument(folder != null);
     muleFolder = folder;
     return this;
   }
 
   public PackageBuilder withMaven(File folder) {
-    checkNotNull(folder, "The folder must not be null");
+    checkArgument(folder != null, "The folder must not be null");
     mavenFolder = folder;
     return this;
   }
 
   public PackageBuilder withMuleSrc(File folder) {
-    checkNotNull(folder, "The folder must not be null");
+    checkArgument(folder != null, "The folder must not be null");
     muleSrcFolder = folder;
     return this;
   }
 
   public PackageBuilder withMuleArtifact(File folder) {
-    checkNotNull(folder, "The folder must not be null");
+    checkArgument(folder != null, "The folder must not be null");
     muleArtifactFolder = folder;
     return this;
   }
 
   public PackageBuilder withRepository(File folder) {
-    checkNotNull(folder, "The folder must not be null");
+    checkArgument(folder != null, "The folder must not be null");
     repositoryFolder = folder;
     return this;
   }
 
   public PackageBuilder withRootResource(File resource) {
-    checkNotNull(resource, "The resource must not be null");
+    checkArgument(resource != null, "The resource must not be null");
     rootResources.add(resource);
     return this;
   }
@@ -134,7 +131,7 @@ public class PackageBuilder {
    * @return
    */
   public PackageBuilder withDestinationFile(File file) {
-    checkNotNull(file, "The file must not be null");
+    checkArgument(file != null, "The file must not be null");
     checkArgument(!file.exists(), "The file must not be duplicated");
     this.destinationFile = file;
     return this;
@@ -186,17 +183,12 @@ public class PackageBuilder {
     archiver.createArchive();
   }
 
-  public void setApplicationStructureValidator(PackageStructureValidator applicationStructureValidator) {
-    this.applicationStructureValidator = applicationStructureValidator;
-  }
-
-
   private void runPrePackageValidations() {
-    checkNotNull(destinationFile, "The destination file has not been set");
+    checkArgument(destinationFile != null, "The destination file has not been set");
   }
 
   private void checkMandatoryFolder(File folder) {
-    checkNotNull(folder, "The folder must not be null");
+    checkArgument(folder != null, "The folder must not be null");
     checkArgument(folder.exists(), "The folder must exists");
     checkArgument(folder.isDirectory(), "The folder must be a valid directory");
   }
@@ -209,31 +201,26 @@ public class PackageBuilder {
    * @return builder
    */
   public PackageBuilder addRootResourcesFile(File file) {
-    //        this.rootResourceFolder.addFile(file);
+    // this.rootResourceFolder.addFile(file);
     return this;
   }
 
   public void generateArtifact(File targetFolder, File destinationFile) throws IOException {
     checkMandatoryFolder(targetFolder);
-    checkNotNull(destinationFile);
     checkArgument(destinationFile != null && !destinationFile.exists(), "Destination file must not be null or already exist");
     File[] files = targetFolder.listFiles();
     if (files == null) {
       log.warn("The provided target folder is empty, no file will be generated");
       return;
     }
-    if (getApplicationPackageStructureValidator().hasExpectedStructure(files)) {
-      Map<String, File> fileMap = Arrays.stream(files).collect(Collectors.toMap(File::getName, Function.identity()));
+    Map<String, File> fileMap = Arrays.stream(files).collect(Collectors.toMap(File::getName, Function.identity()));
+    try {
       this.packagingType.applyPackaging(this, fileMap).withDestinationFile(destinationFile);
-      this.createDeployableFile();
-      log.info("File " + destinationFile.getName() + " has been successfully created");
-    } else {
+    } catch (IllegalArgumentException e) {
       log.warn("The provided target folder does not have the expected structure");
+      return;
     }
-  }
-
-  public PackageStructureValidator getApplicationPackageStructureValidator() {
-    return this.applicationStructureValidator != null ? this.applicationStructureValidator
-        : new PackageStructureValidator(this.packagingType);
+    this.createDeployableFile();
+    log.info("File " + destinationFile.getName() + " has been successfully created");
   }
 }

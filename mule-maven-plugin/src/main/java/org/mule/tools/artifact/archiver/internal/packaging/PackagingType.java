@@ -10,25 +10,17 @@
 
 package org.mule.tools.artifact.archiver.internal.packaging;
 
-import com.google.common.collect.Iterables;
-import org.mule.tools.artifact.archiver.internal.PackageBuilder;
+import static com.google.common.base.CaseFormat.LOWER_CAMEL;
+import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 
 import java.io.File;
 import java.util.Map;
-import java.util.Set;
 
-import static com.google.common.base.CaseFormat.LOWER_CAMEL;
-import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
-import static com.google.common.collect.Sets.newHashSet;
+import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 
 public enum PackagingType {
 
   SOURCES {
-
-    @Override
-    public Set<String> listDirectories() {
-      return newHashSet(PackageBuilder.MULE_SRC_FOLDER);
-    }
 
     @Override
     public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
@@ -36,11 +28,6 @@ public enum PackagingType {
     }
   },
   BINARIES {
-
-    @Override
-    public Set<String> listDirectories() {
-      return newHashSet(PackageBuilder.MULE_FOLDER, PackageBuilder.CLASSES_FOLDER, PackageBuilder.REPOSITORY_FOLDER);
-    }
 
     @Override
     public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
@@ -53,27 +40,19 @@ public enum PackagingType {
   BINARIES_AND_SOURCES {
 
     @Override
-    public Set<String> listDirectories() {
-      return newHashSet(Iterables.concat(SOURCES.listDirectories(), BINARIES.listDirectories()));
-
-    }
-
-    @Override
     public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
       return packageBuilder
           .withClasses(fileMap.get(PackageBuilder.CLASSES_FOLDER))
           .withMule(fileMap.get(PackageBuilder.MULE_FOLDER));
-      //                .withMetaInf(fileMap.get(PackageBuilder.METAINF_FOLDER));
+      // .withMetaInf(fileMap.get(PackageBuilder.METAINF_FOLDER));
     }
   };
-
-  public abstract Set<String> listDirectories();
-
-  public abstract PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap);
 
   public static PackagingType fromString(String name) {
     String packagingName = LOWER_HYPHEN.to(LOWER_CAMEL, name);
     return valueOf(packagingName);
   }
+
+  public abstract PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap);
 
 }

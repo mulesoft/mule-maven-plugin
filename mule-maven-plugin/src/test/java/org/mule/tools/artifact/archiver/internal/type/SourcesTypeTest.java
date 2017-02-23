@@ -10,42 +10,32 @@
 
 package org.mule.tools.artifact.archiver.internal.type;
 
-import org.junit.Test;
-import org.mockito.ArgumentMatchers;
-import org.mule.tools.artifact.archiver.internal.PackageBuilder;
-import org.mule.tools.artifact.archiver.internal.packaging.PackagingType;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.mockito.Mockito.*;
+import org.junit.Test;
+import org.mule.tools.artifact.archiver.internal.PackageBuilder;
+import org.mule.tools.artifact.archiver.internal.packaging.PackagingType;
 
-public class SourcesTypeTest {
+import com.google.common.collect.ImmutableMap;
+
+public class SourcesTypeTest extends PackageTypeTest {
 
   private PackagingType packagingType = PackagingType.SOURCES;
 
   @Test
-  public void validateListDirectories() {
-    assertThat("Directories set should not be null", packagingType.listDirectories(), notNullValue());
-    assertThat("Directories set is not as expected", packagingType.listDirectories(),
-               containsInAnyOrder(PackageBuilder.MULE_SRC_FOLDER));
-  }
-
-  @Test
   public void applyPackagingTest() {
     PackageBuilder packageBuilderMock = mock(PackageBuilder.class);
+    File muleSrc = mockFileWithName(PackageBuilder.MULE_SRC_FOLDER);
 
-    //        when(packageBuilderMock.withMetaInf(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
+    when(packageBuilderMock.withMuleSrc(muleSrc)).thenReturn(packageBuilderMock);
 
-    Map<String, File> fileMapMock = mock(Map.class);
+    Map<String, File> fileMapMock = ImmutableMap.of(muleSrc.getName(), muleSrc);
 
     packagingType.applyPackaging(packageBuilderMock, fileMapMock);
 
-    verify(packageBuilderMock, never()).withClasses(ArgumentMatchers.any());
-    verify(packageBuilderMock, never()).withMule(ArgumentMatchers.any());
-    //        verify(packageBuilderMock, times(1)).withMetaInf(ArgumentMatchers.any());
+    verify(packageBuilderMock).withMuleSrc(muleSrc);
   }
 }

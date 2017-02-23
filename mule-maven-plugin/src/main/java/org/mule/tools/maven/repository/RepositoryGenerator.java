@@ -10,6 +10,15 @@
 
 package org.mule.tools.maven.repository;
 
+import static java.lang.String.format;
+import static java.util.Collections.sort;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
@@ -21,15 +30,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import static java.lang.String.format;
-import static java.util.Collections.sort;
 
 public class RepositoryGenerator {
 
@@ -55,7 +55,6 @@ public class RepositoryGenerator {
                              List<ArtifactRepository> remoteArtifactRepositories,
                              File outputDirectory, Log log) {
 
-    // TODO all this is mandatory
     this.log = log;
     this.session = session;
     this.project = project;
@@ -92,7 +91,7 @@ public class RepositoryGenerator {
 
 
     log.debug(format("Local repository [%s]", projectBuildingRequest.getLocalRepository().getBasedir()));
-    projectBuildingRequest.getRemoteRepositories().stream()
+    projectBuildingRequest.getRemoteRepositories()
         .forEach(artifactRepository -> log.debug(format("Remote repository ID [%s], URL [%s]", artifactRepository.getId(),
                                                         artifactRepository.getUrl())));
   }
@@ -109,7 +108,7 @@ public class RepositoryGenerator {
     List<Artifact> sortedArtifacts = new ArrayList<>(artifacts);
     sort(sortedArtifacts);
     if (sortedArtifacts.isEmpty()) {
-      generateMarkerFileInRepositoryFolder(repositoryFile, sortedArtifacts);
+      generateMarkerFileInRepositoryFolder(repositoryFile);
     }
 
     ArtifactInstaller installer = new ArtifactInstaller(log);
@@ -118,7 +117,7 @@ public class RepositoryGenerator {
     }
   }
 
-  private void generateMarkerFileInRepositoryFolder(File repositoryFile, List<Artifact> sortedArtifacts)
+  private void generateMarkerFileInRepositoryFolder(File repositoryFile)
       throws MojoExecutionException {
     File markerFile = new File(repositoryFile, ".marker");
     log.info(format("No artifacts to add, adding marker file <%s/%s>", REPOSITORY_FOLDER, markerFile.getName()));

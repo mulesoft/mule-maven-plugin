@@ -10,6 +10,14 @@
 
 package org.mule.tools.artifact.archiver.internal;
 
+import static org.mockito.Mockito.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
@@ -20,15 +28,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mule.tools.artifact.archiver.internal.packaging.PackageStructureValidator;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PackageBuilderTest {
@@ -59,19 +58,19 @@ public class PackageBuilderTest {
     this.destinationFileMock = mock(File.class);
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void setNullClassesFolderTest() {
     this.packageBuilder.withClasses(null);
   }
 
 
 
-  @Test(expected = NullPointerException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void setNullMuleFolderTest() {
     this.packageBuilder.withMule(null);
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void setNullRootResourceFileTest() {
     this.packageBuilder.withRootResource(null);
   }
@@ -90,7 +89,7 @@ public class PackageBuilderTest {
     Assert.assertEquals("The list of root resources should contain two elements", 2, actualRootResourcesList.size());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void setNullDestinationFileTest() {
     this.packageBuilder.withDestinationFile(null);
   }
@@ -190,7 +189,7 @@ public class PackageBuilderTest {
     File metaInfFolderMock = mock(File.class);
     when(metaInfFolderMock.exists()).thenReturn(true);
     when(metaInfFolderMock.isDirectory()).thenReturn(true);
-    //        this.packageBuilder.withMetaInf(metaInfFolderMock);
+    // this.packageBuilder.withMetaInf(metaInfFolderMock);
 
     MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
     this.packageBuilder.withArchiver(muleArchiverMock);
@@ -199,7 +198,7 @@ public class PackageBuilderTest {
 
     this.packageBuilder.createDeployableFile();
 
-    //        verify(muleArchiverMock,times(1)).addMetaInf(metaInfFolderMock, null, null);
+    // verify(muleArchiverMock,times(1)).addMetaInf(metaInfFolderMock, null, null);
     verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
     verify(muleArchiverMock, times(1)).createArchive();
   }
@@ -279,7 +278,7 @@ public class PackageBuilderTest {
     verify(muleArchiverMock, times(1)).createArchive();
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void createArtifactNullDirectory() throws IOException {
     File nullDirectory = null;
     this.packageBuilder.generateArtifact(nullDirectory, destinationFileMock);
@@ -344,10 +343,6 @@ public class PackageBuilderTest {
   @Test
   public void generateArtifactGivenCorrectStructureTest() throws IOException {
     Logger.getRootLogger().addAppender(appender);
-
-    PackageStructureValidator applicationPackageStructureValidatorMock = mock(PackageStructureValidator.class);
-    when(applicationPackageStructureValidatorMock.hasExpectedStructure(any(File[].class))).thenReturn(true);
-    this.packageBuilder.setApplicationStructureValidator(applicationPackageStructureValidatorMock);
 
     File targetFolder = mock(File.class);
 

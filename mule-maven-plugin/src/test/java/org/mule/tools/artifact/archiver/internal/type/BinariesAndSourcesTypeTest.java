@@ -10,48 +10,38 @@
 
 package org.mule.tools.artifact.archiver.internal.type;
 
+import static org.mockito.Mockito.*;
+
+import java.io.File;
+import java.util.Map;
+
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 import org.mule.tools.artifact.archiver.internal.packaging.PackagingType;
 
-import java.io.File;
-import java.util.Map;
+import com.google.common.collect.ImmutableMap;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.mockito.Mockito.*;
-
-public class BinariesAndSourcesTypeTest {
+public class BinariesAndSourcesTypeTest extends PackageTypeTest {
 
   private PackagingType packagingType = PackagingType.BINARIES_AND_SOURCES;
 
   @Test
-  public void validateListDirectories() {
-    assertThat("Directories set should not be null", packagingType.listDirectories(), notNullValue());
-    assertThat("Directories set is not as expected", packagingType.listDirectories(), containsInAnyOrder(
-                                                                                                         PackageBuilder.MULE_FOLDER,
-                                                                                                         PackageBuilder.CLASSES_FOLDER,
-                                                                                                         PackageBuilder.REPOSITORY_FOLDER,
-                                                                                                         "META-INF"));
-  }
-
-  @Test
   public void validateApplyPackagingTest() {
     PackageBuilder packageBuilderMock = mock(PackageBuilder.class);
+    File classes = mockFileWithName(PackageBuilder.CLASSES_FOLDER);
+    File mule = mockFileWithName(PackageBuilder.MULE_FOLDER);
 
     when(packageBuilderMock.withClasses(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
     when(packageBuilderMock.withMule(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
-    //        when(packageBuilderMock.withMetaInf(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
 
-    Map<String, File> fileMapMock = mock(Map.class);
+    Map<String, File> fileMapMock = ImmutableMap.of(classes.getName(), classes, mule.getName(), mule);
 
     packagingType.applyPackaging(packageBuilderMock, fileMapMock);
 
-    verify(packageBuilderMock).withClasses(ArgumentMatchers.any());
-    verify(packageBuilderMock).withMule(ArgumentMatchers.any());
-    //        verify(packageBuilderMock, times(1)).withMetaInf(ArgumentMatchers.any());
+    verify(packageBuilderMock).withClasses(classes);
+    verify(packageBuilderMock).withMule(mule);
+    // verify(packageBuilderMock, times(0)).withMetaInf(ArgumentMatchers.any());
   }
 
 

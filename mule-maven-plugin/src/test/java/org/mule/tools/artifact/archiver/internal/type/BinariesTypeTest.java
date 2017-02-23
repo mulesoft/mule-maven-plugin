@@ -10,46 +10,41 @@
 
 package org.mule.tools.artifact.archiver.internal.type;
 
+import static org.mockito.Mockito.*;
+
+import java.io.File;
+import java.util.Map;
+
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 import org.mule.tools.artifact.archiver.internal.packaging.PackagingType;
 
-import java.io.File;
-import java.util.Map;
+import com.google.common.collect.ImmutableMap;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.mockito.Mockito.*;
-
-public class BinariesTypeTest {
+public class BinariesTypeTest extends PackageTypeTest {
 
   private PackagingType packagingType = PackagingType.BINARIES;
 
   @Test
-  public void binariesStructureListDirectoriesTest() {
-    assertThat("Directories set should not be null", packagingType.listDirectories(), notNullValue());
-    assertThat("Directories set is not as expected", packagingType.listDirectories(),
-               containsInAnyOrder(PackageBuilder.MULE_FOLDER, PackageBuilder.CLASSES_FOLDER,
-                                  PackageBuilder.REPOSITORY_FOLDER));
-  }
-
-  @Test
   public void binariesTypeApplyPackagingTest() {
-
     PackageBuilder packageBuilderMock = mock(PackageBuilder.class);
+    File classes = mockFileWithName(PackageBuilder.CLASSES_FOLDER);
+    File mule = mockFileWithName(PackageBuilder.MULE_FOLDER);
+    File repository = mockFileWithName(PackageBuilder.REPOSITORY_FOLDER);
 
     when(packageBuilderMock.withClasses(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
     when(packageBuilderMock.withMule(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
+    when(packageBuilderMock.withRepository(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
 
-    Map<String, File> fileMapMock = mock(Map.class);
+    Map<String, File> fileMapMock =
+        ImmutableMap.of(classes.getName(), classes, mule.getName(), mule, repository.getName(), repository);
 
     packagingType.applyPackaging(packageBuilderMock, fileMapMock);
 
-    verify(packageBuilderMock).withClasses(ArgumentMatchers.any());
-    verify(packageBuilderMock).withMule(ArgumentMatchers.any());
-    //        verify(packageBuilderMock, times(0)).withMetaInf(ArgumentMatchers.any());
+    verify(packageBuilderMock).withClasses(classes);
+    verify(packageBuilderMock).withMule(mule);
+    verify(packageBuilderMock).withRepository(repository);
   }
 
 }

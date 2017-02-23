@@ -10,13 +10,7 @@
 
 package org.mule.tools.maven.repository;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.model.building.ModelProblem;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.*;
-import org.apache.maven.repository.RepositorySystem;
+import static java.lang.String.format;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,7 +18,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.lang.String.format;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.model.building.ModelProblem;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.*;
+import org.apache.maven.repository.RepositorySystem;
 
 public class ArtifactLocator {
 
@@ -64,8 +64,7 @@ public class ArtifactLocator {
     artifacts.add(getResolvedArtifactUsingLocalRepository(pomArtifact));
   }
 
-  private void addParentPomArtifacts(Set<Artifact> artifacts)
-      throws MojoExecutionException {
+  private void addParentPomArtifacts(Set<Artifact> artifacts) throws MojoExecutionException {
     MavenProject currentProject = project;
     boolean projectParent = true;
     while (currentProject.hasParent() && projectParent) {

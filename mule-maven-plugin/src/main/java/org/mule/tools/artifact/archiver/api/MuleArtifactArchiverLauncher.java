@@ -13,8 +13,8 @@ package org.mule.tools.artifact.archiver.api;
 
 import org.apache.commons.cli.*;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
+import org.mule.tools.artifact.archiver.internal.packaging.PackagingType;
 import org.mule.tools.artifact.archiver.internal.packaging.PackagingTypeFactory;
-import org.mule.tools.artifact.archiver.internal.packaging.type.PackagingType;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class MuleArtifactArchiverLauncher {
         createOptions();
         CommandLine cmd = parse(args);
         if(cmd != null) {
-            String packagingType = cmd.getOptionValue(ARTIFACT_CONTENT_TYPE, PackagingTypeFactory.BINARIES_PACKAGING);
+            String packagingType = cmd.getOptionValue(ARTIFACT_CONTENT_TYPE, PackagingType.BINARIES.name());
             PackageBuilder packageBuilder = getPackageBuilder(PackagingTypeFactory.getPackaging(packagingType));
             String targetFolder = cmd.getOptionValue(TARGET_FOLDER, System.getProperty(USER_DIR));
             String destinationFile = targetFolder + File.separator + cmd.getOptionValue(PACKAGE_NAME) + ".zip";

@@ -10,8 +10,6 @@
 
 package org.mule.tools.artifact.archiver.internal.packaging;
 
-import org.mule.tools.artifact.archiver.internal.packaging.type.PackagingType;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -22,19 +20,19 @@ import java.util.stream.Collectors;
  * Validates the structure of a Mule Application packages.
  */
 public class PackageStructureValidator {
-    private static PackagingType packagingType = PackagingTypeFactory.getDefaultPackaging();
+
+    private PackagingType packagingType = PackagingTypeFactory.getDefaultPackaging();
 
     public PackageStructureValidator(PackagingType packagingType) {
         this.packagingType = packagingType;
     }
 
     public boolean hasExpectedStructure(File[] allFiles) {
-        if(allFiles == null) {
+        if (allFiles == null) {
             return false;
         }
         List<File> directories = Arrays.stream(allFiles).filter(file -> file.isDirectory()).collect(Collectors.toList());
-        List<File> files = Arrays.stream(allFiles).filter(file -> file.isFile()).collect(Collectors.toList());
-        return checkStructure(directories, packagingType.listDirectories()) && checkStructure(files, packagingType.listFiles());
+        return checkStructure(directories, packagingType.listDirectories());
     }
 
     private boolean checkStructure(List<File> children, Set<String> expectedChildren) {

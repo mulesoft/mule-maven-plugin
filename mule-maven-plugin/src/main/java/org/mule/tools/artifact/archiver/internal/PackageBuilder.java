@@ -13,8 +13,8 @@ package org.mule.tools.artifact.archiver.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.tools.artifact.archiver.internal.packaging.PackageStructureValidator;
+import org.mule.tools.artifact.archiver.internal.packaging.PackagingType;
 import org.mule.tools.artifact.archiver.internal.packaging.PackagingTypeFactory;
-import org.mule.tools.artifact.archiver.internal.packaging.type.PackagingType;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class PackageBuilder {
     public static final String MULE_SRC_FOLDER = "mule-src";
     public static final String REPOSITORY_FOLDER = "repository";
 
-    private static PackagingType packagingType;
+    private PackagingType packagingType;
 
     private transient Log log = LogFactory.getLog(this.getClass());
 

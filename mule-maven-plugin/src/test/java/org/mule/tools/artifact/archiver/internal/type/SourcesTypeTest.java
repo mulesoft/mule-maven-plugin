@@ -13,8 +13,7 @@ package org.mule.tools.artifact.archiver.internal.type;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
-import org.mule.tools.artifact.archiver.internal.packaging.type.PackagingType;
-import org.mule.tools.artifact.archiver.internal.packaging.type.SourcesType;
+import org.mule.tools.artifact.archiver.internal.packaging.PackagingType;
 
 import java.io.File;
 import java.util.Map;
@@ -22,12 +21,11 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
 import static org.mockito.Mockito.*;
 
 public class SourcesTypeTest {
 
-    private PackagingType packagingType = new SourcesType();
+    private PackagingType packagingType = PackagingType.SOURCES;
 
     @Test
     public void validateListDirectories() {
@@ -35,13 +33,6 @@ public class SourcesTypeTest {
         assertThat("Directories set is not as expected", packagingType.listDirectories(),
                    containsInAnyOrder(PackageBuilder.MULE_SRC_FOLDER));
     }
-
-    @Test
-    public void validateListFiles() {
-        assertThat("Files set should not be null", packagingType.listFiles(), notNullValue());
-        assertThat("Files set should be empty", packagingType.listFiles(), empty());
-    }
-
 
     @Test
     public void applyPackagingTest() {
@@ -53,8 +44,8 @@ public class SourcesTypeTest {
 
         packagingType.applyPackaging(packageBuilderMock, fileMapMock);
 
-        verify(packageBuilderMock, times(0)).withClasses(ArgumentMatchers.any());
-        verify(packageBuilderMock, times(0)).withMule(ArgumentMatchers.any());
+        verify(packageBuilderMock, never()).withClasses(ArgumentMatchers.any());
+        verify(packageBuilderMock, never()).withMule(ArgumentMatchers.any());
         //        verify(packageBuilderMock, times(1)).withMetaInf(ArgumentMatchers.any());
     }
 } 

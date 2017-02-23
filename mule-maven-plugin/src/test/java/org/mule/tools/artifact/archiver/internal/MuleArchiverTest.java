@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -32,27 +33,37 @@ public class MuleArchiverTest {
     @Rule
     public TemporaryFolder targetFileFolder = new TemporaryFolder();
 
+    public MuleArchiver muleArchiver;
+
+    @Before
+    public void setUp() {
+        muleArchiver = new MuleArchiver();
+
+    }
+
     @Test
     public void createCompleteAppUsingFolders() throws Exception {
+
         File destinationFile = new File(targetFileFolder.getRoot(), REAL_APP + ".zip");
 
-        MuleArchiver muleArchiver = new MuleArchiver();
         muleArchiver.addRootFile(getTestResourceFile(REAL_APP + File.separator + "mule-app.properties"));
-        muleArchiver.addRootFile(getTestResourceFile(REAL_APP + File.separator + "mule-deploy.properties"));
-        muleArchiver.addRootFile(getTestResourceFile(REAL_APP + File.separator + "pom.xml"));
 
         muleArchiver.addClasses(getTestResourceFile(REAL_APP + File.separator + "classes"), null, null);
-        muleArchiver.addLib(getTestResourceFile(REAL_APP + File.separator + "lib"), null, null);
-        muleArchiver.addMetaInf(getTestResourceFile(REAL_APP + File.separator + "META-INF"), null, null);
+
+        muleArchiver.addMaven(getTestResourceFile(REAL_APP + File.separator + "META-INF" + File.separator + "maven"), null, null);
+        muleArchiver
+            .addMuleSrc(getTestResourceFile(REAL_APP + File.separator + "META-INF" + File.separator + "mule-src"), null, null);
+        muleArchiver
+            .addMuleArtifact(getTestResourceFile(REAL_APP + File.separator + "META-INF" + File.separator + "mule-artifact"), null,
+                             null);
+
         muleArchiver.addMule(getTestResourceFile(REAL_APP + File.separator + "mule"), null, null);
-        muleArchiver.addPlugins(getTestResourceFile(REAL_APP + File.separator + "plugins"), null, null);
 
         muleArchiver.setDestFile(destinationFile);
+
+
         muleArchiver.createArchive();
-
-
         File destinationDirectoryForUnzip = uncompressArchivedApp(destinationFile);
-
         assertCompleteAppContent(destinationDirectoryForUnzip);
     }
 
@@ -84,28 +95,63 @@ public class MuleArchiverTest {
         relativePaths.add("pom.xml");
         relativePaths.add("mule-app.properties");
         relativePaths.add("mule-deploy.properties");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator + "main" + File.separator + "java" + File.separator + "org.fake.core" + File.separator + "class2.clazz");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator + "test" + File.separator + "java" + File.separator + "org.fake.core" + File.separator + "class2Test.clazz");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "resource2");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "resourceFolder" + File.separator + "resource3");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator
+                + "main" + File.separator + "java" + File.separator + "org.fake.core" + File.separator + "class2.clazz");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator
+                + "test" + File.separator + "java" + File.separator + "org.fake.core" + File.separator + "class2Test.clazz");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator
+                + "main" + File.separator + "resources" + File.separator + "resource2");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator
+                + "main" + File.separator + "resources" + File.separator + "resourceFolder" + File.separator + "resource3");
         relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "pom.xml");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator + "test" + File.separator + "java" + File.separator + "org.fake.core" + File.separator + "class1Test.clazz");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "resource1");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "catalog" + File.separator + "something.json");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "lib" + File.separator + "shared" + File.separator + "b.jar");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator + "test" + File.separator + "munit" + File.separator + "org.mule.package" + File.separator + "mule-config2-test.xml");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator + "main" + File.separator + "mule" + File.separator + "mule-config1.xml");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator + "main" + File.separator + "mule" + File.separator + "org.mule.package" + File.separator + "mule-config2.xml");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator + "test" + File.separator + "munit" + File.separator + "mule-config1-test.xml");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "mule-deploy.properties");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator + "main" + File.separator + "java" + File.separator + "org.fake.core" + File.separator + "class1.clazz");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator + "main" + File.separator + "java" + File.separator + "class3.clazz");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "lib" + File.separator + "a.jar");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator + "test" + File.separator + "java" + File.separator + "class3Test.clazz");
-        relativePaths.add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "mule-app.properties");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator
+                + "test" + File.separator + "java" + File.separator + "org.fake.core" + File.separator + "class1Test.clazz");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator
+                + "main" + File.separator + "resources" + File.separator + "resource1");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "catalog" + File.separator
+                + "something.json");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "lib" + File.separator
+                + "shared" + File.separator + "b.jar");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator
+                + "test" + File.separator + "munit" + File.separator + "org.mule.package" + File.separator
+                + "mule-config2-test.xml");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator
+                + "main" + File.separator + "mule" + File.separator + "mule-config1.xml");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator
+                + "main" + File.separator + "mule" + File.separator + "org.mule.package" + File.separator + "mule-config2.xml");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator
+                + "test" + File.separator + "munit" + File.separator + "mule-config1-test.xml");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "mule-deploy.properties");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator
+                + "main" + File.separator + "java" + File.separator + "org.fake.core" + File.separator + "class1.clazz");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator
+                + "main" + File.separator + "java" + File.separator + "class3.clazz");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "lib" + File.separator
+                + "a.jar");
+        relativePaths.add(
+            "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src" + File.separator
+                + "test" + File.separator + "java" + File.separator + "class3Test.clazz");
+        relativePaths
+            .add("META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "mule-app.properties");
 
         List<String> expectedFiles = new ArrayList<>();
-        for(String relativePath : relativePaths) {
+        for (String relativePath : relativePaths) {
             expectedFiles.add(getDestinationDirectoryForUnzip() + File.separator + relativePath);
         }
         assertThatFolderContainsFiles(destinationDirectoryForUnzip, expectedFiles);
@@ -117,7 +163,8 @@ public class MuleArchiverTest {
 
     private void assertThatFolderContainsFiles(File destinationDirectoryForUnzip, List<String> expectedFiles) {
         final Collection<String> allFilesInDestination = FileUtils
-            .listFiles(destinationDirectoryForUnzip, null, true).stream().map(file -> file.getAbsolutePath()).collect(Collectors.toList());
+            .listFiles(destinationDirectoryForUnzip, null, true).stream().map(file -> file.getAbsolutePath())
+            .collect(Collectors.toList());
 
         final Set<String> expectedFilesVerified = new HashSet<>(expectedFiles);
         final Set<String> foundFilesVerified = new HashSet<>(allFilesInDestination);

@@ -102,19 +102,19 @@ public class PackageMojo extends AbstractMuleMojo {
             if (!onlyMuleSources) {
                 builder
                     .withClasses(new File(targetFolder + File.separator + CLASSES))
-                    .withMule(new File(targetFolder + File.separator + MULE));
+                    .withMule(new File(targetFolder + File.separator + MULE))
+                    .withMaven(new File(targetFolder + File.separator + META_INF + File.separator + MAVEN))
+                    .withMuleArtifact(new File(targetFolder + File.separator + META_INF + File.separator + MULE_ARTIFACT));
 
                 if (!lightwayPackage) {
                     builder.withRepository(new File(targetFolder + File.separator + REPOSITORY));
                 }
-                builder.withMetaInf(new File(targetFolder + File.separator + META_INF));
-                // TODO  review this api so we can add mule sources at will
-                //                if (attachMuleSources) {
-                //                    builder.withMetaInf(new File(targetFolder + File.separator + META_INF));
-                //                }
 
+                if (attachMuleSources) {
+                    builder.withMuleSrc(new File(targetFolder + File.separator + META_INF + File.separator + MULE_SRC));
+                }
             } else {
-                builder.withMetaInf(new File(targetFolder + File.separator + META_INF));
+                builder.withMuleSrc(new File(targetFolder + File.separator + META_INF + File.separator + MULE_SRC));
             }
 
             builder.createDeployableFile();

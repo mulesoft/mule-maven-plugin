@@ -27,8 +27,8 @@ public class BinariesAndSourcesType implements PackagingType {
     @Override
     public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
         return packageBuilder.withClasses(fileMap.get(PackageBuilder.CLASSES_FOLDER))
-                .withMule(fileMap.get(PackageBuilder.MULE_FOLDER))
-                .withMetaInf(fileMap.get(PackageBuilder.METAINF_FOLDER));
+                .withMule(fileMap.get(PackageBuilder.MULE_FOLDER))    ;
+//                .withMetaInf(fileMap.get(PackageBuilder.METAINF_FOLDER));
     }
 
     @Override

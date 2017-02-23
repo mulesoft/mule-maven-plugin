@@ -21,12 +21,13 @@ import java.util.Set;
  * Packaging type that knows how to build a package containing only source files.
  */
 public class SourcesType implements PackagingType {
+
     private final Set<String> files = new HashSet<>();
     private final Set<String> directories = listDefaultDirectories();
 
     @Override
     public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
-        return packageBuilder.withMetaInf(fileMap.get(PackageBuilder.METAINF_FOLDER));
+        return packageBuilder.withMuleSrc(fileMap.get(PackageBuilder.MULE_SRC_FOLDER));
     }
 
     @Override
@@ -41,7 +42,7 @@ public class SourcesType implements PackagingType {
 
     private Set<String> listDefaultDirectories() {
         Set<String> defaultDirectories = new HashSet<>();
-        defaultDirectories.add(PackageBuilder.METAINF_FOLDER);
+        defaultDirectories.add(PackageBuilder.MULE_SRC_FOLDER);
         return defaultDirectories;
     }
 }

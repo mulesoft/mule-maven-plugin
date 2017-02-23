@@ -56,117 +56,16 @@ public class PackageBuilderTest {
         this.destinationFileMock = mock(File.class);
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    @Ignore
-    public void setPomFileWithWrongNameTest() {
-        File pomFileWithWrongNameMock = mock(File.class);
-        when(pomFileWithWrongNameMock.getName()).thenReturn(POM_FILE_WRONG_NAME);
-        this.packageBuilder.withPom(pomFileWithWrongNameMock);
-    }
-
-    @Test
-    @Ignore
-    public void setPomFileTest() throws IllegalAccessException, NoSuchFieldException {
-        File filePomMock = mock(File.class);
-        when(filePomMock.getName()).thenReturn(POM_FILE_CORRECT_NAME);
-
-        this.packageBuilder.withPom(filePomMock);
-        verify(filePomMock, times(1)).getName();
-
-        Class<?> clazz = this.packageBuilder.getClass();
-        Field field = clazz.getDeclaredField("pomFile");
-        field.setAccessible(true);
-        File actualPomFile = (File)field.get(this.packageBuilder);
-
-        Assert.assertNotNull("Mule pom file should not be null", actualPomFile);
-
-        String actualPomFileName = actualPomFile.getName();
-
-        Assert.assertEquals("The actual pom file name is not the one provided", POM_FILE_CORRECT_NAME, actualPomFileName);
-    }
-
-    @Test(expected=IllegalArgumentException.class)
-    public void setMuleDeployPropertiesFileWithWrongNameTest() {
-        File muleDeployPropertiesFileWithWrongNameMock = mock(File.class);
-        when(muleDeployPropertiesFileWithWrongNameMock.getName()).thenReturn(MULE_DEPLOY_PROPERTIES_FILE_WRONG_NAME);
-        this.packageBuilder.withMuleDeployProperties(muleDeployPropertiesFileWithWrongNameMock);
-    }
-
-    @Test
-    @Ignore
-    public void setMuleDeployPropertiesFileTest() throws IllegalAccessException, NoSuchFieldException {
-        File muleDeployPropertiesFileMock = mock(File.class);
-        when(muleDeployPropertiesFileMock.getName()).thenReturn(MULE_DEPLOY_PROPERTIES_FILE_CORRECT_NAME);
-
-        this.packageBuilder.withMuleDeployProperties(muleDeployPropertiesFileMock);
-        verify(muleDeployPropertiesFileMock).getName();
-
-        Class<?> clazz = this.packageBuilder.getClass();
-        Field field = clazz.getDeclaredField("muleDeployPropertiesFile");
-        field.setAccessible(true);
-        File actualMuleDeployPropertiesFile = (File)field.get(this.packageBuilder);
-
-        Assert.assertNotNull("Mule deploy properties file should not be null", actualMuleDeployPropertiesFile);
-
-        String actualFileName = actualMuleDeployPropertiesFile.getName();
-
-        Assert.assertEquals("The actual mule deploy properties file name is not the one provided", MULE_DEPLOY_PROPERTIES_FILE_CORRECT_NAME, actualFileName);
-    }
-
-    @Test(expected=IllegalArgumentException.class)
-    @Ignore
-    public void setMuleAppPropertiesFileWithWrongNameTest() {
-        File muleAppPropertiesFileWithWrongNameMock = mock(File.class);
-        when(muleAppPropertiesFileWithWrongNameMock.getName()).thenReturn(MULE_APP_PROPERTIES_FILE_WRONG_NAME);
-        this.packageBuilder.withMuleAppProperties(muleAppPropertiesFileWithWrongNameMock);
-    }
-
-    @Test
-    @Ignore
-    public void setMuleAppPropertiesFileTest() throws IllegalAccessException, NoSuchFieldException {
-        File muleAppPropertiesFileMock = mock(File.class);
-        when(muleAppPropertiesFileMock.getName()).thenReturn(MULE_APP_PROPERTIES_FILE_CORRECT_NAME);
-
-        this.packageBuilder.withMuleAppProperties(muleAppPropertiesFileMock);
-        verify(muleAppPropertiesFileMock).getName();
-
-        Class<?> clazz = this.packageBuilder.getClass();
-        Field field = clazz.getDeclaredField("muleAppPropertiesFile");
-        field.setAccessible(true);
-        File actualMuleAppPropertiesFile = (File)field.get(this.packageBuilder);
-
-        Assert.assertNotNull("Mule app properties file should not be null", actualMuleAppPropertiesFile);
-
-        String actualFileName = actualMuleAppPropertiesFile.getName();
-
-        Assert.assertEquals("The actual mule app properties file name is not the one provided", MULE_APP_PROPERTIES_FILE_CORRECT_NAME, actualFileName);
-    }
-
     @Test(expected=NullPointerException.class)
     public void setNullClassesFolderTest() {
         this.packageBuilder.withClasses(null);
     }
 
-    @Test(expected=NullPointerException.class)
-    @Ignore
-    public void setNullLibFolderTest() {
-        this.packageBuilder.withLib(null);
-    }
+
 
     @Test(expected=NullPointerException.class)
     public void setNullMuleFolderTest() {
         this.packageBuilder.withMule(null);
-    }
-
-    @Test(expected=NullPointerException.class)
-    public void setNullMetaInfFolderTest() {
-        this.packageBuilder.withMetaInf(null);
-    }
-
-    @Test(expected=NullPointerException.class)
-    @Ignore
-    public void setNullPluginsFolderTest() {
-        this.packageBuilder.withPlugins(null);
     }
 
     @Test(expected=NullPointerException.class)
@@ -285,7 +184,7 @@ public class PackageBuilderTest {
         File metaInfFolderMock = mock(File.class);
         when(metaInfFolderMock.exists()).thenReturn(true);
         when(metaInfFolderMock.isDirectory()).thenReturn(true);
-        this.packageBuilder.withMetaInf(metaInfFolderMock);
+//        this.packageBuilder.withMetaInf(metaInfFolderMock);
 
         MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
         this.packageBuilder.withArchiver(muleArchiverMock);
@@ -294,7 +193,7 @@ public class PackageBuilderTest {
 
         this.packageBuilder.createDeployableFile();
 
-        verify(muleArchiverMock,times(1)).addMetaInf(metaInfFolderMock, null, null);
+//        verify(muleArchiverMock,times(1)).addMetaInf(metaInfFolderMock, null, null);
         verify(muleArchiverMock,times(1)).setDestFile(destinationFileMock);
         verify(muleArchiverMock, times(1)).createArchive();
     }

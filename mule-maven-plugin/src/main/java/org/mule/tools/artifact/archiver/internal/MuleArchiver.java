@@ -23,22 +23,19 @@ public class MuleArchiver extends ZipArchiver {
 
     public final static String ROOT_LOCATION = "";
 
-    public final static String PLUGINS_LOCATION = "plugins" + File.separator;
-
-    public final static String LIB_LOCATION = "lib" + File.separator;
-
     public final static String CLASSES_LOCATION = "classes" + File.separator;
 
     public final static String MULE_LOCATION = "mule" + File.separator;
 
     public final static String METAINF_LOCATION = "META-INF" + File.separator;
 
+    public final static String MAVEN_LOCATION = METAINF_LOCATION + "maven" + File.separator;
+
+    public final static String MULE_SRC_LOCATION = METAINF_LOCATION + "mule-src" + File.separator;
+
+    public final static String MULE_ARTIFACT_LOCATION = METAINF_LOCATION + "mule-artifact" + File.separator;
+
     public static final String REPOSITORY_LOCATION = "repository" + File.separator;
-
-
-    //    public final static String LIB_SHARED_LOCATION = LIB_LOCATION + "shared" + File.separator;
-    //    public final static String CLASSES_PLUGIN_LOCATION = CLASSES_LOCATION + "plugin" + File.separator;
-    //    public final static String METAINF_MULESRC_LOCATION = METAINF_LOCATION + "mule-src" + File.separator;
 
 
     public void addClasses(File file) throws ArchiverException {
@@ -49,12 +46,28 @@ public class MuleArchiver extends ZipArchiver {
         addDirectory(directoryName, CLASSES_LOCATION, includes, addDefaultExcludes(excludes));
     }
 
-    public void addMetaInf(File file) throws ArchiverException {
-        addFile(file, METAINF_LOCATION + file.getName());
+    public void addMuleSrc(File file) throws ArchiverException {
+        addFile(file, MULE_SRC_LOCATION + file.getName());
     }
 
-    public void addMetaInf(File directoryName, String[] includes, String[] excludes) throws ArchiverException {
-        addDirectory(directoryName, METAINF_LOCATION, includes, addDefaultExcludes(excludes));
+    public void addMuleSrc(File directoryName, String[] includes, String[] excludes) throws ArchiverException {
+        addDirectory(directoryName, MULE_SRC_LOCATION, includes, addDefaultExcludes(excludes));
+    }
+
+    public void addMaven(File file) throws ArchiverException {
+        addFile(file, MAVEN_LOCATION + file.getName());
+    }
+
+    public void addMaven(File directoryName, String[] includes, String[] excludes) throws ArchiverException {
+        addDirectory(directoryName, MAVEN_LOCATION, includes, addDefaultExcludes(excludes));
+    }
+
+    public void addMuleArtifact(File file) throws ArchiverException {
+        addFile(file, MULE_ARTIFACT_LOCATION + file.getName());
+    }
+
+    public void addMuleArtifact(File directoryName, String[] includes, String[] excludes) throws ArchiverException {
+        addDirectory(directoryName, MULE_ARTIFACT_LOCATION, includes, addDefaultExcludes(excludes));
     }
 
     public void addRepository(File file) throws ArchiverException {
@@ -75,26 +88,6 @@ public class MuleArchiver extends ZipArchiver {
 
     public void addRootDirectory(File directory) throws ArchiverException {
         addDirectory(directory, ROOT_LOCATION, null, addDefaultExcludes(null));
-    }
-
-    @Deprecated
-    public void addLib(File file) throws ArchiverException {
-        addFile(file, LIB_LOCATION + file.getName());
-    }
-
-    @Deprecated
-    public void addLib(File directoryName, String[] includes, String[] excludes) throws ArchiverException {
-        addDirectory(directoryName, LIB_LOCATION, includes, addDefaultExcludes(excludes));
-    }
-
-    @Deprecated
-    public void addPlugins(File file) throws ArchiverException {
-        addFile(file, PLUGINS_LOCATION + file.getName());
-    }
-
-    @Deprecated
-    public void addPlugins(File directoryName, String[] includes, String[] excludes) throws ArchiverException {
-        addDirectory(directoryName, PLUGINS_LOCATION, includes, addDefaultExcludes(excludes));
     }
 
     @Deprecated

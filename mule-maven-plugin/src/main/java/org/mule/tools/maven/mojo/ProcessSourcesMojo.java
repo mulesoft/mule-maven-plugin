@@ -46,15 +46,15 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        RepositoryGenerator repositoryGenerator = new RepositoryGenerator(session,
-                                                                          project,
-                                                                          projectBuilder,
-                                                                          repositorySystem,
-                                                                          localRepository,
-                                                                          remoteArtifactRepositories,
-                                                                          outputDirectory,
-                                                                          getLog());
         if (!lightwayPackage) {
+            RepositoryGenerator repositoryGenerator = new RepositoryGenerator(session,
+                                                                              project,
+                                                                              projectBuilder,
+                                                                              repositorySystem,
+                                                                              localRepository,
+                                                                              remoteArtifactRepositories,
+                                                                              outputDirectory,
+                                                                              getLog());
             repositoryGenerator.generate();
         }
 

@@ -41,14 +41,13 @@ public class RepositoryGenerator {
     private Log log;
 
     private MavenSession session;
-    protected MavenProject project;
+    private MavenProject project;
     private ProjectBuilder projectBuilder;
     private RepositorySystem repositorySystem;
     private ArtifactRepository localRepository;
     private List<ArtifactRepository> remoteArtifactRepositories;
 
     protected File outputDirectory;
-
     private ProjectBuildingRequest projectBuildingRequest;
 
     public RepositoryGenerator(MavenSession session,
@@ -86,8 +85,6 @@ public class RepositoryGenerator {
         }
     }
 
-
-
     private void initializeProjectBuildingRequest() {
         projectBuildingRequest = new DefaultProjectBuildingRequest(session.getProjectBuildingRequest());
         projectBuildingRequest.setLocalRepository(localRepository);
@@ -118,39 +115,35 @@ public class RepositoryGenerator {
         return artifacts;
     }
 
-    private void addThirdPartyParentPomArtifacts(Set<Artifact> artifacts, Artifact dep) throws MojoExecutionException {
-        MavenProject project = buildProjectFromArtifact(dep);
-        addParentDependencyPomArtifacts(project, artifacts);
-
-        Artifact pomArtifact = repositorySystem.createProjectArtifact(dep.getGroupId(), dep.getArtifactId(), dep.getVersion());
-        artifacts.add(getResolvedArtifactUsingLocalRepository(pomArtifact));
-    }
-
     private void installArtifacts(File repositoryFile, Set<Artifact> artifacts) throws MojoExecutionException {
-        final List<Artifact> sortedArtifacts = new ArrayList<>(artifacts);
+        List<Artifact> sortedArtifacts = new ArrayList<>(artifacts);
         sort(sortedArtifacts);
         if (sortedArtifacts.isEmpty()) {
-            final File markerFile = new File(repositoryFile, ".marker");
-            log.info(format("No artifacts to add, adding marker file <%s/%s>", REPOSITORY_FOLDER, markerFile.getName()));
-            try {
-                markerFile.createNewFile();
-            } catch (IOException e) {
-                throw new MojoExecutionException(
-                    format("The current repository has no artifacts to install, and trying to create [%s] failed",
-                           markerFile.toString()),
-                    e);
-            }
+            generateMarkerFileInRepositoryFolder(repositoryFile, sortedArtifacts);
+
         }
         for (Artifact artifact : sortedArtifacts) {
             installArtifact(repositoryFile, artifact);
         }
     }
 
-
+    private void generateMarkerFileInRepositoryFolder(File repositoryFile, List<Artifact> sortedArtifacts)
+        throws MojoExecutionException {
+        File markerFile = new File(repositoryFile, ".marker");
+        log.info(format("No artifacts to add, adding marker file <%s/%s>", REPOSITORY_FOLDER, markerFile.getName()));
+        try {
+            markerFile.createNewFile();
+        } catch (IOException e) {
+            throw new MojoExecutionException(
+                format("The current repository has no artifacts to install, and trying to create [%s] failed",
+                       markerFile.toString()),
+                e);
+        }
+    }
 
     private void installArtifact(File repositoryFile, Artifact artifact) throws MojoExecutionException {
-        final File artifactFolderDestination = getFormattedOutputDirectory(repositoryFile, artifact);
-        final String artifactFilename = getFormattedFileName(artifact);
+        File artifactFolderDestination = getFormattedOutputDirectory(repositoryFile, artifact);
+        String artifactFilename = getFormattedFileName(artifact);
 
         if (!artifactFolderDestination.exists()) {
             artifactFolderDestination.mkdirs();
@@ -240,6 +233,14 @@ public class RepositoryGenerator {
             final Artifact unresolvedParentPomArtifact = currentProject.getArtifact();
             addThirdPartyParentPomArtifacts(artifacts, unresolvedParentPomArtifact);
         }
+    }
+
+    private void addThirdPartyParentPomArtifacts(Set<Artifact> artifacts, Artifact dep) throws MojoExecutionException {
+        MavenProject project = buildProjectFromArtifact(dep);
+        addParentDependencyPomArtifacts(project, artifacts);
+
+        Artifact pomArtifact = repositorySystem.createProjectArtifact(dep.getGroupId(), dep.getArtifactId(), dep.getVersion());
+        artifacts.add(getResolvedArtifactUsingLocalRepository(pomArtifact));
     }
 
     private Artifact getResolvedArtifactUsingLocalRepository(Artifact pomArtifact) throws MojoExecutionException {

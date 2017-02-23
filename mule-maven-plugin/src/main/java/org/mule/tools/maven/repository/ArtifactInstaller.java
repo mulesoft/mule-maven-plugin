@@ -24,6 +24,7 @@ import static org.apache.commons.io.FileUtils.copyFile;
 import static org.mule.tools.maven.repository.RepositoryGenerator.REPOSITORY_FOLDER;
 
 public class ArtifactInstaller {
+
     private Log log;
 
     public ArtifactInstaller(Log log) {

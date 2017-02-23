@@ -106,15 +106,6 @@ public class RepositoryGenerator {
         return repositoryFolder;
     }
 
-//    private Set<Artifact> getArtifacts() throws MojoExecutionException {
-//        Set<Artifact> artifacts = new HashSet<>(project.getArtifacts());
-//        for (Artifact dep : new ArrayList<>(artifacts)) {
-//            addThirdPartyParentPomArtifacts(artifacts, dep);
-//        }
-//        addParentPomArtifacts(artifacts);
-//        return artifacts;
-//    }
-
     private void installArtifacts(File repositoryFile, Set<Artifact> artifacts) throws MojoExecutionException {
         List<Artifact> sortedArtifacts = new ArrayList<>(artifacts);
         sort(sortedArtifacts);
@@ -124,7 +115,6 @@ public class RepositoryGenerator {
 
         ArtifactInstaller installer = new ArtifactInstaller(log);
         for (Artifact artifact : sortedArtifacts) {
-            //            installArtifact(repositoryFile, artifact);
             installer.installArtifact(repositoryFile, artifact);
         }
     }
@@ -142,103 +132,4 @@ public class RepositoryGenerator {
                 e);
         }
     }
-
-
-//    private MavenProject buildProjectFromArtifact(Artifact artifact)
-//        throws MojoExecutionException {
-//        MavenProject mavenProject;
-//        Artifact projectArtifact =
-//            repositorySystem.createProjectArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion());
-//        try {
-//            mavenProject = projectBuilder.build(projectArtifact, projectBuildingRequest).getProject();
-//        } catch (ProjectBuildingException e) {
-//            log
-//                .warn(format("The artifact [%s] seems to have some warnings, enable logs for more information",
-//                             artifact.toString()));
-//            if (log.isDebugEnabled()) {
-//                log.warn(format("The artifact [%s] had the following issue ", artifact.toString()), e);
-//            }
-//            if (e.getResults() == null || e.getResults().size() != 1) {
-//                throw new MojoExecutionException(
-//                    format("There was an issue while trying to create a maven project from the artifact [%s]",
-//                           artifact.toString()),
-//                    e);
-//            }
-//            final ProjectBuildingResult projectBuildingResult = e.getResults().get(0);
-//            final List<ModelProblem> collect = projectBuildingResult.getProblems().stream()
-//                .filter(modelProblem -> modelProblem.getSeverity().equals(ModelProblem.Severity.FATAL)).collect(
-//                    Collectors.toList());
-//            if (!collect.isEmpty()) {
-//                throw new MojoExecutionException(format(
-//                    "There was an issue while trying to create a maven project from the artifact [%s], several FATAL errors were found",
-//                    artifact.toString()),
-//                                                 e);
-//            }
-//            mavenProject = projectBuildingResult.getProject();
-//        }
-//        return mavenProject;
-//    }
-//
-//    private void addParentDependencyPomArtifacts(MavenProject projectDependency, Set<Artifact> artifacts)
-//        throws MojoExecutionException {
-//        MavenProject currentProject = projectDependency;
-//        while (currentProject.hasParent()) {
-//            currentProject = currentProject.getParent();
-//            final Artifact pomArtifact = currentProject.getArtifact();
-//            if (!artifacts.add(getResolvedArtifactUsingLocalRepository(pomArtifact))) {
-//                break;
-//            }
-//        }
-//    }
-
-//    private void addParentPomArtifacts(Set<Artifact> artifacts)
-//        throws MojoExecutionException {
-//        MavenProject currentProject = project;
-//        boolean projectParent = true;
-//        while (currentProject.hasParent() && projectParent) {
-//            currentProject = currentProject.getParent();
-//            if (currentProject.getFile() == null) {
-//                projectParent = false;
-//            } else {
-//                Artifact pomArtifact = currentProject.getArtifact();
-//                pomArtifact.setFile(currentProject.getFile());
-//                validatePomArtifactFile(pomArtifact);
-//                if (!artifacts.add(pomArtifact)) {
-//                    break;
-//                }
-//            }
-//        }
-//        if (!projectParent) {
-//            final Artifact unresolvedParentPomArtifact = currentProject.getArtifact();
-//            addThirdPartyParentPomArtifacts(artifacts, unresolvedParentPomArtifact);
-//        }
-//    }
-
-//    private void addThirdPartyParentPomArtifacts(Set<Artifact> artifacts, Artifact dep) throws MojoExecutionException {
-//        MavenProject project = buildProjectFromArtifact(dep);
-//        addParentDependencyPomArtifacts(project, artifacts);
-//
-//        Artifact pomArtifact = repositorySystem.createProjectArtifact(dep.getGroupId(), dep.getArtifactId(), dep.getVersion());
-//        artifacts.add(getResolvedArtifactUsingLocalRepository(pomArtifact));
-//    }
-
-//    private Artifact getResolvedArtifactUsingLocalRepository(Artifact pomArtifact) throws MojoExecutionException {
-//        final Artifact resolvedPomArtifact = localRepository.find(pomArtifact);
-//        validatePomArtifactFile(resolvedPomArtifact);
-//        return resolvedPomArtifact;
-//    }
-
-//    private void validatePomArtifactFile(Artifact resolvedPomArtifact) throws MojoExecutionException {
-//        if (resolvedPomArtifact.getFile() == null) {
-//            throw new MojoExecutionException(
-//                format("There was a problem trying to resolve the artifact's file location for [%s], file was null",
-//                       resolvedPomArtifact.toString()));
-//        }
-//        if (!resolvedPomArtifact.getFile().exists()) {
-//            throw new MojoExecutionException(
-//                format("There was a problem trying to resolve the artifact's file location for [%s], file [%s] doesn't exists",
-//                       resolvedPomArtifact.toString(), resolvedPomArtifact.getFile().getAbsolutePath()));
-//        }
-//    }
-
-} 
+}

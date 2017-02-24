@@ -44,6 +44,8 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     when(packageBuilderMock.withClasses(any())).thenReturn(packageBuilderMock);
     when(packageBuilderMock.withMule(any())).thenReturn(packageBuilderMock);
     when(packageBuilderMock.withRepository(any())).thenReturn(packageBuilderMock);
+    when(packageBuilderMock.withMuleArtifact(any())).thenReturn(packageBuilderMock);
+    when(packageBuilderMock.withMaven(any())).thenReturn(packageBuilderMock);
   }
 
   @Test
@@ -53,7 +55,6 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     mojo.createMuleApp(destinationFile, buildTemporaryFolder.getRoot().getAbsolutePath());
 
     verify(packageBuilderMock, times(1)).withDestinationFile(any());
-    //        verify(packageBuilderMock, times(1)).withMetaInf(metaInfFolder);
     verify(packageBuilderMock, times(0)).withClasses(any());
     verify(packageBuilderMock, times(0)).withMule(any());
     verify(packageBuilderMock, times(0)).withRepository(any());
@@ -67,10 +68,11 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     mojo.createMuleApp(destinationFile, buildTemporaryFolder.getRoot().getAbsolutePath());
 
     verify(packageBuilderMock, times(1)).withDestinationFile(any());
-    //        verify(packageBuilderMock, times(0)).withMetaInf(metaInfFolder);
     verify(packageBuilderMock, times(1)).withClasses(any());
     verify(packageBuilderMock, times(1)).withMule(any());
     verify(packageBuilderMock, times(1)).withRepository(any());
+    verify(packageBuilderMock, times(1)).withMuleArtifact(any());
+    verify(packageBuilderMock, times(1)).withMaven(any());
   }
 
   @Test
@@ -81,7 +83,6 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     mojo.createMuleApp(destinationFile, buildTemporaryFolder.getRoot().getAbsolutePath());
 
     verify(packageBuilderMock, times(1)).withDestinationFile(any());
-    //        verify(packageBuilderMock, times(1)).withMetaInf(metaInfFolder);
     verify(packageBuilderMock, times(1)).withClasses(any());
     verify(packageBuilderMock, times(1)).withMule(any());
     verify(packageBuilderMock, times(1)).withRepository(any());

@@ -113,6 +113,8 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
     muleAppPropertiesFile.createNewFile();
     File muleDeployPropertiesFile = projectRootFolder.newFile(MULE_DEPLOY_PROPERTIES);
     muleDeployPropertiesFile.createNewFile();
+    File muleApplicationJsonFile = projectRootFolder.newFile(MULE_APPLICATION_JSON);
+    muleApplicationJsonFile.createNewFile();
 
     buildMock = mock(Build.class);
     projectMock = mock(MavenProject.class);
@@ -133,13 +135,13 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
     assertThat("The pom destination folder does not contains the expected file",
                actualFilesInPomDestinationFolder.get(0).getName(), equalTo(POM_XML));
 
-    assertThat("There should be 2 files in the properties destination folder", propertiesDestinationFolder.listFiles().length,
-               equalTo(2));
+    assertThat("There should be 1 file in the properties destination folder", propertiesDestinationFolder.listFiles().length,
+               equalTo(1));
     List<File> actualFilesInPropertiesDestinationFolder =
         Arrays.asList(propertiesDestinationFolder.listFiles()).stream().filter(file -> file.isFile())
             .collect(Collectors.toList());
     assertThat("The properties destination folder does not contains the expected files",
                actualFilesInPropertiesDestinationFolder.stream().map(file -> file.getName()).collect(Collectors.toList()),
-               containsInAnyOrder(MULE_APP_PROPERTIES, MULE_DEPLOY_PROPERTIES));
+               containsInAnyOrder(MULE_APPLICATION_JSON));
   }
 }

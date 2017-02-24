@@ -44,6 +44,7 @@ public class AbstractMuleMojoTest {
   protected static final String MUNIT_TEST_FILE_NAME = "munit-test.xml";
   protected static final String MULE_APP_PROPERTIES = "mule-app.properties";
   protected static final String PROJECT_ARTIFACT_ID = "project-artifact-id";
+  protected static final String MULE_APPLICATION_JSON = "mule-application.json";
   protected static final String MULE_DEPLOY_PROPERTIES = "mule-deploy.properties";
   protected final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
   protected Build buildMock;
@@ -52,6 +53,7 @@ public class AbstractMuleMojoTest {
   protected File testMuleFolder;
   protected File destinationFile;
   protected File munitSourceFolder;
+  protected File muleApplicationJson;
   protected MavenProject projectMock;
   protected File muleSourceFolderMock;
   protected PackageBuilder packageBuilderMock;
@@ -70,7 +72,6 @@ public class AbstractMuleMojoTest {
     projectRootFolder.create();
     buildTemporaryFolder.create();
     metaInfFolder = buildTemporaryFolder.newFolder(META_INF);
-
     System.setOut(new PrintStream(outContent));
 
     projectMock = mock(MavenProject.class);

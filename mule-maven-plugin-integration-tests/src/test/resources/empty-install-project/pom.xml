@@ -31,23 +31,23 @@
                     </execution>
                     <execution>
                         <id>execution3</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>process-sources</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>execution4</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate-sources</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>execution4</id>
+                        <id>execution5</id>
                         <phase>generate-test-sources</phase>
                         <goals>
                             <goal>generate-test-sources</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>execution5</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>repository-mirror</goal>
                         </goals>
                     </execution>
                     <execution>

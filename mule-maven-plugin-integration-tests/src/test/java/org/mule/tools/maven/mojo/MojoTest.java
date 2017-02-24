@@ -31,7 +31,12 @@ public class MojoTest {
   protected static final String PROJECT_BASE_DIR_PROPERTY = "project.basedir";
   protected static final String MULE_DEPLOY_PROPERTIES = "mule-deploy.properties";
   protected static final String PROJECT_BUILD_DIRECTORY_PROPERTY = "project.build.directory";
-
+  protected static final String INSTALL = "install";
+  protected static final String DEPENDENCY_ORG_ID = "org.apache.maven.plugin.my.dependency";
+  protected static final String DEPENDENCY_NAME = "dependency-repository-mirror-project";
+  protected static final String DEPENDENCY_VERSION = "1.0-SNAPSHOT";
+  protected static final String DEPENDENCY_TYPE = "jar";
+  protected static final String DEPENDENCY_PROJECT_NAME = "dependency-repository-mirror-test";
   protected ProjectFactory builder;
   protected File projectBaseDirectory;
   protected Verifier verifier;
@@ -66,5 +71,15 @@ public class MojoTest {
 
   protected File getExpectedStructure() throws IOException {
     return ResourceExtractor.simpleExtractResources(getClass(), getExpectedStructureRelativePath());
+  }
+
+  protected void installThirdPartyArtifact() throws IOException, VerificationException {
+    File dependencyProjectRootFolder = builder.createProjectBaseDir(DEPENDENCY_PROJECT_NAME, this.getClass());
+    Verifier auxVerifier = new Verifier(dependencyProjectRootFolder.getAbsolutePath());
+    auxVerifier.deleteArtifact(DEPENDENCY_ORG_ID, DEPENDENCY_NAME, DEPENDENCY_VERSION, DEPENDENCY_TYPE);
+    auxVerifier.assertArtifactNotPresent(DEPENDENCY_ORG_ID, DEPENDENCY_NAME, DEPENDENCY_VERSION, DEPENDENCY_TYPE);
+    auxVerifier.executeGoal(INSTALL);
+    auxVerifier.assertArtifactPresent(DEPENDENCY_ORG_ID, DEPENDENCY_NAME, DEPENDENCY_VERSION, DEPENDENCY_TYPE);
+    auxVerifier.verifyErrorFreeLog();
   }
 }

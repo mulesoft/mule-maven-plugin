@@ -31,13 +31,8 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
 
   private static final String VALIDATE_GOAL_DEBUG_MESSAGE =
       "[debug] Validating Mule application...\n[debug] Validating Mule application done\n";
-  private static final String VALIDATE_OTHER_DESCRIPTORS_MESSAGE =
-      "Invalid Mule project. Either " + MULE_DEPLOY_PROPERTIES + " or " + MULE_CONFIG_XML
-          + " files must be present in the root of application";
   private static final String VALIDATE_MANDATORY_FOLDERS_MESSAGE =
       "Invalid Mule project. Missing src/main/mule folder. This folder is mandatory";
-  private static final String VALIDATE_MULE_APP_PROPERTIES_MESSAGE =
-      "Invalid Mule project. Missing " + MULE_APP_PROPERTIES + " file, it must be present in the root of application";
 
   @Before
   public void before() throws IOException {
@@ -57,35 +52,12 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
   }
 
   @Test
-  public void validateMandatoryFoldersFailsWhenMuleAppPropertiesFileDoesNotExistTest()
-      throws MojoFailureException, MojoExecutionException, IOException {
-    expectedException.expect(MojoExecutionException.class);
-    expectedException.expectMessage(VALIDATE_MULE_APP_PROPERTIES_MESSAGE);
-
-    when(muleSourceFolderMock.exists()).thenReturn(true);
-
-    mojo.execute();
-  }
-
-  @Test
-  public void validateMandatoryFoldersFailsWhenMuleDeployPropertiesFileAndMuleConfigFileDoNotExistTest()
-      throws MojoFailureException, MojoExecutionException, IOException {
-    expectedException.expect(MojoExecutionException.class);
-    expectedException.expectMessage(VALIDATE_OTHER_DESCRIPTORS_MESSAGE);
-
-    when(muleSourceFolderMock.exists()).thenReturn(true);
-
-    projectRootFolder.newFile(MULE_APP_PROPERTIES);
-
-    mojo.execute();
-  }
-
-  @Test
   public void validateGoalSucceedTest() throws MojoFailureException, MojoExecutionException, IOException {
     when(muleSourceFolderMock.exists()).thenReturn(true);
 
     projectRootFolder.newFile(MULE_APP_PROPERTIES);
     projectRootFolder.newFile(MULE_CONFIG_XML);
+    projectRootFolder.newFile(MULE_APPLICATION_JSON);
 
     MulePluginResolver resolverMock = mock(MulePluginResolver.class);
     MulePluginsCompatibilityValidator validatorMock = mock(MulePluginsCompatibilityValidator.class);

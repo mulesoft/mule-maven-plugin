@@ -32,42 +32,4 @@ public class ValidateMojoTest extends MojoTest {
     }
     verifier.verifyTextInLog("Invalid Mule project. Missing src/main/mule folder. This folder is mandatory");
   }
-
-  @Test
-  public void testFailWhenJustContainsSrcFolder() throws Exception {
-    builder.exclude(MULE_APP_PROPERTIES).exclude(MULE_CONFIG_XML).exclude(MULE_DEPLOY_PROPERTIES)
-        .createProjectStructureOfValidateGoal(projectBaseDirectory);
-    try {
-      verifier.executeGoal(VALIDATE);
-    } catch (VerificationException e) {
-    }
-    verifier
-        .verifyTextInLog("Invalid Mule project. Missing mule-app.properties file, it must be present in the root of application");
-  }
-
-  @Test
-  public void testFailWhenDoesNotContainsConfigNeitherDeployProperties() throws Exception {
-    builder.exclude(MULE_CONFIG_XML).exclude(MULE_DEPLOY_PROPERTIES).exclude(MULE_APP_JSON)
-        .createProjectStructureOfValidateGoal(projectBaseDirectory);
-    try {
-      verifier.executeGoal(VALIDATE);
-    } catch (VerificationException e) {
-    }
-    verifier
-        .verifyTextInLog("Invalid Mule project. Either mule-deploy.properties or mule-config.xml files must be present in the root of application");
-  }
-
-  @Test
-  public void testSucceedWhenDoesNotContainsDeployProperties() throws Exception {
-    builder.exclude(MULE_DEPLOY_PROPERTIES).createProjectStructureOfValidateGoal(projectBaseDirectory);
-    verifier.executeGoal(VALIDATE);
-    verifier.verifyErrorFreeLog();
-  }
-
-  @Test
-  public void testSucceedWhenDoesNotContainsConfigProperties() throws Exception {
-    builder.exclude(MULE_CONFIG_XML).createProjectStructureOfValidateGoal(projectBaseDirectory);
-    verifier.executeGoal(VALIDATE);
-    verifier.verifyErrorFreeLog();
-  }
 }

@@ -18,16 +18,15 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
-import static org.mule.tools.maven.FileTreeMatcher.hasSameTreeStructure;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mule.tools.maven.FileTreeMatcher.hasSameTreeStructure;
 
+public class ProcessSourcesMojoTest extends MojoTest {
 
-public class PackageMojoTest extends MojoTest {
+  private static final String PROCESS_SOURCES = "process-sources";
 
-  private static final String PACKAGE = "package";
-
-  public PackageMojoTest() {
-    this.goal = PACKAGE;
+  public ProcessSourcesMojoTest() {
+    this.goal = PROCESS_SOURCES;
   }
 
   @Before
@@ -36,9 +35,10 @@ public class PackageMojoTest extends MojoTest {
   }
 
   @Test
-  public void testPackage() throws IOException, VerificationException {
+  public void testProcessSources() throws IOException, VerificationException {
     installThirdPartyArtifact();
-    verifier.executeGoal(PACKAGE);
+
+    verifier.executeGoal(PROCESS_SOURCES);
 
     File expectedStructure = getExpectedStructure();
 
@@ -46,4 +46,6 @@ public class PackageMojoTest extends MojoTest {
 
     verifier.verifyErrorFreeLog();
   }
+
+
 }

@@ -185,25 +185,6 @@ public class PackageBuilderTest {
   }
 
   @Test
-  public void createDeployableFileSettingMetaInfFolderTest() throws IOException {
-    File metaInfFolderMock = mock(File.class);
-    when(metaInfFolderMock.exists()).thenReturn(true);
-    when(metaInfFolderMock.isDirectory()).thenReturn(true);
-    // this.packageBuilder.withMetaInf(metaInfFolderMock);
-
-    MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
-    this.packageBuilder.withArchiver(muleArchiverMock);
-
-    this.packageBuilder.withDestinationFile(destinationFileMock);
-
-    this.packageBuilder.createDeployableFile();
-
-    // verify(muleArchiverMock,times(1)).addMetaInf(metaInfFolderMock, null, null);
-    verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
-    verify(muleArchiverMock, times(1)).createArchive();
-  }
-
-  @Test
   @Ignore
   public void createDeployableFileSettingPluginsFolderTest() throws IOException {
     File pluginsFolderMock = mock(File.class);
@@ -324,7 +305,6 @@ public class PackageBuilderTest {
     when(emptyDirectoryMock.exists()).thenReturn(true);
 
     File childFileMock = mock(File.class);
-    when(childFileMock.isDirectory()).thenReturn(false);
 
     File[] wrongDirectoryStructure = new File[1];
     wrongDirectoryStructure[0] = childFileMock;

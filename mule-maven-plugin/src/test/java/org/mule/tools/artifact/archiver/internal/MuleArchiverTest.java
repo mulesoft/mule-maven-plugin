@@ -87,14 +87,9 @@ public class MuleArchiverTest {
     relativePaths.add("classes" + File.separator + "resourceFolder" + File.separator + "resource3");
     relativePaths.add("classes" + File.separator + "plugins" + File.separator + "api" + File.separator + "api.raml");
     relativePaths.add("classes" + File.separator + "plugins" + File.separator + "wsdl" + File.separator + "aservice.wsdl");
-    relativePaths.add("lib" + File.separator + "shared" + File.separator + "b.jar");
-    relativePaths.add("lib" + File.separator + "a.jar");
     relativePaths.add("mule" + File.separator + "mule-config1.xml");
     relativePaths.add("mule" + File.separator + "org.mule.package" + File.separator + "mule-config2.xml");
-    relativePaths.add("plugins" + File.separator + "plugin1.zip");
-    relativePaths.add("pom.xml");
     relativePaths.add("mule-app.properties");
-    relativePaths.add("mule-deploy.properties");
     relativePaths.add(
                       "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src"
                           + File.separator
@@ -129,10 +124,6 @@ public class MuleArchiverTest {
                           + File.separator
                           + "something.json");
     relativePaths.add(
-                      "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "lib"
-                          + File.separator
-                          + "shared" + File.separator + "b.jar");
-    relativePaths.add(
                       "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src"
                           + File.separator
                           + "test" + File.separator + "munit" + File.separator + "org.mule.package" + File.separator
@@ -162,10 +153,6 @@ public class MuleArchiverTest {
                       "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src"
                           + File.separator
                           + "main" + File.separator + "java" + File.separator + "class3.clazz");
-    relativePaths.add(
-                      "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "lib"
-                          + File.separator
-                          + "a.jar");
     relativePaths.add(
                       "META-INF" + File.separator + "mule-src" + File.separator + "real-app" + File.separator + "src"
                           + File.separator

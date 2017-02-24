@@ -35,6 +35,7 @@ public class InitializeMojoTest extends AbstractMuleMojoTest {
   @Before
   public void before() throws IOException {
     mojo = new InitializeMojo();
+    muleApplicationJson = projectRootFolder.newFile(MULE_APPLICATION_JSON);
     when(projectMock.getGroupId()).thenReturn(GROUP_ID);
     when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
     when(buildMock.getDirectory()).thenReturn(projectRootFolder.getRoot().getAbsolutePath());

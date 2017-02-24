@@ -188,11 +188,11 @@ OS name: "mac os x", version: "10.11.6", arch: "x86_64", family: "mac"
   <sharedLibraries>${shared.libraries}</sharedLibraries>
 </configuration>
 [DEBUG] =======================================================================
-[DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=0, ConflictMarker.markTime=0, ConflictMarker.nodeCount=1, ConflictIdSorter.graphTime=0, ConflictIdSorter.topsortTime=1, ConflictIdSorter.conflictIdCount=0, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=2, ConflictResolver.conflictItemCount=0, DefaultDependencyCollector.collectTime=0, DefaultDependencyCollector.transformTime=5}
+[DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=0, ConflictMarker.markTime=0, ConflictMarker.nodeCount=1, ConflictIdSorter.graphTime=0, ConflictIdSorter.topsortTime=1, ConflictIdSorter.conflictIdCount=0, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=3, ConflictResolver.conflictItemCount=0, DefaultDependencyCollector.collectTime=0, DefaultDependencyCollector.transformTime=8}
 [DEBUG] org.apache.maven.plugin.my.unit:empty-generate-sources-project:jar:1.0-SNAPSHOT
 [INFO] 
 [INFO] --- maven-clean-plugin:2.5:clean (default-cli) @ empty-generate-sources-project ---
-[DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=1, ConflictMarker.markTime=0, ConflictMarker.nodeCount=3, ConflictIdSorter.graphTime=0, ConflictIdSorter.topsortTime=0, ConflictIdSorter.conflictIdCount=3, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=2, ConflictResolver.conflictItemCount=3, DefaultDependencyCollector.collectTime=24, DefaultDependencyCollector.transformTime=3}
+[DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=2, ConflictMarker.markTime=0, ConflictMarker.nodeCount=3, ConflictIdSorter.graphTime=0, ConflictIdSorter.topsortTime=0, ConflictIdSorter.conflictIdCount=3, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=2, ConflictResolver.conflictItemCount=3, DefaultDependencyCollector.collectTime=28, DefaultDependencyCollector.transformTime=4}
 [DEBUG] org.apache.maven.plugins:maven-clean-plugin:jar:2.5:
 [DEBUG]    org.apache.maven:maven-plugin-api:jar:2.0.6:compile
 [DEBUG]    org.codehaus.plexus:plexus-utils:jar:3.0:compile
@@ -220,7 +220,7 @@ OS name: "mac os x", version: "10.11.6", arch: "x86_64", family: "mac"
 [DEBUG] Skipping non-existing directory /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/target/site
 [INFO] 
 [INFO] --- mule-maven-plugin:3.0.0-SNAPSHOT:validate (execution1) @ empty-generate-sources-project ---
-[DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=0, ConflictMarker.markTime=1, ConflictMarker.nodeCount=21, ConflictIdSorter.graphTime=0, ConflictIdSorter.topsortTime=0, ConflictIdSorter.conflictIdCount=18, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=1, ConflictResolver.conflictItemCount=21, DefaultDependencyCollector.collectTime=120, DefaultDependencyCollector.transformTime=2}
+[DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=0, ConflictMarker.markTime=0, ConflictMarker.nodeCount=21, ConflictIdSorter.graphTime=0, ConflictIdSorter.topsortTime=0, ConflictIdSorter.conflictIdCount=18, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=2, ConflictResolver.conflictItemCount=21, DefaultDependencyCollector.collectTime=119, DefaultDependencyCollector.transformTime=2}
 [DEBUG] org.mule.tools.maven:mule-maven-plugin:jar:3.0.0-SNAPSHOT:
 [DEBUG]    commons-logging:commons-logging:jar:1.2:compile
 [DEBUG]    commons-io:commons-io:jar:2.5:compile
@@ -312,7 +312,7 @@ snapshots: [enabled => true, update => daily]
 snapshots: [enabled => false, update => daily]
  releases: [enabled => true, update => daily]
 ]
-[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@1ee4730
+[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@ca27722
 [DEBUG]   (f) sharedLibraries = []
 [DEBUG] -- end configuration --
 [DEBUG] Validating Mule application...
@@ -383,7 +383,7 @@ snapshots: [enabled => true, update => daily]
 snapshots: [enabled => false, update => daily]
  releases: [enabled => true, update => daily]
 ]
-[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@1ee4730
+[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@ca27722
 [DEBUG]   (f) sharedLibraries = []
 [DEBUG] -- end configuration --
 [DEBUG] Initializing Mule Maven Plugin...
@@ -445,7 +445,7 @@ snapshots: [enabled => true, update => daily]
 snapshots: [enabled => false, update => daily]
  releases: [enabled => true, update => daily]
 ]
-[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@1ee4730
+[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@ca27722
 [DEBUG]   (f) sharedLibraries = []
 [DEBUG] -- end configuration --
 [DEBUG] Creating target content with Mule source code...

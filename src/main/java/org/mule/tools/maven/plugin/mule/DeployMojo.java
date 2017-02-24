@@ -14,14 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.settings.Server;
-import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
@@ -164,30 +161,6 @@ public class DeployMojo extends AbstractMuleMojo
                 break;
             default:
                 throw new MojoFailureException("Unsupported deployment type: " + deploymentType);
-        }
-    }
-
-    private void initializeEnvironment() throws MojoExecutionException
-    {
-        if (server != null)
-        {
-            Server serverObject = this.settings.getServer(server);
-            if (serverObject == null)
-            {
-                getLog().error("Server [" + server + "] not found in settings file.");
-                throw new MojoExecutionException("Server [" + server + "] not found in settings file.");
-            }
-            // Decrypting Maven server, in case of plain text passwords returns the same
-            serverObject = decrypter.decrypt(new DefaultSettingsDecryptionRequest(serverObject)).getServer();
-            if (StringUtils.isNotEmpty(username) || StringUtils.isNotEmpty(password))
-            {
-                getLog().warn("Both server and credentials are configured. Using plugin configuration credentials.");
-            }
-            else
-            {
-                username = serverObject.getUsername();
-                password = serverObject.getPassword();
-            }
         }
     }
 

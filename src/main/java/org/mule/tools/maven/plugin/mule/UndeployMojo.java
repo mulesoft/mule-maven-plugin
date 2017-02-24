@@ -30,6 +30,8 @@ public class UndeployMojo extends AbstractMuleMojo
     @Override
     protected void doExecute() throws MojoExecutionException, MojoFailureException
     {
+        initializeApplication();
+        initializeEnvironment();
         switch (deploymentType)
         {
             case standalone:
@@ -56,7 +58,6 @@ public class UndeployMojo extends AbstractMuleMojo
     {
         CloudhubApi cloudhubApi = new CloudhubApi(uri, getLog(), username, password, environment, businessGroup);
         cloudhubApi.init();
-        initializeApplication();
         getLog().info("Stopping application " + applicationName);
         cloudhubApi.stopApplication(applicationName);
     }
@@ -65,7 +66,6 @@ public class UndeployMojo extends AbstractMuleMojo
     {
         ArmApi armApi = new ArmApi(getLog(), uri, username, password, environment, businessGroup, armInsecure);
         armApi.init();
-        initializeApplication();
         getLog().info("Undeploying application " + applicationName);
         armApi.undeployApplication(applicationName, targetType, target);
     }
@@ -73,15 +73,12 @@ public class UndeployMojo extends AbstractMuleMojo
     private void agent() throws MojoFailureException
     {
         AgentApi agentApi = new AgentApi(getLog(), uri);
-        initializeApplication();
         getLog().info("Undeploying application " + applicationName);
         agentApi.undeployApplication(applicationName);
     }
 
     private void cluster() throws MojoFailureException, MojoExecutionException
     {
-        initializeApplication();
-
         File[] muleHomes = new File[size];
         for (int i = 0; i < size; i++)
         {
@@ -98,15 +95,12 @@ public class UndeployMojo extends AbstractMuleMojo
 
     public void standalone() throws MojoFailureException, MojoExecutionException
     {
-        initializeApplication();
-
         if (!muleHome.exists())
         {
             throw new MojoFailureException("MULE_HOME directory does not exist.");
         }
         getLog().info("Using MULE_HOME: " + muleHome);
         new Undeployer(getLog(), applicationName, muleHome).execute();
-
     }
 
 }

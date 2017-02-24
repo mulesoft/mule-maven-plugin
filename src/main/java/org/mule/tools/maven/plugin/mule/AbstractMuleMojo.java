@@ -28,7 +28,9 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
+import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 
 import groovy.lang.GroovyShell;
@@ -335,6 +337,31 @@ public abstract class AbstractMuleMojo extends AbstractMojo
             if (applicationName == null)
             {
                 applicationName = application.getName();
+            }
+        }
+    }
+
+
+    protected void initializeEnvironment() throws MojoExecutionException
+    {
+        if (server != null)
+        {
+            Server serverObject = this.settings.getServer(server);
+            if (serverObject == null)
+            {
+                getLog().error("Server [" + server + "] not found in settings file.");
+                throw new MojoExecutionException("Server [" + server + "] not found in settings file.");
+            }
+            // Decrypting Maven server, in case of plain text passwords returns the same
+            serverObject = decrypter.decrypt(new DefaultSettingsDecryptionRequest(serverObject)).getServer();
+            if (StringUtils.isNotEmpty(username) || StringUtils.isNotEmpty(password))
+            {
+                getLog().warn("Both server and credentials are configured. Using plugin configuration credentials.");
+            }
+            else
+            {
+                username = serverObject.getUsername();
+                password = serverObject.getPassword();
             }
         }
     }

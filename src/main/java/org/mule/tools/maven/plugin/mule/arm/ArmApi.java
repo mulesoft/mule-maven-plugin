@@ -162,18 +162,18 @@ public class ArmApi extends AbstractMuleApi
 
     public Integer findApplication(String name, TargetType targetType, String target)
     {
-        Data[] applications = getApplications().data;
-        String targetId = getId(targetType, target);
-
-        if (applications == null)
+        Applications apps = getApplications();
+        if (apps == null)
         {
             return null;
         }
-        for (int i = 0 ; i < applications.length ; i ++ )
+        Data[] appArray = getApplications().data;
+        String targetId = getId(targetType, target);
+        for (int i = 0 ; i < appArray.length ; i ++ )
         {
-            if (name.equals(applications[i].artifact.name) && targetId.equals(applications[i].target.id))
+            if (name.equals(appArray[i].artifact.name) && targetId.equals(appArray[i].target.id))
             {
-                return applications[i].id;
+                return appArray[i].id;
             }
         }
         return null;

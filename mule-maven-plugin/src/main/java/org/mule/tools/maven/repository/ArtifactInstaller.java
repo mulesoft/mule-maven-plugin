@@ -10,21 +10,23 @@
 
 package org.mule.tools.maven.repository;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
+import static java.io.File.separatorChar;
+import static java.lang.String.format;
+import static org.apache.commons.io.FileUtils.copyFile;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
-import static java.io.File.separatorChar;
-import static java.lang.String.format;
-import static org.apache.commons.io.FileUtils.copyFile;
-import static org.mule.tools.maven.repository.RepositoryGenerator.REPOSITORY_FOLDER;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 
 public class ArtifactInstaller {
 
+  private static final int MAX_NAME_SIZE = 128;
   private Log log;
 
   public ArtifactInstaller(Log log) {
@@ -42,7 +44,7 @@ public class ArtifactInstaller {
     File destinationArtifactFile = new File(artifactFolderDestination, artifactFilename);
     try {
       log.info(format("Adding artifact <%s%s>",
-                      REPOSITORY_FOLDER,
+                      REPOSITORY,
                       destinationArtifactFile.getAbsolutePath()
                           .replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
                                         "")));
@@ -59,7 +61,7 @@ public class ArtifactInstaller {
   private String getFormattedFileName(Artifact artifact) {
     StringBuilder destFileName = new StringBuilder();
     String versionString = "-" + getNormalizedVersion(artifact);
-    String classifierString = "";
+    String classifierString = StringUtils.EMPTY;
 
     if (artifact.getClassifier() != null && !artifact.getClassifier().isEmpty()) {
       classifierString = "-" + artifact.getClassifier();
@@ -79,7 +81,7 @@ public class ArtifactInstaller {
   }
 
   private static File getFormattedOutputDirectory(File outputDirectory, Artifact artifact) {
-    StringBuilder sb = new StringBuilder(128);
+    StringBuilder sb = new StringBuilder(MAX_NAME_SIZE);
     sb.append(artifact.getGroupId().replace('.', separatorChar)).append(separatorChar);
     sb.append(artifact.getArtifactId()).append(separatorChar);
     sb.append(artifact.getBaseVersion()).append(separatorChar);

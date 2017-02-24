@@ -10,13 +10,8 @@
 
 package org.mule.tools.maven.mojo;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.mule.tools.maven.util.CopyFileVisitor;
-import org.mule.tools.maven.util.ProjectBaseFolderFileCloner;
+import static org.mule.tools.artifact.archiver.api.PackagerFiles.*;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +21,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.mule.tools.maven.util.CopyFileVisitor;
+import org.mule.tools.maven.util.ProjectBaseFolderFileCloner;
 
 /**
  * Copy resource to the proper places
@@ -55,7 +58,7 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
   }
 
   protected void createMuleSourceFolderContent() throws IOException {
-    //TODO create ignore concept for things like .settings
+    // TODO create ignore concept for things like .settings
 
     File targetFolder = Paths.get(project.getBuild().getDirectory(), META_INF, MULE_SRC, project.getArtifactId()).toFile();
     CopyFileVisitor visitor = new CopyFileVisitor(projectBaseFolder, targetFolder);

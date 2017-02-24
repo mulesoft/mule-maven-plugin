@@ -16,6 +16,7 @@ import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import java.io.File;
 import java.util.Map;
 
+import org.mule.tools.artifact.archiver.api.PackagerFolders;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 
 public enum PackagingType {
@@ -24,7 +25,7 @@ public enum PackagingType {
 
     @Override
     public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
-      return packageBuilder.withMuleSrc(fileMap.get(PackageBuilder.MULE_SRC_FOLDER));
+      return packageBuilder.withMuleSrc(fileMap.get(PackagerFolders.MULE_SRC));
     }
   },
   BINARIES {
@@ -32,9 +33,9 @@ public enum PackagingType {
     @Override
     public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
       return packageBuilder
-          .withMule(fileMap.get(PackageBuilder.MULE_FOLDER))
-          .withClasses(fileMap.get(PackageBuilder.CLASSES_FOLDER))
-          .withRepository(fileMap.get(PackageBuilder.REPOSITORY_FOLDER));
+          .withMule(fileMap.get(PackagerFolders.MULE))
+          .withClasses(fileMap.get(PackagerFolders.CLASSES))
+          .withRepository(fileMap.get(PackagerFolders.REPOSITORY));
     }
   },
   BINARIES_AND_SOURCES {
@@ -42,9 +43,8 @@ public enum PackagingType {
     @Override
     public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
       return packageBuilder
-          .withClasses(fileMap.get(PackageBuilder.CLASSES_FOLDER))
-          .withMule(fileMap.get(PackageBuilder.MULE_FOLDER));
-      // .withMetaInf(fileMap.get(PackageBuilder.METAINF_FOLDER));
+          .withClasses(fileMap.get(PackagerFolders.CLASSES))
+          .withMule(fileMap.get(PackagerFolders.MULE));
     }
   };
 

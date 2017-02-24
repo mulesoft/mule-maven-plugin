@@ -11,6 +11,7 @@
 package org.mule.tools.artifact.archiver.internal;
 
 import static org.mockito.Mockito.*;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -349,18 +350,18 @@ public class PackageBuilderTest {
     List<File> files = new ArrayList<>();
 
     File classesFolderMock = mock(File.class);
-    when(classesFolderMock.getName()).thenReturn("classes");
+    when(classesFolderMock.getName()).thenReturn(CLASSES);
 
     File muleFolderMock = mock(File.class);
     when(muleFolderMock.exists()).thenReturn(true);
     when(muleFolderMock.isDirectory()).thenReturn(true);
-    when(muleFolderMock.getName()).thenReturn("mule");
+    when(muleFolderMock.getName()).thenReturn(MULE);
 
     File metaInfFolderMock = mock(File.class);
-    when(metaInfFolderMock.getName()).thenReturn("META-INF");
+    when(metaInfFolderMock.getName()).thenReturn(META_INF);
 
     File repositoryFolderMock = mock(File.class);
-    when(repositoryFolderMock.getName()).thenReturn("repository");
+    when(repositoryFolderMock.getName()).thenReturn(REPOSITORY);
 
     files.add(classesFolderMock);
     files.add(muleFolderMock);

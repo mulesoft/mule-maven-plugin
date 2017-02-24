@@ -10,17 +10,19 @@
 
 package org.mule.tools.maven.mojo;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.when;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.MUNIT;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.TEST_MULE;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.when;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.junit.Before;
+import org.junit.Test;
 
 public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
 

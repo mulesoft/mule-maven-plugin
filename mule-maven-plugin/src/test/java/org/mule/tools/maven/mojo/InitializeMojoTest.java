@@ -10,6 +10,14 @@
 
 package org.mule.tools.maven.mojo;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.when;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
+
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.maven.it.util.ResourceExtractor;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -17,13 +25,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.tools.maven.FileTreeMatcher;
-
-import java.io.File;
-import java.io.IOException;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.when;
 
 public class InitializeMojoTest extends AbstractMuleMojoTest {
 

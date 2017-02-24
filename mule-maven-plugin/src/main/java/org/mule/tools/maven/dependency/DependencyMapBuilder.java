@@ -10,18 +10,14 @@
 
 package org.mule.tools.maven.dependency;
 
-import org.apache.maven.model.Dependency;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.maven.model.Dependency;
+
 public class DependencyMapBuilder {
-
-  public DependencyMapBuilder() {
-
-  }
 
   public Map<String, List<Dependency>> build(List<Dependency> dependencyList) {
     Map<String, List<Dependency>> dependencyMap = new HashMap<>();

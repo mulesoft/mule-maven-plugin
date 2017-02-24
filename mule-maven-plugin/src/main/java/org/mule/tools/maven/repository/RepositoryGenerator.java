@@ -12,7 +12,7 @@ package org.mule.tools.maven.repository;
 
 import static java.lang.String.format;
 import static java.util.Collections.sort;
-import static org.mule.tools.artifact.archiver.api.PackagerConstants.REPOSITORY_FOLDER;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,7 +96,7 @@ public class RepositoryGenerator {
   }
 
   private File getRepositoryFolder() {
-    File repositoryFolder = new File(outputDirectory, REPOSITORY_FOLDER);
+    File repositoryFolder = new File(outputDirectory, REPOSITORY);
     if (!repositoryFolder.exists()) {
       repositoryFolder.mkdirs();
     }
@@ -118,7 +118,7 @@ public class RepositoryGenerator {
 
   private void generateMarkerFileInRepositoryFolder(File repositoryFile) throws MojoExecutionException {
     File markerFile = new File(repositoryFile, ".marker");
-    log.info(format("No artifacts to add, adding marker file <%s/%s>", REPOSITORY_FOLDER, markerFile.getName()));
+    log.info(format("No artifacts to add, adding marker file <%s/%s>", REPOSITORY, markerFile.getName()));
     try {
       markerFile.createNewFile();
     } catch (IOException e) {

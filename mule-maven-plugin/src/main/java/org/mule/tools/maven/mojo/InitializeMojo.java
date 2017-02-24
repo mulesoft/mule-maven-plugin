@@ -11,6 +11,8 @@
 package org.mule.tools.maven.mojo;
 
 
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;

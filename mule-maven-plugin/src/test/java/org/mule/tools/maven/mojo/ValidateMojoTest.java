@@ -10,20 +10,21 @@
 
 package org.mule.tools.maven.mojo;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.mule.tools.artifact.archiver.api.PackagerFiles.*;
+
+import java.io.IOException;
+import java.util.Collections;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.tools.maven.dependency.MulePluginsCompatibilityValidator;
 import org.mule.tools.maven.dependency.resolver.MulePluginResolver;
-
-import java.io.IOException;
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 public class ValidateMojoTest extends AbstractMuleMojoTest {
 

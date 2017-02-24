@@ -10,6 +10,15 @@
 
 package org.mule.tools.maven.mojo;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.META_INF;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+
 import org.apache.maven.model.Build;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
@@ -18,33 +27,13 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 public class AbstractMuleMojoTest {
 
-  protected static final String MULE = "mule";
-  protected static final String MAVEN = "maven";
-  protected static final String MUNIT = "munit";
-  protected static final String POM_XML = "pom.xml";
-  protected static final String META_INF = "META-INF";
-  protected static final String MULE_SRC = "mule-src";
   protected static final String GROUP_ID = "group-id";
-  protected static final String TEST_MULE = "test-mule";
-  protected static final String REPOSITORY = "repository";
   protected static final String ARTIFACT_ID = "artifact-id";
   protected static final String PACKAGE_NAME = "packageName";
-  protected static final String MULE_ARTIFACT = "mule-artifact";
-  protected static final String MULE_CONFIG_XML = "mule-config.xml";
   protected static final String MUNIT_TEST_FILE_NAME = "munit-test.xml";
-  protected static final String MULE_APP_PROPERTIES = "mule-app.properties";
   protected static final String PROJECT_ARTIFACT_ID = "project-artifact-id";
-  protected static final String MULE_DEPLOY_PROPERTIES = "mule-deploy.properties";
   protected final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
   protected Build buildMock;
   protected File munitFolder;

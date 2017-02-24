@@ -10,7 +10,7 @@
 
 package org.mule.tools.artifact.archiver.internal;
 
-import static org.mule.tools.artifact.archiver.api.PackagerConstants.*;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
 
 import java.io.File;
 
@@ -26,19 +26,19 @@ public class MuleArchiver extends ZipArchiver {
 
   public final static String ROOT_LOCATION = StringUtils.EMPTY;
 
-  public final static String CLASSES_LOCATION = CLASSES_FOLDER + File.separator;
+  public final static String CLASSES_LOCATION = CLASSES + File.separator;
 
-  public final static String MULE_LOCATION = MULE_FOLDER + File.separator;
+  public final static String MULE_LOCATION = MULE + File.separator;
 
-  public final static String META_INF_LOCATION = META_INF_FOLDER + File.separator;
+  public final static String META_INF_LOCATION = META_INF + File.separator;
 
-  public final static String MAVEN_LOCATION = META_INF_LOCATION + MAVEN_FOLDER + File.separator;
+  public final static String MAVEN_LOCATION = META_INF_LOCATION + MAVEN + File.separator;
 
-  public final static String MULE_SRC_LOCATION = META_INF_LOCATION + MULE_SRC_FOLDER + File.separator;
+  public final static String MULE_SRC_LOCATION = META_INF_LOCATION + MULE_SRC + File.separator;
 
-  public final static String MULE_ARTIFACT_LOCATION = META_INF_LOCATION + MULE_ARTIFACT_FOLDER + File.separator;
+  public final static String MULE_ARTIFACT_LOCATION = META_INF_LOCATION + MULE_ARTIFACT + File.separator;
 
-  public static final String REPOSITORY_LOCATION = REPOSITORY_FOLDER + File.separator;
+  public static final String REPOSITORY_LOCATION = REPOSITORY + File.separator;
 
 
   public void addClasses(File file) throws ArchiverException {

@@ -10,6 +10,14 @@
 
 package org.mule.tools.maven.mojo;
 
+import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_APPLICATION_JSON;
+
+import java.io.File;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -17,12 +25,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.tools.maven.dependency.MulePluginsCompatibilityValidator;
 import org.mule.tools.maven.dependency.resolver.MulePluginResolver;
-
-import java.io.File;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * It creates all the required folders in the project.build.directory

@@ -10,6 +10,14 @@
 
 package org.mule.tools.maven.mojo;
 
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
@@ -19,12 +27,6 @@ import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.artifact.AttachedArtifact;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * Build a Mule application archive.

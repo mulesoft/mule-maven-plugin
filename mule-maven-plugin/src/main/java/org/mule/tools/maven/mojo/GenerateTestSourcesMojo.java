@@ -10,17 +10,20 @@
 
 package org.mule.tools.maven.mojo;
 
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.MUNIT;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.TEST_MULE;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.tools.maven.util.CopyFileVisitor;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /**
  * Build a Mule application archive.

@@ -13,7 +13,7 @@ package org.mule.tools.maven.repository;
 import static java.io.File.separatorChar;
 import static java.lang.String.format;
 import static org.apache.commons.io.FileUtils.copyFile;
-import static org.mule.tools.artifact.archiver.api.PackagerConstants.REPOSITORY_FOLDER;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +44,7 @@ public class ArtifactInstaller {
     File destinationArtifactFile = new File(artifactFolderDestination, artifactFilename);
     try {
       log.info(format("Adding artifact <%s%s>",
-                      REPOSITORY_FOLDER,
+                      REPOSITORY,
                       destinationArtifactFile.getAbsolutePath()
                           .replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
                                         "")));

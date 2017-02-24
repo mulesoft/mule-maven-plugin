@@ -10,12 +10,12 @@
 
 package org.mule.tools.maven.dependency;
 
-import org.apache.maven.model.Dependency;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.apache.maven.model.Dependency;
 
 /**
  * The goal of this class is to select always the newer version of a plugin
@@ -26,15 +26,15 @@ public class ApplicationDependencySelector {
     List<Dependency> selectedDependencies = new ArrayList<>();
 
     Map<String, List<Dependency>> dependencyMap = new DependencyMapBuilder().build(mulePlugins);
-    selectedDependencies.addAll(
-                                dependencyMap.entrySet().stream().map(entry -> getNewerPluginFile(entry.getValue()))
-                                    .collect(Collectors.toList()));
+    selectedDependencies.addAll(dependencyMap.entrySet().stream().map(entry -> getNewerPluginFile(entry.getValue()))
+        .collect(Collectors.toList()));
 
     return selectedDependencies;
   }
 
   /**
-   * Given a list of dependencies all representing the same artifact, different versions it will select the newer version and return the file of that one.
+   * Given a list of dependencies all representing the same artifact, different versions it will select the newer version and
+   * return the file of that one.
    *
    * @param dependencyVersions list of dependencies, all the same artifact different versions
    * @return returns the file of th newer version of the dependencies list

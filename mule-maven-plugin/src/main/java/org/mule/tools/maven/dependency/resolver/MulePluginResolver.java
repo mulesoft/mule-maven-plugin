@@ -10,6 +10,13 @@
 
 package org.mule.tools.maven.dependency.resolver;
 
+import static java.lang.String.format;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
@@ -20,14 +27,11 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.*;
 import org.apache.maven.repository.RepositorySystem;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.lang.String.format;
-
 public class MulePluginResolver {
 
+  private static final String CREATION_ERROR_MESSAGE =
+      "There was an issue while trying to create a maven project from the artifact [%s]";
+  private static final String CREATION_SEVERAL_ERRORS_MESSAGE = CREATION_ERROR_MESSAGE + ", several FATAL errors were found";
   private Log log;
   private MavenSession session;
   private ProjectBuilder projectBuilder;
@@ -56,16 +60,13 @@ public class MulePluginResolver {
     List<Dependency> mulePlugins = new ArrayList<>();
 
     List<Dependency> directMulePluginDependencies = project.getDependencies().stream()
-        .filter(d -> d.getType().equals("jar"))
-        .filter(d -> d.getScope().equals("compile"))
-        .filter(d -> d.getClassifier() != null && d.getClassifier().equals("mule-plugin"))
+        .filter(dependencyWith("jar", "compile", "mule-plugin"))
         .collect(Collectors.toList());
 
     mulePlugins.addAll(directMulePluginDependencies);
 
     for (Dependency d : directMulePluginDependencies) {
-      mulePlugins.addAll(
-                         getAllMulePluginDependencies(buildMavenProject(d.getGroupId(), d.getArtifactId(), d.getVersion())));
+      mulePlugins.addAll(getAllMulePluginDependencies(buildMavenProject(d.getGroupId(), d.getArtifactId(), d.getVersion())));
     }
 
     return mulePlugins;
@@ -73,9 +74,7 @@ public class MulePluginResolver {
 
   private List<Dependency> getAllMulePluginDependencies(MavenProject project) throws MojoExecutionException {
     List<Dependency> mulePluginDependencies = project.getDependencies().stream()
-        .filter(d -> d.getType().equals("jar"))
-        .filter(d -> d.getScope().equals("provided"))
-        .filter(d -> d.getClassifier() != null && d.getClassifier().equals("mule-plugin"))
+        .filter(dependencyWith("jar", "provided", "mule-plugin"))
         .collect(Collectors.toList());
 
 
@@ -129,27 +128,24 @@ public class MulePluginResolver {
    */
   private MavenProject buildMavenMavenProjectWithErrors(Artifact artifact, ProjectBuildingException e)
       throws MojoExecutionException {
-    if (e.getResults() == null || e.getResults().size() != 1) {
-      throw new MojoExecutionException(
-                                       format("There was an issue while trying to create a maven project from the artifact [%s]",
-                                              artifact.toString()),
-                                       e);
+    List<ProjectBuildingResult> results = e.getResults();
+    if (results == null || results.size() != 1) {
+      throw new MojoExecutionException(format(CREATION_ERROR_MESSAGE, artifact.toString()), e);
     }
-
-    ProjectBuildingResult projectBuildingResult = e.getResults().get(0);
+    ProjectBuildingResult projectBuildingResult = results.get(0);
     List<ModelProblem> fatalProblems = projectBuildingResult.getProblems().stream()
         .filter(modelProblem -> modelProblem.getSeverity().equals(ModelProblem.Severity.FATAL)).collect(
                                                                                                         Collectors.toList());
     if (!fatalProblems.isEmpty()) {
-      throw new MojoExecutionException(format(
-                                              "There was an issue while trying to create a maven project from the artifact [%s], several FATAL errors were found",
-                                              artifact.toString()),
-                                       e);
+      throw new MojoExecutionException(format(CREATION_SEVERAL_ERRORS_MESSAGE, artifact.toString()), e);
     }
 
     return projectBuildingResult.getProject();
   }
 
-
+  private Predicate<Dependency> dependencyWith(String type, String scope, String classifier) {
+    return dependency -> type.equals(dependency.getType()) && scope.equals(dependency.getScope())
+        && classifier.equals(dependency.getClassifier());
+  }
 
 }

@@ -10,6 +10,12 @@
 
 package org.mule.tools.maven.mojo;
 
+import static org.mule.tools.artifact.archiver.api.PackagerConstants.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
@@ -21,10 +27,6 @@ import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.utils.StringUtils;
 import org.mule.tools.maven.mojo.model.SharedLibraryDependency;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 /**
  * Base Mojo
  */
@@ -35,17 +37,17 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   public static final String MULE_APP_PROPERTIES = "mule-app.properties";
   public static final String MULE_DEPLOY_PROPERTIES = "mule-deploy.properties";
 
-  public static final String MULE = "mule";
-  public static final String TEST_MULE = "test-mule";
-  public static final String MUNIT = "munit";
-  public static final String TARGET = "target";
-  public static final String CLASSES = "classes";
-  public static final String MULE_SRC = "mule-src";
-  public static final String META_INF = "META-INF";
-  public static final String MAVEN = "maven";
+  public static final String MULE = MULE_FOLDER;
+  public static final String TEST_MULE = TEST_MULE_FOLDER;
+  public static final String MUNIT = MUNIT_FOLDER;
+  public static final String TARGET = TARGET_FOLDER;
+  public static final String CLASSES = CLASSES_FOLDER;
+  public static final String MULE_SRC = MULE_SRC_FOLDER;
+  public static final String META_INF = META_INF_FOLDER;
+  public static final String MAVEN = MAVEN_FOLDER;
   public static final String MULE_APPLICATION_JSON = "mule-application.json";
-  public static final String MULE_ARTIFACT = "mule-artifact";
-  public static final String REPOSITORY = "repository";
+  public static final String MULE_ARTIFACT = MULE_ARTIFACT_FOLDER;
+  public static final String REPOSITORY = REPOSITORY_FOLDER;
   public static final String POM_PROPERTIES = "pom.properties";
 
   @Component

@@ -10,17 +10,17 @@
 
 package org.mule.tools.maven.dependency;
 
-import org.apache.maven.model.Dependency;
-import org.apache.maven.plugin.MojoExecutionException;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.maven.model.Dependency;
+import org.apache.maven.plugin.MojoExecutionException;
+
 /**
- * The goal of this class is to check for if a list of Dependencies are compatible amongst them self
- * Compatibility is defined by semantic versioning
+ * The goal of this class is to check for if a list of Dependencies are compatible amongst them self Compatibility is defined by
+ * semantic versioning
  */
 public class MulePluginsCompatibilityValidator {
 
@@ -29,39 +29,34 @@ public class MulePluginsCompatibilityValidator {
   /**
    * Validates a list of dependencies to check for incompatibilities
    *
-   * @param mulePlugins
+   * @param mulePlugins List of mule plugins dependencies
    * @throws MojoExecutionException if the list of mule plugins contains incompatibilities
    */
   public void validate(List<Dependency> mulePlugins) throws MojoExecutionException {
     for (Map.Entry<String, List<Dependency>> entry : dependencyMapBuilder.build(mulePlugins).entrySet()) {
-      if (entry.getValue().size() > 1) {
-
-        if (!areMulePluginVersionCompatible(entry.getValue())) {
-          StringBuilder message = new StringBuilder()
-              .append("There are incompatible versions of the same mule plugin in the application dependency graph.")
-              .append("This application can not be package as it will fail to deploy.")
-              .append("Offending mule plugin: ").append(entry.getKey())
-              .append("Versions: ");
-          entry.getValue().forEach(d -> message.append(d.getVersion()).append(","));
-
-          throw new MojoExecutionException(message.toString());
-        }
+      List<Dependency> dependencies = entry.getValue();
+      if (dependencies.size() > 1 && !areMulePluginVersionCompatible(dependencies)) {
+        throw new MojoExecutionException(createErrorMessage(entry.getKey(), dependencies));
       }
     }
   }
 
-
   private boolean areMulePluginVersionCompatible(List<Dependency> dependencies) {
     Set<String> majors = dependencies.stream()
-        .map(d -> d.getVersion())
+        .map(Dependency::getVersion)
         .map(v -> v.substring(0, v.indexOf(".")))
         .collect(Collectors.toSet());
+    return majors.size() <= 1;
+  }
 
-    if (majors.size() > 1) {
-      return false;
-    }
-    return true;
-
+  private String createErrorMessage(String mulePlugin, List<Dependency> dependencies) {
+    StringBuilder message = new StringBuilder()
+        .append("There are incompatible versions of the same mule plugin in the application dependency graph.")
+        .append("This application can not be package as it will fail to deploy.")
+        .append("Offending mule plugin: ").append(mulePlugin)
+        .append("Versions: ");
+    dependencies.forEach(d -> message.append(d.getVersion()).append(","));
+    return message.toString();
   }
 
 }

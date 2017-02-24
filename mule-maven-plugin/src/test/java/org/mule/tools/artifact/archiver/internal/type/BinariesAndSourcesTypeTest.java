@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.mule.tools.artifact.archiver.api.PackagerConstants;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 import org.mule.tools.artifact.archiver.internal.packaging.PackagingType;
 
@@ -29,8 +30,8 @@ public class BinariesAndSourcesTypeTest extends PackageTypeTest {
   @Test
   public void validateApplyPackagingTest() {
     PackageBuilder packageBuilderMock = mock(PackageBuilder.class);
-    File classes = mockFileWithName(PackageBuilder.CLASSES_FOLDER);
-    File mule = mockFileWithName(PackageBuilder.MULE_FOLDER);
+    File classes = mockFileWithName(PackagerConstants.CLASSES_FOLDER);
+    File mule = mockFileWithName(PackagerConstants.MULE_FOLDER);
 
     when(packageBuilderMock.withClasses(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
     when(packageBuilderMock.withMule(ArgumentMatchers.any())).thenReturn(packageBuilderMock);

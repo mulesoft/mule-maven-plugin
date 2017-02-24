@@ -32,12 +32,6 @@ import org.mule.tools.artifact.archiver.internal.packaging.PackagingTypeFactory;
  */
 public class PackageBuilder {
 
-  // TODO: could we move these constants out of this class
-  public static final String MULE_FOLDER = "mule";
-  public static final String CLASSES_FOLDER = "classes";
-  public static final String MULE_SRC_FOLDER = "mule-src";
-  public static final String REPOSITORY_FOLDER = "repository";
-
   private PackagingType packagingType;
 
   private transient Log log = LogFactory.getLog(this.getClass());
@@ -209,7 +203,7 @@ public class PackageBuilder {
     checkMandatoryFolder(targetFolder);
     checkArgument(destinationFile != null && !destinationFile.exists(), "Destination file must not be null or already exist");
     File[] files = targetFolder.listFiles();
-    if (files == null) {
+    if (files == null || files.length == 0) {
       log.warn("The provided target folder is empty, no file will be generated");
       return;
     }

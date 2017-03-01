@@ -47,8 +47,6 @@ public class MuleArchiverTest {
 
     File destinationFile = new File(targetFileFolder.getRoot(), REAL_APP + ".zip");
 
-    muleArchiver.addRootFile(getTestResourceFile(REAL_APP + File.separator + "mule-app.properties"));
-
     muleArchiver.addClasses(getTestResourceFile(REAL_APP + File.separator + CLASSES), null, null);
 
     muleArchiver.addMaven(getTestResourceFile(REAL_APP + File.separator + META_INF + File.separator + MAVEN), null,
@@ -83,17 +81,17 @@ public class MuleArchiverTest {
 
   private void assertCompleteAppContent(File destinationDirectoryForUnzip) {
     List<String> relativePaths = new ArrayList<>();
-    relativePaths.add("classes" + File.separator + "resource2");
-    relativePaths.add("classes" + File.separator + "resource1");
-    relativePaths.add("classes" + File.separator + "class3.clazz");
-    relativePaths.add("classes" + File.separator + "org.fake.core" + File.separator + "class1.clazz");
-    relativePaths.add("classes" + File.separator + "org.fake.core" + File.separator + "class2.clazz");
-    relativePaths.add("classes" + File.separator + "resourceFolder" + File.separator + "resource3");
-    relativePaths.add("classes" + File.separator + "plugins" + File.separator + "api" + File.separator + "api.raml");
-    relativePaths.add("classes" + File.separator + "plugins" + File.separator + "wsdl" + File.separator + "aservice.wsdl");
-    relativePaths.add("mule" + File.separator + "mule-config1.xml");
-    relativePaths.add("mule" + File.separator + "org.mule.package" + File.separator + "mule-config2.xml");
-    relativePaths.add("mule-app.properties");
+    relativePaths.add(CLASSES + File.separator + "resource2");
+    relativePaths.add(CLASSES + File.separator + "resource1");
+    relativePaths.add(CLASSES + File.separator + "class3.clazz");
+    relativePaths.add(CLASSES + File.separator + "org.fake.core" + File.separator + "class1.clazz");
+    relativePaths.add(CLASSES + File.separator + "org.fake.core" + File.separator + "class2.clazz");
+    relativePaths.add(CLASSES + File.separator + "resourceFolder" + File.separator + "resource3");
+    relativePaths.add(CLASSES + File.separator + PLUGINS + File.separator + "api" + File.separator + "api.raml");
+    relativePaths
+        .add(CLASSES + File.separator + PLUGINS + File.separator + "wsdl" + File.separator + "aservice.wsdl");
+    relativePaths.add(MULE + File.separator + "mule-config1.xml");
+    relativePaths.add(MULE + File.separator + "org.mule.package" + File.separator + "mule-config2.xml");
     relativePaths.add(
                       META_INF + File.separator + MULE_SRC + File.separator + "real-app" + File.separator + "src"
                           + File.separator

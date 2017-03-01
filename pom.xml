@@ -19,6 +19,7 @@
         <maven.verifier.version>1.6</maven.verifier.version>
         <maven.license.plugin.version>1.8.0</maven.license.plugin.version>
         <maven.java.formatter.version>1.8.0</maven.java.formatter.version>
+        <maven.resources.plugin.version>2.3</maven.resources.plugin.version>
         <formatter.path>formatter.xml</formatter.path>
         <formatterGoal>validate</formatterGoal>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
@@ -49,6 +50,11 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven.resources.plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

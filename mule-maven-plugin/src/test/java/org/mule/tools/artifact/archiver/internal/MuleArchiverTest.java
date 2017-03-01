@@ -93,6 +93,16 @@ public class MuleArchiverTest {
     relativePaths.add(MULE + File.separator + "mule-config1.xml");
     relativePaths.add(MULE + File.separator + "org.mule.package" + File.separator + "mule-config2.xml");
     relativePaths.add(
+                      META_INF + File.separator + MAVEN + File.separator + "org.mule.fake" + File.separator + "complete-app"
+                          + File.separator
+                          + "pom.xml");
+    relativePaths.add(
+                      META_INF + File.separator + MAVEN + File.separator + "org.mule.fake" + File.separator + "complete-app"
+                          + File.separator
+                          + "pom.properties");
+    relativePaths.add(
+                      META_INF + File.separator + MULE_ARTIFACT + File.separator + "mule-application.json");
+    relativePaths.add(
                       META_INF + File.separator + MULE_SRC + File.separator + "real-app" + File.separator + "src"
                           + File.separator
                           + "main" + File.separator + "java" + File.separator + "org.fake.core" + File.separator

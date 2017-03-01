@@ -61,11 +61,10 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
     mojo.createMuleFolderContent();
 
     assertThat("The mule folder does not contain the expected number of files", muleFolder.listFiles().length, equalTo(2));
-    File actualCopiedFile1 = muleFolder.listFiles()[0];
-    File actualCopiedFile2 = muleFolder.listFiles()[1];
+    Set<String> copiedFiles =
+        Arrays.asList(muleFolder.listFiles()).stream().map(file -> file.getName()).collect(Collectors.toSet());
     assertThat("The mule folder content is different from the expected",
-               StringUtils.equals(actualCopiedFile1.getName(), fileToBeCopied1.getName()) && StringUtils
-                   .equals(actualCopiedFile2.getName(), fileToBeCopied2.getName()));
+               copiedFiles, containsInAnyOrder(fileToBeCopied1.getName(), fileToBeCopied2.getName()));
   }
 
   @Test

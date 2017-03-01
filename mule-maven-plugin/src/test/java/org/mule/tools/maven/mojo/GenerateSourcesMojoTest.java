@@ -20,8 +20,7 @@ import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -88,14 +87,10 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
 
     assertThat("There should be 2 files in the target folder", projectArtifactIdFolder.listFiles().length, equalTo(2));
 
-    File actualCopiedFile1 = projectArtifactIdFolder.listFiles()[0];
+    Set<String> copiedFiles =
+        Arrays.asList(projectArtifactIdFolder.listFiles()).stream().map(file -> file.getName()).collect(Collectors.toSet());
     assertThat("The mule folder content is different from the expected",
-               actualCopiedFile1.getName().equals(fileToBeCopied1.getName()));
-
-
-    File actualCopiedFile2 = projectArtifactIdFolder.listFiles()[1];
-    assertThat("The mule folder content is different from the expected",
-               actualCopiedFile2.getName().equals(fileToBeCopied2.getName()));
+               copiedFiles, containsInAnyOrder(fileToBeCopied1.getName(), fileToBeCopied2.getName()));
   }
 
   @Test

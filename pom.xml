@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.tools.maven</groupId>
     <artifactId>mule-maven-plugin</artifactId>
-    <version>2.2-SNAPSHOT</version>
+    <version>2.2</version>
     <packaging>maven-plugin</packaging>
     <name>Mule Maven Plugin</name>
     <description>
@@ -221,7 +221,7 @@
         <connection>scm:git:git://github.com/mulesoft/mule-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:mulesoft/mule-maven-plugin.git</developerConnection>
         <url>https://github.com/mulesoft/mule-maven-plugin</url>
-      <tag>HEAD</tag>
+      <tag>2.2</tag>
   </scm>
 
     <build>

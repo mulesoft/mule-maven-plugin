@@ -17,13 +17,14 @@ import org.hamcrest.Matcher;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FileTreeMatcher {
 
   private static String PADDING = "    ";
   public static final String HORIZONTAL_LINE = StringUtils.repeat("-", PADDING.length() - 1);
 
-  public static Matcher<File> hasSameTreeStructure(final File root) {
+  public static Matcher<File> hasSameTreeStructure(final File root, String[] excludes) {
     return new BaseMatcher<File>() {
 
       @Override
@@ -57,7 +58,10 @@ public class FileTreeMatcher {
         if (root.isFile()) {
           return treeRepresentation;
         }
-        for (File child : root.listFiles()) {
+        File[] rootChildren = root.listFiles() == null ? null
+            : Arrays.stream(root.listFiles()).filter(file -> !Arrays.asList(excludes).contains(file.getName()))
+                .toArray(File[]::new);
+        for (File child : rootChildren) {
           treeRepresentation.append(generateLeftPadding(padding) + child.getName() + ((child.isDirectory()) ? "/\n" : "\n"));
           treeRepresentation.append(generateTreeRepresentation(child, padding + PADDING.length()));
         }
@@ -73,11 +77,20 @@ public class FileTreeMatcher {
       }
 
       private boolean sameTreeSructure(File root, File otherRoot) {
-        if (root.listFiles() == null || otherRoot.listFiles() == null) {
-          return !(root.listFiles() == null ^ otherRoot.listFiles() == null);
+        File[] rootChildrenArray = root.listFiles() == null ? null
+            : Arrays.stream(root.listFiles()).filter(file -> !Arrays.asList(excludes).contains(file.getName()))
+                .toArray(File[]::new);
+        File[] otherRootChildrenArray = otherRoot.listFiles() == null ? null
+            : Arrays.stream(otherRoot.listFiles()).filter(file -> !Arrays.asList(excludes).contains(file.getName()))
+                .toArray(File[]::new);
+
+        if (rootChildrenArray == null || otherRootChildrenArray == null || rootChildrenArray.length == 0
+            || otherRootChildrenArray.length == 0) {
+          return !((rootChildrenArray == null || rootChildrenArray.length == 0)
+              ^ (otherRootChildrenArray == null || otherRootChildrenArray.length == 0));
         }
-        Set<File> rootChildren = new TreeSet<>(Arrays.asList(root.listFiles()));
-        Set<File> otherRootChildren = new TreeSet<>(Arrays.asList(otherRoot.listFiles()));
+        Set<File> rootChildren = new TreeSet<>(Arrays.asList(rootChildrenArray));
+        Set<File> otherRootChildren = new TreeSet<>(Arrays.asList(otherRootChildrenArray));
         if (rootChildren.size() != otherRootChildren.size()) {
           return false;
         }

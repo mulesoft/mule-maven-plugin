@@ -46,8 +46,9 @@ public class InitializeMojoTest extends AbstractMuleMojoTest {
   @After
   public void after() throws IOException {
     File rootOfExpectedStructure = ResourceExtractor.simpleExtractResources(getClass(), EXPECTED_STRUCTURE_RELATIVE_PATH);
+    String[] excludes = new String[] {".placeholder"};
     assertThat("The target folder directory does not have the expected structure", projectRootFolder.getRoot(),
-               FileTreeMatcher.hasSameTreeStructure(rootOfExpectedStructure));
+               FileTreeMatcher.hasSameTreeStructure(rootOfExpectedStructure, excludes));
     assertThat("Initialize goal message was not the expected", INITIALIZE_GOAL_DEBUG_MESSAGE, equalTo(outContent.toString()));
   }
 

@@ -74,6 +74,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
+
+                <executions>
+                    <execution>
+                        <goals>
+
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <includeEmptyDirs>true</includeEmptyDirs>
                 </configuration>

@@ -6,6 +6,7 @@
  */
 package org.mule.tools.maven.plugin.mule;
 
+import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.maven.plugin.mule.agent.AgentApi;
 import org.mule.tools.maven.plugin.mule.arm.ArmApi;
 import org.mule.tools.maven.plugin.mule.cloudhub.CloudhubApi;
@@ -15,6 +16,8 @@ import java.io.File;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
+
+import javax.ws.rs.NotFoundException;
 
 /**
  * Undeploys all the applications on a Mule Runtime Standalone server, regardless of whether it was started using start or deploy goals.
@@ -26,6 +29,14 @@ import org.apache.maven.plugins.annotations.Mojo;
 @Mojo(name = "undeploy", requiresProject = true)
 public class UndeployMojo extends AbstractMuleMojo
 {
+
+    /**
+     * When set to false, undeployment won't fail if the specified application does not exist.
+     *
+     * @since 2.2
+     */
+    @Parameter(defaultValue = "true")
+    private boolean failIfNotExists;
 
     @Override
     protected void doExecute() throws MojoExecutionException, MojoFailureException
@@ -67,7 +78,21 @@ public class UndeployMojo extends AbstractMuleMojo
         ArmApi armApi = new ArmApi(getLog(), uri, username, password, environment, businessGroup, armInsecure);
         armApi.init();
         getLog().info("Undeploying application " + applicationName);
-        armApi.undeployApplication(applicationName, targetType, target);
+        try
+        {
+            armApi.undeployApplication(applicationName, targetType, target);
+        }
+        catch (NotFoundException e)
+        {
+            if (failIfNotExists)
+            {
+                throw e;
+            }
+            else
+            {
+                getLog().warn("Application not found: " + applicationName);
+            }
+        }
     }
 
     private void agent() throws MojoFailureException

@@ -110,7 +110,7 @@ public class DeployMojo extends AbstractMuleMojo
      *
      * @since 2.0
      */
-    @Parameter(readonly = true, property = "cloudhub.region", defaultValue = "us-east-1")
+    @Parameter(property = "cloudhub.region", defaultValue = "us-east-1")
     protected String region;
 
     /**
@@ -118,7 +118,7 @@ public class DeployMojo extends AbstractMuleMojo
      *
      * @since 2.0
      */
-    @Parameter(readonly = true, property = "cloudhub.workers")
+    @Parameter(property = "cloudhub.workers")
     protected Integer workers = 1;
 
     /**
@@ -126,7 +126,7 @@ public class DeployMojo extends AbstractMuleMojo
      *
      * @since 2.0
      */
-    @Parameter(defaultValue = "Medium", readonly = true, property = "cloudhub.workerType")
+    @Parameter(defaultValue = "Medium", property = "cloudhub.workerType")
     protected String workerType;
 
     /**
@@ -134,7 +134,7 @@ public class DeployMojo extends AbstractMuleMojo
      * @since 2.0
      *
      */
-    @Parameter(readonly = true)
+    @Parameter(required = false)
     protected Map<String, String> properties;
 
 

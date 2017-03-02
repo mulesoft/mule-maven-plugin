@@ -73,7 +73,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo
      *
      * @since 2.2
      */
-    @Parameter(required = false, readonly = true, property = "maven.server")
+    @Parameter(required = false, property = "maven.server")
     protected String server;
 
     /**
@@ -81,7 +81,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo
      *
      * @since 2.0
      */
-    @Parameter(required = false, readonly = true, property = "anypoint.username")
+    @Parameter(required = false, property = "anypoint.username")
     protected String username;
 
     /**
@@ -89,7 +89,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo
      *
      * @since 2.0
      */
-    @Parameter(required = false, readonly = true, property = "anypoint.password")
+    @Parameter(required = false, property = "anypoint.password")
     protected String password;
 
     /**
@@ -97,7 +97,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo
      *
      * @since 1.0
      */
-    @Parameter(required = true, readonly = true)
+    @Parameter(required = true)
     protected DeploymentType deploymentType;
 
     /**
@@ -113,7 +113,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo
      *
      * @since 2.0
      */
-    @Parameter(required = false, readonly = true, property = "anypoint.environment")
+    @Parameter(required = false, property = "anypoint.environment")
     protected String environment;
 
     /**
@@ -122,7 +122,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo
      *
      * @since 2.0
      */
-    @Parameter(readonly = true, property = "mule.home")
+    @Parameter(property = "mule.home")
     protected File muleHome;
 
     /**
@@ -131,7 +131,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo
      *
      * @since 1.0
      */
-    @Parameter(readonly = true, property = "mule.version")
+    @Parameter(property = "mule.version")
     protected String muleVersion;
 
     /**
@@ -139,7 +139,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo
      *
      * @since 1.0
      */
-    @Parameter(defaultValue = "2", readonly = true, required = true)
+    @Parameter(defaultValue = "2", required = true)
     protected Integer size;
 
     /**
@@ -184,7 +184,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo
      * @since 2.0
      * @see DeployMojo#targetType
      */
-    @Parameter(readonly = true, property = "anypoint.target")
+    @Parameter(property = "anypoint.target")
     protected String target;
 
     /**
@@ -192,7 +192,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo
      *
      * @since 2.0
      */
-    @Parameter(readonly = true, property = "anypoint.target.type")
+    @Parameter(property = "anypoint.target.type")
     protected TargetType targetType;
 
     /**

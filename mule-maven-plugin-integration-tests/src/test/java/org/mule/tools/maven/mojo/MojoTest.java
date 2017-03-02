@@ -24,12 +24,8 @@ import java.io.IOException;
 public class MojoTest {
 
   protected static final String TARGET_FOLDER_NAME = "target";
-  protected static final String MULE_APP_JSON = "mule-app.json";
   protected static final String EMPTY_PROJECT_NAME = "empty-project";
-  protected static final String MULE_CONFIG_XML = "mule-config.xml";
-  protected static final String MULE_APP_PROPERTIES = "mule-app.properties";
   protected static final String PROJECT_BASE_DIR_PROPERTY = "project.basedir";
-  protected static final String MULE_DEPLOY_PROPERTIES = "mule-deploy.properties";
   protected static final String PROJECT_BUILD_DIRECTORY_PROPERTY = "project.build.directory";
   protected static final String INSTALL = "install";
   protected static final String DEPENDENCY_ORG_ID = "org.apache.maven.plugin.my.dependency";
@@ -42,6 +38,7 @@ public class MojoTest {
   protected Verifier verifier;
   protected File targetFolder;
   protected String goal;
+  protected static final String[] excludes = new String[] {".placeholder"};
 
   @Before
   public void initializeContext() throws IOException, VerificationException {

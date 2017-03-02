@@ -163,11 +163,11 @@ public class ArmApi extends AbstractMuleApi
     public Integer findApplication(String name, TargetType targetType, String target)
     {
         Applications apps = getApplications();
-        if (apps == null)
+        Data[] appArray = getApplications().data;
+        if (appArray == null)
         {
             return null;
         }
-        Data[] appArray = getApplications().data;
         String targetId = getId(targetType, target);
         for (int i = 0 ; i < appArray.length ; i ++ )
         {

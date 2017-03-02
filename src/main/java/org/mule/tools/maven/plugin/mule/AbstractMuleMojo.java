@@ -69,7 +69,8 @@ public abstract class AbstractMuleMojo extends AbstractMojo
     protected int timeout;
 
     /**
-     * Maven server with Anypoint Platform credentials.
+     * Maven server with Anypoint Platform credentials. This is only needed if you want to use your credentials stored
+     * in your Maven settings.xml file. This is NOT your Mule server name.
      *
      * @since 2.2
      */

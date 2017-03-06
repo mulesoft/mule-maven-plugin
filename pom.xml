@@ -5,7 +5,7 @@
     <groupId>org.mule.tools.maven</groupId>
     <artifactId>mule-maven-plugins</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0-M1-HF1</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>Mule Maven Plugins</name>
     <modules>
         <module>mule-maven-plugin</module>
@@ -86,7 +86,7 @@
             scm:git:git@github.com:mulesoft-labs/mule-maven-plugin.git
         </developerConnection>
         <url>http://github.com/mulesoft-labs/mule-maven-plugin</url>
-      <tag>3.0.0-Milestone1-HF1</tag>
+      <tag>HEAD</tag>
   </scm>
 
   <repositories>

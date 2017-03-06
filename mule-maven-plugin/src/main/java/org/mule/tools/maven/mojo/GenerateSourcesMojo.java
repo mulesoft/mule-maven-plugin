@@ -53,8 +53,9 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
   }
 
   protected void createMuleFolderContent() throws IOException {
-    File targetFolder = Paths.get(project.getBuild().getDirectory(), MULE).toFile();
-    Files.walkFileTree(muleSourceFolder.toPath(), new CopyFileVisitor(muleSourceFolder, targetFolder));
+    File targetFolder =
+        Paths.get(project.getBuild().getDirectory(), project.getPackaging().equals("mule-policy") ? POLICY : MULE).toFile();
+    Files.walkFileTree(getSourceFolder().toPath(), new CopyFileVisitor(getSourceFolder(), targetFolder));
   }
 
   protected void createMuleSourceFolderContent() throws IOException {
@@ -76,7 +77,9 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
   protected void createDescriptorFilesContent() throws IOException {
     projectBaseFolderFileCloner.clone(POM_XML)
         .toPath(META_INF, MAVEN, project.getGroupId(), project.getArtifactId());
-    projectBaseFolderFileCloner.clone(MULE_APPLICATION_JSON).toPath(META_INF, MULE_ARTIFACT);
+    projectBaseFolderFileCloner
+        .clone((project.getPackaging().equals("mule-policy") ? MULE_POLICY_JSON : MULE_APPLICATION_JSON))
+        .toPath(META_INF, MULE_ARTIFACT);
   }
 
   protected void createPomProperties() throws IOException, MojoExecutionException {

@@ -15,6 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +41,7 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
 
   @Before
   public void before() throws IOException, MojoExecutionException {
-    mojo.muleSourceFolder = muleSourceFolderMock;
+    mojo.mainSourceFolder = muleSourceFolderMock;
     mojo.projectBaseFolder = projectRootFolder.getRoot();
     when(resolverMock.resolveMulePlugins(any())).thenReturn(Collections.emptyList());
   }
@@ -50,7 +51,13 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
       throws MojoFailureException, MojoExecutionException {
     expectedException.expect(MojoExecutionException.class);
     expectedException.expectMessage(VALIDATE_MANDATORY_FOLDERS_MESSAGE);
-
+    File sourceFolder = projectRootFolder.newFolder("src");
+    sourceFolder.mkdir();
+    File mainFolder = new File(sourceFolder, "main");
+    mainFolder.mkdir();
+    mojo.mainSourceFolder = mainFolder;
+    mojo.project = projectMock;
+    when(projectMock.getPackaging()).thenReturn("mule-application");
     when(muleSourceFolderMock.exists()).thenReturn(false);
 
     mojo.execute();
@@ -62,8 +69,14 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     projectRootFolder.newFile(MULE_APPLICATION_JSON);
 
     ValidateMojo mojo = new ValidateMojoWithMockedResolverAndValidate();
-
-    mojo.muleSourceFolder = muleSourceFolderMock;
+    File sourceFolder = projectRootFolder.newFolder("src");
+    sourceFolder.mkdir();
+    File mainFolder = new File(sourceFolder, "main");
+    mainFolder.mkdir();
+    File muleFolder = new File(mainFolder, "mule");
+    muleFolder.mkdir();
+    mojo.mainSourceFolder = projectRootFolder.newFolder("src/main");
+    mojo.mainSourceFolder.mkdirs();
     mojo.projectBaseFolder = projectRootFolder.getRoot();
 
     when(projectMock.getDependencies()).thenReturn(new ArrayList<>());
@@ -82,6 +95,7 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     expectedException.expect(MojoExecutionException.class);
 
     when(projectMock.getDependencies()).thenReturn(new ArrayList<>());
+    when(projectMock.getPackaging()).thenReturn("mule-application");
     mojo.project = projectMock;
 
     mojo.sharedLibraries = new ArrayList<>();

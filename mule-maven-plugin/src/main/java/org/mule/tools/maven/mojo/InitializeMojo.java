@@ -11,6 +11,8 @@
 package org.mule.tools.maven.mojo;
 
 
+import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_APPLICATION_JSON;
+import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_POLICY_JSON;
 import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -35,7 +37,7 @@ public class InitializeMojo extends AbstractMuleMojo {
     String targetFolder = project.getBuild().getDirectory();
 
     createFolderIfNecessary(targetFolder);
-    createFolderIfNecessary(targetFolder, MULE);
+    createFolderIfNecessary(targetFolder, project.getPackaging().equals("mule-policy") ? POLICY : MULE);
 
     createFolderIfNecessary(targetFolder, TEST_MULE);
     createFolderIfNecessary(targetFolder, TEST_MULE, MUNIT);

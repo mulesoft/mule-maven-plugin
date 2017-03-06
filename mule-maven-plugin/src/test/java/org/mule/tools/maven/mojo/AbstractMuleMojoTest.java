@@ -75,6 +75,6 @@ public class AbstractMuleMojoTest {
 
     when(buildMock.getDirectory()).thenReturn(buildTemporaryFolder.getRoot().getAbsolutePath());
     when(projectMock.getBuild()).thenReturn(buildMock);
-
+    when(projectMock.getPackaging()).thenReturn("mule-application");
   }
 }

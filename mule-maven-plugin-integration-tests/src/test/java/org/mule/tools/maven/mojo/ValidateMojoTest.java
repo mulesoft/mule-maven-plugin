@@ -49,6 +49,7 @@ public class ValidateMojoTest extends MojoTest {
   public void testFailOnMissingSharedLibrariesProject() throws Exception {
     projectBaseDirectory = builder.createProjectBaseDir(MISSING_DECLARED_SHARED_LIBRARIES_PROJECT, this.getClass());
     verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+
     try {
       verifier.executeGoal(VALIDATE);
     } catch (VerificationException e) {

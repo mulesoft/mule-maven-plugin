@@ -83,7 +83,7 @@ public class PackageMojo extends AbstractMuleMojo {
 
   private String getFinalName() {
     if (finalName == null) {
-      finalName = project.getArtifactId() + "-" + project.getVersion();
+      finalName = project.getArtifactId() + "-" + project.getVersion() + "-" + project.getPackaging();
     }
     getLog().debug("Using final name: " + finalName);
     return finalName;
@@ -104,10 +104,14 @@ public class PackageMojo extends AbstractMuleMojo {
       if (!onlyMuleSources) {
         builder
             .withClasses(new File(targetFolder + File.separator + CLASSES))
-            .withMule(new File(targetFolder + File.separator + MULE))
             .withMaven(new File(targetFolder + File.separator + META_INF + File.separator + MAVEN))
             .withMuleArtifact(new File(targetFolder + File.separator + META_INF + File.separator + MULE_ARTIFACT));
+        if (project.getPackaging().equals("mule-policy")) {
+          builder.withPolicy(new File(targetFolder + File.separator + POLICY));
 
+        } else {
+          builder.withMule(new File(targetFolder + File.separator + MULE));
+        }
         if (!lightwayPackage) {
           builder.withRepository(new File(targetFolder + File.separator + REPOSITORY));
         }

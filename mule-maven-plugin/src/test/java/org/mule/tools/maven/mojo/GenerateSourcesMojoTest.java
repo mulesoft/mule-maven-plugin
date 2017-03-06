@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -54,7 +53,8 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
     fileToBeCopied1.createNewFile();
     fileToBeCopied2.createNewFile();
 
-    mojo.muleSourceFolder = muleSourceFolderMock;
+    mojo.mainSourceFolder =
+        new File(projectRootFolder.getRoot().getAbsolutePath(), "src" + File.separator + "main" + File.separator);
 
     File muleFolder = buildTemporaryFolder.newFolder(MULE);
     muleFolder.mkdir();
@@ -119,6 +119,7 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
     when(projectMock.getGroupId()).thenReturn(GROUP_ID);
     when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
     when(projectMock.getBasedir()).thenReturn(projectRootFolder.getRoot());
+    when(projectMock.getPackaging()).thenReturn("mule-application");
 
     mojo.project = projectMock;
     mojo.projectBaseFolderFileCloner = new ProjectBaseFolderFileCloner(projectMock);

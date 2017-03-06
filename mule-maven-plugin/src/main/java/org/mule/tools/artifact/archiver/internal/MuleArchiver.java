@@ -30,6 +30,8 @@ public class MuleArchiver extends ZipArchiver {
 
   public final static String MULE_LOCATION = MULE + File.separator;
 
+  public final static String POLICY_LOCATION = POLICY + File.separator;
+
   public final static String META_INF_LOCATION = META_INF + File.separator;
 
   public final static String MAVEN_LOCATION = META_INF_LOCATION + MAVEN + File.separator;
@@ -87,6 +89,10 @@ public class MuleArchiver extends ZipArchiver {
 
   public void addMule(File directoryName, String[] includes, String[] excludes) throws ArchiverException {
     addDirectory(directoryName, MULE_LOCATION, includes, addDefaultExcludes(excludes));
+  }
+
+  public void addPolicy(File directoryName, String[] includes, String[] excludes) throws ArchiverException {
+    addDirectory(directoryName, POLICY_LOCATION, includes, addDefaultExcludes(excludes));
   }
 
   public void addRootDirectory(File directory) throws ArchiverException {

@@ -16,6 +16,7 @@ package org.mule.tools.artifact.archiver.api;
 public class PackagerFolders {
 
   public static final String MULE = "mule";
+  public static final String POLICY = "policy";
   public static final String TEST_MULE = "test-mule";
   public static final String MUNIT = "munit";
   public static final String MULE_SRC = "mule-src";
@@ -23,7 +24,6 @@ public class PackagerFolders {
   public static final String MAVEN = "maven";
   public static final String MULE_ARTIFACT = "mule-artifact";
   public static final String CLASSES = "classes";
-  public static final String LIB = "lib";
   public static final String PLUGINS = "plugins";
   public static final String META_INF = "META-INF";
   public static final String TARGET = "target";

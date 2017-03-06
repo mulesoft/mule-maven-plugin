@@ -11,6 +11,9 @@
 package org.mule.tools.maven.mojo;
 
 import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_APPLICATION_JSON;
+import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_POLICY_JSON;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -50,9 +53,9 @@ public class ValidateMojo extends AbstractMuleMojo {
   protected void validateSharedLibraries() throws MojoExecutionException {
     if (sharedLibraries != null && sharedLibraries.size() != 0) {
       Set<String> projectDependenciesCoordinates = project.getDependencies().stream()
-          .map(dependency -> dependency.getArtifactId() + "#" + dependency.getGroupId()).collect(Collectors.toSet());
+          .map(dependency -> dependency.getArtifactId() + ":" + dependency.getGroupId()).collect(Collectors.toSet());
       Set<String> sharedLibrariesCoordinates = sharedLibraries.stream()
-          .map(dependency -> dependency.getArtifactId() + "#" + dependency.getGroupId()).collect(Collectors.toSet());
+          .map(dependency -> dependency.getArtifactId() + ":" + dependency.getGroupId()).collect(Collectors.toSet());
 
       if (!projectDependenciesCoordinates.containsAll(sharedLibrariesCoordinates)) {
         sharedLibrariesCoordinates.removeAll(projectDependenciesCoordinates);
@@ -63,15 +66,16 @@ public class ValidateMojo extends AbstractMuleMojo {
   }
 
   private void validateMandatoryFolders() throws MojoExecutionException {
-    if (!muleSourceFolder.exists()) {
-      String message = String.format("Invalid Mule project. Missing src/main/mule folder. This folder is mandatory");
+    if (!getSourceFolder().exists()) {
+      String message = String.format("Invalid Mule project. Missing src/main/"
+          + (project.getPackaging().equals("mule-policy") ? POLICY : MULE) + " folder. This folder is mandatory");
       throw new MojoExecutionException(message);
     }
   }
 
   private void validateMandatoryDescriptors() throws MojoExecutionException {
     isFilePresent("Invalid Mule project. Missing %s file, it must be present in the root of application",
-                  MULE_APPLICATION_JSON);
+                  (project.getPackaging().equals("mule-policy") ? MULE_POLICY_JSON : MULE_APPLICATION_JSON));
   }
 
   private void isFilePresent(String message, String... fileName) throws MojoExecutionException {

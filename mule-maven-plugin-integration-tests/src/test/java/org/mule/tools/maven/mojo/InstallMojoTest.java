@@ -11,6 +11,7 @@
 package org.mule.tools.maven.mojo;
 
 import org.apache.maven.it.VerificationException;
+import org.apache.maven.it.Verifier;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,5 +46,20 @@ public class InstallMojoTest extends MojoTest {
 
     verifier.verifyErrorFreeLog();
     verifier.assertArtifactPresent(ORG_ID, NAME, VERSION, EXT);
+  }
+
+  @Test
+  public void testInstallPolicy() throws IOException, VerificationException {
+    //verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=y");
+    projectBaseDirectory = builder.createProjectBaseDir("empty-install-policy-project", this.getClass());
+    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.deleteArtifact(ORG_ID, "empty-install-policy-project", VERSION, EXT);
+    verifier.assertArtifactNotPresent(ORG_ID, "empty-install-policy-project", VERSION, EXT);
+
+    verifier.executeGoal(INSTALL);
+
+    verifier.verifyErrorFreeLog();
+    verifier.assertArtifactPresent(ORG_ID, "empty-install-policy-project", VERSION, EXT);
   }
 }

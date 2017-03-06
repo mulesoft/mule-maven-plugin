@@ -37,6 +37,7 @@ public class PackageBuilder {
   private transient Log log = LogFactory.getLog(this.getClass());
 
   private File muleFolder = null;
+  private File policyFolder = null;
   private File classesFolder = null;
   private File repositoryFolder = null;
 
@@ -87,6 +88,12 @@ public class PackageBuilder {
   public PackageBuilder withMule(File folder) {
     checkArgument(folder != null);
     muleFolder = folder;
+    return this;
+  }
+
+  public PackageBuilder withPolicy(File folder) {
+    checkArgument(folder != null);
+    policyFolder = folder;
     return this;
   }
 
@@ -142,6 +149,10 @@ public class PackageBuilder {
     MuleArchiver archiver = getMuleArchiver();
     if (null != muleFolder && muleFolder.exists() && muleFolder.isDirectory()) {
       archiver.addMule(muleFolder, null, null);
+    }
+
+    if (null != policyFolder && policyFolder.exists() && policyFolder.isDirectory()) {
+      archiver.addPolicy(policyFolder, null, null);
     }
 
     if (null != classesFolder && classesFolder.exists() && classesFolder.isDirectory()) {

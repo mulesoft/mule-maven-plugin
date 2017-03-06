@@ -57,8 +57,8 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   @Parameter(defaultValue = "${project.basedir}")
   protected File projectBaseFolder;
 
-  @Parameter(defaultValue = "${project.basedir}/src/main/mule/")
-  protected File muleSourceFolder;
+  @Parameter(defaultValue = "${project.basedir}/src/main/")
+  protected File mainSourceFolder;
 
   @Parameter(defaultValue = "${project.basedir}/src/test/munit/")
   protected File munitSourceFolder;
@@ -74,8 +74,16 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
     return new File(this.outputDirectory, this.finalName + ".zip");
   }
 
+  protected File getSourceFolder() {
+    if (project.getPackaging().equals("mule-policy")) {
+      return new File(mainSourceFolder, "policy");
+    } else {
+      return new File(mainSourceFolder, "mule");
+    }
+  }
 
   protected void createFileIfNecessary(String... filePath) throws IOException {
+
     String path = StringUtils.join(filePath, File.separator);
     File file = new File(path);
     if (!file.exists()) {

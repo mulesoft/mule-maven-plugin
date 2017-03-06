@@ -20,5 +20,6 @@ public class PackagerFiles {
   public static final String MULE_APP_PROPERTIES = "mule-app.properties";
   public static final String MULE_DEPLOY_PROPERTIES = "mule-deploy.properties";
   public static final String MULE_APPLICATION_JSON = "mule-application.json";
+  public static final String MULE_POLICY_JSON = "mule-policy.json";
   public static final String POM_PROPERTIES = "pom.properties";
 }

@@ -6,7 +6,7 @@
     <groupId>org.apache.maven.plugin.my.unit</groupId>
     <artifactId>empty-generate-sources-project</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging> <!--should be changed to mule-->
+    <packaging>mule-application</packaging>
     <name>Test MyMojo</name>
     <build>
         <plugins>
@@ -14,29 +14,7 @@
                 <groupId>org.mule.tools.maven</groupId>
                 <artifactId>mule-maven-plugin</artifactId>
                 <version>3.0.0-SNAPSHOT</version>
-                <executions>
-                    <execution>
-                        <id>execution1</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>validate</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>execution2</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>initialize</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>execution3</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate-sources</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <extensions>true</extensions>
             </plugin>
         </plugins>
     </build>

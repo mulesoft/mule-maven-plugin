@@ -11,7 +11,6 @@
 package org.mule.tools.maven.mojo;
 
 import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,7 +35,7 @@ public class ProcessSourcesMojoTest extends MojoTest {
 
   @Test
   public void testProcessSources() throws IOException, VerificationException {
-    installThirdPartyArtifact();
+    installThirdPartyArtifact(DEPENDENCY_ORG_ID, DEPENDENCY_NAME, DEPENDENCY_VERSION, DEPENDENCY_TYPE, DEPENDENCY_PROJECT_NAME);
 
     verifier.executeGoal(PROCESS_SOURCES);
 

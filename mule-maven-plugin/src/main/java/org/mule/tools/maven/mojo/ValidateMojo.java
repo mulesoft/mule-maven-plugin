@@ -14,8 +14,7 @@ import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_APPLICATIO
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -43,8 +42,24 @@ public class ValidateMojo extends AbstractMuleMojo {
     validateMandatoryFolders();
     validateMandatoryDescriptors();
     validateMulePluginDependencies();
+    validateSharedLibraries();
 
     getLog().debug("Validating Mule application done");
+  }
+
+  protected void validateSharedLibraries() throws MojoExecutionException {
+    if (sharedLibraries != null && sharedLibraries.size() != 0) {
+      Set<String> projectDependenciesCoordinates = project.getDependencies().stream()
+          .map(dependency -> dependency.getArtifactId() + "#" + dependency.getGroupId()).collect(Collectors.toSet());
+      Set<String> sharedLibrariesCoordinates = sharedLibraries.stream()
+          .map(dependency -> dependency.getArtifactId() + "#" + dependency.getGroupId()).collect(Collectors.toSet());
+
+      if (!projectDependenciesCoordinates.containsAll(sharedLibrariesCoordinates)) {
+        sharedLibrariesCoordinates.removeAll(projectDependenciesCoordinates);
+        throw new MojoExecutionException("The mule application does not contain the following shared libraries: "
+            + sharedLibrariesCoordinates.toString());
+      }
+    }
   }
 
   private void validateMandatoryFolders() throws MojoExecutionException {

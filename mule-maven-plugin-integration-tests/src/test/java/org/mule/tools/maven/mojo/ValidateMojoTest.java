@@ -17,6 +17,18 @@ import org.junit.Test;
 public class ValidateMojoTest extends MojoTest {
 
   protected static final String VALIDATE = "validate";
+  private static final String MISSING_DECLARED_SHARED_LIBRARIES_PROJECT = "missing-declared-shared-libraries-project";
+  private static final String VALIDATE_SHARED_LIBRARIES_PROJECT = "validate-shared-libraries-project";
+  private static final String DEPENDENCY_A_GROUP_ID = "group.id.a";
+  private static final String DEPENDENCY_A_ARTIFACT_ID = "artifact-id-a";
+  private static final String DEPENDENCY_A_VERSION = "1.0.0-SNAPSHOT";
+  private static final String DEPENDENCY_A_TYPE = "jar";
+  private static final String DEPENDENCY_B_GROUP_ID = "group.id.b";
+  private static final String DEPENDENCY_B_ARTIFACT_ID = "artifact-id-b";
+  private static final String DEPENDENCY_B_VERSION = "1.0.0";
+  private static final String DEPENDENCY_B_TYPE = "jar";
+  private static final String DEPENDENCY_A_PROJECT_NAME = "dependency-a";
+  private static final String DEPENDENCY_B_PROJECT_NAME = "dependency-b";
 
   public ValidateMojoTest() {
     this.goal = VALIDATE;
@@ -31,5 +43,32 @@ public class ValidateMojoTest extends MojoTest {
     } catch (VerificationException e) {
     }
     verifier.verifyTextInLog("Invalid Mule project. Missing src/main/mule folder. This folder is mandatory");
+  }
+
+  @Test
+  public void testFailOnMissingSharedLibrariesProject() throws Exception {
+    projectBaseDirectory = builder.createProjectBaseDir(MISSING_DECLARED_SHARED_LIBRARIES_PROJECT, this.getClass());
+    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    try {
+      verifier.executeGoal(VALIDATE);
+    } catch (VerificationException e) {
+    }
+    verifier.verifyTextInLog("The mule application does not contain the following shared libraries: ");
+  }
+
+  @Test
+  public void testValidateSharedLibrariesProject() throws Exception {
+    installThirdPartyArtifact(DEPENDENCY_A_GROUP_ID, DEPENDENCY_A_ARTIFACT_ID, DEPENDENCY_A_VERSION, DEPENDENCY_A_TYPE,
+                              DEPENDENCY_A_PROJECT_NAME);
+    installThirdPartyArtifact(DEPENDENCY_B_GROUP_ID, DEPENDENCY_B_ARTIFACT_ID, DEPENDENCY_B_VERSION, DEPENDENCY_B_TYPE,
+                              DEPENDENCY_B_PROJECT_NAME);
+
+    projectBaseDirectory = builder.createProjectBaseDir(VALIDATE_SHARED_LIBRARIES_PROJECT, this.getClass());
+    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    try {
+      verifier.executeGoal(VALIDATE);
+    } catch (VerificationException e) {
+    }
+    verifier.verifyErrorFreeLog();
   }
 }

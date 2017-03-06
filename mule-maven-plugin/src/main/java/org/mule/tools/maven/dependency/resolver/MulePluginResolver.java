@@ -92,6 +92,7 @@ public class MulePluginResolver {
         projectBuildingRequest = new DefaultProjectBuildingRequest(session.getProjectBuildingRequest());
         projectBuildingRequest.setLocalRepository(localRepository);
         projectBuildingRequest.setRemoteRepositories(remoteArtifactRepositories);
+        projectBuildingRequest.setResolveDependencies(true);
 
         log.debug(format("Local repository [%s]", projectBuildingRequest.getLocalRepository().getBasedir()));
         for (ArtifactRepository artifactRepository : projectBuildingRequest.getRemoteRepositories()) {

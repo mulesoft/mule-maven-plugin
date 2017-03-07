@@ -10,19 +10,6 @@
 
 package org.mule.tools.maven.mojo;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mule.tools.artifact.archiver.api.PackagerFiles.*;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -30,6 +17,21 @@ import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.tools.maven.util.ProjectBaseFolderFileCloner;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mule.tools.artifact.archiver.api.PackagerFiles.*;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
 
 public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
 
@@ -53,12 +55,12 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
     fileToBeCopied1.createNewFile();
     fileToBeCopied2.createNewFile();
 
-    mojo.mainSourceFolder =
+    mojo.mainFolder =
         new File(projectRootFolder.getRoot().getAbsolutePath(), "src" + File.separator + "main" + File.separator);
 
     File muleFolder = buildTemporaryFolder.newFolder(MULE);
     muleFolder.mkdir();
-    mojo.createMuleFolderContent();
+    mojo.createSrcFolderContent();
 
     assertThat("The mule folder does not contain the expected number of files", muleFolder.listFiles().length, equalTo(2));
     Set<String> copiedFiles =
@@ -82,7 +84,7 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
     fileToBeCopied2.createNewFile();
 
     when(projectMock.getArtifactId()).thenReturn(PROJECT_ARTIFACT_ID);
-    mojo.createMuleSourceFolderContent();
+    mojo.createMetaInfMuleSourceFolderContent();
 
     assertThat("There should be 2 files in the target folder", projectArtifactIdFolder.listFiles().length, equalTo(2));
 

@@ -10,8 +10,13 @@
 
 package org.mule.tools.maven.mojo;
 
-import static org.mule.tools.artifact.archiver.api.PackagerFiles.*;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.mule.tools.maven.util.CopyFileVisitor;
+import org.mule.tools.maven.util.ProjectBaseFolderFileCloner;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,13 +27,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.mule.tools.maven.util.CopyFileVisitor;
-import org.mule.tools.maven.util.ProjectBaseFolderFileCloner;
+import static org.mule.tools.artifact.archiver.api.PackagerFiles.*;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
 
 /**
  * Copy resource to the proper places
@@ -44,23 +44,21 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
     getLog().debug("Creating target content with Mule source code...");
     projectBaseFolderFileCloner = new ProjectBaseFolderFileCloner(project);
     try {
-      createMuleFolderContent();
-      createMuleSourceFolderContent();
+      createSrcFolderContent();
+      createMetaInfMuleSourceFolderContent();
       createDescriptors();
     } catch (IOException e) {
       throw new MojoFailureException("Fail to generate sources", e);
     }
   }
 
-  protected void createMuleFolderContent() throws IOException {
-    File targetFolder =
-        Paths.get(project.getBuild().getDirectory(), project.getPackaging().equals("mule-policy") ? POLICY : MULE).toFile();
+  protected void createSrcFolderContent() throws IOException, MojoExecutionException {
+    String srcFolderName = MULE_POLICY_PACKAGING.equals(project.getPackaging()) ? POLICY : MULE;
+    File targetFolder = Paths.get(project.getBuild().getDirectory(), srcFolderName).toFile();
     Files.walkFileTree(getSourceFolder().toPath(), new CopyFileVisitor(getSourceFolder(), targetFolder));
   }
 
-  protected void createMuleSourceFolderContent() throws IOException {
-    // TODO create ignore concept for things like .settings
-
+  protected void createMetaInfMuleSourceFolderContent() throws IOException {
     File targetFolder = Paths.get(project.getBuild().getDirectory(), META_INF, MULE_SRC, project.getArtifactId()).toFile();
     CopyFileVisitor visitor = new CopyFileVisitor(projectBaseFolder, targetFolder);
     List<Path> exclusions = new ArrayList<>();
@@ -75,11 +73,13 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
   }
 
   protected void createDescriptorFilesContent() throws IOException {
-    projectBaseFolderFileCloner.clone(POM_XML)
-        .toPath(META_INF, MAVEN, project.getGroupId(), project.getArtifactId());
     projectBaseFolderFileCloner
-        .clone((project.getPackaging().equals("mule-policy") ? MULE_POLICY_JSON : MULE_APPLICATION_JSON))
-        .toPath(META_INF, MULE_ARTIFACT);
+        .clone(POM_XML).toPath(META_INF, MAVEN, project.getGroupId(), project.getArtifactId());
+
+    String jsonDescriptorFileName =
+        MULE_POLICY_PACKAGING.equals(project.getPackaging()) ? MULE_POLICY_JSON : MULE_APPLICATION_JSON;
+    projectBaseFolderFileCloner
+        .clone(jsonDescriptorFileName).toPath(META_INF, MULE_ARTIFACT);
   }
 
   protected void createPomProperties() throws IOException, MojoExecutionException {

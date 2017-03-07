@@ -10,13 +10,10 @@
 
 package org.mule.tools.maven.mojo;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
@@ -25,10 +22,20 @@ import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.utils.StringUtils;
 import org.mule.tools.maven.mojo.model.SharedLibraryDependency;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
+
 /**
  * Base Mojo
  */
 public abstract class AbstractMuleMojo extends AbstractMojo {
+
+  public static final String MULE_POLICY_PACKAGING = "mule-policy";
+  public static final String MULE_APPLICATION_PACKAGING = "mule-application";
 
   @Component
   protected ProjectBuilder projectBuilder;
@@ -58,7 +65,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   protected File projectBaseFolder;
 
   @Parameter(defaultValue = "${project.basedir}/src/main/")
-  protected File mainSourceFolder;
+  protected File mainFolder;
 
   @Parameter(defaultValue = "${project.basedir}/src/test/munit/")
   protected File munitSourceFolder;
@@ -70,16 +77,20 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   protected List<SharedLibraryDependency> sharedLibraries;
 
 
-  protected File getMuleAppZipFile() {
-    return new File(this.outputDirectory, this.finalName + ".zip");
+
+  protected File getSourceFolder() throws MojoExecutionException {
+    if (MULE_APPLICATION_PACKAGING.equals(project.getPackaging())) {
+      return new File(mainFolder, MULE);
+    }
+
+    if (MULE_POLICY_PACKAGING.equals(project.getPackaging())) {
+      return new File(mainFolder, POLICY);
+    }
+    throw new MojoExecutionException("Unknown packaging type: " + project.getPackaging());
   }
 
-  protected File getSourceFolder() {
-    if (project.getPackaging().equals("mule-policy")) {
-      return new File(mainSourceFolder, "policy");
-    } else {
-      return new File(mainSourceFolder, "mule");
-    }
+  protected File getMuleAppZipFile() {
+    return new File(this.outputDirectory, this.finalName + ".zip");
   }
 
   protected void createFileIfNecessary(String... filePath) throws IOException {

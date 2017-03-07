@@ -10,10 +10,12 @@
 
 package org.mule.tools.maven.mojo;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.junit.Before;
+import org.junit.Test;
+import org.mule.tools.maven.mojo.model.SharedLibraryDependency;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,12 +23,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.maven.model.Dependency;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.junit.Before;
-import org.junit.Test;
-import org.mule.tools.maven.mojo.model.SharedLibraryDependency;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 public class ValidateMojoTest extends AbstractMuleMojoTest {
 
@@ -41,7 +41,7 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
 
   @Before
   public void before() throws IOException, MojoExecutionException {
-    mojo.mainSourceFolder = muleSourceFolderMock;
+    mojo.mainFolder = muleSourceFolderMock;
     mojo.projectBaseFolder = projectRootFolder.getRoot();
     when(resolverMock.resolveMulePlugins(any())).thenReturn(Collections.emptyList());
   }
@@ -55,7 +55,7 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     sourceFolder.mkdir();
     File mainFolder = new File(sourceFolder, "main");
     mainFolder.mkdir();
-    mojo.mainSourceFolder = mainFolder;
+    mojo.mainFolder = mainFolder;
     mojo.project = projectMock;
     when(projectMock.getPackaging()).thenReturn("mule-application");
     when(muleSourceFolderMock.exists()).thenReturn(false);
@@ -75,8 +75,8 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     mainFolder.mkdir();
     File muleFolder = new File(mainFolder, "mule");
     muleFolder.mkdir();
-    mojo.mainSourceFolder = projectRootFolder.newFolder("src/main");
-    mojo.mainSourceFolder.mkdirs();
+    mojo.mainFolder = projectRootFolder.newFolder("src/main");
+    mojo.mainFolder.mkdirs();
     mojo.projectBaseFolder = projectRootFolder.getRoot();
 
     when(projectMock.getDependencies()).thenReturn(new ArrayList<>());

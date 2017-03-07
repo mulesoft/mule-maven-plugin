@@ -17,10 +17,14 @@ import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;
 import org.junit.Before;
+import org.mule.tools.maven.mojo.model.Classifier;
+import org.mule.tools.maven.mojo.model.PackagingType;
 
 import java.io.File;
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -93,7 +97,7 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     ArtifactHandlerManager artifactHandlerManager = mock(ArtifactHandlerManager.class);
     when(artifactHandlerManager.getArtifactHandler(ZIP_TYPE)).thenReturn(new DefaultArtifactHandler(ZIP_TYPE));
     mojo.handlerManager = artifactHandlerManager;
-
+    mojo.packagingType = PackagingType.MULE_APPLICATION;
     Artifact jarArtifact =
         new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, null, JAR_TYPE, null, new DefaultArtifactHandler(JAR_TYPE));
     when(projectMock.getArtifact()).thenReturn(jarArtifact);
@@ -101,8 +105,30 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     mojo.setProjectArtifactTypeToZip(destinationFile);
 
     Artifact zipArtifact =
-        new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, null, ZIP_TYPE, null, new DefaultArtifactHandler(ZIP_TYPE));
+        new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, null, ZIP_TYPE, MULE_APPLICATION,
+                            new DefaultArtifactHandler(ZIP_TYPE));
     verify(projectMock, times(1)).setArtifact(zipArtifact);
+  }
+
+  @Test
+  public void getFinalNameTest() {
+    when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
+    when(projectMock.getVersion()).thenReturn(VERSION);
+    mojo.project = projectMock;
+    mojo.packagingType = PackagingType.MULE_DOMAIN;
+
+    mojo.finalName = null;
+    assertThat("Final name is not the expected", mojo.getFinalName(), equalTo(ARTIFACT_ID + "-" + VERSION + "-" + MULE_DOMAIN));
+
+    mojo.packagingType = PackagingType.MULE_APPLICATION;
+    mojo.finalName = null;
+    assertThat("Final name is not the expected", mojo.getFinalName(),
+               equalTo(ARTIFACT_ID + "-" + VERSION + "-" + MULE_APPLICATION));
+
+    mojo.classifier = Classifier.MULE_APPLICATION_EXAMPLE.toString();
+    mojo.finalName = null;
+    assertThat("Final name is not the expected", mojo.getFinalName(),
+               equalTo(ARTIFACT_ID + "-" + VERSION + "-" + MULE_APPLICATION_EXAMPLE));
   }
 
   private class PackageMojoImpl extends PackageMojo {
@@ -110,6 +136,7 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     @Override
     public void initializePackageBuilder() {
       this.packageBuilder = packageBuilderMock;
+
     }
   }
 }

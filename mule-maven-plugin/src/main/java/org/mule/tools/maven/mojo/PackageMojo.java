@@ -27,6 +27,8 @@ import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.artifact.AttachedArtifact;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
+import org.mule.tools.maven.mojo.model.Classifier;
+import org.mule.tools.maven.mojo.model.PackagingType;
 
 /**
  * Build a Mule application archive.
@@ -52,7 +54,10 @@ public class PackageMojo extends AbstractMuleMojo {
 
   protected PackageBuilder packageBuilder;
 
+  protected PackagingType packagingType;
+
   public void execute() throws MojoExecutionException, MojoFailureException {
+    packagingType = PackagingType.fromString(project.getPackaging());
     String targetFolder = project.getBuild().getDirectory();
     File destinationFile = getDestinationFile(targetFolder);
     try {
@@ -81,9 +86,9 @@ public class PackageMojo extends AbstractMuleMojo {
     return destinationPath.toFile();
   }
 
-  private String getFinalName() {
+  protected String getFinalName() {
     if (finalName == null) {
-      finalName = project.getArtifactId() + "-" + project.getVersion() + "-" + project.getPackaging();
+      finalName = project.getArtifactId() + "-" + project.getVersion() + "-" + packagingType.resolveClassifier(classifier);
     }
     getLog().debug("Using final name: " + finalName);
     return finalName;
@@ -91,7 +96,8 @@ public class PackageMojo extends AbstractMuleMojo {
 
   protected void setProjectArtifactTypeToZip(File destinationFile) {
     ArtifactHandler handler = handlerManager.getArtifactHandler(TYPE);
-    Artifact artifact = new AttachedArtifact(this.project.getArtifact(), TYPE, handler);
+    Artifact artifact =
+        new AttachedArtifact(this.project.getArtifact(), TYPE, packagingType.resolveClassifier(classifier).toString(), handler);
     artifact.setFile(destinationFile);
     artifact.setResolved(true);
     this.project.setArtifact(artifact);
@@ -106,7 +112,7 @@ public class PackageMojo extends AbstractMuleMojo {
             .withClasses(new File(targetFolder + File.separator + CLASSES))
             .withMaven(new File(targetFolder + File.separator + META_INF + File.separator + MAVEN))
             .withMuleArtifact(new File(targetFolder + File.separator + META_INF + File.separator + MULE_ARTIFACT));
-        if (project.getPackaging().equals("mule-policy")) {
+        if (PackagingType.MULE_POLICY.equals(project.getPackaging())) {
           builder.withPolicy(new File(targetFolder + File.separator + POLICY));
 
         } else {

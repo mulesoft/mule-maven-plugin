@@ -15,16 +15,21 @@ import org.apache.maven.it.Verifier;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 
 public class InstallMojoTest extends MojoTest {
 
   private static final String INSTALL = "install";
-  private static final String ORG_ID = "org.apache.maven.plugin.my.unit";
-  private static final String NAME = "empty-install-project";
+  private static final String GROUP_ID = "org.apache.maven.plugin.my.unit";
+  private static final String ARTIFACT_ID = "empty-install-project";
   private static final String VERSION = "1.0-SNAPSHOT";
   private static final String EXT = "zip";
+  private static final String MULE_POLICY_CLASSIFIER = "mule-policy";
+  private static final String MULE_APPLICATION_CLASSIFIER = "mule-application";
 
   public InstallMojoTest() {
     this.goal = INSTALL;
@@ -37,29 +42,32 @@ public class InstallMojoTest extends MojoTest {
 
   @Test
   public void testInstall() throws IOException, VerificationException {
-    //verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=y");
     verifier.addCliOption("-DattachMuleSources=true");
-    verifier.deleteArtifact(ORG_ID, NAME, VERSION, EXT);
-    verifier.assertArtifactNotPresent(ORG_ID, NAME, VERSION, EXT);
+    verifier.deleteArtifacts(GROUP_ID, ARTIFACT_ID, VERSION);
+    String artifactPath = verifier.getArtifactPath(GROUP_ID, ARTIFACT_ID, VERSION, EXT, MULE_APPLICATION_CLASSIFIER);
+    File artifactFile = new File(artifactPath);
+    assertThat("Artifact already exists", !artifactFile.exists());
 
     verifier.executeGoal(INSTALL);
 
     verifier.verifyErrorFreeLog();
-    verifier.assertArtifactPresent(ORG_ID, NAME, VERSION, EXT);
+    assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
   }
 
   @Test
   public void testInstallPolicy() throws IOException, VerificationException {
-    //verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=y");
-    projectBaseDirectory = builder.createProjectBaseDir("empty-install-policy-project", this.getClass());
+    String artifactId = "empty-install-policy-project";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-DattachMuleSources=true");
-    verifier.deleteArtifact(ORG_ID, "empty-install-policy-project", VERSION, EXT);
-    verifier.assertArtifactNotPresent(ORG_ID, "empty-install-policy-project", VERSION, EXT);
-
+    verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
+    String artifactPath = verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_POLICY_CLASSIFIER);
+    File artifactFile = new File(artifactPath);
+    assertThat("Artifact already exists", !artifactFile.exists());
     verifier.executeGoal(INSTALL);
 
     verifier.verifyErrorFreeLog();
-    verifier.assertArtifactPresent(ORG_ID, "empty-install-policy-project", VERSION, EXT);
+
+    assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
   }
 }

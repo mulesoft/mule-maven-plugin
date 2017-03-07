@@ -107,10 +107,6 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
 
     File pom = projectRootFolder.newFile(POM_XML);
     pom.createNewFile();
-    File muleAppPropertiesFile = projectRootFolder.newFile(MULE_APP_PROPERTIES);
-    muleAppPropertiesFile.createNewFile();
-    File muleDeployPropertiesFile = projectRootFolder.newFile(MULE_DEPLOY_PROPERTIES);
-    muleDeployPropertiesFile.createNewFile();
     File muleApplicationJsonFile = projectRootFolder.newFile(MULE_APPLICATION_JSON);
     muleApplicationJsonFile.createNewFile();
 
@@ -121,7 +117,7 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
     when(projectMock.getGroupId()).thenReturn(GROUP_ID);
     when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
     when(projectMock.getBasedir()).thenReturn(projectRootFolder.getRoot());
-    when(projectMock.getPackaging()).thenReturn("mule-application");
+    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
 
     mojo.project = projectMock;
     mojo.projectBaseFolderFileCloner = new ProjectBaseFolderFileCloner(projectMock);

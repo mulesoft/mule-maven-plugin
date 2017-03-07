@@ -19,7 +19,7 @@ import java.util.Map;
 import org.mule.tools.artifact.archiver.api.PackagerFolders;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 
-public enum PackagingType {
+public enum PackagingMode {
 
   SOURCES {
 
@@ -48,7 +48,7 @@ public enum PackagingType {
     }
   };
 
-  public static PackagingType fromString(String name) {
+  public static PackagingMode fromString(String name) {
     String packagingName = LOWER_HYPHEN.to(LOWER_CAMEL, name);
     return valueOf(packagingName);
   }

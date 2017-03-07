@@ -13,15 +13,15 @@ package org.mule.tools.artifact.archiver.internal.packaging;
 /**
  * Creates packaging types.
  */
-public class PackagingTypeFactory {
+public class PackagingModeFactory {
 
-  public static PackagingType getDefaultPackaging() {
-    return PackagingType.BINARIES;
+  public static PackagingMode getDefaultPackaging() {
+    return PackagingMode.BINARIES;
   }
 
-  public static PackagingType getPackaging(String packagingTypeName) {
+  public static PackagingMode getPackaging(String packagingTypeName) {
     try {
-      return PackagingType.fromString(packagingTypeName);
+      return PackagingMode.fromString(packagingTypeName);
     } catch (IllegalArgumentException e) {
       return getDefaultPackaging();
     }

@@ -15,6 +15,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.mule.tools.maven.mojo.model.PackagingType;
 import org.mule.tools.maven.util.CopyFileVisitor;
 import org.mule.tools.maven.util.ProjectBaseFolderFileCloner;
 
@@ -53,7 +54,7 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
   }
 
   protected void createSrcFolderContent() throws IOException, MojoExecutionException {
-    String srcFolderName = MULE_POLICY_PACKAGING.equals(project.getPackaging()) ? POLICY : MULE;
+    String srcFolderName = PackagingType.MULE_POLICY.equals(project.getPackaging()) ? POLICY : MULE;
     File targetFolder = Paths.get(project.getBuild().getDirectory(), srcFolderName).toFile();
     Files.walkFileTree(getSourceFolder().toPath(), new CopyFileVisitor(getSourceFolder(), targetFolder));
   }
@@ -77,7 +78,7 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
         .clone(POM_XML).toPath(META_INF, MAVEN, project.getGroupId(), project.getArtifactId());
 
     String jsonDescriptorFileName =
-        MULE_POLICY_PACKAGING.equals(project.getPackaging()) ? MULE_POLICY_JSON : MULE_APPLICATION_JSON;
+        PackagingType.MULE_POLICY.equals(project.getPackaging()) ? MULE_POLICY_JSON : MULE_APPLICATION_JSON;
     projectBaseFolderFileCloner
         .clone(jsonDescriptorFileName).toPath(META_INF, MULE_ARTIFACT);
   }

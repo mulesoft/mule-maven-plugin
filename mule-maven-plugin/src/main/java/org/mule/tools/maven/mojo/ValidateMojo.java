@@ -17,6 +17,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.tools.maven.dependency.MulePluginsCompatibilityValidator;
 import org.mule.tools.maven.dependency.resolver.MulePluginResolver;
+import org.mule.tools.maven.mojo.model.PackagingType;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -70,14 +71,14 @@ public class ValidateMojo extends AbstractMuleMojo {
   private void validateMandatoryFolders() throws MojoExecutionException {
     if (!getSourceFolder().exists()) {
       String message = String.format("Invalid Mule project. Missing src/main/"
-          + (MULE_POLICY_PACKAGING.equals(project.getPackaging()) ? POLICY : MULE) + " folder. This folder is mandatory");
+          + (PackagingType.MULE_POLICY.equals(project.getPackaging()) ? POLICY : MULE) + " folder. This folder is mandatory");
       throw new MojoExecutionException(message);
     }
   }
 
   private void validateMandatoryDescriptors() throws MojoExecutionException {
     isFilePresent("Invalid Mule project. Missing %s file, it must be present in the root of application",
-                  (MULE_POLICY_PACKAGING.equals(project.getPackaging()) ? MULE_POLICY_JSON : MULE_APPLICATION_JSON));
+                  (PackagingType.MULE_POLICY.equals(project.getPackaging()) ? MULE_POLICY_JSON : MULE_APPLICATION_JSON));
   }
 
   private void isFilePresent(String message, String... fileName) throws MojoExecutionException {

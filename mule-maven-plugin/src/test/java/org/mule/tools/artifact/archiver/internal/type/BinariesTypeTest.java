@@ -19,13 +19,13 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mule.tools.artifact.archiver.api.PackagerFolders;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
-import org.mule.tools.artifact.archiver.internal.packaging.PackagingType;
+import org.mule.tools.artifact.archiver.internal.packaging.PackagingMode;
 
 import com.google.common.collect.ImmutableMap;
 
 public class BinariesTypeTest extends PackageTypeTest {
 
-  private PackagingType packagingType = PackagingType.BINARIES;
+  private PackagingMode packagingMode = PackagingMode.BINARIES;
 
   @Test
   public void binariesTypeApplyPackagingTest() {
@@ -41,7 +41,7 @@ public class BinariesTypeTest extends PackageTypeTest {
     Map<String, File> fileMapMock =
         ImmutableMap.of(classes.getName(), classes, mule.getName(), mule, repository.getName(), repository);
 
-    packagingType.applyPackaging(packageBuilderMock, fileMapMock);
+    packagingMode.applyPackaging(packageBuilderMock, fileMapMock);
 
     verify(packageBuilderMock).withClasses(classes);
     verify(packageBuilderMock).withMule(mule);

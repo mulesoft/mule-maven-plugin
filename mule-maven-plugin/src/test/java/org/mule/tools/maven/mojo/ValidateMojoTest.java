@@ -95,7 +95,7 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     expectedException.expect(MojoExecutionException.class);
 
     when(projectMock.getDependencies()).thenReturn(new ArrayList<>());
-    when(projectMock.getPackaging()).thenReturn("mule-application");
+    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
     mojo.project = projectMock;
 
     mojo.sharedLibraries = new ArrayList<>();

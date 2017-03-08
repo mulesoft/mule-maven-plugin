@@ -33,12 +33,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class PackageBuilderTest {
 
-  private static final String POM_FILE_WRONG_NAME = "PoM.XmL";
-  private static final String POM_FILE_CORRECT_NAME = "pom.xml";
-  private static final String MULE_DEPLOY_PROPERTIES_FILE_WRONG_NAME = "MuLe-DePlOy.pRoPeRtIeS";
-  private static final String MULE_DEPLOY_PROPERTIES_FILE_CORRECT_NAME = "mule-deploy.properties";
-  private static final String MULE_APP_PROPERTIES_FILE_WRONG_NAME = "MuLe-aPp.pRoPeRtIeS";
-  private static final String MULE_APP_PROPERTIES_FILE_CORRECT_NAME = "mule-app.properties";
   private static final String EXPECTED_EMPTY_DIRECTORY_MESSAGE = "The provided target folder is empty, no file will be generated";
   private static final String EXPECTED_WRONG_DIRECTORY_STRUCTURE_MESSAGE =
       "The provided target folder does not have the expected structure";
@@ -191,63 +185,6 @@ public class PackageBuilderTest {
     File pluginsFolderMock = mock(File.class);
     when(pluginsFolderMock.exists()).thenReturn(true);
     when(pluginsFolderMock.isDirectory()).thenReturn(true);
-
-    MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
-    this.packageBuilder.withArchiver(muleArchiverMock);
-
-    this.packageBuilder.withDestinationFile(destinationFileMock);
-
-    this.packageBuilder.createDeployableFile();
-
-    verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
-    verify(muleArchiverMock, times(1)).createArchive();
-  }
-
-  @Test
-  @Ignore
-  public void createDeployableFileSettingMuleAppPropertiesFileTest() throws IOException {
-    File muleAppPropertiesFileMock = mock(File.class);
-    when(muleAppPropertiesFileMock.exists()).thenReturn(true);
-    when(muleAppPropertiesFileMock.isFile()).thenReturn(true);
-    when(muleAppPropertiesFileMock.getName()).thenReturn(MULE_APP_PROPERTIES_FILE_CORRECT_NAME);
-
-    MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
-    this.packageBuilder.withArchiver(muleArchiverMock);
-
-    this.packageBuilder.withDestinationFile(destinationFileMock);
-
-    this.packageBuilder.createDeployableFile();
-
-    verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
-    verify(muleArchiverMock, times(1)).createArchive();
-  }
-
-  @Test
-  @Ignore
-  public void createDeployableFileSettingMuleDeployPropertiesFileTest() throws IOException {
-    File muleDeployPropertiesFileMock = mock(File.class);
-    when(muleDeployPropertiesFileMock.exists()).thenReturn(true);
-    when(muleDeployPropertiesFileMock.isFile()).thenReturn(true);
-    when(muleDeployPropertiesFileMock.getName()).thenReturn(MULE_DEPLOY_PROPERTIES_FILE_CORRECT_NAME);
-
-    MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
-    this.packageBuilder.withArchiver(muleArchiverMock);
-
-    this.packageBuilder.withDestinationFile(destinationFileMock);
-
-    this.packageBuilder.createDeployableFile();
-
-    verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
-    verify(muleArchiverMock, times(1)).createArchive();
-  }
-
-  @Test
-  @Ignore
-  public void createDeployableFileSettingMulePomFileTest() throws IOException {
-    File pomFileMock = mock(File.class);
-    when(pomFileMock.exists()).thenReturn(true);
-    when(pomFileMock.isFile()).thenReturn(true);
-    when(pomFileMock.getName()).thenReturn(POM_FILE_CORRECT_NAME);
 
     MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
     this.packageBuilder.withArchiver(muleArchiverMock);

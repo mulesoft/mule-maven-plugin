@@ -24,15 +24,15 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.tools.artifact.archiver.internal.packaging.PackagingType;
-import org.mule.tools.artifact.archiver.internal.packaging.PackagingTypeFactory;
+import org.mule.tools.artifact.archiver.internal.packaging.PackagingMode;
+import org.mule.tools.artifact.archiver.internal.packaging.PackagingModeFactory;
 
 /**
  * Builder for Mule Application archives.
  */
 public class PackageBuilder {
 
-  private PackagingType packagingType;
+  private PackagingMode packagingMode;
 
   private transient Log log = LogFactory.getLog(this.getClass());
 
@@ -50,12 +50,12 @@ public class PackageBuilder {
   private File destinationFile;
   private MuleArchiver archiver = null;
 
-  public PackageBuilder(PackagingType packagingType) {
-    this.packagingType = packagingType;
+  public PackageBuilder(PackagingMode packagingMode) {
+    this.packagingMode = packagingMode;
   }
 
   public PackageBuilder() {
-    this(PackagingTypeFactory.getDefaultPackaging());
+    this(PackagingModeFactory.getDefaultPackaging());
   }
 
   public MuleArchiver getMuleArchiver() {
@@ -220,7 +220,7 @@ public class PackageBuilder {
     }
     Map<String, File> fileMap = Arrays.stream(files).collect(Collectors.toMap(File::getName, Function.identity()));
     try {
-      this.packagingType.applyPackaging(this, fileMap).withDestinationFile(destinationFile);
+      this.packagingMode.applyPackaging(this, fileMap).withDestinationFile(destinationFile);
     } catch (IllegalArgumentException e) {
       log.warn("The provided target folder does not have the expected structure");
       return;

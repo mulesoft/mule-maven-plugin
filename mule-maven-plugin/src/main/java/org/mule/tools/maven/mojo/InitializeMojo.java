@@ -16,6 +16,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.mule.tools.maven.mojo.model.PackagingType;
 
 import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
 
@@ -35,7 +36,7 @@ public class InitializeMojo extends AbstractMuleMojo {
     String targetFolder = project.getBuild().getDirectory();
 
     createFolderIfNecessary(targetFolder);
-    createFolderIfNecessary(targetFolder, MULE_POLICY_PACKAGING.equals(project.getPackaging()) ? POLICY : MULE);
+    createFolderIfNecessary(targetFolder, PackagingType.MULE_POLICY.equals(project.getPackaging()) ? POLICY : MULE);
 
     createFolderIfNecessary(targetFolder, TEST_MULE);
     createFolderIfNecessary(targetFolder, TEST_MULE, MUNIT);

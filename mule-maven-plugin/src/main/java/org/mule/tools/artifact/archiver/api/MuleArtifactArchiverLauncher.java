@@ -13,8 +13,8 @@ package org.mule.tools.artifact.archiver.api;
 
 import org.apache.commons.cli.*;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
-import org.mule.tools.artifact.archiver.internal.packaging.PackagingType;
-import org.mule.tools.artifact.archiver.internal.packaging.PackagingTypeFactory;
+import org.mule.tools.artifact.archiver.internal.packaging.PackagingMode;
+import org.mule.tools.artifact.archiver.internal.packaging.PackagingModeFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,8 +51,8 @@ public class MuleArtifactArchiverLauncher {
     createOptions();
     CommandLine cmd = parse(args);
     if (cmd != null) {
-      String packagingType = cmd.getOptionValue(ARTIFACT_CONTENT_TYPE, PackagingType.BINARIES.name());
-      PackageBuilder packageBuilder = getPackageBuilder(PackagingTypeFactory.getPackaging(packagingType));
+      String packagingType = cmd.getOptionValue(ARTIFACT_CONTENT_TYPE, PackagingMode.BINARIES.name());
+      PackageBuilder packageBuilder = getPackageBuilder(PackagingModeFactory.getPackaging(packagingType));
       String targetFolder = cmd.getOptionValue(TARGET_FOLDER, System.getProperty(USER_DIR));
       String destinationFile = targetFolder + File.separator + cmd.getOptionValue(PACKAGE_NAME) + ".zip";
       packageBuilder.generateArtifact(new File(targetFolder), new File(destinationFile));
@@ -84,9 +84,9 @@ public class MuleArtifactArchiverLauncher {
     this.packageBuilder = packageBuilder;
   }
 
-  public static PackageBuilder getPackageBuilder(PackagingType packagingType) {
+  public static PackageBuilder getPackageBuilder(PackagingMode packagingMode) {
     if (packageBuilder == null) {
-      packageBuilder = new PackageBuilder(packagingType);
+      packageBuilder = new PackageBuilder(packagingMode);
     }
     return packageBuilder;
   }

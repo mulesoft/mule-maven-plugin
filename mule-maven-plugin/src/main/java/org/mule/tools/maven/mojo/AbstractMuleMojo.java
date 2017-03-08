@@ -20,6 +20,8 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.utils.StringUtils;
+import org.eclipse.sisu.Parameters;
+import org.mule.tools.maven.mojo.model.PackagingType;
 import org.mule.tools.maven.mojo.model.SharedLibraryDependency;
 
 import java.io.File;
@@ -33,9 +35,6 @@ import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
  * Base Mojo
  */
 public abstract class AbstractMuleMojo extends AbstractMojo {
-
-  public static final String MULE_POLICY_PACKAGING = "mule-policy";
-  public static final String MULE_APPLICATION_PACKAGING = "mule-application";
 
   @Component
   protected ProjectBuilder projectBuilder;
@@ -76,17 +75,20 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   @Parameter(property = "shared.libraries", required = false)
   protected List<SharedLibraryDependency> sharedLibraries;
 
+  @Parameter
+  protected String classifier;
 
 
   protected File getSourceFolder() throws MojoExecutionException {
-    if (MULE_APPLICATION_PACKAGING.equals(project.getPackaging())) {
+    String packagingType = project.getPackaging();
+    if (PackagingType.MULE_APPLICATION.equals(packagingType) || PackagingType.MULE_DOMAIN.equals(packagingType)) {
       return new File(mainFolder, MULE);
     }
 
-    if (MULE_POLICY_PACKAGING.equals(project.getPackaging())) {
+    if (PackagingType.MULE_POLICY.equals(packagingType)) {
       return new File(mainFolder, POLICY);
     }
-    throw new MojoExecutionException("Unknown packaging type: " + project.getPackaging());
+    throw new MojoExecutionException("Unknown packaging type: " + packagingType);
   }
 
   protected File getMuleAppZipFile() {

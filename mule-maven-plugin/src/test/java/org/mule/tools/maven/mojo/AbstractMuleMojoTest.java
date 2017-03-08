@@ -38,6 +38,9 @@ public class AbstractMuleMojoTest {
   protected static final String MUNIT_TEST_FILE_NAME = "munit-test.xml";
   protected static final String PROJECT_ARTIFACT_ID = "project-artifact-id";
   protected static final String MULE_APPLICATION_JSON = "mule-application.json";
+  protected static final String MULE_APPLICATION = "mule-application";
+  protected static final String MULE_DOMAIN = "mule-domain";
+  protected static final String MULE_APPLICATION_EXAMPLE = "mule-application-example";
   protected final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
   protected Build buildMock;
   protected File munitFolder;
@@ -75,6 +78,6 @@ public class AbstractMuleMojoTest {
 
     when(buildMock.getDirectory()).thenReturn(buildTemporaryFolder.getRoot().getAbsolutePath());
     when(projectMock.getBuild()).thenReturn(buildMock);
-    when(projectMock.getPackaging()).thenReturn("mule-application");
+    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
   }
 }

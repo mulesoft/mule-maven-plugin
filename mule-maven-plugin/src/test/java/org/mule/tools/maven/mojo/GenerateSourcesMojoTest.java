@@ -121,7 +121,7 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
     when(projectMock.getGroupId()).thenReturn(GROUP_ID);
     when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
     when(projectMock.getBasedir()).thenReturn(projectRootFolder.getRoot());
-    when(projectMock.getPackaging()).thenReturn("mule-application");
+    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
 
     mojo.project = projectMock;
     mojo.projectBaseFolderFileCloner = new ProjectBaseFolderFileCloner(projectMock);

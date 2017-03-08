@@ -18,13 +18,13 @@ import java.util.Map;
 import org.junit.Test;
 import org.mule.tools.artifact.archiver.api.PackagerFolders;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
-import org.mule.tools.artifact.archiver.internal.packaging.PackagingType;
+import org.mule.tools.artifact.archiver.internal.packaging.PackagingMode;
 
 import com.google.common.collect.ImmutableMap;
 
 public class SourcesTypeTest extends PackageTypeTest {
 
-  private PackagingType packagingType = PackagingType.SOURCES;
+  private PackagingMode packagingMode = PackagingMode.SOURCES;
 
   @Test
   public void applyPackagingTest() {
@@ -35,7 +35,7 @@ public class SourcesTypeTest extends PackageTypeTest {
 
     Map<String, File> fileMapMock = ImmutableMap.of(muleSrc.getName(), muleSrc);
 
-    packagingType.applyPackaging(packageBuilderMock, fileMapMock);
+    packagingMode.applyPackaging(packageBuilderMock, fileMapMock);
 
     verify(packageBuilderMock).withMuleSrc(muleSrc);
   }

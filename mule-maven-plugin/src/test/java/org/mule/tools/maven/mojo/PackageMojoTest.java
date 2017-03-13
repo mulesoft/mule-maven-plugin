@@ -15,6 +15,7 @@ import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.Before;
 import org.mule.tools.maven.mojo.model.Classifier;
@@ -90,24 +91,6 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     verify(packageBuilderMock, times(1)).withClasses(any());
     verify(packageBuilderMock, times(1)).withMule(any());
     verify(packageBuilderMock, times(1)).withRepository(any());
-  }
-
-  @Test
-  public void setProjectArtifactTypeToZipTest() {
-    ArtifactHandlerManager artifactHandlerManager = mock(ArtifactHandlerManager.class);
-    when(artifactHandlerManager.getArtifactHandler(ZIP_TYPE)).thenReturn(new DefaultArtifactHandler(ZIP_TYPE));
-    mojo.handlerManager = artifactHandlerManager;
-    mojo.packagingType = PackagingType.MULE_APPLICATION;
-    Artifact jarArtifact =
-        new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, null, JAR_TYPE, null, new DefaultArtifactHandler(JAR_TYPE));
-    when(projectMock.getArtifact()).thenReturn(jarArtifact);
-
-    mojo.setProjectArtifactTypeToZip(destinationFile);
-
-    Artifact zipArtifact =
-        new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, null, ZIP_TYPE, MULE_APPLICATION,
-                            new DefaultArtifactHandler(ZIP_TYPE));
-    verify(projectMock, times(1)).setArtifact(zipArtifact);
   }
 
   @Test

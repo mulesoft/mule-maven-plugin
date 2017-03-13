@@ -21,9 +21,12 @@ import java.nio.file.Paths;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
+import org.apache.maven.artifact.handler.manager.DefaultArtifactHandlerManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
+import org.apache.maven.project.DefaultMavenProjectHelper;
+import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.project.artifact.AttachedArtifact;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
@@ -41,7 +44,7 @@ public class PackageMojo extends AbstractMuleMojo {
   private static final String TYPE = "zip";
 
   @Component
-  protected ArtifactHandlerManager handlerManager;
+  protected MavenProjectHelper helper;
 
   @Parameter(defaultValue = "${finalName}")
   protected String finalName;
@@ -65,7 +68,7 @@ public class PackageMojo extends AbstractMuleMojo {
     } catch (ArchiverException e) {
       throw new MojoExecutionException("Exception creating the Mule App", e);
     }
-    setProjectArtifactTypeToZip(destinationFile);
+    helper.attachArtifact(this.project, TYPE, packagingType.resolveClassifier(classifier).toString(), destinationFile);
   }
 
   /**
@@ -92,15 +95,6 @@ public class PackageMojo extends AbstractMuleMojo {
     }
     getLog().debug("Using final name: " + finalName);
     return finalName;
-  }
-
-  protected void setProjectArtifactTypeToZip(File destinationFile) {
-    ArtifactHandler handler = handlerManager.getArtifactHandler(TYPE);
-    Artifact artifact =
-        new AttachedArtifact(this.project.getArtifact(), TYPE, packagingType.resolveClassifier(classifier).toString(), handler);
-    artifact.setFile(destinationFile);
-    artifact.setResolved(true);
-    this.project.setArtifact(artifact);
   }
 
   protected void createMuleApp(File destinationFile, String targetFolder) throws MojoExecutionException, ArchiverException {

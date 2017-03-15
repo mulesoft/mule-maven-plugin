@@ -13,6 +13,7 @@ package org.mule.tools.maven.mojo;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -30,6 +31,7 @@ public class InstallMojoTest extends MojoTest {
   private static final String EXT = "zip";
   private static final String MULE_POLICY_CLASSIFIER = "mule-policy";
   private static final String MULE_APPLICATION_CLASSIFIER = "mule-application";
+  private static final String MULE_APPLICATION_CLASSIFIER_LIGHT_PACKAGE = "mule-application-light-package";
 
   public InstallMojoTest() {
     this.goal = INSTALL;
@@ -68,6 +70,22 @@ public class InstallMojoTest extends MojoTest {
 
     verifier.verifyErrorFreeLog();
 
+    assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
+  }
+
+  @Test
+  public void testInstallLightPackage() throws IOException, VerificationException {
+    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.addCliOption("-DlightwayPackage=true");
+    verifier.deleteArtifacts(GROUP_ID, ARTIFACT_ID, VERSION);
+    String artifactPath =
+        verifier.getArtifactPath(GROUP_ID, ARTIFACT_ID, VERSION, EXT, MULE_APPLICATION_CLASSIFIER_LIGHT_PACKAGE);
+    File artifactFile = new File(artifactPath);
+    assertThat("Artifact already exists", !artifactFile.exists());
+
+    verifier.executeGoal(INSTALL);
+
+    verifier.verifyErrorFreeLog();
     assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
   }
 }

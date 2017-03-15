@@ -18,19 +18,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
-import org.apache.maven.artifact.handler.manager.DefaultArtifactHandlerManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
-import org.apache.maven.project.DefaultMavenProjectHelper;
 import org.apache.maven.project.MavenProjectHelper;
-import org.apache.maven.project.artifact.AttachedArtifact;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
-import org.mule.tools.maven.mojo.model.Classifier;
 import org.mule.tools.maven.mojo.model.PackagingType;
 
 /**
@@ -68,7 +61,7 @@ public class PackageMojo extends AbstractMuleMojo {
     } catch (ArchiverException e) {
       throw new MojoExecutionException("Exception creating the Mule App", e);
     }
-    helper.attachArtifact(this.project, TYPE, packagingType.resolveClassifier(classifier).toString(), destinationFile);
+    helper.attachArtifact(this.project, TYPE, packagingType.resolveClassifier(classifier, lightwayPackage), destinationFile);
   }
 
   /**
@@ -91,7 +84,8 @@ public class PackageMojo extends AbstractMuleMojo {
 
   protected String getFinalName() {
     if (finalName == null) {
-      finalName = project.getArtifactId() + "-" + project.getVersion() + "-" + packagingType.resolveClassifier(classifier);
+      finalName = project.getArtifactId() + "-" + project.getVersion() + "-"
+          + packagingType.resolveClassifier(classifier, lightwayPackage);
     }
     getLog().debug("Using final name: " + finalName);
     return finalName;

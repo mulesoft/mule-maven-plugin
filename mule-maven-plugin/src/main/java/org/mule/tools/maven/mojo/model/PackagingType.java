@@ -47,9 +47,9 @@ public enum PackagingType {
     this.defaultClassifier = defaultClassifier;
   }
 
-  public Classifier resolveClassifier(String classifierName) {
+  public String resolveClassifier(String classifierName, boolean lightwayPackage) {
     return Arrays.stream(getClassifiers()).filter(allowedClassifier -> allowedClassifier.equals(classifierName)).findFirst()
-        .orElse(defaultClassifier);
+        .orElse(defaultClassifier).toString() + (lightwayPackage ? "-light-package" : "");
   }
 
   public static PackagingType fromString(String name) {

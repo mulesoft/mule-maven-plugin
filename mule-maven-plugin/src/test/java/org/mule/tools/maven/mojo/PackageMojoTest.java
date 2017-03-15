@@ -32,8 +32,7 @@ import static org.mockito.Mockito.*;
 public class PackageMojoTest extends AbstractMuleMojoTest {
 
   private static final String VERSION = "1.0";
-  private static final String ZIP_TYPE = "zip";
-  private static final String JAR_TYPE = "jar";
+  private static final String LIGHT_PACKAGE_CLASSIFIER = "light-package";
 
   protected PackageMojo mojo = new PackageMojo();
 
@@ -112,6 +111,11 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     mojo.finalName = null;
     assertThat("Final name is not the expected", mojo.getFinalName(),
                equalTo(ARTIFACT_ID + "-" + VERSION + "-" + MULE_APPLICATION_EXAMPLE));
+
+    mojo.finalName = null;
+    mojo.lightwayPackage = true;
+    assertThat("Final name is not the expected", mojo.getFinalName(),
+               equalTo(ARTIFACT_ID + "-" + VERSION + "-" + MULE_APPLICATION_EXAMPLE + "-" + LIGHT_PACKAGE_CLASSIFIER));
   }
 
   private class PackageMojoImpl extends PackageMojo {

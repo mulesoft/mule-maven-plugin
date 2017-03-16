@@ -56,7 +56,7 @@ public class ArtifactLocator {
     return artifacts;
   }
 
-  private void addThirdPartyParentPomArtifacts(Set<Artifact> artifacts, Artifact dep) throws MojoExecutionException {
+  protected void addThirdPartyParentPomArtifacts(Set<Artifact> artifacts, Artifact dep) throws MojoExecutionException {
     MavenProject project = buildProjectFromArtifact(dep);
     addParentDependencyPomArtifacts(project, artifacts);
 
@@ -64,7 +64,7 @@ public class ArtifactLocator {
     artifacts.add(getResolvedArtifactUsingLocalRepository(pomArtifact));
   }
 
-  private void addParentPomArtifacts(Set<Artifact> artifacts) throws MojoExecutionException {
+  protected void addParentPomArtifacts(Set<Artifact> artifacts) throws MojoExecutionException {
     MavenProject currentProject = project;
     boolean projectParent = true;
     while (currentProject.hasParent() && projectParent) {
@@ -86,7 +86,7 @@ public class ArtifactLocator {
     }
   }
 
-  private MavenProject buildProjectFromArtifact(Artifact artifact)
+  protected MavenProject buildProjectFromArtifact(Artifact artifact)
       throws MojoExecutionException {
     MavenProject mavenProject;
     Artifact projectArtifact =
@@ -121,7 +121,7 @@ public class ArtifactLocator {
     return mavenProject;
   }
 
-  private void addParentDependencyPomArtifacts(MavenProject projectDependency, Set<Artifact> artifacts)
+  protected void addParentDependencyPomArtifacts(MavenProject projectDependency, Set<Artifact> artifacts)
       throws MojoExecutionException {
     MavenProject currentProject = projectDependency;
     while (currentProject.hasParent()) {
@@ -133,13 +133,13 @@ public class ArtifactLocator {
     }
   }
 
-  private Artifact getResolvedArtifactUsingLocalRepository(Artifact pomArtifact) throws MojoExecutionException {
+  protected Artifact getResolvedArtifactUsingLocalRepository(Artifact pomArtifact) throws MojoExecutionException {
     final Artifact resolvedPomArtifact = localRepository.find(pomArtifact);
     validatePomArtifactFile(resolvedPomArtifact);
     return resolvedPomArtifact;
   }
 
-  private void validatePomArtifactFile(Artifact resolvedPomArtifact) throws MojoExecutionException {
+  protected void validatePomArtifactFile(Artifact resolvedPomArtifact) throws MojoExecutionException {
     if (resolvedPomArtifact.getFile() == null) {
       throw new MojoExecutionException(
                                        format("There was a problem trying to resolve the artifact's file location for [%s], file was null",
@@ -147,7 +147,7 @@ public class ArtifactLocator {
     }
     if (!resolvedPomArtifact.getFile().exists()) {
       throw new MojoExecutionException(
-                                       format("There was a problem trying to resolve the artifact's file location for [%s], file [%s] doesn't exists",
+                                       format("There was a problem trying to resolve the artifact's file location for [%s], file [%s] doesn't exist",
                                               resolvedPomArtifact.toString(), resolvedPomArtifact.getFile().getAbsolutePath()));
     }
   }

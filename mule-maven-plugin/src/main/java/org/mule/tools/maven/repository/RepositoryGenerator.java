@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -70,20 +71,27 @@ public class RepositoryGenerator {
     try {
       initializeProjectBuildingRequest();
 
-      ArtifactLocator artifactLocator =
-          new ArtifactLocator(log, project, projectBuilder, repositorySystem, localRepository, projectBuildingRequest);
+      ArtifactLocator artifactLocator = buildArtifactLocator();
       Set<Artifact> artifacts = artifactLocator.getArtifacts();
 
       File repositoryFolder = getRepositoryFolder();
-
-      installArtifacts(repositoryFolder, artifacts);
+      ArtifactInstaller artifactInstaller = buildArtifactInstaller();
+      installArtifacts(repositoryFolder, artifacts, artifactInstaller);
     } catch (Exception e) {
       log.debug(format("There was an exception while building [%s]", project.toString()), e);
       throw e;
     }
   }
 
-  private void initializeProjectBuildingRequest() {
+  protected ArtifactInstaller buildArtifactInstaller() {
+    return new ArtifactInstaller(log);
+  }
+
+  protected ArtifactLocator buildArtifactLocator() {
+    return new ArtifactLocator(log, project, projectBuilder, repositorySystem, localRepository, projectBuildingRequest);
+  }
+
+  protected void initializeProjectBuildingRequest() {
     projectBuildingRequest = new DefaultProjectBuildingRequest(session.getProjectBuildingRequest());
     projectBuildingRequest.setLocalRepository(localRepository);
     projectBuildingRequest.setRemoteRepositories(remoteArtifactRepositories);
@@ -95,7 +103,7 @@ public class RepositoryGenerator {
                                                         artifactRepository.getUrl())));
   }
 
-  private File getRepositoryFolder() {
+  protected File getRepositoryFolder() {
     File repositoryFolder = new File(outputDirectory, REPOSITORY);
     if (!repositoryFolder.exists()) {
       repositoryFolder.mkdirs();
@@ -103,20 +111,18 @@ public class RepositoryGenerator {
     return repositoryFolder;
   }
 
-  private void installArtifacts(File repositoryFile, Set<Artifact> artifacts) throws MojoExecutionException {
-    List<Artifact> sortedArtifacts = new ArrayList<>(artifacts);
-    sort(sortedArtifacts);
+  protected void installArtifacts(File repositoryFile, Set<Artifact> artifacts, ArtifactInstaller installer)
+      throws MojoExecutionException {
+    TreeSet<Artifact> sortedArtifacts = new TreeSet<>(artifacts);
     if (sortedArtifacts.isEmpty()) {
       generateMarkerFileInRepositoryFolder(repositoryFile);
     }
-
-    ArtifactInstaller installer = new ArtifactInstaller(log);
     for (Artifact artifact : sortedArtifacts) {
       installer.installArtifact(repositoryFile, artifact);
     }
   }
 
-  private void generateMarkerFileInRepositoryFolder(File repositoryFile) throws MojoExecutionException {
+  protected void generateMarkerFileInRepositoryFolder(File repositoryFile) throws MojoExecutionException {
     File markerFile = new File(repositoryFile, ".marker");
     log.info(format("No artifacts to add, adding marker file <%s/%s>", REPOSITORY, markerFile.getName()));
     try {

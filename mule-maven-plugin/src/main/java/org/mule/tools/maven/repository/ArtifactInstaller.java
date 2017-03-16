@@ -10,6 +10,7 @@
 
 package org.mule.tools.maven.repository;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.io.File.separatorChar;
 import static java.lang.String.format;
 import static org.apache.commons.io.FileUtils.copyFile;
@@ -17,16 +18,18 @@ import static org.mule.tools.artifact.archiver.api.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 public class ArtifactInstaller {
 
-  private static final int MAX_NAME_SIZE = 128;
   private Log log;
 
   public ArtifactInstaller(Log log) {
@@ -34,6 +37,7 @@ public class ArtifactInstaller {
   }
 
   public void installArtifact(File repositoryFile, Artifact artifact) throws MojoExecutionException {
+    checkArgument(artifact != null, "Artifact to be installed should not be null");
     String artifactFilename = getFormattedFileName(artifact);
     File artifactFolderDestination = getFormattedOutputDirectory(repositoryFile, artifact);
 
@@ -58,7 +62,7 @@ public class ArtifactInstaller {
     }
   }
 
-  private String getFormattedFileName(Artifact artifact) {
+  protected String getFormattedFileName(Artifact artifact) {
     StringBuilder destFileName = new StringBuilder();
     String versionString = "-" + getNormalizedVersion(artifact);
     String classifierString = StringUtils.EMPTY;
@@ -68,20 +72,23 @@ public class ArtifactInstaller {
     }
     destFileName.append(artifact.getArtifactId()).append(versionString);
     destFileName.append(classifierString).append(".");
-    destFileName.append(artifact.getArtifactHandler().getExtension());
+
+    Optional<ArtifactHandler> artifactHandler = Optional.ofNullable(artifact.getArtifactHandler());
+    String extension = artifactHandler.orElse(new DefaultArtifactHandler(artifact.getType())).getExtension();
+    destFileName.append(extension);
 
     return destFileName.toString();
   }
 
-  private String getNormalizedVersion(Artifact artifact) {
+  protected String getNormalizedVersion(Artifact artifact) {
     if (artifact.isSnapshot() && !artifact.getVersion().equals(artifact.getBaseVersion())) {
       return artifact.getBaseVersion();
     }
     return artifact.getVersion();
   }
 
-  private static File getFormattedOutputDirectory(File outputDirectory, Artifact artifact) {
-    StringBuilder sb = new StringBuilder(MAX_NAME_SIZE);
+  protected static File getFormattedOutputDirectory(File outputDirectory, Artifact artifact) {
+    StringBuilder sb = new StringBuilder();
     sb.append(artifact.getGroupId().replace('.', separatorChar)).append(separatorChar);
     sb.append(artifact.getArtifactId()).append(separatorChar);
     sb.append(artifact.getBaseVersion()).append(separatorChar);

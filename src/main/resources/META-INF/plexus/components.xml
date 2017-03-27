@@ -1,0 +1,68 @@
+<component-set>
+    <components>
+
+        <component>
+            <role>org.mule.tools.maven.plugin.app.cloudhub.CloudHubAdapter</role>
+            <implementation>org.mule.tools.maven.plugin.app.cloudhub.DefaultCloudHubAdapter</implementation>
+        </component>
+
+        <component>
+            <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+            <role-hint>mule-application</role-hint>
+            <implementation>org.mule.tools.maven.mojo.model.lifecycle.MuleLifecycleMapping</implementation>
+        </component>
+
+        <!-- let maven plugins know that a mule project is a java project -->
+        <component>
+            <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+            <role-hint>mule-application</role-hint>
+            <implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler</implementation>
+            <configuration>
+                <type>mule-application</type>
+                <language>java</language>
+                <addedToClasspath>true</addedToClasspath>
+            </configuration>
+        </component>
+
+
+        <component>
+            <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+            <role-hint>mule-policy</role-hint>
+            <implementation>org.mule.tools.maven.mojo.model.lifecycle.MuleLifecycleMapping</implementation>
+        </component>
+
+
+
+        <component>
+            <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+            <role-hint>mule-policy</role-hint>
+            <implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler</implementation>
+            <configuration>
+                <type>mule-policy</type>
+                <language>java</language>
+                <addedToClasspath>true</addedToClasspath>
+            </configuration>
+        </component>
+
+
+        <component>
+            <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+            <role-hint>mule-domain</role-hint>
+            <implementation>org.mule.tools.maven.mojo.model.lifecycle.MuleLifecycleMapping</implementation>
+        </component>
+
+        <component>
+            <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+            <role-hint>mule-domain</role-hint>
+            <implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler</implementation>
+            <configuration>
+                <type>mule-domain</type>
+                <language>java</language>
+                <addedToClasspath>true</addedToClasspath>
+            </configuration>
+        </component>
+
+    </components>
+
+</component-set>
+

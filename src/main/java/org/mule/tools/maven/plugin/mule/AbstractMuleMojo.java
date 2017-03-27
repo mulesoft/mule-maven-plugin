@@ -1,5 +1,8 @@
 /*
+ * Mule ESB Maven Tools
+ * <p>
  * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * <p>
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
@@ -21,7 +24,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.AbstractArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
+//import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -50,8 +53,8 @@ public abstract class AbstractMuleMojo extends AbstractMojo
     @Component
     protected ArtifactFactory artifactFactory;
 
-    @Component
-    protected ArtifactResolver artifactResolver;
+//    @Component
+//    protected ArtifactResolver artifactResolver;
 
     @Parameter(defaultValue = "${localRepository}", readonly = true)
     protected ArtifactRepository localRepository;
@@ -224,13 +227,13 @@ public abstract class AbstractMuleMojo extends AbstractMojo
                                                                artifactDescription.getArtifactId(), artifactDescription.getVersion(), null,
                                                                artifactDescription.getType());
             getLog().info("Resolving " + artifact);
-            artifactResolver.resolve(artifact, mavenProject.getRemoteArtifactRepositories(), localRepository);
+//            artifactResolver.resolve(artifact, mavenProject.getRemoteArtifactRepositories(), localRepository);
             return artifact.getFile();
         }
-        catch (AbstractArtifactResolutionException e)
-        {
-            throw new MojoExecutionException("Couldn't download artifact: " + e.getMessage(), e);
-        }
+//        catch (AbstractArtifactResolutionException e)
+//        {
+//            throw new MojoExecutionException("Couldn't download artifact: " + e.getMessage(), e);
+//        }
         catch (Exception e)
         {
             throw new MojoFailureException("Couldn't download artifact: " + e.getMessage());
@@ -301,18 +304,18 @@ public abstract class AbstractMuleMojo extends AbstractMojo
     protected Artifact resolveMavenProjectArtifact() throws MojoFailureException
     {
         Artifact artifact = artifactFactory.createArtifact(mavenProject.getGroupId(), mavenProject.getArtifactId(), mavenProject.getVersion(), "", "zip");
-        try
-        {
-            artifactResolver.resolve(artifact, new ArrayList<ArtifactRepository>(), localRepository);
-        }
-        catch (ArtifactResolutionException e)
-        {
-            throw new MojoFailureException("Couldn't resolve artifact [" + artifact + "]");
-        }
-        catch (ArtifactNotFoundException e)
-        {
-            throw new MojoFailureException("Couldn't resolve artifact [" + artifact + "]");
-        }
+//        try
+//        {
+//            artifactResolver.resolve(artifact, new ArrayList<ArtifactRepository>(), localRepository);
+//        }
+//        catch (ArtifactResolutionException e)
+//        {
+//            throw new MojoFailureException("Couldn't resolve artifact [" + artifact + "]");
+//        }
+//        catch (ArtifactNotFoundException e)
+//        {
+//            throw new MojoFailureException("Couldn't resolve artifact [" + artifact + "]");
+//        }
 
         return artifact;
     }

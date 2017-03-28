@@ -6,14 +6,7 @@
  */
 package org.mule.tools.maven.plugin.mule;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import groovy.lang.GroovyShell;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -33,7 +26,16 @@ import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 
-import groovy.lang.GroovyShell;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractMuleMojo extends AbstractMojo
 {
@@ -363,6 +365,27 @@ public abstract class AbstractMuleMojo extends AbstractMojo
             {
                 username = serverObject.getUsername();
                 password = serverObject.getPassword();
+            }
+        }
+
+        String ibmJdkSupport  = System.getProperty("ibm.jdk.support");
+        if("true".equals(ibmJdkSupport)){
+            getLog().debug("Attempting to provide support for IBM JDK...");
+            try {
+                Field methods = HttpURLConnection.class.getDeclaredField("methods");
+                methods.setAccessible(true);
+                Field modifiers = Field.class.getDeclaredField("modifiers");
+                modifiers.setAccessible(true);
+
+                modifiers.setInt(methods, methods.getModifiers() & ~Modifier.FINAL);
+
+                String [] actualMethods = {"GET","POST","HEAD","OPTIONS","PUT", "PATCH","DELETE", "TRACE"};
+                methods.set(null,actualMethods);
+
+            } catch (NoSuchFieldException e) {
+                getLog().error("Fail to provide support for IBM JDK", e);
+            } catch (IllegalAccessException e) {
+                getLog().error("Fail to provide support for IBM JDK", e);
             }
         }
     }

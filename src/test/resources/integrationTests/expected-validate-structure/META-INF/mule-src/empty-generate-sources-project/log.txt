@@ -1,0 +1,451 @@
+Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-10T13:41:47-03:00)
+Maven home: /usr/local/Cellar/maven/3.3.9/libexec
+Java version: 1.8.0_111, vendor: Oracle Corporation
+Java home: /Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre
+Default locale: en_US, platform encoding: UTF-8
+OS name: "mac os x", version: "10.11.6", arch: "x86_64", family: "mac"
+[DEBUG] Created new class realm maven.api
+[DEBUG] Importing foreign packages into class realm maven.api
+[DEBUG]   Imported: javax.enterprise.inject.* < plexus.core
+[DEBUG]   Imported: javax.enterprise.util.* < plexus.core
+[DEBUG]   Imported: javax.inject.* < plexus.core
+[DEBUG]   Imported: org.apache.maven.* < plexus.core
+[DEBUG]   Imported: org.apache.maven.artifact < plexus.core
+[DEBUG]   Imported: org.apache.maven.classrealm < plexus.core
+[DEBUG]   Imported: org.apache.maven.cli < plexus.core
+[DEBUG]   Imported: org.apache.maven.configuration < plexus.core
+[DEBUG]   Imported: org.apache.maven.exception < plexus.core
+[DEBUG]   Imported: org.apache.maven.execution < plexus.core
+[DEBUG]   Imported: org.apache.maven.execution.scope < plexus.core
+[DEBUG]   Imported: org.apache.maven.lifecycle < plexus.core
+[DEBUG]   Imported: org.apache.maven.model < plexus.core
+[DEBUG]   Imported: org.apache.maven.monitor < plexus.core
+[DEBUG]   Imported: org.apache.maven.plugin < plexus.core
+[DEBUG]   Imported: org.apache.maven.profiles < plexus.core
+[DEBUG]   Imported: org.apache.maven.project < plexus.core
+[DEBUG]   Imported: org.apache.maven.reporting < plexus.core
+[DEBUG]   Imported: org.apache.maven.repository < plexus.core
+[DEBUG]   Imported: org.apache.maven.rtinfo < plexus.core
+[DEBUG]   Imported: org.apache.maven.settings < plexus.core
+[DEBUG]   Imported: org.apache.maven.toolchain < plexus.core
+[DEBUG]   Imported: org.apache.maven.usability < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.* < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.authentication < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.authorization < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.events < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.observers < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.proxy < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.repository < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.resource < plexus.core
+[DEBUG]   Imported: org.codehaus.classworlds < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.* < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.classworlds < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.component < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.configuration < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.container < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.context < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.lifecycle < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.logging < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.personality < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.util.xml.Xpp3Dom < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlPullParser < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlPullParserException < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlSerializer < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.* < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.artifact < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.collection < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.deployment < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.graph < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.impl < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.installation < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.internal.impl < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.metadata < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.repository < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.resolution < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.spi < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.transfer < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.version < plexus.core
+[DEBUG]   Imported: org.slf4j.* < plexus.core
+[DEBUG]   Imported: org.slf4j.helpers.* < plexus.core
+[DEBUG]   Imported: org.slf4j.spi.* < plexus.core
+[DEBUG] Populating class realm maven.api
+[INFO] Error stacktraces are turned on.
+[DEBUG] Reading global settings from /usr/local/Cellar/maven/3.3.9/libexec/conf/settings.xml
+[DEBUG] Reading user settings from /Users/ms0374/.m2/settings.xml
+[DEBUG] Reading global toolchains from /usr/local/Cellar/maven/3.3.9/libexec/conf/toolchains.xml
+[DEBUG] Reading user toolchains from /Users/ms0374/.m2/toolchains.xml
+[DEBUG] Using local repository at /Users/ms0374/.m2/repository
+[DEBUG] Using manager EnhancedLocalRepositoryManager with priority 10.0 for /Users/ms0374/.m2/repository
+[INFO] Scanning for projects...
+[DEBUG] Using mirror mulesoft-private (https://repository.mulesoft.org/nexus/content/repositories/private) for mule-ee-releases (https://repository-master.mulesoft.org/nexus/content/repositories/ci-releases/).
+[DEBUG] Using mirror mulesoft-private (https://repository.mulesoft.org/nexus/content/repositories/private) for libs-releases (https://repository.mulesoft.org/nexus/content/repositories/libs-releases/).
+[DEBUG] Using mirror mulesoft-private (https://repository.mulesoft.org/nexus/content/repositories/private) for ext-releases (https://repository.mulesoft.org/nexus/content/repositories/ext-releases/).
+[DEBUG] Extension realms for project org.apache.maven.plugin.my.unit:empty-generate-sources-project:jar:1.0-SNAPSHOT: (none)
+[DEBUG] Looking up lifecyle mappings for packaging jar from ClassRealm[plexus.core, parent: null]
+[DEBUG] === REACTOR BUILD PLAN ================================================
+[DEBUG] Project: org.apache.maven.plugin.my.unit:empty-generate-sources-project:jar:1.0-SNAPSHOT
+[DEBUG] Tasks:   [org.apache.maven.plugins:maven-clean-plugin:clean, generate-sources]
+[DEBUG] Style:   Regular
+[DEBUG] =======================================================================
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Test MyMojo 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[DEBUG] Skipped remote request for org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule.tools.maven:mule-maven-plugins:3.0.0-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule.tools.maven:mule-maven-plugins:3.0.0-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule.tools.maven:mule-maven-plugins:3.0.0-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule.tools.maven:mule-maven-plugins:3.0.0-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[DEBUG] === PROJECT BUILD PLAN ================================================
+[DEBUG] Project:       org.apache.maven.plugin.my.unit:empty-generate-sources-project:1.0-SNAPSHOT
+[DEBUG] Dependencies (collect): []
+[DEBUG] Dependencies (resolve): [runtime, test]
+[DEBUG] Repositories (dependencies): [mulesoft-public (https://repository.mulesoft.org/nexus/content/repositories/public, default, releases+snapshots), mulesoft-private (https://repository.mulesoft.org/nexus/content/repositories/private, default, releases+snapshots), mule-public (https://repository.mulesoft.org/nexus/content/repositories/releases/, default, releases+snapshots), mule-ee-snapshot (https://repository-master.mulesoft.org/nexus/content/repositories/ci-snapshots/, default, snapshots), mulesoft-releases (https://repository.mulesoft.org/nexus/service/local/repositories/releases/content/, default, releases), mule-ee-snapshots-r (https://repository.mulesoft.org/nexus/content/repositories/snapshots, default, releases+snapshots), MuleRepository (https://repository.mulesoft.org/nexus-ee/content/repositories/releases-ee/, default, releases+snapshots), central (https://repo.maven.apache.org/maven2, default, releases)]
+[DEBUG] Repositories (plugins)     : [mulesoft-private (https://repository.mulesoft.org/nexus/content/repositories/private, default, releases+snapshots), mule-ee-snapshots-p (https://repository.mulesoft.org/nexus/content/repositories/snapshots, default, releases+snapshots), central (https://repo.maven.apache.org/maven2, default, releases)]
+[DEBUG] -----------------------------------------------------------------------
+[DEBUG] Goal:          org.apache.maven.plugins:maven-clean-plugin:2.5:clean (default-cli)
+[DEBUG] Style:         Regular
+[DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <directory default-value="${project.build.directory}"/>
+  <excludeDefaultDirectories default-value="false">${clean.excludeDefaultDirectories}</excludeDefaultDirectories>
+  <failOnError default-value="true">${maven.clean.failOnError}</failOnError>
+  <followSymLinks default-value="false">${clean.followSymLinks}</followSymLinks>
+  <outputDirectory default-value="${project.build.outputDirectory}"/>
+  <reportDirectory default-value="${project.reporting.outputDirectory}"/>
+  <retryOnError default-value="true">${maven.clean.retryOnError}</retryOnError>
+  <skip default-value="false">${clean.skip}</skip>
+  <testOutputDirectory default-value="${project.build.testOutputDirectory}"/>
+  <verbose>${clean.verbose}</verbose>
+</configuration>
+[DEBUG] -----------------------------------------------------------------------
+[DEBUG] Goal:          org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:validate (execution1)
+[DEBUG] Style:         Regular
+[DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <finalName default-value="${project.build.finalName}"/>
+  <lightwayPackage default-value="${lightwayPackage}"/>
+  <localRepository default-value="${localRepository}"/>
+  <muleSourceFolder default-value="${project.basedir}/src/main/mule/"/>
+  <munitSourceFolder default-value="${project.basedir}/src/test/munit/"/>
+  <outputDirectory>${project.build.directory}</outputDirectory>
+  <project>${project}</project>
+  <projectBaseFolder default-value="${project.basedir}"/>
+  <remoteArtifactRepositories default-value="${project.remoteArtifactRepositories}"/>
+  <session default-value="${session}"/>
+  <sharedLibraries>${shared.libraries}</sharedLibraries>
+</configuration>
+[DEBUG] -----------------------------------------------------------------------
+[DEBUG] Goal:          org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:initialize (execution2)
+[DEBUG] Style:         Regular
+[DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <finalName default-value="${project.build.finalName}"/>
+  <lightwayPackage default-value="${lightwayPackage}"/>
+  <localRepository default-value="${localRepository}"/>
+  <muleSourceFolder default-value="${project.basedir}/src/main/mule/"/>
+  <munitSourceFolder default-value="${project.basedir}/src/test/munit/"/>
+  <outputDirectory>${project.build.directory}</outputDirectory>
+  <project>${project}</project>
+  <projectBaseFolder default-value="${project.basedir}"/>
+  <remoteArtifactRepositories default-value="${project.remoteArtifactRepositories}"/>
+  <session default-value="${session}"/>
+  <sharedLibraries>${shared.libraries}</sharedLibraries>
+</configuration>
+[DEBUG] -----------------------------------------------------------------------
+[DEBUG] Goal:          org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:generate-sources (execution3)
+[DEBUG] Style:         Regular
+[DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <finalName default-value="${project.build.finalName}"/>
+  <lightwayPackage default-value="${lightwayPackage}"/>
+  <localRepository default-value="${localRepository}"/>
+  <muleSourceFolder default-value="${project.basedir}/src/main/mule/"/>
+  <munitSourceFolder default-value="${project.basedir}/src/test/munit/"/>
+  <outputDirectory>${project.build.directory}</outputDirectory>
+  <project>${project}</project>
+  <projectBaseFolder default-value="${project.basedir}"/>
+  <remoteArtifactRepositories default-value="${project.remoteArtifactRepositories}"/>
+  <session default-value="${session}"/>
+  <sharedLibraries>${shared.libraries}</sharedLibraries>
+</configuration>
+[DEBUG] =======================================================================
+[DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=0, ConflictMarker.markTime=0, ConflictMarker.nodeCount=1, ConflictIdSorter.graphTime=0, ConflictIdSorter.topsortTime=1, ConflictIdSorter.conflictIdCount=0, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=3, ConflictResolver.conflictItemCount=0, DefaultDependencyCollector.collectTime=0, DefaultDependencyCollector.transformTime=8}
+[DEBUG] org.apache.maven.plugin.my.unit:empty-generate-sources-project:jar:1.0-SNAPSHOT
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-cli) @ empty-generate-sources-project ---
+[DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=2, ConflictMarker.markTime=0, ConflictMarker.nodeCount=3, ConflictIdSorter.graphTime=0, ConflictIdSorter.topsortTime=0, ConflictIdSorter.conflictIdCount=3, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=2, ConflictResolver.conflictItemCount=3, DefaultDependencyCollector.collectTime=28, DefaultDependencyCollector.transformTime=4}
+[DEBUG] org.apache.maven.plugins:maven-clean-plugin:jar:2.5:
+[DEBUG]    org.apache.maven:maven-plugin-api:jar:2.0.6:compile
+[DEBUG]    org.codehaus.plexus:plexus-utils:jar:3.0:compile
+[DEBUG] Created new class realm plugin>org.apache.maven.plugins:maven-clean-plugin:2.5
+[DEBUG] Importing foreign packages into class realm plugin>org.apache.maven.plugins:maven-clean-plugin:2.5
+[DEBUG]   Imported:  < maven.api
+[DEBUG] Populating class realm plugin>org.apache.maven.plugins:maven-clean-plugin:2.5
+[DEBUG]   Included: org.apache.maven.plugins:maven-clean-plugin:jar:2.5
+[DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:3.0
+[DEBUG] Configuring mojo org.apache.maven.plugins:maven-clean-plugin:2.5:clean from plugin realm ClassRealm[plugin>org.apache.maven.plugins:maven-clean-plugin:2.5, parent: sun.misc.Launcher$AppClassLoader@42a57993]
+[DEBUG] Configuring mojo 'org.apache.maven.plugins:maven-clean-plugin:2.5:clean' with basic configurator -->
+[DEBUG]   (f) directory = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/target
+[DEBUG]   (f) excludeDefaultDirectories = false
+[DEBUG]   (f) failOnError = true
+[DEBUG]   (f) followSymLinks = false
+[DEBUG]   (f) outputDirectory = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/target/classes
+[DEBUG]   (f) reportDirectory = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/target/site
+[DEBUG]   (f) retryOnError = true
+[DEBUG]   (f) skip = false
+[DEBUG]   (f) testOutputDirectory = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/target/test-classes
+[DEBUG] -- end configuration --
+[DEBUG] Skipping non-existing directory /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/target
+[DEBUG] Skipping non-existing directory /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/target/classes
+[DEBUG] Skipping non-existing directory /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/target/test-classes
+[DEBUG] Skipping non-existing directory /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/target/site
+[INFO] 
+[INFO] --- mule-maven-plugin:3.0.0-SNAPSHOT:validate (execution1) @ empty-generate-sources-project ---
+[DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=0, ConflictMarker.markTime=0, ConflictMarker.nodeCount=21, ConflictIdSorter.graphTime=0, ConflictIdSorter.topsortTime=0, ConflictIdSorter.conflictIdCount=18, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=2, ConflictResolver.conflictItemCount=21, DefaultDependencyCollector.collectTime=119, DefaultDependencyCollector.transformTime=2}
+[DEBUG] org.mule.tools.maven:mule-maven-plugin:jar:3.0.0-SNAPSHOT:
+[DEBUG]    commons-logging:commons-logging:jar:1.2:compile
+[DEBUG]    commons-io:commons-io:jar:2.5:compile
+[DEBUG]    commons-cli:commons-cli:jar:1.3.1:compile
+[DEBUG]    com.google.guava:guava:jar:18.0:compile
+[DEBUG]    org.codehaus.plexus:plexus-archiver:jar:2.0.1:compile
+[DEBUG]       org.codehaus.plexus:plexus-container-default:jar:1.0-alpha-9-stable-1:compile
+[DEBUG]          junit:junit:jar:4.8.2:test
+[DEBUG]          classworlds:classworlds:jar:1.1-alpha-2:compile
+[DEBUG]       org.codehaus.plexus:plexus-utils:jar:3.0:compile
+[DEBUG]       org.codehaus.plexus:plexus-io:jar:2.0.1:compile
+[DEBUG]    org.hamcrest:hamcrest-all:jar:1.3:compile
+[DEBUG]    org.apache.maven:maven-plugin-api:jar:3.3.9:compile
+[DEBUG]    org.apache.maven.shared:maven-shared-utils:jar:3.1.0:compile
+[DEBUG]    org.mockito:mockito-core:jar:2.5.6:compile
+[DEBUG]       net.bytebuddy:byte-buddy:jar:1.6.0:runtime
+[DEBUG]       net.bytebuddy:byte-buddy-agent:jar:1.6.0:runtime
+[DEBUG]       org.objenesis:objenesis:jar:2.4:runtime
+[DEBUG] Created new class realm plugin>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT
+[DEBUG] Importing foreign packages into class realm plugin>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT
+[DEBUG]   Imported:  < maven.api
+[DEBUG] Populating class realm plugin>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT
+[DEBUG]   Included: org.mule.tools.maven:mule-maven-plugin:jar:3.0.0-SNAPSHOT
+[DEBUG]   Included: commons-logging:commons-logging:jar:1.2
+[DEBUG]   Included: commons-io:commons-io:jar:2.5
+[DEBUG]   Included: commons-cli:commons-cli:jar:1.3.1
+[DEBUG]   Included: com.google.guava:guava:jar:18.0
+[DEBUG]   Included: org.codehaus.plexus:plexus-archiver:jar:2.0.1
+[DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:3.0
+[DEBUG]   Included: org.codehaus.plexus:plexus-io:jar:2.0.1
+[DEBUG]   Included: org.hamcrest:hamcrest-all:jar:1.3
+[DEBUG]   Included: org.apache.maven.shared:maven-shared-utils:jar:3.1.0
+[DEBUG]   Included: org.mockito:mockito-core:jar:2.5.6
+[DEBUG]   Included: net.bytebuddy:byte-buddy:jar:1.6.0
+[DEBUG]   Included: net.bytebuddy:byte-buddy-agent:jar:1.6.0
+[DEBUG]   Included: org.objenesis:objenesis:jar:2.4
+[DEBUG] Configuring mojo org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:validate from plugin realm ClassRealm[plugin>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@42a57993]
+[DEBUG] Configuring mojo 'org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:validate' with basic configurator -->
+[DEBUG]   (f) finalName = empty-generate-sources-project-1.0-SNAPSHOT
+[DEBUG]   (f) localRepository =       id: local
+      url: file:///Users/ms0374/.m2/repository/
+   layout: default
+snapshots: [enabled => true, update => always]
+ releases: [enabled => true, update => always]
+
+[DEBUG]   (f) muleSourceFolder = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/src/main/mule
+[DEBUG]   (f) munitSourceFolder = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/src/test/munit
+[DEBUG]   (f) outputDirectory = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/target
+[DEBUG]   (f) project = MavenProject: org.apache.maven.plugin.my.unit:empty-generate-sources-project:1.0-SNAPSHOT @ /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/pom.xml
+[DEBUG]   (f) projectBaseFolder = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project
+[DEBUG]   (f) remoteArtifactRepositories = [      id: mulesoft-public
+      url: https://repository.mulesoft.org/nexus/content/repositories/public
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: mulesoft-private
+      url: https://repository.mulesoft.org/nexus/content/repositories/private
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: mule-public
+      url: https://repository.mulesoft.org/nexus/content/repositories/releases/
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: mule-ee-snapshot
+      url: https://repository-master.mulesoft.org/nexus/content/repositories/ci-snapshots/
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => false, update => daily]
+,       id: mulesoft-releases
+      url: https://repository.mulesoft.org/nexus/service/local/repositories/releases/content/
+   layout: default
+snapshots: [enabled => false, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: mule-ee-snapshots-r
+      url: https://repository.mulesoft.org/nexus/content/repositories/snapshots
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: MuleRepository
+      url: https://repository.mulesoft.org/nexus-ee/content/repositories/releases-ee/
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: central
+      url: https://repo.maven.apache.org/maven2
+   layout: default
+snapshots: [enabled => false, update => daily]
+ releases: [enabled => true, update => daily]
+]
+[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@ca27722
+[DEBUG]   (f) sharedLibraries = []
+[DEBUG] -- end configuration --
+[DEBUG] Validating Mule application...
+[DEBUG] Local repository [/Users/ms0374/.m2/repository]
+[DEBUG] Remote repository ID [mulesoft-public], URL [https://repository.mulesoft.org/nexus/content/repositories/public]
+[DEBUG] Remote repository ID [mulesoft-private], URL [https://repository.mulesoft.org/nexus/content/repositories/private]
+[DEBUG] Remote repository ID [mule-public], URL [https://repository.mulesoft.org/nexus/content/repositories/releases/]
+[DEBUG] Remote repository ID [mule-ee-snapshot], URL [https://repository-master.mulesoft.org/nexus/content/repositories/ci-snapshots/]
+[DEBUG] Remote repository ID [mulesoft-releases], URL [https://repository.mulesoft.org/nexus/service/local/repositories/releases/content/]
+[DEBUG] Remote repository ID [mule-ee-snapshots-r], URL [https://repository.mulesoft.org/nexus/content/repositories/snapshots]
+[DEBUG] Remote repository ID [MuleRepository], URL [https://repository.mulesoft.org/nexus-ee/content/repositories/releases-ee/]
+[DEBUG] Remote repository ID [central], URL [https://repo.maven.apache.org/maven2]
+[DEBUG] Validating Mule application done
+[INFO] 
+[INFO] --- mule-maven-plugin:3.0.0-SNAPSHOT:initialize (execution2) @ empty-generate-sources-project ---
+[DEBUG] Configuring mojo org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:initialize from plugin realm ClassRealm[plugin>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@42a57993]
+[DEBUG] Configuring mojo 'org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:initialize' with basic configurator -->
+[DEBUG]   (f) finalName = empty-generate-sources-project-1.0-SNAPSHOT
+[DEBUG]   (f) localRepository =       id: local
+      url: file:///Users/ms0374/.m2/repository/
+   layout: default
+snapshots: [enabled => true, update => always]
+ releases: [enabled => true, update => always]
+
+[DEBUG]   (f) muleSourceFolder = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/src/main/mule
+[DEBUG]   (f) munitSourceFolder = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/src/test/munit
+[DEBUG]   (f) outputDirectory = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/target
+[DEBUG]   (f) project = MavenProject: org.apache.maven.plugin.my.unit:empty-generate-sources-project:1.0-SNAPSHOT @ /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/pom.xml
+[DEBUG]   (f) projectBaseFolder = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project
+[DEBUG]   (f) remoteArtifactRepositories = [      id: mulesoft-public
+      url: https://repository.mulesoft.org/nexus/content/repositories/public
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: mulesoft-private
+      url: https://repository.mulesoft.org/nexus/content/repositories/private
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: mule-public
+      url: https://repository.mulesoft.org/nexus/content/repositories/releases/
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: mule-ee-snapshot
+      url: https://repository-master.mulesoft.org/nexus/content/repositories/ci-snapshots/
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => false, update => daily]
+,       id: mulesoft-releases
+      url: https://repository.mulesoft.org/nexus/service/local/repositories/releases/content/
+   layout: default
+snapshots: [enabled => false, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: mule-ee-snapshots-r
+      url: https://repository.mulesoft.org/nexus/content/repositories/snapshots
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: MuleRepository
+      url: https://repository.mulesoft.org/nexus-ee/content/repositories/releases-ee/
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: central
+      url: https://repo.maven.apache.org/maven2
+   layout: default
+snapshots: [enabled => false, update => daily]
+ releases: [enabled => true, update => daily]
+]
+[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@ca27722
+[DEBUG]   (f) sharedLibraries = []
+[DEBUG] -- end configuration --
+[DEBUG] Initializing Mule Maven Plugin...
+[DEBUG] Mule Maven Plugin Initialize done
+[INFO] 
+[INFO] --- mule-maven-plugin:3.0.0-SNAPSHOT:generate-sources (execution3) @ empty-generate-sources-project ---
+[DEBUG] Configuring mojo org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:generate-sources from plugin realm ClassRealm[plugin>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@42a57993]
+[DEBUG] Configuring mojo 'org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:generate-sources' with basic configurator -->
+[DEBUG]   (f) finalName = empty-generate-sources-project-1.0-SNAPSHOT
+[DEBUG]   (f) localRepository =       id: local
+      url: file:///Users/ms0374/.m2/repository/
+   layout: default
+snapshots: [enabled => true, update => always]
+ releases: [enabled => true, update => always]
+
+[DEBUG]   (f) muleSourceFolder = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/src/main/mule
+[DEBUG]   (f) munitSourceFolder = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/src/test/munit
+[DEBUG]   (f) outputDirectory = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/target
+[DEBUG]   (f) project = MavenProject: org.apache.maven.plugin.my.unit:empty-generate-sources-project:1.0-SNAPSHOT @ /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project/pom.xml
+[DEBUG]   (f) projectBaseFolder = /Users/ms0374/Documents/projects/mule-maven-plugins/mule-maven-plugin-integration-tests/target/test-classes/empty-generate-sources-project
+[DEBUG]   (f) remoteArtifactRepositories = [      id: mulesoft-public
+      url: https://repository.mulesoft.org/nexus/content/repositories/public
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: mulesoft-private
+      url: https://repository.mulesoft.org/nexus/content/repositories/private
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: mule-public
+      url: https://repository.mulesoft.org/nexus/content/repositories/releases/
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: mule-ee-snapshot
+      url: https://repository-master.mulesoft.org/nexus/content/repositories/ci-snapshots/
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => false, update => daily]
+,       id: mulesoft-releases
+      url: https://repository.mulesoft.org/nexus/service/local/repositories/releases/content/
+   layout: default
+snapshots: [enabled => false, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: mule-ee-snapshots-r
+      url: https://repository.mulesoft.org/nexus/content/repositories/snapshots
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: MuleRepository
+      url: https://repository.mulesoft.org/nexus-ee/content/repositories/releases-ee/
+   layout: default
+snapshots: [enabled => true, update => daily]
+ releases: [enabled => true, update => daily]
+,       id: central
+      url: https://repo.maven.apache.org/maven2
+   layout: default
+snapshots: [enabled => false, update => daily]
+ releases: [enabled => true, update => daily]
+]
+[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@ca27722
+[DEBUG]   (f) sharedLibraries = []
+[DEBUG] -- end configuration --
+[DEBUG] Creating target content with Mule source code...

@@ -158,7 +158,7 @@ public class ArtifactLocatorTest {
     MavenProject mavenProjectMock2 = buildMavenProjectMock(2, mavenProjectMock1, artifact2, null);
     doReturn(artifact2).when(artifactLocatorSpy).getResolvedArtifactUsingLocalRepository(artifact2);
 
-    Artifact artifact3 = buildArtifact(3);;
+    Artifact artifact3 = buildArtifact(3);
     MavenProject mavenProjectMock3 = buildMavenProjectMock(3, mavenProjectMock2, artifact3, null);
     doReturn(artifact3).when(artifactLocatorSpy).getResolvedArtifactUsingLocalRepository(artifact3);
 

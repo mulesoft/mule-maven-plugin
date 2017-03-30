@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.maven.it.VerificationException;
+import org.apache.maven.it.Verifier;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,6 +24,7 @@ import org.junit.Test;
 public class PackageMojoTest extends MojoTest {
 
   private static final String PACKAGE = "package";
+  private static final String TARGET_FOLDER_NAME = "target";
 
   public PackageMojoTest() {
     this.goal = PACKAGE;
@@ -34,7 +36,7 @@ public class PackageMojoTest extends MojoTest {
   }
 
   @Test
-  public void testPackage() throws IOException, VerificationException {
+  public void testPackageApp() throws IOException, VerificationException {
     installThirdPartyArtifact(DEPENDENCY_ORG_ID, DEPENDENCY_NAME, DEPENDENCY_VERSION, DEPENDENCY_TYPE, DEPENDENCY_PROJECT_NAME);
     verifier.executeGoal(PACKAGE);
 
@@ -45,4 +47,75 @@ public class PackageMojoTest extends MojoTest {
 
     verifier.verifyErrorFreeLog();
   }
+
+  @Test
+  public void testPackageAppWithSharedLibraries() throws IOException, VerificationException {
+    String artifactId = "validate-shared-libraries-project";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.setMavenDebug(true);
+    verifier.executeGoal(PACKAGE);
+
+    File expectedStructure = getExpectedStructure("/integrationTests/expected-package-app-shared-libraries");
+    File targetStructure = new File(verifier.getBasedir() + File.separator + TARGET_FOLDER_NAME);
+
+    assertThat("The directory structure is different from the expected", targetStructure,
+               hasSameTreeStructure(expectedStructure, excludes));
+    verifier.verifyErrorFreeLog();
+  }
+
+  @Test
+  public void testPackagePolicy() throws IOException, VerificationException {
+    String artifactId = "empty-package-policy-project";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.setMavenDebug(true);
+    verifier.executeGoal(PACKAGE);
+
+    File expectedStructure = getExpectedStructure("/integrationTests/expected-package-policy-structure");
+    File targetStructure = new File(verifier.getBasedir() + File.separator + TARGET_FOLDER_NAME);
+
+    assertThat("The directory structure is different from the expected", targetStructure,
+               hasSameTreeStructure(expectedStructure, excludes));
+    verifier.verifyErrorFreeLog();
+  }
+
+  @Test
+  public void testPackageMultiModuleAppModuleCorrectStructure() throws IOException, VerificationException {
+    String artifactId = "multi-module-application";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.setMavenDebug(true);
+    verifier.executeGoal(PACKAGE);
+
+    String moduleName = "empty-app";
+    File expectedStructure = getExpectedStructure("/integrationTests/multi-module-application" + File.separator + moduleName + File.separator + TARGET_FOLDER_NAME);
+    File targetStructure = new File(verifier.getBasedir() + File.separator + moduleName + File.separator + TARGET_FOLDER_NAME);
+
+    assertThat("The directory structure is different from the expected", targetStructure,
+               hasSameTreeStructure(expectedStructure, excludes));
+    verifier.verifyErrorFreeLog();
+  }
+
+  @Test
+  public void testPackageMultiModulePolicyModuleCorrectStructure() throws IOException, VerificationException {
+    String artifactId = "multi-module-application";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.setMavenDebug(true);
+    verifier.executeGoal(PACKAGE);
+
+    String moduleName = "empty-policy";
+    File expectedStructure = getExpectedStructure("/integrationTests/multi-module-application" + File.separator + moduleName + File.separator + TARGET_FOLDER_NAME);
+    File targetStructure = new File(verifier.getBasedir() + File.separator + moduleName + File.separator + TARGET_FOLDER_NAME);
+
+    assertThat("The directory structure is different from the expected", targetStructure,
+               hasSameTreeStructure(expectedStructure, excludes));
+    verifier.verifyErrorFreeLog();
+  }
+
 }

@@ -27,8 +27,12 @@ public class InstallMojoTest extends MojoTest {
   private static final String ARTIFACT_ID = "empty-install-project";
   private static final String VERSION = "1.0-SNAPSHOT";
   private static final String EXT = "jar";
+  private static final String LIGHT_PACKAGE_EXT = "-light-package";
   private static final String MULE_POLICY_CLASSIFIER = "mule-policy";
+  private static final String MULE_DOMAIN_CLASSIFIER = "mule-domain";
   private static final String MULE_APPLICATION_CLASSIFIER = "mule-application";
+  private static final String MULE_APPLICATION_EXAMPLE_CLASSIFIER = "mule-application-example";
+  private static final String MULE_APPLICATION_TEMPLATE_CLASSIFIER = "mule-application-template";
   private static final String MULE_APPLICATION_CLASSIFIER_LIGHT_PACKAGE = "mule-application-light-package";
 
   public InstallMojoTest() {
@@ -73,26 +77,146 @@ public class InstallMojoTest extends MojoTest {
 
   @Test
   public void testInstallAppTemplate() throws IOException, VerificationException {
+    String artifactId = "empty-install-app-template-project";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
+    String artifactPath = verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_APPLICATION_TEMPLATE_CLASSIFIER);
+    File artifactFile = new File(artifactPath);
+    assertThat("Artifact already exists", !artifactFile.exists());
+    verifier.executeGoal(INSTALL);
 
+    verifier.verifyErrorFreeLog();
+
+    assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
   }
 
   @Test
   public void testInstallAppExample() throws IOException, VerificationException {
+    String artifactId = "empty-install-app-example-project";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
+    String artifactPath = verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_APPLICATION_EXAMPLE_CLASSIFIER);
+    File artifactFile = new File(artifactPath);
+    assertThat("Artifact already exists", !artifactFile.exists());
+    verifier.executeGoal(INSTALL);
 
+    verifier.verifyErrorFreeLog();
+
+    assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
   }
 
   @Test
   public void testInstallDomain() throws IOException, VerificationException {
+    String artifactId = "empty-install-domain-project";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
+    String artifactPath = verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_DOMAIN_CLASSIFIER);
+    File artifactFile = new File(artifactPath);
+    assertThat("Artifact already exists", !artifactFile.exists());
+    verifier.executeGoal(INSTALL);
 
+    verifier.verifyErrorFreeLog();
+
+    assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
   }
 
   @Test
-  public void testInstallLightPackage() throws IOException, VerificationException {
+  public void testInstallMultiModuleApplication() throws IOException, VerificationException {
+    String artifactId = "multi-module-application";
+    String appSubModule = "empty-app";
+    String policySubModule = "empty-policy";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-DattachMuleSources=true");
+
+    verifier.deleteArtifacts(GROUP_ID, appSubModule, VERSION);
+    String artifactPath = verifier.getArtifactPath(GROUP_ID, appSubModule, VERSION, EXT, MULE_APPLICATION_CLASSIFIER);
+    File artifactAppFile = new File(artifactPath);
+    assertThat("Artifact already exists", !artifactAppFile.exists());
+
+    verifier.deleteArtifacts(GROUP_ID, policySubModule, VERSION);
+    artifactPath = verifier.getArtifactPath(GROUP_ID, policySubModule, VERSION, EXT, MULE_POLICY_CLASSIFIER);
+    File artifactPolicyFile = new File(artifactPath);
+    assertThat("Artifact already exists", !artifactPolicyFile.exists());
+
+    verifier.executeGoal(INSTALL);
+
+    verifier.verifyErrorFreeLog();
+
+    assertThat("Artifact was not installed in the .m2 repository", artifactAppFile.exists());
+    assertThat("Artifact was not installed in the .m2 repository", artifactPolicyFile.exists());
+  }
+
+  @Test
+  public void testInstallApplicationLightPackage() throws IOException, VerificationException {
     verifier.addCliOption("-DattachMuleSources=true");
     verifier.addCliOption("-DlightwayPackage=true");
     verifier.deleteArtifacts(GROUP_ID, ARTIFACT_ID, VERSION);
     String artifactPath =
         verifier.getArtifactPath(GROUP_ID, ARTIFACT_ID, VERSION, EXT, MULE_APPLICATION_CLASSIFIER_LIGHT_PACKAGE);
+    File artifactFile = new File(artifactPath);
+    assertThat("Artifact already exists", !artifactFile.exists());
+
+    verifier.executeGoal(INSTALL);
+
+    verifier.verifyErrorFreeLog();
+    assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
+  }
+
+  @Test
+  public void testInstallTemplateLightPackage() throws IOException, VerificationException {
+    String artifactId = "empty-install-app-template-project";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.addCliOption("-DlightwayPackage=true");
+    verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
+    String artifactPath =
+        verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_APPLICATION_TEMPLATE_CLASSIFIER + LIGHT_PACKAGE_EXT);
+    File artifactFile = new File(artifactPath);
+    assertThat("Artifact already exists", !artifactFile.exists());
+
+    verifier.executeGoal(INSTALL);
+
+    verifier.verifyErrorFreeLog();
+    assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
+  }
+
+  @Test
+  public void testInstallExampleLightPackage() throws IOException, VerificationException {
+    String artifactId = "empty-install-app-example-project";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.addCliOption("-DlightwayPackage=true");
+    verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
+    String artifactPath =
+        verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_APPLICATION_EXAMPLE_CLASSIFIER + LIGHT_PACKAGE_EXT);
+    File artifactFile = new File(artifactPath);
+    assertThat("Artifact already exists", !artifactFile.exists());
+
+    verifier.executeGoal(INSTALL);
+
+    verifier.verifyErrorFreeLog();
+    assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
+  }
+
+  @Test
+  public void testInstallDomainLightPackage() throws IOException, VerificationException {
+    String artifactId = "empty-install-domain-project";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.addCliOption("-DlightwayPackage=true");
+    verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
+    String artifactPath =
+        verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_DOMAIN_CLASSIFIER + LIGHT_PACKAGE_EXT);
     File artifactFile = new File(artifactPath);
     assertThat("Artifact already exists", !artifactFile.exists());
 

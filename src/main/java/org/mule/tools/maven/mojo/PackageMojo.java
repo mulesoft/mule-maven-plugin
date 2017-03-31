@@ -22,6 +22,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.repository.legacy.metadata.ArtifactMetadataSource;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 import org.mule.tools.maven.mojo.model.PackagingType;
@@ -34,7 +35,7 @@ import org.mule.tools.maven.mojo.model.PackagingType;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class PackageMojo extends AbstractMuleMojo {
 
-  private static final String TYPE = "zip";
+  private static final String TYPE = "jar";
 
   @Component
   protected MavenProjectHelper helper;

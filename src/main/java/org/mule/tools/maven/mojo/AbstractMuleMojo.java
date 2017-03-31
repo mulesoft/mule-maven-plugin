@@ -91,7 +91,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   }
 
   protected File getMuleAppZipFile() {
-    return new File(this.outputDirectory, this.finalName + ".zip");
+    return new File(this.outputDirectory, this.finalName + ".jar");
   }
 
   protected void createFileIfNecessary(String... filePath) throws IOException {

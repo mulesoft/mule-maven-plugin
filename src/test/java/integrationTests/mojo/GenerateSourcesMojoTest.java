@@ -35,9 +35,7 @@ public class GenerateSourcesMojoTest extends MojoTest {
   @Test
   public void testGenerateSources() throws IOException, VerificationException {
     verifier.executeGoal(GENERATE_SOURCES);
-
     File expectedStructure = getExpectedStructure();
-
     assertThat("The directory structure is different from the expected", targetFolder,
                hasSameTreeStructure(expectedStructure, excludes));
     verifier.verifyErrorFreeLog();

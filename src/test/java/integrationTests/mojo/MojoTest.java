@@ -40,7 +40,7 @@ public class MojoTest {
   protected Verifier verifier;
   protected File targetFolder;
   protected String goal;
-  protected static final String[] excludes = new String[] {".placeholder"};
+  protected static final String[] excludes = new String[] {".placeholder", "log.txt"};
 
   @Before
   public void initializeContext() throws IOException, VerificationException {
@@ -70,6 +70,10 @@ public class MojoTest {
 
   protected File getExpectedStructure() throws IOException {
     return ResourceExtractor.simpleExtractResources(getClass(), getExpectedStructureRelativePath());
+  }
+
+  protected File getExpectedStructure(String expectedStructurePath) throws IOException {
+    return ResourceExtractor.simpleExtractResources(getClass(), expectedStructurePath);
   }
 
   protected void installThirdPartyArtifact(String groupId, String artifactId, String version, String type,

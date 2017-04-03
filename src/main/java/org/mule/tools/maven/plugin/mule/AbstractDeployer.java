@@ -26,7 +26,7 @@ public abstract class AbstractDeployer
 
     /**
      * Deploys the application.
-     * @throws DeploymentException
+     * @throws DeploymentException Deploy fails
      */
     public abstract void deploy() throws DeploymentException;
 

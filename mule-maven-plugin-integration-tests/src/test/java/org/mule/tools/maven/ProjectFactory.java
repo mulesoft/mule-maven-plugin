@@ -19,20 +19,11 @@ import java.util.*;
 
 public class ProjectFactory {
 
-    public static final String POM_XML = "pom.xml";
     public static final String MULE_CONFIG_XML = "mule-config.xml";
     public static final String MULE_APP_PROPERTIES = "mule-app.properties";
     public static final String MULE_DEPLOY_PROPERTIES = "mule-deploy.properties";
 
-    public static final String LIB = "lib";
     public static final String MULE = "mule";
-    public static final String TEST_MULE = "test-mule";
-    public static final String MUNIT = "munit";
-    public static final String TARGET = "target";
-    public static final String PLUGINS = "plugins";
-    public static final String CLASSES = "classes";
-    public static final String MULE_SRC = "mule-src";
-    public static final String META_INF = "META-INF";
     private static final String SRC = "src";
     private static final String MAIN = "main";
 

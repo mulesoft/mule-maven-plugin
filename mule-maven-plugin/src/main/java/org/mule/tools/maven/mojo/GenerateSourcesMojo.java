@@ -45,14 +45,15 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
     private static final String MULE_MODULE_GROUP_ID = "org.mule.modules";
     protected MulePluginResolver mulePluginResolver;
     protected ApplicationDependencySelector applicationDependencySelector;
-    private static Set<String> containerPlugins = new HashSet<>();
+    private final Set<String> containerPlugins = new HashSet<>();
 
-    static {
+    public GenerateSourcesMojo(){
         containerPlugins.add(MULE_MODULE_GROUP_ID + ":mule-module-http-ext");
         containerPlugins.add(MULE_MODULE_GROUP_ID + ":mule-module-extensions-xml-support");
         containerPlugins.add(MULE_MODULE_GROUP_ID + ":mule-module-sockets");
         containerPlugins.add(MULE_MODULE_GROUP_ID + ":mule-module-oauth");
     }
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().debug("Creating target content with Mule source code...");
 

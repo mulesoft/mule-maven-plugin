@@ -25,6 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class GenerateSourcesMojoTest extends MojoTest {
     private static final String GENERATE_SOURCES = "generate-sources";
     private static final String EXPECTED_STRUCTURE_RELATIVE_PATH = "/expected-generate-sources-structure";
+    private static final String EXPECTED_SMART_CONNECTOR_STRUCTURE_RELATIVE_PATH = "/expected-smart-connector-dependency-structure";
 
     public GenerateSourcesMojoTest() {
         super("empty-generate-sources-project");
@@ -50,6 +51,5 @@ public class GenerateSourcesMojoTest extends MojoTest {
         assertThat("The directory structure is different from the expected", targetFolder, hasSameTreeStructure(expectedStructure));
 
         verifier.verifyErrorFreeLog();
-
     }
 }

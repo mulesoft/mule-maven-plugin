@@ -20,6 +20,7 @@ import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.Test;
 import org.junit.Before;
 import org.mule.tools.maven.dependency.ApplicationDependencySelector;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -224,5 +226,37 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
         assertThat("There should be 1 file in the plugins folder", pluginsFolder.listFiles().length, equalTo(1));
         List<File> actualFiles = Arrays.asList(pluginsFolder.listFiles()).stream().filter(file -> file.isFile()).collect(Collectors.toList());
         assertThat("The plugins folder does not contains the expected file", actualFiles.get(0).getName(), equalTo(ARTIFACT_FILE_NAME));
+    }
+
+    @Test
+    public void isNotAlreadyPresentInMuleContainerTest() {
+        List<Dependency> dependencies = new ArrayList<>();
+        dependencies.add(createDependencyMock("org.mule.modules","mule-module-http-ext"));
+        dependencies.add(createDependencyMock("org.mule.modules","mule-module-extensions-xml-support"));
+        dependencies.add(createDependencyMock("org.mule.modules","mule-module-sockets"));
+        dependencies.add(createDependencyMock("org.mule.modules","mule-module-oauth"));
+        dependencies.add(createDependencyMock("org.company.modules","mule-module-http-ext"));
+        dependencies.add(createDependencyMock("org.mule.modules","mule-module-http-ext-dummy"));
+        dependencies.add(createDependencyMock("org.company.modules","bla-ble-bli-blo-blu"));
+
+        dependencies = dependencies.stream().filter(dependency -> mojo.isNotAlreadyPresentInMuleContainer(dependency)).collect(Collectors.toList());
+
+        Set<String> expectedDependencies = new HashSet<>();
+        expectedDependencies.add("org.company.modules:mule-module-http-ext");
+        expectedDependencies.add("org.mule.modules:mule-module-http-ext-dummy");
+        expectedDependencies.add("org.company.modules:bla-ble-bli-blo-blu");
+
+        for(Dependency dependency : dependencies) {
+            String dependencyCoordinates = dependency.getGroupId() + ":" + dependency.getArtifactId();
+            assertThat("The following dependency should not be present in the list of filtered dependencies: " + dependencyCoordinates, expectedDependencies.remove(dependencyCoordinates), is(true));
+        }
+        assertThat("Expected dependencies should be empty at this stage", expectedDependencies, IsEmptyCollection.emptyCollectionOf(String.class));
+    }
+    
+    private Dependency createDependencyMock(String group_id, String artifact_id) {
+        Dependency dependency = mock(Dependency.class);
+        when(dependency.getGroupId()).thenReturn(group_id);
+        when(dependency.getArtifactId()).thenReturn(artifact_id);
+        return dependency;
     }
 }

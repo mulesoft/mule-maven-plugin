@@ -29,7 +29,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -40,9 +42,17 @@ import java.util.stream.Collectors;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class GenerateSourcesMojo extends AbstractMuleMojo {
 
-
+    private static final String MULE_MODULE_GROUP_ID = "org.mule.modules";
     protected MulePluginResolver mulePluginResolver;
     protected ApplicationDependencySelector applicationDependencySelector;
+    private final Set<String> containerPlugins = new HashSet<>();
+
+    public GenerateSourcesMojo(){
+        containerPlugins.add(MULE_MODULE_GROUP_ID + ":mule-module-http-ext");
+        containerPlugins.add(MULE_MODULE_GROUP_ID + ":mule-module-extensions-xml-support");
+        containerPlugins.add(MULE_MODULE_GROUP_ID + ":mule-module-sockets");
+        containerPlugins.add(MULE_MODULE_GROUP_ID + ":mule-module-oauth");
+    }
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().debug("Creating target content with Mule source code...");
@@ -99,6 +109,7 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
         List<Dependency> selectedMulePlugins = applicationDependencySelector.select(mulePluginDependencies);
 
         List<File> selectedMulePluginFiles = selectedMulePlugins.stream()
+                .filter(mulePlugin -> isNotAlreadyPresentInMuleContainer(mulePlugin))
             .map(smp -> localRepository.find(repositorySystem.createDependencyArtifact(smp)).getFile())
             .collect(Collectors.toList());
 
@@ -108,6 +119,10 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
             Path targetFilePath = new File(targetFolder.toPath().toString() + File.separator + f.getName()).toPath();
             Files.copy(sourceFilePath, targetFilePath, StandardCopyOption.REPLACE_EXISTING);
         }
+    }
+
+    protected boolean isNotAlreadyPresentInMuleContainer(Dependency mulePlugin) {
+        return !containerPlugins.contains(mulePlugin.getGroupId() + ":" + mulePlugin.getArtifactId());
     }
 
     protected void createMuleSourceFolderContent() throws IOException {

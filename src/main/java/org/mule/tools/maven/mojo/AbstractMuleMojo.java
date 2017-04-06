@@ -10,13 +10,6 @@
 
 package org.mule.tools.maven.mojo;
 
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
@@ -29,6 +22,13 @@ import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.utils.StringUtils;
 import org.mule.tools.maven.mojo.model.PackagingType;
 import org.mule.tools.maven.mojo.model.SharedLibraryDependency;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
 
 /**
  * Base Mojo
@@ -68,8 +68,8 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   @Parameter(defaultValue = "${project.basedir}/src/test/munit/")
   protected File munitSourceFolder;
 
-  @Parameter(defaultValue = "${lightwayPackage}")
-  protected boolean lightwayPackage = false;
+  @Parameter(defaultValue = "${lightweightPackage}")
+  protected boolean lightweightPackage = false;
 
   @Parameter(property = "shared.libraries", required = false)
   protected List<SharedLibraryDependency> sharedLibraries;

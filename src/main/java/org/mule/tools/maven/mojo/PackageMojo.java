@@ -22,7 +22,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProjectHelper;
-import org.apache.maven.repository.legacy.metadata.ArtifactMetadataSource;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 import org.mule.tools.maven.mojo.model.PackagingType;
@@ -62,7 +61,7 @@ public class PackageMojo extends AbstractMuleMojo {
     } catch (ArchiverException e) {
       throw new MojoExecutionException("Exception creating the Mule App", e);
     }
-    helper.attachArtifact(this.project, TYPE, packagingType.resolveClassifier(classifier, lightwayPackage), destinationFile);
+    helper.attachArtifact(this.project, TYPE, packagingType.resolveClassifier(classifier, lightweightPackage), destinationFile);
   }
 
   /**
@@ -86,7 +85,7 @@ public class PackageMojo extends AbstractMuleMojo {
   protected String getFinalName() {
     if (finalName == null) {
       finalName = project.getArtifactId() + "-" + project.getVersion() + "-"
-          + packagingType.resolveClassifier(classifier, lightwayPackage);
+          + packagingType.resolveClassifier(classifier, lightweightPackage);
     }
     getLog().debug("Using final name: " + finalName);
     return finalName;
@@ -107,7 +106,7 @@ public class PackageMojo extends AbstractMuleMojo {
         } else {
           builder.withMule(new File(targetFolder + File.separator + MULE));
         }
-        if (!lightwayPackage) {
+        if (!lightweightPackage) {
           builder.withRepository(new File(targetFolder + File.separator + REPOSITORY));
         }
 

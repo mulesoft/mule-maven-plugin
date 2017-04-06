@@ -108,7 +108,7 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
                equalTo(ARTIFACT_ID + "-" + VERSION + "-" + MULE_APPLICATION_EXAMPLE));
 
     mojo.finalName = null;
-    mojo.lightwayPackage = true;
+    mojo.lightweightPackage = true;
     assertThat("Final name is not the expected", mojo.getFinalName(),
                equalTo(ARTIFACT_ID + "-" + VERSION + "-" + MULE_APPLICATION_EXAMPLE + "-" + LIGHT_PACKAGE_CLASSIFIER));
   }

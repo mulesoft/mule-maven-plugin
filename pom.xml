@@ -23,29 +23,7 @@
             <url>https://www.mulesoft.com/CPAL</url>
         </license>
     </licenses>
-    <mailingLists>
-        <mailingList>
-            <name>developers</name>
-            <post>mule-esb@mulesoft.com</post>
-        </mailingList>
-    </mailingLists>
-    <issueManagement>
-        <system>jira</system>
-        <url>https://www.mulesoft.org/jira/browse/MULE</url>
-    </issueManagement>
-    <developers>
-        <developer>
-            <id>asequeira</id>
-            <name>Ale Sequeira</name>
-            <email>alejandro.sequeira@mulesoft.com</email>
-            <organizationUrl>https://www.mulesoft.com/</organizationUrl>
-        </developer>
-    </developers>
-    <organization>
-        <name>MuleSoft Inc</name>
-        <url>https://www.mulesoft.com/</url>
-    </organization>
-
+    
     <properties>
         <licensePath>LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>formatter.xml</formatterConfigPath>

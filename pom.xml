@@ -169,15 +169,18 @@
             <artifactId>plexus-archiver</artifactId>
             <version>${codehaus.plexus.archiver}</version>
         </dependency>
+        <!-- TODO MMP-115 this should not be necessary or it should be test -->
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
             <version>${hamcrest.version}</version>
         </dependency>
+        <!-- TODO MMP-115 this is duplicated and ti should be test-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+        <!-- TODO MMP-115 this should be test -->
         <dependency>
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-verifier</artifactId>
@@ -189,23 +192,27 @@
             <scope>test</scope>
         </dependency>
         <!-- Other Dependencies -->
+        <!-- TODO MMP-115 this should not be necessary-->
         <dependency>
             <groupId>org.mule</groupId>
             <artifactId>mule-core</artifactId>
             <version>${mule.version}</version>
             <classifier>tests</classifier>
         </dependency>
+        <!-- TODO MMP-115 this should not be necessary  -->
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-infrastructure</artifactId>
             <version>${mule.version}</version>
         </dependency>
+        <!-- TODO MMP-115 remove this -->
         <!--<dependency>-->
             <!--<groupId>org.mockito</groupId>-->
             <!--<artifactId>mockito-all</artifactId>-->
             <!--<version>${mockito.version}</version>-->
             <!--<scope>test</scope>-->
         <!--</dependency>-->
+        <!-- TODO MMP-115 this should not be necessary or it should be test -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -231,11 +238,13 @@
             <artifactId>jersey-media-multipart</artifactId>
             <version>${jersey.version}</version>
         </dependency>
+        <!-- TODO MMP-115 can we just use gson? -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>${json.version}</version>
         </dependency>
+        <!-- TODO MMP-115 we should probably use hamcrest-all -->
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
@@ -258,6 +267,7 @@
             <artifactId>maven-shared-utils</artifactId>
             <version>${maven.shared.utils.version}</version>
         </dependency>
+        <!-- TODO MMP-115 why do we use this?? -->
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
@@ -297,6 +307,7 @@
             <version>${hamcrest.all.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- TODO MMP-115 this is duplicated and should be test -->
         <dependency>
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-verifier</artifactId>
@@ -428,6 +439,7 @@
         </plugins>
     </build>
 
+    <!-- TODO MMP-115 this should not be necessary we have no multimodule project-->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -445,6 +457,7 @@
         </dependencies>
     </dependencyManagement>
 
+    <!-- TODO MMP-115 remove the reporting section -->
     <reporting>
         <plugins>
             <plugin>

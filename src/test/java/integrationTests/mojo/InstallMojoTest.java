@@ -156,7 +156,7 @@ public class InstallMojoTest extends MojoTest {
   @Test
   public void testInstallApplicationLightPackage() throws IOException, VerificationException {
     verifier.addCliOption("-DattachMuleSources=true");
-    verifier.addCliOption("-DlightwayPackage=true");
+    verifier.addCliOption("-DlightweightPackage=true");
     verifier.deleteArtifacts(GROUP_ID, ARTIFACT_ID, VERSION);
     String artifactPath =
         verifier.getArtifactPath(GROUP_ID, ARTIFACT_ID, VERSION, EXT, MULE_APPLICATION_CLASSIFIER_LIGHT_PACKAGE);
@@ -175,7 +175,7 @@ public class InstallMojoTest extends MojoTest {
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-DattachMuleSources=true");
-    verifier.addCliOption("-DlightwayPackage=true");
+    verifier.addCliOption("-DlightweightPackage=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
     String artifactPath =
         verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_APPLICATION_TEMPLATE_CLASSIFIER + LIGHT_PACKAGE_EXT);
@@ -194,7 +194,7 @@ public class InstallMojoTest extends MojoTest {
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-DattachMuleSources=true");
-    verifier.addCliOption("-DlightwayPackage=true");
+    verifier.addCliOption("-DlightweightPackage=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
     String artifactPath =
         verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_APPLICATION_EXAMPLE_CLASSIFIER + LIGHT_PACKAGE_EXT);
@@ -213,7 +213,7 @@ public class InstallMojoTest extends MojoTest {
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-DattachMuleSources=true");
-    verifier.addCliOption("-DlightwayPackage=true");
+    verifier.addCliOption("-DlightweightPackage=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
     String artifactPath =
         verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_DOMAIN_CLASSIFIER + LIGHT_PACKAGE_EXT);

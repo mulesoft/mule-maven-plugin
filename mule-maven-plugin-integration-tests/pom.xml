@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.mule.tools.maven</groupId>
         <artifactId>mule-maven-plugins</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>3.0.0-M1-HF2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

@@ -522,7 +522,8 @@
             <id>release</id>
             <build>
                 <plugins>
-                    <!-- <plugin>
+                    <!-- TODO MMP-119 Review plugin executions. Right now javadoc plugin is failing -->
+                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <version>2.10</version>
@@ -557,7 +558,7 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin> -->
+                    </plugin> 
                 </plugins>
             </build>
         </profile>

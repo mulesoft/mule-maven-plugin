@@ -8,21 +8,19 @@ package org.mule.tools.maven.plugin.mule.arm;
 
 import java.util.Date;
 
-public class Data
-{
+public class Data {
 
-    public Data()
-    {
+  public Data() {
 
-    }
+  }
 
-    public int id;
-    public Date timeCreated;
-    public Date timeUpdated;
-    public String desiredStatus;
-    public int contextId;
-    public String lastReportedStatus;
-    public Artifact artifact;
-    public Target target;
+  public int id;
+  public Date timeCreated;
+  public Date timeUpdated;
+  public String desiredStatus;
+  public int contextId;
+  public String lastReportedStatus;
+  public Artifact artifact;
+  public Target target;
 
 }

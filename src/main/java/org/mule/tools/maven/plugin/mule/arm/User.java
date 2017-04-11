@@ -6,7 +6,7 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
-public class User
-{
-    public Organization organization;
+public class User {
+
+  public Organization organization;
 }

@@ -6,10 +6,10 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
-public class Environment
-{
-    public String id;
-    public String name;
-    public String organizationId;
-    public boolean isProduction;
+public class Environment {
+
+  public String id;
+  public String name;
+  public String organizationId;
+  public boolean isProduction;
 }

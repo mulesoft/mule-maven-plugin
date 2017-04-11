@@ -28,114 +28,99 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 
 import org.apache.maven.plugin.logging.Log;
 
-public class ApiLoggingFilter implements ClientRequestFilter, ClientResponseFilter, WriterInterceptor
-{
+public class ApiLoggingFilter implements ClientRequestFilter, ClientResponseFilter, WriterInterceptor {
 
-    private static final String REQUEST_LOGGING_STREAM = "requestLoggingStream";
+  private static final String REQUEST_LOGGING_STREAM = "requestLoggingStream";
 
-    private Log log;
+  private Log log;
 
-    public ApiLoggingFilter(Log log)
-    {
-        this.log = log;
+  public ApiLoggingFilter(Log log) {
+    this.log = log;
+  }
+
+  private void appendHeaders(StringBuilder b, MultivaluedMap<String, String> headers) {
+    for (Map.Entry<String, List<String>> headerEntry : headers.entrySet()) {
+      b.append(headerEntry.getKey()).append(": ").append(StringUtils.join(headerEntry.getValue(), ", ")).append("\n");
+    }
+    b.append("\n");
+  }
+
+
+  @Override
+  public void filter(ClientRequestContext context) throws IOException {
+
+    StringBuilder request = new StringBuilder();
+
+    request.append("HTTP Request\n");
+    request.append(context.getMethod() + " " + context.getUri() + "\n");
+
+    appendHeaders(request, context.getStringHeaders());
+
+    if (context.hasEntity()) {
+      OutputStream stream = new RequestLoggingStream(request, context.getEntityStream());
+      context.setEntityStream(stream);
+      context.setProperty(REQUEST_LOGGING_STREAM, stream);
+    } else {
+      log.debug(request.toString());
+    }
+  }
+
+  @Override
+  public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
+
+    StringBuilder response = new StringBuilder();
+
+    response.append("HTTP response\n");
+    response.append(Integer.toString(responseContext.getStatus())).append(" ")
+        .append(responseContext.getStatusInfo().getReasonPhrase()).append("\n");
+
+    appendHeaders(response, responseContext.getHeaders());
+
+    if (responseContext.hasEntity()) {
+      ByteArrayOutputStream stream = new ByteArrayOutputStream();
+      IOUtils.copy(responseContext.getEntityStream(), stream);
+      byte[] responseBytes = stream.toByteArray();
+      response.append(new String(responseBytes));
+      response.append("\n");
+      responseContext.setEntityStream(new ByteArrayInputStream(responseBytes));
     }
 
-    private void appendHeaders(StringBuilder b, MultivaluedMap<String, String> headers)
-    {
-        for (Map.Entry<String, List<String>> headerEntry : headers.entrySet())
-        {
-            b.append(headerEntry.getKey()).append(": ").append(StringUtils.join(headerEntry.getValue(), ", ")).append("\n");
-        }
-        b.append("\n");
-    }
+    log.debug(response.toString());
+  }
 
+  @Override
+  public void aroundWriteTo(WriterInterceptorContext writerInterceptorContext) throws IOException, WebApplicationException {
+    RequestLoggingStream stream = (RequestLoggingStream) writerInterceptorContext.getProperty(REQUEST_LOGGING_STREAM);
+
+    writerInterceptorContext.proceed();
+
+    if (stream != null) {
+      log.debug(stream.getRequestLog());
+    }
+  }
+
+  private class RequestLoggingStream extends FilterOutputStream {
+
+    private StringBuilder request;
+    private ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
+
+    RequestLoggingStream(StringBuilder request, OutputStream inner) {
+      super(inner);
+      this.request = request;
+    }
 
     @Override
-    public void filter(ClientRequestContext context) throws IOException
-    {
-
-        StringBuilder request = new StringBuilder();
-
-        request.append("HTTP Request\n");
-        request.append(context.getMethod() + " " + context.getUri() + "\n");
-
-        appendHeaders(request, context.getStringHeaders());
-
-        if (context.hasEntity())
-        {
-            OutputStream stream = new RequestLoggingStream(request, context.getEntityStream());
-            context.setEntityStream(stream);
-            context.setProperty(REQUEST_LOGGING_STREAM, stream);
-        }
-        else
-        {
-            log.debug(request.toString());
-        }
+    public void write(final int i) throws IOException {
+      requestBody.write(i);
+      out.write(i);
     }
 
-    @Override
-    public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException
-    {
 
-        StringBuilder response = new StringBuilder();
-
-        response.append("HTTP response\n");
-        response.append(Integer.toString(responseContext.getStatus())).append(" ").append(responseContext.getStatusInfo().getReasonPhrase()).append("\n");
-
-        appendHeaders(response, responseContext.getHeaders());
-
-        if (responseContext.hasEntity())
-        {
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            IOUtils.copy(responseContext.getEntityStream(), stream);
-            byte[] responseBytes = stream.toByteArray();
-            response.append(new String(responseBytes));
-            response.append("\n");
-            responseContext.setEntityStream(new ByteArrayInputStream(responseBytes));
-        }
-
-        log.debug(response.toString());
+    public String getRequestLog() {
+      request.append(new String(requestBody.toByteArray()));
+      request.append('\n');
+      return request.toString();
     }
 
-    @Override
-    public void aroundWriteTo(WriterInterceptorContext writerInterceptorContext) throws IOException, WebApplicationException
-    {
-        RequestLoggingStream stream = (RequestLoggingStream) writerInterceptorContext.getProperty(REQUEST_LOGGING_STREAM);
-
-        writerInterceptorContext.proceed();
-
-        if (stream != null)
-        {
-            log.debug(stream.getRequestLog());
-        }
-    }
-
-    private class RequestLoggingStream extends FilterOutputStream
-    {
-
-        private StringBuilder request;
-        private ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
-
-        RequestLoggingStream(StringBuilder request, OutputStream inner)
-        {
-            super(inner);
-            this.request = request;
-        }
-
-        @Override
-        public void write(final int i) throws IOException
-        {
-            requestBody.write(i);
-            out.write(i);
-        }
-
-
-        public String getRequestLog()
-        {
-            request.append(new String(requestBody.toByteArray()));
-            request.append('\n');
-            return request.toString();
-        }
-
-    }
+  }
 }

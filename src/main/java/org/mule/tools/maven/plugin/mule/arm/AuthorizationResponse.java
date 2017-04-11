@@ -6,15 +6,14 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
-public class AuthorizationResponse
-{
-    public String access_token;
-    public String token_type;
-    public String redirectUrl;
+public class AuthorizationResponse {
 
-    public AuthorizationResponse()
-    {
+  public String access_token;
+  public String token_type;
+  public String redirectUrl;
 
-    }
+  public AuthorizationResponse() {
+
+  }
 
 }

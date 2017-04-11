@@ -26,21 +26,13 @@
     <mailingLists>
         <mailingList>
             <name>developers</name>
-            <post>mule-esb@mulesoft.com</post>
+            <post>munit@mulesoft.com</post>
         </mailingList>
     </mailingLists>
     <issueManagement>
         <system>jira</system>
-        <url>https://www.mulesoft.org/jira/browse/MULE</url>
+        <url>https://www.mulesoft.org/jira/browse/MMP</url>
     </issueManagement>
-    <developers>
-        <developer>
-            <id>asequeira</id>
-            <name>Ale Sequeira</name>
-            <email>alejandro.sequeira@mulesoft.com</email>
-            <organizationUrl>https://www.mulesoft.com/</organizationUrl>
-        </developer>
-    </developers>
     <organization>
         <name>MuleSoft Inc</name>
         <url>https://www.mulesoft.com/</url>
@@ -48,6 +40,7 @@
 
     <properties>
         <licensePath>LICENSE_HEADER.txt</licensePath>
+        <formatterConfigPath>formatter.xml</formatterConfigPath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mule.version>3.8.1</mule.version>
         <suite>standalone</suite>
@@ -55,9 +48,10 @@
         <environment>Production</environment>
         <target>server-name</target>
 
-        <java.source>1.7</java.source>
-        <java.target>1.7</java.target>
+        <java.source>1.8</java.source>
+        <java.target>1.8</java.target>
 
+        <javaFormatter.plugin.version>1.8.0</javaFormatter.plugin.version>
         <license.plugin.version>2.6</license.plugin.version>
         <junit.version>4.11</junit.version>
         <mockito.version>1.8.5</mockito.version>
@@ -66,6 +60,9 @@
         <groovy.version>2.0.1</groovy.version>
         <hamcrest.version>1.3</hamcrest.version>
         <json.version>20140107</json.version>
+
+        <skipVerifications>false</skipVerifications>
+        <formatterGoal>validate</formatterGoal>
 
         <maven.settings.version>3.0.4</maven.settings.version>
         <maven.plugin.api.version>2.0</maven.plugin.api.version>
@@ -319,6 +316,30 @@
                         <phase>compile</phase>
                         <goals>
                             <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.marvinformatics.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>${javaFormatter.plugin.version}</version>
+                <configuration>
+                    <compilerCompliance>${java.source}</compilerCompliance>
+                    <compilerSource>${java.source}</compilerSource>
+                    <compilerTargetPlatform>${java.source}</compilerTargetPlatform>
+                    <configFile>${basedir}/${formatterConfigPath}</configFile>
+                    <configJsFile>${basedir}/${formatterConfigPath}</configJsFile>
+                    <lineEnding>LF</lineEnding>
+                    <aggregator>false</aggregator>
+                    <executionRoot>true</executionRoot>
+                    <skipFormatting>${skipVerifications}</skipFormatting>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>${formatterGoal}</goal>
                         </goals>
                     </execution>
                 </executions>

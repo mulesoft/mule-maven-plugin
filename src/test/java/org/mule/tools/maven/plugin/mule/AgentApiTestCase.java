@@ -15,28 +15,24 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 @Ignore
-public class AgentApiTestCase
-{
+public class AgentApiTestCase {
 
-    private static final File APP = new File("/tmp/echo-test4.zip");
-    private AgentApi agentApi;
+  private static final File APP = new File("/tmp/echo-test4.zip");
+  private AgentApi agentApi;
 
-    @Before
-    public void setup()
-    {
-        agentApi = new AgentApi(null, "http://localhost:9999/");
-    }
+  @Before
+  public void setup() {
+    agentApi = new AgentApi(null, "http://localhost:9999/");
+  }
 
-    @Test
-    public void deployApplication()
-    {
-        agentApi.deployApplication("test", APP);
-    }
+  @Test
+  public void deployApplication() {
+    agentApi.deployApplication("test", APP);
+  }
 
-    @Test
-    public void undeployApplication()
-    {
-        agentApi.undeployApplication("echo-test4");
-    }
+  @Test
+  public void undeployApplication() {
+    agentApi.undeployApplication("echo-test4");
+  }
 
 }

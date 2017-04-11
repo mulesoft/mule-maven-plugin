@@ -6,9 +6,6 @@
  */
 package org.mule.tools.maven.plugin.mule;
 
-public enum TargetType
-{
-    server,
-    serverGroup,
-    cluster
+public enum TargetType {
+  server, serverGroup, cluster
 }

@@ -22,64 +22,55 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 @Ignore
-public class ArmApiTestCase
-{
+public class ArmApiTestCase {
 
-    private static final String USERNAME = System.getProperty("username");
-    private static final String PASSWORD = System.getProperty("password");
-    private static final String ENVIRONMENT = "Production";
-    private ArmApi armApi;
+  private static final String USERNAME = System.getProperty("username");
+  private static final String PASSWORD = System.getProperty("password");
+  private static final String ENVIRONMENT = "Production";
+  private ArmApi armApi;
 
-    @Before
-    public void setup()
-    {
-        armApi = new ArmApi(null, "https://anypoint.mulesoft.com", USERNAME, PASSWORD, ENVIRONMENT, "", false);
-        armApi.init();
-    }
+  @Before
+  public void setup() {
+    armApi = new ArmApi(null, "https://anypoint.mulesoft.com", USERNAME, PASSWORD, ENVIRONMENT, "", false);
+    armApi.init();
+  }
 
-    @Test
-    public void getApplications()
-    {
-        Applications apps = armApi.getApplications();
-        assertThat(apps, notNullValue());
-    }
+  @Test
+  public void getApplications() {
+    Applications apps = armApi.getApplications();
+    assertThat(apps, notNullValue());
+  }
 
-    @Test
-    public void findEnvironmentByName()
-    {
-        Environment environment = armApi.findEnvironmentByName("Production");
-        assertThat(environment.name, equalTo("Production"));
-    }
+  @Test
+  public void findEnvironmentByName() {
+    Environment environment = armApi.findEnvironmentByName("Production");
+    assertThat(environment.name, equalTo("Production"));
+  }
 
-    @Test(expected = RuntimeException.class)
-    public void failToFindFakeEnvironment()
-    {
-        armApi.findEnvironmentByName("notProduction");
-    }
+  @Test(expected = RuntimeException.class)
+  public void failToFindFakeEnvironment() {
+    armApi.findEnvironmentByName("notProduction");
+  }
 
-    @Test
-    public void findServerByName()
-    {
-        Target target = armApi.findServerByName("server-name");
-        assertThat(target.name, equalTo("server-name"));
-    }
+  @Test
+  public void findServerByName() {
+    Target target = armApi.findServerByName("server-name");
+    assertThat(target.name, equalTo("server-name"));
+  }
 
-    @Test(expected = RuntimeException.class)
-    public void failToFindFakeTargetName()
-    {
-        armApi.findServerByName("fake-server-name");
-    }
+  @Test(expected = RuntimeException.class)
+  public void failToFindFakeTargetName() {
+    armApi.findServerByName("fake-server-name");
+  }
 
-    private Callable<Boolean> appIsStarted(final int applicationId)
-    {
-        return new Callable<Boolean>()
-        {
-            @Override
-            public Boolean call() throws Exception
-            {
-                return armApi.isStarted(applicationId);
-            }
-        };
-    }
+  private Callable<Boolean> appIsStarted(final int applicationId) {
+    return new Callable<Boolean>() {
+
+      @Override
+      public Boolean call() throws Exception {
+        return armApi.isStarted(applicationId);
+      }
+    };
+  }
 
 }

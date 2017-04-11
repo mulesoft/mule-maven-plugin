@@ -6,9 +6,9 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
-public class Artifact
-{
-    public int id;
-    public String name;
+public class Artifact {
+
+  public int id;
+  public String name;
 
 }

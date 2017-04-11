@@ -6,7 +6,7 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
-public class Environments
-{
-    public Environment[] data;
+public class Environments {
+
+  public Environment[] data;
 }

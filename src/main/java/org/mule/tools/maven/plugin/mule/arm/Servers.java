@@ -6,13 +6,11 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
-class Servers
-{
+class Servers {
 
-    public Servers()
-    {
+  public Servers() {
 
-    }
+  }
 
-    public Server[] data;
+  public Server[] data;
 }

@@ -6,9 +6,8 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
-public class Target
-{
+public class Target {
 
-    public String id;
-    public String name;
+  public String id;
+  public String name;
 }

@@ -9,7 +9,7 @@ package org.mule.tools.maven.plugin.mule;
 import groovy.lang.GroovyShell;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.factory.DefaultArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.AbstractArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
@@ -49,7 +49,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   protected MavenProject mavenProject;
 
   @Component
-  protected ArtifactFactory artifactFactory;
+  protected DefaultArtifactFactory artifactFactory;
 
   @Component
   protected ArtifactResolver artifactResolver;
@@ -70,8 +70,8 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   protected int timeout;
 
   /**
-   * Maven server with Anypoint Platform credentials. This is only needed if you want to use your credentials stored
-   * in your Maven settings.xml file. This is NOT your Mule server name.
+   * Maven server with Anypoint Platform credentials. This is only needed if you want to use your credentials stored in your Maven
+   * settings.xml file. This is NOT your Mule server name.
    *
    * @since 2.2
    */
@@ -119,8 +119,8 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   protected String environment;
 
   /**
-   * Path to a Mule Standalone server.
-   * This parameter and <code>muleDistribution</code> and <code>muleVersion</code> are mutual exclusive.
+   * Path to a Mule Standalone server. This parameter and <code>muleDistribution</code> and <code>muleVersion</code> are mutual
+   * exclusive.
    *
    * @since 2.0
    */
@@ -128,8 +128,8 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   protected File muleHome;
 
   /**
-   * Version of the Mule Runtime Enterprise distribution to download. If you need to use Community version use <code>muleDistribution</code> parameter.
-   * This parameter and <code>muleDistribution</code> are mutual exclusive.
+   * Version of the Mule Runtime Enterprise distribution to download. If you need to use Community version use
+   * <code>muleDistribution</code> parameter. This parameter and <code>muleDistribution</code> are mutual exclusive.
    *
    * @since 1.0
    */
@@ -172,8 +172,8 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   protected File application;
 
   /**
-   * Name of the application to deploy/undeploy. If not specified, the artifact id will be used as
-   * the name. This parameter allows to override this behavior to specify a custom name.
+   * Name of the application to deploy/undeploy. If not specified, the artifact id will be used as the name. This parameter allows
+   * to override this behavior to specify a custom name.
    *
    * @since 2.0
    */

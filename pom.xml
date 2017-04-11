@@ -53,53 +53,26 @@
 
         <javaFormatter.plugin.version>1.8.0</javaFormatter.plugin.version>
         <license.plugin.version>2.6</license.plugin.version>
-        <junit.version>4.11</junit.version>
-        <mockito.version>1.8.5</mockito.version>
         <jersey.version>2.25</jersey.version>
-        <awaitility.version>1.6.5</awaitility.version>
         <groovy.version>2.0.1</groovy.version>
-        <hamcrest.version>1.3</hamcrest.version>
-        <json.version>20140107</json.version>
 
         <skipVerifications>false</skipVerifications>
         <formatterGoal>validate</formatterGoal>
 
-        <maven.settings.version>3.3.9</maven.settings.version>
-        <maven.plugin.api.version>3.3.9</maven.plugin.api.version>
-        <maven.plugin.testing.harness.version>3.3.0</maven.plugin.testing.harness.version>
         <maven.plugin.annotations.version>3.5</maven.plugin.annotations.version>
         <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
         <maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
         <maven.invoker.plugin.version>2.0.0</maven.invoker.plugin.version>
         <maven.plugin.plugin.version>3.5</maven.plugin.plugin.version>
-        <maven.artifact.version>3.3.9</maven.artifact.version>
         <maven.compat.version>3.3.9</maven.compat.version>
         <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
-        <maven.project.version>2.2.1</maven.project.version>
         <maven.plugin.version>3.2</maven.plugin.version>
-        <maven.settings.builder.version>3.3.9</maven.settings.builder.version>
         <codehaus.plexus.archiver>3.4</codehaus.plexus.archiver>
-        <plexus.utils.version>3.0.24</plexus.utils.version>
         <project.info.plugin.version>2.9</project.info.plugin.version>
     </properties>
 
     <dependencies>
         <!-- Maven Plugin Dependencies -->
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-settings</artifactId>
-            <version>${maven.settings.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-plugin-api</artifactId>
-            <version>${maven.plugin.api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-artifact</artifactId>
-            <version>${maven.artifact.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
@@ -108,48 +81,14 @@
         </dependency>
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-utils</artifactId>
-            <version>${plexus.utils.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-project</artifactId>
-            <version>${maven.project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.plugin-testing</groupId>
-            <artifactId>maven-plugin-testing-harness</artifactId>
-            <version>${maven.plugin.testing.harness.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-archiver</artifactId>
             <version>${codehaus.plexus.archiver}</version>
         </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
         <!-- Other Dependencies -->
-        <dependency>
-            <groupId>org.mule</groupId>
-            <artifactId>mule-core</artifactId>
-            <version>${mule.version}</version>
-            <classifier>tests</classifier>
-        </dependency>
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-infrastructure</artifactId>
             <version>${mule.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
@@ -163,35 +102,8 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-moxy</artifactId>
-            <version>${jersey.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-multipart</artifactId>
             <version>${jersey.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>${json.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-            <version>${hamcrest.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.jayway.awaitility</groupId>
-            <artifactId>awaitility-groovy</artifactId>
-            <version>${awaitility.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-settings-builder</artifactId>
-            <version>${maven.settings.builder.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>

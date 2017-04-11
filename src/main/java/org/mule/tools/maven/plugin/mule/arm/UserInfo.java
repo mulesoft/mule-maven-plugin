@@ -9,7 +9,7 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
-public class UserInfo
-{
-    public User user;
+public class UserInfo {
+
+  public User user;
 }

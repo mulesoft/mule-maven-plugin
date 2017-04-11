@@ -115,7 +115,8 @@ public class ValidateMojoTest extends MojoTest {
       verifier.executeGoal(VALIDATE);
     } catch (VerificationException e) {
     }
-    verifier.verifyTextInLog("Invalid Mule project. Missing mule-policy.json file, it must be present in the root of application");
+    verifier
+        .verifyTextInLog("Invalid Mule project. Missing mule-policy.json file, it must be present in the root of application");
   }
 
   @Test
@@ -127,7 +128,8 @@ public class ValidateMojoTest extends MojoTest {
       verifier.executeGoal(VALIDATE);
     } catch (VerificationException e) {
     }
-    verifier.verifyTextInLog("Invalid Mule project. Missing mule-application.json file, it must be present in the root of application");
+    verifier
+        .verifyTextInLog("Invalid Mule project. Missing mule-application.json file, it must be present in the root of application");
   }
 
   @Test
@@ -139,7 +141,8 @@ public class ValidateMojoTest extends MojoTest {
       verifier.executeGoal(VALIDATE);
     } catch (VerificationException e) {
     }
-    verifier.verifyTextInLog("Invalid Mule project. Missing mule-application.json file, it must be present in the root of application");
+    verifier
+        .verifyTextInLog("Invalid Mule project. Missing mule-application.json file, it must be present in the root of application");
   }
 
 }

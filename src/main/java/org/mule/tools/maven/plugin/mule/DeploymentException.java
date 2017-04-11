@@ -10,17 +10,14 @@
 package org.mule.tools.maven.plugin.mule;
 
 
-public class DeploymentException extends Exception
-{
+public class DeploymentException extends Exception {
 
-    public DeploymentException(String message, Exception exception)
-    {
-        super(message, exception);
-    }
+  public DeploymentException(String message, Exception exception) {
+    super(message, exception);
+  }
 
-    public DeploymentException(String message)
-    {
-        super(message);
-    }
+  public DeploymentException(String message) {
+    super(message);
+  }
 
 }

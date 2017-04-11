@@ -9,20 +9,18 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
-class Server
-{
+class Server {
 
-    public Server()
-    {
+  public Server() {
 
-    }
+  }
 
-    public String id;
-    public String timeCreated;
-    public String timeUpdated;
-    public String name;
-    public String serverType;
-    public String muleVersion;
-    public String agentVersion;
-    public String status;
+  public String id;
+  public String timeCreated;
+  public String timeUpdated;
+  public String name;
+  public String serverType;
+  public String muleVersion;
+  public String agentVersion;
+  public String status;
 }

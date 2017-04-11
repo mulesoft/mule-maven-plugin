@@ -9,9 +9,8 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
-public class Applications
-{
+public class Applications {
 
-    public Data[] data;
+  public Data[] data;
 
 }

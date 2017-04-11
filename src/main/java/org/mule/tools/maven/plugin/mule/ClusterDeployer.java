@@ -22,157 +22,122 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 
-public class ClusterDeployer
-{
+public class ClusterDeployer {
 
-    private List<MuleProcessController> mules;
-    private File[] paths;
-    private Log log;
-    private File application;
-    private Prober prober;
-    private long timeout;
-    private long pollingDelay;
-    private String[] arguments;
-    private ClusterConfigurator configurator = new ClusterConfigurator();
+  private List<MuleProcessController> mules;
+  private File[] paths;
+  private Log log;
+  private File application;
+  private Prober prober;
+  private long timeout;
+  private long pollingDelay;
+  private String[] arguments;
+  private ClusterConfigurator configurator = new ClusterConfigurator();
 
-    public ClusterDeployer(File[] paths,
-                           List<MuleProcessController> mules,
-                           Log log,
-                           File application,
-                           long timeout,
-                           String[] arguments,
-                           long pollingDelay)
-    {
-        this.mules = mules;
-        this.log = log;
-        this.application = application;
-        this.timeout = timeout;
-        this.pollingDelay = pollingDelay;
-        this.arguments = arguments;
-        this.prober = new PollingProber(timeout, pollingDelay);
-        this.paths = paths;
-        log.debug(toString());
+  public ClusterDeployer(File[] paths,
+                         List<MuleProcessController> mules,
+                         Log log,
+                         File application,
+                         long timeout,
+                         String[] arguments,
+                         long pollingDelay) {
+    this.mules = mules;
+    this.log = log;
+    this.application = application;
+    this.timeout = timeout;
+    this.pollingDelay = pollingDelay;
+    this.arguments = arguments;
+    this.prober = new PollingProber(timeout, pollingDelay);
+    this.paths = paths;
+    log.debug(toString());
+  }
+
+  public String toString() {
+    return String.format("Deployer with [Controllers=%s, log=%s, application=%s, timeout=%d, pollingDelay=%d ]",
+                         mules, log, application, timeout, pollingDelay);
+  }
+
+  public void execute() throws MojoFailureException, MojoExecutionException {
+    try {
+      configurator.configureCluster(paths, mules);
+      startMulesIfStopped();
+      deployApplications();
+      waitForDeployments();
+    } catch (MuleControllerException e) {
+      throw new MojoFailureException("Error deploying application: [" + application + "]");
+    } catch (RuntimeException e) {
+      throw new MojoExecutionException("Unexpected error deploying application: [" + application
+          + "]", e);
     }
+  }
 
-    public String toString()
-    {
-        return String.format("Deployer with [Controllers=%s, log=%s, application=%s, timeout=%d, pollingDelay=%d ]",
-                             mules, log, application, timeout, pollingDelay
-        );
+  private void waitForDeployments() throws MojoFailureException {
+    for (MuleProcessController m : mules) {
+      if (!application.exists()) {
+        throw new MojoFailureException("Application does not exists: " + application);
+      }
+      log.debug("Checking for application [" + application + "] to be deployed.");
+      String app = getApplicationName(application);
+      try {
+        prober.check(AppDeploymentProbe.isDeployed(m, app));
+      } catch (AssertionError e) {
+        log.error("Couldn't deploy application [" + application + "] after [" + timeout
+            + "] miliseconds. Check Mule Runtime log");
+        throw new MojoFailureException("Application deployment timeout.");
+      }
+
     }
+  }
 
-    public void execute() throws MojoFailureException, MojoExecutionException
-    {
-        try
-        {
-            configurator.configureCluster(paths, mules);
-            startMulesIfStopped();
-            deployApplications();
-            waitForDeployments();
+  private String getApplicationName(File application) {
+    String name = application.getName();
+    int extensionBeginning = name.lastIndexOf('.');
+    return extensionBeginning == -1 ? name : name.substring(0, extensionBeginning);
+  }
+
+  private void deployApplications() throws MojoFailureException {
+    for (MuleProcessController m : mules) {
+      if (!application.exists()) {
+        throw new MojoFailureException("Application does not exists: " + application.getAbsolutePath());
+      }
+      log.info("Deploying application [" + application + "]");
+      try {
+        m.deploy(application.getAbsolutePath());
+      } catch (MuleControllerException e) {
+        log.error("Couldn't deploy application: " + application + ". Check Mule Runtime logs");
+      }
+    }
+  }
+
+  private void startMulesIfStopped() {
+    for (MuleProcessController m : mules) {
+      log.debug("Checking if Mule Runtime is running.");
+      if (!m.isRunning()) {
+        try {
+          log.info("Starting Mule Runtime");
+          if (arguments == null) {
+            m.start();
+          } else {
+            m.start(arguments);
+          }
+        } catch (MuleControllerException e) {
+          log.error("Couldn't start Mule Runtime. Check Mule Runtime logs");
         }
-        catch (MuleControllerException e)
-        {
-            throw new MojoFailureException("Error deploying application: [" + application + "]");
-        }
-        catch (RuntimeException e)
-        {
-            throw new MojoExecutionException("Unexpected error deploying application: [" + application
-                                             + "]", e);
-        }
+      }
     }
 
-    private void waitForDeployments() throws MojoFailureException
-    {
-        for (MuleProcessController m : mules)
-        {
-            if (!application.exists())
-            {
-                throw new MojoFailureException("Application does not exists: " + application);
-            }
-            log.debug("Checking for application [" + application + "] to be deployed.");
-            String app = getApplicationName(application);
-            try
-            {
-                prober.check(AppDeploymentProbe.isDeployed(m, app));
-            }
-            catch (AssertionError e)
-            {
-                log.error("Couldn't deploy application [" + application + "] after [" + timeout
-                          + "] miliseconds. Check Mule Runtime log");
-                throw new MojoFailureException("Application deployment timeout.");
-            }
+  }
 
-        }
+  public ClusterDeployer addLibraries(List<File> libs) {
+    for (File file : libs) {
+      for (MuleProcessController c : mules) {
+        c.addLibrary(file);
+      }
+
+      log.debug(String.format("Adding library %s...", file));
     }
-
-    private String getApplicationName(File application)
-    {
-        String name = application.getName();
-        int extensionBeginning = name.lastIndexOf('.');
-        return extensionBeginning == -1 ? name : name.substring(0, extensionBeginning);
-    }
-
-    private void deployApplications() throws MojoFailureException
-    {
-        for (MuleProcessController m : mules)
-        {
-            if (!application.exists())
-            {
-                throw new MojoFailureException("Application does not exists: " + application.getAbsolutePath());
-            }
-            log.info("Deploying application [" + application + "]");
-            try
-            {
-                m.deploy(application.getAbsolutePath());
-            }
-            catch (MuleControllerException e)
-            {
-                log.error("Couldn't deploy application: " + application + ". Check Mule Runtime logs");
-            }
-        }
-    }
-
-    private void startMulesIfStopped()
-    {
-        for (MuleProcessController m : mules)
-        {
-            log.debug("Checking if Mule Runtime is running.");
-            if (!m.isRunning())
-            {
-                try
-                {
-                    log.info("Starting Mule Runtime");
-                    if (arguments == null)
-                    {
-                        m.start();
-                    }
-                    else
-                    {
-                        m.start(arguments);
-                    }
-                }
-                catch (MuleControllerException e)
-                {
-                    log.error("Couldn't start Mule Runtime. Check Mule Runtime logs");
-                }
-            }
-        }
-
-    }
-
-    public ClusterDeployer addLibraries(List<File> libs)
-    {
-        for (File file : libs)
-        {
-            for (MuleProcessController c : mules)
-            {
-                c.addLibrary(file);
-            }
-
-            log.debug(String.format("Adding library %s...", file));
-        }
-        return this;
-    }
+    return this;
+  }
 
 
 }

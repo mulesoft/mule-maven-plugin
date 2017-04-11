@@ -23,147 +23,113 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 
-public class Deployer
-{
+public class Deployer {
 
-    private MuleProcessController mule;
-    private Log log;
-    private File application;
-    private Prober prober;
-    private long timeout;
-    private long pollingDelay;
-    private String[] arguments;
+  private MuleProcessController mule;
+  private Log log;
+  private File application;
+  private Prober prober;
+  private long timeout;
+  private long pollingDelay;
+  private String[] arguments;
 
-    public Deployer(MuleProcessController mule,
-                    Log log,
-                    File application,
-                    long timeout,
-                    String[] arguments,
-                    long pollingDelay)
-    {
-        this.mule = mule;
-        this.log = log;
-        this.application = application;
-        this.timeout = timeout;
-        this.pollingDelay = pollingDelay;
-        this.arguments = arguments;
-        this.prober = new PollingProber(timeout, pollingDelay);
-        log.debug(toString());
+  public Deployer(MuleProcessController mule,
+                  Log log,
+                  File application,
+                  long timeout,
+                  String[] arguments,
+                  long pollingDelay) {
+    this.mule = mule;
+    this.log = log;
+    this.application = application;
+    this.timeout = timeout;
+    this.pollingDelay = pollingDelay;
+    this.arguments = arguments;
+    this.prober = new PollingProber(timeout, pollingDelay);
+    log.debug(toString());
+  }
+
+  public String toString() {
+    return String.format("Deployer with [Controller=%s, log=%s, application=%s, timeout=%d, pollingDelay=%d ]",
+                         mule, log, application, timeout, pollingDelay);
+  }
+
+  public void execute() throws MojoFailureException, MojoExecutionException {
+    try {
+      startMuleIfStopped();
+      deployApplications();
+      waitForDeployments();
+    } catch (MuleControllerException e) {
+      throw new MojoFailureException("Error deploying application: [" + application + "]: " + e.getMessage());
+    } catch (RuntimeException e) {
+      throw new MojoExecutionException("Unexpected error deploying application: [" + application
+          + "]", e);
     }
+  }
 
-    public String toString()
-    {
-        return String.format("Deployer with [Controller=%s, log=%s, application=%s, timeout=%d, pollingDelay=%d ]",
-                             mule, log, application, timeout, pollingDelay
-        );
+  private void waitForDeployments() throws MojoFailureException {
+    if (!application.exists()) {
+      throw new MojoFailureException("Application does not exists: " + application);
     }
-
-    public void execute() throws MojoFailureException, MojoExecutionException
-    {
-        try
-        {
-            startMuleIfStopped();
-            deployApplications();
-            waitForDeployments();
-        }
-        catch (MuleControllerException e)
-        {
-            throw new MojoFailureException("Error deploying application: [" + application + "]: " + e.getMessage());
-        }
-        catch (RuntimeException e)
-        {
-            throw new MojoExecutionException("Unexpected error deploying application: [" + application
-                                             + "]", e);
-        }
+    log.debug("Checking for application [" + application + "] to be deployed.");
+    String app = getApplicationName(application);
+    try {
+      prober.check(AppDeploymentProbe.isDeployed(mule, app));
+    } catch (AssertionError e) {
+      log.error("Couldn't deploy application [" + app + "] after [" + timeout
+          + "] miliseconds. Check Mule Runtime log");
+      throw new MojoFailureException("Application deployment timeout.");
     }
+  }
 
-    private void waitForDeployments() throws MojoFailureException
-    {
-        if (!application.exists())
-        {
-            throw new MojoFailureException("Application does not exists: " + application);
-        }
-        log.debug("Checking for application [" + application + "] to be deployed.");
-        String app = getApplicationName(application);
-        try
-        {
-            prober.check(AppDeploymentProbe.isDeployed(mule, app));
-        }
-        catch (AssertionError e)
-        {
-            log.error("Couldn't deploy application [" + app + "] after [" + timeout
-                      + "] miliseconds. Check Mule Runtime log");
-            throw new MojoFailureException("Application deployment timeout.");
-        }
+  private String getApplicationName(File application) {
+    String name = application.getName();
+    int extensionBeginning = name.lastIndexOf('.');
+    return extensionBeginning == -1 ? name : name.substring(0, extensionBeginning);
+  }
+
+  private void deployApplications() throws MojoFailureException {
+    log.info("Deploying application [" + application + "]");
+    try {
+      mule.deploy(application.getAbsolutePath());
+    } catch (MuleControllerException e) {
+      log.error("Couldn't deploy application: " + application + ". Check Mule Runtime logs");
     }
+  }
 
-    private String getApplicationName(File application)
-    {
-        String name = application.getName();
-        int extensionBeginning = name.lastIndexOf('.');
-        return extensionBeginning == -1 ? name : name.substring(0, extensionBeginning);
+  private void startMuleIfStopped() {
+    log.debug("Checking if Mule Runtime is running.");
+    if (!mule.isRunning()) {
+      try {
+        log.info("Starting Mule Runtime");
+        if (arguments == null) {
+          mule.start();
+        } else {
+          mule.start(arguments);
+        }
+      } catch (MuleControllerException e) {
+        log.error("Couldn't start Mule Runtime. Check Mule Runtime logs.");
+      }
     }
+  }
 
-    private void deployApplications() throws MojoFailureException
-    {
-        log.info("Deploying application [" + application + "]");
-        try
-        {
-            mule.deploy(application.getAbsolutePath());
-        }
-        catch (MuleControllerException e)
-        {
-            log.error("Couldn't deploy application: " + application + ". Check Mule Runtime logs");
-        }
+  public Deployer addLibraries(List<File> libs) {
+    for (File file : libs) {
+      mule.addLibrary(file);
+      log.debug(String.format("Adding library %s...", file));
     }
+    return this;
+  }
 
-    private void startMuleIfStopped()
-    {
-        log.debug("Checking if Mule Runtime is running.");
-        if (!mule.isRunning())
-        {
-            try
-            {
-                log.info("Starting Mule Runtime");
-                if (arguments == null)
-                {
-                    mule.start();
-                }
-                else
-                {
-                    mule.start(arguments);
-                }
-            }
-            catch (MuleControllerException e)
-            {
-                log.error("Couldn't start Mule Runtime. Check Mule Runtime logs.");
-            }
-        }
+
+  public Deployer addDomain(File domain) throws MojoFailureException {
+    try {
+      log.debug(String.format("Deploying domain : %s", domain));
+      mule.deployDomain(domain.getAbsolutePath());
+      return this;
+    } catch (MuleControllerException e) {
+      log.error("Couldn't deploy domain: " + domain);
+      throw new MojoFailureException("Couldn't deploy domain: " + domain);
     }
-
-    public Deployer addLibraries(List<File> libs)
-    {
-        for (File file : libs)
-        {
-            mule.addLibrary(file);
-            log.debug(String.format("Adding library %s...", file));
-        }
-        return this;
-    }
-
-
-    public Deployer addDomain(File domain) throws MojoFailureException
-    {
-        try
-        {
-            log.debug(String.format("Deploying domain : %s", domain));
-            mule.deployDomain(domain.getAbsolutePath());
-            return this;
-        }
-        catch(MuleControllerException e)
-        {
-            log.error("Couldn't deploy domain: " + domain);
-            throw new MojoFailureException("Couldn't deploy domain: " + domain);
-        }
-    }
+  }
 }

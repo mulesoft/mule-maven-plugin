@@ -20,37 +20,33 @@ import javax.ws.rs.core.Response;
 
 import org.apache.maven.plugin.logging.Log;
 
-public class AgentApi extends AbstractApi
-{
+public class AgentApi extends AbstractApi {
 
-    public static final String APPLICATIONS_PATH = "/mule/applications/";
+  public static final String APPLICATIONS_PATH = "/mule/applications/";
 
-    private final String uri;
+  private final String uri;
 
-    public AgentApi(Log log, String uri)
+  public AgentApi(Log log, String uri) {
+    super(log);
+    this.uri = uri;
+  }
+
+  public void deployApplication(String applicationName, File file) {
+    Response response =
+        put(uri, APPLICATIONS_PATH + applicationName, Entity.entity(file, MediaType.APPLICATION_OCTET_STREAM_TYPE));
+
+    if (response.getStatus() != 202) // Created
     {
-        super(log);
-        this.uri = uri;
+      throw new ApiException(response, uri + APPLICATIONS_PATH + applicationName);
     }
+  }
 
-    public void deployApplication(String applicationName, File file)
-    {
-        Response response = put(uri, APPLICATIONS_PATH + applicationName, Entity.entity(file, MediaType.APPLICATION_OCTET_STREAM_TYPE));
+  public void undeployApplication(String appName) {
+    Response response = delete(uri, APPLICATIONS_PATH + appName);
 
-        if (response.getStatus() != 202) // Created
-        {
-            throw new ApiException(response, uri + APPLICATIONS_PATH + applicationName);
-        }
+    if (response.getStatus() != 202) {
+      throw new ApiException(response, uri + APPLICATIONS_PATH + appName);
     }
-
-    public void undeployApplication(String appName)
-    {
-        Response response = delete(uri, APPLICATIONS_PATH + appName);
-
-        if (response.getStatus() != 202)
-        {
-            throw new ApiException(response, uri + APPLICATIONS_PATH + appName);
-        }
-    }
+  }
 
 }

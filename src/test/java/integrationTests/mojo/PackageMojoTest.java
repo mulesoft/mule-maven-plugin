@@ -92,7 +92,8 @@ public class PackageMojoTest extends MojoTest {
     verifier.executeGoal(PACKAGE);
 
     String moduleName = "empty-app";
-    File expectedStructure = getExpectedStructure("/integrationTests/multi-module-application" + File.separator + moduleName + File.separator + TARGET_FOLDER_NAME);
+    File expectedStructure = getExpectedStructure("/integrationTests/multi-module-application" + File.separator + moduleName
+        + File.separator + TARGET_FOLDER_NAME);
     File targetStructure = new File(verifier.getBasedir() + File.separator + moduleName + File.separator + TARGET_FOLDER_NAME);
 
     assertThat("The directory structure is different from the expected", targetStructure,
@@ -110,7 +111,8 @@ public class PackageMojoTest extends MojoTest {
     verifier.executeGoal(PACKAGE);
 
     String moduleName = "empty-policy";
-    File expectedStructure = getExpectedStructure("/integrationTests/multi-module-application" + File.separator + moduleName + File.separator + TARGET_FOLDER_NAME);
+    File expectedStructure = getExpectedStructure("/integrationTests/multi-module-application" + File.separator + moduleName
+        + File.separator + TARGET_FOLDER_NAME);
     File targetStructure = new File(verifier.getBasedir() + File.separator + moduleName + File.separator + TARGET_FOLDER_NAME);
 
     assertThat("The directory structure is different from the expected", targetStructure,

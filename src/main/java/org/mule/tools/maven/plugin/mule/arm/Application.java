@@ -9,14 +9,12 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
-public class Application
-{
+public class Application {
 
-    public Application()
-    {
+  public Application() {
 
-    }
+  }
 
-    public Data data;
+  public Data data;
 
 }

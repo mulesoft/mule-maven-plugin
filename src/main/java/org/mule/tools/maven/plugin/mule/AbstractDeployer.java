@@ -14,51 +14,46 @@ import java.io.File;
 import org.apache.maven.plugin.logging.Log;
 
 
-public abstract class AbstractDeployer
-{
-    private final String applicationName;
-    private final File applicationFile;
-    private final Log log;
+public abstract class AbstractDeployer {
 
-    public AbstractDeployer(String applicationName, File applicationFile, Log log)
-    {
-        this.applicationName = applicationName;
-        this.applicationFile = applicationFile;
-        this.log = log;
-    }
+  private final String applicationName;
+  private final File applicationFile;
+  private final Log log;
 
-    /**
-     * Deploys the application.
-     * @throws DeploymentException
-     */
-    public abstract void deploy() throws DeploymentException;
+  public AbstractDeployer(String applicationName, File applicationFile, Log log) {
+    this.applicationName = applicationName;
+    this.applicationFile = applicationFile;
+    this.log = log;
+  }
 
-    /**
-     * Logs an info message in the plugin.
-     * @param message The message to log.
-     */
-    protected void info(String message)
-    {
-        log.info(message);
-    }
+  /**
+   * Deploys the application.
+   * @throws DeploymentException
+   */
+  public abstract void deploy() throws DeploymentException;
 
-    /**
-     * Logs an error message in the plugin.
-     * @param message The message to log.
-     */
-    protected void error(String message)
-    {
-        log.error(message);
-    }
+  /**
+   * Logs an info message in the plugin.
+   * @param message The message to log.
+   */
+  protected void info(String message) {
+    log.info(message);
+  }
 
-    public String getApplicationName()
-    {
-        return applicationName;
-    }
+  /**
+   * Logs an error message in the plugin.
+   * @param message The message to log.
+   */
+  protected void error(String message) {
+    log.error(message);
+  }
 
-    public File getApplicationFile()
-    {
-        return applicationFile;
-    }
+  public String getApplicationName() {
+    return applicationName;
+  }
+
+  public File getApplicationFile() {
+    return applicationFile;
+  }
 
 }

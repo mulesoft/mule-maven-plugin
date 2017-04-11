@@ -9,8 +9,8 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
-public class Targets
-{
-    public Target[] data;
+public class Targets {
+
+  public Target[] data;
 
 }

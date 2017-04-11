@@ -72,25 +72,14 @@
         <skipVerifications>false</skipVerifications>
         <formatterGoal>validate</formatterGoal>
 
-        <maven.settings.version>3.0.4</maven.settings.version>
-        <maven.plugin.api.version>2.0</maven.plugin.api.version>
-        <maven.plugin.annotations.version>3.2</maven.plugin.annotations.version>
-        <maven.dependency.plugin.version>2.8</maven.dependency.plugin.version>
+        <maven.settings.version>3.3.9</maven.settings.version>
+        <maven.plugin.testing.harness.version>3.3.0</maven.plugin.testing.harness.version>
+        <maven.plugin.annotations.version>3.5</maven.plugin.annotations.version>
+        <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
         <maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
         <maven.invoker.plugin.version>2.0.0</maven.invoker.plugin.version>
-        <maven.plugin.plugin.version>3.2</maven.plugin.plugin.version>
-        <maven.artifact.version>2.0.9</maven.artifact.version>
-        <maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
-        <maven.project.version>2.0</maven.project.version>
-        <maven.javadoc.plugin.version>2.10.3</maven.javadoc.plugin.version>
-        <maven.compat.version>3.3.9</maven.compat.version>
         <maven.plugin.version>3.4</maven.plugin.version>
-        <maven.settings.builder.version>3.3.9</maven.settings.builder.version>
-        <maven.shared.utils.version>3.1.0</maven.shared.utils.version>
         <maven.verifier.version>1.6</maven.verifier.version>
-        <codehaus.plexus.archiver>2.3</codehaus.plexus.archiver>
-        <plexus.utils.version>3.0.8</plexus.utils.version>
-        <project.info.plugin.version>2.8.1</project.info.plugin.version>
         <!--Integration tests properties-->
         <maven.verifier.plugin.version>1.1</maven.verifier.plugin.version>
         <hamcrest.all.version>1.3</hamcrest.all.version>
@@ -99,6 +88,15 @@
         <plexus.component.annotations.version>1.0-beta-3.0.5</plexus.component.annotations.version>
         <license.path>../LICENSE_HEADER</license.path>
         <formatter.path>../formatter.xml</formatter.path>
+        <maven.plugin.plugin.version>3.5</maven.plugin.plugin.version>
+        <maven.artifact.version>3.3.9</maven.artifact.version>
+        <maven.compat.version>3.3.9</maven.compat.version>
+        <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
+        <maven.project.version>2.2.1</maven.project.version>
+        <maven.settings.builder.version>3.3.9</maven.settings.builder.version>
+        <codehaus.plexus.archiver>3.4</codehaus.plexus.archiver>
+        <plexus.utils.version>3.0.24</plexus.utils.version>
+        <project.info.plugin.version>2.9</project.info.plugin.version>
     </properties>
 
     <dependencies>
@@ -157,7 +155,7 @@
         <dependency>
             <groupId>org.apache.maven.plugin-testing</groupId>
             <artifactId>maven-plugin-testing-harness</artifactId>
-            <version>${maven.plugin.api.version}</version>
+            <version>${maven.plugin.testing.harness.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -259,12 +257,6 @@
             <version>${maven.settings.builder.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-shared-utils</artifactId>
-            <version>${maven.shared.utils.version}</version>
-        </dependency>
-        <!-- TODO MMP-115 why do we use this?? -->
-        <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>${commons.logging.version}</version>
@@ -318,17 +310,15 @@
             <artifactId>plexus-component-annotations</artifactId>
             <version>${plexus.component.annotations.version}</version>
         </dependency>
-
-        <!-- The plexus container -->
-        <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
-            <version>${plexus.container.default.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-compat</artifactId>
             <version>${maven.compat.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+            <version>${plexus.container.default.version}</version>
         </dependency>
     </dependencies>
 

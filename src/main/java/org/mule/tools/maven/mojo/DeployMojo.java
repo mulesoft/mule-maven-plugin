@@ -8,17 +8,14 @@ package org.mule.tools.maven.mojo;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
@@ -34,13 +31,10 @@ import org.mule.tools.client.cloudhub.CloudhubDeployer;
 import org.mule.util.FilenameUtils;
 
 /**
- * Maven plugin to deploy Mule applications to different kind of servers: Standalone (both Community and Enterprise), Clustered, Anypoint Runtime Manager and CloudHub.
- * Main uses are running integration tests and deploying applications.
- * Some of the features are:
- * Download Mule Standalone from a Maven Repository and install it locally.
- * Deploy a Mule application to a server.
- * Undeploy a Mule appliction.
- * Assemble a Mule cluster and deploy applications.
+ * Maven plugin to deploy Mule applications to different kind of servers: Standalone (both Community and Enterprise), Clustered,
+ * Anypoint Runtime Manager and CloudHub. Main uses are running integration tests and deploying applications. Some of the features
+ * are: Download Mule Standalone from a Maven Repository and install it locally. Deploy a Mule application to a server. Undeploy a
+ * Mule appliction. Assemble a Mule cluster and deploy applications.
  *
  * @author <a href="mailto:asequeira@gmail.com">Ale Sequeira</a>
  * @see UndeployMojo
@@ -57,94 +51,10 @@ public class DeployMojo extends AbstractMuleMojo {
   protected ArchiverManager archiverManager;
 
 
-  /**
-   * When set to true the plugin will use Mule Standalone Community Edition.
-   *
-   * @since 2.0
-   */
-  @Parameter(readonly = true, required = false, defaultValue = "false", property = "mule.community")
-  protected boolean community;
-
-  /**
-   * Maven coordinates for the Mule Runtime distribution to download.
-   * You need to specify:
-   * <li>groupId</li>
-   * <li>artifactId</li>
-   * <li>version</li>
-   * This parameter and <code>muleVersion</code> are mutual exclusive
-   *
-   * @since 1.0
-   * @deprecated Use the official maven artifact descriptor, if you need to use Community distribution @see community property
-   */
-  @Parameter(readonly = true)
-  private ArtifactDescription muleDistribution;
-
-  /**
-   * Deployment timeout in milliseconds.
-   *
-   * @since 1.0
-   */
-  @Parameter(property = "mule.deployment.timeout", defaultValue = "60000", required = true)
-  protected Long deploymentTimeout;
-
-  /**
-   * List of Mule Runtime Standalone command line arguments.
-   * Adding a property to this list is the same that adding it to the command line when starting Mule using bin/mule.
-   * If you want to add a Mule property don't forget to prepend <code>-M-D</code>.
-   * If you want to add a System property for the Wrapper don't forget to prepend <code>-D</code>.
-   * <p>
-   * Example: <code>&lt;arguments&gt;&lt;argument&gt;-M-Djdbc.url=jdbc:oracle:thin:@myhost:1521:orcl&lt;/argument&gt;&lt;/arguments&gt;</code>
-   *
-   * @since 1.0
-   */
-  @Parameter(property = "mule.arguments", required = false)
-  protected String[] arguments;
-
-  /**
-   * List of external libs (Jar files) to be added to MULE_HOME/user/lib directory.
-   *
-   * @since 1.0
-   */
-  @Parameter
-  protected List<File> libs = new ArrayList<>();
-
-  /**
-   * Region to deploy the application in Cloudhub.
-   *
-   * @since 2.0
-   */
-  @Parameter(property = "cloudhub.region", defaultValue = "us-east-1")
-  protected String region;
-
-  /**
-   * Number of workers for the deployment of the application in Cloudhub.
-   *
-   * @since 2.0
-   */
-  @Parameter(property = "cloudhub.workers")
-  protected Integer workers = 1;
-
-  /**
-   * Type of workers for the deployment of the application in Cloudhub.
-   *
-   * @since 2.0
-   */
-  @Parameter(defaultValue = "Medium", property = "cloudhub.workerType")
-  protected String workerType;
-
-  /**
-   * CloudHub properties.
-   * @since 2.0
-   *
-   */
-  @Parameter(required = false)
-  protected Map<String, String> properties;
-
-
   public void doExecute() throws MojoExecutionException, MojoFailureException {
     initializeApplication();
     initializeEnvironment();
-    switch (deploymentType) {
+    switch (deploymentConfiguration.getDeploymentType()) {
       case standalone:
         standalone();
         break;
@@ -161,117 +71,143 @@ public class DeployMojo extends AbstractMuleMojo {
         agent();
         break;
       default:
-        throw new MojoFailureException("Unsupported deployment type: " + deploymentType);
+        throw new MojoFailureException("Unsupported deploymentConfiguration type: "
+            + deploymentConfiguration.getDeploymentType());
     }
   }
 
   private void cloudhub() throws MojoFailureException, MojoExecutionException {
-    CloudhubDeployer deployer = new CloudhubDeployer(uri, username, password, environment, applicationName, application,
-                                                     region, muleVersion, workers, workerType, getLog(), properties,
-                                                     businessGroup);
+    CloudhubDeployer deployer =
+        new CloudhubDeployer(deploymentConfiguration.getUri(), deploymentConfiguration.getUsername(),
+                             deploymentConfiguration.getPassword(),
+                             deploymentConfiguration.getEnvironment(), deploymentConfiguration.getApplicationName(),
+                             deploymentConfiguration.getApplication(),
+                             deploymentConfiguration.getRegion(), deploymentConfiguration.getMuleVersion(),
+                             deploymentConfiguration.getWorkers(),
+                             deploymentConfiguration.getWorkerType(), getLog(), deploymentConfiguration.getProperties(),
+                             deploymentConfiguration.getBusinessGroup());
     deployWithDeployer(deployer);
   }
 
   private void arm() throws MojoFailureException, MojoExecutionException {
-    ArmDeployer deployer = new ArmDeployer(uri, username, password, environment, targetType, target, application, applicationName,
-                                           getLog(), businessGroup, armInsecure);
+    ArmDeployer deployer =
+        new ArmDeployer(deploymentConfiguration.getUri(), deploymentConfiguration.getUsername(),
+                        deploymentConfiguration.getPassword(),
+                        deploymentConfiguration.getEnvironment(), deploymentConfiguration.getTargetType(),
+                        deploymentConfiguration.getTarget(), deploymentConfiguration.getApplication(),
+                        deploymentConfiguration.getApplicationName(),
+                        getLog(), deploymentConfiguration.getBusinessGroup(), deploymentConfiguration.isArmInsecure());
     deployWithDeployer(deployer);
   }
 
   private void agent() throws MojoFailureException, MojoExecutionException {
-    AgentDeployer deployer = new AgentDeployer(getLog(), applicationName, application, uri);
+    AgentDeployer deployer = new AgentDeployer(getLog(), deploymentConfiguration.getApplicationName(),
+                                               deploymentConfiguration.getApplication(), deploymentConfiguration.getUri());
     deployWithDeployer(deployer);
   }
 
   private void deployWithDeployer(AbstractDeployer deployer) throws MojoExecutionException, MojoFailureException {
-    if (null != script) {
+    if (null != deploymentConfiguration.getScript()) {
       executeGroovyScript();
     }
     try {
       deployer.deploy();
     } catch (DeploymentException e) {
-      getLog().error("Failed to deploy " + applicationName + ": " + e.getMessage(), e);
-      throw new MojoFailureException("Failed to deploy [" + application + "]");
+      getLog().error("Failed to deploy " + deploymentConfiguration.getApplicationName() + ": " + e.getMessage(), e);
+      throw new MojoFailureException("Failed to deploy [" + deploymentConfiguration.getApplication() + "]");
     }
   }
 
   private void cluster() throws MojoExecutionException, MojoFailureException {
     validateSize();
-    File[] muleHomes = new File[size];
+    File[] muleHomes = new File[deploymentConfiguration.getSize()];
     List<MuleProcessController> controllers = new LinkedList();
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < deploymentConfiguration.getSize(); i++) {
       File buildDirectory = new File(mavenProject.getBuild().getDirectory(), "mule" + i);
       buildDirectory.mkdir();
       File home = doInstallMule(buildDirectory);
-      controllers.add(new MuleProcessController(home.getAbsolutePath(), timeout));
+      controllers.add(new MuleProcessController(home.getAbsolutePath(), deploymentConfiguration.getTimeout()));
       muleHomes[i] = home;
     }
 
     renameApplicationToApplicationName();
 
-    if (null != script) {
+    if (null != deploymentConfiguration.getScript()) {
       executeGroovyScript();
     }
-    new ClusterDeployer(muleHomes, controllers, getLog(), application, deploymentTimeout, arguments, DEFAULT_POLLING_DELAY)
-        .addLibraries(libs).execute();
+    new ClusterDeployer(muleHomes, controllers, getLog(), deploymentConfiguration.getApplication(),
+                        deploymentConfiguration.getDeploymentTimeout(),
+                        deploymentConfiguration.getArguments(), DEFAULT_POLLING_DELAY)
+                            .addLibraries(deploymentConfiguration.getLibs()).execute();
   }
 
   private void validateSize() throws MojoFailureException {
-    if (size > MAX_CLUSTER_SIZE) {
+    if (deploymentConfiguration.getSize() > MAX_CLUSTER_SIZE) {
       throw new MojoFailureException("Cannot create cluster with more than 8 nodes");
     }
   }
 
   public void standalone() throws MojoExecutionException, MojoFailureException {
     File muleHome = installMule(new File(mavenProject.getBuild().getDirectory()));
-    MuleProcessController mule = new MuleProcessController(muleHome.getAbsolutePath(), timeout);
+    MuleProcessController mule = new MuleProcessController(muleHome.getAbsolutePath(), deploymentConfiguration.getTimeout());
 
     renameApplicationToApplicationName();
 
-    Deployer deployer = new Deployer(mule, getLog(), application, deploymentTimeout, arguments, DEFAULT_POLLING_DELAY)
-        .addLibraries(libs);
+    Deployer deployer = new Deployer(mule, getLog(), deploymentConfiguration.getApplication(),
+                                     deploymentConfiguration.getDeploymentTimeout(), deploymentConfiguration.getArguments(),
+                                     DEFAULT_POLLING_DELAY)
+                                         .addLibraries(deploymentConfiguration.getLibs());
     addDomain(deployer);
     addDependencies(deployer);
-    if (null != script) {
+    if (null != deploymentConfiguration.getScript()) {
       executeGroovyScript();
     }
     deployer.execute();
   }
 
   private void renameApplicationToApplicationName() throws MojoFailureException {
-    if (!FilenameUtils.getBaseName(application.getName()).equals(applicationName)) {
+    if (!FilenameUtils.getBaseName(deploymentConfiguration.getApplication().getName())
+        .equals(deploymentConfiguration.getApplicationName())) {
       try {
-        File destApplication = new File(application.getParentFile(), applicationName + ".zip");
-        FileUtils.copyFile(application, destApplication);
-        application = destApplication;
+        File destApplication =
+            new File(deploymentConfiguration.getApplication().getParentFile(),
+                     deploymentConfiguration.getApplicationName() + ".zip");
+        FileUtils.copyFile(deploymentConfiguration.getApplication(), destApplication);
+        deploymentConfiguration.setApplication(destApplication);
       } catch (IOException e) {
-        throw new MojoFailureException("Couldn't rename [" + application + "] to [" + applicationName + "]");
+        throw new MojoFailureException("Couldn't rename [" + deploymentConfiguration.getApplication() + "] to ["
+            + deploymentConfiguration.getApplicationName()
+            + "]");
       }
     }
   }
 
   private File installMule(File buildDirectory) throws MojoExecutionException, MojoFailureException {
-    if (muleHome == null) {
-      muleHome = doInstallMule(buildDirectory);
+    if (deploymentConfiguration.getMuleHome() == null) {
+      deploymentConfiguration.setMuleHome(doInstallMule(buildDirectory));
     }
-    mavenProject.getProperties().setProperty("mule.home", muleHome.getAbsolutePath());
-    getLog().info("Using MULE_HOME: " + muleHome);
-    return muleHome;
+    mavenProject.getProperties().setProperty("mule.home", deploymentConfiguration.getMuleHome().getAbsolutePath());
+    getLog().info("Using MULE_HOME: " + deploymentConfiguration.getMuleHome());
+    return deploymentConfiguration.getMuleHome();
   }
 
   private File doInstallMule(File buildDirectory) throws MojoExecutionException, MojoFailureException {
-    if (muleDistribution == null) {
-      if (community) {
-        muleDistribution = new ArtifactDescription("org.mule.distributions", "mule-standalone", muleVersion, "tar.gz");
-        this.getLog().debug("muleDistribution not set, using default community artifact: " + muleDistribution);
+    if (deploymentConfiguration.getMuleDistribution() == null) {
+      if (deploymentConfiguration.isCommunity()) {
+        deploymentConfiguration.setMuleDistribution(new ArtifactDescription("org.mule.distributions", "mule-standalone",
+                                                                            deploymentConfiguration.getMuleVersion(), "tar.gz"));
+        this.getLog()
+            .debug("muleDistribution not set, using default community artifact: "
+                + deploymentConfiguration.getMuleDistribution());
       } else {
-        muleDistribution = new ArtifactDescription("com.mulesoft.muleesb.distributions", "mule-ee-distribution-standalone",
-                                                   muleVersion, "tar.gz");
-        this.getLog().debug("muleDistribution not set, using default artifact: " + muleDistribution);
+        deploymentConfiguration
+            .setMuleDistribution(new ArtifactDescription("com.mulesoft.muleesb.distributions", "mule-ee-distribution-standalone",
+                                                         deploymentConfiguration.getMuleVersion(), "tar.gz"));
+        this.getLog().debug("muleDistribution not set, using default artifact: " + deploymentConfiguration.getMuleDistribution());
       }
     }
-    unpackMule(muleDistribution, buildDirectory);
-    return new File(buildDirectory, muleDistribution.getContentDirectory());
+    unpackMule(deploymentConfiguration.getMuleDistribution(), buildDirectory);
+    return new File(buildDirectory, deploymentConfiguration.getMuleDistribution().getContentDirectory());
   }
 
   /**

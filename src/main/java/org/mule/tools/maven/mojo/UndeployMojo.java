@@ -6,7 +6,6 @@
  */
 package org.mule.tools.maven.mojo;
 
-import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.client.standalone.Undeployer;
 import org.mule.tools.client.agent.AgentClient;
 import org.mule.tools.client.arm.ArmClient;
@@ -21,7 +20,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import javax.ws.rs.NotFoundException;
 
 /**
- * Undeploys all the applications on a Mule Runtime Standalone server, regardless of whether it was started using start or deploy goals.
+ * Undeploys all the applications on a Mule Runtime Standalone server, regardless of whether it was started using start or deploy
+ * goals.
  *
  * @author <a href="mailto:asequeira@gmail.com">Ale Sequeira</a>
  * @see DeployMojo
@@ -30,19 +30,11 @@ import javax.ws.rs.NotFoundException;
 @Mojo(name = "undeploy", requiresProject = true)
 public class UndeployMojo extends AbstractMuleMojo {
 
-  /**
-   * When set to false, undeployment won't fail if the specified application does not exist.
-   *
-   * @since 2.2
-   */
-  @Parameter(defaultValue = "true")
-  private boolean failIfNotExists;
-
   @Override
   protected void doExecute() throws MojoExecutionException, MojoFailureException {
     initializeApplication();
     initializeEnvironment();
-    switch (deploymentType) {
+    switch (deploymentConfiguration.getDeploymentType()) {
       case standalone:
         standalone();
         break;
@@ -59,57 +51,67 @@ public class UndeployMojo extends AbstractMuleMojo {
         agent();
         break;
       default:
-        throw new MojoFailureException("Unsupported deployment type: " + deploymentType);
+        throw new MojoFailureException("Unsupported deploymentConfiguration type: "
+            + deploymentConfiguration.getDeploymentType());
     }
   }
 
   private void cloudhub() throws MojoFailureException {
-    CloudhubClient cloudhubClient = new CloudhubClient(uri, getLog(), username, password, environment, businessGroup);
+    CloudhubClient cloudhubClient =
+        new CloudhubClient(deploymentConfiguration.getUri(), getLog(), deploymentConfiguration.getUsername(),
+                           deploymentConfiguration.getPassword(),
+                           deploymentConfiguration.getEnvironment(),
+                           deploymentConfiguration.getBusinessGroup());
     cloudhubClient.init();
-    getLog().info("Stopping application " + applicationName);
-    cloudhubClient.stopApplication(applicationName);
+    getLog().info("Stopping application " + deploymentConfiguration.getApplicationName());
+    cloudhubClient.stopApplication(deploymentConfiguration.getApplicationName());
   }
 
   private void arm() throws MojoFailureException {
-    ArmClient armClient = new ArmClient(getLog(), uri, username, password, environment, businessGroup, armInsecure);
+    ArmClient armClient =
+        new ArmClient(getLog(), deploymentConfiguration.getUri(), deploymentConfiguration.getUsername(),
+                      deploymentConfiguration.getPassword(),
+                      deploymentConfiguration.getEnvironment(), deploymentConfiguration.getBusinessGroup(),
+                      deploymentConfiguration.isArmInsecure());
     armClient.init();
-    getLog().info("Undeploying application " + applicationName);
+    getLog().info("Undeploying application " + deploymentConfiguration.getApplicationName());
     try {
-      armClient.undeployApplication(applicationName, targetType, target);
+      armClient.undeployApplication(deploymentConfiguration.getApplicationName(), deploymentConfiguration.getTargetType(),
+                                    deploymentConfiguration.getTarget());
     } catch (NotFoundException e) {
-      if (failIfNotExists) {
+      if (deploymentConfiguration.isFailIfNotExists()) {
         throw e;
       } else {
-        getLog().warn("Application not found: " + applicationName);
+        getLog().warn("Application not found: " + deploymentConfiguration.getApplicationName());
       }
     }
   }
 
   private void agent() throws MojoFailureException {
-    AgentClient agentClient = new AgentClient(getLog(), uri);
-    getLog().info("Undeploying application " + applicationName);
-    agentClient.undeployApplication(applicationName);
+    AgentClient agentClient = new AgentClient(getLog(), deploymentConfiguration.getUri());
+    getLog().info("Undeploying application " + deploymentConfiguration.getApplicationName());
+    agentClient.undeployApplication(deploymentConfiguration.getApplicationName());
   }
 
   private void cluster() throws MojoFailureException, MojoExecutionException {
-    File[] muleHomes = new File[size];
-    for (int i = 0; i < size; i++) {
+    File[] muleHomes = new File[deploymentConfiguration.getSize()];
+    for (int i = 0; i < deploymentConfiguration.getSize(); i++) {
       File parentDir = new File(mavenProject.getBuild().getDirectory(), "mule" + i);
-      muleHomes[i] = new File(parentDir, "mule-enterprise-standalone-" + muleVersion);
+      muleHomes[i] = new File(parentDir, "mule-enterprise-standalone-" + deploymentConfiguration.getMuleVersion());
 
       if (!muleHomes[i].exists()) {
         throw new MojoFailureException(muleHomes[i].getAbsolutePath() + "directory does not exist.");
       }
     }
-    new Undeployer(getLog(), applicationName, muleHomes).execute();
+    new Undeployer(getLog(), deploymentConfiguration.getApplicationName(), muleHomes).execute();
   }
 
   public void standalone() throws MojoFailureException, MojoExecutionException {
-    if (!muleHome.exists()) {
+    if (!deploymentConfiguration.getMuleHome().exists()) {
       throw new MojoFailureException("MULE_HOME directory does not exist.");
     }
-    getLog().info("Using MULE_HOME: " + muleHome);
-    new Undeployer(getLog(), applicationName, muleHome).execute();
+    getLog().info("Using MULE_HOME: " + deploymentConfiguration.getMuleHome());
+    new Undeployer(getLog(), deploymentConfiguration.getApplicationName(), deploymentConfiguration.getMuleHome()).execute();
   }
 
 }

@@ -12,12 +12,12 @@ package org.mule.tools.maven.mojo;
 import groovy.lang.GroovyShell;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.DefaultArtifactFactory;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.AbstractArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.DefaultArtifactResolver;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -29,7 +29,6 @@ import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.mule.tools.client.standalone.Deployer;
-import org.mule.tools.client.model.TargetType;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,6 +43,9 @@ import java.util.Map;
 
 public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
 
+  @Parameter
+  protected DeploymentConfiguration deploymentConfiguration;
+
   @Component
   protected Settings settings;
 
@@ -54,163 +56,23 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
   protected MavenProject mavenProject;
 
   @Component
-  protected DefaultArtifactFactory artifactFactory;
+  protected ArtifactFactory artifactFactory;
 
   @Component
-  protected DefaultArtifactResolver artifactResolver;
+  protected ArtifactResolver artifactResolver;
 
   @Parameter(defaultValue = "${localRepository}", readonly = true)
   protected ArtifactRepository localRepository;
-
-  @Parameter(property = "mule.skip")
-  protected String skip;
-
-  @Parameter
-  protected File domain;
-
-  @Parameter(property = "script", required = false)
-  protected File script;
-
-  @Parameter(property = "mule.timeout", required = false)
-  protected int timeout;
-
-  /**
-   * Maven server with Anypoint Platform credentials. This is only needed if you want to use your credentials stored in your Maven
-   * settings.xml file. This is NOT your Mule server name.
-   *
-   * @since 2.2
-   */
-  @Parameter(required = false, property = "maven.server")
-  protected String server;
-
-  /**
-   * Anypoint Platform username.
-   *
-   * @since 2.0
-   */
-  @Parameter(required = false, property = "anypoint.username")
-  protected String username;
-
-  /**
-   * Anypoint Platform password.
-   *
-   * @since 2.0
-   */
-  @Parameter(required = false, property = "anypoint.password")
-  protected String password;
-
-  /**
-   * Deployment information.
-   *
-   * @since 1.0
-   */
-  @Parameter(required = true)
-  protected DeploymentType deploymentType;
-
-  /**
-   * Anypoint Platform URI, can be configured to use with On Premise platform..
-   *
-   * @since 2.0
-   */
-  @Parameter(readonly = true, property = "anypoint.uri", defaultValue = "https://anypoint.mulesoft.com")
-  protected String uri;
-
-  /**
-   * Anypoint environment name.
-   *
-   * @since 2.0
-   */
-  @Parameter(required = false, property = "anypoint.environment")
-  protected String environment;
-
-  /**
-   * Path to a Mule Standalone server. This parameter and <code>muleDistribution</code> and <code>muleVersion</code> are mutual
-   * exclusive.
-   *
-   * @since 2.0
-   */
-  @Parameter(property = "mule.home")
-  protected File muleHome;
-
-  /**
-   * Version of the Mule Runtime Enterprise distribution to download. If you need to use Community version use
-   * <code>muleDistribution</code> parameter. This parameter and <code>muleDistribution</code> are mutual exclusive.
-   *
-   * @since 1.0
-   */
-  @Parameter(property = "mule.version")
-  protected String muleVersion;
-
-  /**
-   * Number of cluster nodes.
-   *
-   * @since 1.0
-   */
-  @Parameter(defaultValue = "2", required = true)
-  protected Integer size;
-
-  /**
-   * Business group for deployment, if it is a nested one its format should be first.second.
-   *
-   * @since 2.1
-   */
-  @Parameter(defaultValue = "", property = "anypoint.businessGroup")
-  protected String businessGroup = "";
-
-  /**
-   * Use insecure mode for ARM deployment: do not validate certificates, nor hostname.
-   *
-   * @since 2.1
-   */
-  @Parameter(defaultValue = "Medium", readonly = true, property = "arm.insecure")
-  protected boolean armInsecure;
-
-  @Parameter
-  private List<ArtifactDescription> artifactItems = new ArrayList<ArtifactDescription>();
-
-  /**
-   * Application file to be deployed.
-   *
-   * @since 1.0
-   */
-  @Parameter(property = "mule.application")
-  protected File application;
-
-  /**
-   * Name of the application to deploy/undeploy. If not specified, the artifact id will be used as the name. This parameter allows
-   * to override this behavior to specify a custom name.
-   *
-   * @since 2.0
-   */
-  @Parameter(readonly = true, property = "applicationName")
-  protected String applicationName;
-
-  /**
-   * Anypoint Platform target name.
-   *
-   * @since 2.0
-   * @see DeployMojo#targetType
-   */
-  @Parameter(property = "anypoint.target")
-  protected String target;
-
-  /**
-   * Anypoint Platform target type: server, serverGroup or cluster.
-   *
-   * @since 2.0
-   */
-  @Parameter(property = "anypoint.target.type")
-  protected TargetType targetType;
 
   /**
    * @see org.apache.maven.plugin.Mojo#execute()
    */
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
-    if (StringUtils.isNotEmpty(skip) && "true".equals(skip)) {
-      getLog().info("Skipping execution: skip=" + skip);
+    if (StringUtils.isNotEmpty(deploymentConfiguration.getSkip()) && "true".equals(deploymentConfiguration.getSkip())) {
+      getLog().info("Skipping execution: skip=" + deploymentConfiguration.getSkip());
     } else {
-      getLog().debug("Executing mojo, skip=" + skip);
+      getLog().debug("Executing mojo, skip=" + deploymentConfiguration.getSkip());
       doExecute();
     }
   }
@@ -235,13 +97,12 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
   }
 
 
-
   protected void addDomain(Deployer deployer) throws MojoFailureException {
-    if (domain != null && domain.exists()) {
-      getLog().debug("Adding domain with configuration: " + domain);
-      deployer.addDomain(domain);
+    if (deploymentConfiguration.getDomain() != null && deploymentConfiguration.getDomain().exists()) {
+      getLog().debug("Adding domain with configuration: " + deploymentConfiguration.getDomain());
+      deployer.addDomain(deploymentConfiguration.getDomain());
     } else {
-      getLog().debug("Domain configuration not found: " + domain);
+      getLog().debug("Domain configuration not found: " + deploymentConfiguration.getDomain());
     }
   }
 
@@ -260,7 +121,7 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
 
   protected void executeGroovyScript() throws MojoExecutionException {
     GroovyShell shell = new GroovyShell();
-    getLog().info("executing script: " + script.getAbsolutePath());
+    getLog().info("executing script: " + deploymentConfiguration.getScript().getAbsolutePath());
     shell.setProperty("basedir", mavenProject.getBasedir());
 
     for (Map.Entry entry : mavenProject.getProperties().entrySet()) {
@@ -269,15 +130,16 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
 
     getLog().info(mavenProject.getBasedir().getAbsolutePath());
     try {
-      shell.evaluate(readFile(script.getAbsolutePath()));
+      shell.evaluate(readFile(deploymentConfiguration.getScript().getAbsolutePath()));
     } catch (IOException e) {
-      throw new MojoExecutionException("error executing script: " + script.getAbsolutePath() + "\n" + e.getMessage());
+      throw new MojoExecutionException("error executing script: " + deploymentConfiguration.getScript().getAbsolutePath() + "\n"
+          + e.getMessage());
     }
   }
 
   protected void addDependencies(Deployer deployer) throws MojoFailureException, MojoExecutionException {
     List<File> libraries = new ArrayList<File>();
-    for (ArtifactDescription artifact : artifactItems) {
+    for (ArtifactDescription artifact : deploymentConfiguration.getArtifactItems()) {
       libraries.add(this.getDependency(artifact));
     }
     deployer.addLibraries(libraries);
@@ -299,38 +161,39 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
 
 
   protected void initializeApplication() throws MojoFailureException {
-    if (application == null) {
+    if (deploymentConfiguration.getApplication() == null) {
       Artifact artifact = resolveMavenProjectArtifact();
-      application = resolveMavenProjectArtifact().getFile();
-      getLog().info("No application configured. Using project artifact: " + application);
+      deploymentConfiguration.setApplication(resolveMavenProjectArtifact().getFile());
+      getLog().info("No application configured. Using project artifact: " + deploymentConfiguration.getApplication());
 
-      if (applicationName == null) {
-        applicationName = artifact.getArtifactId();
+      if (deploymentConfiguration.getApplicationName() == null) {
+        deploymentConfiguration.setApplicationName(artifact.getArtifactId());
       }
     } else {
       // If an application is defined but no application name is provided, use the name of the file instead of
-      // the artifact ID (expected behavior in standalone deployment for example).
-      if (applicationName == null) {
-        applicationName = application.getName();
+      // the artifact ID (expected behavior in standalone deploymentConfiguration for example).
+      if (deploymentConfiguration.getApplicationName() == null) {
+        deploymentConfiguration.setApplicationName(deploymentConfiguration.getApplication().getName());
       }
     }
   }
 
 
   protected void initializeEnvironment() throws MojoExecutionException {
-    if (server != null) {
-      Server serverObject = this.settings.getServer(server);
+    if (deploymentConfiguration.getServer() != null) {
+      Server serverObject = this.settings.getServer(deploymentConfiguration.getServer());
       if (serverObject == null) {
-        getLog().error("Server [" + server + "] not found in settings file.");
-        throw new MojoExecutionException("Server [" + server + "] not found in settings file.");
+        getLog().error("Server [" + deploymentConfiguration.getServer() + "] not found in settings file.");
+        throw new MojoExecutionException("Server [" + deploymentConfiguration.getServer() + "] not found in settings file.");
       }
       // Decrypting Maven server, in case of plain text passwords returns the same
       serverObject = decrypter.decrypt(new DefaultSettingsDecryptionRequest(serverObject)).getServer();
-      if (StringUtils.isNotEmpty(username) || StringUtils.isNotEmpty(password)) {
+      if (StringUtils.isNotEmpty(deploymentConfiguration.getUsername())
+          || StringUtils.isNotEmpty(deploymentConfiguration.getPassword())) {
         getLog().warn("Both server and credentials are configured. Using plugin configuration credentials.");
       } else {
-        username = serverObject.getUsername();
-        password = serverObject.getPassword();
+        deploymentConfiguration.setUsername(serverObject.getUsername());
+        deploymentConfiguration.setPassword(serverObject.getPassword());
       }
     }
 

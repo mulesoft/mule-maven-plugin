@@ -30,6 +30,7 @@ import java.util.List;
 import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE;
 import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
 
+
 /**
  * Base Mojo
  */

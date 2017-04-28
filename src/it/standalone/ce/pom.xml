@@ -21,9 +21,11 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <muleVersion>${mule.version}</muleVersion>
-                    <community>true</community>
-                    <deploymentType>standalone</deploymentType>
+                    <deploymentConfiguration>
+                        <muleVersion>${mule.version}</muleVersion>
+                        <community>true</community>
+                        <deploymentType>standalone</deploymentType>
+                    </deploymentConfiguration>
                 </configuration>
                 <executions>
                     <execution>

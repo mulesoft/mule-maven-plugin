@@ -43,8 +43,10 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <muleHome>target/dependency/mule-enterprise-standalone-${mule.version}</muleHome>
-                    <deploymentType>standalone</deploymentType>
+                    <deploymentConfiguration>
+                        <muleHome>target/dependency/mule-enterprise-standalone-${mule.version}</muleHome>
+                        <deploymentType>standalone</deploymentType>
+                    </deploymentConfiguration>
                 </configuration>
                 <executions>
                     <execution>

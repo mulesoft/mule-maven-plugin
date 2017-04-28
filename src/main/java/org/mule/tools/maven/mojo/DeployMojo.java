@@ -151,7 +151,7 @@ public class DeployMojo extends AbstractMuleMojo {
     File muleHome = installMule(new File(mavenProject.getBuild().getDirectory()));
     MuleProcessController mule = new MuleProcessController(muleHome.getAbsolutePath(), deploymentConfiguration.getTimeout());
 
-    renameApplicationToApplicationName();
+    //renameApplicationToApplicationName();
 
     Deployer deployer = new Deployer(mule, getLog(), deploymentConfiguration.getApplication(),
                                      deploymentConfiguration.getDeploymentTimeout(), deploymentConfiguration.getArguments(),

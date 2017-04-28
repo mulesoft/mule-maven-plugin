@@ -14,12 +14,14 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <deploymentType>standalone</deploymentType>
-                    <muleVersion>${mule.version}</muleVersion>
-                    <application>${basedir}/app2</application>
-                    <arguments>
-                        <argument>-M-Dparameter.port=${port}</argument>
-                    </arguments>
+                    <deploymentConfiguration>
+                        <deploymentType>standalone</deploymentType>
+                        <muleVersion>${mule.version}</muleVersion>
+                        <application>${basedir}/app2</application>
+                        <arguments>
+                            <argument>-M-Dparameter.port=${port}</argument>
+                        </arguments>
+                    </deploymentConfiguration>
                 </configuration>
                 <executions>
                     <execution>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.mule.tools.muleesb.it</groupId>
@@ -14,10 +14,12 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <deploymentType>standalone</deploymentType>
-                    <muleVersion>${mule.version}</muleVersion>
-                    <application>${basedir}/app</application>
-                    <script>${basedir}/script.groovy</script>
+                    <deploymentConfiguration>
+                        <deploymentType>standalone</deploymentType>
+                        <muleVersion>${mule.version}</muleVersion>
+                        <application>${basedir}/app</application>
+                        <script>${basedir}/script.groovy</script>
+                    </deploymentConfiguration>
                 </configuration>
                 <executions>
                     <execution>

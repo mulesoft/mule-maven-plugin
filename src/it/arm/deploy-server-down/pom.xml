@@ -21,13 +21,15 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <deploymentType>arm</deploymentType>
-                    <muleVersion>${mule.version}</muleVersion>
-                    <username>${username}</username>
-                    <password>${password}</password>
-                    <target>server-name-down</target>
-                    <targetType>server</targetType>
-                    <environment>${environment}</environment>
+                    <deploymentConfiguration>
+                        <deploymentType>arm</deploymentType>
+                        <muleVersion>${mule.version}</muleVersion>
+                        <username>${username}</username>
+                        <password>${password}</password>
+                        <target>server-name-down</target>
+                        <targetType>server</targetType>
+                        <environment>${environment}</environment>
+                    </deploymentConfiguration>
                 </configuration>
                 <executions>
                     <execution>

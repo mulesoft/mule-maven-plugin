@@ -36,11 +36,13 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <deploymentType>standalone</deploymentType>
-                    <muleVersion>${mule.version}</muleVersion>
-                    <arguments>
-                        <argument>-M-Dhttp.port=${port}</argument>
-                    </arguments>
+                    <deploymentConfiguration>
+                        <deploymentType>standalone</deploymentType>
+                        <muleVersion>${mule.version}</muleVersion>
+                        <arguments>
+                            <argument>-M-Dhttp.port=${port}</argument>
+                        </arguments>
+                    </deploymentConfiguration>
                 </configuration>
                 <executions>
                     <execution>

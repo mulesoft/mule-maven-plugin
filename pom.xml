@@ -69,9 +69,23 @@
         <maven.plugin.version>3.2</maven.plugin.version>
         <codehaus.plexus.archiver>3.4</codehaus.plexus.archiver>
         <project.info.plugin.version>2.9</project.info.plugin.version>
+        <maven.verifier.version>1.6</maven.verifier.version>
+        <junit.version>4.8.2</junit.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-verifier</artifactId>
+            <version>${maven.verifier.version}</version>
+            <scope>test</scope>
+        </dependency>
         <!-- Maven Plugin Dependencies -->
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
@@ -286,67 +300,67 @@
     </reporting>
 
     <profiles>
-        <profile>
-            <id>integration</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-invoker-plugin</artifactId>
-                        <version>${maven.invoker.plugin.version}</version>
-                        <configuration>
-                            <skipInvocation>${skipTests}</skipInvocation>
-                            <debug>${debug}</debug>
-                            <streamLogs>${debug}</streamLogs>
-                            <showErrors>${debug}</showErrors>
-                            <projectsDirectory>src/it/${suite}</projectsDirectory>
-                            <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-                            <postBuildHookScript>verify</postBuildHookScript>
-                            <preBuildHookScript>setup</preBuildHookScript>
-                            <addTestClassPath>true</addTestClassPath>
-                            <invokerPropertiesFile>invoker.properties</invokerPropertiesFile>
-                            <mavenOpts>${mavenOpts}</mavenOpts>
-                            <settingsFile>${maven.invoker.settings}</settingsFile>
-                            <scriptVariables>
-                                <muleVersion>${mule.version}</muleVersion>
-                                <username>${username}</username>
-                                <password>${password}</password>
-                            </scriptVariables>
-                            <properties>
-                                <mule.version>${mule.version}</mule.version>
-                                <maven.antrun.plugin.version>${maven.antrun.plugin.version}</maven.antrun.plugin.version>
-                                <username>${username}</username>
-                                <password>${password}</password>
-                                <environment>${environment}</environment>
-                                <target>${target}</target>
-                                <port>${port}</port>
-                                <skipProperty>skipPlugin</skipProperty>
-                                <skipPlugin>true</skipPlugin>
-                                <mule.timeout>120000</mule.timeout>
-                            </properties>
-                            <goals>
-                                <goal>clean</goal>
-                                <goal>verify</goal>
-                            </goals>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>integration-test</id>
-                                <phase>integration-test</phase>
-                                <goals>
-                                    <goal>install</goal>
-                                    <goal>run</goal>
-                                    <goal>report</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+        <!--<profile>-->
+            <!--<id>integration</id>-->
+            <!--<activation>-->
+                <!--<activeByDefault>true</activeByDefault>-->
+            <!--</activation>-->
+            <!--<build>-->
+                <!--<plugins>-->
+                    <!--<plugin>-->
+                        <!--<groupId>org.apache.maven.plugins</groupId>-->
+                        <!--<artifactId>maven-invoker-plugin</artifactId>-->
+                        <!--<version>${maven.invoker.plugin.version}</version>-->
+                        <!--<configuration>-->
+                            <!--<skipInvocation>${skipTests}</skipInvocation>-->
+                            <!--<debug>${debug}</debug>-->
+                            <!--<streamLogs>${debug}</streamLogs>-->
+                            <!--<showErrors>${debug}</showErrors>-->
+                            <!--<projectsDirectory>src/it/${suite}</projectsDirectory>-->
+                            <!--<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>-->
+                            <!--<postBuildHookScript>verify</postBuildHookScript>-->
+                            <!--<preBuildHookScript>setup</preBuildHookScript>-->
+                            <!--<addTestClassPath>true</addTestClassPath>-->
+                            <!--<invokerPropertiesFile>invoker.properties</invokerPropertiesFile>-->
+                            <!--<mavenOpts>${mavenOpts}</mavenOpts>-->
+                            <!--<settingsFile>${maven.invoker.settings}</settingsFile>-->
+                            <!--<scriptVariables>-->
+                                <!--<muleVersion>${mule.version}</muleVersion>-->
+                                <!--<username>${username}</username>-->
+                                <!--<password>${password}</password>-->
+                            <!--</scriptVariables>-->
+                            <!--<properties>-->
+                                <!--<mule.version>${mule.version}</mule.version>-->
+                                <!--<maven.antrun.plugin.version>${maven.antrun.plugin.version}</maven.antrun.plugin.version>-->
+                                <!--<username>${username}</username>-->
+                                <!--<password>${password}</password>-->
+                                <!--<environment>${environment}</environment>-->
+                                <!--<target>${target}</target>-->
+                                <!--<port>${port}</port>-->
+                                <!--<skipProperty>skipPlugin</skipProperty>-->
+                                <!--<skipPlugin>true</skipPlugin>-->
+                                <!--<mule.timeout>120000</mule.timeout>-->
+                            <!--</properties>-->
+                            <!--<goals>-->
+                                <!--<goal>clean</goal>-->
+                                <!--<goal>verify</goal>-->
+                            <!--</goals>-->
+                        <!--</configuration>-->
+                        <!--<executions>-->
+                            <!--<execution>-->
+                                <!--<id>integration-test</id>-->
+                                <!--<phase>integration-test</phase>-->
+                                <!--<goals>-->
+                                    <!--<goal>install</goal>-->
+                                    <!--<goal>run</goal>-->
+                                    <!--<goal>report</goal>-->
+                                <!--</goals>-->
+                            <!--</execution>-->
+                        <!--</executions>-->
+                    <!--</plugin>-->
+                <!--</plugins>-->
+            <!--</build>-->
+        <!--</profile>-->
         <profile>
             <id>release</id>
             <properties>

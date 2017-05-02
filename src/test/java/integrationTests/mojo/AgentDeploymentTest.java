@@ -8,6 +8,8 @@ package integrationTests.mojo;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.util.ResourceExtractor;
@@ -50,7 +52,8 @@ public class AgentDeploymentTest extends MojoTest {
   public void before() throws VerificationException, InterruptedException, IOException {
     verifier.executeGoal(INSTALL);
 
-    String targetFolder = ResourceExtractor.simpleExtractResources(this.getClass(), "/").getParent();
+    Path currentRelativePath = Paths.get("");
+    String targetFolder = currentRelativePath.toAbsolutePath().toString() + File.separator + "target";
 
     muleHome = targetFolder + MULE_HOME_FOLDER_PREFIX + MULE_VERSION;
 

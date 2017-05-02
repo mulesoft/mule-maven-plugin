@@ -21,13 +21,15 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <deploymentType>cloudhub</deploymentType>
-                    <muleVersion>${mule.version}</muleVersion>
-                    <username>${username}</username>
-                    <password>${password}</password>
-                    <applicationName>maven-plugin-cloudhub-business-group-test</applicationName>
-                    <environment>${environment}</environment>
-                    <businessGroup>test1\test2</businessGroup>
+                    <deploymentConfiguration>
+                        <deploymentType>cloudhub</deploymentType>
+                        <muleVersion>${mule.version}</muleVersion>
+                        <username>${username}</username>
+                        <password>${password}</password>
+                        <applicationName>maven-plugin-cloudhub-business-group-test</applicationName>
+                        <environment>${environment}</environment>
+                        <businessGroup>test1\test2</businessGroup>
+                    </deploymentConfiguration>
                 </configuration>
                 <executions>
                     <execution>

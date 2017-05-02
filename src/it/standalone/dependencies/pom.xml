@@ -14,17 +14,19 @@
 				<artifactId>@project.artifactId@</artifactId>
 				<version>@project.version@</version>
 				<configuration>
-					<deploymentType>standalone</deploymentType>
-					<muleVersion>${mule.version}</muleVersion>
-					<application>${basedir}/app1</application>
-					<artifactItems>
-						<artifactItem>
-							<groupId>org.apache.activemq</groupId>
-							<artifactId>activemq-all</artifactId>
-							<version>5.5.0</version>
-							<type>jar</type>
-						</artifactItem>
-					</artifactItems>
+					<deploymentConfiguration>
+						<deploymentType>standalone</deploymentType>
+						<muleVersion>${mule.version}</muleVersion>
+						<application>${basedir}/app1</application>
+						<artifactItems>
+							<artifactItem>
+								<groupId>org.apache.activemq</groupId>
+								<artifactId>activemq-all</artifactId>
+								<version>5.5.0</version>
+								<type>jar</type>
+							</artifactItem>
+						</artifactItems>
+					</deploymentConfiguration>
 				</configuration>
 				<executions>
 					<execution>

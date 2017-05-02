@@ -21,11 +21,13 @@
 				<artifactId>@project.artifactId@</artifactId>
 				<version>@project.version@</version>
                 <configuration>
-					<deploymentType>cluster</deploymentType>
-                    <size>2</size>
-					<libs>
-						<lib>${basedir}/activemq-all-5.5.0.jar</lib>
-					</libs>
+					<deploymentConfiguration>
+						<deploymentType>cluster</deploymentType>
+						<size>2</size>
+						<libs>
+							<lib>${basedir}/activemq-all-5.5.0.jar</lib>
+						</libs>
+					</deploymentConfiguration>
                 </configuration>
 				<executions>
 					<execution>

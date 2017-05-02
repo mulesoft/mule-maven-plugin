@@ -21,8 +21,10 @@
 				<artifactId>@project.artifactId@</artifactId>
 				<version>@project.version@</version>
                 <configuration>
-					<deploymentType>cluster</deploymentType>
-                    <size>2</size>
+					<deploymentConfiguration>
+						<deploymentType>cluster</deploymentType>
+						<size>2</size>
+					</deploymentConfiguration>
                 </configuration>
 				<executions>
                     <execution>

@@ -48,7 +48,7 @@ public class AgentDeploymentTest {
     log.info("Initializing context...");
     initializeContext();
     verifier.executeGoal(INSTALL);
-    agentSetup = new AgentSetup();
+    agentSetup = new AgentSetup("3.8.1");
     agentSetup.start();
   }
 

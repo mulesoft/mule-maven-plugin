@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.tools.maven</groupId>
     <artifactId>mule-maven-plugin</artifactId>
@@ -7,7 +8,8 @@
     <packaging>maven-plugin</packaging>
     <name>Mule Maven Plugin</name>
     <description>
-        Maven plugin to deploy Mule applications to different kinds of servers: Standalone (both Community and Enterprise), Clustered, Anypoint Runtime Manager and CloudHub.
+        Maven plugin to deploy Mule applications to different kinds of servers: Standalone (both Community and
+        Enterprise), Clustered, Anypoint Runtime Manager and CloudHub.
         Main uses are running integration tests and deploying applications.
         Some of the features are:
         Download Mule Standalone from a Maven Repository and install it locally.
@@ -122,6 +124,11 @@
             <version>${groovy.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-moxy</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
             <version>${jersey.version}</version>
@@ -162,8 +169,8 @@
         <connection>scm:git:git://github.com/mulesoft/mule-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:mulesoft/mule-maven-plugin.git</developerConnection>
         <url>https://github.com/mulesoft/mule-maven-plugin</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <build>
         <plugins>
@@ -313,65 +320,65 @@
 
     <profiles>
         <!--<profile>-->
-            <!--<id>integration</id>-->
-            <!--<activation>-->
-                <!--<activeByDefault>true</activeByDefault>-->
-            <!--</activation>-->
-            <!--<build>-->
-                <!--<plugins>-->
-                    <!--<plugin>-->
-                        <!--<groupId>org.apache.maven.plugins</groupId>-->
-                        <!--<artifactId>maven-invoker-plugin</artifactId>-->
-                        <!--<version>${maven.invoker.plugin.version}</version>-->
-                        <!--<configuration>-->
-                            <!--<skipInvocation>${skipTests}</skipInvocation>-->
-                            <!--<debug>${debug}</debug>-->
-                            <!--<streamLogs>${debug}</streamLogs>-->
-                            <!--<showErrors>${debug}</showErrors>-->
-                            <!--<projectsDirectory>src/it/${suite}</projectsDirectory>-->
-                            <!--<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>-->
-                            <!--<postBuildHookScript>verify</postBuildHookScript>-->
-                            <!--<preBuildHookScript>setup</preBuildHookScript>-->
-                            <!--<addTestClassPath>true</addTestClassPath>-->
-                            <!--<invokerPropertiesFile>invoker.properties</invokerPropertiesFile>-->
-                            <!--<mavenOpts>${mavenOpts}</mavenOpts>-->
-                            <!--<settingsFile>${maven.invoker.settings}</settingsFile>-->
-                            <!--<scriptVariables>-->
-                                <!--<muleVersion>${mule.version}</muleVersion>-->
-                                <!--<username>${username}</username>-->
-                                <!--<password>${password}</password>-->
-                            <!--</scriptVariables>-->
-                            <!--<properties>-->
-                                <!--<mule.version>${mule.version}</mule.version>-->
-                                <!--<maven.antrun.plugin.version>${maven.antrun.plugin.version}</maven.antrun.plugin.version>-->
-                                <!--<username>${username}</username>-->
-                                <!--<password>${password}</password>-->
-                                <!--<environment>${environment}</environment>-->
-                                <!--<target>${target}</target>-->
-                                <!--<port>${port}</port>-->
-                                <!--<skipProperty>skipPlugin</skipProperty>-->
-                                <!--<skipPlugin>true</skipPlugin>-->
-                                <!--<mule.timeout>120000</mule.timeout>-->
-                            <!--</properties>-->
-                            <!--<goals>-->
-                                <!--<goal>clean</goal>-->
-                                <!--<goal>verify</goal>-->
-                            <!--</goals>-->
-                        <!--</configuration>-->
-                        <!--<executions>-->
-                            <!--<execution>-->
-                                <!--<id>integration-test</id>-->
-                                <!--<phase>integration-test</phase>-->
-                                <!--<goals>-->
-                                    <!--<goal>install</goal>-->
-                                    <!--<goal>run</goal>-->
-                                    <!--<goal>report</goal>-->
-                                <!--</goals>-->
-                            <!--</execution>-->
-                        <!--</executions>-->
-                    <!--</plugin>-->
-                <!--</plugins>-->
-            <!--</build>-->
+        <!--<id>integration</id>-->
+        <!--<activation>-->
+        <!--<activeByDefault>true</activeByDefault>-->
+        <!--</activation>-->
+        <!--<build>-->
+        <!--<plugins>-->
+        <!--<plugin>-->
+        <!--<groupId>org.apache.maven.plugins</groupId>-->
+        <!--<artifactId>maven-invoker-plugin</artifactId>-->
+        <!--<version>${maven.invoker.plugin.version}</version>-->
+        <!--<configuration>-->
+        <!--<skipInvocation>${skipTests}</skipInvocation>-->
+        <!--<debug>${debug}</debug>-->
+        <!--<streamLogs>${debug}</streamLogs>-->
+        <!--<showErrors>${debug}</showErrors>-->
+        <!--<projectsDirectory>src/it/${suite}</projectsDirectory>-->
+        <!--<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>-->
+        <!--<postBuildHookScript>verify</postBuildHookScript>-->
+        <!--<preBuildHookScript>setup</preBuildHookScript>-->
+        <!--<addTestClassPath>true</addTestClassPath>-->
+        <!--<invokerPropertiesFile>invoker.properties</invokerPropertiesFile>-->
+        <!--<mavenOpts>${mavenOpts}</mavenOpts>-->
+        <!--<settingsFile>${maven.invoker.settings}</settingsFile>-->
+        <!--<scriptVariables>-->
+        <!--<muleVersion>${mule.version}</muleVersion>-->
+        <!--<username>${username}</username>-->
+        <!--<password>${password}</password>-->
+        <!--</scriptVariables>-->
+        <!--<properties>-->
+        <!--<mule.version>${mule.version}</mule.version>-->
+        <!--<maven.antrun.plugin.version>${maven.antrun.plugin.version}</maven.antrun.plugin.version>-->
+        <!--<username>${username}</username>-->
+        <!--<password>${password}</password>-->
+        <!--<environment>${environment}</environment>-->
+        <!--<target>${target}</target>-->
+        <!--<port>${port}</port>-->
+        <!--<skipProperty>skipPlugin</skipProperty>-->
+        <!--<skipPlugin>true</skipPlugin>-->
+        <!--<mule.timeout>120000</mule.timeout>-->
+        <!--</properties>-->
+        <!--<goals>-->
+        <!--<goal>clean</goal>-->
+        <!--<goal>verify</goal>-->
+        <!--</goals>-->
+        <!--</configuration>-->
+        <!--<executions>-->
+        <!--<execution>-->
+        <!--<id>integration-test</id>-->
+        <!--<phase>integration-test</phase>-->
+        <!--<goals>-->
+        <!--<goal>install</goal>-->
+        <!--<goal>run</goal>-->
+        <!--<goal>report</goal>-->
+        <!--</goals>-->
+        <!--</execution>-->
+        <!--</executions>-->
+        <!--</plugin>-->
+        <!--</plugins>-->
+        <!--</build>-->
         <!--</profile>-->
         <profile>
             <id>release</id>

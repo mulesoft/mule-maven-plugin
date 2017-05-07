@@ -82,7 +82,7 @@ public abstract class AbstractClient {
     return builder.method("PATCH", entity);
   }
 
-  private Invocation.Builder builder(String uri, String path) {
+  protected Invocation.Builder builder(String uri, String path) {
     WebTarget target = getTarget(uri, path);
     Invocation.Builder builder = target.request(APPLICATION_JSON_TYPE);
     configureRequest(builder);

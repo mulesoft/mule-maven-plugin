@@ -12,4 +12,8 @@ public class Environment {
   public String name;
   public String organizationId;
   public boolean isProduction;
+
+  public Environment() {
+
+  }
 }

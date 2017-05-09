@@ -7,6 +7,7 @@
 package org.mule.tools.maven.mojo;
 
 import org.apache.maven.plugins.annotations.Parameter;
+import org.mule.tools.client.arm.model.Target;
 import org.mule.tools.client.model.TargetType;
 
 import java.io.File;
@@ -16,100 +17,78 @@ import java.util.Map;
 
 public class DeploymentConfiguration {
 
-  @Parameter(required = false, property = "maven.server")
   protected String server;
 
-  @Parameter(required = false, property = "anypoint.username")
   protected String username;
 
-  @Parameter(required = false, property = "anypoint.password")
   protected String password;
 
   @Parameter(required = true)
   protected AbstractMuleMojo.DeploymentType deploymentType;
 
-  @Parameter(readonly = true, property = "anypoint.uri", defaultValue = "https://anypoint.mulesoft.com")
+  @Parameter(readonly = true)
   protected String uri;
 
-  @Parameter(required = false, property = "anypoint.environment")
   protected String environment;
 
-  @Parameter(property = "mule.home")
   protected File muleHome;
 
-  @Parameter(property = "mule.version")
   protected String muleVersion;
 
-  @Parameter(defaultValue = "2", required = true)
+  @Parameter(required = true)
   protected Integer size;
 
-  @Parameter(defaultValue = "", property = "anypoint.businessGroup")
   protected String businessGroup = "";
 
   @Parameter(defaultValue = "Medium", readonly = true, property = "arm.insecure")
   protected boolean armInsecure;
 
-  @Parameter(property = "mule.application")
   protected File application;
 
-  @Parameter(readonly = true, property = "applicationName")
+  @Parameter(readonly = true)
   protected String applicationName;
 
-  @Parameter(property = "anypoint.target")
   protected String target;
 
-  @Parameter(property = "anypoint.target.type")
   protected TargetType targetType;
 
-  @Parameter(property = "mule.skip")
   protected String skip;
 
-  @Parameter
   protected File domain;
 
-  @Parameter(property = "script", required = false)
   protected File script;
 
-  @Parameter(property = "mule.timeout", required = false)
-  protected int timeout;
+  protected Integer timeout;
 
-  @Parameter
   protected List<ArtifactDescription> artifactItems = new ArrayList<ArtifactDescription>();
 
 
   // DeployMojo configuration parameters
 
-  @Parameter(readonly = true, required = false, defaultValue = "false", property = "mule.community")
-  protected boolean community;
+  @Parameter(readonly = true)
+  protected Boolean community;
 
   @Parameter(readonly = true)
   protected ArtifactDescription muleDistribution;
 
-  @Parameter(property = "mule.deploymentConfiguration.timeout", defaultValue = "60000", required = true)
+  @Parameter(required = true)
   protected Long deploymentTimeout;
 
-  @Parameter(property = "mule.arguments", required = false)
   protected String[] arguments;
 
-  @Parameter
   protected List<File> libs = new ArrayList<>();
 
-  @Parameter(property = "cloudhub.region", defaultValue = "us-east-1")
   protected String region;
 
-  @Parameter(property = "cloudhub.workers")
   protected Integer workers = 1;
 
-  @Parameter(defaultValue = "Medium", property = "cloudhub.workerType")
   protected String workerType;
 
-  @Parameter(required = false)
   protected Map<String, String> properties;
 
   // Undeploy mojo configuration parameters
 
-  @Parameter(defaultValue = "true")
-  protected boolean failIfNotExists;
+  protected Boolean failIfNotExists;
 
   /**
    * Maven server with Anypoint Platform credentials. This is only needed if you want to use your credentials stored in your Maven
@@ -118,6 +97,9 @@ public class DeploymentConfiguration {
    * @since 2.2
    */
   public String getServer() {
+    if (server == null) {
+      server = System.getProperty("maven.server");
+    }
     return server;
   }
 
@@ -131,6 +113,9 @@ public class DeploymentConfiguration {
    * @since 2.0
    */
   public String getUsername() {
+    if (username == null) {
+      username = System.getProperty("anypoint.username");
+    }
     return username;
   }
 
@@ -144,6 +129,9 @@ public class DeploymentConfiguration {
    * @since 2.0
    */
   public String getPassword() {
+    if (password == null) {
+      password = "anypoint.password";
+    }
     return password;
   }
 
@@ -170,6 +158,12 @@ public class DeploymentConfiguration {
    * @since 2.0
    */
   public String getUri() {
+    if (uri == null) {
+      uri = System.getProperty("anypoint.uri");
+    }
+    if (uri == null) {
+      uri = "https://anypoint.mulesoft.com";
+    }
     return uri;
   }
 
@@ -183,6 +177,9 @@ public class DeploymentConfiguration {
    * @since 2.0
    */
   public String getEnvironment() {
+    if (environment == null) {
+      environment = System.getProperty("anypoint.environment");
+    }
     return environment;
   }
 
@@ -197,6 +194,12 @@ public class DeploymentConfiguration {
    * @since 2.0
    */
   public File getMuleHome() {
+    if (muleHome == null) {
+      String muleHomePath = System.getProperty("mule.home");
+      if (muleHomePath != null) {
+        muleHome = new File(muleHomePath);
+      }
+    }
     return muleHome;
   }
 
@@ -211,6 +214,9 @@ public class DeploymentConfiguration {
    * @since 1.0
    */
   public String getMuleVersion() {
+    if (muleVersion == null) {
+      muleVersion = "mule.version";
+    }
     return muleVersion;
   }
 
@@ -224,6 +230,9 @@ public class DeploymentConfiguration {
    * @since 1.0
    */
   public Integer getSize() {
+    if (size == null) {
+      size = 2;
+    }
     return size;
   }
 
@@ -237,6 +246,9 @@ public class DeploymentConfiguration {
    * @since 2.1
    */
   public String getBusinessGroup() {
+    if (businessGroup == null) {
+      businessGroup = System.getProperty("anypoint.businessGroup");
+    }
     return businessGroup;
   }
 
@@ -263,6 +275,12 @@ public class DeploymentConfiguration {
    * @since 1.0
    */
   public File getApplication() {
+    if (application == null) {
+      String applicationPath = System.getProperty("mule.application");
+      if (applicationPath != null) {
+        application = new File(applicationPath);
+      }
+    }
     return application;
   }
 
@@ -277,6 +295,9 @@ public class DeploymentConfiguration {
    * @since 2.0
    */
   public String getApplicationName() {
+    if (applicationName == null) {
+      applicationName = System.getProperty("applicationName");
+    }
     return applicationName;
   }
 
@@ -291,6 +312,9 @@ public class DeploymentConfiguration {
    * @see DeployMojo#targetType
    */
   public String getTarget() {
+    if (target == null) {
+      target = System.getProperty("anypoint.target");
+    }
     return target;
   }
 
@@ -304,6 +328,12 @@ public class DeploymentConfiguration {
    * @since 2.0
    */
   public TargetType getTargetType() {
+    if (targetType == null) {
+      String targetTypeName = System.getProperty("anypoint.target.type");
+      if (targetTypeName != null) {
+        targetType = TargetType.valueOf(targetTypeName);
+      }
+    }
     return targetType;
   }
 
@@ -312,6 +342,9 @@ public class DeploymentConfiguration {
   }
 
   public String getSkip() {
+    if (skip == null) {
+      skip = System.getProperty("mule.skip");
+    }
     return skip;
   }
 
@@ -328,6 +361,12 @@ public class DeploymentConfiguration {
   }
 
   public File getScript() {
+    if (script == null) {
+      String scriptPath = System.getProperty("script");
+      if (scriptPath != null) {
+        script = new File(scriptPath);
+      }
+    }
     return script;
   }
 
@@ -336,6 +375,12 @@ public class DeploymentConfiguration {
   }
 
   public int getTimeout() {
+    if (timeout == null) {
+      String timeoutValue = System.getProperty("mule.timeout");
+      if (timeoutValue != null) {
+        timeout = Integer.parseInt(timeoutValue);
+      }
+    }
     return timeout;
   }
 
@@ -357,6 +402,12 @@ public class DeploymentConfiguration {
    * @since 2.0
    */
   public boolean isCommunity() {
+    if (community == null) {
+      community = Boolean.valueOf(System.getProperty("mule.community"));
+    }
+    if (community == null) {
+      community = false;
+    }
     return community;
   }
 
@@ -387,6 +438,15 @@ public class DeploymentConfiguration {
    * @since 1.0
    */
   public Long getDeploymentTimeout() {
+    if (deploymentTimeout == null) {
+      String deploymentTimeoutValue = System.getProperty("mule.deploymentConfiguration.timeout");
+      if (deploymentTimeoutValue != null) {
+        deploymentTimeout = Long.parseLong(deploymentTimeoutValue);
+      }
+    }
+    if (deploymentTimeout == null) {
+      deploymentTimeout = new Long(60000);
+    }
     return deploymentTimeout;
   }
 
@@ -405,6 +465,12 @@ public class DeploymentConfiguration {
    * @since 1.0
    */
   public String[] getArguments() {
+    if (arguments == null) {
+      String argumentsValue = System.getProperty("mule.arguments");
+      if (argumentsValue != null) {
+        arguments = argumentsValue.split(",");
+      }
+    }
     return arguments;
   }
 
@@ -431,6 +497,12 @@ public class DeploymentConfiguration {
    * @since 2.0
    */
   public String getRegion() {
+    if (region == null) {
+      region = System.getProperty("cloudhub.region");
+    }
+    if (region == null) {
+      region = "us-east-1";
+    }
     return region;
   }
 
@@ -444,6 +516,15 @@ public class DeploymentConfiguration {
    * @since 2.0
    */
   public Integer getWorkers() {
+    if (workers == null) {
+      String workersValue = System.getProperty("cloudhub.workers");
+      if (workersValue != null) {
+        workers = Integer.parseInt(workersValue);
+      }
+    }
+    if (workers == null) {
+      workers = 1;
+    }
     return workers;
   }
 
@@ -457,6 +538,12 @@ public class DeploymentConfiguration {
    * @since 2.0
    */
   public String getWorkerType() {
+    if (workerType == null) {
+      workerType = System.getProperty("cloudhub.workerType");
+    }
+    if (workerType == null) {
+      workerType = "Medium";
+    }
     return workerType;
   }
 
@@ -484,6 +571,9 @@ public class DeploymentConfiguration {
    * @since 2.2
    */
   public boolean isFailIfNotExists() {
+    if (failIfNotExists == null) {
+      failIfNotExists = true;
+    }
     return failIfNotExists;
   }
 

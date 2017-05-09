@@ -36,7 +36,7 @@ public class AgentDeploymentTest {
 
   public void initializeContext() throws IOException, VerificationException {
     builder = new ProjectFactory();
-    projectBaseDirectory = builder.createProjectBaseDir("empty-mule-deploy-project", this.getClass());
+    projectBaseDirectory = builder.createProjectBaseDir("empty-mule-deploy-agent-project", this.getClass());
     verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);

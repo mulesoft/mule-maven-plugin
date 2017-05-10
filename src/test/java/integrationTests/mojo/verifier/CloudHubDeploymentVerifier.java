@@ -19,6 +19,8 @@ import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 
+import java.util.concurrent.TimeoutException;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -49,6 +51,10 @@ public class CloudHubDeploymentVerifier {
   private static final String ACCESS_TOKEN_KEY = "access_token";
   private static final String APPLICATIONS = "/cloudhub/api/applications";
   private static final String APPLICATION_NAME = "maven-plugin-cloudhub-deploy-test";
+  private static final long SLEEP_TIME = 30000;
+  public static final String DEPLOYED_STATUS = "STARTED";
+  public static final String UNDEPLOYED_STATUS = "UNDEPLOYED";
+  private static final String STATUS_JSON_KEY = "status";
   private WebTarget target;
   private String response;
   private JSONObject responseJson;
@@ -57,51 +63,45 @@ public class CloudHubDeploymentVerifier {
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
 
-  public void verifyIsDeployed() throws InterruptedException {
+  public void verifyIsDeployed() throws InterruptedException, TimeoutException {
     loginAndGetNecessaryIds();
-    assertThat("Application was not deployed", isDeployed(), is(true));
+    assertThat("Application was not deployed", validateStatus(DEPLOYED_STATUS), is(true));
     deleteApplication();
   }
 
-  public boolean isDeployed() throws InterruptedException {
+  public boolean validateStatus(String status) throws InterruptedException, TimeoutException {
+    log.info("Checking application " + APPLICATION_NAME + " for status " + status + "...");
     int repeat = ATTEMPTS;
-    boolean deployed = false;
-    while (repeat > 0 && !deployed) {
-      JSONArray applications = getApplications();
-      JSONObject application = getApplication(applications);
-      if (application != null) {
-        log.info(APPLICATION_NAME + " status: " + application.getString("status"));
-        deployed = "STARTED".equals(application.getString("status"));
+    boolean keepValidating = false;
+    while (repeat > 0 && !keepValidating) {
+      JSONObject application = getApplication(getApplications());
+      keepValidating = !isExpectedStatus(status, application);
+      if (keepValidating) {
+        Thread.sleep(SLEEP_TIME);
       }
-      if (!deployed) {
-        Thread.sleep(30000);
-      }
+      repeat--;
     }
-    return deployed;
+    if (repeat == 0 && !keepValidating) {
+      throw new TimeoutException("Validating status " + status + " for application " + APPLICATION_NAME
+          + " has exceed the maximum number of attempts.");
+    }
+    return keepValidating;
   }
 
-  public void verifyIsUndeployed() throws InterruptedException {
+  private boolean isExpectedStatus(String status, JSONObject application) {
+    if (DEPLOYED_STATUS.equals(status) && application != null) {
+      return status.equals(application.getString(STATUS_JSON_KEY));
+    }
+    if (UNDEPLOYED_STATUS.equals(status)) {
+      return application == null || UNDEPLOYED_STATUS.equals(application.getString(STATUS_JSON_KEY));
+    }
+    return false;
+  }
+
+  public void verifyIsUndeployed() throws InterruptedException, TimeoutException {
     loginAndGetNecessaryIds();
-    assertThat("Application was not undeployed", isUndeployed(), is(true));
+    assertThat("Application was not undeployed", validateStatus(UNDEPLOYED_STATUS), is(true));
     deleteApplication();
-  }
-
-  public boolean isUndeployed() throws InterruptedException {
-    log.info("Checking if application " + APPLICATION_NAME + " was undeployed...");
-    int repeat = ATTEMPTS;
-    boolean undeployed = false;
-    while (repeat > 0 && !undeployed) {
-      JSONArray applications = getApplications();
-      JSONObject application = getApplication(applications);
-      if (application != null) {
-        log.info(APPLICATION_NAME + " status: " + application.getString("status"));
-      }
-      undeployed = application == null || "UNDEPLOYED".equals(application.getString("status"));
-      if (!undeployed) {
-        Thread.sleep(30000);
-      }
-    }
-    return undeployed;
   }
 
   private void loginAndGetNecessaryIds() {

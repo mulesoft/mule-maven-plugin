@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 public class CloudHubDeploymentTest {
 
@@ -51,7 +52,7 @@ public class CloudHubDeploymentTest {
   }
 
   @Test
-  public void testCloudHubDeploy() throws VerificationException, InterruptedException {
+  public void testCloudHubDeploy() throws VerificationException, InterruptedException, TimeoutException {
     log.info("Executing mule:deploy goal...");
     verifier.executeGoal(MULE_DEPLOY);
     cloudHubDeploymentVerifier.verifyIsDeployed();
@@ -60,10 +61,10 @@ public class CloudHubDeploymentTest {
   }
 
   @Test
-  public void testCloudHubUndeploy() throws VerificationException, InterruptedException {
+  public void testCloudHubUndeploy() throws VerificationException, InterruptedException, TimeoutException {
     log.info("Executing mule:deploy goal...");
     verifier.executeGoal(MULE_DEPLOY);
-    cloudHubDeploymentVerifier.isDeployed();
+    cloudHubDeploymentVerifier.validateStatus(cloudHubDeploymentVerifier.DEPLOYED_STATUS);
     log.info("Application successfully deployed to CloudHub.");
     log.info("Executing mule:undeploy goal...");
     verifier.executeGoal(MULE_UNDEPLOY);

@@ -72,6 +72,9 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   @Parameter(defaultValue = "${lightweightPackage}")
   protected boolean lightweightPackage = false;
 
+  @Parameter(defaultValue = "${skipValidation}")
+  protected boolean skipValidation = false;
+
   @Parameter(property = "shared.libraries", required = false)
   protected List<SharedLibraryDependency> sharedLibraries;
 

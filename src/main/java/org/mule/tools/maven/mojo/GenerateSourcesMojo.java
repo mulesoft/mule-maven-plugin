@@ -18,6 +18,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +42,9 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
   protected ProjectBaseFolderFileCloner projectBaseFolderFileCloner;
 
   public void execute() throws MojoExecutionException, MojoFailureException {
-    getLog().debug("Creating target content with Mule source code...");
+    long start = System.currentTimeMillis();
+    getLog().debug("Generating source code...");
+
     projectBaseFolderFileCloner = new ProjectBaseFolderFileCloner(project);
     try {
       createSrcFolderContent();
@@ -50,6 +53,8 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
     } catch (IOException e) {
       throw new MojoFailureException("Fail to generate sources", e);
     }
+
+    getLog().debug(MessageFormat.format("Source code generation done ({0}ms)", System.currentTimeMillis() - start));
   }
 
   protected void createSrcFolderContent() throws IOException, MojoExecutionException {

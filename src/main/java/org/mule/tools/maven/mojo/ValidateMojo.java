@@ -17,6 +17,7 @@ import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -43,14 +44,17 @@ public class ValidateMojo extends AbstractMuleMojo {
   protected MulePluginsCompatibilityValidator validator;
 
   public void execute() throws MojoExecutionException, MojoFailureException {
+    long start = System.currentTimeMillis();
     getLog().debug("Validating Mule application...");
 
-    validateMandatoryFolders();
-    validateMandatoryDescriptors();
-    validateMulePluginDependencies();
-    validateSharedLibraries();
+    if (!skipValidation) {
+      validateMandatoryFolders();
+      validateMandatoryDescriptors();
+      validateMulePluginDependencies();
+      validateSharedLibraries();
+    }
 
-    getLog().debug("Validating Mule application done");
+    getLog().debug(MessageFormat.format("Validation for Mule application done ({0}ms)", System.currentTimeMillis() - start));
   }
 
   protected void validateSharedLibraries() throws MojoExecutionException {

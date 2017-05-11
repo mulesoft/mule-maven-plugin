@@ -16,6 +16,10 @@ import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileStore;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.DosFileAttributeView;
 import java.util.*;
 
 import org.apache.maven.artifact.Artifact;
@@ -36,6 +40,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 import org.mockito.Spy;
+import org.mule.tools.maven.util.FileUtils;
 
 public class RepositoryGeneratorTest {
 
@@ -113,14 +118,14 @@ public class RepositoryGeneratorTest {
   }
 
   @Test
-  public void generateMarkerFileInRepositoryFolderWhenFolderIsNotWritableTest() throws MojoExecutionException {
+  public void generateMarkerFileInRepositoryFolderWhenFolderIsNotWritableTest() throws MojoExecutionException, IOException {
     exception.expect(MojoExecutionException.class);
     File generatedMarkerFile = new File(temporaryFolder.getRoot(), ".marker");
 
     assertThat("Marker file already exists", !generatedMarkerFile.exists());
 
     File readOnlyFolder = temporaryFolder.getRoot();
-    readOnlyFolder.setReadOnly();
+    FileUtils.markAsReadOnly(readOnlyFolder);
 
     repositoryGenerator.generateMarkerFileInRepositoryFolder(readOnlyFolder);
   }

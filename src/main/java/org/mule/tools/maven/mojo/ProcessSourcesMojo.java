@@ -10,6 +10,7 @@
 
 package org.mule.tools.maven.mojo;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -46,6 +47,9 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
+    long start = System.currentTimeMillis();
+    getLog().debug("Processing sources...");
+
     if (!lightweightPackage) {
       RepositoryGenerator repositoryGenerator = new RepositoryGenerator(session,
                                                                         project,
@@ -58,5 +62,6 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
       repositoryGenerator.generate();
     }
 
+    getLog().debug(MessageFormat.format("Process sources done ({0}ms)", System.currentTimeMillis() - start));
   }
 }

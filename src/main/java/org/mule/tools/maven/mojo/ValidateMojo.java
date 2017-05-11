@@ -44,17 +44,19 @@ public class ValidateMojo extends AbstractMuleMojo {
   protected MulePluginsCompatibilityValidator validator;
 
   public void execute() throws MojoExecutionException, MojoFailureException {
-    long start = System.currentTimeMillis();
-    getLog().debug("Validating Mule application...");
-
     if (!skipValidation) {
+      long start = System.currentTimeMillis();
+      getLog().debug("Validating Mule application...");
+
       validateMandatoryFolders();
       validateMandatoryDescriptors();
       validateMulePluginDependencies();
       validateSharedLibraries();
-    }
 
-    getLog().debug(MessageFormat.format("Validation for Mule application done ({0}ms)", System.currentTimeMillis() - start));
+      getLog().debug(MessageFormat.format("Validation for Mule application done ({0}ms)", System.currentTimeMillis() - start));
+    } else {
+      getLog().debug("Skipping Validation for Mule application");
+    }
   }
 
   protected void validateSharedLibraries() throws MojoExecutionException {

@@ -20,6 +20,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.tools.maven.mojo.model.PackagingType;
 
+import java.text.MessageFormat;
+
 /**
  * It creates all the required folders in the project.build.directory
  */
@@ -29,6 +31,7 @@ import org.mule.tools.maven.mojo.model.PackagingType;
 public class InitializeMojo extends AbstractMuleMojo {
 
   public void execute() throws MojoExecutionException, MojoFailureException {
+    long start = System.currentTimeMillis();
     getLog().debug("Initializing Mule Maven Plugin...");
 
     String groupId = project.getGroupId();
@@ -51,7 +54,7 @@ public class InitializeMojo extends AbstractMuleMojo {
 
     createFolderIfNecessary(targetFolder, REPOSITORY);
 
-    getLog().debug("Mule Maven Plugin Initialize done");
+    getLog().debug(MessageFormat.format("Mule Maven Plugin Initialize done ({0}ms)", System.currentTimeMillis() - start));
   }
 
 }

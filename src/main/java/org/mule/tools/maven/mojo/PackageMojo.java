@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -53,15 +54,22 @@ public class PackageMojo extends AbstractMuleMojo {
   protected PackagingType packagingType;
 
   public void execute() throws MojoExecutionException, MojoFailureException {
+    long start = System.currentTimeMillis();
+    getLog().debug("Packaging...");
+
     packagingType = PackagingType.fromString(project.getPackaging());
     String targetFolder = project.getBuild().getDirectory();
     File destinationFile = getDestinationFile(targetFolder);
+
     try {
       createMuleApp(destinationFile, targetFolder);
     } catch (ArchiverException e) {
       throw new MojoExecutionException("Exception creating the Mule App", e);
     }
+
     helper.attachArtifact(this.project, TYPE, packagingType.resolveClassifier(classifier, lightweightPackage), destinationFile);
+
+    getLog().debug(MessageFormat.format("Package done ({0}ms)", System.currentTimeMillis() - start));
   }
 
   /**

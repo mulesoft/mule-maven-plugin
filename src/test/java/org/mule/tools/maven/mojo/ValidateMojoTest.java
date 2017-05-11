@@ -32,8 +32,6 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
 
   private static final ValidateMojo mojo = new ValidateMojo();
 
-  private static final String VALIDATE_GOAL_DEBUG_MESSAGE =
-      "[debug] Validating Mule application...\n[debug] Validating Mule application done\n";
   private static final String VALIDATE_MANDATORY_FOLDERS_MESSAGE =
       "Invalid Mule project. Missing src/main/mule folder. This folder is mandatory";
   private static final String VALIDATE_SHARED_LIBRARIES_MESSAGE =
@@ -87,7 +85,6 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
 
     verify(resolverMock, times(1)).resolveMulePlugins(any());
     verify(validatorMock, times(1)).validate(anyList());
-    assertThat("Validate goal message was not the expected", VALIDATE_GOAL_DEBUG_MESSAGE, equalTo(outContent.toString()));
   }
 
   @Test

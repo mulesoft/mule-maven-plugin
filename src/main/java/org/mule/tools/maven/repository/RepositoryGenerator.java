@@ -15,6 +15,10 @@ import static org.mule.tools.artifact.archiver.api.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileStore;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.DosFileAttributeView;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -30,6 +34,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
+import org.mule.tools.maven.util.FileUtils;
 
 public class RepositoryGenerator {
 
@@ -124,10 +129,10 @@ public class RepositoryGenerator {
     File markerFile = new File(repositoryFile, ".marker");
     log.info(format("No artifacts to add, adding marker file <%s/%s>", REPOSITORY, markerFile.getName()));
     try {
+      FileUtils.checkReadOnly(repositoryFile);
       markerFile.createNewFile();
     } catch (IOException e) {
-      throw new MojoExecutionException(
-                                       format("The current repository has no artifacts to install, and trying to create [%s] failed",
+      throw new MojoExecutionException(format("The current repository has no artifacts to install, and trying to create [%s] failed",
                                               markerFile.toString()),
                                        e);
     }

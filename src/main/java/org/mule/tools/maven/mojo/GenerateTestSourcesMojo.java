@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -34,13 +35,16 @@ import org.mule.tools.maven.util.CopyFileVisitor;
 public class GenerateTestSourcesMojo extends AbstractMuleMojo {
 
   public void execute() throws MojoExecutionException, MojoFailureException {
-    getLog().debug("Creating target content with Test Mule source code...");
+    long start = System.currentTimeMillis();
+    getLog().debug("Generating test source code...");
 
     try {
       createTestMuleFolderContent();
     } catch (IOException e) {
       throw new MojoFailureException("Fail to generate sources", e);
     }
+
+    getLog().debug(MessageFormat.format("Test source code generation done ({0}ms)", System.currentTimeMillis() - start));
   }
 
   private void createTestMuleFolderContent() throws IOException {

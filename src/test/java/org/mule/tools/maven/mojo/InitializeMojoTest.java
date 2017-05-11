@@ -28,8 +28,6 @@ import org.mule.tools.maven.FileTreeMatcher;
 
 public class InitializeMojoTest extends AbstractMuleMojoTest {
 
-  private static final String INITIALIZE_GOAL_DEBUG_MESSAGE =
-      "[debug] Initializing Mule Maven Plugin...\n[debug] Mule Maven Plugin Initialize done\n";
   private static final String EXPECTED_STRUCTURE_RELATIVE_PATH = "/expected-initialize-structure";
   private AbstractMuleMojo mojo;
 
@@ -49,7 +47,6 @@ public class InitializeMojoTest extends AbstractMuleMojoTest {
     String[] excludes = new String[] {".placeholder"};
     assertThat("The target folder directory does not have the expected structure", projectRootFolder.getRoot(),
                FileTreeMatcher.hasSameTreeStructure(rootOfExpectedStructure, excludes));
-    assertThat("Initialize goal message was not the expected", INITIALIZE_GOAL_DEBUG_MESSAGE, equalTo(outContent.toString()));
   }
 
   @Test

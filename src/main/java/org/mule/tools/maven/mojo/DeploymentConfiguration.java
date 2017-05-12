@@ -124,7 +124,7 @@ public class DeploymentConfiguration {
   }
 
   /**
-   * Anypoint Platform password.
+   * Anypoint Platform word.
    *
    * @since 2.0
    */
@@ -381,7 +381,7 @@ public class DeploymentConfiguration {
         timeout = Integer.parseInt(timeoutValue);
       }
     }
-    return timeout;
+    return Integer.valueOf(0);
   }
 
   public void setTimeout(int timeout) {

@@ -6,25 +6,32 @@
  */
 package integrationTests.mojo.environmentSetup;
 
+import org.apache.maven.it.VerificationException;
 import org.apache.maven.plugin.logging.SystemStreamLog;
+import org.apache.maven.shared.utils.io.FileUtils;
 import org.junit.rules.TemporaryFolder;
 import org.mule.tools.client.agent.AgentClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isIn;
 import static org.junit.Assert.fail;
 
-public class AgentSetup {
+public class StandaloneEnvironment {
 
   public static final int ATTEMPTS = 30;
+  private static final String STATUS_COMMAND = "status";
   private Logger log;
   private static final long TEN_SECONDS = 10000;
   private static final String MULE_HOME_FOLDER_PREFIX = "/mule-enterprise-standalone-";
@@ -36,21 +43,21 @@ public class AgentSetup {
   private static final String UNENCRYPTED_CONNECTION_OPTION = "-I";
   private static final int NORMAL_TERMINATION = 0;
   private static final String START_AGENT_COMMAND = "start";
-  private static final String ANCHOR_FILE_RELATIVE_PATH = "/apps/agent-anchor.txt";
+  private static final String ANCHOR_FILE_RELATIVE_PATH = "/apps";
   private static final String STOP_AGENT_COMMAND = "stop";
   private static String muleExecutable;
   private static List<String> commands = new ArrayList<>();
   private static String muleHome;
-  private static Runtime runtime;
+  private static Runtime runtime = Runtime.getRuntime();;
   private static Process applicationProcess;
 
-  public AgentSetup(String muleVersion) {
+  public StandaloneEnvironment(String muleVersion) {
     log = LoggerFactory.getLogger(this.getClass());
     this.muleVersion = muleVersion;
   }
 
 
-  public void start() throws IOException, InterruptedException {
+  public void start() {
     Path currentRelativePath = Paths.get("");
     String targetFolder = currentRelativePath.toAbsolutePath().toString() + File.separator + "target";
 
@@ -59,17 +66,36 @@ public class AgentSetup {
     deleteFile(muleHome + AGENT_JKS_RELATIVE_PATH);
     deleteFile(muleHome + AGENT_YMS_RELATIVE_PATH);
 
-    muleExecutable = muleHome + EXECUTABLE_FOLDER_RELATIVE_PATH;
+  }
 
-    runtime = Runtime.getRuntime();
-
+  public void runAgent() throws IOException, InterruptedException {
     unpackAgent();
     startMule();
     checkAgentIsAcceptingDeployments();
   }
 
+  public void checkStandaloneStatus(String status) throws InterruptedException, IOException {
+    commands.clear();
+    commands.add(getMuleExecutable());
+    commands.add(STATUS_COMMAND);
+    log.info("Checking mule status...");
+    applicationProcess = runtime.exec(commands.toArray(new String[0]));
+    applicationProcess.waitFor();
+    BufferedReader output = new BufferedReader(new InputStreamReader(applicationProcess.getInputStream()));
+    String line;
+    Boolean containsStatus = false;
+    while ((line = output.readLine()) != null) {
+      if (line.contains(status)) {
+        containsStatus = true;
+        break;
+      }
+    }
+    assertThat("Standalone status " + status + " was not found in process output", containsStatus, is(true));
+  }
+
   public void stop() throws IOException, InterruptedException {
     stopMule();
+    checkStandaloneStatus("Mule Enterprise Edition is not running.");
     killMuleProcesses();
   }
 
@@ -106,7 +132,7 @@ public class AgentSetup {
         stopMule();
       }
       commands.clear();
-      commands.add(muleExecutable);
+      commands.add(getMuleExecutable());
       commands.add(START_AGENT_COMMAND);
       log.info("Starting mule...");
       applicationProcess = runtime.exec(commands.toArray(new String[0]));
@@ -155,7 +181,7 @@ public class AgentSetup {
         log.info("Failed to stop mule. Trying to stop again...");
       }
       commands.clear();
-      commands.add(muleExecutable);
+      commands.add(getMuleExecutable());
       commands.add(STOP_AGENT_COMMAND);
       applicationProcess = runtime.exec(commands.toArray(new String[0]));
       applicationProcess.waitFor();
@@ -167,8 +193,8 @@ public class AgentSetup {
     log.info("Mule successfully stopped.");
   }
 
-  public String getAnchorFilePath() {
-    return muleHome + ANCHOR_FILE_RELATIVE_PATH;
+  public String getAnchorFilePath(String anchorFileName) {
+    return muleHome + ANCHOR_FILE_RELATIVE_PATH + File.separator + anchorFileName;
   }
 
 
@@ -192,5 +218,25 @@ public class AgentSetup {
     commands.add("kill");
     commands.add("-9");
     runtime.exec(commands.toArray(new String[0]));
+  }
+
+  public void verifyDeployment(boolean isDeployed, String anchorFileName)
+      throws InterruptedException, IOException, VerificationException {
+    log.info("Verifying deployment status...");
+    boolean deployed = false;
+    for (int i = 0; i < 10 && !deployed; ++i, Thread.sleep(1000)) {
+      deployed = FileUtils.fileExists(getAnchorFilePath(anchorFileName));
+    }
+    assertThat("Failed to deploy, could not find anchor file", deployed, is(isDeployed));
+
+    stop();
+  }
+
+  public void setMuleHome(String muleHome) {
+    this.muleHome = muleHome;
+  }
+
+  public String getMuleExecutable() {
+    return muleHome + EXECUTABLE_FOLDER_RELATIVE_PATH;
   }
 }

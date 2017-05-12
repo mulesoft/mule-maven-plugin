@@ -8,6 +8,7 @@ package org.mule.tools.maven.mojo;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.xmlbeans.impl.store.Path;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
@@ -151,7 +153,7 @@ public class DeployMojo extends AbstractMuleMojo {
     File muleHome = installMule(new File(mavenProject.getBuild().getDirectory()));
     MuleProcessController mule = new MuleProcessController(muleHome.getAbsolutePath(), deploymentConfiguration.getTimeout());
 
-    //renameApplicationToApplicationName();
+    // renameApplicationToApplicationName();
 
     Deployer deployer = new Deployer(mule, getLog(), deploymentConfiguration.getApplication(),
                                      deploymentConfiguration.getDeploymentTimeout(), deploymentConfiguration.getArguments(),
@@ -226,6 +228,9 @@ public class DeployMojo extends AbstractMuleMojo {
       UnArchiver unArchiver = getArchiver(type);
       unArchiver.setSourceFile(src);
       unArchiver.setDestDirectory(dest);
+      if (!dest.exists()) {
+        dest.mkdirs();
+      }
       unArchiver.extract();
     } catch (ArchiverException e) {
       throw new MojoExecutionException("Couldn't extract file " + src + " to " + dest);

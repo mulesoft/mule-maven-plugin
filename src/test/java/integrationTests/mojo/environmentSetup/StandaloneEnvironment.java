@@ -48,7 +48,7 @@ public class StandaloneEnvironment {
   private static String muleExecutable;
   private static List<String> commands = new ArrayList<>();
   private static String muleHome;
-  private static Runtime runtime = Runtime.getRuntime();;
+  private static Runtime runtime = Runtime.getRuntime();
   private static Process applicationProcess;
 
   public StandaloneEnvironment(String muleVersion) {

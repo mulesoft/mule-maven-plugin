@@ -18,6 +18,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class StandaloneDeploymentTest {
 
@@ -27,7 +30,6 @@ public class StandaloneDeploymentTest {
   private static File projectBaseDirectory;
   private static ProjectFactory builder;
   private static final String INSTALL = "install";
-  private static final String MULE_DEPLOY = "mule:deploy";
 
   public void initializeContext() throws IOException, VerificationException {
     builder = new ProjectFactory();
@@ -42,6 +44,10 @@ public class StandaloneDeploymentTest {
     log = LoggerFactory.getLogger(this.getClass());
     log.info("Initializing context...");
     initializeContext();
+    String mavenSettings = System.getenv("MAVEN_SETTINGS");
+    if (mavenSettings != null) {
+      verifier.addCliOption("-s " + mavenSettings);
+    }
     verifier.setEnvironmentVariable("mule.version", System.getProperty("mule.version"));
     verifier.setEnvironmentVariable("mule.timeout", System.getProperty("mule.timeout"));
   }
@@ -53,7 +59,6 @@ public class StandaloneDeploymentTest {
 
   @Test
   public void testStandaloneDeploy() throws IOException, VerificationException, InterruptedException {
-    // verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=y");
     log.info("Executing mule:deploy goal...");
     verifier.executeGoal(INSTALL);
     verifyDeployment();

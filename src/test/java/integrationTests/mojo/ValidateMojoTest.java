@@ -17,6 +17,7 @@ public class ValidateMojoTest extends MojoTest {
 
   protected static final String VALIDATE = "validate";
   private static final String MISSING_DECLARED_SHARED_LIBRARIES_PROJECT = "missing-declared-shared-libraries-project";
+  private static final String MISSING_PACKAGE_TYPE_PROJECT = "missing-package-type-project";
   private static final String INVALID_PACKAGE_PROJECT = "invalid-package-project";
   private static final String VALIDATE_SHARED_LIBRARIES_PROJECT = "validate-shared-libraries-project";
   private static final String DEPENDENCY_A_GROUP_ID = "group.id.a";
@@ -54,6 +55,17 @@ public class ValidateMojoTest extends MojoTest {
     } catch (VerificationException e) {
     }
     verifier.verifyTextInLog("Unknown packaging: mule-invalid");
+  }
+
+  @Test
+  public void testFailWhenMissingPackageType() throws Exception {
+    projectBaseDirectory = builder.createProjectBaseDir(MISSING_PACKAGE_TYPE_PROJECT, this.getClass());
+    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    try {
+      verifier.executeGoal(VALIDATE);
+    } catch (VerificationException e) {
+    }
+    verifier.verifyTextInLog("Unknown packaging type jar. Please specify a valid mule packaging type:");
   }
 
   @Test

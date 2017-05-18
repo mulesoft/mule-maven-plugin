@@ -54,11 +54,7 @@ public enum PackagingType {
 
   public static PackagingType fromString(String name) {
     String packagingName = LOWER_HYPHEN.to(UPPER_UNDERSCORE, name);
-    try {
-      return valueOf(packagingName);
-    } catch (IllegalArgumentException e) {
-      return MULE_APPLICATION;
-    }
+    return valueOf(packagingName);
   }
 
   public boolean equals(String name) {

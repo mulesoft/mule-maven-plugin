@@ -25,7 +25,9 @@ import org.mule.tools.maven.mojo.model.SharedLibraryDependency;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE;
 import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
@@ -84,14 +86,22 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
 
   protected File getSourceFolder() throws MojoExecutionException {
     String packagingType = project.getPackaging();
-    if (PackagingType.MULE_APPLICATION.equals(packagingType) || PackagingType.MULE_DOMAIN.equals(packagingType)) {
-      return new File(mainFolder, MULE);
+    File sourceFolder = null;
+    try {
+      if (PackagingType.MULE_APPLICATION.equals(packagingType) || PackagingType.MULE_DOMAIN.equals(packagingType)) {
+        sourceFolder = new File(mainFolder, MULE);
+      }
+      if (PackagingType.MULE_POLICY.equals(packagingType)) {
+        sourceFolder = new File(mainFolder, POLICY);
+      }
+    } catch (IllegalArgumentException e) {
+      List<String> packagingTypeNames =
+          Arrays.stream(PackagingType.values()).map(type -> type.toString()).collect(Collectors.toList());
+      String possibleValues = String.join(", ", packagingTypeNames);
+      throw new MojoExecutionException("Unknown packaging type " + packagingType
+          + ". Please specify a valid mule packaging type: " + possibleValues);
     }
-
-    if (PackagingType.MULE_POLICY.equals(packagingType)) {
-      return new File(mainFolder, POLICY);
-    }
-    throw new MojoExecutionException("Unknown packaging type: " + packagingType);
+    return sourceFolder;
   }
 
   protected File getMuleAppZipFile() {

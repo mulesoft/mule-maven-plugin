@@ -178,23 +178,23 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>${maven.dependency.plugin.version}</version>
-                <configuration>
-                    <artifactItems>
-                        <artifactItem>
-                            <groupId>com.mulesoft.muleesb.distributions</groupId>
-                            <artifactId>mule-ee-distribution-standalone</artifactId>
-                            <version>${mule.version}</version>
-                            <type>tar.gz</type>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
-                        </artifactItem>
-                    </artifactItems>
-                </configuration>
                 <executions>
                     <execution>
+                        <phase>process-test-resources</phase>
                         <goals>
                             <goal>unpack</goal>
                         </goals>
-                        <phase>process-test-resources</phase>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.mulesoft.muleesb.distributions</groupId>
+                                    <artifactId>mule-ee-distribution-standalone</artifactId>
+                                    <version>${mule.version}</version>
+                                    <type>tar.gz</type>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

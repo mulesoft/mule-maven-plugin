@@ -62,6 +62,23 @@
             </configuration>
         </component>
 
+        <component>
+            <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+            <role-hint>jar</role-hint>
+            <implementation>org.mule.tools.maven.mojo.model.lifecycle.MuleLifecycleMapping</implementation>
+        </component>
+
+        <component>
+            <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+            <role-hint>jar</role-hint>
+            <implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler</implementation>
+            <configuration>
+                <type>jar</type>
+                <language>java</language>
+                <addedToClasspath>true</addedToClasspath>
+            </configuration>
+        </component>
+
     </components>
 
 </component-set>

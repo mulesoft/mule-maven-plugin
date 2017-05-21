@@ -10,10 +10,10 @@
 
 package org.mule.tools.maven.mojo.model.lifecycle;
 
+import org.apache.maven.lifecycle.mapping.LifecycleMapping;
+
 import java.util.List;
 import java.util.Map;
-
-import org.apache.maven.lifecycle.mapping.LifecycleMapping;
 
 public class MuleLifecycleMapping implements LifecycleMapping {
 
@@ -32,6 +32,7 @@ public class MuleLifecycleMapping implements LifecycleMapping {
   @Override
   public Map getLifecycles() {
     Map lifecycles;
+    // This method implementation is to save issues between Maven versions 3.3.3/3.3./3.5.0
     try {
       Class.forName("org.apache.maven.lifecycle.mapping.LifecyclePhase");
       muleLifecycleMappingMaven = new MuleLifecycleMappingMaven339();

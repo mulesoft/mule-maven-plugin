@@ -31,12 +31,15 @@ public class MuleLifecycleMapping implements LifecycleMapping {
 
   @Override
   public Map getLifecycles() {
+    Map lifecycles;
     try {
       Class.forName("org.apache.maven.lifecycle.mapping.LifecyclePhase");
       muleLifecycleMappingMaven = new MuleLifecycleMappingMaven339();
-    } catch (ClassNotFoundException e) {
+      lifecycles = muleLifecycleMappingMaven.getLifecycles();
+    } catch (ClassNotFoundException | ClassCastException e) {
       muleLifecycleMappingMaven = new MuleLifecycleMappingMaven333();
+      lifecycles = muleLifecycleMappingMaven.getLifecycles();
     }
-    return muleLifecycleMappingMaven.getLifecycles();
+    return lifecycles;
   }
 }

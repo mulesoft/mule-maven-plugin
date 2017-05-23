@@ -12,13 +12,14 @@ package integrationTests.mojo;
 import java.io.File;
 import java.io.IOException;
 
-import integrationTests.ProjectFactory;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
 import org.apache.maven.shared.utils.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+
+import integrationTests.ProjectFactory;
 
 
 public class MojoTest {
@@ -57,6 +58,10 @@ public class MojoTest {
     builder = new ProjectFactory();
     projectBaseDirectory = builder.createProjectBaseDir("empty-" + goal + "-project", this.getClass());
     verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    String mavenSettings = System.getenv("MAVEN_SETTINGS");
+    if (mavenSettings != null) {
+      verifier.addCliOption("-s " + mavenSettings);
+    }
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
   }

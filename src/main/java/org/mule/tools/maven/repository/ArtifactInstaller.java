@@ -33,6 +33,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.DependencyFilter;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactResult;
@@ -137,7 +138,7 @@ public class ArtifactInstaller {
     String versionString = "-" + getNormalizedVersion(artifact);
     String classifierString = StringUtils.EMPTY;
 
-    if (artifact.getClassifier() != null && !artifact.getClassifier().isEmpty()) {
+    if (StringUtils.isNotBlank(artifact.getClassifier())) {
       classifierString = "-" + artifact.getClassifier();
     }
     mainName.append(artifact.getArtifactId()).append(versionString);
@@ -163,7 +164,7 @@ public class ArtifactInstaller {
 
   public void downloadExcludedDependencyToLocalRepository(Artifact artifact) throws MojoExecutionException {
     CollectRequest collectRequest = new CollectRequest();
-    collectRequest.setRoot(new org.eclipse.aether.graph.Dependency(RepositoryUtils.toArtifact(artifact), null));
+    collectRequest.setRoot(new Dependency(RepositoryUtils.toArtifact(artifact), null));
     for (RemoteRepository repository : toAetherRepos(remoteRepositories)) {
       collectRequest.addRepository(repository);
     }
@@ -178,7 +179,8 @@ public class ArtifactInstaller {
         artifact.setFile(resolved.getFile());
       }
     } catch (DependencyResolutionException e) {
-      throw new MojoExecutionException("Error while resolving dependency", e);
+      throw new MojoExecutionException("Error while resolving dependency " + artifact.getGroupId() + ":"
+          + artifact.getArtifactId() + ":" + artifact.getVersion(), e);
     }
   }
 }

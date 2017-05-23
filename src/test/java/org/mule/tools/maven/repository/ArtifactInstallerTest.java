@@ -59,12 +59,14 @@ public class ArtifactInstallerTest {
   private Log logMock;
   private ArtifactHandler handler;
   private ArtifactInstaller installer;
-  private TemporaryFolder outputFolder;
-  private TemporaryFolder artifactFileFolder;
   private Artifact artifact;
 
   @Rule
   public ExpectedException exception = ExpectedException.none();
+  @Rule
+  public TemporaryFolder outputFolder = new TemporaryFolder();;
+  @Rule
+  public TemporaryFolder artifactFileFolder = new TemporaryFolder();;
   private RepositorySystem aetherRepositorySystemMock;
   private RepositorySystemSession aetherRepositorySystemSessionMock;
 
@@ -77,9 +79,7 @@ public class ArtifactInstallerTest {
     aetherRepositorySystemSessionMock = mock(RepositorySystemSession.class);
     installer = new ArtifactInstaller(logMock, remoteArtifactRepositories, aetherRepositorySystemMock,
                                       aetherRepositorySystemSessionMock);
-    outputFolder = new TemporaryFolder();
     outputFolder.create();
-    artifactFileFolder = new TemporaryFolder();
     artifactFileFolder.create();
     artifact = new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, SCOPE, TYPE, CLASSIFIER, handler);
   }

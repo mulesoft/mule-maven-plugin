@@ -88,15 +88,6 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   @Parameter
   protected String classifier;
 
-  @Component
-  protected ArtifactFactory artifactFactory;
-  @Component
-  protected ArtifactMetadataSource artifactMetadataSource;
-  @Component
-  protected ArtifactCollector artifactCollector;
-  @Component
-  protected DependencyTreeBuilder treeBuilder;
-
 
   protected File getSourceFolder() throws MojoExecutionException {
     String packagingType = project.getPackaging();

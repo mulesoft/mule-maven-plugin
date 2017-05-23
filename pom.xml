@@ -70,6 +70,7 @@
         <skipVerifications>false</skipVerifications>
         <formatterGoal>validate</formatterGoal>
 
+        <maven.dependency.tree.version>1.2</maven.dependency.tree.version>
         <maven.plugin.annotations.version>3.5</maven.plugin.annotations.version>
         <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
         <maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
@@ -272,7 +273,7 @@
         <dependency>
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-dependency-tree</artifactId>
-            <version>1.2</version>
+            <version>${maven.dependency.tree.version}</version>
         </dependency>
     </dependencies>
 

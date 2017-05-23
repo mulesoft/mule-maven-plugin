@@ -45,9 +45,6 @@ public class MavenProjectBuilder {
     try {
       mavenProject = projectBuilder.build(projectArtifact, projectBuildingRequest).getProject();
     } catch (ProjectBuildingException e) {
-      log
-          .warn(format("The artifact [%s] seems to have some warnings, enable logs for more information",
-                       artifact.toString()));
       if (log.isDebugEnabled()) {
         log.warn(format("The artifact [%s] had the following issue ", artifact.toString()), e);
       }

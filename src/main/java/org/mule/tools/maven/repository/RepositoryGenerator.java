@@ -94,14 +94,10 @@ public class RepositoryGenerator {
       ArtifactInstaller artifactInstaller = buildArtifactInstaller(remoteArtifactRepositories);
       installArtifacts(repositoryFolder, artifacts, artifactInstaller);
       generateExcludedDependenciesMetadata(repositoryFolder, excludedArtifacts, artifactInstaller);
+    } catch (DependencyTreeBuilderException e) {
+      log.debug(format("There was an exception while resolving transitive dependencies of [%s]", project.toString()), e);
     } catch (Exception e) {
       log.debug(format("There was an exception while building [%s]", project.toString()), e);
-      try {
-        throw e;
-      } catch (DependencyTreeBuilderException e1) {
-        log.debug(format("There was an exception while resolving transitive dependencies of [%s]", project.toString()), e);
-
-      }
     }
   }
 

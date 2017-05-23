@@ -12,17 +12,27 @@ package org.mule.tools.maven.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.DefaultArtifactRepository;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,21 +59,27 @@ public class ArtifactInstallerTest {
   private Log logMock;
   private ArtifactHandler handler;
   private ArtifactInstaller installer;
-  private TemporaryFolder outputFolder;
-  private TemporaryFolder artifactFileFolder;
   private Artifact artifact;
 
   @Rule
   public ExpectedException exception = ExpectedException.none();
+  @Rule
+  public TemporaryFolder outputFolder = new TemporaryFolder();;
+  @Rule
+  public TemporaryFolder artifactFileFolder = new TemporaryFolder();;
+  private RepositorySystem aetherRepositorySystemMock;
+  private RepositorySystemSession aetherRepositorySystemSessionMock;
 
   @Before
   public void before() throws IOException {
     logMock = mock(Log.class);
     handler = new DefaultArtifactHandler(TYPE);
-    installer = new ArtifactInstaller(logMock);
-    outputFolder = new TemporaryFolder();
+    List<ArtifactRepository> remoteArtifactRepositories = new ArrayList<>();
+    aetherRepositorySystemMock = mock(RepositorySystem.class);
+    aetherRepositorySystemSessionMock = mock(RepositorySystemSession.class);
+    installer = new ArtifactInstaller(logMock, remoteArtifactRepositories, aetherRepositorySystemMock,
+                                      aetherRepositorySystemSessionMock);
     outputFolder.create();
-    artifactFileFolder = new TemporaryFolder();
     artifactFileFolder.create();
     artifact = new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, SCOPE, TYPE, CLASSIFIER, handler);
   }
@@ -74,6 +90,7 @@ public class ArtifactInstallerTest {
     String actual = installer.getNormalizedVersion(artifact);
     assertThat("The normalized version is different from the expected", actual, equalTo(VERSION + "-" + SNAPSHOT_VERSION));
   }
+
 
   @Test
   public void getNormalizedVersionFromVersionTest() {

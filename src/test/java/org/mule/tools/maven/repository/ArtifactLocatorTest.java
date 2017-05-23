@@ -21,9 +21,12 @@ import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
+import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactCollector;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -31,6 +34,7 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
+import org.apache.maven.shared.dependency.tree.DependencyTreeBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,6 +66,11 @@ public class ArtifactLocatorTest {
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
+  private DependencyTreeBuilder treeBuilderMock;
+  private ArtifactFactory artifactFactoryMock;
+  private ArtifactMetadataSource artifactMetadataSourceMock;
+  private ArtifactCollector artifactCollectorMock;
+  private MavenProjectBuilder mavenProjectBuilderMock;
 
   @Before
   public void before() {
@@ -73,9 +82,15 @@ public class ArtifactLocatorTest {
     repositorySystemMock = mock(RepositorySystem.class);
     localRepositoryMock = mock(ArtifactRepository.class);
     projectBuildingRequestMock = mock(ProjectBuildingRequest.class);
-    artifactLocator = new ArtifactLocator(logMock, projectMock, projectBuilderMock,
-                                          repositorySystemMock, localRepositoryMock,
-                                          projectBuildingRequestMock);
+    treeBuilderMock = mock(DependencyTreeBuilder.class);
+    artifactFactoryMock = mock(ArtifactFactory.class);
+    artifactMetadataSourceMock = mock(ArtifactMetadataSource.class);
+    artifactCollectorMock = mock(ArtifactCollector.class);
+    mavenProjectBuilderMock = mock(MavenProjectBuilder.class);
+    artifactLocator = new ArtifactLocator(logMock, projectMock, projectBuilderMock, repositorySystemMock, localRepositoryMock,
+                                          projectBuildingRequestMock, treeBuilderMock, artifactFactoryMock,
+                                          artifactMetadataSourceMock,
+                                          artifactCollectorMock, mavenProjectBuilderMock);
   }
 
   @Test
@@ -204,17 +219,15 @@ public class ArtifactLocatorTest {
     Artifact artifact = buildArtifact(10);
     Set<Artifact> artifacts = buildSetOfArtifacts();
     MavenProject mavenProjectMock = mock(MavenProject.class);
-    doReturn(mavenProjectMock).when(artifactLocatorSpy).buildProjectFromArtifact(artifact);
+    doReturn(mavenProjectMock).when(mavenProjectBuilderMock).buildProjectFromArtifact(artifact);
+    doReturn(artifact).when(mavenProjectBuilderMock).createProjectArtifact(artifact);
     doNothing().when(artifactLocatorSpy).addParentDependencyPomArtifacts(mavenProjectMock, artifacts);
-    when(repositorySystemMock.createProjectArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion()))
-        .thenReturn(artifact);
     doReturn(artifact).when(artifactLocatorSpy).getResolvedArtifactUsingLocalRepository(artifact);
 
     artifactLocatorSpy.addThirdPartyParentPomArtifacts(artifacts, artifact);
 
     verify(artifactLocatorSpy, times(1)).addThirdPartyParentPomArtifacts(artifacts, artifact);
     verify(artifactLocatorSpy, times(1)).addParentDependencyPomArtifacts(mavenProjectMock, artifacts);
-    verify(repositorySystemMock, times(1)).createProjectArtifact(GROUP_ID + ".10", ARTIFACT_ID + "-10", VERSION);
     verify(artifactLocatorSpy, times(1)).getResolvedArtifactUsingLocalRepository(artifact);
 
     Set<Artifact> expectedArtifacts = buildSetOfArtifacts();
@@ -350,8 +363,9 @@ public class ArtifactLocatorTest {
     when(repositorySystemMock.createProjectArtifact(GROUP_ID + ".0", ARTIFACT_ID + "-0", VERSION))
         .thenReturn(projectArtifactMock);
     when(projectBuilderMock.build(projectArtifactMock, projectBuildingRequestMock).getProject()).thenReturn(projectMock);
-
-    MavenProject actualMavenProject = artifactLocator.buildProjectFromArtifact(artifact);
+    MavenProjectBuilder builder =
+        new MavenProjectBuilder(projectBuilderMock, projectBuildingRequestMock, repositorySystemMock, logMock);
+    MavenProject actualMavenProject = builder.buildProjectFromArtifact(artifact);
 
     assertThat("The project that was built is different from the expected", actualMavenProject, equalTo(projectMock));
   }

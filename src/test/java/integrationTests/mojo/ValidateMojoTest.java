@@ -20,16 +20,7 @@ public class ValidateMojoTest extends MojoTest {
   private static final String MISSING_PACKAGE_TYPE_PROJECT = "missing-package-type-project";
   private static final String INVALID_PACKAGE_PROJECT = "invalid-package-project";
   private static final String VALIDATE_SHARED_LIBRARIES_PROJECT = "validate-shared-libraries-project";
-  private static final String DEPENDENCY_A_GROUP_ID = "group.id.a";
-  private static final String DEPENDENCY_A_ARTIFACT_ID = "artifact-id-a";
-  private static final String DEPENDENCY_A_VERSION = "1.0.0-SNAPSHOT";
-  private static final String DEPENDENCY_A_TYPE = "jar";
-  private static final String DEPENDENCY_B_GROUP_ID = "group.id.b";
-  private static final String DEPENDENCY_B_ARTIFACT_ID = "artifact-id-b";
-  private static final String DEPENDENCY_B_VERSION = "1.0.0";
-  private static final String DEPENDENCY_B_TYPE = "jar";
-  private static final String DEPENDENCY_A_PROJECT_NAME = "dependency-a";
-  private static final String DEPENDENCY_B_PROJECT_NAME = "dependency-b";
+
 
   public ValidateMojoTest() {
     this.goal = VALIDATE;

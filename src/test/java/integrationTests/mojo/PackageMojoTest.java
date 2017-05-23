@@ -50,6 +50,10 @@ public class PackageMojoTest extends MojoTest {
 
   @Test
   public void testPackageAppWithSharedLibraries() throws IOException, VerificationException {
+    installThirdPartyArtifact(DEPENDENCY_A_GROUP_ID, DEPENDENCY_A_ARTIFACT_ID, DEPENDENCY_A_VERSION, DEPENDENCY_A_TYPE,
+                              DEPENDENCY_A_PROJECT_NAME);
+    installThirdPartyArtifact(DEPENDENCY_B_GROUP_ID, DEPENDENCY_B_ARTIFACT_ID, DEPENDENCY_B_VERSION, DEPENDENCY_B_TYPE,
+                              DEPENDENCY_B_PROJECT_NAME);
     String artifactId = "validate-shared-libraries-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = new Verifier(projectBaseDirectory.getAbsolutePath());

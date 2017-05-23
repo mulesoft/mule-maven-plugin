@@ -11,7 +11,10 @@
 package org.mule.tools.maven.mojo;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactCollector;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -20,6 +23,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.repository.RepositorySystem;
+import org.apache.maven.shared.dependency.tree.DependencyTreeBuilder;
+import org.eclipse.aether.RepositorySystemSession;
 import org.mule.tools.maven.mojo.model.PackagingType;
 import org.mule.tools.maven.mojo.model.SharedLibraryDependency;
 

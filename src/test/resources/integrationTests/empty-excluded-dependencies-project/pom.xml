@@ -22,7 +22,7 @@
         <dependency>
             <groupId>group.id.c</groupId>
             <artifactId>artifact-id-c</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

@@ -96,9 +96,12 @@ public class MojoTest {
       throws IOException, VerificationException {
     File dependencyProjectRootFolder = builder.createProjectBaseDir(dependencyProjectName, this.getClass());
     Verifier auxVerifier = new Verifier(dependencyProjectRootFolder.getAbsolutePath());
+    String mavenSettings = System.getenv("MAVEN_SETTINGS");
+    if (mavenSettings != null) {
+      auxVerifier.addCliOption("-s " + mavenSettings);
+    }
     auxVerifier.deleteArtifact(groupId, artifactId, version, type);
     auxVerifier.assertArtifactNotPresent(groupId, artifactId, version, type);
-    auxVerifier.addCliOption("-o");
     auxVerifier.executeGoal(INSTALL);
     auxVerifier.assertArtifactPresent(groupId, artifactId, version, type);
     auxVerifier.verifyErrorFreeLog();

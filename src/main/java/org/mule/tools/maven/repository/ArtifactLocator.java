@@ -14,37 +14,55 @@ import static java.lang.String.format;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.model.building.ModelProblem;
+import org.apache.maven.artifact.resolver.ArtifactCollector;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Exclusion;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.*;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
+import org.apache.maven.shared.dependency.tree.DependencyTreeBuilder;
+import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
+import org.mule.tools.maven.resolver.ExcludedDependenciesResolver;
 
 public class ArtifactLocator {
 
   private Log log;
   private MavenProject project;
-  private ProjectBuilder projectBuilder;
   private RepositorySystem repositorySystem;
   private ArtifactRepository localRepository;
-  private ProjectBuildingRequest projectBuildingRequest;
+  private DependencyTreeBuilder treeBuilder;
+  private ArtifactFactory artifactFactory;
+  private ArtifactMetadataSource artifactMetadataSource;
+  private ArtifactCollector artifactCollector;
+  private Set<String> exclusions;
+  private MavenProjectBuilder mavenProjectBuilder;
 
 
   public ArtifactLocator(Log log, MavenProject project, ProjectBuilder projectBuilder,
                          RepositorySystem repositorySystem, ArtifactRepository localRepository,
-                         ProjectBuildingRequest projectBuildingRequest) {
+                         ProjectBuildingRequest projectBuildingRequest, DependencyTreeBuilder treeBuilder,
+                         ArtifactFactory artifactFactory,
+                         ArtifactMetadataSource artifactMetadataSource, ArtifactCollector artifactCollector,
+                         MavenProjectBuilder mavenProjectBuilder) {
     this.log = log;
     this.project = project;
-    this.projectBuilder = projectBuilder;
     this.repositorySystem = repositorySystem;
     this.localRepository = localRepository;
-    this.projectBuildingRequest = projectBuildingRequest;
+    this.treeBuilder = treeBuilder;
+    this.artifactFactory = artifactFactory;
+    this.artifactMetadataSource = artifactMetadataSource;
+    this.artifactCollector = artifactCollector;
+    this.exclusions = new HashSet<>();
+    this.mavenProjectBuilder = mavenProjectBuilder;
   }
 
   public Set<Artifact> getArtifacts() throws MojoExecutionException {
@@ -57,18 +75,20 @@ public class ArtifactLocator {
   }
 
   protected void addThirdPartyParentPomArtifacts(Set<Artifact> artifacts, Artifact dep) throws MojoExecutionException {
-    MavenProject project = buildProjectFromArtifact(dep);
+    MavenProject project = mavenProjectBuilder.buildProjectFromArtifact(dep);
     addParentDependencyPomArtifacts(project, artifacts);
 
-    Artifact pomArtifact = repositorySystem.createProjectArtifact(dep.getGroupId(), dep.getArtifactId(), dep.getVersion());
+    Artifact pomArtifact = mavenProjectBuilder.createProjectArtifact(dep);
     artifacts.add(getResolvedArtifactUsingLocalRepository(pomArtifact));
   }
 
   protected void addParentPomArtifacts(Set<Artifact> artifacts) throws MojoExecutionException {
     MavenProject currentProject = project;
     boolean projectParent = true;
+    addExclusions(currentProject);
     while (currentProject.hasParent() && projectParent) {
       currentProject = currentProject.getParent();
+      addExclusions(currentProject);
       if (currentProject.getFile() == null) {
         projectParent = false;
       } else {
@@ -86,46 +106,23 @@ public class ArtifactLocator {
     }
   }
 
-  protected MavenProject buildProjectFromArtifact(Artifact artifact)
-      throws MojoExecutionException {
-    MavenProject mavenProject;
-    Artifact projectArtifact =
-        repositorySystem.createProjectArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion());
-    try {
-      mavenProject = projectBuilder.build(projectArtifact, projectBuildingRequest).getProject();
-    } catch (ProjectBuildingException e) {
-      log
-          .warn(format("The artifact [%s] seems to have some warnings, enable logs for more information",
-                       artifact.toString()));
-      if (log.isDebugEnabled()) {
-        log.warn(format("The artifact [%s] had the following issue ", artifact.toString()), e);
+  private void addExclusions(MavenProject project) {
+    if (project != null) {
+      for (Dependency dependency : project.getDependencies()) {
+        for (Exclusion exclusion : dependency.getExclusions()) {
+          exclusions.add(exclusion.getGroupId() + ":" + exclusion.getArtifactId());
+        }
       }
-      if (e.getResults() == null || e.getResults().size() != 1) {
-        throw new MojoExecutionException(
-                                         format("There was an issue while trying to create a maven project from the artifact [%s]",
-                                                artifact.toString()),
-                                         e);
-      }
-      final ProjectBuildingResult projectBuildingResult = e.getResults().get(0);
-      final List<ModelProblem> collect = projectBuildingResult.getProblems().stream()
-          .filter(modelProblem -> modelProblem.getSeverity().equals(ModelProblem.Severity.FATAL)).collect(
-                                                                                                          Collectors.toList());
-      if (!collect.isEmpty()) {
-        throw new MojoExecutionException(format(
-                                                "There was an issue while trying to create a maven project from the artifact [%s], several FATAL errors were found",
-                                                artifact.toString()),
-                                         e);
-      }
-      mavenProject = projectBuildingResult.getProject();
     }
-    return mavenProject;
   }
 
   protected void addParentDependencyPomArtifacts(MavenProject projectDependency, Set<Artifact> artifacts)
       throws MojoExecutionException {
     MavenProject currentProject = projectDependency;
+    addExclusions(currentProject);
     while (currentProject.hasParent()) {
       currentProject = currentProject.getParent();
+      addExclusions(currentProject);
       final Artifact pomArtifact = currentProject.getArtifact();
       if (!artifacts.add(getResolvedArtifactUsingLocalRepository(pomArtifact))) {
         break;
@@ -151,5 +148,13 @@ public class ArtifactLocator {
                                               resolvedPomArtifact.toString(), resolvedPomArtifact.getFile().getAbsolutePath()));
     }
   }
+
+  public Set<Artifact> getExclusions() throws DependencyTreeBuilderException, MojoExecutionException {
+    ExcludedDependenciesResolver exclusionsResolver =
+        new ExcludedDependenciesResolver(treeBuilder, localRepository, artifactFactory, artifactMetadataSource, artifactCollector,
+                                         mavenProjectBuilder);
+    return exclusionsResolver.resolve(project, exclusions);
+  }
+
 
 }

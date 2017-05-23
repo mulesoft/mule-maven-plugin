@@ -269,6 +269,11 @@
             <artifactId>plexus-container-default</artifactId>
             <version>${plexus.container.default.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-dependency-tree</artifactId>
+            <version>1.2</version>
+        </dependency>
     </dependencies>
 
     <build>

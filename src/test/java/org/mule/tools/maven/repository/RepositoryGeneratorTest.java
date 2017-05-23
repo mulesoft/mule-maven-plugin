@@ -16,23 +16,24 @@ import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileStore;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.DosFileAttributeView;
 import java.util.*;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
+import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactCollector;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.*;
 import org.apache.maven.repository.RepositorySystem;
+import org.apache.maven.shared.dependency.tree.DependencyTreeBuilder;
+import org.eclipse.aether.RepositorySystemSession;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -72,6 +73,12 @@ public class RepositoryGeneratorTest {
 
   @Spy
   RepositoryGenerator repositoryGeneratorSpy;
+  private DependencyTreeBuilder treeBuilder;
+  private ArtifactFactory artifactFactory;
+  private ArtifactMetadataSource artifactMetadataSource;
+  private ArtifactCollector artifactCollector;
+  private org.eclipse.aether.RepositorySystem aetherRepositorySystem;
+  private RepositorySystemSession aetherRepositorySystemSession;
 
   @Before
   public void before() throws IOException, ProjectBuildingException {
@@ -88,13 +95,21 @@ public class RepositoryGeneratorTest {
     remoteArtifactRepositoriesMock = new ArrayList<>();
     logMock = mock(Log.class);
     artifactInstallerMock = mock(ArtifactInstaller.class);
+    treeBuilder = mock(DependencyTreeBuilder.class);
+    artifactFactory = mock(ArtifactFactory.class);
+    artifactMetadataSource = mock(ArtifactMetadataSource.class);
+    artifactCollector = mock(ArtifactCollector.class);
+    aetherRepositorySystem = mock(org.eclipse.aether.RepositorySystem.class);
+    aetherRepositorySystemSession = mock(RepositorySystemSession.class);
     repositoryGenerator = new RepositoryGenerator(sessionMock,
                                                   projectMock,
                                                   projectBuilderMock,
                                                   repositorySystemMock,
                                                   localRepositoryMock,
                                                   remoteArtifactRepositoriesMock,
-                                                  temporaryFolder.getRoot(), logMock);
+                                                  temporaryFolder.getRoot(), logMock, treeBuilder, artifactFactory,
+                                                  artifactMetadataSource, artifactCollector, aetherRepositorySystem,
+                                                  aetherRepositorySystemSession);
     repositoryGeneratorSpy = spy(repositoryGenerator);
     artifactHandler = new DefaultArtifactHandler(TYPE);
   }
@@ -182,7 +197,9 @@ public class RepositoryGeneratorTest {
                                                   repositorySystemMock,
                                                   localRepositoryMock,
                                                   remoteArtifactRepositories,
-                                                  temporaryFolder.getRoot(), logMock);
+                                                  temporaryFolder.getRoot(), logMock, treeBuilder, artifactFactory,
+                                                  artifactMetadataSource, artifactCollector, aetherRepositorySystem,
+                                                  aetherRepositorySystemSession);
 
     repositoryGenerator.initializeProjectBuildingRequest();
 
@@ -207,7 +224,7 @@ public class RepositoryGeneratorTest {
     when(repositoryGeneratorSpy.buildArtifactLocator()).thenReturn(artifactLocatorMock);
     doNothing().when(repositoryGeneratorSpy).installArtifacts(any(File.class), anySet(), any(ArtifactInstaller.class));
     File repositoryFolder = temporaryFolder.newFolder(REPOSITORY_FOLDER);
-    when(repositoryGeneratorSpy.buildArtifactInstaller()).thenReturn(artifactInstallerMock);
+    when(repositoryGeneratorSpy.buildArtifactInstaller(remoteArtifactRepositoriesMock)).thenReturn(artifactInstallerMock);
     when(repositoryGeneratorSpy.getRepositoryFolder()).thenReturn(repositoryFolder);
 
     repositoryGeneratorSpy.generate();

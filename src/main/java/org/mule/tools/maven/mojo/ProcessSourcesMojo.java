@@ -21,6 +21,7 @@ import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
 import org.mule.tools.maven.repository.RepositoryGenerator;
 
 @Mojo(name = "process-sources",
@@ -45,6 +46,12 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
 
   private ProjectBuildingRequest projectBuildingRequest;
 
+
+  @Component
+  protected org.eclipse.aether.RepositorySystem aetherRepositorySystem;
+  @Parameter(defaultValue = "${repositorySystemSession}")
+  protected RepositorySystemSession aetherRepositorySystemSession;
+
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
     long start = System.currentTimeMillis();
@@ -58,7 +65,9 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
                                                                         localRepository,
                                                                         remoteArtifactRepositories,
                                                                         outputDirectory,
-                                                                        getLog());
+                                                                        getLog(), treeBuilder, artifactFactory,
+                                                                        artifactMetadataSource, artifactCollector,
+                                                                        aetherRepositorySystem, aetherRepositorySystemSession);
       repositoryGenerator.generate();
     }
 

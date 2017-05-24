@@ -6,9 +6,10 @@
  */
 package integrationTests.mojo.verifier;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.slf4j.LoggerFactory;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -17,12 +18,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
-
-import java.util.concurrent.TimeoutException;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.slf4j.LoggerFactory;
 
 
 public class CloudHubDeploymentVerifier {
@@ -30,7 +29,7 @@ public class CloudHubDeploymentVerifier {
   private static final String URI = "https://anypoint.mulesoft.com";
   private static final String ME = "/accounts/api/me";
   private static final String LOGIN = "/accounts/login";
-  private static final String APPLICATION = "/cloudhub/api/applications/maven-plugin-cloudhub-deploy-test";
+  private static final String APPLICATION_PATH = "/cloudhub/api/applications/";
   private static final String ENVIRONMENTS_PATH = "/accounts/api/organizations/%s/environments";
   private static final String AUTHORIZATION_HEADER = "Authorization";
   private static final String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
@@ -50,7 +49,6 @@ public class CloudHubDeploymentVerifier {
   private static final String PASSWORD_ENVIRONMENT_VARIABLE = "password";
   private static final String ACCESS_TOKEN_KEY = "access_token";
   private static final String APPLICATIONS = "/cloudhub/api/applications";
-  private static final String APPLICATION_NAME = "maven-plugin-cloudhub-deploy-test";
   private static final long SLEEP_TIME = 30000;
   public static final String DEPLOYED_STATUS = "STARTED";
   public static final String UNDEPLOYED_STATUS = "UNDEPLOYED";
@@ -63,18 +61,18 @@ public class CloudHubDeploymentVerifier {
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
 
-  public void verifyIsDeployed() throws InterruptedException, TimeoutException {
+  public void verifyIsDeployed(String applicationName) throws InterruptedException, TimeoutException {
     loginAndGetNecessaryIds();
-    assertThat("Application was not deployed", validateStatus(DEPLOYED_STATUS), is(true));
-    deleteApplication();
+    assertThat("Application was not deployed", validateStatus(applicationName, DEPLOYED_STATUS), is(true));
+    deleteApplication(applicationName);
   }
 
-  public boolean validateStatus(String status) throws InterruptedException, TimeoutException {
-    log.info("Checking application " + APPLICATION_NAME + " for status " + status + "...");
+  public boolean validateStatus(String applicationName, String status) throws InterruptedException, TimeoutException {
+    log.info("Checking application " + applicationName + " for status " + status + "...");
     int repeat = ATTEMPTS;
     boolean keepValidating = false;
     while (repeat > 0 && !keepValidating) {
-      JSONObject application = getApplication(getApplications());
+      JSONObject application = getApplication(applicationName, getApplications());
       keepValidating = !isExpectedStatus(status, application);
       if (keepValidating) {
         Thread.sleep(SLEEP_TIME);
@@ -82,7 +80,7 @@ public class CloudHubDeploymentVerifier {
       repeat--;
     }
     if (repeat == 0 && !keepValidating) {
-      throw new TimeoutException("Validating status " + status + " for application " + APPLICATION_NAME
+      throw new TimeoutException("Validating status " + status + " for application " + applicationName
           + " has exceed the maximum number of attempts.");
     }
     return keepValidating;
@@ -98,10 +96,10 @@ public class CloudHubDeploymentVerifier {
     return false;
   }
 
-  public void verifyIsUndeployed() throws InterruptedException, TimeoutException {
+  public void verifyIsUndeployed(String applicationName) throws InterruptedException, TimeoutException {
     loginAndGetNecessaryIds();
-    assertThat("Application was not undeployed", validateStatus(UNDEPLOYED_STATUS), is(true));
-    deleteApplication();
+    assertThat("Application was not undeployed", validateStatus(applicationName, UNDEPLOYED_STATUS), is(true));
+    deleteApplication(applicationName);
   }
 
   private void loginAndGetNecessaryIds() {
@@ -110,8 +108,8 @@ public class CloudHubDeploymentVerifier {
     obtainEnvironmentId();
   }
 
-  private void deleteApplication() {
-    target = client.target(URI).path(APPLICATION);
+  private void deleteApplication(String applicationName) {
+    target = client.target(URI).path(APPLICATION_PATH + applicationName);
     Response deleteResponse = delete(target);
     assertThat("Application was not deleted", deleteResponse.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL);
   }
@@ -161,15 +159,15 @@ public class CloudHubDeploymentVerifier {
     log.info("Login is successful, bearer token is " + bearerToken);
   }
 
-  public JSONObject getApplication(JSONArray applications) {
-    log.info("Trying to find application " + APPLICATION_NAME + " within all existent applications in CloudHub account...");
+  public JSONObject getApplication(String applicationName, JSONArray applications) {
+    log.info("Trying to find application " + applicationName + " within all existent applications in CloudHub account...");
     for (int i = 0; i < applications.length(); ++i) {
-      if (APPLICATION_NAME.equals(applications.getJSONObject(i).getString("domain"))) {
-        log.info("The application " + APPLICATION_NAME + " was found.");
+      if (applicationName.equals(applications.getJSONObject(i).getString("domain"))) {
+        log.info("The application " + applicationName + " was found.");
         return applications.getJSONObject(i);
       }
     }
-    log.info("The application " + APPLICATION_NAME + " could not be found.");
+    log.info("The application " + applicationName + " could not be found.");
     return null;
   }
 

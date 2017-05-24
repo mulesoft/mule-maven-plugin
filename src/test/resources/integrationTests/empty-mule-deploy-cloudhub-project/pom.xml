@@ -26,7 +26,7 @@
                         <muleVersion>${mule.version}</muleVersion>
                         <username>${username}</username>
                         <password>${password}</password>
-                        <applicationName>maven-plugin-cloudhub-deploy-test</applicationName>
+                        <applicationName>${cloudhub.application.name}</applicationName>
                         <environment>${environment}</environment>
                         <properties>
                             <key>value</key>

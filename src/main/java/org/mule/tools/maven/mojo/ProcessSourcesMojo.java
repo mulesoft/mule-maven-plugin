@@ -11,20 +11,10 @@
 package org.mule.tools.maven.mojo;
 
 import java.text.MessageFormat;
-import java.util.List;
 
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactCollector;
-import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
-import org.apache.maven.project.ProjectBuilder;
-import org.apache.maven.project.ProjectBuildingRequest;
-import org.apache.maven.repository.RepositorySystem;
-import org.apache.maven.shared.dependency.tree.DependencyTreeBuilder;
 import org.eclipse.aether.RepositorySystemSession;
 import org.mule.tools.maven.repository.RepositoryGenerator;
 
@@ -33,31 +23,6 @@ import org.mule.tools.maven.repository.RepositoryGenerator;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class ProcessSourcesMojo extends AbstractMuleMojo {
 
-  @Component
-  private RepositorySystem repositorySystem;
-
-  @Component
-  private ProjectBuilder projectBuilder;
-
-  @Parameter(readonly = true, required = true, defaultValue = "${session}")
-  private MavenSession session;
-
-  @Parameter(readonly = true, required = true, defaultValue = "${project.remoteArtifactRepositories}")
-  private List<ArtifactRepository> remoteArtifactRepositories;
-
-  @Parameter(readonly = true, required = true, defaultValue = "${localRepository}")
-  private ArtifactRepository localRepository;
-
-  private ProjectBuildingRequest projectBuildingRequest;
-
-  @Component
-  protected ArtifactFactory artifactFactory;
-  @Component
-  protected ArtifactMetadataSource artifactMetadataSource;
-  @Component
-  protected ArtifactCollector artifactCollector;
-  @Component
-  protected DependencyTreeBuilder treeBuilder;
   @Component
   protected org.eclipse.aether.RepositorySystem aetherRepositorySystem;
   @Parameter(defaultValue = "${repositorySystemSession}")
@@ -69,16 +34,11 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
     getLog().debug("Processing sources...");
 
     if (!lightweightPackage) {
-      RepositoryGenerator repositoryGenerator = new RepositoryGenerator(session,
-                                                                        project,
-                                                                        projectBuilder,
-                                                                        repositorySystem,
-                                                                        localRepository,
-                                                                        remoteArtifactRepositories,
-                                                                        outputDirectory,
-                                                                        getLog(), treeBuilder, artifactFactory,
-                                                                        artifactMetadataSource, artifactCollector,
-                                                                        aetherRepositorySystem, aetherRepositorySystemSession);
+      RepositoryGenerator repositoryGenerator = new RepositoryGenerator(session, project, localRepository,
+                                                                        remoteArtifactRepositories, outputDirectory,
+                                                                        getLog(), aetherRepositorySystem,
+                                                                        aetherRepositorySystemSession,
+                                                                        repositorySystem, projectBuilder);
       repositoryGenerator.generate();
     }
 

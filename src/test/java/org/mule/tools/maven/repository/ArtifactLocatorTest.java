@@ -16,17 +16,17 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactCollector;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -34,13 +34,14 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
-import org.apache.maven.shared.dependency.tree.DependencyTreeBuilder;
+import org.eclipse.aether.repository.RemoteRepository;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.invocation.InvocationOnMock;
+import org.mule.maven.client.internal.AetherMavenClient;
 
 public class ArtifactLocatorTest {
 
@@ -66,10 +67,6 @@ public class ArtifactLocatorTest {
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
-  private DependencyTreeBuilder treeBuilderMock;
-  private ArtifactFactory artifactFactoryMock;
-  private ArtifactMetadataSource artifactMetadataSourceMock;
-  private ArtifactCollector artifactCollectorMock;
   private MavenProjectBuilder mavenProjectBuilderMock;
 
   @Before
@@ -82,15 +79,10 @@ public class ArtifactLocatorTest {
     repositorySystemMock = mock(RepositorySystem.class);
     localRepositoryMock = mock(ArtifactRepository.class);
     projectBuildingRequestMock = mock(ProjectBuildingRequest.class);
-    treeBuilderMock = mock(DependencyTreeBuilder.class);
-    artifactFactoryMock = mock(ArtifactFactory.class);
-    artifactMetadataSourceMock = mock(ArtifactMetadataSource.class);
-    artifactCollectorMock = mock(ArtifactCollector.class);
     mavenProjectBuilderMock = mock(MavenProjectBuilder.class);
-    artifactLocator = new ArtifactLocator(logMock, projectMock, projectBuilderMock, repositorySystemMock, localRepositoryMock,
-                                          projectBuildingRequestMock, treeBuilderMock, artifactFactoryMock,
-                                          artifactMetadataSourceMock,
-                                          artifactCollectorMock, mavenProjectBuilderMock);
+    List<RemoteRepository> remoteRepositoriesMock = new ArrayList<>();
+    artifactLocator =
+        new ArtifactLocator(remoteRepositoriesMock, projectMock, localRepositoryMock, mavenProjectBuilderMock, logMock);
   }
 
   @Test
@@ -197,14 +189,18 @@ public class ArtifactLocatorTest {
   }
 
   @Test
-  public void getArtifactsTest() throws MojoExecutionException {
+  public void getArtifactsTest() throws MojoExecutionException, IOException {
     ArtifactLocator artifactLocatorSpy = spy(artifactLocator);
     doNothing().when(artifactLocatorSpy).addThirdPartyParentPomArtifacts(anySet(), any(Artifact.class));
     doNothing().when(artifactLocatorSpy).addParentPomArtifacts(anySet());
     Set<Artifact> artifacts = buildSetOfArtifacts();
     when(projectMock.getArtifacts()).thenReturn(artifacts);
+    AetherMavenClient clientMock = mock(AetherMavenClient.class);
+    when(artifactLocatorSpy.buildMavenClient()).thenReturn(clientMock);
+    doReturn(new ArrayList<>()).when(artifactLocatorSpy).getBundleDependenciesFromDescriptor(any(), any());
 
-    artifactLocatorSpy.getArtifacts();
+    File pomFile = temporaryFolder.newFile("pom.xml");
+    artifactLocatorSpy.getArtifacts(pomFile, temporaryFolder.getRoot());
 
     verify(projectMock, times(1)).getArtifacts();
     for (Artifact artifact : artifacts) {

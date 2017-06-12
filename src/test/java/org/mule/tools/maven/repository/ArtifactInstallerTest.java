@@ -56,6 +56,7 @@ public class ArtifactInstallerTest {
   private static final String GENERATED_PACKAGE_NAME = "artifact-id-1.0.0-classifier.zip";
   private static final String OUTPUT_DIRECTORY =
       PREFIX_GROUP_ID + File.separator + POSFIX_GROUP_ID + File.separator + ARTIFACT_ID + File.separator + VERSION;
+  private static final String POM_FILE_NAME = ARTIFACT_ID + "-" + VERSION + ".pom";
   private Log logMock;
   private ArtifactHandler handler;
   private ArtifactInstaller installer;
@@ -134,10 +135,15 @@ public class ArtifactInstallerTest {
   public void installArtifactTest() throws MojoExecutionException, IOException {
     artifact = new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, SCOPE, TYPE, CLASSIFIER, handler);
     artifact.setFile(artifactFileFolder.newFile(ARTIFACT_FILE_NAME));
+    artifact.setFile(artifactFileFolder.newFile(POM_FILE_NAME));
+
     File installedFile = new File(outputFolder.getRoot(), OUTPUT_DIRECTORY + File.separator + GENERATED_PACKAGE_NAME);
+    File pomFile = new File(outputFolder.getRoot(), OUTPUT_DIRECTORY + File.separator + POM_FILE_NAME);
+
     assertThat("File should not be installed yet", !installedFile.exists());
     installer.installArtifact(outputFolder.getRoot(), artifact);
     assertThat("File was not installed", installedFile.exists());
+    assertThat("Pom file was not copied", pomFile.exists());
   }
 
   @Test

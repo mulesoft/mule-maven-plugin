@@ -19,11 +19,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactCollector;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -33,9 +31,8 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
-import org.apache.maven.shared.dependency.tree.DependencyTreeBuilder;
-import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
 import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
 import org.mule.tools.maven.util.FileUtils;
 
 public class RepositoryGenerator {
@@ -50,21 +47,15 @@ public class RepositoryGenerator {
   private RepositorySystem repositorySystem;
   private ArtifactRepository localRepository;
   private List<ArtifactRepository> remoteArtifactRepositories;
-  private DependencyTreeBuilder treeBuilder;
-  private ArtifactFactory artifactFactory;
-  private ArtifactMetadataSource artifactMetadataSource;
-  private ArtifactCollector artifactCollector;
 
   protected File outputDirectory;
   private ProjectBuildingRequest projectBuildingRequest;
 
-  public RepositoryGenerator(MavenSession session, MavenProject project, ProjectBuilder projectBuilder,
-                             RepositorySystem repositorySystem, ArtifactRepository localRepository,
+  public RepositoryGenerator(MavenSession session, MavenProject project, ArtifactRepository localRepository,
                              List<ArtifactRepository> remoteArtifactRepositories, File outputDirectory, Log log,
-                             DependencyTreeBuilder treeBuilder, ArtifactFactory artifactFactory,
-                             ArtifactMetadataSource artifactMetadataSource, ArtifactCollector artifactCollector,
                              org.eclipse.aether.RepositorySystem aetherRepositorySystem,
-                             RepositorySystemSession aetherRepositorySystemSession) {
+                             RepositorySystemSession aetherRepositorySystemSession, RepositorySystem repositorySystem,
+                             ProjectBuilder projectBuilder) {
     this.log = log;
     this.session = session;
     this.project = project;
@@ -73,12 +64,10 @@ public class RepositoryGenerator {
     this.localRepository = localRepository;
     this.remoteArtifactRepositories = remoteArtifactRepositories;
     this.outputDirectory = outputDirectory;
-    this.treeBuilder = treeBuilder;
-    this.artifactFactory = artifactFactory;
-    this.artifactMetadataSource = artifactMetadataSource;
-    this.artifactCollector = artifactCollector;
     this.aetherRepositorySystem = aetherRepositorySystem;
     this.aetherRepositorySystemSession = aetherRepositorySystemSession;
+    this.repositorySystem = repositorySystem;
+    this.projectBuilder = projectBuilder;
   }
 
 
@@ -88,28 +77,14 @@ public class RepositoryGenerator {
       initializeProjectBuildingRequest();
 
       ArtifactLocator artifactLocator = buildArtifactLocator();
-      Set<Artifact> artifacts = artifactLocator.getArtifacts();
-      Set<Artifact> excludedArtifacts = artifactLocator.getExclusions();
+      File pomFile = project.getFile();
+      Set<Artifact> artifacts = artifactLocator.getArtifacts(pomFile, outputDirectory);
       File repositoryFolder = getRepositoryFolder();
       ArtifactInstaller artifactInstaller = buildArtifactInstaller(remoteArtifactRepositories);
       installArtifacts(repositoryFolder, artifacts, artifactInstaller);
-      generateExcludedDependenciesMetadata(repositoryFolder, excludedArtifacts, artifactInstaller);
-    } catch (DependencyTreeBuilderException e) {
-      log.debug(format("There was an exception while resolving transitive dependencies of [%s]", project.toString()), e);
     } catch (Exception e) {
       log.debug(format("There was an exception while building [%s]", project.toString()), e);
     }
-  }
-
-  private void generateExcludedDependenciesMetadata(File repositoryFile, Set<Artifact> excludedArtifacts,
-                                                    ArtifactInstaller installer)
-      throws MojoExecutionException {
-    TreeSet<Artifact> sortedArtifacts = new TreeSet<>(excludedArtifacts);
-    for (Artifact artifact : sortedArtifacts) {
-      installer.downloadExcludedDependencyToLocalRepository(artifact);
-      installer.generateExcludedDependencyMetadata(repositoryFile, artifact);
-    }
-
   }
 
   protected ArtifactInstaller buildArtifactInstaller(List<ArtifactRepository> remoteArtifactRepositories) {
@@ -118,10 +93,10 @@ public class RepositoryGenerator {
   }
 
   protected ArtifactLocator buildArtifactLocator() {
-    return new ArtifactLocator(log, project, projectBuilder, repositorySystem, localRepository, projectBuildingRequest,
-                               treeBuilder, artifactFactory,
-                               artifactMetadataSource, artifactCollector,
-                               new MavenProjectBuilder(projectBuilder, projectBuildingRequest, repositorySystem, log));
+    List<RemoteRepository> remoteRepositories = RepositoryUtils.toRepos(remoteArtifactRepositories);
+    MavenProjectBuilder mavenProjectBuilder =
+        new MavenProjectBuilder(projectBuilder, projectBuildingRequest, repositorySystem, log);
+    return new ArtifactLocator(remoteRepositories, project, localRepository, mavenProjectBuilder, log);
   }
 
   protected void initializeProjectBuildingRequest() {

@@ -305,6 +305,7 @@ public class ArtifactLocator {
         }
       }
     }
+    excludedArtifacts.removeAll(artifacts);
     return excludedArtifacts;
   }
 

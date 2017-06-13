@@ -1,4 +1,3 @@
-Listening for transport dt_socket at address: 8002
 Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-10T13:41:47-03:00)
 Maven home: /usr/local/Cellar/maven/3.3.9/libexec
 Java version: 1.8.0_111, vendor: Oracle Corporation
@@ -85,7 +84,19 @@ OS name: "mac os x", version: "10.11.6", arch: "x86_64", family: "mac"
 [DEBUG] Skipped remote request for org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
 [DEBUG] Skipped remote request for org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
 [DEBUG] Skipped remote request for org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
-[DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=3, ConflictMarker.markTime=2, ConflictMarker.nodeCount=333, ConflictIdSorter.graphTime=2, ConflictIdSorter.topsortTime=1, ConflictIdSorter.conflictIdCount=133, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=20, ConflictResolver.conflictItemCount=284, DefaultDependencyCollector.collectTime=934, DefaultDependencyCollector.transformTime=33}
+[DEBUG] Skipped remote request for org.mule:mule-maven-client-impl:1.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule:mule-maven-client-impl:1.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule:mule-maven-client-impl:1.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule:mule-maven-client-impl:1.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule:mule-maven-client:1.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule:mule-maven-client:1.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule:mule-maven-client-api:1.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule:mule-maven-client-api:1.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule:mule-maven-client-api:1.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule:mule-maven-client-api:1.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule:mule-maven-client-api:1.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Skipped remote request for org.mule:mule-maven-client-api:1.0.0-SNAPSHOT/maven-metadata.xml, locally cached metadata up-to-date.
+[DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=2, ConflictMarker.markTime=2, ConflictMarker.nodeCount=403, ConflictIdSorter.graphTime=3, ConflictIdSorter.topsortTime=1, ConflictIdSorter.conflictIdCount=142, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=28, ConflictResolver.conflictItemCount=311, DefaultDependencyCollector.collectTime=1121, DefaultDependencyCollector.transformTime=39}
 [DEBUG] org.mule.tools.maven:mule-maven-plugin:jar:3.0.0-SNAPSHOT:
 [DEBUG]    org.apache.maven:maven-plugin-api:jar:3.3.9:compile
 [DEBUG]    org.codehaus.plexus:plexus-archiver:jar:3.4:compile
@@ -191,13 +202,8 @@ OS name: "mac os x", version: "10.11.6", arch: "x86_64", family: "mac"
 [DEBUG]       org.apache.maven:maven-settings:jar:3.3.9:compile
 [DEBUG]       org.apache.maven:maven-artifact:jar:3.3.9:compile
 [DEBUG]       org.apache.maven:maven-core:jar:3.3.9:compile
-[DEBUG]          org.apache.maven:maven-settings-builder:jar:3.3.9:compile
 [DEBUG]          org.apache.maven:maven-repository-metadata:jar:3.3.9:compile
-[DEBUG]          org.apache.maven:maven-aether-provider:jar:3.3.9:compile
-[DEBUG]             org.eclipse.aether:aether-spi:jar:1.0.2.v20150114:compile
 [DEBUG]          org.eclipse.aether:aether-impl:jar:1.0.2.v20150114:compile
-[DEBUG]          org.eclipse.aether:aether-api:jar:1.0.2.v20150114:compile
-[DEBUG]          org.eclipse.aether:aether-util:jar:1.0.2.v20150114:compile
 [DEBUG]          com.google.inject:guice:jar:no_aop:4.0:compile
 [DEBUG]          org.sonatype.plexus:plexus-sec-dispatcher:jar:1.3:compile
 [DEBUG]             org.sonatype.plexus:plexus-cipher:jar:1.4:compile
@@ -218,6 +224,20 @@ OS name: "mac os x", version: "10.11.6", arch: "x86_64", family: "mac"
 [DEBUG]          org.apache.maven:maven-profile:jar:2.0.8:compile
 [DEBUG]          org.apache.maven:maven-artifact-manager:jar:2.0.8:compile
 [DEBUG]          org.apache.maven:maven-plugin-registry:jar:2.0.8:compile
+[DEBUG]    org.mule:mule-maven-client-impl:jar:1.0.0-SNAPSHOT:compile
+[DEBUG]       org.mule:mule-maven-client-api:jar:1.0.0-SNAPSHOT:compile
+[DEBUG]       org.eclipse.aether:aether-api:jar:1.0.2.v20150114:compile
+[DEBUG]       org.eclipse.aether:aether-util:jar:1.0.2.v20150114:compile
+[DEBUG]       org.eclipse.aether:aether-connector-basic:jar:1.0.2.v20150114:compile
+[DEBUG]          org.eclipse.aether:aether-spi:jar:1.0.2.v20150114:compile
+[DEBUG]       org.eclipse.aether:aether-transport-file:jar:1.0.2.v20150114:compile
+[DEBUG]       org.eclipse.aether:aether-transport-http:jar:1.0.2.v20150114:compile
+[DEBUG]          org.apache.httpcomponents:httpclient:jar:4.2.6:compile
+[DEBUG]             org.apache.httpcomponents:httpcore:jar:4.2.5:compile
+[DEBUG]             commons-codec:commons-codec:jar:1.6:compile
+[DEBUG]       org.apache.maven:maven-settings-builder:jar:3.3.9:compile
+[DEBUG]       org.apache.maven:maven-aether-provider:jar:3.3.9:compile
+[DEBUG]       com.beust:jcommander:jar:1.69:compile
 [DEBUG] Created new class realm extension>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT
 [DEBUG] Importing foreign packages into class realm extension>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT
 [DEBUG]   Imported:  < maven.api
@@ -317,7 +337,6 @@ OS name: "mac os x", version: "10.11.6", arch: "x86_64", family: "mac"
 [DEBUG]   Included: org.codehaus.plexus:plexus-component-annotations:jar:1.0-beta-3.0.5
 [DEBUG]   Included: org.apache.commons:commons-lang3:jar:3.4
 [DEBUG]   Included: org.apache.maven:maven-builder-support:jar:3.3.9
-[DEBUG]   Included: org.eclipse.aether:aether-util:jar:1.0.2.v20150114
 [DEBUG]   Included: com.google.inject:guice:jar:no_aop:4.0
 [DEBUG]   Included: org.sonatype.plexus:plexus-sec-dispatcher:jar:1.3
 [DEBUG]   Included: org.sonatype.plexus:plexus-cipher:jar:1.4
@@ -330,7 +349,17 @@ OS name: "mac os x", version: "10.11.6", arch: "x86_64", family: "mac"
 [DEBUG]   Included: commons-logging:commons-logging-api:jar:1.1
 [DEBUG]   Included: com.google.code.google-collections:google-collect:jar:snapshot-20080530
 [DEBUG]   Included: org.apache.maven.shared:maven-dependency-tree:jar:1.2
-[DEBUG] Extension realms for project org.apache.maven.plugin.my.unit:empty-install-app-example-project:mule-application:1.0-SNAPSHOT: [ClassRealm[extension>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@18b4aac2]]
+[DEBUG]   Included: org.mule:mule-maven-client-impl:jar:1.0.0-SNAPSHOT
+[DEBUG]   Included: org.mule:mule-maven-client-api:jar:1.0.0-SNAPSHOT
+[DEBUG]   Included: org.eclipse.aether:aether-util:jar:1.0.2.v20150114
+[DEBUG]   Included: org.eclipse.aether:aether-connector-basic:jar:1.0.2.v20150114
+[DEBUG]   Included: org.eclipse.aether:aether-transport-file:jar:1.0.2.v20150114
+[DEBUG]   Included: org.eclipse.aether:aether-transport-http:jar:1.0.2.v20150114
+[DEBUG]   Included: org.apache.httpcomponents:httpclient:jar:4.2.6
+[DEBUG]   Included: org.apache.httpcomponents:httpcore:jar:4.2.5
+[DEBUG]   Included: commons-codec:commons-codec:jar:1.6
+[DEBUG]   Included: com.beust:jcommander:jar:1.69
+[DEBUG] Extension realms for project org.apache.maven.plugin.my.unit:empty-install-app-example-project:mule-application:1.0-SNAPSHOT: [ClassRealm[extension>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@42a57993]]
 [DEBUG] Created new class realm project>org.apache.maven.plugin.my.unit:empty-install-app-example-project:1.0-SNAPSHOT
 [DEBUG] Populating class realm project>org.apache.maven.plugin.my.unit:empty-install-app-example-project:1.0-SNAPSHOT
 [DEBUG] Looking up lifecyle mappings for packaging mule-application from ClassRealm[project>org.apache.maven.plugin.my.unit:empty-install-app-example-project:1.0-SNAPSHOT, parent: ClassRealm[maven.api, parent: null]]
@@ -461,13 +490,12 @@ OS name: "mac os x", version: "10.11.6", arch: "x86_64", family: "mac"
   <skipValidation default-value="${skipValidation}"/>
 </configuration>
 [DEBUG] =======================================================================
-[DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=0, ConflictMarker.markTime=0, ConflictMarker.nodeCount=3, ConflictIdSorter.graphTime=0, ConflictIdSorter.topsortTime=0, ConflictIdSorter.conflictIdCount=2, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=1, ConflictResolver.conflictItemCount=2, DefaultDependencyCollector.collectTime=4, DefaultDependencyCollector.transformTime=1}
+[DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=0, ConflictMarker.markTime=0, ConflictMarker.nodeCount=2, ConflictIdSorter.graphTime=1, ConflictIdSorter.topsortTime=0, ConflictIdSorter.conflictIdCount=1, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=0, ConflictResolver.conflictItemCount=1, DefaultDependencyCollector.collectTime=1, DefaultDependencyCollector.transformTime=1}
 [DEBUG] org.apache.maven.plugin.my.unit:empty-install-app-example-project:mule-application:1.0-SNAPSHOT
-[DEBUG]    group.id.c:artifact-id-c:jar:1.0.0:compile
-[DEBUG]       group.id.d:artifact-id-d:jar:1.0.0:compile
+[DEBUG]    group.id.d:artifact-id-d:jar:1.0.0:compile
 [INFO] 
 [INFO] --- maven-clean-plugin:2.5:clean (default-cli) @ empty-install-app-example-project ---
-[DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=0, ConflictMarker.markTime=0, ConflictMarker.nodeCount=3, ConflictIdSorter.graphTime=0, ConflictIdSorter.topsortTime=0, ConflictIdSorter.conflictIdCount=3, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=0, ConflictResolver.conflictItemCount=3, DefaultDependencyCollector.collectTime=9, DefaultDependencyCollector.transformTime=0}
+[DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=0, ConflictMarker.markTime=0, ConflictMarker.nodeCount=3, ConflictIdSorter.graphTime=0, ConflictIdSorter.topsortTime=0, ConflictIdSorter.conflictIdCount=3, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=0, ConflictResolver.conflictItemCount=3, DefaultDependencyCollector.collectTime=11, DefaultDependencyCollector.transformTime=0}
 [DEBUG] org.apache.maven.plugins:maven-clean-plugin:jar:2.5:
 [DEBUG]    org.apache.maven:maven-plugin-api:jar:2.0.6:compile
 [DEBUG]    org.codehaus.plexus:plexus-utils:jar:3.0:compile
@@ -477,7 +505,7 @@ OS name: "mac os x", version: "10.11.6", arch: "x86_64", family: "mac"
 [DEBUG] Populating class realm plugin>org.apache.maven.plugins:maven-clean-plugin:2.5
 [DEBUG]   Included: org.apache.maven.plugins:maven-clean-plugin:jar:2.5
 [DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:3.0
-[DEBUG] Configuring mojo org.apache.maven.plugins:maven-clean-plugin:2.5:clean from plugin realm ClassRealm[plugin>org.apache.maven.plugins:maven-clean-plugin:2.5, parent: sun.misc.Launcher$AppClassLoader@18b4aac2]
+[DEBUG] Configuring mojo org.apache.maven.plugins:maven-clean-plugin:2.5:clean from plugin realm ClassRealm[plugin>org.apache.maven.plugins:maven-clean-plugin:2.5, parent: sun.misc.Launcher$AppClassLoader@42a57993]
 [DEBUG] Configuring mojo 'org.apache.maven.plugins:maven-clean-plugin:2.5:clean' with basic configurator -->
 [DEBUG]   (f) directory = /Users/ms0374/Documents/projects/mule-maven-plugin/target/test-classes/integrationTests/empty-excluded-dependencies-project/target
 [DEBUG]   (f) excludeDefaultDirectories = false
@@ -495,7 +523,7 @@ OS name: "mac os x", version: "10.11.6", arch: "x86_64", family: "mac"
 [DEBUG] Skipping non-existing directory /Users/ms0374/Documents/projects/mule-maven-plugin/target/test-classes/integrationTests/empty-excluded-dependencies-project/target/site
 [INFO] 
 [INFO] --- mule-maven-plugin:3.0.0-SNAPSHOT:validate (default-validate) @ empty-install-app-example-project ---
-[DEBUG] Configuring mojo org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:validate from plugin realm ClassRealm[extension>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@18b4aac2]
+[DEBUG] Configuring mojo org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:validate from plugin realm ClassRealm[extension>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@42a57993]
 [DEBUG] Configuring mojo 'org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:validate' with basic configurator -->
 [DEBUG]   (f) finalName = empty-install-app-example-project-1.0-SNAPSHOT
 [DEBUG]   (f) localRepository =       id: local
@@ -550,7 +578,7 @@ snapshots: [enabled => true, update => daily]
 snapshots: [enabled => false, update => daily]
  releases: [enabled => true, update => daily]
 ]
-[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@14823f76
+[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@3013909b
 [DEBUG]   (f) sharedLibraries = []
 [DEBUG] -- end configuration --
 [DEBUG] Validating Mule application...
@@ -563,10 +591,10 @@ snapshots: [enabled => false, update => daily]
 [DEBUG] Remote repository ID [mule-ee-snapshots-r], URL [https://repository.mulesoft.org/nexus/content/repositories/snapshots]
 [DEBUG] Remote repository ID [MuleRepository], URL [https://repository.mulesoft.org/nexus-ee/content/repositories/releases-ee/]
 [DEBUG] Remote repository ID [central], URL [https://repo.maven.apache.org/maven2]
-[DEBUG] Validation for Mule application done (121ms)
+[DEBUG] Validation for Mule application done (100ms)
 [INFO] 
 [INFO] --- mule-maven-plugin:3.0.0-SNAPSHOT:initialize (default-initialize) @ empty-install-app-example-project ---
-[DEBUG] Configuring mojo org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:initialize from plugin realm ClassRealm[extension>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@18b4aac2]
+[DEBUG] Configuring mojo org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:initialize from plugin realm ClassRealm[extension>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@42a57993]
 [DEBUG] Configuring mojo 'org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:initialize' with basic configurator -->
 [DEBUG]   (f) finalName = empty-install-app-example-project-1.0-SNAPSHOT
 [DEBUG]   (f) localRepository =       id: local
@@ -621,14 +649,14 @@ snapshots: [enabled => true, update => daily]
 snapshots: [enabled => false, update => daily]
  releases: [enabled => true, update => daily]
 ]
-[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@14823f76
+[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@3013909b
 [DEBUG]   (f) sharedLibraries = []
 [DEBUG] -- end configuration --
 [DEBUG] Initializing Mule Maven Plugin...
-[DEBUG] Mule Maven Plugin Initialize done (4ms)
+[DEBUG] Mule Maven Plugin Initialize done (6ms)
 [INFO] 
 [INFO] --- mule-maven-plugin:3.0.0-SNAPSHOT:generate-sources (default-generate-sources) @ empty-install-app-example-project ---
-[DEBUG] Configuring mojo org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:generate-sources from plugin realm ClassRealm[extension>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@18b4aac2]
+[DEBUG] Configuring mojo org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:generate-sources from plugin realm ClassRealm[extension>org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@42a57993]
 [DEBUG] Configuring mojo 'org.mule.tools.maven:mule-maven-plugin:3.0.0-SNAPSHOT:generate-sources' with basic configurator -->
 [DEBUG]   (f) finalName = empty-install-app-example-project-1.0-SNAPSHOT
 [DEBUG]   (f) localRepository =       id: local
@@ -683,7 +711,7 @@ snapshots: [enabled => true, update => daily]
 snapshots: [enabled => false, update => daily]
  releases: [enabled => true, update => daily]
 ]
-[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@14823f76
+[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@3013909b
 [DEBUG]   (f) sharedLibraries = []
 [DEBUG] -- end configuration --
 [DEBUG] Generating source code...

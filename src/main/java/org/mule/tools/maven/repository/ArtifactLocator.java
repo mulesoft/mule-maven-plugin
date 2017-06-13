@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.MavenExecutionException;
@@ -26,6 +28,8 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Exclusion;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -55,6 +59,7 @@ public class ArtifactLocator {
   private MavenProject project;
   private ArtifactRepository localRepository;
   private MavenProjectBuilder mavenProjectBuilder;
+  private Set<Artifact> artifacts;
 
   public ArtifactLocator(List<RemoteRepository> remoteRepositories, MavenProject project, ArtifactRepository localRepository,
                          MavenProjectBuilder mavenProjectBuilder, Log log) {
@@ -63,6 +68,7 @@ public class ArtifactLocator {
     this.localRepository = localRepository;
     this.mavenProjectBuilder = mavenProjectBuilder;
     this.log = log;
+    artifacts = new HashSet<>();
   }
 
 
@@ -75,7 +81,7 @@ public class ArtifactLocator {
 
     List<BundleDependency> dependencies = getBundleDependenciesFromDescriptor(client, descriptor);
 
-    Set<Artifact> artifacts = new HashSet<>(project.getArtifacts());
+    artifacts = new HashSet<>(project.getArtifacts());
     dependencies.removeIf(bundleDependency -> bundleDependency.getDescriptor().equals(descriptor));
     for (BundleDependency dependency : dependencies) {
       List<BundleDependency> deps = client.resolveArtifactDependencies(new File(dependency.getBundleUri().getPath()), false,
@@ -88,8 +94,7 @@ public class ArtifactLocator {
       addThirdPartyParentPomArtifacts(artifacts, dep);
     }
     addParentPomArtifacts(artifacts);
-    return artifacts;
-
+    return new HashSet<>(artifacts);
   }
 
   private BundleDescriptor createBundleDescriptor(Model pomModel) {
@@ -266,4 +271,51 @@ public class ArtifactLocator {
     }
   }
 
+  public Set<Artifact> getExclusions() throws MojoExecutionException {
+    Set<Artifact> exclusions = new HashSet<>();
+    List<Dependency> directDependencies = project.getDependencies();
+    Map<String, Dependency> directDependenciesCoordinates =
+        directDependencies.stream().collect(Collectors.toMap(this::getCoordinates, Function.identity()));
+    for (Artifact artifact : project.getArtifacts()) {
+      if (directDependenciesCoordinates.containsKey(artifact.toString())) {
+        Dependency dependency = directDependenciesCoordinates.get(artifact.toString());
+        if (dependency.getExclusions() != null && dependency.getExclusions().size() > 0) {
+          MavenProject artifactProject = mavenProjectBuilder.buildProjectFromArtifact(artifact);
+          exclusions.addAll(findExcludedArtifacts(artifactProject, dependency.getExclusions()));
+        }
+      }
+    }
+    return new HashSet<>(exclusions);
+  }
+
+  private Set<Artifact> findExcludedArtifacts(MavenProject project, List<Exclusion> exclusions) {
+    Set<Artifact> excludedArtifacts = new HashSet<>();
+    for (Artifact artifact : project.getArtifacts()) {
+      for (Exclusion exclusion : exclusions) {
+        if (exclusion.getArtifactId().equals(artifact.getArtifactId()) && exclusion.getGroupId().equals(artifact.getGroupId())) {
+          excludedArtifacts.add(artifact);
+        }
+      }
+    }
+    for (Dependency dependency : project.getDependencies()) {
+      for (Exclusion exclusion : exclusions) {
+        if (exclusion.getArtifactId().equals(dependency.getArtifactId())
+            && exclusion.getGroupId().equals(dependency.getGroupId())) {
+          excludedArtifacts.add(createArtifact(dependency));
+        }
+      }
+    }
+    return excludedArtifacts;
+  }
+
+  private Artifact createArtifact(Dependency dependency) {
+    return new DefaultArtifact(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(),
+                               dependency.getScope(), dependency.getType(), dependency.getClassifier(),
+                               new DefaultArtifactHandler(dependency.getType()));
+  }
+
+  private String getCoordinates(Dependency dependency) {
+    return dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + dependency.getType() + ":"
+        + dependency.getVersion() + ":" + dependency.getScope();
+  }
 }

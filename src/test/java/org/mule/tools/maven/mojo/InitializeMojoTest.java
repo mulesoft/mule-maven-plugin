@@ -10,57 +10,61 @@
 
 package org.mule.tools.maven.mojo;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.apache.maven.it.util.ResourceExtractor;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.junit.After;
+import org.apache.maven.plugin.logging.Log;
 import org.junit.Before;
 import org.junit.Test;
-import org.mule.tools.maven.FileTreeMatcher;
+
+import org.mule.tools.api.packager.ProjectFoldersGenerator;
 
 public class InitializeMojoTest extends AbstractMuleMojoTest {
 
-  private static final String EXPECTED_STRUCTURE_RELATIVE_PATH = "/expected-initialize-structure";
-  private AbstractMuleMojo mojo;
+  private InitializeMojo mojoMock;
 
   @Before
   public void before() throws IOException {
-    mojo = new InitializeMojo();
-    muleApplicationJson = projectRootFolder.newFile(MULE_APPLICATION_JSON);
+    mojoMock = mock(InitializeMojo.class);
+    mojoMock.project = projectMock;
+
+    when(buildMock.getDirectory()).thenReturn(projectBaseFolder.getRoot().getAbsolutePath());
+  }
+
+  @Test
+  public void execute() throws MojoFailureException, MojoExecutionException, IOException {
+    Log logMock = mock(Log.class);
+    ProjectFoldersGenerator projectFoldersGeneratorMock = mock(ProjectFoldersGenerator.class);
+
+    when(mojoMock.getLog()).thenReturn(logMock);
+    doReturn(projectFoldersGeneratorMock).when(mojoMock).getProjectFoldersGenerator();
+
+    doCallRealMethod().when(mojoMock).execute();
+    mojoMock.execute();
+
+    verify(mojoMock, times(1)).getProjectFoldersGenerator();
+    verify(projectFoldersGeneratorMock, times(1)).generate(projectBaseFolder.getRoot().toPath());
+  }
+
+  @Test
+  public void getProjectFoldersGenerator() throws MojoFailureException, MojoExecutionException, IOException {
     when(projectMock.getGroupId()).thenReturn(GROUP_ID);
     when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
-    when(buildMock.getDirectory()).thenReturn(projectRootFolder.getRoot().getAbsolutePath());
-    mojo.project = projectMock;
-  }
+    when(projectMock.getArtifactId()).thenReturn("mule-application");
 
-  @After
-  public void after() throws IOException {
-    File rootOfExpectedStructure = ResourceExtractor.simpleExtractResources(getClass(), EXPECTED_STRUCTURE_RELATIVE_PATH);
-    String[] excludes = new String[] {".placeholder"};
-    assertThat("The target folder directory does not have the expected structure", projectRootFolder.getRoot(),
-               FileTreeMatcher.hasSameTreeStructure(rootOfExpectedStructure, excludes));
-  }
+    doCallRealMethod().when(mojoMock).getProjectFoldersGenerator();
+    mojoMock.getProjectFoldersGenerator();
 
-  @Test
-  public void initializeWhenTargetFolderIsEmptyTest() throws MojoFailureException, MojoExecutionException, IOException {
-    mojo.execute();
-  }
-
-  @Test
-  public void initializeWhenTargetFolderAlreadyHasSomeFoldersOfExpectedStructureTest()
-      throws MojoFailureException, MojoExecutionException, IOException {
-    projectRootFolder.newFolder(META_INF + File.separator + MULE);
-    projectRootFolder.newFolder(MULE);
-    projectRootFolder.newFolder(REPOSITORY);
-
-    mojo.execute();
+    verify(projectMock, times(1)).getGroupId();
+    verify(projectMock, times(1)).getArtifactId();
+    verify(projectMock, times(1)).getPackaging();
   }
 }

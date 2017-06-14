@@ -12,18 +12,21 @@ package org.mule.tools.artifact.archiver.internal;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.CLASSES;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.MAVEN;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.META_INF;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE_ARTIFACT;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE_SRC;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.mule.tools.artifact.archiver.internal.packaging.PackagingMode;
 import org.mule.tools.artifact.archiver.internal.packaging.PackagingModeFactory;
 
@@ -33,8 +36,6 @@ import org.mule.tools.artifact.archiver.internal.packaging.PackagingModeFactory;
 public class PackageBuilder {
 
   private PackagingMode packagingMode;
-
-  private transient Log log = LogFactory.getLog(this.getClass());
 
   private File muleFolder = null;
   private File policyFolder = null;
@@ -139,7 +140,30 @@ public class PackageBuilder {
   }
 
   /**
+   * It wires all the possible folders that should be properly name from the workingDirectory to the package.
+   * 
+   * @param workingDirectory a directory containing all the folders properly named
+   * @return a PackageBuilder
+   */
+  public PackageBuilder fromWorkingDirectory(Path workingDirectory) {
+    return this
+        .withClasses(workingDirectory.resolve(CLASSES).toFile())
+        // TODO check this
+        .withMule(workingDirectory.resolve(MULE).toFile())
+        .withPolicy(workingDirectory.resolve(POLICY).toFile())
+
+        .withMaven(workingDirectory.resolve(META_INF).resolve(MAVEN).toFile())
+        .withMuleArtifact(workingDirectory.resolve(META_INF).resolve(MULE_ARTIFACT).toFile())
+
+        .withMuleSrc(workingDirectory.resolve(META_INF).resolve(MULE_SRC).toFile())
+        .withRepository(workingDirectory.resolve(REPOSITORY).toFile());
+  }
+
+  /**
    * Creates the application package.
+   *
+   * It does so using the provided directories. If a directory does not exits or a directory path is not an actual directory then
+   * such element will not be added to the final package.
    *
    * @throws IOException
    */
@@ -180,10 +204,6 @@ public class PackageBuilder {
       // Warning
     }
 
-    if (null != muleSrcFolder && muleSrcFolder.exists() && muleSrcFolder.isDirectory()) {
-      archiver.addMuleSrc(muleSrcFolder, null, null);
-    }
-
     archiver.setDestFile(destinationFile);
     archiver.createArchive();
   }
@@ -192,40 +212,4 @@ public class PackageBuilder {
     checkArgument(destinationFile != null, "The destination file has not been set");
   }
 
-  private void checkMandatoryFolder(File folder) {
-    checkArgument(folder != null, "The folder must not be null");
-    checkArgument(folder.exists(), "The folder must exists");
-    checkArgument(folder.isDirectory(), "The folder must be a valid directory");
-  }
-
-
-  /**
-   * Resource go under: app-folder/
-   *
-   * @param file file to be included in the root folder of the app
-   * @return builder
-   */
-  public PackageBuilder addRootResourcesFile(File file) {
-    // this.rootResourceFolder.addFile(file);
-    return this;
-  }
-
-  public void generateArtifact(File targetFolder, File destinationFile) throws IOException {
-    checkMandatoryFolder(targetFolder);
-    checkArgument(destinationFile != null && !destinationFile.exists(), "Destination file must not be null or already exist");
-    File[] files = targetFolder.listFiles();
-    if (files == null || files.length == 0) {
-      log.warn("The provided target folder is empty, no file will be generated");
-      return;
-    }
-    Map<String, File> fileMap = Arrays.stream(files).collect(Collectors.toMap(File::getName, Function.identity()));
-    try {
-      this.packagingMode.applyPackaging(this, fileMap).withDestinationFile(destinationFile);
-    } catch (IllegalArgumentException e) {
-      log.warn("The provided target folder does not have the expected structure");
-      return;
-    }
-    this.createDeployableFile();
-    log.info("File " + destinationFile.getName() + " has been successfully created");
-  }
 }

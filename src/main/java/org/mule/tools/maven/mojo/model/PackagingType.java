@@ -12,7 +12,18 @@ package org.mule.tools.maven.mojo.model;
 
 import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
+import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_APPLICATION_JSON;
+import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_POLICY_JSON;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
+import static org.mule.tools.api.packager.FolderNames.MAIN;
+import static org.mule.tools.api.packager.FolderNames.MUNIT;
+import static org.mule.tools.api.packager.FolderNames.SRC;
+import static org.mule.tools.api.packager.FolderNames.TEST;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 public enum PackagingType {
@@ -24,6 +35,7 @@ public enum PackagingType {
           Classifier.MULE_APPLICATION_TEMPLATE};
     }
   },
+
   MULE_DOMAIN(Classifier.MULE_DOMAIN) {
 
     @Override
@@ -31,6 +43,7 @@ public enum PackagingType {
       return new Classifier[] {Classifier.MULE_DOMAIN};
     }
   },
+
   MULE_POLICY(Classifier.MULE_POLICY) {
 
     @Override
@@ -39,7 +52,6 @@ public enum PackagingType {
     }
   };
 
-  protected abstract Classifier[] getClassifiers();
 
   protected Classifier defaultClassifier;
 
@@ -47,8 +59,11 @@ public enum PackagingType {
     this.defaultClassifier = defaultClassifier;
   }
 
+  protected abstract Classifier[] getClassifiers();
+
   public String resolveClassifier(String classifierName, boolean lightwayPackage) {
-    return Arrays.stream(getClassifiers()).filter(allowedClassifier -> allowedClassifier.equals(classifierName)).findFirst()
+    return Arrays.stream(getClassifiers())
+        .filter(allowedClassifier -> allowedClassifier.equals(classifierName)).findFirst()
         .orElse(defaultClassifier).toString() + (lightwayPackage ? "-light-package" : "");
   }
 
@@ -64,5 +79,43 @@ public enum PackagingType {
   @Override
   public String toString() {
     return UPPER_UNDERSCORE.to(LOWER_HYPHEN, this.name());
+  }
+
+  public Path getSourceFolderLocation(Path projectBasedFolder) {
+    return Paths.get(mainFolder(projectBasedFolder).getAbsolutePath(), getSourceFolderName());
+  }
+
+  public Path getTestSourceFolderLocation(Path projectBasedFolder) {
+    return testFolder(projectBasedFolder).toPath().resolve(getTestFolderName());
+  }
+
+  public String getTestFolderName() {
+    return MUNIT.value();
+  }
+
+  public String getSourceFolderName() {
+    if (MULE_POLICY.equals(defaultClassifier.toString())) {
+      return POLICY;
+    }
+    return MULE;
+  }
+
+  public String getDescriptorFileName() {
+    if (MULE_POLICY.equals(defaultClassifier.toString())) {
+      return MULE_POLICY_JSON;
+    }
+    return MULE_APPLICATION_JSON;
+  }
+
+  private File mainFolder(Path projectBasedFolder) {
+    return Paths.get(srcFolder(projectBasedFolder).getAbsolutePath(), MAIN.value()).toFile();
+  }
+
+  private File testFolder(Path projectBasedFolder) {
+    return Paths.get(srcFolder(projectBasedFolder).getAbsolutePath(), TEST.value()).toFile();
+  }
+
+  private File srcFolder(Path projectBasedFolder) {
+    return Paths.get(projectBasedFolder.toFile().getAbsolutePath(), SRC.value()).toFile();
   }
 }

@@ -10,7 +10,14 @@
 
 package org.mule.tools.artifact.archiver.internal;
 
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.CLASSES;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.MAVEN;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.META_INF;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE_ARTIFACT;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE_SRC;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
+import static org.mule.tools.artifact.archiver.api.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 
@@ -43,65 +50,68 @@ public class MuleArchiver extends ZipArchiver {
   public static final String REPOSITORY_LOCATION = REPOSITORY + File.separator;
 
 
-  public void addClasses(File file) throws ArchiverException {
-    addFile(file, CLASSES_LOCATION + file.getName());
+  public void addClasses(File resource, String[] includes, String[] excludes) throws ArchiverException {
+    if (resource.isFile()) {
+      addFile(resource, CLASSES_LOCATION + resource.getName());
+    } else {
+      addDirectory(resource, CLASSES_LOCATION, includes, addDefaultExcludes(excludes));
+    }
   }
 
-  public void addClasses(File directoryName, String[] includes, String[] excludes) throws ArchiverException {
-    addDirectory(directoryName, CLASSES_LOCATION, includes, addDefaultExcludes(excludes));
+  public void addMuleSrc(File resource, String[] includes, String[] excludes) throws ArchiverException {
+    if (resource.isFile()) {
+      addFile(resource, MULE_SRC_LOCATION + resource.getName());
+    } else {
+      addDirectory(resource, MULE_SRC_LOCATION, includes, addDefaultExcludes(excludes));
+    }
   }
 
-  public void addMuleSrc(File file) throws ArchiverException {
-    addFile(file, MULE_SRC_LOCATION + file.getName());
+  public void addMaven(File resource, String[] includes, String[] excludes) throws ArchiverException {
+    if (resource.isFile()) {
+      addFile(resource, MAVEN_LOCATION + resource.getName());
+    } else {
+      addDirectory(resource, MAVEN_LOCATION, includes, addDefaultExcludes(excludes));
+    }
   }
 
-  public void addMuleSrc(File directoryName, String[] includes, String[] excludes) throws ArchiverException {
-    addDirectory(directoryName, MULE_SRC_LOCATION, includes, addDefaultExcludes(excludes));
+  public void addMuleArtifact(File resource, String[] includes, String[] excludes) throws ArchiverException {
+    if (resource.isFile()) {
+      addFile(resource, MULE_ARTIFACT_LOCATION + resource.getName());
+    } else {
+      addDirectory(resource, MULE_ARTIFACT_LOCATION, includes, addDefaultExcludes(excludes));
+    }
   }
 
-  public void addMaven(File file) throws ArchiverException {
-    addFile(file, MAVEN_LOCATION + file.getName());
+  public void addRepository(File resource, String[] includes, String[] excludes) throws ArchiverException {
+    if (resource.isFile()) {
+      addFile(resource, REPOSITORY_LOCATION + resource.getName());
+    } else {
+      addDirectory(resource, REPOSITORY_LOCATION, includes, addDefaultExcludes(excludes));
+    }
   }
 
-  public void addMaven(File directoryName, String[] includes, String[] excludes) throws ArchiverException {
-    addDirectory(directoryName, MAVEN_LOCATION, includes, addDefaultExcludes(excludes));
+  public void addMule(File resource, String[] includes, String[] excludes) throws ArchiverException {
+    if (resource.isFile()) {
+      addFile(resource, MULE_LOCATION + resource.getName());
+    } else {
+      addDirectory(resource, MULE_LOCATION, includes, addDefaultExcludes(excludes));
+    }
   }
 
-  public void addMuleArtifact(File file) throws ArchiverException {
-    addFile(file, MULE_ARTIFACT_LOCATION + file.getName());
+  public void addPolicy(File resource, String[] includes, String[] excludes) throws ArchiverException {
+    if (resource.isFile()) {
+      addFile(resource, POLICY_LOCATION + resource.getName());
+    } else {
+      addDirectory(resource, POLICY_LOCATION, includes, addDefaultExcludes(excludes));
+    }
   }
 
-  public void addMuleArtifact(File directoryName, String[] includes, String[] excludes) throws ArchiverException {
-    addDirectory(directoryName, MULE_ARTIFACT_LOCATION, includes, addDefaultExcludes(excludes));
-  }
-
-  public void addRepository(File file) throws ArchiverException {
-    addFile(file, REPOSITORY_LOCATION + file.getName());
-  }
-
-  public void addRepository(File directoryName, String[] includes, String[] excludes) throws ArchiverException {
-    addDirectory(directoryName, REPOSITORY_LOCATION, includes, addDefaultExcludes(excludes));
-  }
-
-  public void addMule(File file) throws ArchiverException {
-    addFile(file, MULE_LOCATION + file.getName());
-  }
-
-  public void addMule(File directoryName, String[] includes, String[] excludes) throws ArchiverException {
-    addDirectory(directoryName, MULE_LOCATION, includes, addDefaultExcludes(excludes));
-  }
-
-  public void addPolicy(File directoryName, String[] includes, String[] excludes) throws ArchiverException {
-    addDirectory(directoryName, POLICY_LOCATION, includes, addDefaultExcludes(excludes));
-  }
-
-  public void addRootDirectory(File directory) throws ArchiverException {
-    addDirectory(directory, ROOT_LOCATION, null, addDefaultExcludes(null));
-  }
-
-  @Deprecated
-  public void addRootFile(File file) throws ArchiverException {
-    addFile(file, ROOT_LOCATION + file.getName());
+  public void addToRootDirectory(File resource) throws ArchiverException {
+    if (resource.isFile()) {
+      addFile(resource, ROOT_LOCATION + resource.getName());
+    } else {
+      addDirectory(resource, ROOT_LOCATION, null, addDefaultExcludes(null));
+    }
   }
 
   private String[] addDefaultExcludes(String[] excludes) {

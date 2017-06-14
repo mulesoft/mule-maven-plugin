@@ -11,60 +11,98 @@
 package org.mule.tools.maven.mojo;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MUNIT;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.TEST_MULE;
 
-import java.io.File;
+import org.mule.tools.api.packager.ContentGenerator;
+
 import java.io.IOException;
 
+import org.apache.maven.model.Build;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
 
 public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
 
-  private static final String EXPECTED_EXCEPTION_MESSAGE_FAIL_GENERATE_SOURCES = "Fail to generate sources";
-  private GenerateTestSourcesMojo mojo;
+  private Log logMock;
+  private GenerateTestSourcesMojo mojoMock;
 
   @Before
   public void before() throws IOException {
-    testMuleFolder = buildTemporaryFolder.newFolder(TEST_MULE);
-    munitFolder = new File(testMuleFolder.getAbsolutePath(), MUNIT);
-    munitFolder.mkdir();
+    logMock = mock(Log.class);
 
-    munitSourceFolder = projectRootFolder.getRoot();
+    buildMock = mock(Build.class);
+    when(buildMock.getDirectory()).thenReturn(projectBaseFolder.getRoot().getAbsolutePath());
 
-    mojo = new GenerateTestSourcesMojo();
-    mojo.munitSourceFolder = munitSourceFolder;
-    mojo.project = projectMock;
+    projectMock = mock(MavenProject.class);
+
+    mojoMock = mock(GenerateTestSourcesMojo.class);
+    mojoMock.project = projectMock;
+    mojoMock.projectBaseFolder = projectBaseFolder.getRoot();
+
+    when(mojoMock.getLog()).thenReturn(logMock);
   }
 
   @Test
-  public void createTestMuleFolderContentWithoutTestThrowsExceptionTest()
-      throws IOException, MojoFailureException, MojoExecutionException {
-    expectedException.expect(MojoFailureException.class);
-    expectedException.expectMessage(EXPECTED_EXCEPTION_MESSAGE_FAIL_GENERATE_SOURCES);
+  public void execute() throws MojoFailureException, MojoExecutionException, IOException {
+    ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
+    doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
-    when(buildMock.getDirectory()).thenReturn(projectRootFolder.getRoot().getAbsolutePath());
-    when(projectMock.getBuild()).thenReturn(buildMock);
+    doCallRealMethod().when(mojoMock).execute();
+    mojoMock.execute();
 
-    mojo.execute();
+    verify(mojoMock, times(1)).getContentGenerator();
+    verify(contentGeneratorMock, times(1)).createTestFolderContent();
+  }
+
+  @Test(expected = MojoFailureException.class)
+  public void executeFailIOException() throws MojoFailureException, MojoExecutionException, IOException {
+    ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
+    doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
+
+    doThrow(new IOException("")).when(contentGeneratorMock).createTestFolderContent();
+
+    doCallRealMethod().when(mojoMock).execute();
+    mojoMock.execute();
+  }
+
+  @Test(expected = MojoFailureException.class)
+  public void executeFailIllegalArgument() throws MojoFailureException, MojoExecutionException, IOException {
+    ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
+    doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
+
+    doThrow(new IllegalArgumentException("")).when(contentGeneratorMock).createTestFolderContent();
+
+    doCallRealMethod().when(mojoMock).execute();
+    mojoMock.execute();
   }
 
   @Test
-  public void createTestMuleFolderContentTest() throws IOException, MojoFailureException, MojoExecutionException {
-    when(buildMock.getDirectory()).thenReturn(buildTemporaryFolder.getRoot().getAbsolutePath());
+  public void getContentGenerator() {
+    when(projectMock.getGroupId()).thenReturn(GROUP_ID);
+    when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
+    when(projectMock.getVersion()).thenReturn("1.0.0-SNAPSHOT");
+    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
     when(projectMock.getBuild()).thenReturn(buildMock);
-    File munitTestFile = projectRootFolder.newFile(MUNIT_TEST_FILE_NAME);
 
-    mojo.execute();
+    doCallRealMethod().when(mojoMock).getContentGenerator();
+    mojoMock.getContentGenerator();
 
-    File[] filesInMunitFolder = munitFolder.listFiles();
-    assertThat("The munit folder should contain only one file", filesInMunitFolder.length == 1 && filesInMunitFolder[0].isFile());
-    assertThat("The file in the munit folder is not the expected", filesInMunitFolder[0].getName(),
-               equalTo(munitTestFile.getName()));
+    verify(projectMock, times(1)).getGroupId();
+    verify(projectMock, times(1)).getArtifactId();
+    verify(projectMock, times(1)).getVersion();
+    verify(projectMock, times(1)).getPackaging();
+    verify(projectMock, times(1)).getBuild();
+    verify(buildMock, times(1)).getDirectory();
   }
 }

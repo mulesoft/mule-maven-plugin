@@ -37,7 +37,7 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     mojo.project = projectMock;
     mojo.finalName = PACKAGE_NAME;
 
-    destinationFile = new File(buildTemporaryFolder.getRoot().getAbsolutePath(), PACKAGE_NAME + ".zip");
+    destinationFile = new File(buildFolderFolder.getRoot().getAbsolutePath(), PACKAGE_NAME + ".zip");
 
     when(packageBuilderMock.withDestinationFile(any())).thenReturn(packageBuilderMock);
     when(packageBuilderMock.withClasses(any())).thenReturn(packageBuilderMock);
@@ -51,7 +51,7 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
   public void createMuleAppOnlyMuleSourcesTest() throws MojoExecutionException {
     mojo.onlyMuleSources = true;
 
-    mojo.createMuleApp(destinationFile, buildTemporaryFolder.getRoot().getAbsolutePath());
+    mojo.createMuleApp(destinationFile, buildFolderFolder.getRoot().getAbsolutePath());
 
     verify(packageBuilderMock, times(1)).withDestinationFile(any());
     verify(packageBuilderMock, times(0)).withClasses(any());
@@ -64,7 +64,7 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     mojo.onlyMuleSources = false;
     mojo.attachMuleSources = false;
 
-    mojo.createMuleApp(destinationFile, buildTemporaryFolder.getRoot().getAbsolutePath());
+    mojo.createMuleApp(destinationFile, buildFolderFolder.getRoot().getAbsolutePath());
 
     verify(packageBuilderMock, times(1)).withDestinationFile(any());
     verify(packageBuilderMock, times(1)).withClasses(any());
@@ -79,7 +79,7 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     mojo.onlyMuleSources = false;
     mojo.attachMuleSources = true;
 
-    mojo.createMuleApp(destinationFile, buildTemporaryFolder.getRoot().getAbsolutePath());
+    mojo.createMuleApp(destinationFile, buildFolderFolder.getRoot().getAbsolutePath());
 
     verify(packageBuilderMock, times(1)).withDestinationFile(any());
     verify(packageBuilderMock, times(1)).withClasses(any());

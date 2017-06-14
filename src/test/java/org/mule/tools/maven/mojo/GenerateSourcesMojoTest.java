@@ -10,133 +10,98 @@
 
 package org.mule.tools.maven.mojo;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mule.tools.artifact.archiver.api.PackagerFiles.POM_XML;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
-import org.mule.tools.maven.util.ProjectBaseFolderFileCloner;
+
+import org.mule.tools.api.packager.ContentGenerator;
 
 public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
 
-  private GenerateSourcesMojo mojo = new GenerateSourcesMojo();
+  private Log logMock;
+  private GenerateSourcesMojo mojoMock;
 
   @Before
   public void before() throws IOException {
-    mojo = new GenerateSourcesMojo();
-    mojo.projectBaseFolder = projectRootFolder.getRoot();
-    mojo.project = projectMock;
-  }
-
-  @Test
-  public void createMuleFolderContentTest() throws IOException, MojoFailureException, MojoExecutionException {
-    muleSourceFolderMock =
-        new File(projectRootFolder.getRoot().getAbsolutePath(), "src" + File.separator + "main" + File.separator + "mule");
-    muleSourceFolderMock.mkdirs();
-
-    File fileToBeCopied1 = new File(muleSourceFolderMock.getAbsolutePath(), "file1");
-    File fileToBeCopied2 = new File(muleSourceFolderMock.getAbsolutePath(), "file2");
-    fileToBeCopied1.createNewFile();
-    fileToBeCopied2.createNewFile();
-
-    mojo.mainFolder =
-        new File(projectRootFolder.getRoot().getAbsolutePath(), "src" + File.separator + "main" + File.separator);
-
-    File muleFolder = buildTemporaryFolder.newFolder(MULE);
-    muleFolder.mkdir();
-    mojo.createSrcFolderContent();
-
-    assertThat("The mule folder does not contain the expected number of files", muleFolder.listFiles().length, equalTo(2));
-    Set<String> copiedFiles =
-        Arrays.asList(muleFolder.listFiles()).stream().map(file -> file.getName()).collect(Collectors.toSet());
-    assertThat("The mule folder content is different from the expected",
-               copiedFiles, containsInAnyOrder(fileToBeCopied1.getName(), fileToBeCopied2.getName()));
-  }
-
-  @Test
-  public void createMuleSourceFolderContentTest() throws IOException {
-    File muleSourceFolder = new File(metaInfFolder.getAbsolutePath(), MULE_SRC);
-    File projectArtifactIdFolder = new File(muleSourceFolder.getAbsolutePath(), PROJECT_ARTIFACT_ID);
-
-    metaInfFolder.mkdir();
-    muleSourceFolder.mkdir();
-    projectArtifactIdFolder.mkdir();
-
-    File fileToBeCopied1 = new File(projectRootFolder.getRoot().getAbsolutePath(), "file1");
-    fileToBeCopied1.createNewFile();
-    File fileToBeCopied2 = new File(projectRootFolder.getRoot().getAbsolutePath(), "file2");
-    fileToBeCopied2.createNewFile();
-
-    when(projectMock.getArtifactId()).thenReturn(PROJECT_ARTIFACT_ID);
-    mojo.createMetaInfMuleSourceFolderContent();
-
-    assertThat("There should be 2 files in the target folder", projectArtifactIdFolder.listFiles().length, equalTo(2));
-
-    Set<String> copiedFiles =
-        Arrays.asList(projectArtifactIdFolder.listFiles()).stream().map(file -> file.getName()).collect(Collectors.toSet());
-    assertThat("The mule folder content is different from the expected",
-               copiedFiles, containsInAnyOrder(fileToBeCopied1.getName(), fileToBeCopied2.getName()));
-  }
-
-  @Test
-  public void createDescriptorFilesContentTest() throws IOException {
-    File pomDestinationFolder = new File(projectRootFolder.getRoot().getAbsolutePath(),
-                                         META_INF + File.separator + MAVEN + File.separator + GROUP_ID + File.separator
-                                             + ARTIFACT_ID);
-    pomDestinationFolder.mkdirs();
-
-    File propertiesDestinationFolder =
-        new File(projectRootFolder.getRoot().getAbsolutePath(), META_INF + File.separator + MULE_ARTIFACT);
-    propertiesDestinationFolder.mkdirs();
-
-    File pom = projectRootFolder.newFile(POM_XML);
-    pom.createNewFile();
-    File muleApplicationJsonFile = projectRootFolder.newFile(MULE_APPLICATION_JSON);
-    muleApplicationJsonFile.createNewFile();
+    logMock = mock(Log.class);
 
     buildMock = mock(Build.class);
+    when(buildMock.getDirectory()).thenReturn(projectBaseFolder.getRoot().getAbsolutePath());
+
     projectMock = mock(MavenProject.class);
-    when(buildMock.getDirectory()).thenReturn(projectRootFolder.getRoot().getAbsolutePath());
-    when(projectMock.getBuild()).thenReturn(buildMock);
+
+    mojoMock = mock(GenerateSourcesMojo.class);
+    mojoMock.project = projectMock;
+    mojoMock.projectBaseFolder = projectBaseFolder.getRoot();
+
+    when(mojoMock.getLog()).thenReturn(logMock);
+  }
+
+  @Test
+  public void execute() throws MojoFailureException, MojoExecutionException, IOException {
+    ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
+    doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
+
+    doCallRealMethod().when(mojoMock).execute();
+    mojoMock.execute();
+
+    verify(mojoMock, times(1)).getContentGenerator();
+    verify(contentGeneratorMock, times(1)).createContent();
+  }
+
+  @Test(expected = MojoFailureException.class)
+  public void executeFailIOException() throws MojoFailureException, MojoExecutionException, IOException {
+    ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
+    doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
+
+    doThrow(new IOException("")).when(contentGeneratorMock).createContent();
+
+    doCallRealMethod().when(mojoMock).execute();
+    mojoMock.execute();
+  }
+
+  @Test(expected = MojoFailureException.class)
+  public void executeFailIllegalArgument() throws MojoFailureException, MojoExecutionException, IOException {
+    ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
+    doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
+
+    doThrow(new IllegalArgumentException("")).when(contentGeneratorMock).createContent();
+
+    doCallRealMethod().when(mojoMock).execute();
+    mojoMock.execute();
+  }
+
+  @Test
+  public void getContentGenerator() {
     when(projectMock.getGroupId()).thenReturn(GROUP_ID);
     when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
-    when(projectMock.getBasedir()).thenReturn(projectRootFolder.getRoot());
+    when(projectMock.getVersion()).thenReturn("1.0.0-SNAPSHOT");
     when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
+    when(projectMock.getBuild()).thenReturn(buildMock);
 
-    mojo.project = projectMock;
-    mojo.projectBaseFolderFileCloner = new ProjectBaseFolderFileCloner(projectMock);
+    doCallRealMethod().when(mojoMock).getContentGenerator();
+    mojoMock.getContentGenerator();
 
-    mojo.createDescriptorFilesContent();
-
-    assertThat("There should be 1 file in the pom destination folder", pomDestinationFolder.listFiles().length, equalTo(1));
-    List<File> actualFilesInPomDestinationFolder =
-        Arrays.asList(pomDestinationFolder.listFiles()).stream().filter(file -> file.isFile()).collect(Collectors.toList());
-    assertThat("The pom destination folder does not contains the expected file",
-               actualFilesInPomDestinationFolder.get(0).getName(), equalTo(POM_XML));
-
-    assertThat("There should be 1 file in the properties destination folder", propertiesDestinationFolder.listFiles().length,
-               equalTo(1));
-    List<File> actualFilesInPropertiesDestinationFolder =
-        Arrays.asList(propertiesDestinationFolder.listFiles()).stream().filter(file -> file.isFile())
-            .collect(Collectors.toList());
-    assertThat("The properties destination folder does not contains the expected files",
-               actualFilesInPropertiesDestinationFolder.stream().map(file -> file.getName()).collect(Collectors.toList()),
-               containsInAnyOrder(MULE_APPLICATION_JSON));
+    verify(projectMock, times(1)).getGroupId();
+    verify(projectMock, times(1)).getArtifactId();
+    verify(projectMock, times(1)).getVersion();
+    verify(projectMock, times(1)).getPackaging();
+    verify(projectMock, times(1)).getBuild();
+    verify(buildMock, times(1)).getDirectory();
   }
+
 }

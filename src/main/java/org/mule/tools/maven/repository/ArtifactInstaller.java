@@ -19,13 +19,11 @@ import static org.mule.tools.artifact.archiver.api.PackagerFolders.REPOSITORY;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -65,20 +63,23 @@ public class ArtifactInstaller {
   public void installArtifact(File repositoryFile, Artifact artifact) throws MojoExecutionException {
     checkArgument(artifact != null, "Artifact to be installed should not be null");
     String artifactFilename = getFormattedFileName(artifact);
+    String artifactPomFilename = getPomFileName(artifact);
     File artifactFolderDestination = getFormattedOutputDirectory(repositoryFile, artifact);
-
     if (!artifactFolderDestination.exists()) {
       artifactFolderDestination.mkdirs();
     }
-
     File destinationArtifactFile = new File(artifactFolderDestination, artifactFilename);
+    File destinationPomFile = new File(artifactFolderDestination, artifactPomFilename);
     try {
+
       log.info(format("Adding artifact <%s%s>",
                       REPOSITORY,
                       destinationArtifactFile.getAbsolutePath()
                           .replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
                                         "")));
+
       copyFile(artifact.getFile(), destinationArtifactFile);
+      copyFile(new File(artifact.getFile().getParent(), artifactPomFilename), destinationPomFile);
     } catch (IOException e) {
       throw new MojoExecutionException(
                                        format("There was a problem while copying the artifact [%s] file [%s] to the destination [%s]",
@@ -88,48 +89,20 @@ public class ArtifactInstaller {
     }
   }
 
-  public void generateExcludedDependencyMetadata(File repositoryFile, Artifact artifact) throws MojoExecutionException {
-    checkArgument(artifact != null, "Artifact from which metadata is going to be extracted should not be null");
-    String pomFileName = getPomFileName(artifact);
-    File metadataFolderDestination = getFormattedOutputDirectory(repositoryFile, artifact);
+  private String getPomFileName(Artifact artifact) {
+    StringBuilder destFileName = buildMainPOMFileName(artifact);
 
-    if (!metadataFolderDestination.exists()) {
-      metadataFolderDestination.mkdirs();
-    }
-    if (artifact.getFile() == null) {
-      return;
-    }
-    File sourcePomFile = new File(artifact.getFile().getParent(), pomFileName);
-    File destinationPomFile = new File(metadataFolderDestination, pomFileName);
-    try {
-      log.info(format("Adding artifact <%s%s>",
-                      REPOSITORY,
-                      destinationPomFile.getAbsolutePath()
-                          .replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
-                                        "")));
-      copyFile(sourcePomFile, destinationPomFile);
-    } catch (IOException e) {
-      throw new MojoExecutionException(
-                                       format("There was a problem while copying the [%s] pom file from [%s] to the destination [%s]",
-                                              artifact.toString(), sourcePomFile.getAbsolutePath(),
-                                              destinationPomFile.getAbsolutePath()),
-                                       e);
-    }
+    destFileName.append("pom");
+
+    return destFileName.toString();
   }
 
   protected String getFormattedFileName(Artifact artifact) {
     StringBuilder destFileName = buildMainFileName(artifact);
 
-    Optional<ArtifactHandler> artifactHandler = Optional.ofNullable(artifact.getArtifactHandler());
-    String extension = artifactHandler.orElse(new DefaultArtifactHandler(artifact.getType())).getExtension();
+    String extension = new DefaultArtifactHandler(artifact.getType()).getExtension();
     destFileName.append(extension);
 
-    return destFileName.toString();
-  }
-
-  protected String getPomFileName(Artifact artifact) {
-    StringBuilder destFileName = buildMainFileName(artifact);
-    destFileName.append("pom");
     return destFileName.toString();
   }
 
@@ -143,6 +116,15 @@ public class ArtifactInstaller {
     }
     mainName.append(artifact.getArtifactId()).append(versionString);
     mainName.append(classifierString).append(".");
+    return mainName;
+  }
+
+  private StringBuilder buildMainPOMFileName(Artifact artifact) {
+    StringBuilder mainName = new StringBuilder();
+    String versionString = "-" + getNormalizedVersion(artifact);
+
+    mainName.append(artifact.getArtifactId()).append(versionString);
+    mainName.append(".");
     return mainName;
   }
 

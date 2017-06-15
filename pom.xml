@@ -275,6 +275,11 @@
             <artifactId>maven-dependency-tree</artifactId>
             <version>${maven.dependency.tree.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mule</groupId>
+            <artifactId>mule-maven-client-impl</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

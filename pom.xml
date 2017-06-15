@@ -90,6 +90,7 @@
         <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
         <codehaus.plexus.archiver>3.4</codehaus.plexus.archiver>
         <project.info.plugin.version>2.9</project.info.plugin.version>
+        <mule.maven.client.impl.version>1.0.0-SNAPSHOT</mule.maven.client.impl.version>
     </properties>
 
     <dependencies>
@@ -278,7 +279,7 @@
         <dependency>
             <groupId>org.mule</groupId>
             <artifactId>mule-maven-client-impl</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${mule.maven.client.impl.version}</version>
         </dependency>
     </dependencies>
 

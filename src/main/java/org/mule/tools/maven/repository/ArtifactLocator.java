@@ -78,7 +78,7 @@ public class ArtifactLocator {
     Set<Artifact> artifacts = new HashSet<>(project.getArtifacts());
     dependencies.removeIf(bundleDependency -> bundleDependency.getDescriptor().equals(descriptor));
     for (BundleDependency dependency : dependencies) {
-      List<BundleDependency> deps = client.resolveArtifactDependencies(new File(dependency.getBundleUrl().getPath()), false,
+      List<BundleDependency> deps = client.resolveArtifactDependencies(new File(dependency.getBundleUri().getPath()), false,
                                                                        Optional.empty(),
                                                                        Optional.of(temporaryFolder));
       artifacts.add(buildArtifact(dependency));
@@ -120,7 +120,7 @@ public class ArtifactLocator {
                                             descriptor.getType(),
                                             descriptor.getClassifier().orElse(null),
                                             new DefaultArtifactHandler());
-    artifact.setFile(new File(dependency.getBundleUrl().getPath()));
+    artifact.setFile(new File(dependency.getBundleUri().getPath()));
     return artifact;
   }
 

@@ -82,9 +82,22 @@ public class RepositoryGenerator {
       File repositoryFolder = getRepositoryFolder();
       ArtifactInstaller artifactInstaller = buildArtifactInstaller(remoteArtifactRepositories);
       installArtifacts(repositoryFolder, artifacts, artifactInstaller);
+      Set<Artifact> excludedArtifacts = artifactLocator.getExclusions();
+      generateExcludedDependenciesMetadata(repositoryFolder, excludedArtifacts, artifactInstaller);
     } catch (Exception e) {
       log.debug(format("There was an exception while building [%s]", project.toString()), e);
     }
+  }
+
+  private void generateExcludedDependenciesMetadata(File repositoryFile, Set<Artifact> excludedArtifacts,
+                                                    ArtifactInstaller installer)
+      throws MojoExecutionException {
+    TreeSet<Artifact> sortedArtifacts = new TreeSet<>(excludedArtifacts);
+    for (Artifact artifact : sortedArtifacts) {
+      installer.downloadExcludedDependencyToLocalRepository(artifact);
+      installer.generateExcludedDependencyMetadata(repositoryFile, artifact);
+    }
+
   }
 
   protected ArtifactInstaller buildArtifactInstaller(List<ArtifactRepository> remoteArtifactRepositories) {

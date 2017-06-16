@@ -165,4 +165,33 @@ public class ArtifactInstaller {
           + artifact.getArtifactId() + ":" + artifact.getVersion(), e);
     }
   }
+
+  public void generateExcludedDependencyMetadata(File repositoryFile, Artifact artifact) throws MojoExecutionException {
+    checkArgument(artifact != null, "Artifact from which metadata is going to be extracted should not be null");
+    String pomFileName = getPomFileName(artifact);
+    File metadataFolderDestination = getFormattedOutputDirectory(repositoryFile, artifact);
+
+    if (!metadataFolderDestination.exists()) {
+      metadataFolderDestination.mkdirs();
+    }
+    if (artifact.getFile() == null) {
+      return;
+    }
+    File sourcePomFile = new File(artifact.getFile().getParent(), pomFileName);
+    File destinationPomFile = new File(metadataFolderDestination, pomFileName);
+    try {
+      log.info(format("Adding artifact <%s%s>",
+                      REPOSITORY,
+                      destinationPomFile.getAbsolutePath()
+                          .replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
+                                        "")));
+      copyFile(sourcePomFile, destinationPomFile);
+    } catch (IOException e) {
+      throw new MojoExecutionException(
+                                       format("There was a problem while copying the [%s] pom file from [%s] to the destination [%s]",
+                                              artifact.toString(), sourcePomFile.getAbsolutePath(),
+                                              destinationPomFile.getAbsolutePath()),
+                                       e);
+    }
+  }
 }

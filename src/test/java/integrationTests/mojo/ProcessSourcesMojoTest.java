@@ -68,7 +68,6 @@ public class ProcessSourcesMojoTest extends MojoTest {
     verifier.verifyErrorFreeLog();
   }
 
-  @Ignore
   @Test
   public void testProcessSourcesExcludedDependency() throws IOException, VerificationException {
     installThirdPartyArtifact(DEPENDENCY_A_GROUP_ID, DEPENDENCY_A_ARTIFACT_ID, DEPENDENCY_A_VERSION, DEPENDENCY_A_TYPE,
@@ -81,7 +80,7 @@ public class ProcessSourcesMojoTest extends MojoTest {
                               DEPENDENCY_C_PROJECT_NAME);
 
     projectBaseDirectory = builder.createProjectBaseDir("empty-excluded-dependencies-project", this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
     verifier.executeGoal(PROCESS_SOURCES);

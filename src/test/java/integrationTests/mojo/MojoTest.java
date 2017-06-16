@@ -57,11 +57,7 @@ public class MojoTest {
   public void initializeContext() throws IOException, VerificationException {
     builder = new ProjectFactory();
     projectBaseDirectory = builder.createProjectBaseDir("empty-" + goal + "-project", this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
-    String mavenSettings = System.getenv("MAVEN_SETTINGS");
-    if (mavenSettings != null) {
-      verifier.addCliOption("-s " + mavenSettings);
-    }
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
   }
@@ -105,5 +101,14 @@ public class MojoTest {
     auxVerifier.executeGoal(INSTALL);
     auxVerifier.assertArtifactPresent(groupId, artifactId, version, type);
     auxVerifier.verifyErrorFreeLog();
+  }
+
+  protected Verifier buildVerifier(File projectBaseDirectory) throws VerificationException {
+    Verifier verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    String mavenSettings = System.getenv("MAVEN_SETTINGS");
+    if (mavenSettings != null) {
+      verifier.addCliOption("-s " + mavenSettings);
+    }
+    return verifier;
   }
 }

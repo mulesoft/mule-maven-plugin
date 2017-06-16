@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -62,7 +61,7 @@ public class InstallMojoTest extends MojoTest {
   public void testInstallPolicy() throws IOException, VerificationException {
     String artifactId = "empty-install-policy-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-DattachMuleSources=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
     String artifactPath = verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_POLICY_CLASSIFIER);
@@ -75,11 +74,13 @@ public class InstallMojoTest extends MojoTest {
     assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
   }
 
+
+
   @Test
   public void testInstallAppTemplate() throws IOException, VerificationException {
     String artifactId = "empty-install-app-template-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-DattachMuleSources=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
     String artifactPath = verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_APPLICATION_TEMPLATE_CLASSIFIER);
@@ -96,7 +97,7 @@ public class InstallMojoTest extends MojoTest {
   public void testInstallAppExample() throws IOException, VerificationException {
     String artifactId = "empty-install-app-example-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-DattachMuleSources=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
     String artifactPath = verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_APPLICATION_EXAMPLE_CLASSIFIER);
@@ -113,7 +114,7 @@ public class InstallMojoTest extends MojoTest {
   public void testInstallDomain() throws IOException, VerificationException {
     String artifactId = "empty-install-domain-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-DattachMuleSources=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
     String artifactPath = verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_DOMAIN_CLASSIFIER);
@@ -132,7 +133,7 @@ public class InstallMojoTest extends MojoTest {
     String appSubModule = "empty-app";
     String policySubModule = "empty-policy";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-DattachMuleSources=true");
 
     verifier.deleteArtifacts(GROUP_ID, appSubModule, VERSION);
@@ -173,7 +174,7 @@ public class InstallMojoTest extends MojoTest {
   public void testInstallTemplateLightPackage() throws IOException, VerificationException {
     String artifactId = "empty-install-app-template-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-DattachMuleSources=true");
     verifier.addCliOption("-DlightweightPackage=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
@@ -192,7 +193,7 @@ public class InstallMojoTest extends MojoTest {
   public void testInstallExampleLightPackage() throws IOException, VerificationException {
     String artifactId = "empty-install-app-example-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-DattachMuleSources=true");
     verifier.addCliOption("-DlightweightPackage=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
@@ -211,7 +212,7 @@ public class InstallMojoTest extends MojoTest {
   public void testInstallDomainLightPackage() throws IOException, VerificationException {
     String artifactId = "empty-install-domain-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-DattachMuleSources=true");
     verifier.addCliOption("-DlightweightPackage=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);

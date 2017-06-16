@@ -10,7 +10,6 @@
 package integrationTests.mojo;
 
 import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
 import org.junit.Test;
 
 public class ValidateMojoTest extends MojoTest {
@@ -29,7 +28,7 @@ public class ValidateMojoTest extends MojoTest {
   @Test
   public void testFailOnEmptyProject() throws Exception {
     projectBaseDirectory = builder.createProjectBaseDir(EMPTY_PROJECT_NAME, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     try {
       verifier.executeGoal(VALIDATE);
     } catch (VerificationException e) {
@@ -40,7 +39,7 @@ public class ValidateMojoTest extends MojoTest {
   @Test
   public void testFailOnInvalidPackageType() throws Exception {
     projectBaseDirectory = builder.createProjectBaseDir(INVALID_PACKAGE_PROJECT, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     try {
       verifier.executeGoal(VALIDATE);
     } catch (VerificationException e) {
@@ -51,7 +50,7 @@ public class ValidateMojoTest extends MojoTest {
   @Test
   public void testFailWhenMissingPackageType() throws Exception {
     projectBaseDirectory = builder.createProjectBaseDir(MISSING_PACKAGE_TYPE_PROJECT, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     try {
       verifier.executeGoal(VALIDATE);
     } catch (VerificationException e) {
@@ -62,7 +61,7 @@ public class ValidateMojoTest extends MojoTest {
   @Test
   public void testFailOnEmptyPolicyProject() throws Exception {
     projectBaseDirectory = builder.createProjectBaseDir(EMPTY_POLICY_NAME, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     try {
       verifier.executeGoal(VALIDATE);
     } catch (VerificationException e) {
@@ -73,7 +72,7 @@ public class ValidateMojoTest extends MojoTest {
   @Test
   public void testFailOnEmptyDomainProject() throws Exception {
     projectBaseDirectory = builder.createProjectBaseDir(EMPTY_DOMAIN_NAME, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     try {
       verifier.executeGoal(VALIDATE);
     } catch (VerificationException e) {
@@ -84,7 +83,7 @@ public class ValidateMojoTest extends MojoTest {
   @Test
   public void testFailOnMissingSharedLibrariesProject() throws Exception {
     projectBaseDirectory = builder.createProjectBaseDir(MISSING_DECLARED_SHARED_LIBRARIES_PROJECT, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
 
     try {
       verifier.executeGoal(VALIDATE);
@@ -101,7 +100,7 @@ public class ValidateMojoTest extends MojoTest {
                               DEPENDENCY_B_PROJECT_NAME);
 
     projectBaseDirectory = builder.createProjectBaseDir(VALIDATE_SHARED_LIBRARIES_PROJECT, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     try {
       verifier.executeGoal(VALIDATE);
     } catch (VerificationException e) {
@@ -113,7 +112,7 @@ public class ValidateMojoTest extends MojoTest {
   public void testFailMissingJsonOnPolicyProject() throws Exception {
     String artifactId = "missing-json-policy-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     try {
       verifier.executeGoal(VALIDATE);
     } catch (VerificationException e) {
@@ -126,7 +125,7 @@ public class ValidateMojoTest extends MojoTest {
   public void testFailMissingJsonOnDomainProject() throws Exception {
     String artifactId = "missing-json-domain-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     try {
       verifier.executeGoal(VALIDATE);
     } catch (VerificationException e) {
@@ -139,7 +138,7 @@ public class ValidateMojoTest extends MojoTest {
   public void testFailMissingJsonAppProject() throws Exception {
     String artifactId = "missing-json-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     try {
       verifier.executeGoal(VALIDATE);
     } catch (VerificationException e) {

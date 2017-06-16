@@ -56,7 +56,7 @@ public class PackageMojoTest extends MojoTest {
                               DEPENDENCY_B_PROJECT_NAME);
     String artifactId = "validate-shared-libraries-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
     verifier.executeGoal(PACKAGE);
@@ -73,7 +73,7 @@ public class PackageMojoTest extends MojoTest {
   public void testPackagePolicy() throws IOException, VerificationException {
     String artifactId = "empty-package-policy-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
     verifier.executeGoal(PACKAGE);
@@ -90,7 +90,7 @@ public class PackageMojoTest extends MojoTest {
   public void testPackageMultiModuleAppModuleCorrectStructure() throws IOException, VerificationException {
     String artifactId = "multi-module-application";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
     verifier.executeGoal(PACKAGE);
@@ -109,7 +109,7 @@ public class PackageMojoTest extends MojoTest {
   public void testPackageMultiModulePolicyModuleCorrectStructure() throws IOException, VerificationException {
     String artifactId = "multi-module-application";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
     verifier.executeGoal(PACKAGE);

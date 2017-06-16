@@ -7,10 +7,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.maven.mojo;
+package org.mule.tools.maven.mojo.model;
 
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.client.model.TargetType;
+import org.mule.tools.maven.mojo.AbstractMuleDeployerMojo.DeploymentType;
+import org.mule.tools.maven.mojo.DeployMojo;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ public class DeploymentConfiguration {
   protected String password;
 
   @Parameter(required = true)
-  protected AbstractMuleDeployerMojo.DeploymentType deploymentType;
+  protected DeploymentType deploymentType;
 
   @Parameter(readonly = true, property = "anypoint.uri", defaultValue = "https://anypoint.mulesoft.com")
   protected String uri;
@@ -159,11 +161,11 @@ public class DeploymentConfiguration {
    *
    * @since 1.0
    */
-  public AbstractMuleDeployerMojo.DeploymentType getDeploymentType() {
+  public DeploymentType getDeploymentType() {
     return deploymentType;
   }
 
-  public void setDeploymentType(AbstractMuleDeployerMojo.DeploymentType deploymentType) {
+  public void setDeploymentType(DeploymentType deploymentType) {
     this.deploymentType = deploymentType;
   }
 

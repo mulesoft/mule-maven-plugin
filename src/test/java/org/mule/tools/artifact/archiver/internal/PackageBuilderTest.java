@@ -10,39 +10,29 @@
 
 package org.mule.tools.artifact.archiver.internal;
 
-import static org.mockito.Mockito.*;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PackageBuilderTest {
 
-  private static final String EXPECTED_EMPTY_DIRECTORY_MESSAGE = "The provided target folder is empty, no file will be generated";
-  private static final String EXPECTED_WRONG_DIRECTORY_STRUCTURE_MESSAGE =
-      "The provided target folder does not have the expected structure";
   private File destinationFileMock;
   private PackageBuilder packageBuilder;
-
-  @Mock
-  AppenderSkeleton appender;
-  @Captor
-  ArgumentCaptor<LoggingEvent> logCaptor;
 
   @Rule
   public TemporaryFolder targetFileFolder = new TemporaryFolder();
@@ -57,8 +47,6 @@ public class PackageBuilderTest {
   public void setNullClassesFolderTest() {
     this.packageBuilder.withClasses(null);
   }
-
-
 
   @Test(expected = IllegalArgumentException.class)
   public void setNullMuleFolderTest() {
@@ -161,152 +149,4 @@ public class PackageBuilderTest {
     verify(muleArchiverMock, times(1)).createArchive();
   }
 
-  @Test
-  @Ignore
-  public void createDeployableFileSettingLibFolderTest() throws IOException {
-    File libFolderMock = mock(File.class);
-    when(libFolderMock.exists()).thenReturn(true);
-    when(libFolderMock.isDirectory()).thenReturn(true);
-
-    MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
-    this.packageBuilder.withArchiver(muleArchiverMock);
-
-    this.packageBuilder.withDestinationFile(destinationFileMock);
-
-    this.packageBuilder.createDeployableFile();
-
-    verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
-    verify(muleArchiverMock, times(1)).createArchive();
-  }
-
-  @Test
-  @Ignore
-  public void createDeployableFileSettingPluginsFolderTest() throws IOException {
-    File pluginsFolderMock = mock(File.class);
-    when(pluginsFolderMock.exists()).thenReturn(true);
-    when(pluginsFolderMock.isDirectory()).thenReturn(true);
-
-    MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
-    this.packageBuilder.withArchiver(muleArchiverMock);
-
-    this.packageBuilder.withDestinationFile(destinationFileMock);
-
-    this.packageBuilder.createDeployableFile();
-
-    verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
-    verify(muleArchiverMock, times(1)).createArchive();
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void createArtifactNullDirectory() throws IOException {
-    File nullDirectory = null;
-    this.packageBuilder.generateArtifact(nullDirectory, destinationFileMock);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void createArtifactNotADirectory() throws IOException {
-    File notADirectory = mock(File.class);
-
-    this.packageBuilder.generateArtifact(notADirectory, destinationFileMock);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void createArtifactInexistentDirectory() throws IOException {
-    File inexistentDirectory = mock(File.class);
-    when(inexistentDirectory.exists()).thenReturn(false);
-
-    this.packageBuilder.generateArtifact(inexistentDirectory, destinationFileMock);
-  }
-
-  @Ignore
-  @Test
-  public void createArtifactEmptyDirectoryLoggingTest() throws IOException {
-    Logger.getRootLogger().addAppender(appender);
-
-    File emptyDirectoryMock = mock(File.class);
-    when(emptyDirectoryMock.isDirectory()).thenReturn(true);
-    when(emptyDirectoryMock.exists()).thenReturn(true);
-    when(emptyDirectoryMock.listFiles()).thenReturn(null);
-    when(destinationFileMock.exists()).thenReturn(false);
-    this.packageBuilder.generateArtifact(emptyDirectoryMock, destinationFileMock);
-
-    verify(appender).doAppend(logCaptor.capture());
-    Assert.assertEquals("Warning about empty directory was not logged", EXPECTED_EMPTY_DIRECTORY_MESSAGE,
-                        logCaptor.getValue().getRenderedMessage());
-  }
-
-  @Ignore
-  @Test
-  public void createArtifactWrongDirectoryStructureLoggingTest() throws IOException {
-    Logger.getRootLogger().addAppender(appender);
-
-    File emptyDirectoryMock = mock(File.class);
-    when(emptyDirectoryMock.isDirectory()).thenReturn(true);
-    when(emptyDirectoryMock.exists()).thenReturn(true);
-
-    File childFileMock = mock(File.class);
-
-    File[] wrongDirectoryStructure = new File[1];
-    wrongDirectoryStructure[0] = childFileMock;
-
-    when(emptyDirectoryMock.listFiles()).thenReturn(wrongDirectoryStructure);
-
-    when(destinationFileMock.exists()).thenReturn(false);
-
-    this.packageBuilder.generateArtifact(emptyDirectoryMock, destinationFileMock);
-
-    verify(appender).doAppend(logCaptor.capture());
-    Assert.assertEquals("Warning about wrong directory structure was not logged", EXPECTED_WRONG_DIRECTORY_STRUCTURE_MESSAGE,
-                        logCaptor.getValue().getRenderedMessage());
-  }
-
-  @Ignore
-  @Test
-  public void generateArtifactGivenCorrectStructureTest() throws IOException {
-    Logger.getRootLogger().addAppender(appender);
-
-    File targetFolder = mock(File.class);
-
-    File[] filesInTargetDirectoryMock = getFiles();
-    when(targetFolder.exists()).thenReturn(true);
-    when(targetFolder.isDirectory()).thenReturn(true);
-    when(targetFolder.listFiles()).thenReturn(filesInTargetDirectoryMock);
-
-    when(destinationFileMock.exists()).thenReturn(false);
-    when(destinationFileMock.getName()).thenReturn("app.zip");
-
-    MuleArchiver archiverMock = mock(MuleArchiver.class);
-    this.packageBuilder.withArchiver(archiverMock);
-
-    this.packageBuilder.generateArtifact(targetFolder, destinationFileMock);
-
-    verify(appender).doAppend(logCaptor.capture());
-    String SUCCESS_MESSAGE = "File " + destinationFileMock.getName() + " has been successfully created";
-    Assert.assertEquals("Info about created destination file not logged", SUCCESS_MESSAGE,
-                        logCaptor.getValue().getRenderedMessage());
-  }
-
-  private File[] getFiles() {
-    List<File> files = new ArrayList<>();
-
-    File classesFolderMock = mock(File.class);
-    when(classesFolderMock.getName()).thenReturn(CLASSES);
-
-    File muleFolderMock = mock(File.class);
-    when(muleFolderMock.exists()).thenReturn(true);
-    when(muleFolderMock.isDirectory()).thenReturn(true);
-    when(muleFolderMock.getName()).thenReturn(MULE);
-
-    File metaInfFolderMock = mock(File.class);
-    when(metaInfFolderMock.getName()).thenReturn(META_INF);
-
-    File repositoryFolderMock = mock(File.class);
-    when(repositoryFolderMock.getName()).thenReturn(REPOSITORY);
-
-    files.add(classesFolderMock);
-    files.add(muleFolderMock);
-    files.add(metaInfFolderMock);
-    files.add(repositoryFolderMock);
-    return files.toArray(new File[0]);
-  }
 }

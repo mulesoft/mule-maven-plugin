@@ -10,12 +10,7 @@
 
 package org.mule.tools.maven.mojo;
 
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MUNIT;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.TEST_MULE;
-
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 
@@ -24,7 +19,9 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.mule.tools.maven.util.CopyFileVisitor;
+
+import org.mule.tools.maven.mojo.model.PackagingType;
+import org.mule.tools.api.packager.ContentGenerator;
 
 /**
  * Build a Mule application archive.
@@ -39,18 +36,18 @@ public class GenerateTestSourcesMojo extends AbstractMuleMojo {
     getLog().debug("Generating test source code...");
 
     try {
-      createTestMuleFolderContent();
-    } catch (IOException e) {
+      getContentGenerator().createTestFolderContent();
+    } catch (IllegalArgumentException | IOException e) {
       throw new MojoFailureException("Fail to generate sources", e);
     }
 
     getLog().debug(MessageFormat.format("Test source code generation done ({0}ms)", System.currentTimeMillis() - start));
   }
 
-  private void createTestMuleFolderContent() throws IOException {
-    File targetFolder = Paths.get(project.getBuild().getDirectory(), TEST_MULE, MUNIT).toFile();
-    Files.walkFileTree(munitSourceFolder.toPath(), new CopyFileVisitor(munitSourceFolder, targetFolder));
+  protected ContentGenerator getContentGenerator() {
+    return new ContentGenerator(project.getGroupId(), project.getArtifactId(), project.getVersion(),
+                                PackagingType.fromString(project.getPackaging()),
+                                Paths.get(projectBaseFolder.toURI()), Paths.get(project.getBuild().getDirectory()));
   }
-
 
 }

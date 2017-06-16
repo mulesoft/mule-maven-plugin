@@ -9,6 +9,7 @@
  */
 package integrationTests.mojo;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.it.VerificationException;
 import org.junit.Test;
 
@@ -25,59 +26,47 @@ public class ValidateMojoTest extends MojoTest {
     this.goal = VALIDATE;
   }
 
-  @Test
+  @Test(expected = VerificationException.class)
   public void testFailOnEmptyProject() throws Exception {
     projectBaseDirectory = builder.createProjectBaseDir(EMPTY_PROJECT_NAME, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    try {
-      verifier.executeGoal(VALIDATE);
-    } catch (VerificationException e) {
-    }
-    verifier.verifyTextInLog("Invalid Mule project. Missing src/main/mule folder. This folder is mandatory");
+
+    verifier.executeGoal(VALIDATE);
+    // verifier.verifyTextInLog("Invalid Mule project. Missing src/main/mule folder. This folder is mandatory");
   }
 
   @Test
   public void testFailOnInvalidPackageType() throws Exception {
     projectBaseDirectory = builder.createProjectBaseDir(INVALID_PACKAGE_PROJECT, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    try {
-      verifier.executeGoal(VALIDATE);
-    } catch (VerificationException e) {
-    }
-    verifier.verifyTextInLog("Unknown packaging: mule-invalid");
+
+    String textInLog = "Unknown packaging: mule-invalid";
+    executeGoalAndVerifyText(VALIDATE, textInLog);
   }
 
   @Test
   public void testFailWhenMissingPackageType() throws Exception {
     projectBaseDirectory = builder.createProjectBaseDir(MISSING_PACKAGE_TYPE_PROJECT, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    try {
-      verifier.executeGoal(VALIDATE);
-    } catch (VerificationException e) {
-    }
-    verifier.verifyTextInLog("Unknown packaging type jar. Please specify a valid mule packaging type:");
+
+    String textInLog = "Unknown packaging type jar. Please specify a valid mule packaging type:";
+    executeGoalAndVerifyText(VALIDATE, textInLog);
   }
 
-  @Test
+  @Test(expected = VerificationException.class)
   public void testFailOnEmptyPolicyProject() throws Exception {
     projectBaseDirectory = builder.createProjectBaseDir(EMPTY_POLICY_NAME, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    try {
-      verifier.executeGoal(VALIDATE);
-    } catch (VerificationException e) {
-    }
-    verifier.verifyTextInLog("Invalid Mule project. Missing src/main/policy folder. This folder is mandatory");
+    verifier.executeGoal(VALIDATE);
+    // verifier.verifyTextInLog("Invalid Mule project. Missing src/main/policy folder. This folder is mandatory");
   }
 
-  @Test
+  @Test(expected = VerificationException.class)
   public void testFailOnEmptyDomainProject() throws Exception {
     projectBaseDirectory = builder.createProjectBaseDir(EMPTY_DOMAIN_NAME, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    try {
-      verifier.executeGoal(VALIDATE);
-    } catch (VerificationException e) {
-    }
-    verifier.verifyTextInLog("Invalid Mule project. Missing src/main/mule folder. This folder is mandatory");
+    verifier.executeGoal(VALIDATE);
+    // verifier.verifyTextInLog("Invalid Mule project. Missing src/main/mule folder. This folder is mandatory");
   }
 
   @Test
@@ -85,11 +74,8 @@ public class ValidateMojoTest extends MojoTest {
     projectBaseDirectory = builder.createProjectBaseDir(MISSING_DECLARED_SHARED_LIBRARIES_PROJECT, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
-    try {
-      verifier.executeGoal(VALIDATE);
-    } catch (VerificationException e) {
-    }
-    verifier.verifyTextInLog("The mule application does not contain the following shared libraries: ");
+    String textInLog = "The mule application does not contain the following shared libraries: ";
+    executeGoalAndVerifyText(VALIDATE, textInLog);
   }
 
   @Test
@@ -113,12 +99,9 @@ public class ValidateMojoTest extends MojoTest {
     String artifactId = "missing-json-policy-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    try {
-      verifier.executeGoal(VALIDATE);
-    } catch (VerificationException e) {
-    }
-    verifier
-        .verifyTextInLog("Invalid Mule project. Missing mule-policy.json file, it must be present in the root of application");
+
+    String textInLog = "Invalid Mule project. Missing mule-policy.json file, it must be present in the root of application";
+    executeGoalAndVerifyText(VALIDATE, textInLog);
   }
 
   @Test
@@ -126,12 +109,9 @@ public class ValidateMojoTest extends MojoTest {
     String artifactId = "missing-json-domain-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    try {
-      verifier.executeGoal(VALIDATE);
-    } catch (VerificationException e) {
-    }
-    verifier
-        .verifyTextInLog("Invalid Mule project. Missing mule-application.json file, it must be present in the root of application");
+
+    String textInLog = "Invalid Mule project. Missing mule-application.json file, it must be present in the root of application";
+    executeGoalAndVerifyText(VALIDATE, textInLog);
   }
 
   @Test
@@ -139,12 +119,22 @@ public class ValidateMojoTest extends MojoTest {
     String artifactId = "missing-json-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    try {
-      verifier.executeGoal(VALIDATE);
-    } catch (VerificationException e) {
-    }
-    verifier
-        .verifyTextInLog("Invalid Mule project. Missing mule-application.json file, it must be present in the root of application");
+
+    String textInLog = "Invalid Mule project. Missing mule-application.json file, it must be present in the root of application";
+    executeGoalAndVerifyText(VALIDATE, textInLog);
   }
+
+  private void executeGoalAndVerifyText(String goal, String text) throws VerificationException {
+    try {
+      verifier.executeGoal(goal);
+    } catch (VerificationException e) {
+      if (StringUtils.isNotBlank(text)) {
+        verifier.verifyTextInLog(text);
+      } else {
+        throw e;
+      }
+    }
+  }
+
 
 }

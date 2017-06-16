@@ -29,6 +29,8 @@ import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.mule.tools.client.standalone.Deployer;
+import org.mule.tools.maven.mojo.model.ArtifactDescription;
+import org.mule.tools.maven.mojo.model.DeploymentConfiguration;
 
 import java.io.BufferedReader;
 import java.io.File;

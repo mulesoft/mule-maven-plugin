@@ -10,16 +10,7 @@
 
 package org.mule.tools.maven.mojo;
 
-import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_APPLICATION_JSON;
-import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_POLICY_JSON;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
-
-import java.io.File;
-import java.nio.file.Paths;
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,9 +19,11 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+
 import org.mule.tools.maven.dependency.MulePluginsCompatibilityValidator;
 import org.mule.tools.maven.dependency.resolver.MulePluginResolver;
-import org.mule.tools.maven.mojo.model.PackagingType;
+import org.mule.tools.api.packager.exception.ValidationException;
+import org.mule.tools.api.packager.Validator;
 
 /**
  * It creates all the required folders in the project.build.directory
@@ -40,16 +33,16 @@ import org.mule.tools.maven.mojo.model.PackagingType;
     requiresDependencyResolution = ResolutionScope.TEST)
 public class ValidateMojo extends AbstractMuleMojo {
 
-  protected MulePluginResolver resolver;
-  protected MulePluginsCompatibilityValidator validator;
-
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (!skipValidation) {
       long start = System.currentTimeMillis();
       getLog().debug("Validating Mule application...");
+      try {
+        getValidator().isProjectValid(project.getPackaging());
+      } catch (ValidationException e) {
+        throw new MojoExecutionException("Validation exception", e);
+      }
 
-      validateMandatoryFolders();
-      validateMandatoryDescriptors();
       validateMulePluginDependencies();
       validateSharedLibraries();
 
@@ -74,39 +67,21 @@ public class ValidateMojo extends AbstractMuleMojo {
     }
   }
 
-  private void validateMandatoryFolders() throws MojoExecutionException {
-    if (!getSourceFolder().exists()) {
-      String message = String.format("Invalid Mule project. Missing src/main/"
-          + (PackagingType.MULE_POLICY.equals(project.getPackaging()) ? POLICY : MULE) + " folder. This folder is mandatory");
-      throw new MojoExecutionException(message);
-    }
+
+  protected void validateMulePluginDependencies() throws MojoExecutionException {
+    getMulePluginsCompatibilityValidator().validate(getResolver().resolveMulePlugins(project));
   }
 
-  private void validateMandatoryDescriptors() throws MojoExecutionException {
-    isFilePresent("Invalid Mule project. Missing %s file, it must be present in the root of application",
-                  (PackagingType.MULE_POLICY.equals(project.getPackaging()) ? MULE_POLICY_JSON : MULE_APPLICATION_JSON));
+  protected Validator getValidator() {
+    return new Validator(projectBaseFolder.toPath());
   }
 
-  private void isFilePresent(String message, String... fileName) throws MojoExecutionException {
-    List<File> files = Arrays.stream(fileName).map(name -> Paths.get(projectBaseFolder.toString(), name).toFile())
-        .collect(Collectors.toList());
-    if (files.stream().allMatch(file -> !file.exists())) {
-      throw new MojoExecutionException(String.format(message, fileName));
-    }
+  protected MulePluginResolver getResolver() {
+    return new MulePluginResolver(getLog(), session, projectBuilder, repositorySystem, localRepository,
+                                  remoteArtifactRepositories);
   }
 
-  private void validateMulePluginDependencies() throws MojoExecutionException {
-    initializeResolver();
-    initializeValidator();
-    validator.validate(resolver.resolveMulePlugins(project));
-  }
-
-  protected void initializeResolver() {
-    resolver = new MulePluginResolver(getLog(), session, projectBuilder, repositorySystem, localRepository,
-                                      remoteArtifactRepositories);
-  }
-
-  protected void initializeValidator() {
-    validator = new MulePluginsCompatibilityValidator();
+  protected MulePluginsCompatibilityValidator getMulePluginsCompatibilityValidator() {
+    return new MulePluginsCompatibilityValidator();
   }
 }

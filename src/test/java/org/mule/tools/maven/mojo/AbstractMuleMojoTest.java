@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+
 import org.mule.tools.artifact.archiver.internal.PackageBuilder;
 import org.mule.tools.maven.dependency.MulePluginsCompatibilityValidator;
 import org.mule.tools.maven.dependency.resolver.MulePluginResolver;
@@ -41,12 +42,10 @@ public class AbstractMuleMojoTest {
   protected static final String MULE_DOMAIN = "mule-domain";
   protected static final String MULE_APPLICATION_EXAMPLE = "mule-application-example";
   protected final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+
   protected Build buildMock;
-  protected File munitFolder;
   protected File metaInfFolder;
-  protected File testMuleFolder;
   protected File destinationFile;
-  protected File munitSourceFolder;
   protected File muleApplicationJson;
   protected MavenProject projectMock;
   protected File muleSourceFolderMock;
@@ -55,28 +54,27 @@ public class AbstractMuleMojoTest {
   protected MulePluginsCompatibilityValidator validatorMock = mock(MulePluginsCompatibilityValidator.class);
 
   @Rule
-  public TemporaryFolder projectRootFolder = new TemporaryFolder();
+  public TemporaryFolder projectBaseFolder = new TemporaryFolder();
 
   @Rule
-  public TemporaryFolder buildTemporaryFolder = new TemporaryFolder();
+  public TemporaryFolder buildFolderFolder = new TemporaryFolder();
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void beforeTest() throws IOException {
-    projectRootFolder.create();
-    buildTemporaryFolder.create();
-    metaInfFolder = buildTemporaryFolder.newFolder(META_INF);
+    metaInfFolder = buildFolderFolder.newFolder(META_INF);
     System.setOut(new PrintStream(outContent));
 
-    projectMock = mock(MavenProject.class);
     buildMock = mock(Build.class);
+    projectMock = mock(MavenProject.class);
     packageBuilderMock = mock(PackageBuilder.class);
     muleSourceFolderMock = mock(File.class);
 
-    when(buildMock.getDirectory()).thenReturn(buildTemporaryFolder.getRoot().getAbsolutePath());
     when(projectMock.getBuild()).thenReturn(buildMock);
     when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
+
+    when(buildMock.getDirectory()).thenReturn(buildFolderFolder.getRoot().getAbsolutePath());
   }
 }

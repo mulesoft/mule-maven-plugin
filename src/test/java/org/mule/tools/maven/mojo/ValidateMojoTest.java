@@ -12,79 +12,58 @@ package org.mule.tools.maven.mojo;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 import org.junit.Before;
 import org.junit.Test;
+
+import org.mule.tools.api.packager.Validator;
 import org.mule.tools.maven.mojo.model.SharedLibraryDependency;
 
 public class ValidateMojoTest extends AbstractMuleMojoTest {
 
-  private static final ValidateMojo mojo = new ValidateMojo();
-
-  private static final String VALIDATE_MANDATORY_FOLDERS_MESSAGE =
-      "Invalid Mule project. Missing src/main/mule folder. This folder is mandatory";
   private static final String VALIDATE_SHARED_LIBRARIES_MESSAGE =
       "The mule application does not contain the following shared libraries: ";
 
+  private ValidateMojo mojo = new ValidateMojo();
+
   @Before
-  public void before() throws IOException, MojoExecutionException {
-    mojo.mainFolder = muleSourceFolderMock;
-    mojo.projectBaseFolder = projectRootFolder.getRoot();
-    when(resolverMock.resolveMulePlugins(any())).thenReturn(Collections.emptyList());
-  }
-
-  @Test
-  public void validateMandatoryFoldersFailsWhenMuleSourceFolderDoesNotExistTest()
-      throws MojoFailureException, MojoExecutionException {
-    expectedException.expect(MojoExecutionException.class);
-    expectedException.expectMessage(VALIDATE_MANDATORY_FOLDERS_MESSAGE);
-    File sourceFolder = projectRootFolder.newFolder("src");
-    sourceFolder.mkdir();
-    File mainFolder = new File(sourceFolder, "main");
-    mainFolder.mkdir();
-    mojo.mainFolder = mainFolder;
-    mojo.project = projectMock;
-    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
-    when(muleSourceFolderMock.exists()).thenReturn(false);
-
-    mojo.execute();
-  }
+  public void before() {}
 
   @Test
   public void validateGoalSucceedTest() throws MojoFailureException, MojoExecutionException, IOException {
-    when(muleSourceFolderMock.exists()).thenReturn(true);
-    projectRootFolder.newFile(MULE_APPLICATION_JSON);
-
-    ValidateMojo mojo = new ValidateMojoWithMockedResolverAndValidate();
-    File sourceFolder = projectRootFolder.newFolder("src");
-    sourceFolder.mkdir();
-    File mainFolder = new File(sourceFolder, "main");
-    mainFolder.mkdir();
-    File muleFolder = new File(mainFolder, "mule");
-    muleFolder.mkdir();
-    mojo.mainFolder = projectRootFolder.newFolder("src/main");
-    mojo.mainFolder.mkdirs();
-    mojo.projectBaseFolder = projectRootFolder.getRoot();
-
-    when(projectMock.getDependencies()).thenReturn(new ArrayList<>());
+    mojo = mock(ValidateMojo.class);
     mojo.project = projectMock;
-    mojo.sharedLibraries = new ArrayList<>();
 
+    Log logMock = mock(Log.class);
+    doReturn(logMock).when(mojo).getLog();
+
+    Validator validatorMock = mock(Validator.class);
+    doReturn(validatorMock).when(mojo).getValidator();
+
+    doNothing().when(mojo).validateSharedLibraries();
+    doNothing().when(mojo).validateMulePluginDependencies();
+
+    doCallRealMethod().when(mojo).execute();
     mojo.execute();
 
-    verify(resolverMock, times(1)).resolveMulePlugins(any());
-    verify(validatorMock, times(1)).validate(anyList());
+    verify(mojo, times(1)).getValidator();
+    verify(mojo, times(1)).validateSharedLibraries();
+    verify(mojo, times(1)).validateMulePluginDependencies();
   }
 
   @Test
@@ -138,18 +117,5 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     dependency.setGroupId(groupId);
     dependency.setArtifactId(artifactId);
     return dependency;
-  }
-
-  private class ValidateMojoWithMockedResolverAndValidate extends ValidateMojo {
-
-    @Override
-    protected void initializeResolver() {
-      this.resolver = resolverMock;
-    }
-
-    @Override
-    protected void initializeValidator() {
-      this.validator = validatorMock;
-    }
   }
 }

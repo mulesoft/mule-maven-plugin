@@ -111,4 +111,8 @@ public class MojoTest {
     }
     return verifier;
   }
+
+  protected void enableVerifierDebugMode() {
+    verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=y");
+  }
 }

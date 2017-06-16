@@ -31,6 +31,7 @@ import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.agent.AgentDeployer;
 import org.mule.tools.client.arm.ArmDeployer;
 import org.mule.tools.client.cloudhub.CloudhubDeployer;
+import org.mule.tools.maven.mojo.model.ArtifactDescription;
 import org.mule.util.FilenameUtils;
 
 /**

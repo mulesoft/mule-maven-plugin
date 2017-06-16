@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.artifact.archiver.internal.type;
+package org.mule.tools.api.packager;
 
 import static org.mockito.Mockito.*;
 
@@ -17,9 +17,8 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
-import org.mule.tools.artifact.archiver.api.PackagerFolders;
-import org.mule.tools.artifact.archiver.internal.PackageBuilder;
-import org.mule.tools.artifact.archiver.internal.packaging.PackagingMode;
+
+import org.mule.tools.api.PackageBuilder;
 
 import com.google.common.collect.ImmutableMap;
 

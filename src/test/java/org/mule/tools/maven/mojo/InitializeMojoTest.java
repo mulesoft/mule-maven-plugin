@@ -25,7 +25,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.mule.tools.api.packager.ProjectFoldersGenerator;
+import org.mule.tools.api.ProjectFoldersGenerator;
 
 public class InitializeMojoTest extends AbstractMuleMojoTest {
 

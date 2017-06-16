@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.packager;
+package org.mule.tools.api;
 
 import static org.mule.tools.api.packager.PackagerTestUtils.MAVEN;
 import static org.mule.tools.api.packager.PackagerTestUtils.META_INF;
@@ -31,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import org.mule.tools.api.ProjectFoldersGenerator;
 import org.mule.tools.maven.mojo.model.PackagingType;
 
 public class ProjectFoldersGeneratorTest {

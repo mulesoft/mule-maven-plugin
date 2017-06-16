@@ -10,7 +10,7 @@
 
 package org.mule.tools.maven.mojo;
 
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.*;
+import static org.mule.tools.api.packager.PackagerFolders.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.ArchiverException;
-import org.mule.tools.artifact.archiver.internal.PackageBuilder;
+import org.mule.tools.api.PackageBuilder;
 import org.mule.tools.maven.mojo.model.PackagingType;
 
 /**

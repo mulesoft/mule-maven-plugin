@@ -20,7 +20,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.mule.tools.maven.mojo.model.PackagingType;
-import org.mule.tools.api.packager.ContentGenerator;
+import org.mule.tools.api.ContentGenerator;
 
 /**
  * Copy resource to the proper places

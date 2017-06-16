@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.packager.exception;
+package org.mule.tools.api.exception;
 
 public class ValidationException extends Exception {
 

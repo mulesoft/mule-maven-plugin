@@ -7,17 +7,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.packager;
+package org.mule.tools.api;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.mule.tools.maven.mojo.model.PackagingType;
-import org.mule.tools.api.packager.exception.ValidationException;
+import org.mule.tools.api.exception.ValidationException;
 
 /**
  * Ensures the project is valid

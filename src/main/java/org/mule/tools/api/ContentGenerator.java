@@ -7,17 +7,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.packager;
+package org.mule.tools.api;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.artifact.archiver.api.PackagerFiles.POM_PROPERTIES;
-import static org.mule.tools.artifact.archiver.api.PackagerFiles.POM_XML;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MAVEN;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.META_INF;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE_ARTIFACT;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE_SRC;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.TARGET;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.TEST_MULE;
+import static org.mule.tools.api.packager.PackagerFiles.POM_PROPERTIES;
+import static org.mule.tools.api.packager.PackagerFiles.POM_XML;
+import static org.mule.tools.api.packager.PackagerFolders.MAVEN;
+import static org.mule.tools.api.packager.PackagerFolders.META_INF;
+import static org.mule.tools.api.packager.PackagerFolders.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.PackagerFolders.MULE_SRC;
+import static org.mule.tools.api.packager.PackagerFolders.TARGET;
+import static org.mule.tools.api.packager.PackagerFolders.TEST_MULE;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -31,6 +31,7 @@ import java.util.Optional;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 
+import org.mule.tools.api.packager.PackagerFolders;
 import org.mule.tools.maven.mojo.model.PackagingType;
 import org.mule.tools.maven.util.CopyFileVisitor;
 
@@ -107,7 +108,7 @@ public class ContentGenerator {
   }
 
   /**
-   * It creates the {@link org.mule.tools.artifact.archiver.api.PackagerFolders#MULE_SRC} folder used by IDEs to import the
+   * It creates the {@link PackagerFolders#MULE_SRC} folder used by IDEs to import the
    * project source code
    * 
    * @throws IOException

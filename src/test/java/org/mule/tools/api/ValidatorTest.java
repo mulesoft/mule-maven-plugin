@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.packager;
+package org.mule.tools.api;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -15,12 +15,12 @@ import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mule.tools.api.packager.FolderNames.MAIN;
-import static org.mule.tools.api.packager.FolderNames.MULE;
-import static org.mule.tools.api.packager.FolderNames.POLICY;
-import static org.mule.tools.api.packager.FolderNames.SRC;
-import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_APPLICATION_JSON;
-import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_POLICY_JSON;
+import static org.mule.tools.api.FolderNames.MAIN;
+import static org.mule.tools.api.FolderNames.MULE;
+import static org.mule.tools.api.FolderNames.POLICY;
+import static org.mule.tools.api.FolderNames.SRC;
+import static org.mule.tools.api.packager.PackagerFiles.MULE_APPLICATION_JSON;
+import static org.mule.tools.api.packager.PackagerFiles.MULE_POLICY_JSON;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -32,7 +32,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 
-import org.mule.tools.api.packager.exception.ValidationException;
+import org.mule.tools.api.Validator;
+import org.mule.tools.api.exception.ValidationException;
 
 public class ValidatorTest {
 

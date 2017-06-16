@@ -8,15 +8,15 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.artifact.archiver.internal;
+package org.mule.tools.api.packager;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.mule.tools.artifact.archiver.internal.packaging.PackagingMode.*;
+import static org.mule.tools.api.packager.PackagingMode.*;
 
 import org.junit.Test;
-import org.mule.tools.artifact.archiver.internal.packaging.PackagingMode;
-import org.mule.tools.artifact.archiver.internal.packaging.PackagingModeFactory;
+import org.mule.tools.api.packager.PackagingMode;
+import org.mule.tools.api.packager.PackagingModeFactory;
 
 public class PackagingModeFactoryTest {
 

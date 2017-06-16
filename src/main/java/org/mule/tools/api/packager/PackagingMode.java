@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.artifact.archiver.internal.packaging;
+package org.mule.tools.api.packager;
 
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
@@ -16,11 +16,10 @@ import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import java.io.File;
 import java.util.Map;
 
-import org.mule.tools.artifact.archiver.api.PackagerFolders;
-import org.mule.tools.artifact.archiver.internal.PackageBuilder;
+import org.mule.tools.api.PackageBuilder;
 
 public enum PackagingMode {
-
+  // TODO we should add a method to inform those folders that are mandatory based on the packaging mode
   SOURCES {
 
     @Override
@@ -28,6 +27,7 @@ public enum PackagingMode {
       return packageBuilder.withMuleSrc(fileMap.get(PackagerFolders.MULE_SRC));
     }
   },
+
   BINARIES {
 
     @Override
@@ -38,6 +38,7 @@ public enum PackagingMode {
           .withRepository(fileMap.get(PackagerFolders.REPOSITORY));
     }
   },
+
   BINARIES_AND_SOURCES {
 
     @Override

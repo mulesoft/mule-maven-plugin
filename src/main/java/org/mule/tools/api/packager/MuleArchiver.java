@@ -8,16 +8,16 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.artifact.archiver.internal;
+package org.mule.tools.api.packager;
 
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.CLASSES;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MAVEN;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.META_INF;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE_ARTIFACT;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE_SRC;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.REPOSITORY;
+import static org.mule.tools.api.packager.PackagerFolders.CLASSES;
+import static org.mule.tools.api.packager.PackagerFolders.MAVEN;
+import static org.mule.tools.api.packager.PackagerFolders.META_INF;
+import static org.mule.tools.api.packager.PackagerFolders.MULE;
+import static org.mule.tools.api.packager.PackagerFolders.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.PackagerFolders.MULE_SRC;
+import static org.mule.tools.api.packager.PackagerFolders.POLICY;
+import static org.mule.tools.api.packager.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 

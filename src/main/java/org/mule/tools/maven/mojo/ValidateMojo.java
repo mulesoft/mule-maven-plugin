@@ -22,8 +22,8 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.mule.tools.maven.dependency.MulePluginsCompatibilityValidator;
 import org.mule.tools.maven.dependency.resolver.MulePluginResolver;
-import org.mule.tools.api.packager.exception.ValidationException;
-import org.mule.tools.api.packager.Validator;
+import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.Validator;
 
 /**
  * It creates all the required folders in the project.build.directory

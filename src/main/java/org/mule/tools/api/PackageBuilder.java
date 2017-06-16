@@ -8,18 +8,18 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.artifact.archiver.internal;
+package org.mule.tools.api;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.CLASSES;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MAVEN;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.META_INF;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE_ARTIFACT;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE_SRC;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.REPOSITORY;
+import static org.mule.tools.api.packager.PackagerFolders.CLASSES;
+import static org.mule.tools.api.packager.PackagerFolders.MAVEN;
+import static org.mule.tools.api.packager.PackagerFolders.META_INF;
+import static org.mule.tools.api.packager.PackagerFolders.MULE;
+import static org.mule.tools.api.packager.PackagerFolders.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.PackagerFolders.MULE_SRC;
+import static org.mule.tools.api.packager.PackagerFolders.POLICY;
+import static org.mule.tools.api.packager.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +27,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mule.tools.artifact.archiver.internal.packaging.PackagingMode;
-import org.mule.tools.artifact.archiver.internal.packaging.PackagingModeFactory;
+import org.mule.tools.api.packager.MuleArchiver;
+import org.mule.tools.api.packager.PackagingMode;
+import org.mule.tools.api.packager.PackagingModeFactory;
 
 /**
  * Builder for Mule Application archives.
@@ -146,6 +147,7 @@ public class PackageBuilder {
    * @return a PackageBuilder
    */
   public PackageBuilder fromWorkingDirectory(Path workingDirectory) {
+    // TODO, ensure the paths exits or use the validator
     return this
         .withClasses(workingDirectory.resolve(CLASSES).toFile())
         // TODO check this

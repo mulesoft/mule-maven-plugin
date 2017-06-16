@@ -37,6 +37,7 @@ public class ProjectFoldersGeneratorTest {
 
   protected static final String GROUP_ID = "org.mule.munit";
   protected static final String ARTIFACT_ID = "fake-id";
+  private static final String FAKE_FILE_NAME = "fakeFile.xml";
 
   @Rule
   public TemporaryFolder projectBaseFolder = new TemporaryFolder();
@@ -85,83 +86,76 @@ public class ProjectFoldersGeneratorTest {
 
   @Test
   public void generateMuleApplicationFolderAlreadyPresent() throws IOException {
-    String fakeFileName = "fakeFile.xml";
-
     Path muleBasePath = basePath.resolve(MULE);
-    createFolder(muleBasePath, fakeFileName, true);
+    createFolder(muleBasePath, FAKE_FILE_NAME, true);
 
     generator = new ProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_APPLICATION);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     assertFolderExist(basePath.resolve(MULE));
-    assertFileExists(muleBasePath.resolve(fakeFileName));
+    assertFileExists(muleBasePath.resolve(FAKE_FILE_NAME));
   }
 
   @Test
   public void generateMulePolicyFolderAlreadyPresent() throws IOException {
-    String fakeFileName = "fakeFile.xml";
-
     Path muleBasePath = basePath.resolve(POLICY);
-    createFolder(muleBasePath, fakeFileName, true);
+    createFolder(muleBasePath, FAKE_FILE_NAME, true);
 
     generator = new ProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_POLICY);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     assertFolderExist(basePath.resolve(POLICY));
-    assertFileExists(muleBasePath.resolve(fakeFileName));
+    assertFileExists(muleBasePath.resolve(FAKE_FILE_NAME));
   }
 
   @Test
   public void generateMuleDomainFolderAlreadyPresent() throws IOException {
-    String fakeFileName = "fakeFile.xml";
-
     Path muleBasePath = basePath.resolve(MULE);
-    createFolder(muleBasePath, fakeFileName, true);
+    createFolder(muleBasePath, FAKE_FILE_NAME, true);
 
     generator = new ProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_DOMAIN);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     assertFolderExist(basePath.resolve(MULE));
-    assertFileExists(muleBasePath.resolve(fakeFileName));
+    assertFileExists(muleBasePath.resolve(FAKE_FILE_NAME));
   }
 
   @Test
   public void generateFoldersAlreadyPresent() throws IOException {
-    String fakeFileName = "fakeFile.xml";
 
     Path munitTestMulePath = basePath.resolve(TEST_MULE).resolve(MUNIT);
-    createFolder(munitTestMulePath, fakeFileName, true);
+    createFolder(munitTestMulePath, FAKE_FILE_NAME, true);
 
     Path artifactIdMuleSrcMetaInfPath = basePath.resolve(META_INF).resolve(MULE_SRC).resolve(ARTIFACT_ID);
-    createFolder(artifactIdMuleSrcMetaInfPath, fakeFileName, true);
+    createFolder(artifactIdMuleSrcMetaInfPath, FAKE_FILE_NAME, true);
 
     Path artifactIdGroupIdMavenMetaInfPath = basePath.resolve(META_INF).resolve(MAVEN).resolve(GROUP_ID).resolve(ARTIFACT_ID);
-    createFolder(artifactIdGroupIdMavenMetaInfPath, fakeFileName, true);
+    createFolder(artifactIdGroupIdMavenMetaInfPath, FAKE_FILE_NAME, true);
 
     Path muleArtifactMetaInfPath = basePath.resolve(META_INF).resolve(MULE_ARTIFACT);
-    createFolder(muleArtifactMetaInfPath, fakeFileName, true);
+    createFolder(muleArtifactMetaInfPath, FAKE_FILE_NAME, true);
 
     Path repositoryPath = basePath.resolve(REPOSITORY);
-    createFolder(repositoryPath, fakeFileName, true);
+    createFolder(repositoryPath, FAKE_FILE_NAME, true);
 
 
     generator = new ProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_APPLICATION);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     assertFolderExist(munitTestMulePath);
-    assertFileExists(munitTestMulePath.resolve(fakeFileName));
+    assertFileExists(munitTestMulePath.resolve(FAKE_FILE_NAME));
 
     assertFolderExist(artifactIdMuleSrcMetaInfPath);
-    assertFileExists(artifactIdMuleSrcMetaInfPath.resolve(fakeFileName));
+    assertFileExists(artifactIdMuleSrcMetaInfPath.resolve(FAKE_FILE_NAME));
 
     assertFolderExist(artifactIdGroupIdMavenMetaInfPath);
-    assertFileExists(artifactIdGroupIdMavenMetaInfPath.resolve(fakeFileName));
+    assertFileExists(artifactIdGroupIdMavenMetaInfPath.resolve(FAKE_FILE_NAME));
 
     assertFolderExist(muleArtifactMetaInfPath);
-    assertFileExists(muleArtifactMetaInfPath.resolve(fakeFileName));
+    assertFileExists(muleArtifactMetaInfPath.resolve(FAKE_FILE_NAME));
 
     assertFolderExist(repositoryPath);
-    assertFileExists(repositoryPath.resolve(fakeFileName));
+    assertFileExists(repositoryPath.resolve(FAKE_FILE_NAME));
   }
 
   private void checkNoPackageDependentFolders() {

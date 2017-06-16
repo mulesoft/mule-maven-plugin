@@ -15,14 +15,12 @@ import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_APPLICATION_JSON;
-import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_POLICY_JSON;
 import static org.mule.tools.api.packager.FolderNames.MAIN;
 import static org.mule.tools.api.packager.FolderNames.MULE;
 import static org.mule.tools.api.packager.FolderNames.POLICY;
 import static org.mule.tools.api.packager.FolderNames.SRC;
-
-import org.mule.tools.api.packager.exception.ValidationException;
+import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_APPLICATION_JSON;
+import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_POLICY_JSON;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -33,6 +31,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
+
+import org.mule.tools.api.packager.exception.ValidationException;
 
 public class ValidatorTest {
 
@@ -81,6 +81,15 @@ public class ValidatorTest {
     validator.isProjectStructureValid(MULE_APPLICATION);
   }
 
+  @Test(expected = ValidationException.class)
+  public void isProjectStructureInvalidValidMuleApplication() throws ValidationException {
+    Path muleMainSrcFolder =
+        projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(POLICY.value());
+    muleMainSrcFolder.toFile().mkdirs();
+
+    validator.isProjectStructureValid(MULE_APPLICATION);
+  }
+
   @Test
   public void isProjectStructureValidMuleApplication() throws ValidationException {
     Path muleMainSrcFolder =
@@ -91,11 +100,19 @@ public class ValidatorTest {
     assertThat("Project structure should be valid", valid, is(true));
   }
 
-
   @Test(expected = ValidationException.class)
   public void isProjectStructureValidMulePolicyInvalid() throws ValidationException {
     Path mainSrcFolder = projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value());
     mainSrcFolder.toFile().mkdirs();
+
+    validator.isProjectStructureValid(MULE_POLICY);
+  }
+
+  @Test(expected = ValidationException.class)
+  public void isProjectStructureInvalidValidMulePolicy() throws ValidationException {
+    Path muleMainSrcFolder =
+        projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value());
+    muleMainSrcFolder.toFile().mkdirs();
 
     validator.isProjectStructureValid(MULE_POLICY);
   }
@@ -114,6 +131,15 @@ public class ValidatorTest {
   public void isProjectStructureValidMuleDomainInvalid() throws ValidationException {
     Path mainSrcFolder = projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value());
     mainSrcFolder.toFile().mkdirs();
+
+    validator.isProjectStructureValid(MULE_DOMAIN);
+  }
+
+  @Test(expected = ValidationException.class)
+  public void isProjectStructureInValidMuleDomain() throws ValidationException {
+    Path muleMainSrcFolder =
+        projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(POLICY.value());
+    muleMainSrcFolder.toFile().mkdirs();
 
     validator.isProjectStructureValid(MULE_DOMAIN);
   }

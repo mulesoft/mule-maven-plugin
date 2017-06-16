@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.artifact.archiver.internal.type;
+package org.mule.tools.api.packager;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

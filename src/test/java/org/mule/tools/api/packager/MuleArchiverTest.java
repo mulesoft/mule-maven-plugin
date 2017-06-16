@@ -8,18 +8,20 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.artifact.archiver.internal;
+package org.mule.tools.api.packager;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.CLASSES;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MAVEN;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.META_INF;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE_ARTIFACT;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE_SRC;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MUNIT;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.PLUGINS;
+import static org.mule.tools.api.packager.PackagerFolders.CLASSES;
+import static org.mule.tools.api.packager.PackagerFolders.MAVEN;
+import static org.mule.tools.api.packager.PackagerFolders.META_INF;
+import static org.mule.tools.api.packager.PackagerFolders.MULE;
+import static org.mule.tools.api.packager.PackagerFolders.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.PackagerFolders.MULE_SRC;
+import static org.mule.tools.api.packager.PackagerFolders.MUNIT;
+import static org.mule.tools.api.packager.PackagerFolders.PLUGINS;
+
+import org.mule.tools.api.packager.MuleArchiver;
 
 import java.io.File;
 import java.nio.file.Path;

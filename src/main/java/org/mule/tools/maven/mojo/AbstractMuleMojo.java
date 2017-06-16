@@ -10,8 +10,8 @@
 
 package org.mule.tools.maven.mojo;
 
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
+import static org.mule.tools.api.packager.PackagerFolders.MULE;
+import static org.mule.tools.api.packager.PackagerFolders.POLICY;
 
 import java.io.File;
 import java.io.IOException;

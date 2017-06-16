@@ -11,7 +11,7 @@
 package org.mule.tools.maven.repository;
 
 import static java.lang.String.format;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.REPOSITORY;
+import static org.mule.tools.api.packager.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;

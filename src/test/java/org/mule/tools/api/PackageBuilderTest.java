@@ -8,16 +8,25 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.artifact.archiver.internal;
+package org.mule.tools.api;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mule.tools.api.packager.PackagerFolders.CLASSES;
+import static org.mule.tools.api.packager.PackagerFolders.MAVEN;
+import static org.mule.tools.api.packager.PackagerFolders.META_INF;
+import static org.mule.tools.api.packager.PackagerFolders.MULE;
+import static org.mule.tools.api.packager.PackagerFolders.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.PackagerFolders.MULE_SRC;
+import static org.mule.tools.api.packager.PackagerFolders.POLICY;
+import static org.mule.tools.api.packager.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.junit.Assert;
@@ -27,6 +36,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import org.mule.tools.api.packager.MuleArchiver;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PackageBuilderTest {
@@ -145,6 +156,62 @@ public class PackageBuilderTest {
     this.packageBuilder.createDeployableFile();
 
     verify(muleArchiverMock, times(1)).addClasses(classesFolderMock, null, null);
+    verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
+    verify(muleArchiverMock, times(1)).createArchive();
+  }
+
+  @Test
+  public void fromWorkingDirectoryWithNonExistingFoldersInWorkingDir() throws IOException {
+    Path workingDirectory = targetFileFolder.getRoot().toPath();
+    MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
+
+    packageBuilder = new PackageBuilder();
+    packageBuilder.withArchiver(muleArchiverMock);
+    packageBuilder.withDestinationFile(destinationFileMock);
+    packageBuilder.fromWorkingDirectory(workingDirectory);
+
+    packageBuilder.createDeployableFile();
+
+    verify(muleArchiverMock, times(0)).addClasses(workingDirectory.resolve(CLASSES).toFile(), null, null);
+    verify(muleArchiverMock, times(0)).addMule(workingDirectory.resolve(MULE).toFile(), null, null);
+    verify(muleArchiverMock, times(0)).addPolicy(workingDirectory.resolve(POLICY).toFile(), null, null);
+    verify(muleArchiverMock, times(0)).addMaven(workingDirectory.resolve(META_INF).resolve(MAVEN).toFile(), null, null);
+    verify(muleArchiverMock, times(0)).addMuleArtifact(workingDirectory.resolve(META_INF).resolve(MULE_ARTIFACT).toFile(),
+                                                       null, null);
+    verify(muleArchiverMock, times(0)).addMuleSrc(workingDirectory.resolve(META_INF).resolve(MULE_SRC).toFile(), null, null);
+    verify(muleArchiverMock, times(0)).addRepository(workingDirectory.resolve(REPOSITORY).toFile(), null, null);
+    verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
+    verify(muleArchiverMock, times(1)).createArchive();
+  }
+
+  @Test
+  public void fromWorkingDirectory() throws IOException {
+    Path workingDirectory = targetFileFolder.getRoot().toPath();
+    MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
+
+    packageBuilder = new PackageBuilder();
+    packageBuilder.withArchiver(muleArchiverMock);
+    packageBuilder.withDestinationFile(destinationFileMock);
+    packageBuilder.fromWorkingDirectory(workingDirectory);
+
+    workingDirectory.resolve(CLASSES).toFile().mkdirs();
+    workingDirectory.resolve(MULE).toFile().mkdirs();
+    workingDirectory.resolve(POLICY).toFile().mkdirs();
+    workingDirectory.resolve(META_INF).resolve(MAVEN).toFile().mkdirs();
+    workingDirectory.resolve(META_INF).resolve(MULE_ARTIFACT).toFile().mkdirs();
+    workingDirectory.resolve(META_INF).resolve(MULE_SRC).toFile().mkdirs();
+    workingDirectory.resolve(REPOSITORY).toFile().mkdirs();
+
+    packageBuilder.createDeployableFile();
+
+    verify(muleArchiverMock, times(1)).addClasses(workingDirectory.resolve(CLASSES).toFile(), null, null);
+    verify(muleArchiverMock, times(1)).addMule(workingDirectory.resolve(MULE).toFile(), null, null);
+    verify(muleArchiverMock, times(1)).addPolicy(workingDirectory.resolve(POLICY).toFile(), null, null);
+    verify(muleArchiverMock, times(1)).addMaven(workingDirectory.resolve(META_INF).resolve(MAVEN).toFile(), null, null);
+    verify(muleArchiverMock, times(1)).addMuleArtifact(workingDirectory.resolve(META_INF).resolve(MULE_ARTIFACT).toFile(),
+                                                       null, null);
+    verify(muleArchiverMock, times(1)).addMuleSrc(workingDirectory.resolve(META_INF).resolve(MULE_SRC).toFile(), null, null);
+    verify(muleArchiverMock, times(1)).addRepository(workingDirectory.resolve(REPOSITORY).toFile(), null, null);
     verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
     verify(muleArchiverMock, times(1)).createArchive();
   }

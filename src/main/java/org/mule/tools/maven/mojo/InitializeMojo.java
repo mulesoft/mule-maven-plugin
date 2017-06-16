@@ -20,7 +20,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.mule.tools.maven.mojo.model.PackagingType;
-import org.mule.tools.api.packager.ProjectFoldersGenerator;
+import org.mule.tools.api.ProjectFoldersGenerator;
 
 /**
  * It creates all the required folders in the project.build.directory

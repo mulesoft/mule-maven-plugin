@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.artifact.archiver.internal.packaging;
+package org.mule.tools.api.packager;
 
 /**
  * Creates packaging types.

@@ -12,14 +12,14 @@ package org.mule.tools.maven.mojo.model;
 
 import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
-import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_APPLICATION_JSON;
-import static org.mule.tools.artifact.archiver.api.PackagerFiles.MULE_POLICY_JSON;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.MULE;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.POLICY;
-import static org.mule.tools.api.packager.FolderNames.MAIN;
-import static org.mule.tools.api.packager.FolderNames.MUNIT;
-import static org.mule.tools.api.packager.FolderNames.SRC;
-import static org.mule.tools.api.packager.FolderNames.TEST;
+import static org.mule.tools.api.packager.PackagerFiles.MULE_APPLICATION_JSON;
+import static org.mule.tools.api.packager.PackagerFiles.MULE_POLICY_JSON;
+import static org.mule.tools.api.packager.PackagerFolders.MULE;
+import static org.mule.tools.api.packager.PackagerFolders.POLICY;
+import static org.mule.tools.api.FolderNames.MAIN;
+import static org.mule.tools.api.FolderNames.MUNIT;
+import static org.mule.tools.api.FolderNames.SRC;
+import static org.mule.tools.api.FolderNames.TEST;
 
 import java.io.File;
 import java.nio.file.Path;

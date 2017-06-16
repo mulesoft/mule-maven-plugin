@@ -12,7 +12,7 @@ package org.mule.tools.maven.mojo;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.tools.artifact.archiver.api.PackagerFolders.META_INF;
+import static org.mule.tools.api.packager.PackagerFolders.META_INF;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,7 +26,7 @@ import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import org.mule.tools.artifact.archiver.internal.PackageBuilder;
+import org.mule.tools.api.PackageBuilder;
 import org.mule.tools.maven.dependency.MulePluginsCompatibilityValidator;
 import org.mule.tools.maven.dependency.resolver.MulePluginResolver;
 

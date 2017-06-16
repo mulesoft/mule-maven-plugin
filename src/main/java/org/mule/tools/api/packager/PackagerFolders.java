@@ -8,13 +8,14 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.artifact.archiver.api;
+package org.mule.tools.api.packager;
 
 /**
  * <code>PackagerFolders</code> is a set of constants belonging to the Mule Packager.
  */
 public class PackagerFolders {
 
+  // TODO we should deprecate this anf favor the class FolderNames
   public static final String MULE = "mule";
   public static final String POLICY = "policy";
   public static final String TEST_MULE = "test-mule";

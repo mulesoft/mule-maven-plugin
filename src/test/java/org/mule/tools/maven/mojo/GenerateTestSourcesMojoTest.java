@@ -20,7 +20,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.mule.tools.api.packager.ContentGenerator;
+import org.mule.tools.api.ContentGenerator;
 
 import java.io.IOException;
 

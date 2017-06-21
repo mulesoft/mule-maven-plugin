@@ -22,7 +22,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
@@ -39,7 +38,6 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.repository.AuthenticationContext;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.mule.maven.client.api.BundleDependenciesResolutionException;
 import org.mule.maven.client.api.BundleDescriptorCreationException;
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.model.Authentication;
@@ -51,7 +49,6 @@ import org.mule.maven.client.internal.*;
 
 
 public class ArtifactLocator {
-
 
   private static final String POM = "pom";
   private final List<RemoteRepository> remoteRepositories;
@@ -72,51 +69,16 @@ public class ArtifactLocator {
   }
 
 
-  public Set<Artifact> getArtifacts(File pomFile, File temporaryFolder)
+  public Set<Artifact> getArtifacts(File pomFile, File targetFolder)
       throws MojoExecutionException {
     AetherMavenClient client = (AetherMavenClient) buildMavenClient();
-
-    Model pomModel = createPomModel(pomFile);
-    BundleDescriptor descriptor = createBundleDescriptor(pomModel);
-
-    List<BundleDependency> dependencies = getBundleDependenciesFromDescriptor(client, descriptor);
-
-    artifacts = new HashSet<>(project.getArtifacts());
-    dependencies.removeIf(bundleDependency -> bundleDependency.getDescriptor().equals(descriptor));
-    for (BundleDependency dependency : dependencies) {
-      List<BundleDependency> deps = client.resolveArtifactDependencies(new File(dependency.getBundleUri().getPath()), false,
-                                                                       Optional.empty(),
-                                                                       Optional.of(temporaryFolder));
-      artifacts.add(buildArtifact(dependency));
-      deps.stream().map(this::buildArtifact).forEach(artifacts::add);
-    }
+    List<BundleDependency> dependencies = client.resolveApplicationBundleDependencies(pomFile, targetFolder);
+    dependencies.forEach(dependency -> artifacts.add(buildArtifact(dependency)));
     for (Artifact dep : new ArrayList<>(artifacts)) {
       addThirdPartyParentPomArtifacts(artifacts, dep);
     }
     addParentPomArtifacts(artifacts);
     return new HashSet<>(artifacts);
-  }
-
-  private BundleDescriptor createBundleDescriptor(Model pomModel) {
-    final String version =
-        StringUtils.isNotBlank(pomModel.getVersion()) ? pomModel.getVersion() : pomModel.getParent().getVersion();
-    return new BundleDescriptor.Builder()
-        .setGroupId(StringUtils.isNotBlank(pomModel.getGroupId()) ? pomModel.getGroupId() : pomModel.getParent().getGroupId())
-        .setArtifactId(pomModel.getArtifactId())
-        .setVersion(version)
-        .setBaseVersion(version)
-        .setType(POM)
-        .build();
-  }
-
-  protected List<BundleDependency> getBundleDependenciesFromDescriptor(AetherMavenClient client, BundleDescriptor descriptor) {
-    List<BundleDependency> dependencies = new ArrayList<>();
-    try {
-      dependencies = client.resolveBundleDescriptorDependencies(false, false, descriptor);
-    } catch (BundleDependenciesResolutionException e) {
-      log.warn("Some dependencies could not be found in any of the remote repositories: " + e.getMessage());
-    }
-    return dependencies;
   }
 
   private Artifact buildArtifact(BundleDependency dependency) {

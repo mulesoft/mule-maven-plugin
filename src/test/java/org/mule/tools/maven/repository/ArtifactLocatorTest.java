@@ -191,22 +191,16 @@ public class ArtifactLocatorTest {
   @Test
   public void getArtifactsTest() throws MojoExecutionException, IOException {
     ArtifactLocator artifactLocatorSpy = spy(artifactLocator);
-    doNothing().when(artifactLocatorSpy).addThirdPartyParentPomArtifacts(anySet(), any(Artifact.class));
     doNothing().when(artifactLocatorSpy).addParentPomArtifacts(anySet());
-    Set<Artifact> artifacts = buildSetOfArtifacts();
-    when(projectMock.getArtifacts()).thenReturn(artifacts);
     AetherMavenClient clientMock = mock(AetherMavenClient.class);
     when(artifactLocatorSpy.buildMavenClient()).thenReturn(clientMock);
-    doReturn(new ArrayList<>()).when(artifactLocatorSpy).getBundleDependenciesFromDescriptor(any(), any());
 
     File pomFile = temporaryFolder.newFile("pom.xml");
-    artifactLocatorSpy.getArtifacts(pomFile, temporaryFolder.getRoot());
+    File targetFolder = temporaryFolder.newFile("target");
+    artifactLocatorSpy.getArtifacts(pomFile, targetFolder);
 
-    verify(projectMock, times(1)).getArtifacts();
-    for (Artifact artifact : artifacts) {
-      verify(artifactLocatorSpy, times(1)).addThirdPartyParentPomArtifacts(artifacts, artifact);
-    }
-    verify(artifactLocatorSpy, times(1)).addParentPomArtifacts(artifacts);
+    verify(artifactLocatorSpy, times(2)).buildMavenClient();
+    verify(artifactLocatorSpy, times(1)).addParentPomArtifacts(any());
   }
 
   @Test

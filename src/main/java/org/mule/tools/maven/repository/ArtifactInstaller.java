@@ -43,6 +43,7 @@ import org.eclipse.aether.util.filter.DependencyFilterUtils;
 
 public class ArtifactInstaller {
 
+  private static final String POM_FILE_NAME = "pom.xml";
   private final List<ArtifactRepository> remoteRepositories;
   private Log log;
   private RepositorySystem repositorySystem;
@@ -79,7 +80,11 @@ public class ArtifactInstaller {
                                         "")));
 
       copyFile(artifact.getFile(), destinationArtifactFile);
-      copyFile(new File(artifact.getFile().getParent(), artifactPomFilename), destinationPomFile);
+      File srcPomFile = new File(artifact.getFile().getParent(), artifactPomFilename);
+      if (!srcPomFile.exists()) {
+        srcPomFile = new File(artifact.getFile().getParent(), POM_FILE_NAME);
+      }
+      copyFile(srcPomFile, destinationPomFile);
     } catch (IOException e) {
       throw new MojoExecutionException(
                                        format("There was a problem while copying the artifact [%s] file [%s] to the destination [%s]",
@@ -178,6 +183,9 @@ public class ArtifactInstaller {
       return;
     }
     File sourcePomFile = new File(artifact.getFile().getParent(), pomFileName);
+    if (!sourcePomFile.exists()) {
+      sourcePomFile = new File(artifact.getFile().getParent(), POM_FILE_NAME);
+    }
     File destinationPomFile = new File(metadataFolderDestination, pomFileName);
     try {
       log.info(format("Adding artifact <%s%s>",

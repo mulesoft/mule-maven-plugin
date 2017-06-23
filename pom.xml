@@ -90,7 +90,7 @@
         <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
         <codehaus.plexus.archiver>3.4</codehaus.plexus.archiver>
         <project.info.plugin.version>2.9</project.info.plugin.version>
-        <mule.maven.client.impl.version>1.0.0-BETA-SNAPSHOT</mule.maven.client.impl.version>
+        <mule.maven.client.impl.version>1.0.0-BETA</mule.maven.client.impl.version>
     </properties>
 
     <dependencies>

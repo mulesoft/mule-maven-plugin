@@ -160,12 +160,12 @@
         </dependency>
         <!-- Other Dependencies -->
         <!-- TODO MMP-115 this should not be necessary-->
-        <dependency>
-            <groupId>org.mule</groupId>
-            <artifactId>mule-core</artifactId>
-            <version>${mule.version}</version>
-            <classifier>tests</classifier>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.mule</groupId>-->
+            <!--<artifactId>mule-core</artifactId>-->
+            <!--<version>${mule.version}</version>-->
+            <!--<classifier>tests</classifier>-->
+        <!--</dependency>-->
         <!-- TODO MMP-115 this should not be necessary  -->
         <dependency>
             <groupId>org.mule.tests</groupId>
@@ -534,17 +534,17 @@
                             </execution>
                         </executions>
                     </plugin> -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
+                    <!--<plugin>-->
+                        <!--<groupId>org.apache.maven.plugins</groupId>-->
+                        <!--<artifactId>maven-source-plugin</artifactId>-->
+                        <!--<executions>-->
+                            <!--<execution>-->
+                                <!--<goals>-->
+                                    <!--<goal>jar</goal>-->
+                                <!--</goals>-->
+                            <!--</execution>-->
+                        <!--</executions>-->
+                    <!--</plugin>-->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>

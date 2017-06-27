@@ -15,21 +15,33 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Stream;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mule.tools.maven.mojo.model.Classifier;
 import org.mule.tools.maven.mojo.model.PackagingType;
+import org.apache.commons.io.FileUtils;
 
 public class PackageMojoTest extends AbstractMuleMojoTest {
 
   private static final String VERSION = "1.0";
   private static final String LIGHT_PACKAGE_CLASSIFIER = "light-package";
 
+  @Rule
+  public TemporaryFolder targetFolder = new TemporaryFolder();
+
   protected PackageMojo mojo = new PackageMojo();
+  private static final String TYPE = "jar";
 
   @Before
   public void before() throws IOException {
@@ -111,6 +123,21 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     mojo.lightweightPackage = true;
     assertThat("Final name is not the expected", mojo.getFinalName(),
                equalTo(ARTIFACT_ID + "-" + VERSION + "-" + MULE_APPLICATION_EXAMPLE + "-" + LIGHT_PACKAGE_CLASSIFIER));
+  }
+
+  @Test
+  public void getDestinationFileTest() throws MojoExecutionException, IOException {
+    mojo.finalName = ARTIFACT_ID + "-" + VERSION + "-" + MULE_APPLICATION;
+    File expectedDestinationFile = targetFolder.newFile(mojo.finalName + "." + TYPE);
+    File destinationFile = mojo.getDestinationFile(targetFolder.getRoot().getPath());
+    assertThat("Destination file is not the expected", destinationFile.getAbsolutePath(),
+               equalTo(expectedDestinationFile.getAbsolutePath()));
+  }
+
+  @Test
+  public void getDestinationFileNullArgumentTest() throws MojoExecutionException, IOException {
+    expectedException.expect(IllegalArgumentException.class);
+    mojo.getDestinationFile(null);
   }
 
   private class PackageMojoImpl extends PackageMojo {

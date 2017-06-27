@@ -9,10 +9,15 @@
  */
 package org.mule.tools.maven.mojo.model;
 
+import org.apache.commons.lang.StringUtils;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.*;
 
 public class ArtifactDescription {
 
+  private final String COORDINATES_SEPARATOR = ":";
   private String groupId;
   private String artifactId;
   private String version;
@@ -22,19 +27,21 @@ public class ArtifactDescription {
 
   }
 
-  public ArtifactDescription(String groupId) {
-    String[] elements = groupId.split(":");
-    groupId = elements[0];
-    artifactId = elements[1];
-    version = elements[2];
-    type = elements[3];
+  public ArtifactDescription(String artifactCoordinates) {
+    checkArgument(StringUtils.isNotEmpty(artifactCoordinates), "The artifact coordinates must not be null nor empty");
+    String[] coordinateElements = artifactCoordinates.split(COORDINATES_SEPARATOR);
+    checkState(coordinateElements.length == 4, "The artifact coordinates are not in the format groupId:artifactId:version:type");
+    setGroupId(coordinateElements[0]);
+    setArtifactId(coordinateElements[1]);
+    setVersion(coordinateElements[2]);
+    setType(coordinateElements[3]);
   }
 
   public ArtifactDescription(String groupId, String artifactId, String version, String type) {
-    this.groupId = groupId;
-    this.artifactId = artifactId;
-    this.version = version;
-    this.type = type;
+    setGroupId(groupId);
+    setArtifactId(artifactId);
+    setVersion(version);
+    setType(type);
   }
 
   public String toString() {
@@ -46,6 +53,7 @@ public class ArtifactDescription {
   }
 
   public void setGroupId(String groupId) {
+    checkArgument(StringUtils.isNotEmpty(groupId), "The groupId must not be null nor empty");
     this.groupId = groupId;
   }
 
@@ -54,6 +62,7 @@ public class ArtifactDescription {
   }
 
   public void setArtifactId(String artifactId) {
+    checkArgument(StringUtils.isNotEmpty(artifactId), "The artifactId must not be null nor empty");
     this.artifactId = artifactId;
   }
 
@@ -62,6 +71,7 @@ public class ArtifactDescription {
   }
 
   public void setVersion(String version) {
+    checkArgument(StringUtils.isNotEmpty(version), "The version must not be null nor empty");
     this.version = version;
   }
 
@@ -70,6 +80,7 @@ public class ArtifactDescription {
   }
 
   public void setType(String type) {
+    checkArgument(StringUtils.isNotEmpty(version), "The type must not be null nor empty");
     this.type = type;
   }
 

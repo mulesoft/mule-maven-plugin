@@ -53,9 +53,6 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   @Parameter(readonly = true, required = true, defaultValue = "${project.remoteArtifactRepositories}")
   protected List<ArtifactRepository> remoteArtifactRepositories;
 
-  @Parameter(defaultValue = "${project.build.finalName}", required = true)
-  protected String finalName;
-
   @Parameter(property = "project", required = true)
   protected MavenProject project;
 
@@ -65,63 +62,15 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   @Parameter(defaultValue = "${project.basedir}")
   protected File projectBaseFolder;
 
-  @Parameter(defaultValue = "${project.basedir}/src/main/")
-  protected File mainFolder;
-
-  @Parameter(defaultValue = "${project.basedir}/src/test/munit/")
-  protected File munitSourceFolder;
-
   @Parameter(defaultValue = "${lightweightPackage}")
   protected boolean lightweightPackage = false;
 
   @Parameter(defaultValue = "${skipValidation}")
   protected boolean skipValidation = false;
 
-  @Parameter(property = "shared.libraries", required = false)
+  @Parameter(property = "shared.libraries")
   protected List<SharedLibraryDependency> sharedLibraries;
 
   @Parameter
   protected String classifier;
-
-
-  protected File getSourceFolder() throws MojoExecutionException {
-    String packagingType = project.getPackaging();
-    File sourceFolder = null;
-    try {
-      if (PackagingType.MULE_APPLICATION.equals(packagingType) || PackagingType.MULE_DOMAIN.equals(packagingType)) {
-        sourceFolder = new File(mainFolder, MULE);
-      }
-      if (PackagingType.MULE_POLICY.equals(packagingType)) {
-        sourceFolder = new File(mainFolder, POLICY);
-      }
-    } catch (IllegalArgumentException e) {
-      List<String> packagingTypeNames =
-          Arrays.stream(PackagingType.values()).map(type -> type.toString()).collect(Collectors.toList());
-      String possibleValues = String.join(", ", packagingTypeNames);
-      throw new MojoExecutionException("Unknown packaging type " + packagingType
-          + ". Please specify a valid mule packaging type: " + possibleValues);
-    }
-    return sourceFolder;
-  }
-
-  protected File getMuleAppZipFile() {
-    return new File(this.outputDirectory, this.finalName + ".jar");
-  }
-
-  protected void createFileIfNecessary(String... filePath) throws IOException {
-
-    String path = StringUtils.join(filePath, File.separator);
-    File file = new File(path);
-    if (!file.exists()) {
-      file.createNewFile();
-    }
-  }
-
-  protected void createFolderIfNecessary(String... folderPath) {
-    String path = StringUtils.join(folderPath, File.separator);
-    File folder = new File(path);
-    if (!folder.exists()) {
-      folder.mkdirs();
-    }
-  }
 }

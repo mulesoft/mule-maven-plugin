@@ -10,6 +10,7 @@
 
 package org.mule.tools.maven.mojo;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static org.mule.tools.api.packager.PackagerFolders.*;
 
 import java.io.File;
@@ -19,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
@@ -80,7 +82,8 @@ public class PackageMojo extends AbstractMuleMojo {
    * @return the destination file to store the Mule app
    * @throws MojoExecutionException if it can't delete the previous file
    */
-  private File getDestinationFile(String targetFolder) throws MojoExecutionException {
+  protected File getDestinationFile(String targetFolder) throws MojoExecutionException {
+    checkArgument(targetFolder != null, "The target folder must not be null");
     final Path destinationPath = Paths.get(targetFolder, getFinalName() + "." + TYPE);
     try {
       Files.deleteIfExists(destinationPath);

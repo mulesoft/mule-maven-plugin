@@ -28,14 +28,14 @@ public abstract class MuleLifecycleMappingMaven {
     return lifecycleMap;
   }
 
-  private Lifecycle getDefaultLifecycle() {
+  protected Lifecycle getDefaultLifecycle() {
     Lifecycle lifecycle = new Lifecycle();
     lifecycle.setId(DEFAULT_LIFECYCLE_ID);
     lifecycle.setPhases(getLifecyclePhases());
     return lifecycle;
   }
 
-  private Map getLifecyclePhases() {
+  protected Map getLifecyclePhases() {
     Map phases = new HashMap<>();
     phases.put(VALIDATE.id(), buildGoals("org.mule.tools.maven:mule-maven-plugin:validate"));
     phases.put(INITIALIZE.id(), buildGoals("org.mule.tools.maven:mule-maven-plugin:initialize"));

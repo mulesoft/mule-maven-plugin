@@ -31,16 +31,21 @@ public class MuleLifecycleMapping implements LifecycleMapping {
 
   @Override
   public Map getLifecycles() {
-    Map lifecycles;
     // This method implementation is to save issues between Maven versions 3.3.3/3.3./3.5.0
+    muleLifecycleMappingMaven = getMuleLifecycleMappingMaven();
+    return muleLifecycleMappingMaven.getLifecycles();
+  }
+
+  protected MuleLifecycleMappingMaven getMuleLifecycleMappingMaven() {
     try {
-      Class.forName("org.apache.maven.lifecycle.mapping.LifecyclePhase");
-      muleLifecycleMappingMaven = new MuleLifecycleMappingMaven339();
-      lifecycles = muleLifecycleMappingMaven.getLifecycles();
-    } catch (ClassNotFoundException | ClassCastException e) {
-      muleLifecycleMappingMaven = new MuleLifecycleMappingMaven333();
-      lifecycles = muleLifecycleMappingMaven.getLifecycles();
+      loadClass();
+      return new MuleLifecycleMappingMaven339();
+    } catch (ClassNotFoundException e) {
+      return new MuleLifecycleMappingMaven333();
     }
-    return lifecycles;
+  }
+
+  protected void loadClass() throws ClassNotFoundException {
+    Class.forName("org.apache.maven.lifecycle.mapping.LifecyclePhase");
   }
 }

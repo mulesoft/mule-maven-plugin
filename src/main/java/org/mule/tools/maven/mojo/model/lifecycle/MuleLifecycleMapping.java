@@ -39,7 +39,7 @@ public class MuleLifecycleMapping implements LifecycleMapping {
   protected MuleLifecycleMappingMaven getMuleLifecycleMappingMaven() {
     try {
       loadClass();
-      return new MuleLifecycleMappingMaven339();
+      return new MuleLifecycleMappingMaven339OrHigher();
     } catch (ClassNotFoundException e) {
       return new MuleLifecycleMappingMaven333();
     }

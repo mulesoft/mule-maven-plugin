@@ -31,7 +31,7 @@ public abstract class MuleLifecycleMappingMaven {
   protected Lifecycle getDefaultLifecycle() {
     Lifecycle lifecycle = new Lifecycle();
     lifecycle.setId(DEFAULT_LIFECYCLE_ID);
-    lifecycle.setPhases(getLifecyclePhases());
+    setLifecyclePhases(lifecycle);
     return lifecycle;
   }
 
@@ -58,4 +58,6 @@ public abstract class MuleLifecycleMappingMaven {
   }
 
   protected abstract Object buildGoals(String goals);
+
+  protected abstract void setLifecyclePhases(Lifecycle lifecycle);
 }

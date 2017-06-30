@@ -10,10 +10,17 @@
 
 package org.mule.tools.maven.mojo.model.lifecycle;
 
+import org.apache.maven.lifecycle.mapping.Lifecycle;
+
 public class MuleLifecycleMappingMaven333 extends MuleLifecycleMappingMaven {
 
   @Override
   protected Object buildGoals(String goals) {
     return goals;
+  }
+
+  @Override
+  protected void setLifecyclePhases(Lifecycle lifecycle) {
+    lifecycle.setPhases(getLifecyclePhases());
   }
 }

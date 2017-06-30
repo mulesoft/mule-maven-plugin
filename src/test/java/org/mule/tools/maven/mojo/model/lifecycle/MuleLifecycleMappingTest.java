@@ -33,6 +33,6 @@ public class MuleLifecycleMappingTest {
     doNothing().when(mappingSpy).loadClass();
     MuleLifecycleMappingMaven lifecycleMappingMaven = mappingSpy.getMuleLifecycleMappingMaven();
     assertThat("The lifecycle mapping object is not an instance of the expected class", lifecycleMappingMaven,
-               instanceOf(MuleLifecycleMappingMaven339.class));
+               instanceOf(MuleLifecycleMappingMaven339OrHigher.class));
   }
 }

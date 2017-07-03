@@ -193,32 +193,6 @@ public class RepositoryGeneratorTest {
     }
   }
 
-  @Test
-  public void generateTest() throws MojoFailureException, MojoExecutionException, ProjectBuildingException, IOException {
-    buildArtifacts();
-    when(sessionMock.getProjectBuildingRequest()).thenReturn(new DefaultProjectBuildingRequest());
-
-    ArtifactLocator artifactLocatorMock = mock(ArtifactLocator.class);
-
-    when(artifactLocatorMock.getArtifacts(any(), any())).thenReturn(artifacts);
-
-    doNothing().when(repositoryGeneratorSpy).initializeProjectBuildingRequest();
-    when(repositoryGeneratorSpy.buildArtifactLocator()).thenReturn(artifactLocatorMock);
-    doNothing().when(repositoryGeneratorSpy).installArtifacts(any(File.class), anySet(), any(ArtifactInstaller.class));
-    File repositoryFolder = temporaryFolder.newFolder(REPOSITORY_FOLDER);
-    when(repositoryGeneratorSpy.buildArtifactInstaller(remoteArtifactRepositoriesMock)).thenReturn(artifactInstallerMock);
-    when(repositoryGeneratorSpy.getRepositoryFolder()).thenReturn(repositoryFolder);
-
-    repositoryGeneratorSpy.generate();
-
-    verify(artifactLocatorMock, times(1)).getArtifacts(any(), any());
-    verify(repositoryGeneratorSpy, times(1)).initializeProjectBuildingRequest();
-    verify(repositoryGeneratorSpy, times(1)).getRepositoryFolder();
-    verify(repositoryGeneratorSpy, times(1)).installArtifacts(repositoryFolder, artifacts,
-                                                              artifactInstallerMock);
-
-  }
-
   private ArtifactRepository createArtifactRepository(int i) {
     ArtifactRepository repository = mock(ArtifactRepository.class);
     when(repository.getId()).thenReturn("id" + i);

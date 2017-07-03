@@ -100,7 +100,7 @@ public class ClassLoaderModelTest {
     SortedSet<Dependency> mulePlugin1Dependencies = new TreeSet<>(buildDependencySet(ARBITRARY_NUMBER_DEPENDENCIES, null));
     SortedSet<Dependency> mulePlugin2Dependencies = new TreeSet<>(buildDependencySet(INITIAL_NUMBER_DEPENDENCIES, null));
 
-    SortedMap<Dependency, SortedSet<Dependency>> mulePlugins = new TreeMap<>();
+    Map<Dependency, Set<Dependency>> mulePlugins = new TreeMap<>();
     mulePlugins.put(mulePlugin1, mulePlugin1Dependencies);
     mulePlugins.put(mulePlugin2, mulePlugin2Dependencies);
 

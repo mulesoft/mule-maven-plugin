@@ -51,4 +51,21 @@ public class Dependency implements Comparable {
     ArtifactCoordinates coordinates = dependency.getArtifactCoordinates();
     return coordinates.getGroupId() + ":" + coordinates.getArtifactId() + ":" + coordinates.getVersion();
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+
+    Dependency that = (Dependency) o;
+
+    return getArtifactCoordinates().equals(that.getArtifactCoordinates());
+  }
+
+  @Override
+  public int hashCode() {
+    return getArtifactCoordinates().hashCode();
+  }
 }

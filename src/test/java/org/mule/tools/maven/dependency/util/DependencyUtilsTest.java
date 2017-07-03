@@ -21,10 +21,8 @@ import org.mule.tools.maven.dependency.model.Dependency;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.mule.tools.maven.dependency.util.DependencyUtils.isValidMulePlugin;

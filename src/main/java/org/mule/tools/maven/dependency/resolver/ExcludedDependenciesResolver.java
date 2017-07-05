@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.resolver;
+package org.mule.tools.maven.dependency.resolver;
 
 import java.util.*;
 

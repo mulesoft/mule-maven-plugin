@@ -22,27 +22,33 @@ public class ClassLoaderModel {
 
   private String version;
   private ArtifactCoordinates artifactCoordinates;
-  private SortedSet<Dependency> dependencies;
-  private SortedMap<Dependency, SortedSet<Dependency>> mulePlugins;
+  private Set<Dependency> dependencies = new TreeSet<>();
+  private Map<Dependency, Set<Dependency>> mulePlugins = new TreeMap<>();
 
   public ClassLoaderModel(String version, ArtifactCoordinates artifactCoordinates) {
-    checkArgument(version != null, "Version cannot be null");
-    checkArgument(artifactCoordinates != null, "Artifact coordinates cannot be null");
-    this.artifactCoordinates = artifactCoordinates;
-    this.version = version;
-    this.dependencies = new TreeSet<>();
-    this.mulePlugins = new TreeMap<>();
+    setArtifactCoordinates(artifactCoordinates);
+    setVersion(version);
   }
 
   public String getVersion() {
     return version;
   }
 
+  public void setVersion(String version) {
+    checkArgument(version != null, "Version cannot be null");
+    this.version = version;
+  }
+
   public ArtifactCoordinates getArtifactCoordinates() {
     return artifactCoordinates;
   }
 
-  public SortedSet<Dependency> getDependencies() {
+  public void setArtifactCoordinates(ArtifactCoordinates artifactCoordinates) {
+    checkArgument(artifactCoordinates != null, "Artifact coordinates cannot be null");
+    this.artifactCoordinates = artifactCoordinates;
+  }
+
+  public Set<Dependency> getDependencies() {
     return this.dependencies;
   }
 
@@ -50,13 +56,13 @@ public class ClassLoaderModel {
     this.dependencies = dependencies;
   }
 
-  public SortedMap<Dependency, SortedSet<Dependency>> getMulePlugins() {
+  public Map<Dependency, Set<Dependency>> getMulePlugins() {
     return this.mulePlugins;
   }
 
   public void setMulePlugins(SortedMap<Dependency, SortedSet<Dependency>> mulePlugins) {
     validatePlugins(mulePlugins.keySet());
-    this.mulePlugins = mulePlugins;
+    this.mulePlugins.putAll(mulePlugins);
   }
 
 
@@ -70,11 +76,11 @@ public class ClassLoaderModel {
     }
   }
 
-  public void addMulePlugin(Dependency dependency, SortedSet<Dependency> pluginDependencies) {
+  public void addMulePlugin(Dependency dependency, Set<Dependency> pluginDependencies) {
     if (!isValidMulePlugin(dependency)) {
       throw new IllegalArgumentException("The dependency " + dependency + " is not a valid mule plugin dependency");
     }
-    SortedSet<Dependency> newDependencies = this.mulePlugins.getOrDefault(dependency, pluginDependencies);
+    Set<Dependency> newDependencies = this.mulePlugins.getOrDefault(dependency, pluginDependencies);
     newDependencies.addAll(pluginDependencies);
     this.mulePlugins.put(dependency, newDependencies);
   }

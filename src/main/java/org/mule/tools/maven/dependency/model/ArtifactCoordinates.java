@@ -18,46 +18,68 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 public class ArtifactCoordinates {
 
+  public static final String DEFAULT_ARTIFACT_TYPE = "jar";
   private String artifactId;
   private String groupId;
   private String version;
-  private Optional<String> type;
-  private Optional<String> classifier;
+  private String type;
+  private String classifier;
 
   public ArtifactCoordinates(String groupId, String artifactId, String version) {
-    this(groupId, artifactId, version, Optional.of("jar"), Optional.empty());
+    this(groupId, artifactId, version, DEFAULT_ARTIFACT_TYPE, null);
   }
 
-  public ArtifactCoordinates(String groupId, String artifactId, String version, Optional<String> type,
-                             Optional<String> classifier) {
-    checkArgument(StringUtils.isNotBlank(groupId), "Group id cannot be null nor blank");
-    checkArgument(StringUtils.isNotBlank(artifactId), "Artifact id cannot be null nor blank");
-    checkArgument(StringUtils.isNotBlank(version), "Version cannot be null nor blank");
-    this.groupId = groupId;
-    this.artifactId = artifactId;
-    this.version = version;
-    this.type = type;
-    this.classifier = classifier;
+  public ArtifactCoordinates(String groupId, String artifactId, String version, String type,
+                             String classifier) {
+    setGroupId(groupId);
+    setArtifactId(artifactId);
+    setVersion(version);
+    setType(type);
+    setClassifier(classifier);
   }
 
   public String getArtifactId() {
     return artifactId;
   }
 
+  public void setArtifactId(String artifactId) {
+    checkArgument(StringUtils.isNotBlank(artifactId), "Artifact id can not be null nor blank");
+    this.artifactId = artifactId;
+  }
+
   public String getGroupId() {
     return groupId;
+  }
+
+  public void setGroupId(String groupId) {
+    checkArgument(StringUtils.isNotBlank(groupId), "Group id cannot be null nor blank");
+    this.groupId = groupId;
   }
 
   public String getVersion() {
     return version;
   }
 
-  public Optional<String> getType() {
+  public void setVersion(String version) {
+    checkArgument(StringUtils.isNotBlank(version), "Version can not be null nor blank");
+    this.version = version;
+  }
+
+  public String getType() {
     return type;
   }
 
-  public Optional<String> getClassifier() {
+  public void setType(String type) {
+    checkArgument(StringUtils.isNotBlank(type), "Type can not be null nor blank");
+    this.type = type;
+  }
+
+  public String getClassifier() {
     return classifier;
+  }
+
+  public void setClassifier(String classifier) {
+    this.classifier = classifier;
   }
 
   @Override

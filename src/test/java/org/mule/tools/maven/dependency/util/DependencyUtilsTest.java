@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.mule.tools.maven.dependency.util.DependencyUtils.isValidMulePlugin;
@@ -55,7 +56,7 @@ public class DependencyUtilsTest {
   @Test
   public void toArtifactCoordinatesFromMinimumRequirementsTest() {
     ArtifactCoordinates actualArtifactCoordinates = DependencyUtils.toArtifactCoordinates(bundleDescriptor);
-    assertArtifactCoordinates(actualArtifactCoordinates, Optional.of(DEFAULT_ARTIFACT_DESCRIPTOR_TYPE), Optional.empty());
+    assertArtifactCoordinates(actualArtifactCoordinates, DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, null);
   }
 
   @Test
@@ -66,7 +67,7 @@ public class DependencyUtilsTest {
 
     ArtifactCoordinates actualArtifactCoordinates = DependencyUtils.toArtifactCoordinates(bundleDescriptor);
 
-    assertArtifactCoordinates(actualArtifactCoordinates, Optional.of(POM_TYPE), Optional.of(MULE_PLUGIN));
+    assertArtifactCoordinates(actualArtifactCoordinates, POM_TYPE, MULE_PLUGIN);
   }
 
   @Test
@@ -76,18 +77,18 @@ public class DependencyUtilsTest {
 
     Dependency actualDependency = DependencyUtils.toDependency(bundleDependency);
 
-    assertArtifactCoordinates(actualDependency.getArtifactCoordinates(), Optional.of("jar"), Optional.empty());
+    assertArtifactCoordinates(actualDependency.getArtifactCoordinates(), DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, null);
     assertThat("Dependency path location is not the expected", actualDependency.getPath(), equalTo(bundleURI));
   }
 
-  private void assertArtifactCoordinates(ArtifactCoordinates actualArtifactCoordinates, Optional<String> optionalType,
-                                         Optional<Object> optionalClassifier) {
+  private void assertArtifactCoordinates(ArtifactCoordinates actualArtifactCoordinates, String type,
+                                         String classifier) {
     assertThat("Group id is not the expected", actualArtifactCoordinates.getGroupId(), equalTo(GROUP_ID));
     assertThat("Artifact id is not the expected", actualArtifactCoordinates.getArtifactId(), equalTo(ARTIFACT_ID));
     assertThat("Version is not the expected", actualArtifactCoordinates.getVersion(), equalTo(VERSION));
     assertThat("Type is not the expected", actualArtifactCoordinates.getType(),
-               equalTo(optionalType));
-    assertThat("Classifier is not the expected", actualArtifactCoordinates.getClassifier(), equalTo(optionalClassifier));
+               equalTo(type));
+    assertThat("Classifier is not the expected", actualArtifactCoordinates.getClassifier(), equalTo(classifier));
 
   }
 
@@ -100,7 +101,8 @@ public class DependencyUtilsTest {
 
   @Test
   public void isNotValidMulePluginWrongClassifierTest() {
-    artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, Optional.empty(), Optional.of(NOT_MULE_PLUGIN));
+    artifactCoordinates =
+        new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, NOT_MULE_PLUGIN);
     Dependency notAMulePluginDependency = new Dependency(artifactCoordinates, bundleURI);
     assertThat("Mule plugin validation method should have returned false", isValidMulePlugin(notAMulePluginDependency),
                is(false));
@@ -108,7 +110,7 @@ public class DependencyUtilsTest {
 
   @Test
   public void isValidMulePluginTest() {
-    artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, Optional.empty(), Optional.of(MULE_PLUGIN));
+    artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, MULE_PLUGIN);
     Dependency mulePluginDependency = new Dependency(artifactCoordinates, bundleURI);
     assertThat("Mule plugin validation method should have returned true", isValidMulePlugin(mulePluginDependency), is(true));
   }

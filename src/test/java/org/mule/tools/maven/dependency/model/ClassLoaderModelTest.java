@@ -10,7 +10,6 @@
 
 package org.mule.tools.maven.dependency.model;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -31,7 +30,7 @@ public class ClassLoaderModelTest {
   private static final String GROUP_ID = "group.id";
   private static final String ARTIFACT_ID = "artifact-id";
   private static final String VERSION = "1.0.0";
-  private static final String RESOURCE_LOCATION = "/Users/username/.m2/group/id/artifact-id/1.0.0/artifact-id-1.0.0.jar";
+  private static final String DEFAULT_ARTIFACT_DESCRIPTOR_TYPE = "jar";
   private static final int LENGTH = 5;
   private static final int NUM_DIGITS = 1;
   private static final String NOT_MULE_PLUGIN_EXAMPLE_CLASSIFIER = "javadoc";
@@ -42,7 +41,7 @@ public class ClassLoaderModelTest {
   private static final String URI_SEPARATOR = "/";
   private static final int INITIAL_NUMBER_DEPENDENCIES = 2;
   private static final int ADDITIONAL_NUMBER_DEPENDENCIES = 4;
-  private static final int CONSTANT_NUMBER_DEPENDENCIES = 3;
+  private static final int ARBITRARY_NUMBER_DEPENDENCIES = 3;
   private static final int NUMBER_MULE_PLUGINS = 2;
   private static final int NUMBER_NOT_MULE_PLUGINS_DEPENDENCIES = 2;
   private static final int NUMBER_DEPENDENCIES_WITHOUT_CLASSIFIER = 4;
@@ -98,7 +97,7 @@ public class ClassLoaderModelTest {
     Dependency mulePlugin1 = buildDependency(MULE_PLUGIN_CLASSIFIER);
     Dependency mulePlugin2 = buildDependency(MULE_PLUGIN_CLASSIFIER);
 
-    SortedSet<Dependency> mulePlugin1Dependencies = new TreeSet<>(buildDependencySet(CONSTANT_NUMBER_DEPENDENCIES, null));
+    SortedSet<Dependency> mulePlugin1Dependencies = new TreeSet<>(buildDependencySet(ARBITRARY_NUMBER_DEPENDENCIES, null));
     SortedSet<Dependency> mulePlugin2Dependencies = new TreeSet<>(buildDependencySet(INITIAL_NUMBER_DEPENDENCIES, null));
 
     SortedMap<Dependency, SortedSet<Dependency>> mulePlugins = new TreeMap<>();
@@ -114,14 +113,14 @@ public class ClassLoaderModelTest {
 
     model.addMulePlugin(mulePlugin2, additionalMulePlugin2Dependencies);
 
-    SortedMap<Dependency, SortedSet<Dependency>> actualMulePlugins = model.getMulePlugins();
+    Map<Dependency, Set<Dependency>> actualMulePlugins = model.getMulePlugins();
 
     assertThat("Number of mule plugins in set is not the expected", actualMulePlugins.keySet().size(),
                equalTo(NUMBER_MULE_PLUGINS));
     assertThat("Mule plugins set is not the expected", actualMulePlugins.keySet(), containsInAnyOrder(mulePlugin1, mulePlugin2));
 
     assertThat("Number of dependencies of mulePlugin1 is not the expected", actualMulePlugins.get(mulePlugin1).size(),
-               equalTo(CONSTANT_NUMBER_DEPENDENCIES));
+               equalTo(ARBITRARY_NUMBER_DEPENDENCIES));
     assertThat("Number of dependencies of mulePlugin2 is not the expected", actualMulePlugins.get(mulePlugin2).size(),
                equalTo(INITIAL_NUMBER_DEPENDENCIES + ADDITIONAL_NUMBER_DEPENDENCIES));
   }
@@ -154,7 +153,7 @@ public class ClassLoaderModelTest {
     String artifactId = randomAlphabetic(LENGTH).toLowerCase() + ARTIFACT_ID_SEPARATOR + randomAlphabetic(LENGTH).toLowerCase();
     String version =
         randomNumeric(NUM_DIGITS) + VERSION_SEPARATOR + randomNumeric(NUM_DIGITS) + VERSION_SEPARATOR + randomNumeric(NUM_DIGITS);
-    return new ArtifactCoordinates(groupId, artifactId, version, Optional.empty(), Optional.ofNullable(classifier));
+    return new ArtifactCoordinates(groupId, artifactId, version, DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, classifier);
   }
 
 }

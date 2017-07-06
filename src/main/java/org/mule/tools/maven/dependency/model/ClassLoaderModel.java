@@ -10,6 +10,7 @@
 
 package org.mule.tools.maven.dependency.model;
 
+import org.apache.maven.artifact.Artifact;
 import org.mule.tools.maven.dependency.util.DependencyUtils;
 
 import java.util.*;
@@ -52,7 +53,7 @@ public class ClassLoaderModel {
     return this.dependencies;
   }
 
-  public void setDependencies(SortedSet<Dependency> dependencies) {
+  public void setDependencies(Set<Dependency> dependencies) {
     this.dependencies = dependencies;
   }
 
@@ -60,7 +61,7 @@ public class ClassLoaderModel {
     return this.mulePlugins;
   }
 
-  public void setMulePlugins(SortedMap<Dependency, SortedSet<Dependency>> mulePlugins) {
+  public void setMulePlugins(Map<Dependency, Set<Dependency>> mulePlugins) {
     validatePlugins(mulePlugins.keySet());
     this.mulePlugins.putAll(mulePlugins);
   }
@@ -83,5 +84,16 @@ public class ClassLoaderModel {
     Set<Dependency> newDependencies = this.mulePlugins.getOrDefault(dependency, pluginDependencies);
     newDependencies.addAll(pluginDependencies);
     this.mulePlugins.put(dependency, newDependencies);
+  }
+
+  public Set<Artifact> getArtifacts() {
+    Set<Dependency> allDependencies = new TreeSet<>();
+
+    allDependencies.addAll(dependencies);
+    allDependencies.addAll(mulePlugins.keySet());
+    mulePlugins.values().forEach(allDependencies::addAll);
+
+    return allDependencies.stream().map(DependencyUtils::toArtifact).collect(Collectors.toSet());
+
   }
 }

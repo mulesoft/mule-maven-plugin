@@ -10,11 +10,15 @@
 
 package org.mule.tools.maven.dependency.util;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
+import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.tools.maven.dependency.model.ArtifactCoordinates;
 import org.mule.tools.maven.dependency.model.Dependency;
 
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,5 +49,15 @@ public class DependencyUtils {
     ArtifactCoordinates pluginCoordinates = dependency.getArtifactCoordinates();
     Optional<String> pluginClassifier = Optional.ofNullable(pluginCoordinates.getClassifier());
     return pluginClassifier.isPresent() && MULE_PLUGIN_CLASSIFIER.equals(pluginClassifier.get());
+  }
+
+  public static Artifact toArtifact(Dependency dependency) {
+    ArtifactCoordinates artifactCoordinates = dependency.getArtifactCoordinates();
+    Artifact artifact = new DefaultArtifact(artifactCoordinates.getGroupId(), artifactCoordinates.getArtifactId(),
+                                            artifactCoordinates.getVersion(), null, artifactCoordinates.getType(),
+                                            artifactCoordinates.getClassifier(),
+                                            new DefaultArtifactHandler(artifactCoordinates.getType()));
+    artifact.setFile(new File(dependency.getPath()));
+    return artifact;
   }
 }

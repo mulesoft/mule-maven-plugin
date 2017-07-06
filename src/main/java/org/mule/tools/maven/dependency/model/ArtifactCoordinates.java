@@ -84,12 +84,34 @@ public class ArtifactCoordinates {
 
   @Override
   public String toString() {
-    return "ArtifactCoordinates{" +
-        "artifactId='" + artifactId + '\'' +
-        ", groupId='" + groupId + '\'' +
-        ", version='" + version + '\'' +
-        ", type=" + type +
-        ", classifier=" + classifier +
-        '}';
+    return artifactId + ':' + groupId + ':' + version + ':' + type + (StringUtils.isNotBlank(classifier) ? ':' + classifier : "");
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    ArtifactCoordinates that = (ArtifactCoordinates) o;
+
+    if (!getArtifactId().equals(that.getArtifactId())) {
+      return false;
+    }
+    if (!getGroupId().equals(that.getGroupId())) {
+      return false;
+    }
+    return getVersion().equals(that.getVersion());
+  }
+
+  @Override
+  public int hashCode() {
+    int result = getArtifactId().hashCode();
+    result = 31 * result + getGroupId().hashCode();
+    result = 31 * result + getVersion().hashCode();
+    return result;
   }
 }

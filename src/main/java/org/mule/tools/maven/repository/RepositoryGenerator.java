@@ -33,6 +33,8 @@ import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.tools.maven.dependency.model.ClassLoaderModel;
 import org.mule.tools.maven.util.FileUtils;
 
 public class RepositoryGenerator {
@@ -75,29 +77,16 @@ public class RepositoryGenerator {
     log.info(format("Mirroring repository for [%s]", project.toString()));
     try {
       initializeProjectBuildingRequest();
-
-      ArtifactLocator artifactLocator = buildArtifactLocator();
       File pomFile = project.getFile();
-      Set<Artifact> artifacts = artifactLocator.getArtifacts(pomFile, outputDirectory);
+      ClassLoaderModelAssembler classLoaderModelAssembler = buildClassLoaderModelAssembler();
+      ClassLoaderModel model = classLoaderModelAssembler.getClassLoaderModel(pomFile, outputDirectory);
+      Set<Artifact> artifacts = model.getArtifacts();
       File repositoryFolder = getRepositoryFolder();
       ArtifactInstaller artifactInstaller = buildArtifactInstaller(remoteArtifactRepositories);
       installArtifacts(repositoryFolder, artifacts, artifactInstaller);
-      Set<Artifact> excludedArtifacts = artifactLocator.getExclusions();
-      generateExcludedDependenciesMetadata(repositoryFolder, excludedArtifacts, artifactInstaller);
     } catch (Exception e) {
       log.debug(format("There was an exception while building [%s]", project.toString()), e);
     }
-  }
-
-  private void generateExcludedDependenciesMetadata(File repositoryFile, Set<Artifact> excludedArtifacts,
-                                                    ArtifactInstaller installer)
-      throws MojoExecutionException {
-    TreeSet<Artifact> sortedArtifacts = new TreeSet<>(excludedArtifacts);
-    for (Artifact artifact : sortedArtifacts) {
-      installer.downloadExcludedDependencyToLocalRepository(artifact);
-      installer.generateExcludedDependencyMetadata(repositoryFile, artifact);
-    }
-
   }
 
   protected ArtifactInstaller buildArtifactInstaller(List<ArtifactRepository> remoteArtifactRepositories) {
@@ -105,11 +94,10 @@ public class RepositoryGenerator {
                                  aetherRepositorySystemSession);
   }
 
-  protected ArtifactLocator buildArtifactLocator() {
+  protected ClassLoaderModelAssembler buildClassLoaderModelAssembler() {
     List<RemoteRepository> remoteRepositories = RepositoryUtils.toRepos(remoteArtifactRepositories);
-    MavenProjectBuilder mavenProjectBuilder =
-        new MavenProjectBuilder(projectBuilder, projectBuildingRequest, repositorySystem, log);
-    return new ArtifactLocator(remoteRepositories, project, localRepository, mavenProjectBuilder, log);
+    return new ClassLoaderModelAssembler(log, (AetherMavenClient) new MuleMavenPluginClientProvider(remoteRepositories, log)
+        .buildMavenClient());
   }
 
   protected void initializeProjectBuildingRequest() {

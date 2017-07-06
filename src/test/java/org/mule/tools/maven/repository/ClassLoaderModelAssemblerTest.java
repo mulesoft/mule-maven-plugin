@@ -158,22 +158,6 @@ public class ClassLoaderModelAssemblerTest {
 
   }
 
-  private ClassLoaderModelAssembler getClassLoaderModelAssemblySpy(AetherMavenClient aetherMavenClientMock) {
-    ClassLoaderModelAssembler classLoaderModelAssemblerSpy = spy(new ClassLoaderModelAssembler(logMock, aetherMavenClientMock));
-    ArtifactCoordinates projectArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
-    doReturn(projectArtifactCoordinates).when(classLoaderModelAssemblerSpy).getArtifactCoordinates(any());
-    BundleDescriptor projectBundleDescriptor = mock(BundleDescriptor.class);
-    doReturn(projectBundleDescriptor).when(classLoaderModelAssemblerSpy).getProjectBundleDescriptor(any());
-    return classLoaderModelAssemblerSpy;
-  }
-
-  private void setPluginDependencyinAetherMavenClientMock(BundleDependency mulePlugin,
-                                                          List<BundleDependency> mulePluginDependencies) {
-    when(aetherMavenClientMock
-        .resolveBundleDescriptorDependencies(eq(false), eq(false), eq(mulePlugin.getDescriptor())))
-            .thenReturn(mulePluginDependencies);
-  }
-
   @Test
   public void getClassLoaderModelWithOneDependencyThatIsNotMulePluginTest() throws URISyntaxException {
     List<BundleDependency> appDependencies = new ArrayList<>();
@@ -248,8 +232,24 @@ public class ClassLoaderModelAssemblerTest {
         .setVersion(VERSION).setBaseVersion(VERSION).setType(TYPE).setClassifier(classifier).build();
   }
 
-  public AetherMavenClient getAetherMavenClientMock(List<BundleDependency> appDependencies,
-                                                    List<BundleDependency> appMulePluginDependencies) {
+  private ClassLoaderModelAssembler getClassLoaderModelAssemblySpy(AetherMavenClient aetherMavenClientMock) {
+    ClassLoaderModelAssembler classLoaderModelAssemblerSpy = spy(new ClassLoaderModelAssembler(logMock, aetherMavenClientMock));
+    ArtifactCoordinates projectArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
+    doReturn(projectArtifactCoordinates).when(classLoaderModelAssemblerSpy).getArtifactCoordinates(any());
+    BundleDescriptor projectBundleDescriptor = mock(BundleDescriptor.class);
+    doReturn(projectBundleDescriptor).when(classLoaderModelAssemblerSpy).getProjectBundleDescriptor(any());
+    return classLoaderModelAssemblerSpy;
+  }
+
+  private void setPluginDependencyinAetherMavenClientMock(BundleDependency mulePlugin,
+                                                          List<BundleDependency> mulePluginDependencies) {
+    when(aetherMavenClientMock
+        .resolveBundleDescriptorDependencies(eq(false), eq(false), eq(mulePlugin.getDescriptor())))
+            .thenReturn(mulePluginDependencies);
+  }
+
+  private AetherMavenClient getAetherMavenClientMock(List<BundleDependency> appDependencies,
+                                                     List<BundleDependency> appMulePluginDependencies) {
     AetherMavenClient aetherMavenClientMock = mock(AetherMavenClient.class);
     when(aetherMavenClientMock
         .resolveBundleDescriptorDependenciesWithWorkspaceReader(any(File.class), anyBoolean(), anyBoolean(),

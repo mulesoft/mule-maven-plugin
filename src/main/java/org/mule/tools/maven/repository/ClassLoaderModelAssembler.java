@@ -18,25 +18,13 @@ import static org.mule.tools.maven.dependency.util.DependencyUtils.toDependencie
 import static org.mule.tools.maven.dependency.util.DependencyUtils.toDependency;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.aether.graph.DependencyFilter;
-import org.eclipse.aether.repository.RemoteRepository;
-import org.mule.maven.client.api.BundleDescriptorCreationException;
 import org.mule.maven.client.api.PomFileSupplierFactory;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
@@ -44,13 +32,12 @@ import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.maven.dependency.model.ArtifactCoordinates;
 import org.mule.tools.maven.dependency.model.ClassLoaderModel;
 import org.mule.tools.maven.dependency.model.Dependency;
-import org.mule.tools.maven.dependency.util.DependencyUtils;
 
 
 public class ClassLoaderModelAssembler {
 
-  private static final String POM = "pom";
-  private static final String VERSION = "1.0.0";
+  private static final String POM_TYPE = "pom";
+  private static final String CLASS_LOADER_MODEL_VERSION = "1.0.0";
   private final Log log;
   private final AetherMavenClient muleMavenPluginClient;
   private ClassLoaderModel model;
@@ -67,7 +54,7 @@ public class ClassLoaderModelAssembler {
   public ClassLoaderModel getClassLoaderModel(File pomFile, File targetFolder) {
     BundleDescriptor projectBundleDescriptor = getProjectBundleDescriptor(pomFile);
 
-    model = new ClassLoaderModel(VERSION, getArtifactCoordinates(projectBundleDescriptor));
+    model = new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, getArtifactCoordinates(projectBundleDescriptor));
 
     List<BundleDependency> nonMulePluginDependencies =
         resolveNonMulePluginDependencies(targetFolder, projectBundleDescriptor);
@@ -144,7 +131,7 @@ public class ClassLoaderModelAssembler {
         .setArtifactId(pomModel.getArtifactId())
         .setVersion(version)
         .setBaseVersion(version)
-        .setType(POM)
+        .setType(POM_TYPE)
         .build();
   }
 }

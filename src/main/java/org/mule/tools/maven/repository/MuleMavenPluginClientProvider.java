@@ -10,7 +10,7 @@
 
 package org.mule.tools.maven.repository;
 
-import org.apache.maven.MavenExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.repository.AuthenticationContext;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -29,13 +29,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 
 public class MuleMavenPluginClientProvider {
 
+  private final Log log;
   private List<RemoteRepository> remoteRepositories;
 
-  public MuleMavenPluginClientProvider(List<RemoteRepository> remoteRepositories) {
+  public MuleMavenPluginClientProvider(List<RemoteRepository> remoteRepositories, Log log) {
+    checkArgument(remoteRepositories != null, "Remote repositories list can not be null");
     this.remoteRepositories = remoteRepositories;
+    this.log = log;
   }
 
   protected MavenClient buildMavenClient() {
@@ -57,37 +62,43 @@ public class MuleMavenPluginClientProvider {
     DefaultLocalRepositorySupplierFactory localRepositorySupplierFactory = new DefaultLocalRepositorySupplierFactory();
     Supplier<File> localMavenRepository = localRepositorySupplierFactory.environmentMavenRepositorySupplier();
 
-    this.remoteRepositories.stream().map(this::toRemoteRepo).forEach(mavenConfigurationBuilder::withRemoteRepository);
+    this.remoteRepositories.stream().filter(this::hasValidURL).map(this::toRemoteRepo)
+        .forEach(mavenConfigurationBuilder::withRemoteRepository);
 
     return mavenConfigurationBuilder
         .withLocalMavenRepositoryLocation(localMavenRepository.get())
         .build();
   }
 
+  private boolean hasValidURL(RemoteRepository remoteRepository) {
+    try {
+      new URL(remoteRepository.getUrl());
+    } catch (MalformedURLException e) {
+      return false;
+    }
+    return true;
+  }
+
   private org.mule.maven.client.api.model.RemoteRepository toRemoteRepo(RemoteRepository remoteRepository) {
     String id = remoteRepository.getId();
     Optional<Authentication> authentication = getAuthentication(remoteRepository);
-    URL url = null;
-    try {
-      url = getURL(remoteRepository);
-    } catch (MavenExecutionException e) {
-      e.printStackTrace();
-    }
+    URL remoteRepositoryUrl = getURL(remoteRepository);
     org.mule.maven.client.api.model.RemoteRepository.RemoteRepositoryBuilder builder =
         new org.mule.maven.client.api.model.RemoteRepository.RemoteRepositoryBuilder();
     authentication.ifPresent(builder::withAuthentication);
     return builder
         .withId(id)
-        .withUrl(url)
+        .withUrl(remoteRepositoryUrl)
         .build();
   }
 
-  private URL getURL(RemoteRepository remoteRepository) throws MavenExecutionException {
+  private URL getURL(RemoteRepository remoteRepository) {
     try {
       return new URL(remoteRepository.getUrl());
     } catch (MalformedURLException e) {
-      throw new MavenExecutionException(e.getMessage(), e.getCause());
+      log.info("Could not resolve remote repository URL: " + remoteRepository);
     }
+    return null;
   }
 
   private Optional<Authentication> getAuthentication(RemoteRepository remoteRepository) {

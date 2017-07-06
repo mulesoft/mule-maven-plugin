@@ -96,7 +96,7 @@ public class RepositoryGenerator {
 
   protected ClassLoaderModelAssembler buildClassLoaderModelAssembler() {
     List<RemoteRepository> remoteRepositories = RepositoryUtils.toRepos(remoteArtifactRepositories);
-    return new ClassLoaderModelAssembler(log, (AetherMavenClient) new MuleMavenPluginClientProvider(remoteRepositories)
+    return new ClassLoaderModelAssembler(log, (AetherMavenClient) new MuleMavenPluginClientProvider(remoteRepositories, log)
         .buildMavenClient());
   }
 

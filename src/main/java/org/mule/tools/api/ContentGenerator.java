@@ -140,6 +140,25 @@ public class ContentGenerator {
     copyDescriptorFile();
   }
 
+  /**
+   * It creates classloader-model.json in META-INF/mule-artifact
+   *
+   * @param classLoaderModel the classloader model of the application being packaged
+   */
+  public void createClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel) {
+    File destinationFile =
+        projectTargetFolder.resolve(META_INF).resolve(MULE_ARTIFACT).resolve(CLASSLOADER_MODEL_FILE_NAME).toFile();
+    try {
+      destinationFile.createNewFile();
+      Gson gson = new GsonBuilder().setPrettyPrinting().create();
+      Writer writer = new FileWriter(destinationFile.getAbsolutePath());
+      gson.toJson(classLoaderModel, writer);
+      writer.close();
+    } catch (IOException e) {
+      throw new RuntimeException("Could not create classloadermodel.json", e);
+    }
+  }
+
   private void copyPomFile() throws IOException {
     Path originPath = projectBaseFolder.resolve(POM_XML);
     Path destinationPath = projectTargetFolder.resolve(META_INF).resolve(MAVEN).resolve(groupId).resolve(artifactId);
@@ -200,19 +219,5 @@ public class ContentGenerator {
 
   private void checkPathExist(Path path) {
     checkArgument(path.toFile().exists(), "The path: " + path.toString() + " should exits");
-  }
-
-  public void createClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel) {
-    File destinationFile = new File(projectTargetFolder.resolve(META_INF).resolve(MULE_ARTIFACT).toAbsolutePath().toString(),
-                                    CLASSLOADER_MODEL_FILE_NAME);
-    try {
-      destinationFile.createNewFile();
-      Gson gson = new GsonBuilder().setPrettyPrinting().create();
-      Writer writer = new FileWriter(destinationFile.getAbsolutePath());
-      gson.toJson(classLoaderModel, writer);
-      writer.close();
-    } catch (IOException e) {
-      throw new RuntimeException("Could not create classloadermodel.json", e);
-    }
   }
 }

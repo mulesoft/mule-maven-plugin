@@ -47,7 +47,8 @@ public class DependencyUtilsTest {
   @Before
   public void before() throws URISyntaxException {
     bundleDescriptor =
-        new BundleDescriptor.Builder().setGroupId(GROUP_ID).setArtifactId(ARTIFACT_ID).setVersion(VERSION).build();
+        new BundleDescriptor.Builder().setGroupId(GROUP_ID).setArtifactId(ARTIFACT_ID).setVersion(VERSION).setBaseVersion(VERSION)
+            .build();
     bundleURI = new URI(RESOURCE_LOCATION);
   }
 
@@ -60,7 +61,8 @@ public class DependencyUtilsTest {
   @Test
   public void toArtifactCoordinatesTest() {
     bundleDescriptor =
-        new BundleDescriptor.Builder().setGroupId(GROUP_ID).setArtifactId(ARTIFACT_ID).setVersion(VERSION).setType(POM_TYPE)
+        new BundleDescriptor.Builder().setGroupId(GROUP_ID).setArtifactId(ARTIFACT_ID).setVersion(VERSION).setBaseVersion(VERSION)
+            .setType(POM_TYPE)
             .setClassifier(MULE_PLUGIN).build();
 
     ArtifactCoordinates actualArtifactCoordinates = DependencyUtils.toArtifactCoordinates(bundleDescriptor);
@@ -76,7 +78,7 @@ public class DependencyUtilsTest {
     Dependency actualDependency = DependencyUtils.toDependency(bundleDependency);
 
     assertArtifactCoordinates(actualDependency.getArtifactCoordinates(), DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, null);
-    assertThat("Dependency path location is not the expected", actualDependency.getPath(), equalTo(bundleURI));
+    assertThat("Dependency path location is not the expected", actualDependency.getUri(), equalTo(bundleURI));
   }
 
   private void assertArtifactCoordinates(ArtifactCoordinates actualArtifactCoordinates, String type,

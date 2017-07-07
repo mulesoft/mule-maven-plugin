@@ -17,21 +17,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class Dependency implements Comparable {
 
   private ArtifactCoordinates artifactCoordinates;
-  private URI path;
+  private URI uri;
 
   public Dependency(ArtifactCoordinates artifactCoordinates, URI path) {
     checkNotNull(artifactCoordinates, "Artifact coordinates cannot be null");
     checkNotNull(path, "Path cannot be null");
     this.artifactCoordinates = artifactCoordinates;
-    this.path = path;
+    this.uri = path;
   }
 
   public ArtifactCoordinates getArtifactCoordinates() {
     return artifactCoordinates;
   }
 
-  public URI getPath() {
-    return path;
+  public URI getUri() {
+    return uri;
   }
 
   @Override

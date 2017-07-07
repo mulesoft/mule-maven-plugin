@@ -28,7 +28,8 @@ public class DependencyUtils {
 
   public static ArtifactCoordinates toArtifactCoordinates(BundleDescriptor bundleDescriptor) {
     ArtifactCoordinates artifactCoordinates =
-        new ArtifactCoordinates(bundleDescriptor.getGroupId(), bundleDescriptor.getArtifactId(), bundleDescriptor.getVersion(),
+        new ArtifactCoordinates(bundleDescriptor.getGroupId(), bundleDescriptor.getArtifactId(),
+                                bundleDescriptor.getBaseVersion(),
                                 bundleDescriptor.getType(), bundleDescriptor.getClassifier().orElse(null));
     return artifactCoordinates;
   }
@@ -57,7 +58,7 @@ public class DependencyUtils {
                                             artifactCoordinates.getVersion(), null, artifactCoordinates.getType(),
                                             artifactCoordinates.getClassifier(),
                                             new DefaultArtifactHandler(artifactCoordinates.getType()));
-    artifact.setFile(new File(dependency.getPath()));
+    artifact.setFile(new File(dependency.getUri()));
     return artifact;
   }
 }

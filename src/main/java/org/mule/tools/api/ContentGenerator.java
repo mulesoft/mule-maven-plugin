@@ -19,19 +19,23 @@ import static org.mule.tools.api.packager.PackagerFolders.MULE_SRC;
 import static org.mule.tools.api.packager.PackagerFolders.TARGET;
 import static org.mule.tools.api.packager.PackagerFolders.TEST_MULE;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import org.mule.tools.api.packager.PackagerFolders;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.maven.mojo.model.PackagingType;
 import org.mule.tools.maven.util.CopyFileVisitor;
 
@@ -41,6 +45,7 @@ import org.mule.tools.maven.util.CopyFileVisitor;
  */
 public class ContentGenerator {
 
+  private static final String CLASSLOADER_MODEL_FILE_NAME = "classloader-model.json";
   private String groupId;
   private String artifactId;
   private String version;
@@ -108,8 +113,7 @@ public class ContentGenerator {
   }
 
   /**
-   * It creates the {@link PackagerFolders#MULE_SRC} folder used by IDEs to import the
-   * project source code
+   * It creates the {@link PackagerFolders#MULE_SRC} folder used by IDEs to import the project source code
    * 
    * @throws IOException
    */
@@ -134,6 +138,25 @@ public class ContentGenerator {
     copyPomFile();
     createPomProperties();
     copyDescriptorFile();
+  }
+
+  /**
+   * It creates classloader-model.json in META-INF/mule-artifact
+   *
+   * @param classLoaderModel the classloader model of the application being packaged
+   */
+  public void createClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel) {
+    File destinationFile =
+        projectTargetFolder.resolve(META_INF).resolve(MULE_ARTIFACT).resolve(CLASSLOADER_MODEL_FILE_NAME).toFile();
+    try {
+      destinationFile.createNewFile();
+      Gson gson = new GsonBuilder().setPrettyPrinting().create();
+      Writer writer = new FileWriter(destinationFile.getAbsolutePath());
+      gson.toJson(classLoaderModel, writer);
+      writer.close();
+    } catch (IOException e) {
+      throw new RuntimeException("Could not create classloadermodel.json", e);
+    }
   }
 
   private void copyPomFile() throws IOException {
@@ -197,5 +220,4 @@ public class ContentGenerator {
   private void checkPathExist(Path path) {
     checkArgument(path.toFile().exists(), "The path: " + path.toString() + " should exits");
   }
-
 }

@@ -8,19 +8,17 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.dependency.model;
+package org.mule.tools.api.classloader.model;
 
 import org.apache.commons.lang.StringUtils;
-
-import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
 public class ArtifactCoordinates {
 
   public static final String DEFAULT_ARTIFACT_TYPE = "jar";
-  private String artifactId;
   private String groupId;
+  private String artifactId;
   private String version;
   private String type;
   private String classifier;
@@ -38,15 +36,6 @@ public class ArtifactCoordinates {
     setClassifier(classifier);
   }
 
-  public String getArtifactId() {
-    return artifactId;
-  }
-
-  public void setArtifactId(String artifactId) {
-    checkArgument(StringUtils.isNotBlank(artifactId), "Artifact id can not be null nor blank");
-    this.artifactId = artifactId;
-  }
-
   public String getGroupId() {
     return groupId;
   }
@@ -54,6 +43,15 @@ public class ArtifactCoordinates {
   public void setGroupId(String groupId) {
     checkArgument(StringUtils.isNotBlank(groupId), "Group id cannot be null nor blank");
     this.groupId = groupId;
+  }
+
+  public String getArtifactId() {
+    return artifactId;
+  }
+
+  public void setArtifactId(String artifactId) {
+    checkArgument(StringUtils.isNotBlank(artifactId), "Artifact id can not be null nor blank");
+    this.artifactId = artifactId;
   }
 
   public String getVersion() {
@@ -84,7 +82,7 @@ public class ArtifactCoordinates {
 
   @Override
   public String toString() {
-    return artifactId + ':' + groupId + ':' + version + ':' + type + (StringUtils.isNotBlank(classifier) ? ':' + classifier : "");
+    return groupId + ':' + artifactId + ':' + version + ':' + type + (StringUtils.isNotBlank(classifier) ? ':' + classifier : "");
   }
 
   @Override

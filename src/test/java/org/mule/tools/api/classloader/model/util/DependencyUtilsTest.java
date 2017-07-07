@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.dependency.util;
+package org.mule.tools.api.classloader.model.util;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,8 +16,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.tools.maven.dependency.model.ArtifactCoordinates;
-import org.mule.tools.maven.dependency.model.Dependency;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.Dependency;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,7 +25,7 @@ import java.net.URISyntaxException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
-import static org.mule.tools.maven.dependency.util.DependencyUtils.isValidMulePlugin;
+import static org.mule.tools.api.classloader.model.util.DependencyUtils.isValidMulePlugin;
 
 public class DependencyUtilsTest {
 
@@ -47,7 +47,8 @@ public class DependencyUtilsTest {
   @Before
   public void before() throws URISyntaxException {
     bundleDescriptor =
-        new BundleDescriptor.Builder().setGroupId(GROUP_ID).setArtifactId(ARTIFACT_ID).setVersion(VERSION).build();
+        new BundleDescriptor.Builder().setGroupId(GROUP_ID).setArtifactId(ARTIFACT_ID).setVersion(VERSION).setBaseVersion(VERSION)
+            .build();
     bundleURI = new URI(RESOURCE_LOCATION);
   }
 
@@ -60,7 +61,8 @@ public class DependencyUtilsTest {
   @Test
   public void toArtifactCoordinatesTest() {
     bundleDescriptor =
-        new BundleDescriptor.Builder().setGroupId(GROUP_ID).setArtifactId(ARTIFACT_ID).setVersion(VERSION).setType(POM_TYPE)
+        new BundleDescriptor.Builder().setGroupId(GROUP_ID).setArtifactId(ARTIFACT_ID).setVersion(VERSION).setBaseVersion(VERSION)
+            .setType(POM_TYPE)
             .setClassifier(MULE_PLUGIN).build();
 
     ArtifactCoordinates actualArtifactCoordinates = DependencyUtils.toArtifactCoordinates(bundleDescriptor);
@@ -76,7 +78,7 @@ public class DependencyUtilsTest {
     Dependency actualDependency = DependencyUtils.toDependency(bundleDependency);
 
     assertArtifactCoordinates(actualDependency.getArtifactCoordinates(), DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, null);
-    assertThat("Dependency path location is not the expected", actualDependency.getPath(), equalTo(bundleURI));
+    assertThat("Dependency path location is not the expected", actualDependency.getUri(), equalTo(bundleURI));
   }
 
   private void assertArtifactCoordinates(ArtifactCoordinates actualArtifactCoordinates, String type,

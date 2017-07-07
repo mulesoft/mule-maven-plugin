@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.maven.mojo;
+package org.mule.tools.maven.mojo.deploy;
 
 import groovy.lang.GroovyShell;
 import org.apache.commons.lang.StringUtils;

@@ -16,7 +16,10 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
 import org.eclipse.aether.RepositorySystemSession;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.maven.repository.RepositoryGenerator;
+
+import static java.lang.String.format;
 
 @Mojo(name = "process-sources",
     defaultPhase = LifecyclePhase.PROCESS_SOURCES,
@@ -34,12 +37,15 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
     getLog().debug("Processing sources...");
 
     if (!lightweightPackage) {
-      RepositoryGenerator repositoryGenerator = new RepositoryGenerator(session, project, localRepository,
-                                                                        remoteArtifactRepositories, outputDirectory,
-                                                                        getLog(), aetherRepositorySystem,
-                                                                        aetherRepositorySystemSession,
-                                                                        repositorySystem, projectBuilder);
-      repositoryGenerator.generate();
+      RepositoryGenerator repositoryGenerator =
+          new RepositoryGenerator(project, remoteArtifactRepositories, outputDirectory, getLog(), aetherRepositorySystem,
+                                  aetherRepositorySystemSession);
+      try {
+        ClassLoaderModel classLoaderModel = repositoryGenerator.generate();
+        getContentGenerator().createClassLoaderModelJsonFile(classLoaderModel);
+      } catch (Exception e) {
+        getLog().debug(format("There was an exception while creating the repository of [%s]", project.toString()), e);
+      }
     }
 
     getLog().debug(MessageFormat.format("Process sources done ({0}ms)", System.currentTimeMillis() - start));

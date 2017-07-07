@@ -8,15 +8,15 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.dependency.util;
+package org.mule.tools.api.classloader.model.util;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.tools.maven.dependency.model.ArtifactCoordinates;
-import org.mule.tools.maven.dependency.model.Dependency;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.Dependency;
 
 import java.io.File;
 import java.util.*;
@@ -28,7 +28,8 @@ public class DependencyUtils {
 
   public static ArtifactCoordinates toArtifactCoordinates(BundleDescriptor bundleDescriptor) {
     ArtifactCoordinates artifactCoordinates =
-        new ArtifactCoordinates(bundleDescriptor.getGroupId(), bundleDescriptor.getArtifactId(), bundleDescriptor.getVersion(),
+        new ArtifactCoordinates(bundleDescriptor.getGroupId(), bundleDescriptor.getArtifactId(),
+                                bundleDescriptor.getBaseVersion(),
                                 bundleDescriptor.getType(), bundleDescriptor.getClassifier().orElse(null));
     return artifactCoordinates;
   }
@@ -41,8 +42,8 @@ public class DependencyUtils {
     return dependency;
   }
 
-  public static SortedSet<Dependency> toDependencies(List<BundleDependency> dependencies) {
-    return dependencies.stream().map(DependencyUtils::toDependency).collect(Collectors.toCollection(TreeSet::new));
+  public static List<Dependency> toDependencies(List<BundleDependency> dependencies) {
+    return dependencies.stream().map(DependencyUtils::toDependency).collect(Collectors.toList());
   }
 
   public static boolean isValidMulePlugin(Dependency dependency) {
@@ -57,7 +58,7 @@ public class DependencyUtils {
                                             artifactCoordinates.getVersion(), null, artifactCoordinates.getType(),
                                             artifactCoordinates.getClassifier(),
                                             new DefaultArtifactHandler(artifactCoordinates.getType()));
-    artifact.setFile(new File(dependency.getPath()));
+    artifact.setFile(new File(dependency.getUri()));
     return artifact;
   }
 }

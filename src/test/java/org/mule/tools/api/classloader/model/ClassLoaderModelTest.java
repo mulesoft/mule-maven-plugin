@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.dependency.model;
+package org.mule.tools.api.classloader.model;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -74,10 +74,10 @@ public class ClassLoaderModelTest {
     String notMulePluginsInitialMessage = "The following dependencies are not mule plugins but are trying to be added as such: ";
     expectedException.expectMessage(notMulePluginsInitialMessage);
 
-    Set<Dependency> mulePlugins = buildDependencySet(NUMBER_MULE_PLUGINS, MULE_PLUGIN_CLASSIFIER);
-    Set<Dependency> notMulePlugins1 =
-        buildDependencySet(NUMBER_NOT_MULE_PLUGINS_DEPENDENCIES, NOT_MULE_PLUGIN_EXAMPLE_CLASSIFIER);
-    Set<Dependency> notMulePlugins2 = buildDependencySet(NUMBER_DEPENDENCIES_WITHOUT_CLASSIFIER, null);
+    List<Dependency> mulePlugins = buildDependencyList(NUMBER_MULE_PLUGINS, MULE_PLUGIN_CLASSIFIER);
+    List<Dependency> notMulePlugins1 =
+        buildDependencyList(NUMBER_NOT_MULE_PLUGINS_DEPENDENCIES, NOT_MULE_PLUGIN_EXAMPLE_CLASSIFIER);
+    List<Dependency> notMulePlugins2 = buildDependencyList(NUMBER_DEPENDENCIES_WITHOUT_CLASSIFIER, null);
 
     Set<Dependency> allDependenciesCandidatesAsMulePlugins = new HashSet<>();
 
@@ -97,10 +97,10 @@ public class ClassLoaderModelTest {
     Dependency mulePlugin1 = buildDependency(MULE_PLUGIN_CLASSIFIER);
     Dependency mulePlugin2 = buildDependency(MULE_PLUGIN_CLASSIFIER);
 
-    SortedSet<Dependency> mulePlugin1Dependencies = new TreeSet<>(buildDependencySet(ARBITRARY_NUMBER_DEPENDENCIES, null));
-    SortedSet<Dependency> mulePlugin2Dependencies = new TreeSet<>(buildDependencySet(INITIAL_NUMBER_DEPENDENCIES, null));
+    List<Dependency> mulePlugin1Dependencies = buildDependencyList(ARBITRARY_NUMBER_DEPENDENCIES, null);
+    List<Dependency> mulePlugin2Dependencies = buildDependencyList(INITIAL_NUMBER_DEPENDENCIES, null);
 
-    Map<Dependency, Set<Dependency>> mulePlugins = new TreeMap<>();
+    Map<Dependency, List<Dependency>> mulePlugins = new TreeMap<>();
     mulePlugins.put(mulePlugin1, mulePlugin1Dependencies);
     mulePlugins.put(mulePlugin2, mulePlugin2Dependencies);
 
@@ -108,12 +108,12 @@ public class ClassLoaderModelTest {
 
     model.setMulePlugins(mulePlugins);
 
-    SortedSet<Dependency> additionalMulePlugin2Dependencies =
-        new TreeSet<>(buildDependencySet(ADDITIONAL_NUMBER_DEPENDENCIES, null));
+    List<Dependency> additionalMulePlugin2Dependencies =
+        buildDependencyList(ADDITIONAL_NUMBER_DEPENDENCIES, null);
 
     model.addMulePlugin(mulePlugin2, additionalMulePlugin2Dependencies);
 
-    Map<Dependency, Set<Dependency>> actualMulePlugins = model.getMulePlugins();
+    Map<Dependency, List<Dependency>> actualMulePlugins = model.getMulePlugins();
 
     assertThat("Number of mule plugins in set is not the expected", actualMulePlugins.keySet().size(),
                equalTo(NUMBER_MULE_PLUGINS));
@@ -129,8 +129,8 @@ public class ClassLoaderModelTest {
     return new Dependency(buildArtifactCoordinates(classifier), buildURI());
   }
 
-  private Set<Dependency> buildDependencySet(int numberElements, String classifier) throws URISyntaxException {
-    Set<Dependency> dependencies = new HashSet<>();
+  private List<Dependency> buildDependencyList(int numberElements, String classifier) throws URISyntaxException {
+    List<Dependency> dependencies = new ArrayList<>();
     while (numberElements > 0) {
       ArtifactCoordinates coordinates = buildArtifactCoordinates(classifier);
 

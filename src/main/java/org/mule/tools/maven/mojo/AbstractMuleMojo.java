@@ -15,6 +15,7 @@ import static org.mule.tools.api.packager.PackagerFolders.POLICY;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.repository.RepositorySystem;
+import org.mule.tools.api.ContentGenerator;
 import org.mule.tools.maven.mojo.model.PackagingType;
 import org.mule.tools.maven.mojo.model.SharedLibraryDependency;
 
@@ -73,4 +75,15 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
 
   @Parameter
   protected String classifier;
+
+  protected ContentGenerator contentGenerator;
+
+  protected ContentGenerator getContentGenerator() {
+    if (contentGenerator == null) {
+      contentGenerator = new ContentGenerator(project.getGroupId(), project.getArtifactId(), project.getVersion(),
+                                              PackagingType.fromString(project.getPackaging()),
+                                              Paths.get(projectBaseFolder.toURI()), Paths.get(project.getBuild().getDirectory()));
+    }
+    return contentGenerator;
+  }
 }

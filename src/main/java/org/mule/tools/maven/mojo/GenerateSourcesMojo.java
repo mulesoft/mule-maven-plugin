@@ -42,10 +42,4 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
 
     getLog().debug(MessageFormat.format("Source code generation done ({0}ms)", System.currentTimeMillis() - start));
   }
-
-  protected ContentGenerator getContentGenerator() {
-    return new ContentGenerator(project.getGroupId(), project.getArtifactId(), project.getVersion(),
-                                PackagingType.fromString(project.getPackaging()),
-                                Paths.get(projectBaseFolder.toURI()), Paths.get(project.getBuild().getDirectory()));
-  }
 }

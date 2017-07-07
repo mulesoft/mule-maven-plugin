@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.dependency.model;
+package org.mule.tools.api.classloader.model;
 
 import java.net.URI;
 

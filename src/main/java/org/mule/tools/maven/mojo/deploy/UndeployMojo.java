@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.maven.mojo;
+package org.mule.tools.maven.mojo.deploy;
 
 import org.mule.tools.client.standalone.Undeployer;
 import org.mule.tools.client.agent.AgentClient;
@@ -19,10 +19,10 @@ import java.io.File;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.mule.tools.maven.mojo.deploy.AbstractMuleDeployerMojo;
+import org.mule.tools.maven.mojo.deploy.DeployMojo;
 
 import javax.ws.rs.NotFoundException;
-
-import static org.mule.tools.maven.mojo.AbstractMuleDeployerMojo.DeploymentType.*;
 
 /**
  * Undeploys all the applications on a Mule Runtime Standalone server, regardless of whether it was started using start or deploy

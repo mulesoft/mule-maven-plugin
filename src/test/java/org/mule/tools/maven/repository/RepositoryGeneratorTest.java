@@ -49,13 +49,10 @@ public class RepositoryGeneratorTest {
   private static final String TYPE = "zip";
   private static final String CLASSIFIER = "classifier";
   private static final String REPOSITORY_FOLDER = "repository";
-  private static final int NUMBER_ARTIFACT_REPOSITORIES = 10;
   private TemporaryFolder temporaryFolder;
   private RepositoryGenerator repositoryGenerator;
-  private MavenSession sessionMock;
   private MavenProject projectMock;
   private ProjectBuilder projectBuilderMock;
-  private ArtifactRepository localRepositoryMock;
   private ArtifactInstaller artifactInstallerMock;
   private List<ArtifactRepository> remoteArtifactRepositoriesMock;
   private ProjectBuildingResult resultMock;
@@ -76,25 +73,21 @@ public class RepositoryGeneratorTest {
   public void before() throws IOException, ProjectBuildingException {
     temporaryFolder = new TemporaryFolder();
     temporaryFolder.create();
-    sessionMock = mock(MavenSession.class);
     projectMock = mock(MavenProject.class);
     projectBuilderMock = mock(ProjectBuilder.class);
     resultMock = mock(ProjectBuildingResult.class);
     when(resultMock.getProject()).thenReturn(projectMock);
     when(projectBuilderMock.build(Mockito.any(Artifact.class), any(ProjectBuildingRequest.class))).thenReturn(resultMock);
     repositorySystemMock = mock(RepositorySystem.class);
-    localRepositoryMock = mock(ArtifactRepository.class);
     remoteArtifactRepositoriesMock = new ArrayList<>();
     logMock = mock(Log.class);
     artifactInstallerMock = mock(ArtifactInstaller.class);
     aetherRepositorySystem = mock(org.eclipse.aether.RepositorySystem.class);
     aetherRepositorySystemSession = mock(RepositorySystemSession.class);
-    repositoryGenerator = new RepositoryGenerator(sessionMock,
-                                                  projectMock,
-                                                  localRepositoryMock,
+    repositoryGenerator = new RepositoryGenerator(projectMock,
                                                   remoteArtifactRepositoriesMock,
                                                   temporaryFolder.getRoot(), logMock, aetherRepositorySystem,
-                                                  aetherRepositorySystemSession, repositorySystemMock, projectBuilderMock);
+                                                  aetherRepositorySystemSession);
     repositoryGeneratorSpy = spy(repositoryGenerator);
     artifactHandler = new DefaultArtifactHandler(TYPE);
   }
@@ -162,42 +155,6 @@ public class RepositoryGeneratorTest {
     assertThat("Repository folder does not exist", expectedRepositoryFolder.exists());
     File actualRepositoryFolder = repositoryGenerator.getRepositoryFolder();
     assertThat("Repository folder was modified", actualRepositoryFolder, equalTo(expectedRepositoryFolder));
-  }
-
-  @Test
-  public void initializeProjectBuildingRequestTest() {
-    when(localRepositoryMock.getBasedir()).thenReturn(temporaryFolder.getRoot().getAbsolutePath());
-
-    when(sessionMock.getProjectBuildingRequest()).thenReturn(new DefaultProjectBuildingRequest());
-
-    List<ArtifactRepository> remoteArtifactRepositories = new ArrayList<>();
-
-    for (int i = 0; i < NUMBER_ARTIFACT_REPOSITORIES; ++i) {
-      remoteArtifactRepositories.add(createArtifactRepository(i));
-    }
-
-    repositoryGenerator = new RepositoryGenerator(sessionMock,
-                                                  projectMock,
-                                                  localRepositoryMock,
-                                                  remoteArtifactRepositories,
-                                                  temporaryFolder.getRoot(), logMock, aetherRepositorySystem,
-                                                  aetherRepositorySystemSession, repositorySystemMock, projectBuilderMock);
-
-    repositoryGenerator.initializeProjectBuildingRequest();
-
-    verify(localRepositoryMock, times(1)).getBasedir();
-
-    for (ArtifactRepository repository : remoteArtifactRepositories) {
-      verify(repository, times(1)).getId();
-      verify(repository, times(1)).getUrl();
-    }
-  }
-
-  private ArtifactRepository createArtifactRepository(int i) {
-    ArtifactRepository repository = mock(ArtifactRepository.class);
-    when(repository.getId()).thenReturn("id" + i);
-    when(repository.getUrl()).thenReturn("url" + i);
-    return repository;
   }
 
   private Artifact createArtifact(int i) {

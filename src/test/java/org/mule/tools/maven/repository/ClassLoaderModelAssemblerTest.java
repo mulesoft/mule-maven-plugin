@@ -14,7 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
-import static org.mule.tools.maven.dependency.util.DependencyUtils.toDependency;
+import static org.mule.tools.api.classloader.model.util.DependencyUtils.toDependency;
 
 import java.io.File;
 import java.net.URI;
@@ -25,17 +25,15 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
-import org.apache.maven.plugin.logging.Log;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
-import org.mule.tools.maven.dependency.model.ArtifactCoordinates;
-import org.mule.tools.maven.dependency.model.ClassLoaderModel;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 public class ClassLoaderModelAssemblerTest {
 
@@ -46,14 +44,11 @@ public class ClassLoaderModelAssemblerTest {
   private static final String SEPARATOR = "/";
   private static final String MULE_PLUGIN_CLASSIFIER = "mule-plugin";
   private static final String GROUP_ID_SEPARATOR = ".";
-  private File dummyFile;
   private ClassLoaderModelAssembler classLoaderModelAssembler;
-  private Log logMock;
   private static final String GROUP_ID = "group.id";
   private static final String ARTIFACT_ID = "artifact-id";
   private static final String VERSION = "1.0.0";
   private static final String TYPE = "jar";
-  private TemporaryFolder temporaryFolder;
   private Model pomModel;
   private Parent parentProject;
 
@@ -64,11 +59,8 @@ public class ClassLoaderModelAssemblerTest {
 
   @Before
   public void before() {
-    temporaryFolder = new TemporaryFolder();
-    dummyFile = new File(temporaryFolder.getRoot(), SEPARATOR);
-    logMock = mock(Log.class);
     classLoaderModelAssembler =
-        new ClassLoaderModelAssembler(logMock, mock(AetherMavenClient.class));
+        new ClassLoaderModelAssembler(mock(AetherMavenClient.class));
     pomModel = new Model();
     pomModel.setGroupId(GROUP_ID);
     pomModel.setArtifactId(ARTIFACT_ID);
@@ -233,7 +225,7 @@ public class ClassLoaderModelAssemblerTest {
   }
 
   private ClassLoaderModelAssembler getClassLoaderModelAssemblySpy(AetherMavenClient aetherMavenClientMock) {
-    ClassLoaderModelAssembler classLoaderModelAssemblerSpy = spy(new ClassLoaderModelAssembler(logMock, aetherMavenClientMock));
+    ClassLoaderModelAssembler classLoaderModelAssemblerSpy = spy(new ClassLoaderModelAssembler(aetherMavenClientMock));
     ArtifactCoordinates projectArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
     doReturn(projectArtifactCoordinates).when(classLoaderModelAssemblerSpy).getArtifactCoordinates(any());
     BundleDescriptor projectBundleDescriptor = mock(BundleDescriptor.class);

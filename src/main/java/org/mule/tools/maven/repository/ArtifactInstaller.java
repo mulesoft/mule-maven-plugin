@@ -57,10 +57,6 @@ public class ArtifactInstaller {
     this.repositorySystemSession = repositorySystemSession;
   }
 
-  protected List<RemoteRepository> toAetherRepos(List<ArtifactRepository> remoteArtifactRepositories) {
-    return RepositoryUtils.toRepos(remoteArtifactRepositories);
-  }
-
   public void installArtifact(File repositoryFile, Artifact artifact) throws MojoExecutionException {
     checkArgument(artifact != null, "Artifact to be installed should not be null");
     String artifactFilename = getFormattedFileName(artifact);
@@ -147,59 +143,5 @@ public class ArtifactInstaller {
     sb.append(artifact.getBaseVersion()).append(separatorChar);
 
     return new File(outputDirectory, sb.toString());
-  }
-
-  public void downloadExcludedDependencyToLocalRepository(Artifact artifact) throws MojoExecutionException {
-    CollectRequest collectRequest = new CollectRequest();
-    collectRequest.setRoot(new Dependency(RepositoryUtils.toArtifact(artifact), null));
-    for (RemoteRepository repository : toAetherRepos(remoteRepositories)) {
-      collectRequest.addRepository(repository);
-    }
-    DependencyFilter dependencyFilter = DependencyFilterUtils
-        .classpathFilter(JavaScopes.RUNTIME, JavaScopes.COMPILE, JavaScopes.PROVIDED, JavaScopes.SYSTEM, JavaScopes.TEST);
-    DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, dependencyFilter);
-    try {
-      DependencyResult dependencyResult = repositorySystem.resolveDependencies(repositorySystemSession, dependencyRequest);
-      List<ArtifactResult> results = dependencyResult.getArtifactResults();
-      if (results != null && results.size() != 0) {
-        org.eclipse.aether.artifact.Artifact resolved = results.get(0).getArtifact();
-        artifact.setFile(resolved.getFile());
-      }
-    } catch (DependencyResolutionException e) {
-      throw new MojoExecutionException("Error while resolving dependency " + artifact.getGroupId() + ":"
-          + artifact.getArtifactId() + ":" + artifact.getVersion(), e);
-    }
-  }
-
-  public void generateExcludedDependencyMetadata(File repositoryFile, Artifact artifact) throws MojoExecutionException {
-    checkArgument(artifact != null, "Artifact from which metadata is going to be extracted should not be null");
-    String pomFileName = getPomFileName(artifact);
-    File metadataFolderDestination = getFormattedOutputDirectory(repositoryFile, artifact);
-
-    if (!metadataFolderDestination.exists()) {
-      metadataFolderDestination.mkdirs();
-    }
-    if (artifact.getFile() == null) {
-      return;
-    }
-    File sourcePomFile = new File(artifact.getFile().getParent(), pomFileName);
-    if (!sourcePomFile.exists()) {
-      sourcePomFile = new File(artifact.getFile().getParent(), POM_FILE_NAME);
-    }
-    File destinationPomFile = new File(metadataFolderDestination, pomFileName);
-    try {
-      log.info(format("Adding artifact <%s%s>",
-                      REPOSITORY,
-                      destinationPomFile.getAbsolutePath()
-                          .replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
-                                        "")));
-      copyFile(sourcePomFile, destinationPomFile);
-    } catch (IOException e) {
-      throw new MojoExecutionException(
-                                       format("There was a problem while copying the [%s] pom file from [%s] to the destination [%s]",
-                                              artifact.toString(), sourcePomFile.getAbsolutePath(),
-                                              destinationPomFile.getAbsolutePath()),
-                                       e);
-    }
   }
 }

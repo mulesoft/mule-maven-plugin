@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.dependency.util;
+package org.mule.tools.api.classloader.model.util;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,8 +16,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.tools.maven.dependency.model.ArtifactCoordinates;
-import org.mule.tools.maven.dependency.model.Dependency;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.Dependency;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,7 +25,7 @@ import java.net.URISyntaxException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
-import static org.mule.tools.maven.dependency.util.DependencyUtils.isValidMulePlugin;
+import static org.mule.tools.api.classloader.model.util.DependencyUtils.isValidMulePlugin;
 
 public class DependencyUtilsTest {
 

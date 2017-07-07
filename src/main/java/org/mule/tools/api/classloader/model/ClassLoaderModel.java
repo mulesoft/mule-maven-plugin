@@ -8,23 +8,23 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.dependency.model;
+package org.mule.tools.api.classloader.model;
 
 import org.apache.maven.artifact.Artifact;
-import org.mule.tools.maven.dependency.util.DependencyUtils;
+import org.mule.tools.api.classloader.model.util.DependencyUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.maven.dependency.util.DependencyUtils.isValidMulePlugin;
+import static org.mule.tools.api.classloader.model.util.DependencyUtils.isValidMulePlugin;
 
 public class ClassLoaderModel {
 
   private String version;
   private ArtifactCoordinates artifactCoordinates;
-  private Set<Dependency> dependencies = new TreeSet<>();
-  private Map<Dependency, Set<Dependency>> mulePlugins = new TreeMap<>();
+  private List<Dependency> dependencies = new ArrayList<>();
+  private Map<Dependency, List<Dependency>> mulePlugins = new TreeMap<>();
 
   public ClassLoaderModel(String version, ArtifactCoordinates artifactCoordinates) {
     setArtifactCoordinates(artifactCoordinates);
@@ -49,19 +49,19 @@ public class ClassLoaderModel {
     this.artifactCoordinates = artifactCoordinates;
   }
 
-  public Set<Dependency> getDependencies() {
+  public List<Dependency> getDependencies() {
     return this.dependencies;
   }
 
-  public void setDependencies(Set<Dependency> dependencies) {
+  public void setDependencies(List<Dependency> dependencies) {
     this.dependencies = dependencies;
   }
 
-  public Map<Dependency, Set<Dependency>> getMulePlugins() {
+  public Map<Dependency, List<Dependency>> getMulePlugins() {
     return this.mulePlugins;
   }
 
-  public void setMulePlugins(Map<Dependency, Set<Dependency>> mulePlugins) {
+  public void setMulePlugins(Map<Dependency, List<Dependency>> mulePlugins) {
     validatePlugins(mulePlugins.keySet());
     this.mulePlugins.putAll(mulePlugins);
   }
@@ -77,11 +77,11 @@ public class ClassLoaderModel {
     }
   }
 
-  public void addMulePlugin(Dependency dependency, Set<Dependency> pluginDependencies) {
+  public void addMulePlugin(Dependency dependency, List<Dependency> pluginDependencies) {
     if (!isValidMulePlugin(dependency)) {
       throw new IllegalArgumentException("The dependency " + dependency + " is not a valid mule plugin dependency");
     }
-    Set<Dependency> newDependencies = this.mulePlugins.getOrDefault(dependency, pluginDependencies);
+    List<Dependency> newDependencies = this.mulePlugins.getOrDefault(dependency, pluginDependencies);
     newDependencies.addAll(pluginDependencies);
     this.mulePlugins.put(dependency, newDependencies);
   }

@@ -11,8 +11,8 @@ package org.mule.tools.maven.mojo.model;
 
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.client.model.TargetType;
-import org.mule.tools.maven.mojo.AbstractMuleDeployerMojo.DeploymentType;
-import org.mule.tools.maven.mojo.DeployMojo;
+import org.mule.tools.maven.mojo.deploy.AbstractMuleDeployerMojo.DeploymentType;
+import org.mule.tools.maven.mojo.deploy.DeployMojo;
 
 import java.io.File;
 import java.util.ArrayList;

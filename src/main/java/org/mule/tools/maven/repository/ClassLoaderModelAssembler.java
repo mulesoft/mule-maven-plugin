@@ -13,9 +13,9 @@ package org.mule.tools.maven.repository;
 import static java.lang.String.format;
 import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
 import static org.mule.maven.client.internal.util.MavenUtils.getPomModelFromFile;
-import static org.mule.tools.maven.dependency.util.DependencyUtils.*;
-import static org.mule.tools.maven.dependency.util.DependencyUtils.toDependencies;
-import static org.mule.tools.maven.dependency.util.DependencyUtils.toDependency;
+import static org.mule.tools.api.classloader.model.util.DependencyUtils.*;
+import static org.mule.tools.api.classloader.model.util.DependencyUtils.toDependencies;
+import static org.mule.tools.api.classloader.model.util.DependencyUtils.toDependency;
 
 import java.io.File;
 import java.util.*;
@@ -23,22 +23,20 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Model;
-import org.apache.maven.plugin.logging.Log;
 import org.eclipse.aether.graph.DependencyFilter;
 import org.mule.maven.client.api.PomFileSupplierFactory;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
-import org.mule.tools.maven.dependency.model.ArtifactCoordinates;
-import org.mule.tools.maven.dependency.model.ClassLoaderModel;
-import org.mule.tools.maven.dependency.model.Dependency;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.classloader.model.Dependency;
 
 
 public class ClassLoaderModelAssembler {
 
   private static final String POM_TYPE = "pom";
   private static final String CLASS_LOADER_MODEL_VERSION = "1.0.0";
-  private final Log log;
   private final AetherMavenClient muleMavenPluginClient;
   private ClassLoaderModel model;
   protected DependencyFilter mulePluginFilter = (node, parents) -> node != null && node.getArtifact() != null
@@ -46,8 +44,7 @@ public class ClassLoaderModelAssembler {
   protected DependencyFilter notMulePluginFilter = (node, parents) -> node != null && node.getArtifact() != null
       && MULE_PLUGIN_CLASSIFIER.equals(node.getArtifact().getClassifier());
 
-  public ClassLoaderModelAssembler(Log log, AetherMavenClient muleMavenPluginClient) {
-    this.log = log;
+  public ClassLoaderModelAssembler(AetherMavenClient muleMavenPluginClient) {
     this.muleMavenPluginClient = muleMavenPluginClient;
   }
 
@@ -72,7 +69,7 @@ public class ClassLoaderModelAssembler {
     return toDependency(bundleDependency);
   }
 
-  private Set<Dependency> getDependencies(List<BundleDependency> bundleDependencies) {
+  private List<Dependency> getDependencies(List<BundleDependency> bundleDependencies) {
     return toDependencies(bundleDependencies);
   }
 

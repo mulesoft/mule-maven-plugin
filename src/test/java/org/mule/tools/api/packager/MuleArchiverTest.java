@@ -125,7 +125,7 @@ public class MuleArchiverTest {
     relativePaths.add(tempBasePath.resolve("org.mule.fake").resolve("complete-app").resolve("pom.properties").toString());
 
     tempBasePath = Paths.get(META_INF).resolve(MULE_ARTIFACT);
-    relativePaths.add(tempBasePath.resolve("mule-application.json").toString());
+    relativePaths.add(tempBasePath.resolve("mule-artifact.json").toString());
 
     tempBasePath = Paths.get(META_INF).resolve(MULE_SRC).resolve(REAL_APP);
     relativePaths.add(tempBasePath.resolve("pom.xml").toString());

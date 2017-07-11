@@ -100,7 +100,7 @@ public class ValidateMojoTest extends MojoTest {
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
-    String textInLog = "Invalid Mule project. Missing mule-policy.json file, it must be present in the root of application";
+    String textInLog = "Invalid Mule project. Missing mule-artifact.json file, it must be present in the root of application";
     executeGoalAndVerifyText(VALIDATE, textInLog);
   }
 
@@ -110,7 +110,7 @@ public class ValidateMojoTest extends MojoTest {
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
-    String textInLog = "Invalid Mule project. Missing mule-application.json file, it must be present in the root of application";
+    String textInLog = "Invalid Mule project. Missing mule-artifact.json file, it must be present in the root of application";
     executeGoalAndVerifyText(VALIDATE, textInLog);
   }
 
@@ -120,7 +120,7 @@ public class ValidateMojoTest extends MojoTest {
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
-    String textInLog = "Invalid Mule project. Missing mule-application.json file, it must be present in the root of application";
+    String textInLog = "Invalid Mule project. Missing mule-artifact.json file, it must be present in the root of application";
     executeGoalAndVerifyText(VALIDATE, textInLog);
   }
 

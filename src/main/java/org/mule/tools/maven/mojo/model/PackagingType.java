@@ -12,14 +12,13 @@ package org.mule.tools.maven.mojo.model;
 
 import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
-import static org.mule.tools.api.packager.PackagerFiles.MULE_APPLICATION_JSON;
-import static org.mule.tools.api.packager.PackagerFiles.MULE_POLICY_JSON;
-import static org.mule.tools.api.packager.PackagerFolders.MULE;
-import static org.mule.tools.api.packager.PackagerFolders.POLICY;
 import static org.mule.tools.api.FolderNames.MAIN;
 import static org.mule.tools.api.FolderNames.MUNIT;
 import static org.mule.tools.api.FolderNames.SRC;
 import static org.mule.tools.api.FolderNames.TEST;
+import static org.mule.tools.api.packager.PackagerFiles.MULE_ARTIFACT_JSON;
+import static org.mule.tools.api.packager.PackagerFolders.MULE;
+import static org.mule.tools.api.packager.PackagerFolders.POLICY;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -101,10 +100,7 @@ public enum PackagingType {
   }
 
   public String getDescriptorFileName() {
-    if (MULE_POLICY.equals(defaultClassifier.toString())) {
-      return MULE_POLICY_JSON;
-    }
-    return MULE_APPLICATION_JSON;
+    return MULE_ARTIFACT_JSON;
   }
 
   private File mainFolder(Path projectBasedFolder) {

@@ -36,8 +36,7 @@ public class ContentGeneratorTest {
 
   private static final String POM_FILE_NAME = "pom.xml";
   private static final String FAKE_FILE_NAME = "fakeFile.xml";
-  private static final String MULE_POLICY_DESCRIPTOR_FILE_NAME = "mule-policy.json";
-  private static final String MULE_APPLICATION_DESCRIPTOR_FILE_NAME = "mule-application.json";
+  private static final String MULE_ARTIFACT_DESCRIPTOR_FILE_NAME = "mule-artifact.json";
 
   @Rule
   public TemporaryFolder projectBaseFolder = new TemporaryFolder();
@@ -178,7 +177,7 @@ public class ContentGeneratorTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void createDescriptorsNoOriginalPom() throws IOException {
-    String descriptorFileName = MULE_APPLICATION_DESCRIPTOR_FILE_NAME;
+    String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
     PackagerTestUtils.createFolder(sourceFolderPath, descriptorFileName, true);
@@ -211,7 +210,7 @@ public class ContentGeneratorTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void createDescriptorsNoDescriptorDestinationFolder() throws IOException {
-    String descriptorFileName = MULE_APPLICATION_DESCRIPTOR_FILE_NAME;
+    String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
     PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
@@ -228,7 +227,7 @@ public class ContentGeneratorTest {
 
   @Test
   public void createDescriptors() throws IOException {
-    String descriptorFileName = MULE_APPLICATION_DESCRIPTOR_FILE_NAME;
+    String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
     PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
@@ -256,7 +255,7 @@ public class ContentGeneratorTest {
     contentGenerator = new ContentGenerator(GROUP_ID, ARTIFACT_ID, VERSION, PackagingType.MULE_POLICY,
                                             projectBaseFolder.getRoot().toPath(), projectTargetFolder.getRoot().toPath());
 
-    String descriptorFileName = MULE_POLICY_DESCRIPTOR_FILE_NAME;
+    String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
     PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
@@ -284,7 +283,7 @@ public class ContentGeneratorTest {
     contentGenerator = new ContentGenerator(GROUP_ID, ARTIFACT_ID, VERSION, PackagingType.MULE_DOMAIN,
                                             projectBaseFolder.getRoot().toPath(), projectTargetFolder.getRoot().toPath());
 
-    String descriptorFileName = MULE_APPLICATION_DESCRIPTOR_FILE_NAME;
+    String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
     PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);

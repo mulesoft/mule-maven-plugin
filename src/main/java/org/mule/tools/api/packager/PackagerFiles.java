@@ -16,7 +16,6 @@ package org.mule.tools.api.packager;
 public class PackagerFiles {
 
   public static final String POM_XML = "pom.xml";
-  public static final String MULE_APPLICATION_JSON = "mule-application.json";
-  public static final String MULE_POLICY_JSON = "mule-policy.json";
+  public static final String MULE_ARTIFACT_JSON = "mule-artifact.json";
   public static final String POM_PROPERTIES = "pom.properties";
 }

@@ -19,8 +19,8 @@ import static org.mule.tools.api.FolderNames.MAIN;
 import static org.mule.tools.api.FolderNames.MULE;
 import static org.mule.tools.api.FolderNames.POLICY;
 import static org.mule.tools.api.FolderNames.SRC;
-import static org.mule.tools.api.packager.PackagerFiles.MULE_APPLICATION_JSON;
-import static org.mule.tools.api.packager.PackagerFiles.MULE_POLICY_JSON;
+import static org.mule.tools.api.packager.PackagerFiles.MULE_ARTIFACT_JSON;
+import org.mule.tools.api.exception.ValidationException;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -31,9 +31,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
-
-import org.mule.tools.api.Validator;
-import org.mule.tools.api.exception.ValidationException;
 
 public class ValidatorTest {
 
@@ -162,7 +159,7 @@ public class ValidatorTest {
 
   @Test
   public void isDescriptorFilePresentMuleApplication() throws IOException, ValidationException {
-    Path descriptorFilePath = projectBaseFolder.getRoot().toPath().resolve(MULE_APPLICATION_JSON);
+    Path descriptorFilePath = projectBaseFolder.getRoot().toPath().resolve(MULE_ARTIFACT_JSON);
     descriptorFilePath.toFile().createNewFile();
 
     Boolean valid = validator.isDescriptorFilePresent(MULE_APPLICATION);
@@ -176,7 +173,7 @@ public class ValidatorTest {
 
   @Test
   public void isDescriptorFilePresentMulePolicy() throws IOException, ValidationException {
-    Path descriptorFilePath = projectBaseFolder.getRoot().toPath().resolve(MULE_POLICY_JSON);
+    Path descriptorFilePath = projectBaseFolder.getRoot().toPath().resolve(MULE_ARTIFACT_JSON);
     descriptorFilePath.toFile().createNewFile();
 
     Boolean valid = validator.isDescriptorFilePresent(MULE_POLICY);

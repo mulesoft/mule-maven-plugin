@@ -150,7 +150,7 @@ public class ContentGenerator {
         projectTargetFolder.resolve(META_INF).resolve(MULE_ARTIFACT).resolve(CLASSLOADER_MODEL_FILE_NAME).toFile();
     try {
       destinationFile.createNewFile();
-      Gson gson = new GsonBuilder().setPrettyPrinting().create();
+      Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
       Writer writer = new FileWriter(destinationFile.getAbsolutePath());
       gson.toJson(classLoaderModel, writer);
       writer.close();

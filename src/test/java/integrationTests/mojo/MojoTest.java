@@ -87,6 +87,10 @@ public class MojoTest {
     return ResourceExtractor.simpleExtractResources(getClass(), expectedStructurePath);
   }
 
+  protected File getFile(String filePath) throws IOException {
+    return ResourceExtractor.simpleExtractResources(getClass(), filePath);
+  }
+
   protected void installThirdPartyArtifact(String groupId, String artifactId, String version, String type,
                                            String dependencyProjectName)
       throws IOException, VerificationException {

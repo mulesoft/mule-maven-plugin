@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.repository;
+package org.mule.tools.api.repository;
 
 import org.apache.maven.plugin.logging.Log;
 import org.eclipse.aether.DefaultRepositorySystemSession;

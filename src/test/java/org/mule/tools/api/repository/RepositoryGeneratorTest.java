@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.repository;
+package org.mule.tools.api.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -23,9 +23,7 @@ import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.*;
 import org.apache.maven.repository.RepositorySystem;
@@ -65,9 +63,6 @@ public class RepositoryGeneratorTest {
 
   @Spy
   RepositoryGenerator repositoryGeneratorSpy;
-  private org.eclipse.aether.RepositorySystem aetherRepositorySystem;
-  private RepositorySystemSession aetherRepositorySystemSession;
-  private RepositorySystem repositorySystemMock;
 
   @Before
   public void before() throws IOException, ProjectBuildingException {
@@ -78,16 +73,12 @@ public class RepositoryGeneratorTest {
     resultMock = mock(ProjectBuildingResult.class);
     when(resultMock.getProject()).thenReturn(projectMock);
     when(projectBuilderMock.build(Mockito.any(Artifact.class), any(ProjectBuildingRequest.class))).thenReturn(resultMock);
-    repositorySystemMock = mock(RepositorySystem.class);
     remoteArtifactRepositoriesMock = new ArrayList<>();
     logMock = mock(Log.class);
     artifactInstallerMock = mock(ArtifactInstaller.class);
-    aetherRepositorySystem = mock(org.eclipse.aether.RepositorySystem.class);
-    aetherRepositorySystemSession = mock(RepositorySystemSession.class);
     repositoryGenerator = new RepositoryGenerator(projectMock,
                                                   remoteArtifactRepositoriesMock,
-                                                  temporaryFolder.getRoot(), logMock, aetherRepositorySystem,
-                                                  aetherRepositorySystemSession);
+                                                  temporaryFolder.getRoot(), logMock);
     repositoryGeneratorSpy = spy(repositoryGenerator);
     artifactHandler = new DefaultArtifactHandler(TYPE);
   }

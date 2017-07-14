@@ -8,13 +8,13 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.repository;
+package org.mule.tools.api.classloader.model;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
-import static org.mule.tools.api.classloader.model.util.DependencyUtils.toDependency;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
 
 import java.io.File;
 import java.net.URI;
@@ -34,6 +34,7 @@ import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.classloader.model.ClassLoaderModelAssembler;
 
 public class ClassLoaderModelAssemblerTest {
 
@@ -135,18 +136,18 @@ public class ClassLoaderModelAssemblerTest {
     ClassLoaderModel classLoaderModel = classLoaderModelAssemblerSpy.getClassLoaderModel(mock(File.class), mock(File.class));
 
     assertThat("Application dependencies are not the expected", classLoaderModel.getDependencies(),
-               containsInAnyOrder(toDependency(dependency1), toDependency(dependency2)));
+               containsInAnyOrder(toArtifact(dependency1), toArtifact(dependency2)));
 
     assertThat("Mule plugins are not the expected", classLoaderModel.getMulePlugins().keySet(),
-               containsInAnyOrder(toDependency(firstMulePlugin), toDependency(secondMulePlugin)));
+               containsInAnyOrder(toArtifact(firstMulePlugin), toArtifact(secondMulePlugin)));
 
     assertThat("First mule plugin dependencies are not the expected",
-               classLoaderModel.getMulePlugins().get(toDependency(firstMulePlugin)),
-               containsInAnyOrder(toDependency(secondMulePlugin), toDependency(dependency5), toDependency(dependency8)));
+               classLoaderModel.getMulePlugins().get(toArtifact(firstMulePlugin)),
+               containsInAnyOrder(toArtifact(secondMulePlugin), toArtifact(dependency5), toArtifact(dependency8)));
 
     assertThat("Second mule plugin dependencies are not the expected",
-               classLoaderModel.getMulePlugins().get(toDependency(secondMulePlugin)),
-               containsInAnyOrder(toDependency(dependency6), toDependency(dependency7)));
+               classLoaderModel.getMulePlugins().get(toArtifact(secondMulePlugin)),
+               containsInAnyOrder(toArtifact(dependency6), toArtifact(dependency7)));
 
   }
 
@@ -169,7 +170,7 @@ public class ClassLoaderModelAssemblerTest {
     ClassLoaderModel classLoaderModel = classLoaderModelAssemblerSpy.getClassLoaderModel(mock(File.class), mock(File.class));
 
     assertThat("Application dependencies are not the expected", classLoaderModel.getDependencies(),
-               containsInAnyOrder(toDependency(dependency1)));
+               containsInAnyOrder(toArtifact(dependency1)));
 
     assertThat("The application should have no mule plugin dependencies", classLoaderModel.getMulePlugins().size(),
                equalTo(0));
@@ -199,11 +200,11 @@ public class ClassLoaderModelAssemblerTest {
                equalTo(0));
 
     assertThat("Mule plugins are not the expected", classLoaderModel.getMulePlugins().keySet(),
-               containsInAnyOrder(toDependency(firstMulePlugin)));
+               containsInAnyOrder(toArtifact(firstMulePlugin)));
 
     assertThat("First mule plugin dependencies are not the expected",
-               classLoaderModel.getMulePlugins().get(toDependency(firstMulePlugin)),
-               containsInAnyOrder(toDependency(mulePluginTransitiveDependency1)));
+               classLoaderModel.getMulePlugins().get(toArtifact(firstMulePlugin)),
+               containsInAnyOrder(toArtifact(mulePluginTransitiveDependency1)));
   }
 
   private BundleDependency buildBundleDependency(int groupIdSuffix, int artifactIdSuffix, String classifier)

@@ -71,15 +71,15 @@ public class ClassLoaderModelTest {
   @Test
   public void validatePluginsTest() throws URISyntaxException {
     expectedException.expect(IllegalArgumentException.class);
-    String notMulePluginsInitialMessage = "The following dependencies are not mule plugins but are trying to be added as such: ";
+    String notMulePluginsInitialMessage = "The following artifacts are not mule plugins but are trying to be added as such: ";
     expectedException.expectMessage(notMulePluginsInitialMessage);
 
-    List<Dependency> mulePlugins = buildDependencyList(NUMBER_MULE_PLUGINS, MULE_PLUGIN_CLASSIFIER);
-    List<Dependency> notMulePlugins1 =
+    List<Artifact> mulePlugins = buildDependencyList(NUMBER_MULE_PLUGINS, MULE_PLUGIN_CLASSIFIER);
+    List<Artifact> notMulePlugins1 =
         buildDependencyList(NUMBER_NOT_MULE_PLUGINS_DEPENDENCIES, NOT_MULE_PLUGIN_EXAMPLE_CLASSIFIER);
-    List<Dependency> notMulePlugins2 = buildDependencyList(NUMBER_DEPENDENCIES_WITHOUT_CLASSIFIER, null);
+    List<Artifact> notMulePlugins2 = buildDependencyList(NUMBER_DEPENDENCIES_WITHOUT_CLASSIFIER, null);
 
-    Set<Dependency> allDependenciesCandidatesAsMulePlugins = new HashSet<>();
+    Set<Artifact> allDependenciesCandidatesAsMulePlugins = new HashSet<>();
 
     allDependenciesCandidatesAsMulePlugins.addAll(mulePlugins);
     allDependenciesCandidatesAsMulePlugins.addAll(notMulePlugins1);
@@ -94,13 +94,13 @@ public class ClassLoaderModelTest {
 
   @Test
   public void addMulePluginTest() throws URISyntaxException {
-    Dependency mulePlugin1 = buildDependency(MULE_PLUGIN_CLASSIFIER);
-    Dependency mulePlugin2 = buildDependency(MULE_PLUGIN_CLASSIFIER);
+    Artifact mulePlugin1 = buildDependency(MULE_PLUGIN_CLASSIFIER);
+    Artifact mulePlugin2 = buildDependency(MULE_PLUGIN_CLASSIFIER);
 
-    List<Dependency> mulePlugin1Dependencies = buildDependencyList(ARBITRARY_NUMBER_DEPENDENCIES, null);
-    List<Dependency> mulePlugin2Dependencies = buildDependencyList(INITIAL_NUMBER_DEPENDENCIES, null);
+    List<Artifact> mulePlugin1Dependencies = buildDependencyList(ARBITRARY_NUMBER_DEPENDENCIES, null);
+    List<Artifact> mulePlugin2Dependencies = buildDependencyList(INITIAL_NUMBER_DEPENDENCIES, null);
 
-    Map<Dependency, List<Dependency>> mulePlugins = new TreeMap<>();
+    Map<Artifact, List<Artifact>> mulePlugins = new TreeMap<>();
     mulePlugins.put(mulePlugin1, mulePlugin1Dependencies);
     mulePlugins.put(mulePlugin2, mulePlugin2Dependencies);
 
@@ -108,12 +108,12 @@ public class ClassLoaderModelTest {
 
     model.setMulePlugins(mulePlugins);
 
-    List<Dependency> additionalMulePlugin2Dependencies =
+    List<Artifact> additionalMulePlugin2Dependencies =
         buildDependencyList(ADDITIONAL_NUMBER_DEPENDENCIES, null);
 
     model.addMulePlugin(mulePlugin2, additionalMulePlugin2Dependencies);
 
-    Map<Dependency, List<Dependency>> actualMulePlugins = model.getMulePlugins();
+    Map<Artifact, List<Artifact>> actualMulePlugins = model.getMulePlugins();
 
     assertThat("Number of mule plugins in set is not the expected", actualMulePlugins.keySet().size(),
                equalTo(NUMBER_MULE_PLUGINS));
@@ -125,18 +125,18 @@ public class ClassLoaderModelTest {
                equalTo(INITIAL_NUMBER_DEPENDENCIES + ADDITIONAL_NUMBER_DEPENDENCIES));
   }
 
-  private Dependency buildDependency(String classifier) throws URISyntaxException {
-    return new Dependency(buildArtifactCoordinates(classifier), buildURI());
+  private Artifact buildDependency(String classifier) throws URISyntaxException {
+    return new Artifact(buildArtifactCoordinates(classifier), buildURI());
   }
 
-  private List<Dependency> buildDependencyList(int numberElements, String classifier) throws URISyntaxException {
-    List<Dependency> dependencies = new ArrayList<>();
+  private List<Artifact> buildDependencyList(int numberElements, String classifier) throws URISyntaxException {
+    List<Artifact> dependencies = new ArrayList<>();
     while (numberElements > 0) {
       ArtifactCoordinates coordinates = buildArtifactCoordinates(classifier);
 
       URI path = buildURI();
 
-      dependencies.add(new Dependency(coordinates, path));
+      dependencies.add(new Artifact(coordinates, path));
 
       numberElements--;
     }

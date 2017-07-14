@@ -152,6 +152,7 @@ public class ContentGenerator {
       destinationFile.createNewFile();
       Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
       Writer writer = new FileWriter(destinationFile.getAbsolutePath());
+      classLoaderModel.updateUriSuffixToLocalRepository();
       gson.toJson(classLoaderModel, writer);
       writer.close();
     } catch (IOException e) {

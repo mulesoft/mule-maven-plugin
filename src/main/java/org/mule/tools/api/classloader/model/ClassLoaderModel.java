@@ -10,21 +10,25 @@
 
 package org.mule.tools.api.classloader.model;
 
-import org.apache.maven.artifact.Artifact;
-import org.mule.tools.api.classloader.model.util.DependencyUtils;
+import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.api.classloader.model.util.DependencyUtils.isValidMulePlugin;
+import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedOutputDirectory;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.isValidMulePlugin;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
 
 public class ClassLoaderModel {
 
   private String version;
   private ArtifactCoordinates artifactCoordinates;
-  private List<Dependency> dependencies = new ArrayList<>();
-  private Map<Dependency, List<Dependency>> mulePlugins = new TreeMap<>();
+  private List<Artifact> dependencies = new ArrayList<>();
+  private Map<Artifact, List<Artifact>> mulePlugins = new TreeMap<>();
 
   public ClassLoaderModel(String version, ArtifactCoordinates artifactCoordinates) {
     setArtifactCoordinates(artifactCoordinates);
@@ -49,51 +53,67 @@ public class ClassLoaderModel {
     this.artifactCoordinates = artifactCoordinates;
   }
 
-  public List<Dependency> getDependencies() {
+  public List<Artifact> getDependencies() {
     return this.dependencies;
   }
 
-  public void setDependencies(List<Dependency> dependencies) {
+  public void setDependencies(List<Artifact> dependencies) {
     this.dependencies = dependencies;
   }
 
-  public Map<Dependency, List<Dependency>> getMulePlugins() {
+  public Map<Artifact, List<Artifact>> getMulePlugins() {
     return this.mulePlugins;
   }
 
-  public void setMulePlugins(Map<Dependency, List<Dependency>> mulePlugins) {
+  public void setMulePlugins(Map<Artifact, List<Artifact>> mulePlugins) {
     validatePlugins(mulePlugins.keySet());
     this.mulePlugins.putAll(mulePlugins);
   }
 
 
-  protected void validatePlugins(Set<Dependency> dependencies) {
-    SortedSet<Dependency> notMulePlugins =
-        dependencies.stream().filter(dependency -> !DependencyUtils.isValidMulePlugin(dependency))
+  protected void validatePlugins(Set<Artifact> artifacts) {
+    SortedSet<Artifact> notMulePlugins =
+        artifacts.stream().filter(artifact -> !ArtifactUtils.isValidMulePlugin(artifact))
             .collect(Collectors.toCollection(TreeSet::new));
     if (!notMulePlugins.isEmpty()) {
-      throw new IllegalArgumentException("The following dependencies are not mule plugins but are trying to be added as such: "
-          + notMulePlugins.stream().map(Dependency::toString).collect(Collectors.toList()));
+      throw new IllegalArgumentException("The following artifacts are not mule plugins but are trying to be added as such: "
+          + notMulePlugins.stream().map(Artifact::toString).collect(Collectors.toList()));
     }
   }
 
-  public void addMulePlugin(Dependency dependency, List<Dependency> pluginDependencies) {
-    if (!isValidMulePlugin(dependency)) {
-      throw new IllegalArgumentException("The dependency " + dependency + " is not a valid mule plugin dependency");
+  public void addMulePlugin(Artifact artifact, List<Artifact> pluginDependencies) {
+    if (!isValidMulePlugin(artifact)) {
+      throw new IllegalArgumentException("The artifact " + artifact + " is not a valid mule plugin artifact");
     }
-    List<Dependency> newDependencies = this.mulePlugins.getOrDefault(dependency, pluginDependencies);
+    List<Artifact> newDependencies = this.mulePlugins.getOrDefault(artifact, pluginDependencies);
     newDependencies.addAll(pluginDependencies);
-    this.mulePlugins.put(dependency, newDependencies);
+    this.mulePlugins.put(artifact, newDependencies);
   }
 
-  public Set<Artifact> getArtifacts() {
-    Set<Dependency> allDependencies = new TreeSet<>();
+  public Set<org.apache.maven.artifact.Artifact> getArtifacts() {
+    Set<Artifact> allDependencies = new TreeSet<>();
 
     allDependencies.addAll(dependencies);
     allDependencies.addAll(mulePlugins.keySet());
     mulePlugins.values().forEach(allDependencies::addAll);
 
-    return allDependencies.stream().map(DependencyUtils::toArtifact).collect(Collectors.toSet());
+    return allDependencies.stream().map(ArtifactUtils::toArtifact).collect(Collectors.toSet());
+  }
 
+  public void updateUriSuffixToLocalRepository() {
+    dependencies.forEach(this::updateUriToLocalRepository);
+    mulePlugins.keySet().forEach(this::updateUriToLocalRepository);
+    mulePlugins.values().forEach(list -> list.forEach(this::updateUriToLocalRepository));
+  }
+
+  private void updateUriToLocalRepository(Artifact artifact) {
+    String repositoryFolderName = "repository/";
+    String newUriPath = getFormattedOutputDirectory(new File(repositoryFolderName), toArtifact(artifact)).getPath();
+    try {
+      URI newUri = new URI(newUriPath);
+      artifact.setUri(newUri);
+    } catch (URISyntaxException e) {
+      // the artifact URI is not updated then the original one is kept
+    }
   }
 }

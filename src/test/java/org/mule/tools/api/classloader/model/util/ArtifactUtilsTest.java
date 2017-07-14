@@ -16,8 +16,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.Dependency;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,9 +25,9 @@ import java.net.URISyntaxException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
-import static org.mule.tools.api.classloader.model.util.DependencyUtils.isValidMulePlugin;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.isValidMulePlugin;
 
-public class DependencyUtilsTest {
+public class ArtifactUtilsTest {
 
   private static final String GROUP_ID = "group.id";
   private static final String ARTIFACT_ID = "artifact-id";
@@ -54,7 +54,7 @@ public class DependencyUtilsTest {
 
   @Test
   public void toArtifactCoordinatesFromMinimumRequirementsTest() {
-    ArtifactCoordinates actualArtifactCoordinates = DependencyUtils.toArtifactCoordinates(bundleDescriptor);
+    ArtifactCoordinates actualArtifactCoordinates = ArtifactUtils.toArtifactCoordinates(bundleDescriptor);
     assertArtifactCoordinates(actualArtifactCoordinates, DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, null);
   }
 
@@ -65,7 +65,7 @@ public class DependencyUtilsTest {
             .setType(POM_TYPE)
             .setClassifier(MULE_PLUGIN).build();
 
-    ArtifactCoordinates actualArtifactCoordinates = DependencyUtils.toArtifactCoordinates(bundleDescriptor);
+    ArtifactCoordinates actualArtifactCoordinates = ArtifactUtils.toArtifactCoordinates(bundleDescriptor);
 
     assertArtifactCoordinates(actualArtifactCoordinates, POM_TYPE, MULE_PLUGIN);
   }
@@ -75,10 +75,10 @@ public class DependencyUtilsTest {
     BundleDependency bundleDependency =
         new BundleDependency.Builder().sedBundleDescriptor(bundleDescriptor).setBundleUri(bundleURI).build();
 
-    Dependency actualDependency = DependencyUtils.toDependency(bundleDependency);
+    Artifact actualArtifact = ArtifactUtils.toArtifact(bundleDependency);
 
-    assertArtifactCoordinates(actualDependency.getArtifactCoordinates(), DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, null);
-    assertThat("Dependency path location is not the expected", actualDependency.getUri(), equalTo(bundleURI));
+    assertArtifactCoordinates(actualArtifact.getArtifactCoordinates(), DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, null);
+    assertThat("Artifact path location is not the expected", actualArtifact.getUri(), equalTo(bundleURI));
   }
 
   private void assertArtifactCoordinates(ArtifactCoordinates actualArtifactCoordinates, String type,
@@ -94,7 +94,7 @@ public class DependencyUtilsTest {
 
   @Test
   public void isNotValidMulePluginMissingClassifierTest() {
-    Dependency notAMulePluginDependency = new Dependency(artifactCoordinates, bundleURI);
+    Artifact notAMulePluginDependency = new Artifact(artifactCoordinates, bundleURI);
     assertThat("Mule plugin validation method should have returned false", isValidMulePlugin(notAMulePluginDependency),
                is(false));
   }
@@ -103,15 +103,15 @@ public class DependencyUtilsTest {
   public void isNotValidMulePluginWrongClassifierTest() {
     artifactCoordinates =
         new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, NOT_MULE_PLUGIN);
-    Dependency notAMulePluginDependency = new Dependency(artifactCoordinates, bundleURI);
-    assertThat("Mule plugin validation method should have returned false", isValidMulePlugin(notAMulePluginDependency),
+    Artifact notAMulePluginArtifact = new Artifact(artifactCoordinates, bundleURI);
+    assertThat("Mule plugin validation method should have returned false", isValidMulePlugin(notAMulePluginArtifact),
                is(false));
   }
 
   @Test
   public void isValidMulePluginTest() {
     artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, MULE_PLUGIN);
-    Dependency mulePluginDependency = new Dependency(artifactCoordinates, bundleURI);
-    assertThat("Mule plugin validation method should have returned true", isValidMulePlugin(mulePluginDependency), is(true));
+    Artifact mulePluginArtifact = new Artifact(artifactCoordinates, bundleURI);
+    assertThat("Mule plugin validation method should have returned true", isValidMulePlugin(mulePluginArtifact), is(true));
   }
 }

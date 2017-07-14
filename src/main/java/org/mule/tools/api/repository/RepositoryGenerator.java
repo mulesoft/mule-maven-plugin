@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.repository;
+package org.mule.tools.api.repository;
 
 import static java.lang.String.format;
 import static org.mule.tools.api.packager.PackagerFolders.REPOSITORY;
@@ -26,16 +26,14 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.classloader.model.ClassLoaderModelAssembler;
 import org.mule.tools.maven.util.FileUtils;
 
 public class RepositoryGenerator {
 
-  private final RepositorySystemSession aetherRepositorySystemSession;
-  private final org.eclipse.aether.RepositorySystem aetherRepositorySystem;
   private Log log;
 
   private MavenProject project;
@@ -44,14 +42,11 @@ public class RepositoryGenerator {
   protected File outputDirectory;
 
   public RepositoryGenerator(MavenProject project, List<ArtifactRepository> remoteArtifactRepositories, File outputDirectory,
-                             Log log, org.eclipse.aether.RepositorySystem aetherRepositorySystem,
-                             RepositorySystemSession aetherRepositorySystemSession) {
+                             Log log) {
     this.log = log;
     this.project = project;
     this.remoteArtifactRepositories = remoteArtifactRepositories;
     this.outputDirectory = outputDirectory;
-    this.aetherRepositorySystem = aetherRepositorySystem;
-    this.aetherRepositorySystemSession = aetherRepositorySystemSession;
   }
 
 
@@ -62,14 +57,13 @@ public class RepositoryGenerator {
     ClassLoaderModel model = classLoaderModelAssembler.getClassLoaderModel(pomFile, outputDirectory);
     Set<Artifact> artifacts = model.getArtifacts();
     File repositoryFolder = getRepositoryFolder();
-    ArtifactInstaller artifactInstaller = buildArtifactInstaller(remoteArtifactRepositories);
+    ArtifactInstaller artifactInstaller = buildArtifactInstaller();
     installArtifacts(repositoryFolder, artifacts, artifactInstaller);
     return model;
   }
 
-  protected ArtifactInstaller buildArtifactInstaller(List<ArtifactRepository> remoteArtifactRepositories) {
-    return new ArtifactInstaller(log, remoteArtifactRepositories, aetherRepositorySystem,
-                                 aetherRepositorySystemSession);
+  protected ArtifactInstaller buildArtifactInstaller() {
+    return new ArtifactInstaller(log);
   }
 
   protected ClassLoaderModelAssembler buildClassLoaderModelAssembler() {

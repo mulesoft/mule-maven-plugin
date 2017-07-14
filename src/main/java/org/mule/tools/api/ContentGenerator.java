@@ -152,7 +152,8 @@ public class ContentGenerator {
       destinationFile.createNewFile();
       Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
       Writer writer = new FileWriter(destinationFile.getAbsolutePath());
-      gson.toJson(classLoaderModel, writer);
+      ClassLoaderModel parameterizedClassloaderModel = classLoaderModel.getParametrizedUriModel();
+      gson.toJson(parameterizedClassloaderModel, writer);
       writer.close();
     } catch (IOException e) {
       throw new RuntimeException("Could not create classloadermodel.json", e);

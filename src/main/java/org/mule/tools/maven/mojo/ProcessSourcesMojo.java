@@ -17,7 +17,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
 import org.eclipse.aether.RepositorySystemSession;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.maven.repository.RepositoryGenerator;
+import org.mule.tools.api.repository.RepositoryGenerator;
 
 import static java.lang.String.format;
 
@@ -26,11 +26,6 @@ import static java.lang.String.format;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class ProcessSourcesMojo extends AbstractMuleMojo {
 
-  @Component
-  protected org.eclipse.aether.RepositorySystem aetherRepositorySystem;
-  @Parameter(defaultValue = "${repositorySystemSession}")
-  protected RepositorySystemSession aetherRepositorySystemSession;
-
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
     long start = System.currentTimeMillis();
@@ -38,8 +33,7 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
 
     if (!lightweightPackage) {
       RepositoryGenerator repositoryGenerator =
-          new RepositoryGenerator(project, remoteArtifactRepositories, outputDirectory, getLog(), aetherRepositorySystem,
-                                  aetherRepositorySystemSession);
+          new RepositoryGenerator(project, remoteArtifactRepositories, outputDirectory, getLog());
       try {
         ClassLoaderModel classLoaderModel = repositoryGenerator.generate();
         getContentGenerator().createClassLoaderModelJsonFile(classLoaderModel);

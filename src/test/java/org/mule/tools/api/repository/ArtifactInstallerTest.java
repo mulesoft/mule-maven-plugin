@@ -8,31 +8,20 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.repository;
+package org.mule.tools.api.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.DefaultArtifactRepository;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.repository.RemoteRepository;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,11 +32,9 @@ public class ArtifactInstallerTest {
 
   private static final String ARTIFACT_ID = "artifact-id";
   private static final String VERSION = "1.0.0";
-  private static final String SNAPSHOT_VERSION = "SNAPSHOT";
   private static final String SCOPE = "compile";
   private static final String TYPE = "zip";
   private static final String CLASSIFIER = "classifier";
-  private static final String TIMESTAMP = "20100101.101010-1";
   private static final String FILE_NAME = "file";
   private static final String PREFIX_GROUP_ID = "group";
   private static final String POSFIX_GROUP_ID = "id";
@@ -67,68 +54,16 @@ public class ArtifactInstallerTest {
   @Rule
   public TemporaryFolder outputFolder = new TemporaryFolder();;
   @Rule
-  public TemporaryFolder artifactFileFolder = new TemporaryFolder();;
-  private RepositorySystem aetherRepositorySystemMock;
-  private RepositorySystemSession aetherRepositorySystemSessionMock;
+  public TemporaryFolder artifactFileFolder = new TemporaryFolder();
 
   @Before
   public void before() throws IOException {
     logMock = mock(Log.class);
     handler = new DefaultArtifactHandler(TYPE);
-    List<ArtifactRepository> remoteArtifactRepositories = new ArrayList<>();
-    aetherRepositorySystemMock = mock(RepositorySystem.class);
-    aetherRepositorySystemSessionMock = mock(RepositorySystemSession.class);
-    installer = new ArtifactInstaller(logMock, remoteArtifactRepositories, aetherRepositorySystemMock,
-                                      aetherRepositorySystemSessionMock);
+    installer = new ArtifactInstaller(logMock);
     outputFolder.create();
     artifactFileFolder.create();
     artifact = new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, SCOPE, TYPE, CLASSIFIER, handler);
-  }
-
-  @Test
-  public void getNormalizedVersionFromBaseVersionTest() {
-    artifact = new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION + "-" + TIMESTAMP, SCOPE, TYPE, CLASSIFIER, handler);
-    String actual = installer.getNormalizedVersion(artifact);
-    assertThat("The normalized version is different from the expected", actual, equalTo(VERSION + "-" + SNAPSHOT_VERSION));
-  }
-
-
-  @Test
-  public void getNormalizedVersionFromVersionTest() {
-    String expected = installer.getNormalizedVersion(artifact);
-    assertThat("The normalized version is different from the expected", expected, equalTo(VERSION));
-  }
-
-  @Test
-  public void getFormattedOutputDirectoryTest() {
-    File actual = ArtifactInstaller.getFormattedOutputDirectory(outputFolder.getRoot(), artifact);
-    File expected = new File(outputFolder.getRoot(),
-                             OUTPUT_DIRECTORY);
-    assertThat("Actual formatted output directory is not the expected", actual.getAbsolutePath(),
-               equalTo(expected.getAbsolutePath()));
-  }
-
-  @Test
-  public void getFormattedFileNameTest() {
-    String actual = installer.getFormattedFileName(artifact);
-    String expected = ARTIFACT_ID + "-" + VERSION + "-" + CLASSIFIER + "." + TYPE;
-    assertThat("Formatted file name is different from the expected", actual, equalTo(expected));
-  }
-
-  @Test
-  public void getFormattedFileNameWithoutClassifierTest() {
-    artifact = new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, SCOPE, TYPE, null, handler);
-    String actual = installer.getFormattedFileName(artifact);
-    String expected = ARTIFACT_ID + "-" + VERSION + "." + TYPE;
-    assertThat("Formatted file name is different from the expected", actual, equalTo(expected));
-  }
-
-  @Test
-  public void getFormattedFileNameWithoutHandlerTest() {
-    artifact = new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, SCOPE, TYPE, CLASSIFIER, null);
-    String actual = installer.getFormattedFileName(artifact);
-    String expected = ARTIFACT_ID + "-" + VERSION + "-" + CLASSIFIER + "." + TYPE;
-    assertThat("Formatted file name is different from the expected", actual, equalTo(expected));
   }
 
   @Test

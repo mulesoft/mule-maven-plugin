@@ -8,14 +8,14 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.repository;
+package org.mule.tools.api.classloader.model;
 
 import static java.lang.String.format;
 import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
 import static org.mule.maven.client.internal.util.MavenUtils.getPomModelFromFile;
-import static org.mule.tools.api.classloader.model.util.DependencyUtils.*;
-import static org.mule.tools.api.classloader.model.util.DependencyUtils.toDependencies;
-import static org.mule.tools.api.classloader.model.util.DependencyUtils.toDependency;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.*;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifacts;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
 
 import java.io.File;
 import java.util.*;
@@ -28,9 +28,10 @@ import org.mule.maven.client.api.PomFileSupplierFactory;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.classloader.model.Dependency;
+import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 
 
 public class ClassLoaderModelAssembler {
@@ -65,12 +66,12 @@ public class ClassLoaderModelAssembler {
     return model;
   }
 
-  private Dependency getDependency(BundleDependency bundleDependency) {
-    return toDependency(bundleDependency);
+  private Artifact getDependency(BundleDependency bundleDependency) {
+    return ArtifactUtils.toArtifact(bundleDependency);
   }
 
-  private List<Dependency> getDependencies(List<BundleDependency> bundleDependencies) {
-    return toDependencies(bundleDependencies);
+  private List<Artifact> getDependencies(List<BundleDependency> bundleDependencies) {
+    return toArtifacts(bundleDependencies);
   }
 
   protected ArtifactCoordinates getArtifactCoordinates(BundleDescriptor projectBundleDescriptor) {

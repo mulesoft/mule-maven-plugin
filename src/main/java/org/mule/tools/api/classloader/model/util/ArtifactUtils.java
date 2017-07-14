@@ -23,8 +23,18 @@ import java.util.stream.Collectors;
 
 import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
 
+/**
+ * ArtifactUtils presents helper methods to convert artifact related classes and recognize mule plugin artifacts.
+ *
+ */
 public class ArtifactUtils {
 
+  /**
+   * Convert a {@link org.mule.maven.client.api.model.BundleDescriptor} instance to {@link ArtifactCoordinates}.
+   *
+   * @param bundleDescriptor the bundle descriptor to be converted.
+   * @return the corresponding artifact coordinates with normalized version.
+   */
   public static ArtifactCoordinates toArtifactCoordinates(BundleDescriptor bundleDescriptor) {
     ArtifactCoordinates artifactCoordinates =
         new ArtifactCoordinates(bundleDescriptor.getGroupId(), bundleDescriptor.getArtifactId(),
@@ -33,24 +43,45 @@ public class ArtifactUtils {
     return artifactCoordinates;
   }
 
+  /**
+   * Convert a {@link org.mule.maven.client.api.model.BundleDependency} instance to {@link Artifact}.
+   *
+   * @param bundleDependency the bundle dependency to be converted.
+   * @return the corresponding artifact with normalized version.
+   */
   public static Artifact toArtifact(BundleDependency bundleDependency) {
     ArtifactCoordinates artifactCoordinates = toArtifactCoordinates(bundleDependency.getDescriptor());
-
-    Artifact artifact = new Artifact(artifactCoordinates, bundleDependency.getBundleUri());
-
-    return artifact;
+    return new Artifact(artifactCoordinates, bundleDependency.getBundleUri());
   }
 
+  /**
+   * Converts a {@link List<org.mule.maven.client.api.model.BundleDependency>} to a {@link List<Artifact>}.
+   *
+   * @param dependencies the bundle dependency list to be converted.
+   * @return the corresponding artifact list, each one with normalized version.
+   */
   public static List<Artifact> toArtifacts(List<BundleDependency> dependencies) {
     return dependencies.stream().map(ArtifactUtils::toArtifact).collect(Collectors.toList());
   }
 
+  /**
+   * Checks if a {@link Artifact} instance represents a mule-plugin.
+   *
+   * @param artifact the artifact to be checked.
+   * @return true if the artifact is a mule-plugin, false otherwise.
+   */
   public static boolean isValidMulePlugin(Artifact artifact) {
     ArtifactCoordinates pluginCoordinates = artifact.getArtifactCoordinates();
     Optional<String> pluginClassifier = Optional.ofNullable(pluginCoordinates.getClassifier());
     return pluginClassifier.isPresent() && MULE_PLUGIN_CLASSIFIER.equals(pluginClassifier.get());
   }
 
+  /**
+   * Converts a {@link Artifact} instance to a {@link org.apache.maven.artifact.Artifact} instance.
+   *
+   * @param dependencyArtifact the artifact to be converted.
+   * @return the corresponding {@link org.apache.maven.artifact.Artifact} instance.
+   */
   public static org.apache.maven.artifact.Artifact toArtifact(Artifact dependencyArtifact) {
     ArtifactCoordinates artifactCoordinates = dependencyArtifact.getArtifactCoordinates();
     org.apache.maven.artifact.Artifact artifact =

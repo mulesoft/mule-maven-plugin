@@ -12,14 +12,11 @@ package org.mule.tools.api.classloader.model;
 
 import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedOutputDirectory;
+import static java.util.stream.Collectors.*;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.isValidMulePlugin;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
 
@@ -74,10 +71,10 @@ public class ClassLoaderModel {
   protected void validatePlugins(Set<Artifact> artifacts) {
     SortedSet<Artifact> notMulePlugins =
         artifacts.stream().filter(artifact -> !ArtifactUtils.isValidMulePlugin(artifact))
-            .collect(Collectors.toCollection(TreeSet::new));
+            .collect(toCollection(TreeSet::new));
     if (!notMulePlugins.isEmpty()) {
       throw new IllegalArgumentException("The following artifacts are not mule plugins but are trying to be added as such: "
-          + notMulePlugins.stream().map(Artifact::toString).collect(Collectors.toList()));
+          + notMulePlugins.stream().map(Artifact::toString).collect(toList()));
     }
   }
 
@@ -97,23 +94,20 @@ public class ClassLoaderModel {
     allDependencies.addAll(mulePlugins.keySet());
     mulePlugins.values().forEach(allDependencies::addAll);
 
-    return allDependencies.stream().map(ArtifactUtils::toArtifact).collect(Collectors.toSet());
+    return allDependencies.stream().map(ArtifactUtils::toArtifact).collect(toSet());
   }
 
-  public void updateUriSuffixToLocalRepository() {
-    dependencies.forEach(this::updateUriToLocalRepository);
-    mulePlugins.keySet().forEach(this::updateUriToLocalRepository);
-    mulePlugins.values().forEach(list -> list.forEach(this::updateUriToLocalRepository));
-  }
+  public ClassLoaderModel getParametrizedUriModel() {
+    List<Artifact> dependenciesCopy = dependencies.stream().map(Artifact::copyWithParameterizedUri).collect(toList());
 
-  private void updateUriToLocalRepository(Artifact artifact) {
-    String repositoryFolderName = "repository/";
-    String newUriPath = getFormattedOutputDirectory(new File(repositoryFolderName), toArtifact(artifact)).getPath();
-    try {
-      URI newUri = new URI(newUriPath);
-      artifact.setUri(newUri);
-    } catch (URISyntaxException e) {
-      // the artifact URI is not updated then the original one is kept
-    }
+    Map<Artifact, List<Artifact>> mulePluginsCopy = mulePlugins.entrySet().stream()
+        .collect(toMap(e -> e.getKey().copyWithParameterizedUri(),
+                       e -> e.getValue().stream().map(Artifact::copyWithParameterizedUri).collect(toList())));
+
+    ClassLoaderModel copy = new ClassLoaderModel(version, artifactCoordinates);
+    copy.setDependencies(dependenciesCopy);
+    copy.setMulePlugins(mulePluginsCopy);
+
+    return copy;
   }
 }

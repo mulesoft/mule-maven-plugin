@@ -10,9 +10,13 @@
 
 package org.mule.tools.api.classloader.model;
 
+import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
+import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedOutputDirectory;
 
 public class Artifact implements Comparable {
 
@@ -49,11 +53,11 @@ public class Artifact implements Comparable {
 
   @Override
   public int compareTo(Object that) {
-    return getMavenCoordinates(this).compareTo(getMavenCoordinates((Artifact) that));
+    return this.getSimplifiedMavenCoordinates().compareTo(((Artifact) that).getSimplifiedMavenCoordinates());
   }
 
-  private String getMavenCoordinates(Artifact artifact) {
-    ArtifactCoordinates coordinates = artifact.getArtifactCoordinates();
+  protected String getSimplifiedMavenCoordinates() {
+    ArtifactCoordinates coordinates = this.getArtifactCoordinates();
     return coordinates.getGroupId() + ":" + coordinates.getArtifactId() + ":" + coordinates.getVersion();
   }
 
@@ -74,5 +78,17 @@ public class Artifact implements Comparable {
   @Override
   public int hashCode() {
     return getArtifactCoordinates().hashCode();
+  }
+
+  public Artifact copyWithParameterizedUri() {
+    Artifact newArtifact = new Artifact(artifactCoordinates, uri);
+    File repositoryFolder = new File("repository");
+    String newUriPath = getFormattedOutputDirectory(repositoryFolder, toArtifact(this)).getPath();
+    try {
+      newArtifact.setUri(new URI(newUriPath));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Could not generate URI for resource, the given path is invalid: " + newUriPath, e);
+    }
+    return newArtifact;
   }
 }

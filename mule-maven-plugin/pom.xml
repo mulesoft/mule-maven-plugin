@@ -69,8 +69,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.mule.tools.maven</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>mule-packager</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mule-deployer</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- Maven Plugin Dependencies -->
@@ -143,9 +148,9 @@
             <artifactId>jersey-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-multipart</artifactId>
-        </dependency>
+        <groupId>org.glassfish.jersey.media</groupId>
+        <artifactId>jersey-media-multipart</artifactId>
+    </dependency>
         <!-- TODO MMP-115 we should probably use hamcrest-all -->
         <dependency>
             <groupId>org.hamcrest</groupId>

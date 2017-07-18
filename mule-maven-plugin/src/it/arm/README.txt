@@ -1,1 +1,0 @@
-To run ARM integration tests you need to start an ARM server before running. After deploy test you need to check manually that the application was deployed, and undeploy it manually.

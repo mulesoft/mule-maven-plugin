@@ -12,7 +12,7 @@
         <module>mule-packager</module>
         <!-- <module>mule-deployer</module> -->
         <module>mule-maven-plugin</module>
-        <!-- <module>mule-artifact-it</module> -->
+         <module>mule-artifact-it</module>
     </modules>
    
     <properties>

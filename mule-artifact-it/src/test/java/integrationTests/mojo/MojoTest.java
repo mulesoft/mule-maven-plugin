@@ -113,6 +113,10 @@ public class MojoTest {
     if (mavenSettings != null) {
       verifier.addCliOption("-s " + mavenSettings);
     }
+    String projectVersion = System.getProperty("projectVersion");
+    if (projectVersion != null) {
+      verifier.setSystemProperty("muleMavenPluginVersion", projectVersion);
+    }
     return verifier;
   }
 

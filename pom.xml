@@ -332,7 +332,7 @@
                     <version>${maven.surefire.plugin.version}</version>
                     <configuration>
                         <systemPropertyVariables>
-                            <projectVersion>${project.version}</projectVersion>
+                            <mule.maven.plugin.version>${project.version}</mule.maven.plugin.version>
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>

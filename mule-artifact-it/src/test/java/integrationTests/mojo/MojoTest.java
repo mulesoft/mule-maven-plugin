@@ -113,7 +113,7 @@ public class MojoTest {
     if (mavenSettings != null) {
       verifier.addCliOption("-s " + mavenSettings);
     }
-    String projectVersion = System.getProperty("projectVersion");
+    String projectVersion = System.getProperty("mule.maven.plugin.version");
     if (projectVersion != null) {
       verifier.setSystemProperty("muleMavenPluginVersion", projectVersion);
     }

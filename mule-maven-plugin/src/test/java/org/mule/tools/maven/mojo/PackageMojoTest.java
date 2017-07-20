@@ -29,6 +29,7 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
 
   private static final String VERSION = "1.0";
   private static final String LIGHT_PACKAGE_CLASSIFIER = "light-package";
+  private static final java.lang.String FINAL_NAME = ARTIFACT_ID + "-" + VERSION;
 
   @Rule
   public TemporaryFolder targetFolder = new TemporaryFolder();
@@ -42,7 +43,7 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     mojo.project = projectMock;
     mojo.finalName = PACKAGE_NAME;
 
-    destinationFile = new File(buildFolderFolder.getRoot().getAbsolutePath(), PACKAGE_NAME + ".zip");
+    destinationFile = new File(buildFolderFolder.getRoot().getAbsolutePath(), PACKAGE_NAME + "." + TYPE);
 
     when(packageBuilderMock.withDestinationFile(any())).thenReturn(packageBuilderMock);
     when(packageBuilderMock.withClasses(any())).thenReturn(packageBuilderMock);
@@ -93,35 +94,36 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
   }
 
   @Test
-  public void getFinalNameTest() {
+  public void getFileNameTest() {
     when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
     when(projectMock.getVersion()).thenReturn(VERSION);
+    mojo.finalName = FINAL_NAME;
+
     mojo.project = projectMock;
     mojo.packagingType = PackagingType.MULE_DOMAIN;
 
-    mojo.finalName = null;
-    assertThat("Final name is not the expected", mojo.getFinalName(), equalTo(ARTIFACT_ID + "-" + VERSION + "-" + MULE_DOMAIN));
+    assertThat("Final name is not the expected", mojo.getFileName(),
+               equalTo(FINAL_NAME + "-" + MULE_DOMAIN + "." + TYPE));
 
     mojo.packagingType = PackagingType.MULE_APPLICATION;
-    mojo.finalName = null;
-    assertThat("Final name is not the expected", mojo.getFinalName(),
-               equalTo(ARTIFACT_ID + "-" + VERSION + "-" + MULE_APPLICATION));
+    assertThat("Final name is not the expected", mojo.getFileName(),
+               equalTo(FINAL_NAME + "-" + MULE_APPLICATION + "." + TYPE));
 
     mojo.classifier = Classifier.MULE_APPLICATION_EXAMPLE.toString();
-    mojo.finalName = null;
-    assertThat("Final name is not the expected", mojo.getFinalName(),
-               equalTo(ARTIFACT_ID + "-" + VERSION + "-" + MULE_APPLICATION_EXAMPLE));
+    assertThat("Final name is not the expected", mojo.getFileName(),
+               equalTo(ARTIFACT_ID + "-" + VERSION + "-" + MULE_APPLICATION_EXAMPLE + "." + TYPE));
 
-    mojo.finalName = null;
     mojo.lightweightPackage = true;
-    assertThat("Final name is not the expected", mojo.getFinalName(),
-               equalTo(ARTIFACT_ID + "-" + VERSION + "-" + MULE_APPLICATION_EXAMPLE + "-" + LIGHT_PACKAGE_CLASSIFIER));
+    assertThat("Final name is not the expected", mojo.getFileName(),
+               equalTo(ARTIFACT_ID + "-" + VERSION + "-" + MULE_APPLICATION_EXAMPLE + "-" + LIGHT_PACKAGE_CLASSIFIER + "."
+                   + TYPE));
   }
 
   @Test
   public void getDestinationFileTest() throws MojoExecutionException, IOException {
-    mojo.finalName = ARTIFACT_ID + "-" + VERSION + "-" + MULE_APPLICATION;
-    File expectedDestinationFile = targetFolder.newFile(mojo.finalName + "." + TYPE);
+    mojo.finalName = FINAL_NAME;
+    mojo.packagingType = PackagingType.MULE_APPLICATION;
+    File expectedDestinationFile = targetFolder.newFile(FINAL_NAME + "-" + MULE_APPLICATION + "." + TYPE);
     File destinationFile = mojo.getDestinationFile(targetFolder.getRoot().getPath());
     assertThat("Destination file is not the expected", destinationFile.getAbsolutePath(),
                equalTo(expectedDestinationFile.getAbsolutePath()));
@@ -138,7 +140,6 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     @Override
     public void initializePackageBuilder() {
       this.packageBuilder = packageBuilderMock;
-
     }
   }
 }

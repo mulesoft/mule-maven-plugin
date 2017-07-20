@@ -41,8 +41,6 @@ public class PackageMojo extends AbstractMuleMojo {
   @Component
   protected MavenProjectHelper helper;
 
-  @Parameter(defaultValue = "${finalName}")
-  protected String finalName;
 
   @Parameter(defaultValue = "${onlyMuleSources}")
   protected boolean onlyMuleSources = false;
@@ -54,14 +52,15 @@ public class PackageMojo extends AbstractMuleMojo {
 
   protected PackagingType packagingType;
 
+  protected String finalName;
+
   public void execute() throws MojoExecutionException, MojoFailureException {
     long start = System.currentTimeMillis();
     getLog().debug("Packaging...");
-
+    finalName = project.getBuild().getFinalName();
     packagingType = PackagingType.fromString(project.getPackaging());
     String targetFolder = project.getBuild().getDirectory();
     File destinationFile = getDestinationFile(targetFolder);
-
     try {
       createMuleApp(destinationFile, targetFolder);
     } catch (ArchiverException e) {
@@ -83,7 +82,7 @@ public class PackageMojo extends AbstractMuleMojo {
    */
   protected File getDestinationFile(String targetFolder) throws MojoExecutionException {
     checkArgument(targetFolder != null, "The target folder must not be null");
-    final Path destinationPath = Paths.get(targetFolder, getFinalName() + "." + TYPE);
+    final Path destinationPath = Paths.get(targetFolder, getFileName());
     try {
       Files.deleteIfExists(destinationPath);
     } catch (IOException e) {
@@ -92,13 +91,8 @@ public class PackageMojo extends AbstractMuleMojo {
     return destinationPath.toFile();
   }
 
-  protected String getFinalName() {
-    if (finalName == null) {
-      finalName = project.getArtifactId() + "-" + project.getVersion() + "-"
-          + packagingType.resolveClassifier(classifier, lightweightPackage);
-    }
-    getLog().debug("Using final name: " + finalName);
-    return finalName;
+  protected String getFileName() {
+    return finalName + "-" + packagingType.resolveClassifier(classifier, lightweightPackage) + "." + TYPE;
   }
 
   protected void createMuleApp(File destinationFile, String targetFolder) throws MojoExecutionException, ArchiverException {

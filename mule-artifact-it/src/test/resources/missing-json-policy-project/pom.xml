@@ -9,16 +9,12 @@
 	<packaging>mule-policy</packaging>
 	<name>Mule new-package Application</name>
 
-	<properties>
-		<mule.maven.plugin.version>3.0.0-SNAPSHOT</mule.maven.plugin.version>
-	</properties>
-
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.mule.tools.maven</groupId>
 				<artifactId>mule-maven-plugin</artifactId>
-				<version>${mule.maven.plugin.version}</version>
+				<version>${muleMavenPluginVersion}</version>
 				<extensions>true</extensions>				
 			</plugin>			
 		</plugins>

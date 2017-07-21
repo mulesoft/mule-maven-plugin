@@ -60,7 +60,7 @@ public class ArtifactUtils {
    * @param dependencies the bundle dependency list to be converted.
    * @return the corresponding artifact list, each one with normalized version.
    */
-  public static List<Artifact> toArtifacts(List<BundleDependency> dependencies) {
+  public static List<Artifact> toArtifacts(Collection<BundleDependency> dependencies) {
     return dependencies.stream().map(ArtifactUtils::toArtifact).collect(Collectors.toList());
   }
 
@@ -73,6 +73,17 @@ public class ArtifactUtils {
   public static boolean isValidMulePlugin(Artifact artifact) {
     ArtifactCoordinates pluginCoordinates = artifact.getArtifactCoordinates();
     Optional<String> pluginClassifier = Optional.ofNullable(pluginCoordinates.getClassifier());
+    return pluginClassifier.isPresent() && MULE_PLUGIN_CLASSIFIER.equals(pluginClassifier.get());
+  }
+
+  /**
+   * Checks if a {@link org.apache.maven.artifact.Artifact} instance represents a mule-plugin.
+   *
+   * @param artifact the artifact to be checked.
+   * @return true if the artifact is a mule-plugin, false otherwise.
+   */
+  public static boolean isValidMulePlugin(org.apache.maven.artifact.Artifact artifact) {
+    Optional<String> pluginClassifier = Optional.ofNullable(artifact.getClassifier());
     return pluginClassifier.isPresent() && MULE_PLUGIN_CLASSIFIER.equals(pluginClassifier.get());
   }
 
@@ -91,5 +102,19 @@ public class ArtifactUtils {
                             new DefaultArtifactHandler(artifactCoordinates.getType()));
     artifact.setFile(new File(dependencyArtifact.getUri()));
     return artifact;
+  }
+
+  /**
+   * Converts a {@link org.apache.maven.artifact.Artifact} instance to a {@link ArtifactCoordinates} instance.
+   *
+   * @param artifact the artifact to be converted.
+   * @return the corresponding {@link ArtifactCoordinates} instance.
+   */
+  public static ArtifactCoordinates toArtifactCoordinates(org.apache.maven.artifact.Artifact artifact) {
+    ArtifactCoordinates artifactCoordinates =
+        new ArtifactCoordinates(artifact.getGroupId(), artifact.getArtifactId(), artifact.getBaseVersion());
+    artifactCoordinates.setType(artifact.getType());
+    artifactCoordinates.setClassifier(artifact.getClassifier());
+    return artifactCoordinates;
   }
 }

@@ -11,13 +11,16 @@
 package org.mule.tools.api.repository;
 
 import static java.lang.String.format;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.isValidMulePlugin;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifactCoordinates;
 import static org.mule.tools.api.packager.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
@@ -28,8 +31,10 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.classloader.model.ClassLoaderModelAssembler;
+import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.util.FileUtils;
 
 public class RepositoryGenerator {
@@ -52,23 +57,24 @@ public class RepositoryGenerator {
 
   public ClassLoaderModel generate() throws MojoExecutionException, MojoFailureException {
     log.info(format("Mirroring repository for [%s]", project.toString()));
-    ClassLoaderModelAssembler classLoaderModelAssembler = buildClassLoaderModelAssembler();
+    ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssembler = buildClassLoaderModelAssembler();
     File pomFile = project.getFile();
-    ClassLoaderModel model = classLoaderModelAssembler.getClassLoaderModel(pomFile, outputDirectory);
-    Set<Artifact> artifacts = model.getArtifacts();
+    ApplicationClassloaderModel appModel =
+        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(pomFile, outputDirectory);
+    Set<Artifact> artifacts = appModel.getArtifacts();
     File repositoryFolder = getRepositoryFolder();
     ArtifactInstaller artifactInstaller = buildArtifactInstaller();
-    installArtifacts(repositoryFolder, artifacts, artifactInstaller);
-    return model;
+    installArtifacts(repositoryFolder, artifacts, artifactInstaller, appModel);
+    return appModel.getClassLoaderModel();
   }
 
   protected ArtifactInstaller buildArtifactInstaller() {
     return new ArtifactInstaller(log);
   }
 
-  protected ClassLoaderModelAssembler buildClassLoaderModelAssembler() {
+  protected ApplicationClassLoaderModelAssembler buildClassLoaderModelAssembler() {
     List<RemoteRepository> remoteRepositories = RepositoryUtils.toRepos(remoteArtifactRepositories);
-    return new ClassLoaderModelAssembler((AetherMavenClient) new MuleMavenPluginClientProvider(remoteRepositories, log)
+    return new ApplicationClassLoaderModelAssembler((AetherMavenClient) new MuleMavenPluginClientProvider(remoteRepositories, log)
         .buildMavenClient());
   }
 
@@ -81,14 +87,19 @@ public class RepositoryGenerator {
     return repositoryFolder;
   }
 
-  protected void installArtifacts(File repositoryFile, Set<Artifact> artifacts, ArtifactInstaller installer)
+  protected void installArtifacts(File repositoryFile, Set<Artifact> artifacts, ArtifactInstaller installer, ApplicationClassloaderModel appModel)
       throws MojoExecutionException {
+    Map<ArtifactCoordinates, ClassLoaderModel> mulePluginsClassloaderModels = appModel.getMulePluginsClassloaderModels().stream().collect(Collectors.toMap(ClassLoaderModel::getArtifactCoordinates, Function.identity()));
     TreeSet<Artifact> sortedArtifacts = new TreeSet<>(artifacts);
     if (sortedArtifacts.isEmpty()) {
       generateMarkerFileInRepositoryFolder(repositoryFile);
     }
     for (Artifact artifact : sortedArtifacts) {
-      installer.installArtifact(repositoryFile, artifact);
+      ClassLoaderModel mulePluginClassloader = null;
+      if(isValidMulePlugin(artifact)) {
+        mulePluginClassloader = mulePluginsClassloaderModels.get(toArtifactCoordinates(artifact));
+      }
+      installer.installArtifact(repositoryFile, artifact, Optional.ofNullable(mulePluginClassloader));
     }
   }
 

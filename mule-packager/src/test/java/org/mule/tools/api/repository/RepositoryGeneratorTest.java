@@ -33,6 +33,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 import org.mockito.Spy;
+import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
 import org.mule.tools.api.util.FileUtils;
 
 public class RepositoryGeneratorTest {
@@ -55,6 +56,7 @@ public class RepositoryGeneratorTest {
   private Log logMock;
   private ArtifactHandler artifactHandler;
   private Set<Artifact> artifacts;
+  private ApplicationClassloaderModel appModelMock;
 
   @Rule
   public ExpectedException exception = ExpectedException.none();
@@ -79,14 +81,10 @@ public class RepositoryGeneratorTest {
                                                   temporaryFolder.getRoot(), logMock);
     repositoryGeneratorSpy = spy(repositoryGenerator);
     artifactHandler = new DefaultArtifactHandler(TYPE);
+    appModelMock = mock(ApplicationClassloaderModel.class);
   }
 
-  private void buildArtifacts() {
-    artifacts = new HashSet<>();
-    for (int i = 0; i < NUMBER_ARTIFACTS; ++i) {
-      artifacts.add(createArtifact(i));
-    }
-  }
+
 
   @Test
   public void generateMarkerFileInRepositoryFolderTest() throws MojoExecutionException {
@@ -115,18 +113,18 @@ public class RepositoryGeneratorTest {
   @Test
   public void installEmptySetArtifactsTest() throws MojoExecutionException {
     File repositoryFolder = temporaryFolder.getRoot();
-    repositoryGeneratorSpy.installArtifacts(repositoryFolder, Collections.emptySet(), artifactInstallerMock);
+    repositoryGeneratorSpy.installArtifacts(repositoryFolder, Collections.emptySet(), artifactInstallerMock, appModelMock);
     verify(repositoryGeneratorSpy, times(1)).generateMarkerFileInRepositoryFolder(repositoryFolder);
-    verify(artifactInstallerMock, times(0)).installArtifact(any(), any());
+    verify(artifactInstallerMock, times(0)).installArtifact(any(), any(), any());
   }
 
   @Test
   public void installArtifactsTest() throws MojoExecutionException {
     File repositoryFolder = temporaryFolder.getRoot();
     buildArtifacts();
-    repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifacts, artifactInstallerMock);
+    repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifacts, artifactInstallerMock, appModelMock);
     verify(repositoryGeneratorSpy, times(0)).generateMarkerFileInRepositoryFolder(repositoryFolder);
-    verify(artifactInstallerMock, times(NUMBER_ARTIFACTS)).installArtifact(any(), any());
+    verify(artifactInstallerMock, times(NUMBER_ARTIFACTS)).installArtifact(any(), any(), any());
   }
 
   @Test
@@ -144,6 +142,13 @@ public class RepositoryGeneratorTest {
     assertThat("Repository folder does not exist", expectedRepositoryFolder.exists());
     File actualRepositoryFolder = repositoryGenerator.getRepositoryFolder();
     assertThat("Repository folder was modified", actualRepositoryFolder, equalTo(expectedRepositoryFolder));
+  }
+
+  private void buildArtifacts() {
+    artifacts = new HashSet<>();
+    for (int i = 0; i < NUMBER_ARTIFACTS; ++i) {
+      artifacts.add(createArtifact(i));
+    }
   }
 
   private Artifact createArtifact(int i) {

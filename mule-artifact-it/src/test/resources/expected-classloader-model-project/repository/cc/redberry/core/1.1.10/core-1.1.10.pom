@@ -1,0 +1,182 @@
+<?xml version="1.0"?>
+<!--
+  ~ Redberry: symbolic tensor computations.
+  ~
+  ~ Copyright (c) 2010-2015:
+  ~   Stanislav Poslavsky   <stvlpos@mail.ru>
+  ~   Bolotin Dmitriy       <bolotin.dmitriy@gmail.com>
+  ~
+  ~ This file is part of Redberry.
+  ~
+  ~ Redberry is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Redberry is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Redberry. If not, see <http://www.gnu.org/licenses/>.
+  --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cc.redberry</groupId>
+    <artifactId>core</artifactId>
+    <version>1.1.10</version>
+    <packaging>jar</packaging>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+        <relativePath/>
+    </parent>
+
+    <name>redberry-core</name>
+    <url>http://redberry.cc/</url>
+
+    <description>
+        Redberry is an open source computer algebra system designed for tensor 
+        manipulation.  It implements basic computer algebra system routines as well as 
+        complex tools for real computations in physics. 
+        
+        This is Redberry core, which contains the  implementation of the basic 
+        computer algebra routines and general-purpose transformations.
+    </description>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License, version 3</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>PoslavskySV</id>
+            <email>stvlpos@mail.ru</email>
+            <name>Poslavsky Stanislav</name>
+            <organization>IHEP</organization>
+            <organizationUrl>http://ihep.su</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+                <role>tester</role>
+            </roles>
+            <timezone>UTC+04:00</timezone>
+            <url>https://bitbucket.org/PoslavskySV</url>
+        </developer>
+        <developer>
+            <id>dbolotin</id>
+            <email>bolotin.dmitriy@gmail.com</email>
+            <name>Bolotin Dmitriy</name>
+            <organization>IBCH RAS</organization>
+            <organizationUrl>http://www.ibch.ru/</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+                <role>tester</role>
+            </roles>
+            <timezone>UTC+04:00</timezone>
+            <url>https://bitbucket.org/dbolotin</url>
+        </developer>
+    </developers>
+
+    <scm><connection>scm:hg:http://bitbucket.org/redberry/redberry-core</connection><tag>v1.1.10</tag><url>https://bitbucket.org/redberry/redberry-core/src/?at=v1.1.10</url></scm>
+
+    <issueManagement>
+        <system>YouTRACK</system>
+        <url>http://youtrack.redberry.cc/</url>
+    </issueManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.2</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12</version>
+                <configuration>
+                    <properties>
+                        <property>
+                            <name>listener</name>
+                            <!-- Resets the context before running each test -->
+                            <value>cc.redberry.core.GlobalRunListener</value>
+                        </property>
+                    </properties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+
+            <!--  <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin> -->
+        </plugins>
+    </build>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.trove4j</groupId>
+            <artifactId>trove4j</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+    </dependencies>
+</project>

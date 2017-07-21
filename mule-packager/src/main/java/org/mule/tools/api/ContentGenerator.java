@@ -143,19 +143,22 @@ public class ContentGenerator {
    *
    * @param classLoaderModel the classloader model of the application being packaged
    */
-  public void createClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel) {
-    File destinationFile =
-        projectTargetFolder.resolve(META_INF).resolve(MULE_ARTIFACT).resolve(CLASSLOADER_MODEL_FILE_NAME).toFile();
-    try {
-      destinationFile.createNewFile();
-      Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
-      Writer writer = new FileWriter(destinationFile.getAbsolutePath());
-      ClassLoaderModel parameterizedClassloaderModel = classLoaderModel.getParametrizedUriModel();
-      gson.toJson(parameterizedClassloaderModel, writer);
-      writer.close();
-    } catch (IOException e) {
-      throw new RuntimeException("Could not create classloadermodel.json", e);
-    }
+  public void createApplicationClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel) {
+    File destinationFolder =
+        projectTargetFolder.resolve(META_INF).resolve(MULE_ARTIFACT).toFile();
+    createClassLoaderModelJsonFile(classLoaderModel, destinationFolder);
+  }
+
+  /**
+   * It creates classloader-model.json in META-INF/mule-artifact
+   *
+   * @param classLoaderModel the classloader model of the application being packaged
+   * @param rootFolder
+   */
+  public void createApplicationClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel, Path rootFolder) {
+    File destinationFolder =
+        rootFolder.resolve(META_INF).resolve(MULE_ARTIFACT).toFile();
+    createClassLoaderModelJsonFile(classLoaderModel, destinationFolder);
   }
 
   private void copyPomFile() throws IOException {
@@ -218,5 +221,24 @@ public class ContentGenerator {
 
   private void checkPathExist(Path path) {
     checkArgument(path.toFile().exists(), "The path: " + path.toString() + " should exits");
+  }
+
+  /**
+   * It creates classloader-model.json in META-INF/mule-artifact
+   *
+   * @param classLoaderModel the classloader model of the application being packaged
+   */
+  public static void createClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel, File destinationFolder) {
+    File destinationFile = new File(destinationFolder, CLASSLOADER_MODEL_FILE_NAME);
+    try {
+      destinationFile.createNewFile();
+      Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
+      Writer writer = new FileWriter(destinationFile.getAbsolutePath());
+      ClassLoaderModel parameterizedClassloaderModel = classLoaderModel.getParametrizedUriModel();
+      gson.toJson(parameterizedClassloaderModel, writer);
+      writer.close();
+    } catch (IOException e) {
+      throw new RuntimeException("Could not create classloadermodel.json", e);
+    }
   }
 }

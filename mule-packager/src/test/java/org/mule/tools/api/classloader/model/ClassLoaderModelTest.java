@@ -30,21 +30,6 @@ public class ClassLoaderModelTest {
   private static final String GROUP_ID = "group.id";
   private static final String ARTIFACT_ID = "artifact-id";
   private static final String VERSION = "1.0.0";
-  private static final String DEFAULT_ARTIFACT_DESCRIPTOR_TYPE = "jar";
-  private static final int LENGTH = 5;
-  private static final int NUM_DIGITS = 1;
-  private static final String NOT_MULE_PLUGIN_EXAMPLE_CLASSIFIER = "javadoc";
-  private static final String MULE_APPLICATION_CLASSIFIER = "mule-application";
-  private static final String ARTIFACT_ID_SEPARATOR = "-";
-  private static final String VERSION_SEPARATOR = ".";
-  private static final String GROUP_ID_PREFIX = "com.";
-  private static final String URI_SEPARATOR = "/";
-  private static final int INITIAL_NUMBER_DEPENDENCIES = 2;
-  private static final int ADDITIONAL_NUMBER_DEPENDENCIES = 4;
-  private static final int ARBITRARY_NUMBER_DEPENDENCIES = 3;
-  private static final int NUMBER_MULE_PLUGINS = 2;
-  private static final int NUMBER_NOT_MULE_PLUGINS_DEPENDENCIES = 2;
-  private static final int NUMBER_DEPENDENCIES_WITHOUT_CLASSIFIER = 4;
 
   private ArtifactCoordinates artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
   @Rule
@@ -67,93 +52,4 @@ public class ClassLoaderModelTest {
     expectedException.expect(IllegalArgumentException.class);
     new ClassLoaderModel(null, null);
   }
-
-  @Test
-  public void validatePluginsTest() throws URISyntaxException {
-    expectedException.expect(IllegalArgumentException.class);
-    String notMulePluginsInitialMessage = "The following artifacts are not mule plugins but are trying to be added as such: ";
-    expectedException.expectMessage(notMulePluginsInitialMessage);
-
-    List<Artifact> mulePlugins = buildDependencyList(NUMBER_MULE_PLUGINS, MULE_PLUGIN_CLASSIFIER);
-    List<Artifact> notMulePlugins1 =
-        buildDependencyList(NUMBER_NOT_MULE_PLUGINS_DEPENDENCIES, NOT_MULE_PLUGIN_EXAMPLE_CLASSIFIER);
-    List<Artifact> notMulePlugins2 = buildDependencyList(NUMBER_DEPENDENCIES_WITHOUT_CLASSIFIER, null);
-
-    Set<Artifact> allDependenciesCandidatesAsMulePlugins = new HashSet<>();
-
-    allDependenciesCandidatesAsMulePlugins.addAll(mulePlugins);
-    allDependenciesCandidatesAsMulePlugins.addAll(notMulePlugins1);
-    allDependenciesCandidatesAsMulePlugins.addAll(notMulePlugins2);
-
-    ClassLoaderModel model = new ClassLoaderModel(VERSION, buildArtifactCoordinates(MULE_APPLICATION_CLASSIFIER));
-
-    // 2 (NUMBER_MULE_PLUGINS) dependencies are mule plugins; the remaining 6 (NUMBER_NOT_MULE_PLUGINS_DEPENDENCIES +
-    // NUMBER_DEPENDENCIES_WITHOUT_CLASSIFIER) are not
-    model.validatePlugins(allDependenciesCandidatesAsMulePlugins);
-  }
-
-  @Test
-  public void addMulePluginTest() throws URISyntaxException {
-    Artifact mulePlugin1 = buildDependency(MULE_PLUGIN_CLASSIFIER);
-    Artifact mulePlugin2 = buildDependency(MULE_PLUGIN_CLASSIFIER);
-
-    List<Artifact> mulePlugin1Dependencies = buildDependencyList(ARBITRARY_NUMBER_DEPENDENCIES, null);
-    List<Artifact> mulePlugin2Dependencies = buildDependencyList(INITIAL_NUMBER_DEPENDENCIES, null);
-
-    Map<Artifact, List<Artifact>> mulePlugins = new TreeMap<>();
-    mulePlugins.put(mulePlugin1, mulePlugin1Dependencies);
-    mulePlugins.put(mulePlugin2, mulePlugin2Dependencies);
-
-    ClassLoaderModel model = new ClassLoaderModel(VERSION, buildArtifactCoordinates(MULE_APPLICATION_CLASSIFIER));
-
-    model.setMulePlugins(mulePlugins);
-
-    List<Artifact> additionalMulePlugin2Dependencies =
-        buildDependencyList(ADDITIONAL_NUMBER_DEPENDENCIES, null);
-
-    model.addMulePlugin(mulePlugin2, additionalMulePlugin2Dependencies);
-
-    Map<Artifact, List<Artifact>> actualMulePlugins = model.getMulePlugins();
-
-    assertThat("Number of mule plugins in set is not the expected", actualMulePlugins.keySet().size(),
-               equalTo(NUMBER_MULE_PLUGINS));
-    assertThat("Mule plugins set is not the expected", actualMulePlugins.keySet(), containsInAnyOrder(mulePlugin1, mulePlugin2));
-
-    assertThat("Number of dependencies of mulePlugin1 is not the expected", actualMulePlugins.get(mulePlugin1).size(),
-               equalTo(ARBITRARY_NUMBER_DEPENDENCIES));
-    assertThat("Number of dependencies of mulePlugin2 is not the expected", actualMulePlugins.get(mulePlugin2).size(),
-               equalTo(INITIAL_NUMBER_DEPENDENCIES + ADDITIONAL_NUMBER_DEPENDENCIES));
-  }
-
-  private Artifact buildDependency(String classifier) throws URISyntaxException {
-    return new Artifact(buildArtifactCoordinates(classifier), buildURI());
-  }
-
-  private List<Artifact> buildDependencyList(int numberElements, String classifier) throws URISyntaxException {
-    List<Artifact> dependencies = new ArrayList<>();
-    while (numberElements > 0) {
-      ArtifactCoordinates coordinates = buildArtifactCoordinates(classifier);
-
-      URI path = buildURI();
-
-      dependencies.add(new Artifact(coordinates, path));
-
-      numberElements--;
-    }
-    return dependencies;
-  }
-
-  private URI buildURI() throws URISyntaxException {
-    return new URI(URI_SEPARATOR + randomAlphabetic(LENGTH).toLowerCase() + URI_SEPARATOR
-        + randomAlphabetic(LENGTH).toLowerCase());
-  }
-
-  private ArtifactCoordinates buildArtifactCoordinates(String classifier) {
-    String groupId = GROUP_ID_PREFIX + randomAlphabetic(LENGTH).toLowerCase();
-    String artifactId = randomAlphabetic(LENGTH).toLowerCase() + ARTIFACT_ID_SEPARATOR + randomAlphabetic(LENGTH).toLowerCase();
-    String version =
-        randomNumeric(NUM_DIGITS) + VERSION_SEPARATOR + randomNumeric(NUM_DIGITS) + VERSION_SEPARATOR + randomNumeric(NUM_DIGITS);
-    return new ArtifactCoordinates(groupId, artifactId, version, DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, classifier);
-  }
-
 }

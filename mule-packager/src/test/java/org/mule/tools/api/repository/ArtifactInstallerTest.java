@@ -15,6 +15,7 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
@@ -76,7 +77,7 @@ public class ArtifactInstallerTest {
     File pomFile = new File(outputFolder.getRoot(), OUTPUT_DIRECTORY + File.separator + POM_FILE_NAME);
 
     assertThat("File should not be installed yet", !installedFile.exists());
-    installer.installArtifact(outputFolder.getRoot(), artifact);
+    installer.installArtifact(outputFolder.getRoot(), artifact, Optional.empty());
     assertThat("File was not installed", installedFile.exists());
     assertThat("Pom file was not copied", pomFile.exists());
   }
@@ -84,7 +85,7 @@ public class ArtifactInstallerTest {
   @Test
   public void installNullArtifactTest() throws MojoExecutionException {
     exception.expect(IllegalArgumentException.class);
-    installer.installArtifact(outputFolder.getRoot(), null);
+    installer.installArtifact(outputFolder.getRoot(), null, Optional.empty());
   }
 
   @Test
@@ -93,6 +94,6 @@ public class ArtifactInstallerTest {
     File destination = new File(outputFolder.getRoot(), FILE_NAME);
     destination.setReadOnly();
     artifact.setFile(destination);
-    installer.installArtifact(outputFolder.getRoot(), artifact);
+    installer.installArtifact(outputFolder.getRoot(), artifact, Optional.empty());
   }
 }

@@ -34,44 +34,49 @@ import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 
 
-public class ClassLoaderModelAssembler {
+public class ApplicationClassLoaderModelAssembler {
 
   private static final String POM_TYPE = "pom";
   private static final String CLASS_LOADER_MODEL_VERSION = "1.0.0";
   private final AetherMavenClient muleMavenPluginClient;
-  private ClassLoaderModel model;
+  private ApplicationClassloaderModel applicationClassLoaderModel;
   protected DependencyFilter mulePluginFilter = (node, parents) -> node != null && node.getArtifact() != null
       && !MULE_PLUGIN_CLASSIFIER.equals(node.getArtifact().getClassifier());
   protected DependencyFilter notMulePluginFilter = (node, parents) -> node != null && node.getArtifact() != null
       && MULE_PLUGIN_CLASSIFIER.equals(node.getArtifact().getClassifier());
 
-  public ClassLoaderModelAssembler(AetherMavenClient muleMavenPluginClient) {
+  public ApplicationClassLoaderModelAssembler(AetherMavenClient muleMavenPluginClient) {
     this.muleMavenPluginClient = muleMavenPluginClient;
   }
 
-  public ClassLoaderModel getClassLoaderModel(File pomFile, File targetFolder) {
+  public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, File targetFolder) {
     BundleDescriptor projectBundleDescriptor = getProjectBundleDescriptor(pomFile);
 
-    model = new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, getArtifactCoordinates(projectBundleDescriptor));
+    ClassLoaderModel appModel = new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, getArtifactCoordinates(projectBundleDescriptor));
 
     List<BundleDependency> nonMulePluginDependencies =
         resolveNonMulePluginDependencies(targetFolder, projectBundleDescriptor);
-    model.setDependencies(getDependencies(nonMulePluginDependencies));
 
     Map<BundleDependency, List<BundleDependency>> mulePluginDependencies =
         resolveMulePluginDependencies(targetFolder, projectBundleDescriptor);
-    model.setMulePlugins(mulePluginDependencies.keySet().stream().collect(Collectors
-        .toMap(this::getDependency, dependency -> this.getDependencies(mulePluginDependencies.get(dependency)))));
 
-    return model;
-  }
+    List<BundleDependency> appDependencies = new ArrayList<>();
 
-  private Artifact getDependency(BundleDependency bundleDependency) {
-    return ArtifactUtils.toArtifact(bundleDependency);
-  }
+    appDependencies.addAll(nonMulePluginDependencies);
+    appDependencies.addAll(mulePluginDependencies.keySet());
 
-  private List<Artifact> getDependencies(List<BundleDependency> bundleDependencies) {
-    return toArtifacts(bundleDependencies);
+    appModel.setDependencies(toArtifacts(appDependencies));
+
+    applicationClassLoaderModel = new ApplicationClassloaderModel(appModel);
+
+    // all mule plugins classloader models are resolved here
+    for(Map.Entry<BundleDependency, List<BundleDependency>> mulePluginEntry : mulePluginDependencies.entrySet()) {
+      ClassLoaderModel mulePluginClassloaderModel = new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, toArtifactCoordinates(mulePluginEntry.getKey().getDescriptor()));
+      mulePluginClassloaderModel.setDependencies(toArtifacts(mulePluginEntry.getValue()));
+      applicationClassLoaderModel.addMulePluginClassloaderModel(mulePluginClassloaderModel);
+    }
+
+    return applicationClassLoaderModel;
   }
 
   protected ArtifactCoordinates getArtifactCoordinates(BundleDescriptor projectBundleDescriptor) {

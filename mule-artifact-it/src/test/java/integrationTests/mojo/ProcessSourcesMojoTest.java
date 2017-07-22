@@ -27,8 +27,16 @@ public class ProcessSourcesMojoTest extends MojoTest {
   private static final String PROCESS_SOURCES = "process-sources";
   private static final String GENERATED_CLASSLOADER_MODEL_FILE =
           "/empty-classloader-model-project/target/META-INF/mule-artifact/classloader-model.json";
+  private static final String GENERATED_HTTP_PLUGIN_CLASSLOADER_MODEL_FILE =
+          "/empty-classloader-model-project/target/repository/org/mule/connectors/mule-http-connector/1.0.0-SNAPSHOT/classloader-model.json";
+  private static final String GENERATED_SOCKETS_PLUGIN_CLASSLOADER_MODEL_FILE =
+          "/empty-classloader-model-project/target/repository/org/mule/connectors/mule-sockets-connector/1.0.0-SNAPSHOT/classloader-model.json";
   private static final String EXPECTED_CLASSLOADER_MODEL_FILE =
           "/expected-files/expected-classloader-model.json";
+  private static final String EXPECTED_HTTP_PLUGIN_CLASSLOADER_MODEL_FILE =
+          "/expected-files/expected-mule-http-connector-classloader-model.json";
+  private static final String EXPECTED_SOCKETS_PLUGIN_CLASSLOADER_MODEL_FILE =
+          "/expected-files/expected-mule-sockets-connector-classloader-model.json";
 
   public ProcessSourcesMojoTest() {
     this.goal = PROCESS_SOURCES;
@@ -71,6 +79,36 @@ public class ProcessSourcesMojoTest extends MojoTest {
 
     assertThat("The classloader-model.json file is different from the expected", generatedClassloaderModelFileContent,
                equalTo(expectedClassloaderModelFileContent));
+
+    File generatedHttpPluginClassloaderModelFile =
+            getFile(GENERATED_HTTP_PLUGIN_CLASSLOADER_MODEL_FILE);
+    List<String> generatedHttpPluginClassloaderModelFileContent = Files.readAllLines(generatedHttpPluginClassloaderModelFile.toPath());
+
+    File expectedHttpPluginClassloaderModelFile =
+            getFile(EXPECTED_HTTP_PLUGIN_CLASSLOADER_MODEL_FILE);
+    List<String> expectedHttpPluginClassloaderModelFileContent = Files.readAllLines(expectedHttpPluginClassloaderModelFile.toPath());
+
+    assertThat("The classloader-model.json file of the mule-http-connector is different from the expected", generatedHttpPluginClassloaderModelFileContent,
+            equalTo(expectedHttpPluginClassloaderModelFileContent));
+
+
+    File generatedSocketsPluginClassloaderModelFile =
+            getFile(GENERATED_SOCKETS_PLUGIN_CLASSLOADER_MODEL_FILE);
+    List<String> generatedSocketsPluginClassloaderModelFileContent = Files.readAllLines(generatedSocketsPluginClassloaderModelFile.toPath());
+
+    File expectedSocketsPluginClassloaderModelFile =
+            getFile(EXPECTED_SOCKETS_PLUGIN_CLASSLOADER_MODEL_FILE);
+    List<String> expectedSocketsPluginClassloaderModelFileContent = Files.readAllLines(expectedSocketsPluginClassloaderModelFile.toPath());
+
+    assertThat("The classloader-model.json file of the mule-sockets-connector is different from the expected", generatedSocketsPluginClassloaderModelFileContent,
+            equalTo(expectedSocketsPluginClassloaderModelFileContent));
+
+    File expectedStructure = getExpectedStructure("/expected-classloader-model-project");
+    File targetStructure = new File(verifier.getBasedir() + File.separator + TARGET_FOLDER_NAME);
+
+    assertThat("The directory structure is different from the expected", targetStructure,
+            hasSameTreeStructure(expectedStructure, excludes));
+
     verifier.verifyErrorFreeLog();
   }
 }

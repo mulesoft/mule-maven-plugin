@@ -13,19 +13,15 @@ package org.mule.tools.api.classloader.model;
 import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.*;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.isValidMulePlugin;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
 
 public class ClassLoaderModel {
 
   private String version;
   private ArtifactCoordinates artifactCoordinates;
   private List<Artifact> dependencies = new ArrayList<>();
-  private Map<Artifact, List<Artifact>> mulePlugins = new TreeMap<>();
 
   public ClassLoaderModel(String version, ArtifactCoordinates artifactCoordinates) {
     setArtifactCoordinates(artifactCoordinates);
@@ -58,56 +54,36 @@ public class ClassLoaderModel {
     this.dependencies = dependencies;
   }
 
-  public Map<Artifact, List<Artifact>> getMulePlugins() {
-    return this.mulePlugins;
-  }
-
-  public void setMulePlugins(Map<Artifact, List<Artifact>> mulePlugins) {
-    validatePlugins(mulePlugins.keySet());
-    this.mulePlugins.putAll(mulePlugins);
-  }
-
-
-  protected void validatePlugins(Set<Artifact> artifacts) {
-    SortedSet<Artifact> notMulePlugins =
-        artifacts.stream().filter(artifact -> !ArtifactUtils.isValidMulePlugin(artifact))
-            .collect(toCollection(TreeSet::new));
-    if (!notMulePlugins.isEmpty()) {
-      throw new IllegalArgumentException("The following artifacts are not mule plugins but are trying to be added as such: "
-          + notMulePlugins.stream().map(Artifact::toString).collect(toList()));
-    }
-  }
-
-  public void addMulePlugin(Artifact artifact, List<Artifact> pluginDependencies) {
-    if (!isValidMulePlugin(artifact)) {
-      throw new IllegalArgumentException("The artifact " + artifact + " is not a valid mule plugin artifact");
-    }
-    List<Artifact> newDependencies = this.mulePlugins.getOrDefault(artifact, pluginDependencies);
-    newDependencies.addAll(pluginDependencies);
-    this.mulePlugins.put(artifact, newDependencies);
-  }
-
   public Set<org.apache.maven.artifact.Artifact> getArtifacts() {
     Set<Artifact> allDependencies = new TreeSet<>();
-
     allDependencies.addAll(dependencies);
-    allDependencies.addAll(mulePlugins.keySet());
-    mulePlugins.values().forEach(allDependencies::addAll);
-
     return allDependencies.stream().map(ArtifactUtils::toArtifact).collect(toSet());
   }
 
   public ClassLoaderModel getParametrizedUriModel() {
     List<Artifact> dependenciesCopy = dependencies.stream().map(Artifact::copyWithParameterizedUri).collect(toList());
-
-    Map<Artifact, List<Artifact>> mulePluginsCopy = mulePlugins.entrySet().stream()
-        .collect(toMap(e -> e.getKey().copyWithParameterizedUri(),
-                       e -> e.getValue().stream().map(Artifact::copyWithParameterizedUri).collect(toList())));
-
     ClassLoaderModel copy = new ClassLoaderModel(version, artifactCoordinates);
     copy.setDependencies(dependenciesCopy);
-    copy.setMulePlugins(mulePluginsCopy);
 
     return copy;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    ClassLoaderModel that = (ClassLoaderModel) o;
+
+    return getArtifactCoordinates().equals(that.getArtifactCoordinates());
+  }
+
+  @Override
+  public int hashCode() {
+    return getArtifactCoordinates().hashCode();
   }
 }

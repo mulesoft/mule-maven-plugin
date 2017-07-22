@@ -20,7 +20,9 @@ import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLa
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.Artifact;
@@ -29,6 +31,9 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
+import org.mule.tools.api.ContentGenerator;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.packager.PackagingType;
 
 public class ArtifactInstaller {
 
@@ -39,36 +44,56 @@ public class ArtifactInstaller {
     this.log = log;
   }
 
-  public void installArtifact(File repositoryFile, Artifact artifact) throws MojoExecutionException {
+  public void installArtifact(File repositoryFile, Artifact artifact, Optional<ClassLoaderModel> classLoaderModel)
+      throws MojoExecutionException {
     checkArgument(artifact != null, "Artifact to be installed should not be null");
-    String artifactFilename = getFormattedFileName(artifact);
-    String artifactPomFilename = getPomFileName(artifact);
     File artifactFolderDestination = getFormattedOutputDirectory(repositoryFile, artifact);
+
     if (!artifactFolderDestination.exists()) {
       artifactFolderDestination.mkdirs();
     }
-    File destinationArtifactFile = new File(artifactFolderDestination, artifactFilename);
-    File destinationPomFile = new File(artifactFolderDestination, artifactPomFilename);
+
     try {
-
-      log.info(format("Adding artifact <%s%s>",
-                      REPOSITORY,
-                      destinationArtifactFile.getAbsolutePath()
-                          .replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
-                                        "")));
-
-      copyFile(artifact.getFile(), destinationArtifactFile);
-      File srcPomFile = new File(artifact.getFile().getParent(), artifactPomFilename);
-      if (!srcPomFile.exists()) {
-        srcPomFile = new File(artifact.getFile().getParent(), POM_FILE_NAME);
-      }
-      copyFile(srcPomFile, destinationPomFile);
+      generateArtifactFile(artifact, artifactFolderDestination, repositoryFile);
+      generateDependencyDescriptorFile(artifact, artifactFolderDestination, classLoaderModel);
     } catch (IOException e) {
       throw new MojoExecutionException(
-                                       format("There was a problem while copying the artifact [%s] file [%s] to the destination [%s]",
-                                              artifact.toString(), artifact.getFile().getAbsolutePath(),
-                                              destinationArtifactFile.getAbsolutePath()),
+                                       format("There was a problem while copying the artifact [%s] file [%s] to the application local repository",
+                                              artifact.toString(), artifact.getFile().getAbsolutePath()),
                                        e);
     }
+  }
+
+  private void generateArtifactFile(Artifact artifact, File artifactFolderDestination, File repositoryFile) throws IOException {
+    String artifactFilename = getFormattedFileName(artifact);
+
+    File destinationArtifactFile = new File(artifactFolderDestination, artifactFilename);
+    log.info(format("Adding artifact <%s%s>",
+                    REPOSITORY,
+                    destinationArtifactFile.getAbsolutePath()
+                        .replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
+                                      "")));
+
+    copyFile(artifact.getFile(), destinationArtifactFile);
+  }
+
+  private void generateDependencyDescriptorFile(Artifact artifact, File artifactFolderDestination,
+                                                Optional<ClassLoaderModel> classLoaderModel)
+      throws IOException {
+    if (classLoaderModel.isPresent()) {
+      ContentGenerator.createClassLoaderModelJsonFile(classLoaderModel.get(), artifactFolderDestination);
+    } else {
+      generatePomFile(artifact, artifactFolderDestination);
+    }
+  }
+
+  private void generatePomFile(Artifact artifact, File artifactFolderDestination) throws IOException {
+    String artifactPomFilename = getPomFileName(artifact);
+    File srcPomFile = new File(artifact.getFile().getParent(), artifactPomFilename);
+    File destinationPomFile = new File(artifactFolderDestination, artifactPomFilename);
+    if (!srcPomFile.exists()) {
+      srcPomFile = new File(artifact.getFile().getParent(), POM_FILE_NAME);
+    }
+    copyFile(srcPomFile, destinationPomFile);
   }
 }

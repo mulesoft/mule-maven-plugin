@@ -13,8 +13,17 @@ package org.mule.tools.api.classloader.model;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
+import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.maven.client.internal.AetherMavenClient;
 
 import java.io.File;
 import java.net.URI;
@@ -29,9 +38,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.maven.client.internal.AetherMavenClient;
 
 public class ApplicationClassLoaderModelAssemblerTest {
 

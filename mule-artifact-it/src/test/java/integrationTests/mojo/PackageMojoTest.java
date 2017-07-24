@@ -123,4 +123,17 @@ public class PackageMojoTest extends MojoTest {
     verifier.verifyErrorFreeLog();
   }
 
+  @Test
+  public void testPackageAppWithDefinedFinalName() throws IOException, VerificationException {
+    String artifactId = "check-finalName-package-project";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.setMavenDebug(true);
+    verifier.executeGoal(PACKAGE);
+
+    verifier.assertFilePresent("target/testApp-mule-application.jar");
+    verifier.verifyErrorFreeLog();
+  }
+
 }

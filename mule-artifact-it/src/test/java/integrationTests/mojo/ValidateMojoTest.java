@@ -9,7 +9,7 @@
  */
 package integrationTests.mojo;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.it.VerificationException;
 import org.junit.Test;
 

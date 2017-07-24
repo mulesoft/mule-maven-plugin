@@ -10,7 +10,7 @@
 package org.mule.tools.maven.mojo.deploy;
 
 import groovy.lang.GroovyShell;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;

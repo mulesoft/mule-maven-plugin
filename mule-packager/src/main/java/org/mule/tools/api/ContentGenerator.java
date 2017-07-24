@@ -18,8 +18,21 @@ import static org.mule.tools.api.packager.PackagerFolders.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.PackagerFolders.MULE_SRC;
 import static org.mule.tools.api.packager.PackagerFolders.TARGET;
 import static org.mule.tools.api.packager.PackagerFolders.TEST_MULE;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.packager.PackagerFolders;
+import org.mule.tools.api.packager.PackagingType;
+import org.mule.tools.api.util.CopyFileVisitor;
 
-import java.io.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -27,15 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
-
-import org.mule.tools.api.packager.PackagerFolders;
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.packager.PackagingType;
-import org.mule.tools.api.util.CopyFileVisitor;
 
 /**
  * It knows how to generate the required content for each of the mandatory folder of the package
@@ -150,15 +156,23 @@ public class ContentGenerator {
   }
 
   /**
-   * It creates classloader-model.json in META-INF/mule-artifact
+   * Creates a {@link ClassLoaderModel} from the JSON representation
    *
-   * @param classLoaderModel the classloader model of the application being packaged
-   * @param rootFolder
+   * @param classLoaderModelDescriptor file containing the classloader model in JSON format
+   * @return a non null {@link ClassLoaderModel} matching the provided JSON content
    */
-  public void createApplicationClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel, Path rootFolder) {
-    File destinationFolder =
-        rootFolder.resolve(META_INF).resolve(MULE_ARTIFACT).toFile();
-    createClassLoaderModelJsonFile(classLoaderModel, destinationFolder);
+  public static ClassLoaderModel createClassLoaderModelFromJson(File classLoaderModelDescriptor) {
+    try {
+      Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
+
+      Reader reader = new FileReader(classLoaderModelDescriptor);
+      ClassLoaderModel classLoaderModel = gson.fromJson(reader, ClassLoaderModel.class);
+      reader.close();
+
+      return classLoaderModel;
+    } catch (IOException e) {
+      throw new RuntimeException("Could not create classloadermodel.json", e);
+    }
   }
 
   private void copyPomFile() throws IOException {
@@ -227,8 +241,9 @@ public class ContentGenerator {
    * It creates classloader-model.json in META-INF/mule-artifact
    *
    * @param classLoaderModel the classloader model of the application being packaged
+   * @return the created File containing the classloader model's JSON representation
    */
-  public static void createClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel, File destinationFolder) {
+  public static File createClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel, File destinationFolder) {
     File destinationFile = new File(destinationFolder, CLASSLOADER_MODEL_FILE_NAME);
     try {
       destinationFile.createNewFile();
@@ -237,6 +252,7 @@ public class ContentGenerator {
       ClassLoaderModel parameterizedClassloaderModel = classLoaderModel.getParametrizedUriModel();
       gson.toJson(parameterizedClassloaderModel, writer);
       writer.close();
+      return destinationFile;
     } catch (IOException e) {
       throw new RuntimeException("Could not create classloadermodel.json", e);
     }

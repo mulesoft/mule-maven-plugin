@@ -10,16 +10,17 @@
 
 package org.mule.tools.maven.mojo;
 
+import static java.lang.String.format;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.repository.RepositoryGenerator;
+
 import java.text.MessageFormat;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.*;
-import org.eclipse.aether.RepositorySystemSession;
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.repository.RepositoryGenerator;
-
-import static java.lang.String.format;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 @Mojo(name = "process-sources",
     defaultPhase = LifecyclePhase.PROCESS_SOURCES,

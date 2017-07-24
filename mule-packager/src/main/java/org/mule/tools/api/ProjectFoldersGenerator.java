@@ -14,7 +14,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.io.File;
 import java.nio.file.Path;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.mule.tools.api.packager.PackagingType;
 

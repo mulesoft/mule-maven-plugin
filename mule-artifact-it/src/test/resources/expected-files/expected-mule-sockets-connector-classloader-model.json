@@ -1,0 +1,30 @@
+{
+  "version": "1.0.0",
+  "artifactCoordinates": {
+    "groupId": "org.mule.connectors",
+    "artifactId": "mule-sockets-connector",
+    "version": "1.0.0-SNAPSHOT",
+    "type": "jar",
+    "classifier": "mule-plugin"
+  },
+  "dependencies": [
+    {
+      "artifactCoordinates": {
+        "groupId": "commons-io",
+        "artifactId": "commons-io",
+        "version": "2.4",
+        "type": "jar"
+      },
+      "uri": "repository/commons-io/commons-io/2.4/commons-io-2.4.jar"
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "com.google.guava",
+        "artifactId": "guava",
+        "version": "18.0",
+        "type": "jar"
+      },
+      "uri": "repository/com/google/guava/guava/18.0/guava-18.0.jar"
+    }
+  ]
+}

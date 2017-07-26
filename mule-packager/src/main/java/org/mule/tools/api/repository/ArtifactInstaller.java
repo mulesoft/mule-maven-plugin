@@ -13,27 +13,21 @@ package org.mule.tools.api.repository;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
 import static org.apache.commons.io.FileUtils.copyFile;
-import static org.mule.tools.api.packager.PackagerFolders.REPOSITORY;
 import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedFileName;
 import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedOutputDirectory;
 import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getPomFileName;
+import static org.mule.tools.api.packager.structure.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
-import org.mule.tools.api.ContentGenerator;
+import org.mule.tools.api.packager.ContentGenerator;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.packager.PackagingType;
 
 public class ArtifactInstaller {
 

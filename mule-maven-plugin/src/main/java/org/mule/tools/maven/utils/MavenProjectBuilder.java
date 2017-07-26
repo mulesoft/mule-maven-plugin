@@ -8,14 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.dependency.resolver;
-
-import static java.lang.String.format;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+package org.mule.tools.maven.utils;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -27,7 +20,13 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.*;
 import org.apache.maven.repository.RepositorySystem;
 
-public class MulePluginResolver {
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.lang.String.format;
+
+public class MavenProjectBuilder {
+
 
   private static final String CREATION_ERROR_MESSAGE =
       "There was an issue while trying to create a maven project from the artifact [%s]";
@@ -42,11 +41,11 @@ public class MulePluginResolver {
 
   private ProjectBuildingRequest projectBuildingRequest;
 
-  public MulePluginResolver(Log log, MavenSession session,
-                            ProjectBuilder projectBuilder,
-                            RepositorySystem repositorySystem,
-                            ArtifactRepository localRepository,
-                            List<ArtifactRepository> remoteArtifactRepositories) {
+  public MavenProjectBuilder(Log log, MavenSession session,
+                             ProjectBuilder projectBuilder,
+                             RepositorySystem repositorySystem,
+                             ArtifactRepository localRepository,
+                             List<ArtifactRepository> remoteArtifactRepositories) {
     this.log = log;
     this.session = session;
     this.projectBuilder = projectBuilder;
@@ -55,37 +54,6 @@ public class MulePluginResolver {
     this.remoteArtifactRepositories = remoteArtifactRepositories;
     initialize();
   }
-
-  public List<Dependency> resolveMulePlugins(MavenProject project) throws MojoExecutionException {
-    List<Dependency> mulePlugins = new ArrayList<>();
-
-    List<Dependency> directMulePluginDependencies = project.getDependencies().stream()
-        .filter(dependencyWith("jar", "compile", "mule-plugin"))
-        .collect(Collectors.toList());
-
-    mulePlugins.addAll(directMulePluginDependencies);
-
-    for (Dependency d : directMulePluginDependencies) {
-      mulePlugins.addAll(getAllMulePluginDependencies(buildMavenProject(d.getGroupId(), d.getArtifactId(), d.getVersion())));
-    }
-
-    return mulePlugins;
-  }
-
-  private List<Dependency> getAllMulePluginDependencies(MavenProject project) throws MojoExecutionException {
-    List<Dependency> mulePluginDependencies = project.getDependencies().stream()
-        .filter(dependencyWith("jar", "provided", "mule-plugin"))
-        .collect(Collectors.toList());
-
-
-    List<Dependency> effectiveMulePluginDependencies = new ArrayList<>(mulePluginDependencies);
-    for (Dependency d : mulePluginDependencies) {
-      MavenProject mavenProject = buildMavenProject(d.getGroupId(), d.getArtifactId(), d.getVersion());
-      effectiveMulePluginDependencies.addAll(getAllMulePluginDependencies(mavenProject));
-    }
-    return effectiveMulePluginDependencies;
-  }
-
 
   private void initialize() {
     projectBuildingRequest = new DefaultProjectBuildingRequest(session.getProjectBuildingRequest());
@@ -98,8 +66,9 @@ public class MulePluginResolver {
     }
   }
 
-  private MavenProject buildMavenProject(String groupId, String artifactId, String version) throws MojoExecutionException {
-    Artifact projectArtifact = repositorySystem.createProjectArtifact(groupId, artifactId, version);
+  public MavenProject buildMavenProject(Dependency dependency) throws MojoExecutionException {
+    Artifact projectArtifact =
+        repositorySystem.createProjectArtifact(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion());
     return buildMavenProjectFromArtifact(projectArtifact);
   }
 
@@ -119,7 +88,7 @@ public class MulePluginResolver {
   }
 
   /**
-   * It will build a maven prject as long as there are not fatal errors
+   * It will build a maven project as long as there are not fatal errors
    *
    * @param artifact
    * @param e
@@ -142,10 +111,4 @@ public class MulePluginResolver {
 
     return projectBuildingResult.getProject();
   }
-
-  private Predicate<Dependency> dependencyWith(String type, String scope, String classifier) {
-    return dependency -> type.equals(dependency.getType()) && scope.equals(dependency.getScope())
-        && classifier.equals(dependency.getClassifier());
-  }
-
 }

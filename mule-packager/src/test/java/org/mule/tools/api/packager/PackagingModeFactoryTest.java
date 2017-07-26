@@ -12,11 +12,11 @@ package org.mule.tools.api.packager;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.mule.tools.api.packager.PackagingMode.*;
+import static org.mule.tools.api.packager.packaging.PackagingMode.*;
 
 import org.junit.Test;
-import org.mule.tools.api.packager.PackagingMode;
-import org.mule.tools.api.packager.PackagingModeFactory;
+import org.mule.tools.api.packager.packaging.PackagingMode;
+import org.mule.tools.api.packager.packaging.PackagingModeFactory;
 
 public class PackagingModeFactoryTest {
 

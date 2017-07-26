@@ -11,7 +11,7 @@
 package org.mule.tools.maven.mojo;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.api.packager.PackagerFolders.*;
+import static org.mule.tools.api.packager.structure.PackagerFolders.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +25,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.ArchiverException;
-import org.mule.tools.api.PackageBuilder;
-import org.mule.tools.api.packager.PackagingType;
+import org.mule.tools.api.packager.PackageBuilder;
+import org.mule.tools.api.packager.packaging.PackagingType;
 
 /**
  * Build a Mule application archive.

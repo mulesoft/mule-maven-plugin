@@ -24,8 +24,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import org.mule.tools.api.packager.ContentGenerator;
 import org.mule.tools.api.packager.PackagerTestUtils;
-import org.mule.tools.api.packager.PackagingType;
+import org.mule.tools.api.packager.packaging.PackagingType;
 
 public class ContentGeneratorTest {
 

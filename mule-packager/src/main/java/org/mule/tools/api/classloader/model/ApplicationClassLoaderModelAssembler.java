@@ -10,16 +10,13 @@
 
 package org.mule.tools.api.classloader.model;
 
-import static java.lang.String.format;
 import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
 import static org.mule.maven.client.internal.util.MavenUtils.getPomModelFromFile;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.*;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifacts;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
 
 import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Model;
@@ -28,11 +25,6 @@ import org.mule.maven.client.api.PomFileSupplierFactory;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.classloader.model.util.ArtifactUtils;
-
 
 public class ApplicationClassLoaderModelAssembler {
 

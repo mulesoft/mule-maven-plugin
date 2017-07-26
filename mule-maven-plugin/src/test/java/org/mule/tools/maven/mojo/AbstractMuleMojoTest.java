@@ -12,7 +12,7 @@ package org.mule.tools.maven.mojo;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.tools.api.packager.PackagerFolders.META_INF;
+import static org.mule.tools.api.packager.structure.PackagerFolders.META_INF;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,9 +26,9 @@ import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import org.mule.tools.api.PackageBuilder;
+import org.mule.tools.api.packager.PackageBuilder;
 import org.mule.tools.maven.dependency.MulePluginsCompatibilityValidator;
-import org.mule.tools.maven.dependency.resolver.MulePluginResolver;
+import org.mule.tools.maven.dependency.MulePluginResolver;
 
 public class AbstractMuleMojoTest {
 
@@ -46,12 +46,9 @@ public class AbstractMuleMojoTest {
   protected Build buildMock;
   protected File metaInfFolder;
   protected File destinationFile;
-  protected File muleApplicationJson;
   protected MavenProject projectMock;
   protected File muleSourceFolderMock;
   protected PackageBuilder packageBuilderMock;
-  protected MulePluginResolver resolverMock = mock(MulePluginResolver.class);
-  protected MulePluginsCompatibilityValidator validatorMock = mock(MulePluginsCompatibilityValidator.class);
 
   @Rule
   public TemporaryFolder projectBaseFolder = new TemporaryFolder();

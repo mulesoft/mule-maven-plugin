@@ -22,8 +22,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mule.tools.api.packager.Classifier;
-import org.mule.tools.api.packager.PackagingType;
+import org.mule.tools.api.packager.packaging.Classifier;
+import org.mule.tools.api.packager.packaging.PackagingType;
 
 public class PackageMojoTest extends AbstractMuleMojoTest {
 

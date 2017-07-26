@@ -8,17 +8,16 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.packager;
+package org.mule.tools.api.packager.packaging;
 
 import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
-import static org.mule.tools.api.FolderNames.MAIN;
-import static org.mule.tools.api.FolderNames.MUNIT;
-import static org.mule.tools.api.FolderNames.SRC;
-import static org.mule.tools.api.FolderNames.TEST;
-import static org.mule.tools.api.packager.PackagerFiles.MULE_ARTIFACT_JSON;
-import static org.mule.tools.api.packager.PackagerFolders.MULE;
-import static org.mule.tools.api.packager.PackagerFolders.POLICY;
+import static org.mule.tools.api.packager.structure.FolderNames.MAIN;
+import static org.mule.tools.api.packager.structure.FolderNames.MUNIT;
+import static org.mule.tools.api.packager.structure.FolderNames.SRC;
+import static org.mule.tools.api.packager.structure.FolderNames.TEST;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MULE;
+import static org.mule.tools.api.packager.structure.PackagerFolders.POLICY;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -97,10 +96,6 @@ public enum PackagingType {
       return POLICY;
     }
     return MULE;
-  }
-
-  public String getDescriptorFileName() {
-    return MULE_ARTIFACT_JSON;
   }
 
   private File mainFolder(Path projectBasedFolder) {

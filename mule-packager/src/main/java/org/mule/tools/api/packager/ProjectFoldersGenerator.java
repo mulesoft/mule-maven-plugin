@@ -7,15 +7,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api;
+package org.mule.tools.api.packager;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import org.mule.tools.api.packager.PackagingType;
+import org.mule.tools.api.packager.packaging.PackagingType;
 
 import java.io.File;
 import java.nio.file.Path;
 
 import org.apache.commons.lang3.StringUtils;
+import org.mule.tools.api.packager.structure.FolderNames;
 
 /**
  * The goal of this class it ot generate the basic working folder structure to create a package.

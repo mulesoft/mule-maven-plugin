@@ -8,11 +8,12 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.packager;
+package org.mule.tools.api.packager.structure;
 
 /**
  * <code>PackagerFolders</code> is a set of constants belonging to the Mule Packager.
  */
+
 public class PackagerFolders {
 
   // TODO we should deprecate this anf favor the class FolderNames

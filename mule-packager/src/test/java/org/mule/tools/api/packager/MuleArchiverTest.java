@@ -12,16 +12,7 @@ package org.mule.tools.api.packager;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.mule.tools.api.packager.PackagerFolders.CLASSES;
-import static org.mule.tools.api.packager.PackagerFolders.MAVEN;
-import static org.mule.tools.api.packager.PackagerFolders.META_INF;
-import static org.mule.tools.api.packager.PackagerFolders.MULE;
-import static org.mule.tools.api.packager.PackagerFolders.MULE_ARTIFACT;
-import static org.mule.tools.api.packager.PackagerFolders.MULE_SRC;
-import static org.mule.tools.api.packager.PackagerFolders.MUNIT;
-import static org.mule.tools.api.packager.PackagerFolders.PLUGINS;
-
-import org.mule.tools.api.packager.MuleArchiver;
+import static org.mule.tools.api.packager.structure.PackagerFolders.*;
 
 import java.io.File;
 import java.nio.file.Path;

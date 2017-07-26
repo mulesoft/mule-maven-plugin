@@ -14,14 +14,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mule.tools.api.packager.PackagerFolders.CLASSES;
-import static org.mule.tools.api.packager.PackagerFolders.MAVEN;
-import static org.mule.tools.api.packager.PackagerFolders.META_INF;
-import static org.mule.tools.api.packager.PackagerFolders.MULE;
-import static org.mule.tools.api.packager.PackagerFolders.MULE_ARTIFACT;
-import static org.mule.tools.api.packager.PackagerFolders.MULE_SRC;
-import static org.mule.tools.api.packager.PackagerFolders.POLICY;
-import static org.mule.tools.api.packager.PackagerFolders.REPOSITORY;
+import static org.mule.tools.api.packager.structure.PackagerFolders.CLASSES;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MAVEN;
+import static org.mule.tools.api.packager.structure.PackagerFolders.META_INF;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MULE;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_SRC;
+import static org.mule.tools.api.packager.structure.PackagerFolders.POLICY;
+import static org.mule.tools.api.packager.structure.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import org.mule.tools.api.packager.MuleArchiver;
+import org.mule.tools.api.packager.PackageBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PackageBuilderTest {

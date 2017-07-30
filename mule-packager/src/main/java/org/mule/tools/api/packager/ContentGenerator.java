@@ -7,20 +7,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api;
+package org.mule.tools.api.packager;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.api.packager.PackagerFiles.POM_PROPERTIES;
-import static org.mule.tools.api.packager.PackagerFiles.POM_XML;
-import static org.mule.tools.api.packager.PackagerFolders.MAVEN;
-import static org.mule.tools.api.packager.PackagerFolders.META_INF;
-import static org.mule.tools.api.packager.PackagerFolders.MULE_ARTIFACT;
-import static org.mule.tools.api.packager.PackagerFolders.MULE_SRC;
-import static org.mule.tools.api.packager.PackagerFolders.TARGET;
-import static org.mule.tools.api.packager.PackagerFolders.TEST_MULE;
+import static org.mule.tools.api.packager.structure.PackagerFiles.*;
+import static org.mule.tools.api.packager.structure.PackagerFolders.*;
+
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.packager.PackagerFolders;
-import org.mule.tools.api.packager.PackagingType;
+import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.util.CopyFileVisitor;
 
 import com.google.gson.Gson;
@@ -117,7 +111,7 @@ public class ContentGenerator {
   }
 
   /**
-   * It creates the {@link PackagerFolders#MULE_SRC} folder used by IDEs to import the project source code
+   * It creates the {@link org.mule.tools.api.packager.structure.PackagerFolders#MULE_SRC} folder used by IDEs to import the project source code
    * 
    * @throws IOException
    */
@@ -184,7 +178,7 @@ public class ContentGenerator {
   }
 
   private void copyDescriptorFile() throws IOException {
-    Path originPath = projectBaseFolder.resolve(packagingType.getDescriptorFileName());
+    Path originPath = projectBaseFolder.resolve(MULE_ARTIFACT_JSON);
     Path destinationPath = projectTargetFolder.resolve(META_INF).resolve(MULE_ARTIFACT);
     String destinationFileName = originPath.getFileName().toString();
 

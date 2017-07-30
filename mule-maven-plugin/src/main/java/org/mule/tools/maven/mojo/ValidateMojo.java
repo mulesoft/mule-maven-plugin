@@ -20,10 +20,11 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
+import org.mule.tools.maven.utils.MavenProjectBuilder;
 import org.mule.tools.maven.dependency.MulePluginsCompatibilityValidator;
-import org.mule.tools.maven.dependency.resolver.MulePluginResolver;
+import org.mule.tools.maven.dependency.MulePluginResolver;
 import org.mule.tools.api.exception.ValidationException;
-import org.mule.tools.api.Validator;
+import org.mule.tools.api.validation.Validator;
 
 /**
  * It creates all the required folders in the project.build.directory
@@ -67,7 +68,6 @@ public class ValidateMojo extends AbstractMuleMojo {
     }
   }
 
-
   protected void validateMulePluginDependencies() throws MojoExecutionException {
     getMulePluginsCompatibilityValidator().validate(getResolver().resolveMulePlugins(project));
   }
@@ -77,8 +77,9 @@ public class ValidateMojo extends AbstractMuleMojo {
   }
 
   protected MulePluginResolver getResolver() {
-    return new MulePluginResolver(getLog(), session, projectBuilder, repositorySystem, localRepository,
-                                  remoteArtifactRepositories);
+    MavenProjectBuilder builder = new MavenProjectBuilder(getLog(), session, projectBuilder, repositorySystem, localRepository,
+                                                          remoteArtifactRepositories);
+    return new MulePluginResolver(builder);
   }
 
   protected MulePluginsCompatibilityValidator getMulePluginsCompatibilityValidator() {

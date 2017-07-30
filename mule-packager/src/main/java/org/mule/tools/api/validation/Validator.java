@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api;
+package org.mule.tools.api.validation;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -15,8 +15,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.mule.tools.api.packager.PackagingType;
+import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.exception.ValidationException;
+
+import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 
 /**
  * Ensures the project is valid
@@ -39,7 +41,7 @@ public class Validator {
   public Boolean isProjectValid(String packagingType) throws ValidationException {
     isPackagingTypeValid(packagingType);
     isProjectStructureValid(packagingType);
-    isDescriptorFilePresent(packagingType);
+    isDescriptorFilePresent();
 
     return true;
   }
@@ -81,15 +83,13 @@ public class Validator {
   /**
    * It validates that the mandatory descriptor files are present
    * 
-   * @param packagingType defines the package type of the project to validate
    * @return true if the project's descriptor files are preset
    * @throws ValidationException if the project's descriptor files are missing
    */
-  public Boolean isDescriptorFilePresent(String packagingType) throws ValidationException {
-    String fileName = PackagingType.fromString(packagingType).getDescriptorFileName();
+  public Boolean isDescriptorFilePresent() throws ValidationException {
     String errorMessage = "Invalid Mule project. Missing %s file, it must be present in the root of application";
-    if (!projectBaseDir.resolve(fileName).toFile().exists()) {
-      throw new ValidationException(String.format(errorMessage, fileName));
+    if (!projectBaseDir.resolve(MULE_ARTIFACT_JSON).toFile().exists()) {
+      throw new ValidationException(String.format(errorMessage, MULE_ARTIFACT_JSON));
     }
     return true;
   }

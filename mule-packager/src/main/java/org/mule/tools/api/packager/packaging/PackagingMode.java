@@ -8,15 +8,16 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.packager;
+package org.mule.tools.api.packager.packaging;
+
+import org.mule.tools.api.packager.PackageBuilder;
 
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
+import static org.mule.tools.api.packager.structure.PackagerFolders.*;
 
 import java.io.File;
 import java.util.Map;
-
-import org.mule.tools.api.PackageBuilder;
 
 public enum PackagingMode {
   // TODO we should add a method to inform those folders that are mandatory based on the packaging mode
@@ -24,7 +25,7 @@ public enum PackagingMode {
 
     @Override
     public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
-      return packageBuilder.withMuleSrc(fileMap.get(PackagerFolders.MULE_SRC));
+      return packageBuilder.withMuleSrc(fileMap.get(MULE_SRC));
     }
   },
 
@@ -33,9 +34,9 @@ public enum PackagingMode {
     @Override
     public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
       return packageBuilder
-          .withMule(fileMap.get(PackagerFolders.MULE))
-          .withClasses(fileMap.get(PackagerFolders.CLASSES))
-          .withRepository(fileMap.get(PackagerFolders.REPOSITORY));
+          .withMule(fileMap.get(MULE))
+          .withClasses(fileMap.get(CLASSES))
+          .withRepository(fileMap.get(REPOSITORY));
     }
   },
 
@@ -44,8 +45,8 @@ public enum PackagingMode {
     @Override
     public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
       return packageBuilder
-          .withClasses(fileMap.get(PackagerFolders.CLASSES))
-          .withMule(fileMap.get(PackagerFolders.MULE));
+          .withClasses(fileMap.get(CLASSES))
+          .withMule(fileMap.get(MULE));
     }
   };
 

@@ -12,9 +12,8 @@ package org.mule.tools.api.repository;
 
 import static java.lang.String.format;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.isValidMulePlugin;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifactCoordinates;
-import static org.mule.tools.api.packager.PackagerFolders.REPOSITORY;
+import static org.mule.tools.api.packager.structure.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;

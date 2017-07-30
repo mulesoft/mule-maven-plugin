@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api;
+package org.mule.tools.api.validation;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -15,11 +15,12 @@ import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mule.tools.api.FolderNames.MAIN;
-import static org.mule.tools.api.FolderNames.MULE;
-import static org.mule.tools.api.FolderNames.POLICY;
-import static org.mule.tools.api.FolderNames.SRC;
-import static org.mule.tools.api.packager.PackagerFiles.MULE_ARTIFACT_JSON;
+import static org.mule.tools.api.packager.structure.FolderNames.MAIN;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE;
+import static org.mule.tools.api.packager.structure.FolderNames.POLICY;
+import static org.mule.tools.api.packager.structure.FolderNames.SRC;
+import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
+
 import org.mule.tools.api.exception.ValidationException;
 
 import java.io.IOException;
@@ -154,7 +155,7 @@ public class ValidatorTest {
 
   @Test(expected = ValidationException.class)
   public void isDescriptorFilePresentMuleApplicationInvalid() throws IOException, ValidationException {
-    validator.isDescriptorFilePresent(MULE_APPLICATION);
+    validator.isDescriptorFilePresent();
   }
 
   @Test
@@ -162,21 +163,7 @@ public class ValidatorTest {
     Path descriptorFilePath = projectBaseFolder.getRoot().toPath().resolve(MULE_ARTIFACT_JSON);
     descriptorFilePath.toFile().createNewFile();
 
-    Boolean valid = validator.isDescriptorFilePresent(MULE_APPLICATION);
-    assertThat("Project's descriptor file should be present", valid, is(true));
-  }
-
-  @Test(expected = ValidationException.class)
-  public void isDescriptorFilePresentMulePolicyInvalid() throws IOException, ValidationException {
-    validator.isDescriptorFilePresent(MULE_POLICY);
-  }
-
-  @Test
-  public void isDescriptorFilePresentMulePolicy() throws IOException, ValidationException {
-    Path descriptorFilePath = projectBaseFolder.getRoot().toPath().resolve(MULE_ARTIFACT_JSON);
-    descriptorFilePath.toFile().createNewFile();
-
-    Boolean valid = validator.isDescriptorFilePresent(MULE_POLICY);
+    Boolean valid = validator.isDescriptorFilePresent();
     assertThat("Project's descriptor file should be present", valid, is(true));
   }
 
@@ -187,13 +174,13 @@ public class ValidatorTest {
 
     doReturn(true).when(validator).isPackagingTypeValid(packagingType);
     doReturn(true).when(validator).isProjectStructureValid(packagingType);
-    doReturn(true).when(validator).isDescriptorFilePresent(packagingType);
+    doReturn(true).when(validator).isDescriptorFilePresent();
 
     doCallRealMethod().when(validator).isProjectValid(packagingType);
     validator.isProjectValid(packagingType);
 
     verify(validator, times(1)).isPackagingTypeValid(packagingType);
     verify(validator, times(1)).isProjectStructureValid(packagingType);
-    verify(validator, times(1)).isDescriptorFilePresent(packagingType);
+    verify(validator, times(1)).isDescriptorFilePresent();
   }
 }

@@ -31,7 +31,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.mule.tools.api.Validator;
+import org.mule.tools.api.validation.Validator;
 import org.mule.tools.maven.mojo.model.SharedLibraryDependency;
 
 public class ValidateMojoTest extends AbstractMuleMojoTest {

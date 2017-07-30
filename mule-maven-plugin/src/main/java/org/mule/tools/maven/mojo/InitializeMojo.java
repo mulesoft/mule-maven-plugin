@@ -19,8 +19,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
-import org.mule.tools.api.packager.PackagingType;
-import org.mule.tools.api.ProjectFoldersGenerator;
+import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.packager.ProjectFoldersGenerator;
 
 /**
  * It creates all the required folders in the project.build.directory

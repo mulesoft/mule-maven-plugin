@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.packager;
+package org.mule.tools.api.packager.structure;
 
 /**
  * <code>PackagerFiles</code> is a set of constants belonging to the Mule Packager.

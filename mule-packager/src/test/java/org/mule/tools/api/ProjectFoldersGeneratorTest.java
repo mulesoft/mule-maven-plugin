@@ -31,7 +31,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.mule.tools.api.packager.PackagingType;
+import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.packager.ProjectFoldersGenerator;
 
 public class ProjectFoldersGeneratorTest {
 

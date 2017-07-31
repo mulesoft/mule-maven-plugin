@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.maven.it.VerificationException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ProcessSourcesMojoTest extends MojoTest {
@@ -61,6 +62,8 @@ public class ProcessSourcesMojoTest extends MojoTest {
     verifier.verifyErrorFreeLog();
   }
 
+  //TODO MMP-204
+  @Ignore
   @Test
   public void testProcessSourcesClassloaderModelGeneratedFile() throws IOException, VerificationException {
     // THIS TEST NEEDS TO BE REVIEWED. MULE PLUGINS DECLARATION ORDER SOMETIMES CHANGES IN THE GENERATED CLASSLOADER MODEL

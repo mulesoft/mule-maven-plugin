@@ -53,7 +53,7 @@ public class PackageBuilderTest {
   public TemporaryFolder destinationFileParent = new TemporaryFolder();
 
   @Before
-  public void before() throws IOException {
+  public void setUp() throws IOException {
     this.packageBuilder = new PackageBuilder();
     this.packageBuilderSpy = spy(PackageBuilder.class);
     this.destinationFileMock = mock(File.class);

@@ -48,8 +48,6 @@ public class PackageMojo extends AbstractMuleMojo {
   @Parameter(defaultValue = "${attachMuleSources}")
   protected boolean attachMuleSources = false;
 
-  protected PackageBuilder packageBuilder;
-
   protected PackagingType packagingType;
 
   protected String finalName;
@@ -61,10 +59,9 @@ public class PackageMojo extends AbstractMuleMojo {
     packagingType = PackagingType.fromString(project.getPackaging());
     String targetFolder = project.getBuild().getDirectory();
     File destinationFile = getDestinationFile(targetFolder);
-    initializePackageBuilder();
     try {
-      packageBuilder.createMuleApp(destinationFile, targetFolder, packagingType, onlyMuleSources, lightweightPackage,
-                                   attachMuleSources);
+      getPackageBuilder().createMuleApp(destinationFile, targetFolder, packagingType, onlyMuleSources, lightweightPackage,
+                                        attachMuleSources);
     } catch (ArchiverException | IOException e) {
       throw new MojoExecutionException("Exception creating the Mule App", e);
     }
@@ -95,7 +92,7 @@ public class PackageMojo extends AbstractMuleMojo {
     return finalName + "-" + packagingType.resolveClassifier(classifier, lightweightPackage) + "." + TYPE;
   }
 
-  protected void initializePackageBuilder() {
-    packageBuilder = new PackageBuilder();
+  public PackageBuilder getPackageBuilder() {
+    return new PackageBuilder();
   }
 }

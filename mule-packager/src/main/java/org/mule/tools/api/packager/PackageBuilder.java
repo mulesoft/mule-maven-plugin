@@ -206,8 +206,9 @@ public class PackageBuilder {
   }
 
   /**
-   * Creates a mule app package based on the contents of the target folder, writing them to the destination jar file.
-   * The target file is supposed to have more or less the structure of the example above:
+   * Creates a mule app package based on the contents of the origin folder, writing them to the destination jar file. The target
+   * file is supposed to have more or less the structure of the example below:
+   * 
    * <pre>
    *
    * ├── classes
@@ -246,7 +247,7 @@ public class PackageBuilder {
    * </pre>
    *
    * @param destinationFile file that represents the resource that is going to represent the final package.
-   * @param targetFolder folder containing the source files.
+   * @param originFolder folder containing the source files.
    * @param packagingType packaging type of the app that is being built.
    * @param onlyMuleSources when set to true, generates a package that is restricted to contain only mule sources.
    * @param lightweightPackage when set to true, generates a package with an empty repository folder.
@@ -254,30 +255,30 @@ public class PackageBuilder {
    * @throws ArchiverException
    * @throws IOException
    */
-  public void createMuleApp(File destinationFile, String targetFolder, PackagingType packagingType, boolean onlyMuleSources,
+  public void createMuleApp(File destinationFile, String originFolder, PackagingType packagingType, boolean onlyMuleSources,
                             boolean lightweightPackage, boolean attachMuleSources)
       throws ArchiverException, IOException {
     PackageBuilder builder = this.withDestinationFile(destinationFile);
     if (!onlyMuleSources) {
       builder
-          .withClasses(new File(targetFolder + File.separator + CLASSES))
-          .withMaven(new File(targetFolder + File.separator + META_INF + File.separator + MAVEN))
-          .withMuleArtifact(new File(targetFolder + File.separator + META_INF + File.separator + MULE_ARTIFACT));
+          .withClasses(new File(originFolder + File.separator + CLASSES))
+          .withMaven(new File(originFolder + File.separator + META_INF + File.separator + MAVEN))
+          .withMuleArtifact(new File(originFolder + File.separator + META_INF + File.separator + MULE_ARTIFACT));
       if (PackagingType.MULE_POLICY.equals(packagingType)) {
-        builder.withPolicy(new File(targetFolder + File.separator + POLICY));
+        builder.withPolicy(new File(originFolder + File.separator + POLICY));
 
       } else {
-        builder.withMule(new File(targetFolder + File.separator + MULE));
+        builder.withMule(new File(originFolder + File.separator + MULE));
       }
       if (!lightweightPackage) {
-        builder.withRepository(new File(targetFolder + File.separator + REPOSITORY));
+        builder.withRepository(new File(originFolder + File.separator + REPOSITORY));
       }
 
       if (attachMuleSources) {
-        builder.withMuleSrc(new File(targetFolder + File.separator + META_INF + File.separator + MULE_SRC));
+        builder.withMuleSrc(new File(originFolder + File.separator + META_INF + File.separator + MULE_SRC));
       }
     } else {
-      builder.withMuleSrc(new File(targetFolder + File.separator + META_INF + File.separator + MULE_SRC));
+      builder.withMuleSrc(new File(originFolder + File.separator + META_INF + File.separator + MULE_SRC));
     }
     builder.createDeployableFile();
   }

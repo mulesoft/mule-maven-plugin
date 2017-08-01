@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mule.tools.api.packager.PackageBuilder;
 import org.mule.tools.api.packager.packaging.Classifier;
 import org.mule.tools.api.packager.packaging.PackagingType;
 
@@ -98,8 +99,8 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
   private class PackageMojoImpl extends PackageMojo {
 
     @Override
-    public void initializePackageBuilder() {
-      this.packageBuilder = packageBuilderMock;
+    public PackageBuilder getPackageBuilder() {
+      return packageBuilderMock;
     }
   }
 }

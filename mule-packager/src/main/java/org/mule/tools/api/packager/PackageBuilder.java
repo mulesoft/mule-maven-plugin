@@ -10,8 +10,10 @@
 
 package org.mule.tools.api.packager;
 
+import org.codehaus.plexus.archiver.ArchiverException;
 import org.mule.tools.api.packager.packaging.PackagingMode;
 import org.mule.tools.api.packager.packaging.PackagingModeFactory;
+import org.mule.tools.api.packager.packaging.PackagingType;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -44,6 +46,7 @@ public class PackageBuilder {
   private File destinationFile;
   private MuleArchiver archiver = null;
 
+  @Deprecated
   public PackageBuilder(PackagingMode packagingMode) {
     this.packagingMode = packagingMode;
   }
@@ -200,6 +203,84 @@ public class PackageBuilder {
 
     archiver.setDestFile(destinationFile);
     archiver.createArchive();
+  }
+
+  /**
+   * Creates a mule app package based on the contents of the origin folder, writing them to the destination jar file. The target
+   * file is supposed to have more or less the structure of the example below:
+   * 
+   * <pre>
+   *
+   * ├── classes
+   * │   ├── log4j2.xml
+   * │   ├── org
+   * │   │   └── MyClass.class
+   * │   ├── mule
+   * │   │   ├── package
+   * │   │   └── mule-configuration(s).xml
+   * │   ├── api
+   * │   │   └── *.raml
+   * │   └── wsdl
+   * │       └── *.wsdl
+   * ├── META-INF
+   * │   ├── mule-src
+   * │   │   └── application-name
+   * │   ├── maven
+   * │   │   ├── group-id
+   * │   │   └── artifact-id
+   * │   │       ├── pom.xml
+   * │   │       └── pom.properties
+   * │   └── mule-artifact
+   * │       ├── classloader-model.json
+   * │       └── mule-artifact.json
+   * └── repository
+   *     ├── org
+   *     └── mule
+   *         ├── munit
+   *         └── munit-common
+   *             ├── 1.1.0
+   *             │   ├── *.jar
+   *             │   └── pom.xml
+   *             └── 2.0.0
+   *                 ├── *.jar
+   *                 └── pom.xml
+   * </pre>
+   *
+   * @param destinationFile file that represents the resource that is going to represent the final package.
+   * @param originFolder folder containing the source files.
+   * @param packagingType packaging type of the app that is being built.
+   * @param onlyMuleSources when set to true, generates a package that is restricted to contain only mule sources.
+   * @param lightweightPackage when set to true, generates a package with an empty repository folder.
+   * @param attachMuleSources when set to true, adds the mule source files to final package.
+   * @throws ArchiverException
+   * @throws IOException
+   */
+  public void createMuleApp(File destinationFile, String originFolder, PackagingType packagingType, boolean onlyMuleSources,
+                            boolean lightweightPackage, boolean attachMuleSources)
+      throws ArchiverException, IOException {
+    PackageBuilder builder = this.withDestinationFile(destinationFile);
+    if (!onlyMuleSources) {
+      builder
+          .withClasses(new File(originFolder + File.separator + CLASSES))
+          .withMaven(new File(originFolder + File.separator + META_INF + File.separator + MAVEN))
+          .withMuleArtifact(new File(originFolder + File.separator + META_INF + File.separator + MULE_ARTIFACT));
+      if (PackagingType.MULE_POLICY.equals(packagingType)) {
+        builder.withPolicy(new File(originFolder + File.separator + POLICY));
+
+      } else {
+        builder.withMule(new File(originFolder + File.separator + MULE));
+      }
+      if (!lightweightPackage) {
+        builder.withRepository(new File(originFolder + File.separator + REPOSITORY));
+      }
+
+      if (attachMuleSources) {
+        builder.withMuleSrc(new File(originFolder + File.separator + META_INF + File.separator + MULE_SRC));
+      }
+    } else {
+      builder.withMuleSrc(new File(originFolder + File.separator + META_INF + File.separator + MULE_SRC));
+    }
+    builder.createDeployableFile();
   }
 
   private void runPrePackageValidations() {

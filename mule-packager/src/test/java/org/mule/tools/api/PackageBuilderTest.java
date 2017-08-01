@@ -10,10 +10,8 @@
 
 package org.mule.tools.api;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.mule.tools.api.packager.structure.PackagerFolders.CLASSES;
 import static org.mule.tools.api.packager.structure.PackagerFolders.MAVEN;
 import static org.mule.tools.api.packager.structure.PackagerFolders.META_INF;
@@ -39,20 +37,28 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import org.mule.tools.api.packager.MuleArchiver;
 import org.mule.tools.api.packager.PackageBuilder;
+import org.mule.tools.api.packager.packaging.PackagingType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PackageBuilderTest {
 
   private File destinationFileMock;
   private PackageBuilder packageBuilder;
+  private PackageBuilder packageBuilderSpy;
+  private File destinationFile;
 
   @Rule
   public TemporaryFolder targetFileFolder = new TemporaryFolder();
+  @Rule
+  public TemporaryFolder destinationFileParent = new TemporaryFolder();
 
   @Before
-  public void beforeTest() {
+  public void setUp() throws IOException {
     this.packageBuilder = new PackageBuilder();
+    this.packageBuilderSpy = spy(PackageBuilder.class);
     this.destinationFileMock = mock(File.class);
+    doNothing().when(packageBuilderSpy).createDeployableFile();
+    destinationFile = new File(destinationFileParent.getRoot(), "destinationFile.jar");
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -215,6 +221,38 @@ public class PackageBuilderTest {
     verify(muleArchiverMock, times(1)).addRepository(workingDirectory.resolve(REPOSITORY).toFile(), null, null);
     verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
     verify(muleArchiverMock, times(1)).createArchive();
+  }
+
+  @Test
+  public void createMuleAppOnlyMuleSourcesTest() throws IOException {
+    packageBuilderSpy.createMuleApp(destinationFile, targetFileFolder.getRoot().getPath(), PackagingType.MULE_APPLICATION, true,
+                                    true, true);
+    verify(packageBuilderSpy, times(1)).withDestinationFile(any());
+    verify(packageBuilderSpy, times(0)).withClasses(any());
+    verify(packageBuilderSpy, times(0)).withMule(any());
+    verify(packageBuilderSpy, times(0)).withRepository(any());
+  }
+
+  @Test
+  public void createMuleAppWithBinariesTest() throws IOException {
+    packageBuilderSpy.createMuleApp(destinationFile, targetFileFolder.getRoot().getPath(), PackagingType.MULE_APPLICATION, false,
+                                    false, false);
+    verify(packageBuilderSpy, times(1)).withDestinationFile(any());
+    verify(packageBuilderSpy, times(1)).withClasses(any());
+    verify(packageBuilderSpy, times(1)).withMule(any());
+    verify(packageBuilderSpy, times(1)).withRepository(any());
+    verify(packageBuilderSpy, times(1)).withMuleArtifact(any());
+    verify(packageBuilderSpy, times(1)).withMaven(any());
+  }
+
+  @Test
+  public void createMuleAppWithBinariesAndSourcesTest() throws IOException {
+    packageBuilderSpy.createMuleApp(destinationFile, targetFileFolder.getRoot().getPath(), PackagingType.MULE_APPLICATION, false,
+            false, true);
+    verify(packageBuilderSpy, times(1)).withDestinationFile(any());
+    verify(packageBuilderSpy, times(1)).withClasses(any());
+    verify(packageBuilderSpy, times(1)).withMule(any());
+    verify(packageBuilderSpy, times(1)).withRepository(any());
   }
 
 }

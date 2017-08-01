@@ -61,12 +61,9 @@ public class ProcessSourcesMojoTest extends MojoTest {
 
     verifier.verifyErrorFreeLog();
   }
-
-  //TODO MMP-204
-  @Ignore
+  
   @Test
   public void testProcessSourcesClassloaderModelGeneratedFile() throws IOException, VerificationException {
-    // THIS TEST NEEDS TO BE REVIEWED. MULE PLUGINS DECLARATION ORDER SOMETIMES CHANGES IN THE GENERATED CLASSLOADER MODEL
     projectBaseDirectory = builder.createProjectBaseDir("empty-classloader-model-project", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());

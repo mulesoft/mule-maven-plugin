@@ -61,14 +61,14 @@ public class PackageMojo extends AbstractMuleMojo {
     packagingType = PackagingType.fromString(project.getPackaging());
     String targetFolder = project.getBuild().getDirectory();
     File destinationFile = getDestinationFile(targetFolder);
+    initializePackageBuilder();
     try {
-      createMuleApp(destinationFile, targetFolder);
-    } catch (ArchiverException e) {
+      packageBuilder.createMuleApp(destinationFile, targetFolder, packagingType, onlyMuleSources, lightweightPackage,
+                                   attachMuleSources);
+    } catch (ArchiverException | IOException e) {
       throw new MojoExecutionException("Exception creating the Mule App", e);
     }
-
     helper.attachArtifact(this.project, TYPE, packagingType.resolveClassifier(classifier, lightweightPackage), destinationFile);
-
     getLog().debug(MessageFormat.format("Package done ({0}ms)", System.currentTimeMillis() - start));
   }
 
@@ -93,38 +93,6 @@ public class PackageMojo extends AbstractMuleMojo {
 
   protected String getFileName() {
     return finalName + "-" + packagingType.resolveClassifier(classifier, lightweightPackage) + "." + TYPE;
-  }
-
-  protected void createMuleApp(File destinationFile, String targetFolder) throws MojoExecutionException, ArchiverException {
-    initializePackageBuilder();
-    try {
-      PackageBuilder builder = packageBuilder.withDestinationFile(destinationFile);
-      if (!onlyMuleSources) {
-        builder
-            .withClasses(new File(targetFolder + File.separator + CLASSES))
-            .withMaven(new File(targetFolder + File.separator + META_INF + File.separator + MAVEN))
-            .withMuleArtifact(new File(targetFolder + File.separator + META_INF + File.separator + MULE_ARTIFACT));
-        if (PackagingType.MULE_POLICY.equals(project.getPackaging())) {
-          builder.withPolicy(new File(targetFolder + File.separator + POLICY));
-
-        } else {
-          builder.withMule(new File(targetFolder + File.separator + MULE));
-        }
-        if (!lightweightPackage) {
-          builder.withRepository(new File(targetFolder + File.separator + REPOSITORY));
-        }
-
-        if (attachMuleSources) {
-          builder.withMuleSrc(new File(targetFolder + File.separator + META_INF + File.separator + MULE_SRC));
-        }
-      } else {
-        builder.withMuleSrc(new File(targetFolder + File.separator + META_INF + File.separator + MULE_SRC));
-      }
-
-      builder.createDeployableFile();
-    } catch (IOException e) {
-      throw new MojoExecutionException("Cannot create archive");
-    }
   }
 
   protected void initializePackageBuilder() {

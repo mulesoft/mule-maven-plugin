@@ -54,46 +54,6 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
   }
 
   @Test
-  public void createMuleAppOnlyMuleSourcesTest() throws MojoExecutionException {
-    mojo.onlyMuleSources = true;
-
-    mojo.createMuleApp(destinationFile, buildFolderFolder.getRoot().getAbsolutePath());
-
-    verify(packageBuilderMock, times(1)).withDestinationFile(any());
-    verify(packageBuilderMock, times(0)).withClasses(any());
-    verify(packageBuilderMock, times(0)).withMule(any());
-    verify(packageBuilderMock, times(0)).withRepository(any());
-  }
-
-  @Test
-  public void createMuleAppWithBinariesTest() throws MojoExecutionException {
-    mojo.onlyMuleSources = false;
-    mojo.attachMuleSources = false;
-
-    mojo.createMuleApp(destinationFile, buildFolderFolder.getRoot().getAbsolutePath());
-
-    verify(packageBuilderMock, times(1)).withDestinationFile(any());
-    verify(packageBuilderMock, times(1)).withClasses(any());
-    verify(packageBuilderMock, times(1)).withMule(any());
-    verify(packageBuilderMock, times(1)).withRepository(any());
-    verify(packageBuilderMock, times(1)).withMuleArtifact(any());
-    verify(packageBuilderMock, times(1)).withMaven(any());
-  }
-
-  @Test
-  public void createMuleAppWithBinariesAndSourcesTest() throws MojoExecutionException {
-    mojo.onlyMuleSources = false;
-    mojo.attachMuleSources = true;
-
-    mojo.createMuleApp(destinationFile, buildFolderFolder.getRoot().getAbsolutePath());
-
-    verify(packageBuilderMock, times(1)).withDestinationFile(any());
-    verify(packageBuilderMock, times(1)).withClasses(any());
-    verify(packageBuilderMock, times(1)).withMule(any());
-    verify(packageBuilderMock, times(1)).withRepository(any());
-  }
-
-  @Test
   public void getFileNameTest() {
     when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
     when(projectMock.getVersion()).thenReturn(VERSION);

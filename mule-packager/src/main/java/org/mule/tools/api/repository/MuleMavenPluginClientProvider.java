@@ -56,17 +56,17 @@ public class MuleMavenPluginClientProvider {
     Optional<File> globalSettings = settingsSupplierFactory.environmentGlobalSettingsSupplier();
     Optional<File> userSettings = settingsSupplierFactory.environmentUserSettingsSupplier();
 
-    globalSettings.ifPresent(mavenConfigurationBuilder::withGlobalSettingsLocation);
-    userSettings.ifPresent(mavenConfigurationBuilder::withUserSettingsLocation);
+    globalSettings.ifPresent(mavenConfigurationBuilder::globalSettingsLocation);
+    userSettings.ifPresent(mavenConfigurationBuilder::userSettingsLocation);
 
     DefaultLocalRepositorySupplierFactory localRepositorySupplierFactory = new DefaultLocalRepositorySupplierFactory();
     Supplier<File> localMavenRepository = localRepositorySupplierFactory.environmentMavenRepositorySupplier();
 
     this.remoteRepositories.stream().filter(this::hasValidURL).map(this::toRemoteRepo)
-        .forEach(mavenConfigurationBuilder::withRemoteRepository);
+        .forEach(mavenConfigurationBuilder::remoteRepository);
 
     return mavenConfigurationBuilder
-        .withLocalMavenRepositoryLocation(localMavenRepository.get())
+        .localMavenRepositoryLocation(localMavenRepository.get())
         .build();
   }
 
@@ -85,10 +85,10 @@ public class MuleMavenPluginClientProvider {
     URL remoteRepositoryUrl = getURL(remoteRepository);
     org.mule.maven.client.api.model.RemoteRepository.RemoteRepositoryBuilder builder =
         new org.mule.maven.client.api.model.RemoteRepository.RemoteRepositoryBuilder();
-    authentication.ifPresent(builder::withAuthentication);
+    authentication.ifPresent(builder::authentication);
     return builder
-        .withId(id)
-        .withUrl(remoteRepositoryUrl)
+        .id(id)
+        .url(remoteRepositoryUrl)
         .build();
   }
 
@@ -115,6 +115,6 @@ public class MuleMavenPluginClientProvider {
     Authentication.AuthenticationBuilder authenticationBuilder = new Authentication.AuthenticationBuilder();
     AuthenticationContext.close(authenticationContext);
 
-    return Optional.of(authenticationBuilder.withPassword(password).withUsername(username).build());
+    return Optional.of(authenticationBuilder.password(password).username(username).build());
   }
 }

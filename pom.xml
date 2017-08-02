@@ -50,6 +50,7 @@
         <skipVerifications>false</skipVerifications>
         <formatterGoal>validate</formatterGoal>
 
+        <maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
         <maven.plugin.annotations.version>3.5</maven.plugin.annotations.version>
         <maven.dependency.tree.version>1.2</maven.dependency.tree.version>
         <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
@@ -272,6 +273,11 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven.javadoc.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven.compiler.plugin.version}</version>
                     <configuration>
@@ -279,8 +285,6 @@
                         <target>${java.target}</target>
                     </configuration>
                 </plugin>
-
-
                 <plugin>
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
@@ -413,11 +417,10 @@
             </properties>
             <build>
                 <plugins>
-                    <!-- TODO MMP-119 Review plugin executions. Right now javadoc plugin is failing -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10</version>
+                        <version>${maven.javadoc.plugin.version}</version>
                         <configuration>
                             <additionalparam>${javadoc.opts}</additionalparam>
                         </configuration>

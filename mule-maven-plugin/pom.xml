@@ -60,6 +60,7 @@
         <maven.invoker.plugin.version>2.0.0</maven.invoker.plugin.version>
         <maven.plugin.version>3.4</maven.plugin.version>
         <maven.verifier.version>1.6</maven.verifier.version>
+        <maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
     
         <!--Integration tests properties-->
         <maven.plugin.plugin.version>3.5</maven.plugin.plugin.version>
@@ -421,11 +422,10 @@
             </properties>
             <build>
                 <plugins>
-                    <!-- TODO MMP-119 Review plugin executions. Right now javadoc plugin is failing -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10</version>
+                        <version>${maven.javadoc.plugin.version}</version>
                         <configuration>
                             <additionalparam>${javadoc.opts}</additionalparam>
                         </configuration>

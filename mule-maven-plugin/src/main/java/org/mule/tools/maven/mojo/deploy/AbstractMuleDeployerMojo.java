@@ -71,7 +71,9 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
    */
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
-    if (StringUtils.isNotEmpty(deploymentConfiguration.getSkip()) && "true".equals(deploymentConfiguration.getSkip())) {
+    if (deploymentConfiguration == null) {
+      throw new MojoFailureException("No deployment configuration was defined. Aborting.");
+    } else if (StringUtils.isNotEmpty(deploymentConfiguration.getSkip()) && "true".equals(deploymentConfiguration.getSkip())) {
       getLog().info("Skipping execution: skip=" + deploymentConfiguration.getSkip());
     } else {
       getLog().debug("Executing mojo, skip=" + deploymentConfiguration.getSkip());

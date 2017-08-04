@@ -53,7 +53,12 @@ public abstract class MuleLifecycleMappingMaven {
     phases.put(TEST.id(), buildGoals("org.apache.maven.plugins:maven-surefire-plugin:2.19.1:test"));
     phases.put(PACKAGE.id(), buildGoals("org.mule.tools.maven:mule-maven-plugin:package"));
     phases.put(INSTALL.id(), buildGoals("org.apache.maven.plugins:maven-install-plugin:2.5.2:install"));
-    phases.put(DEPLOY.id(), buildGoals("org.apache.maven.plugins:maven-deploy-plugin:2.8.2:deploy"));
+    String isMuleDeploy = System.getProperty("muleDeploy");
+    if (isMuleDeploy != null && isMuleDeploy.equals("true")) {
+      phases.put(DEPLOY.id(), buildGoals("org.mule.tools.maven:mule-maven-plugin:deploy"));
+    } else {
+      phases.put(DEPLOY.id(), buildGoals("org.apache.maven.plugins:maven-deploy-plugin:2.8.2:deploy"));
+    }
     return phases;
   }
 

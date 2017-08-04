@@ -58,7 +58,7 @@ public class ArtifactInstaller {
     }
   }
 
-  private void generateArtifactFile(Artifact artifact, File artifactFolderDestination, File repositoryFile) throws IOException {
+  protected void generateArtifactFile(Artifact artifact, File artifactFolderDestination, File repositoryFile) throws IOException {
     String artifactFilename = getFormattedFileName(artifact);
 
     File destinationArtifactFile = new File(artifactFolderDestination, artifactFilename);
@@ -71,17 +71,17 @@ public class ArtifactInstaller {
     copyFile(artifact.getFile(), destinationArtifactFile);
   }
 
-  private void generateDependencyDescriptorFile(Artifact artifact, File artifactFolderDestination,
-                                                Optional<ClassLoaderModel> classLoaderModel)
+  protected void generateDependencyDescriptorFile(Artifact artifact, File artifactFolderDestination,
+                                                  Optional<ClassLoaderModel> classLoaderModel)
       throws IOException {
     if (classLoaderModel.isPresent()) {
-      ContentGenerator.createClassLoaderModelJsonFile(classLoaderModel.get(), artifactFolderDestination);
+      generateClassloderModelFile(classLoaderModel.get(), artifactFolderDestination);
     } else {
       generatePomFile(artifact, artifactFolderDestination);
     }
   }
 
-  private void generatePomFile(Artifact artifact, File artifactFolderDestination) throws IOException {
+  protected void generatePomFile(Artifact artifact, File artifactFolderDestination) throws IOException {
     String artifactPomFilename = getPomFileName(artifact);
     File srcPomFile = new File(artifact.getFile().getParent(), artifactPomFilename);
     File destinationPomFile = new File(artifactFolderDestination, artifactPomFilename);
@@ -89,5 +89,9 @@ public class ArtifactInstaller {
       srcPomFile = new File(artifact.getFile().getParent(), POM_FILE_NAME);
     }
     copyFile(srcPomFile, destinationPomFile);
+  }
+
+  protected void generateClassloderModelFile(ClassLoaderModel classLoaderModel, File artifactFolderDestination) {
+    ContentGenerator.createClassLoaderModelJsonFile(classLoaderModel, artifactFolderDestination);
   }
 }

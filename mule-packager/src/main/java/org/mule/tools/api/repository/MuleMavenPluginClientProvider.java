@@ -17,10 +17,7 @@ import org.eclipse.aether.repository.RemoteRepository;
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.model.Authentication;
 import org.mule.maven.client.api.model.MavenConfiguration;
-import org.mule.maven.client.internal.AetherMavenClientProvider;
-import org.mule.maven.client.internal.DefaultLocalRepositorySupplierFactory;
-import org.mule.maven.client.internal.DefaultSettingsSupplierFactory;
-import org.mule.maven.client.internal.MavenEnvironmentVariables;
+import org.mule.maven.client.internal.*;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -43,10 +40,10 @@ public class MuleMavenPluginClientProvider {
     this.log = log;
   }
 
-  protected MavenClient buildMavenClient() {
+  public AetherMavenClient buildMavenClient() {
     MavenConfiguration mavenConfiguration = buildMavenConfiguration();
     AetherMavenClientProvider provider = new AetherMavenClientProvider();
-    return provider.createMavenClient(mavenConfiguration);
+    return (AetherMavenClient) provider.createMavenClient(mavenConfiguration);
   }
 
   public MavenConfiguration buildMavenConfiguration() {

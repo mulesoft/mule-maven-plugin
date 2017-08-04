@@ -11,10 +11,18 @@
 package org.mule.tools.maven.mojo;
 
 import static java.lang.String.format;
+
+import org.apache.maven.RepositoryUtils;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.repository.ArtifactInstaller;
+import org.mule.tools.api.repository.MuleMavenPluginClientProvider;
 import org.mule.tools.api.repository.RepositoryGenerator;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -34,7 +42,8 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
 
     if (!lightweightPackage) {
       RepositoryGenerator repositoryGenerator =
-          new RepositoryGenerator(project, remoteArtifactRepositories, outputDirectory, getLog());
+          new RepositoryGenerator(project.getFile(), outputDirectory, new ArtifactInstaller(getLog()),
+                                  getClassLoaderModelAssembler());
       try {
         ClassLoaderModel classLoaderModel = repositoryGenerator.generate();
         getContentGenerator().createApplicationClassLoaderModelJsonFile(classLoaderModel);
@@ -44,5 +53,14 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
     }
 
     getLog().debug(MessageFormat.format("Process sources done ({0}ms)", System.currentTimeMillis() - start));
+  }
+
+
+  protected ApplicationClassLoaderModelAssembler getClassLoaderModelAssembler() {
+    List<RemoteRepository> remoteRepositories = RepositoryUtils.toRepos(remoteArtifactRepositories);
+    AetherMavenClient aetherMavenClient = new MuleMavenPluginClientProvider(remoteRepositories,
+                                                                            getLog())
+                                                                                .buildMavenClient();
+    return new ApplicationClassLoaderModelAssembler(aetherMavenClient);
   }
 }

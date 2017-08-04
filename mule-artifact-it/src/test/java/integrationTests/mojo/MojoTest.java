@@ -46,6 +46,17 @@ public class MojoTest {
   protected static final String DEPENDENCY_B_TYPE = "jar";
   protected static final String DEPENDENCY_A_PROJECT_NAME = "dependency-a";
   protected static final String DEPENDENCY_B_PROJECT_NAME = "dependency-b";
+  protected static final String DEPENDENCY_C_GROUP_ID = "group.id.c";
+  protected static final String DEPENDENCY_C_ARTIFACT_ID = "artifact-id-c";
+  protected static final String DEPENDENCY_C_VERSION = "1.0.0-SNAPSHOT";
+  protected static final String DEPENDENCY_C_TYPE = "jar";
+  protected static final String DEPENDENCY_D_GROUP_ID = "group.id.d";
+  protected static final String DEPENDENCY_D_ARTIFACT_ID = "artifact-id-d";
+  protected static final String DEPENDENCY_D_VERSION = "1.0.0";
+  protected static final String DEPENDENCY_D_TYPE = "jar";
+  protected static final String DEPENDENCY_C_PROJECT_NAME = "dependency-c";
+  protected static final String DEPENDENCY_D_PROJECT_NAME = "dependency-d";
+  protected static final String DEPENDENCY_ARTIFACT_ID = "dependency";
   protected ProjectFactory builder;
   protected File projectBaseDirectory;
   protected Verifier verifier;
@@ -103,7 +114,6 @@ public class MojoTest {
     auxVerifier.deleteArtifact(groupId, artifactId, version, type);
     auxVerifier.assertArtifactNotPresent(groupId, artifactId, version, type);
     auxVerifier.executeGoal(INSTALL);
-    auxVerifier.assertArtifactPresent(groupId, artifactId, version, type);
     auxVerifier.verifyErrorFreeLog();
   }
 

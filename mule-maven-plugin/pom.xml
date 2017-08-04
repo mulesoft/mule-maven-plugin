@@ -50,7 +50,6 @@
         <javaFormatter.plugin.version>1.8.0</javaFormatter.plugin.version>
         <license.plugin.version>2.6</license.plugin.version>
     
-        <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
         <formatter.maven.plugin.version>1.8.0</formatter.maven.plugin.version>
         <skipVerifications>false</skipVerifications>
         <formatterGoal>validate</formatterGoal>
@@ -59,13 +58,10 @@
         <maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
         <maven.invoker.plugin.version>2.0.0</maven.invoker.plugin.version>
         <maven.plugin.version>3.4</maven.plugin.version>
-        <maven.verifier.version>1.6</maven.verifier.version>
         <maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
     
         <!--Integration tests properties-->
-        <maven.plugin.plugin.version>3.5</maven.plugin.plugin.version>
         <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
-        <project.info.plugin.version>2.9</project.info.plugin.version>
     </properties>
 
     <dependencies>
@@ -84,11 +80,6 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.maven</groupId>-->
-            <!--<artifactId>maven-artifact</artifactId>-->
-            <!--<version>${maven.artifact.version}</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
@@ -101,106 +92,35 @@
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-archiver</artifactId>
         </dependency>
-        <!-- TODO MMP-115 this should not be necessary or it should be test -->
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
-        </dependency>
-        <!-- TODO MMP-115 this should be test -->
-        <dependency>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-verifier</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
+            <scope>test</scope>
         </dependency>
         <!-- Other Dependencies -->
-        <!-- TODO MMP-115 this should not be necessary-->
-        <!-- <dependency>
-            <groupId>org.mule</groupId>
-            <artifactId>mule-core</artifactId>
-            <version>${mule.version}</version>
-            <classifier>test</classifier>
-        </dependency> -->
-        <!-- TODO MMP-115 this should not be necessary  -->
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-infrastructure</artifactId>
-        </dependency>
-        <!-- TODO MMP-115 remove this -->
-        <!--<dependency>-->
-            <!--<groupId>org.mockito</groupId>-->
-            <!--<artifactId>mockito-all</artifactId>-->
-            <!--<version>${mockito.version}</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!-- TODO MMP-115 this should not be necessary or it should be test -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-client</artifactId>
-        </dependency>
-        <dependency>
-        <groupId>org.glassfish.jersey.media</groupId>
-        <artifactId>jersey-media-multipart</artifactId>
-    </dependency>
-        <!-- TODO MMP-115 we should probably use hamcrest-all -->
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-cli</groupId>
-            <artifactId>commons-cli</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.maven.plugin-testing</groupId>
-            <artifactId>maven-plugin-testing-harness</artifactId>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-        </dependency>
-        <!-- The Plexus annotations -->
-        <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-component-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-compat</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-dependency-tree</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.mule</groupId>
             <artifactId>mule-maven-client-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
         </dependency>
     </dependencies>
 
@@ -258,14 +178,6 @@
                     <target>${java.target}</target>
                 </configuration>
             </plugin>
-            <!-- TODO DELETE -->
-            <!-- <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                    <includeEmptyDirs>true</includeEmptyDirs>
-                </configuration>
-            </plugin> -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
@@ -332,33 +244,9 @@
         </plugins>
     </build>
 
-    <!-- TODO MMP-115 remove the reporting section -->
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-plugin-plugin</artifactId>
-                <version>${maven.plugin.version}</version>
-            </plugin>
-            <plugin>
-                <!--Workaround for https://jira.codehaus.org/browse/MPIR-251-->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>${project.info.plugin.version}</version>
-                <configuration>
-                    <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
-
     <profiles>
         <profile>
             <id>integration</id>
-            <!--<activation>-->
-                <!--<activeByDefault>true</activeByDefault>-->
-            <!--</activation>-->
             <build>
                 <plugins>
                     <plugin>
@@ -530,60 +418,7 @@
                     <family>mac</family>
                 </os>
             </activation>
-            <build>
-                <plugins>
-                    <!--<plugin>-->
-                        <!--<artifactId>maven-plugin-plugin</artifactId>-->
-                        <!--<version>${maven.plugin.version}</version>-->
-                        <!--<dependencies>-->
-                            <!--<dependency>-->
-                            <!--<groupId>org.jfrog.maven.annomojo</groupId>-->
-                            <!--<artifactId>maven-plugin-tools-anno</artifactId>-->
-                            <!--<version>${maven.plugin.tools.anno.version}</version>-->
-                            <!--<scope>runtime</scope>-->
-                            <!--</dependency>-->
-                            <!--<dependency>-->
-                            <!--<groupId>com.sun</groupId>-->
-                            <!--<artifactId>tools</artifactId>-->
-                            <!--<version>${java.version}</version>-->
-                            <!--<scope>system</scope>-->
-                            <!--<systemPath>${java.home}/../lib/tools.jar</systemPath>-->
-                            <!--</dependency>-->
-                        <!--</dependencies>-->
-                    <!--</plugin>-->
-
-                </plugins>
-            </build>
         </profile>
     </profiles>
-
-   <!--  <repositories>
-        <repository>
-            <id>mulesoft-private</id>
-            <name>Redirect to internal repository</name>
-            <url>https://repository.mulesoft.org/nexus/content/repositories/private</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>mule-releases</id>
-            <name>Mule Release Repository</name>
-            <url>https://repository-master.mulesoft.org/nexus/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>mule-snapshots</id>
-            <name>Mule Snapshot Repository</name>
-            <url>https://repository-master.mulesoft.org/nexus/content/repositories/snapshots</url>
-            <uniqueVersion>false</uniqueVersion>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <scm>
-        <connection>scm:git:git://github.com/mulesoft/mule-maven-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:mulesoft/mule-maven-plugin.git</developerConnection>
-        <url>https://github.com/mulesoft/mule-maven-plugin</url>
-        <tag>HEAD</tag>
-    </scm> -->
 
 </project>

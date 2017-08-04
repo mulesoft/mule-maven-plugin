@@ -30,7 +30,7 @@ public class ProcessSourcesMojoTest extends MojoTest {
   private static final String GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE =
       "/empty-classloader-model-project/target/repository/org/mule/group/mule-plugin-a/1.0.0/classloader-model.json";
   private static final String GENERATED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE =
-          "/empty-classloader-model-project/target/repository/org/mule/group/mule-plugin-b/1.0.0/classloader-model.json";
+      "/empty-classloader-model-project/target/repository/org/mule/group/mule-plugin-b/1.0.0/classloader-model.json";
   private static final String EXPECTED_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-classloader-model.json";
   private static final String EXPECTED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE =
@@ -69,13 +69,12 @@ public class ProcessSourcesMojoTest extends MojoTest {
                               DEPENDENCY_A_PROJECT_NAME);
     installThirdPartyArtifact(DEPENDENCY_B_GROUP_ID, DEPENDENCY_B_ARTIFACT_ID, DEPENDENCY_B_VERSION, DEPENDENCY_B_TYPE,
                               DEPENDENCY_B_PROJECT_NAME);
-    installThirdPartyArtifact(DEPENDENCY_C_GROUP_ID, DEPENDENCY_C_ARTIFACT_ID, DEPENDENCY_C_VERSION, DEPENDENCY_C_TYPE,
-                              DEPENDENCY_C_PROJECT_NAME);
     installThirdPartyArtifact(DEPENDENCY_D_GROUP_ID, DEPENDENCY_D_ARTIFACT_ID, DEPENDENCY_D_VERSION, DEPENDENCY_D_TYPE,
                               DEPENDENCY_D_PROJECT_NAME);
-    installThirdPartyArtifact("org.mule.group", "mule-plugin-a", "1.0.0", DEPENDENCY_TYPE, "mule-plugin-a");
+    installThirdPartyArtifact(DEPENDENCY_C_GROUP_ID, DEPENDENCY_C_ARTIFACT_ID, DEPENDENCY_C_VERSION, DEPENDENCY_C_TYPE,
+                              DEPENDENCY_C_PROJECT_NAME);
     installThirdPartyArtifact("org.mule.group", "mule-plugin-b", "1.0.0", DEPENDENCY_TYPE, "mule-plugin-b");
-
+    installThirdPartyArtifact("org.mule.group", "mule-plugin-a", "1.0.0", DEPENDENCY_TYPE, "mule-plugin-a");
     projectBaseDirectory = builder.createProjectBaseDir("empty-classloader-model-project", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());

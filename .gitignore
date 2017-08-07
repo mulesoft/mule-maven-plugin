@@ -12,3 +12,4 @@ target/
 /*.log
 *.settings
 bin/
+mule-artifact-it/wrapper.log

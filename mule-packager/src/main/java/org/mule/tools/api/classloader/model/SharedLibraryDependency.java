@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.mojo.model;
+package org.mule.tools.api.classloader.model;
 
 public class SharedLibraryDependency {
 

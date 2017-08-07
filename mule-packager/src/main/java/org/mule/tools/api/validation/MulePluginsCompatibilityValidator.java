@@ -8,13 +8,13 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.dependency;
+package org.mule.tools.api.validation;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.apache.maven.model.Dependency;
-import org.apache.maven.plugin.MojoExecutionException;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.exception.ValidationException;
 
 /**
  * The goal of this class is to check for if a list of Dependencies are compatible amongst them self Compatibility is defined by
@@ -26,26 +26,26 @@ public class MulePluginsCompatibilityValidator {
    * Validates a list of dependencies to check for incompatibilities
    *
    * @param mulePlugins List of mule plugins dependencies
-   * @throws MojoExecutionException if the list of mule plugins contains incompatibilities
+   * @throws org.mule.tools.api.exception.ValidationException if the list of mule plugins contains incompatibilities
    */
-  public void validate(List<Dependency> mulePlugins) throws MojoExecutionException {
-    for (Map.Entry<String, List<Dependency>> entry : buildDependencyMap(mulePlugins).entrySet()) {
-      List<Dependency> dependencies = entry.getValue();
+  public void validate(List<ArtifactCoordinates> mulePlugins) throws ValidationException {
+    for (Map.Entry<String, List<ArtifactCoordinates>> entry : buildDependencyMap(mulePlugins).entrySet()) {
+      List<ArtifactCoordinates> dependencies = entry.getValue();
       if (dependencies.size() > 1 && !areMulePluginVersionCompatible(dependencies)) {
-        throw new MojoExecutionException(createErrorMessage(entry.getKey(), dependencies));
+        throw new ValidationException(createErrorMessage(entry.getKey(), dependencies));
       }
     }
   }
 
-  protected boolean areMulePluginVersionCompatible(List<Dependency> dependencies) {
+  protected boolean areMulePluginVersionCompatible(List<ArtifactCoordinates> dependencies) {
     Set<String> majors = dependencies.stream()
-        .map(Dependency::getVersion)
+        .map(ArtifactCoordinates::getVersion)
         .map(v -> v.substring(0, v.indexOf(".")))
         .collect(Collectors.toSet());
     return majors.size() <= 1;
   }
 
-  protected String createErrorMessage(String mulePlugin, List<Dependency> dependencies) {
+  protected String createErrorMessage(String mulePlugin, List<ArtifactCoordinates> dependencies) {
     StringBuilder message = new StringBuilder()
         .append("There are incompatible versions of the same mule plugin in the application dependency graph.")
         .append("This application can not be packaged as it will fail to deploy.")
@@ -55,10 +55,10 @@ public class MulePluginsCompatibilityValidator {
     return message.toString();
   }
 
-  protected Map<String, List<Dependency>> buildDependencyMap(List<Dependency> dependencyList) {
-    Map<String, List<Dependency>> dependencyMap = new HashMap<>();
+  protected Map<String, List<ArtifactCoordinates>> buildDependencyMap(List<ArtifactCoordinates> dependencyList) {
+    Map<String, List<ArtifactCoordinates>> dependencyMap = new HashMap<>();
 
-    for (Dependency plugin : dependencyList) {
+    for (ArtifactCoordinates plugin : dependencyList) {
       String key = plugin.getGroupId() + ":" + plugin.getArtifactId();
 
       dependencyMap.computeIfAbsent(key, k -> new ArrayList<>());

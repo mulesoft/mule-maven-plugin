@@ -11,17 +11,19 @@
 package org.mule.tools.maven.mojo;
 
 import java.text.MessageFormat;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.validation.MulePluginsCompatibilityValidator;
 import org.mule.tools.maven.utils.MavenProjectBuilder;
-import org.mule.tools.maven.dependency.MulePluginsCompatibilityValidator;
 import org.mule.tools.maven.dependency.MulePluginResolver;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.validation.Validator;
@@ -34,46 +36,37 @@ import org.mule.tools.api.validation.Validator;
     requiresDependencyResolution = ResolutionScope.TEST)
 public class ValidateMojo extends AbstractMuleMojo {
 
+  private Validator validator;
+
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (!skipValidation) {
       long start = System.currentTimeMillis();
       getLog().debug("Validating Mule application...");
       try {
         getValidator().isProjectValid(project.getPackaging());
+        getMulePluginsCompatibilityValidator().validate(toArtifactCoordinates(getResolver().resolveMulePlugins(project)));
+        getValidator().validateSharedLibraries(sharedLibraries, toArtifactCoordinates(project.getDependencies()));
       } catch (ValidationException e) {
         throw new MojoExecutionException("Validation exception", e);
       }
-
-      validateMulePluginDependencies();
-      validateSharedLibraries();
-
       getLog().debug(MessageFormat.format("Validation for Mule application done ({0}ms)", System.currentTimeMillis() - start));
     } else {
       getLog().debug("Skipping Validation for Mule application");
     }
   }
 
-  protected void validateSharedLibraries() throws MojoExecutionException {
-    if (sharedLibraries != null && sharedLibraries.size() != 0) {
-      Set<String> projectDependenciesCoordinates = project.getDependencies().stream()
-          .map(dependency -> dependency.getArtifactId() + ":" + dependency.getGroupId()).collect(Collectors.toSet());
-      Set<String> sharedLibrariesCoordinates = sharedLibraries.stream()
-          .map(dependency -> dependency.getArtifactId() + ":" + dependency.getGroupId()).collect(Collectors.toSet());
-
-      if (!projectDependenciesCoordinates.containsAll(sharedLibrariesCoordinates)) {
-        sharedLibrariesCoordinates.removeAll(projectDependenciesCoordinates);
-        throw new MojoExecutionException("The mule application does not contain the following shared libraries: "
-            + sharedLibrariesCoordinates.toString());
-      }
-    }
-  }
-
-  protected void validateMulePluginDependencies() throws MojoExecutionException {
-    getMulePluginsCompatibilityValidator().validate(getResolver().resolveMulePlugins(project));
+  private List<ArtifactCoordinates> toArtifactCoordinates(List<Dependency> dependencies) {
+    return dependencies
+        .stream().map(d -> new ArtifactCoordinates(d.getGroupId(), d.getArtifactId(), d.getVersion(), d.getType(),
+                                                   d.getClassifier()))
+        .collect(Collectors.toList());
   }
 
   protected Validator getValidator() {
-    return new Validator(projectBaseFolder.toPath());
+    if (validator == null) {
+      validator = new Validator(projectBaseFolder.toPath());
+    }
+    return validator;
   }
 
   protected MulePluginResolver getResolver() {

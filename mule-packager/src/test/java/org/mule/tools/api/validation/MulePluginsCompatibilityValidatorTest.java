@@ -8,34 +8,37 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.dependency;
-
-import org.apache.maven.model.Dependency;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+package org.mule.tools.api.validation;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.fail;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.exception.ValidationException;
+
 public class MulePluginsCompatibilityValidatorTest {
 
   private MulePluginsCompatibilityValidator validator;
-  private List<Dependency> dependencies;
-  private List<Dependency> dependencies1;
-  private List<Dependency> dependencies2;
-  private final Dependency DEPENDENCY0 = createDependency(0, "1.0.0", "mule-plugin");
-  private final Dependency DEPENDENCY1 = createDependency(1, "1.0.1", "mule-plugin");
-  private final Dependency DEPENDENCY2 = createDependency(2, "1.0.2", "mule-plugin");
+  private List<ArtifactCoordinates> dependencies;
+  private List<ArtifactCoordinates> dependencies1;
+  private List<ArtifactCoordinates> dependencies2;
+  private final ArtifactCoordinates DEPENDENCY0 = createDependency(0, "1.0.0", "mule-plugin");
+  private final ArtifactCoordinates DEPENDENCY1 = createDependency(1, "1.0.1", "mule-plugin");
+  private final ArtifactCoordinates DEPENDENCY2 = createDependency(2, "1.0.2", "mule-plugin");
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -52,7 +55,7 @@ public class MulePluginsCompatibilityValidatorTest {
   public void validateEmptyListTest() {
     try {
       validator.validate(Collections.emptyList());
-    } catch (MojoExecutionException e) {
+    } catch (ValidationException e) {
       fail("Empty list should be valid");
     }
   }
@@ -62,7 +65,7 @@ public class MulePluginsCompatibilityValidatorTest {
     dependencies.add(DEPENDENCY0);
     try {
       validator.validate(dependencies);
-    } catch (MojoExecutionException e) {
+    } catch (ValidationException e) {
       fail("Unit list should be valid");
     }
   }
@@ -73,14 +76,14 @@ public class MulePluginsCompatibilityValidatorTest {
     dependencies.add(createDependency(1, "1.0.0", "mule-plugin"));
     try {
       validator.validate(dependencies);
-    } catch (MojoExecutionException e) {
+    } catch (ValidationException e) {
       fail("Different mule-plugins should be valid");
     }
   }
 
   @Test
-  public void validateSameDependenciesNotCompatibleVersionsListTest() throws MojoExecutionException {
-    expectedException.expect(MojoExecutionException.class);
+  public void validateSameDependenciesNotCompatibleVersionsListTest() throws ValidationException {
+    expectedException.expect(ValidationException.class);
     dependencies.add(createDependency(0, "0.8.0", "mule-plugin"));
     dependencies.add(createDependency(0, "1.0.0", "mule-plugin"));
     validator.validate(dependencies);
@@ -190,21 +193,21 @@ public class MulePluginsCompatibilityValidatorTest {
 
   @Test
   public void buildEmptyDependencyMapTest() {
-    List<Dependency> dependencies = new ArrayList<>();
-    Map<String, List<Dependency>> actualDependencyMap = validator.buildDependencyMap(dependencies);
+    List<ArtifactCoordinates> dependencies = new ArrayList<>();
+    Map<String, List<ArtifactCoordinates>> actualDependencyMap = validator.buildDependencyMap(dependencies);
     assertThat("Dependency map should be empty", actualDependencyMap.size(), equalTo(0));
   }
 
   @Test
   public void buildDependencyMapMulePluginDifferentVersionsTest() {
-    List<Dependency> dependencies = new ArrayList<>();
+    List<ArtifactCoordinates> dependencies = new ArrayList<>();
 
     dependencies.add(createDependency(0, "1.0.0", "mule-plugin"));
     dependencies.add(createDependency(0, "1.0.1", "mule-plugin"));
     dependencies.add(createDependency(0, "1.1.0", "mule-plugin"));
     dependencies.add(createDependency(0, "1.1.1", "mule-plugin"));
 
-    Map<String, List<Dependency>> actualDependencyMap = validator.buildDependencyMap(dependencies);
+    Map<String, List<ArtifactCoordinates>> actualDependencyMap = validator.buildDependencyMap(dependencies);
     assertThat("Dependency map should contain 1 element", actualDependencyMap.size(), equalTo(1));
     assertThat("The dependency list should contain 4 elements",
                actualDependencyMap.values().stream().allMatch(l -> l.size() == 4), is(true));
@@ -212,35 +215,20 @@ public class MulePluginsCompatibilityValidatorTest {
 
   @Test
   public void buildDependencyMapUniquePluginsTest() {
-    List<Dependency> dependencies = new ArrayList<>();
+    List<ArtifactCoordinates> dependencies = new ArrayList<>();
 
     dependencies.add(createDependency(0, "1.0.0", "mule-plugin"));
     dependencies.add(createDependency(1, "1.0.0", "mule-plugin"));
     dependencies.add(createDependency(2, "1.0.0", "mule-plugin"));
 
-    Map<String, List<Dependency>> actualDependencyMap = validator.buildDependencyMap(dependencies);
+    Map<String, List<ArtifactCoordinates>> actualDependencyMap = validator.buildDependencyMap(dependencies);
     assertThat("Dependency map should contain 3 elements", actualDependencyMap.size(), equalTo(3));
     assertThat("Every dependency list should contain 1 element",
                actualDependencyMap.values().stream().allMatch(l -> l.size() == 1), is(true));
   }
 
-  private List<Dependency> getDependencies(int i) {
-    if (i <= 0) {
-      return new ArrayList<>();
-    }
-    List<Dependency> dependencies = getDependencies(i - 1);
-    dependencies.add(createDependency(i, "1.0.0", ""));
-    return dependencies;
-  }
-
-  private Dependency createDependency(int i, String version, String classifier) {
-    Dependency dependency = new Dependency();
-    dependency.setGroupId("group.id." + i);
-    dependency.setArtifactId("artifact-id" + i);
-    dependency.setVersion(version);
-    dependency.setType("jar");
-    dependency.setClassifier(classifier);
-    return dependency;
+  private ArtifactCoordinates createDependency(int i, String version, String classifier) {
+    return new ArtifactCoordinates("group.id." + i, "artifact-id" + i, version, "jar", classifier);
   }
 
 }

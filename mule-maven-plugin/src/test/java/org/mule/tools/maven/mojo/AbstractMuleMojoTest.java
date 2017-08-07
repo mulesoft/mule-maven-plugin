@@ -27,17 +27,12 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.mule.tools.api.packager.PackageBuilder;
-import org.mule.tools.maven.dependency.MulePluginsCompatibilityValidator;
-import org.mule.tools.maven.dependency.MulePluginResolver;
 
 public class AbstractMuleMojoTest {
 
   protected static final String GROUP_ID = "group-id";
   protected static final String ARTIFACT_ID = "artifact-id";
   protected static final String PACKAGE_NAME = "packageName";
-  protected static final String MUNIT_TEST_FILE_NAME = "munit-test.xml";
-  protected static final String PROJECT_ARTIFACT_ID = "project-artifact-id";
-  protected static final String MULE_ARTIFACT_JSON = "mule-artifact.json";
   protected static final String MULE_APPLICATION = "mule-application";
   protected static final String MULE_DOMAIN = "mule-domain";
   protected static final String MULE_APPLICATION_EXAMPLE = "mule-application-example";

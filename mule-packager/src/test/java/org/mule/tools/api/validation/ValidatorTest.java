@@ -9,22 +9,25 @@
  */
 package org.mule.tools.api.validation;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mule.tools.api.packager.structure.FolderNames.MAIN;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE;
 import static org.mule.tools.api.packager.structure.FolderNames.POLICY;
 import static org.mule.tools.api.packager.structure.FolderNames.SRC;
-import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 
+import org.junit.rules.ExpectedException;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Before;
@@ -35,9 +38,18 @@ import org.mockito.Mockito;
 
 public class ValidatorTest {
 
-  public static final String MULE_DOMAIN = "mule-domain";
-  public static final String MULE_APPLICATION = "mule-application";
+  private static final String VALIDATE_SHARED_LIBRARIES_MESSAGE =
+      "The mule application does not contain the following shared libraries: ";
   public static final String MULE_POLICY = "mule-policy";
+  protected static final String MULE_ARTIFACT_JSON = "mule-artifact.json";
+  protected static final String GROUP_ID = "group-id";
+  protected static final String ARTIFACT_ID = "artifact-id";
+  protected static final String MULE_APPLICATION = "mule-application";
+  protected static final String MULE_DOMAIN = "mule-domain";
+  protected final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
   @Rule
   public TemporaryFolder projectBaseFolder = new TemporaryFolder();
 
@@ -182,5 +194,47 @@ public class ValidatorTest {
     verify(validator, times(1)).isPackagingTypeValid(packagingType);
     verify(validator, times(1)).isProjectStructureValid(packagingType);
     verify(validator, times(1)).isDescriptorFilePresent();
+  }
+
+  @Test
+  public void validateNoSharedLibrariesInDependenciesTest() throws MojoExecutionException, ValidationException {
+    expectedException.expect(ValidationException.class);
+
+    List<SharedLibraryDependency> sharedLibraries = new ArrayList<>();
+    sharedLibraries.add(buildSharedLibraryDependency(GROUP_ID, ARTIFACT_ID));
+
+    validator.validateSharedLibraries(sharedLibraries, new ArrayList<>());
+
+    assertThat("Validate goal message was not the expected", VALIDATE_SHARED_LIBRARIES_MESSAGE + sharedLibraries.toString(),
+               equalTo(outContent.toString()));
+  }
+
+  @Test
+  public void validateSharedLibrariesInDependenciesTest() throws MojoExecutionException, ValidationException {
+
+    SharedLibraryDependency sharedLibraryDependencyB = new SharedLibraryDependency();
+    sharedLibraryDependencyB.setArtifactId(ARTIFACT_ID + "-b");
+    sharedLibraryDependencyB.setGroupId(GROUP_ID + "-b");
+
+    List<SharedLibraryDependency> sharedLibraries = new ArrayList<>();
+    sharedLibraries.add(buildSharedLibraryDependency(GROUP_ID + "-a", ARTIFACT_ID + "-a"));
+    sharedLibraries.add(buildSharedLibraryDependency(GROUP_ID + "-b", ARTIFACT_ID + "-b"));
+
+    List<ArtifactCoordinates> projectDependencies = new ArrayList<>();
+    projectDependencies.add(buildDependency(GROUP_ID + "-a", ARTIFACT_ID + "-a"));
+    projectDependencies.add(buildDependency(GROUP_ID + "-b", ARTIFACT_ID + "-b"));
+    projectDependencies.add(buildDependency(GROUP_ID + "-c", ARTIFACT_ID + "-c"));
+    validator.validateSharedLibraries(sharedLibraries, projectDependencies);
+  }
+
+  private SharedLibraryDependency buildSharedLibraryDependency(String groupId, String artifactId) {
+    SharedLibraryDependency sharedLibraryDependency = new SharedLibraryDependency();
+    sharedLibraryDependency.setArtifactId(artifactId);
+    sharedLibraryDependency.setGroupId(groupId);
+    return sharedLibraryDependency;
+  }
+
+  private ArtifactCoordinates buildDependency(String groupId, String artifactId) {
+    return new ArtifactCoordinates(groupId, artifactId, "1.0.0");
   }
 }

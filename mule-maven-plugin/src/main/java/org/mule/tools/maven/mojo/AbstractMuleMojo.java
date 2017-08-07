@@ -24,7 +24,6 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.repository.RepositorySystem;
 import org.mule.tools.api.packager.ContentGenerator;
 import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.maven.mojo.model.SharedLibraryDependency;
 
 
 /**
@@ -63,7 +62,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   protected boolean skipValidation = false;
 
   @Parameter(property = "shared.libraries")
-  protected List<SharedLibraryDependency> sharedLibraries;
+  protected List<org.mule.tools.api.classloader.model.SharedLibraryDependency> sharedLibraries;
 
   @Parameter
   protected String classifier;

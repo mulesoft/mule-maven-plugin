@@ -14,13 +14,14 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import integrationTests.ProjectFactory;
 import integrationTests.mojo.verifier.CloudHubDeploymentVerifier;
-
+@Ignore
 public class CloudHubDeploymentTest {
 
   private static final String MULE_UNDEPLOY = "mule:undeploy";

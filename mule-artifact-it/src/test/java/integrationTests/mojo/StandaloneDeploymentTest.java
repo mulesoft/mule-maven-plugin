@@ -12,6 +12,7 @@ import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+@Ignore
 public class StandaloneDeploymentTest {
 
   private static final String STANDALONE_TEST_ANCHOR_FILENAME = "standalone-1.0-anchor.txt";

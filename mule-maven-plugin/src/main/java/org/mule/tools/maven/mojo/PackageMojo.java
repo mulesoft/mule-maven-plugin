@@ -11,7 +11,6 @@
 package org.mule.tools.maven.mojo;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.api.packager.structure.PackagerFolders.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,9 +21,14 @@ import java.text.MessageFormat;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.*;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.ArchiverException;
+
 import org.mule.tools.api.packager.PackageBuilder;
 import org.mule.tools.api.packager.packaging.PackagingType;
 
@@ -50,12 +54,10 @@ public class PackageMojo extends AbstractMuleMojo {
 
   protected PackagingType packagingType;
 
-  protected String finalName;
-
   public void execute() throws MojoExecutionException, MojoFailureException {
     long start = System.currentTimeMillis();
     getLog().debug("Packaging...");
-    finalName = project.getBuild().getFinalName();
+
     packagingType = PackagingType.fromString(project.getPackaging());
     String targetFolder = project.getBuild().getDirectory();
     File destinationFile = getDestinationFile(targetFolder);
@@ -89,7 +91,7 @@ public class PackageMojo extends AbstractMuleMojo {
   }
 
   protected String getFileName() {
-    return finalName + "-" + packagingType.resolveClassifier(classifier, lightweightPackage) + "." + TYPE;
+    return project.getBuild().getFinalName() + "-" + packagingType.resolveClassifier(classifier, lightweightPackage) + "." + TYPE;
   }
 
   public PackageBuilder getPackageBuilder() {

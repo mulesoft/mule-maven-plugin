@@ -19,25 +19,24 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
- * Mojo that runs on the {@link LifecyclePhase#GENERATE_RESOURCES}
+ * @author Mulesoft Inc.
+ * @since 2.0.0
  */
-@Mojo(name = "generate-sources",
-    defaultPhase = LifecyclePhase.GENERATE_SOURCES,
+@Mojo(name = "compile",
+    defaultPhase = LifecyclePhase.COMPILE,
     requiresDependencyResolution = ResolutionScope.RUNTIME)
-public class GenerateSourcesMojo extends AbstractMuleMojo {
+public class CompileMojo extends AbstractMuleMojo {
 
   public void execute() throws MojoExecutionException, MojoFailureException {
     long start = System.currentTimeMillis();
-
     getLog().debug("Generating mule source code...");
 
     try {
-      getContentGenerator().createMetaInfMuleSourceFolderContent();
-      getContentGenerator().createDescriptors();
+      getContentGenerator().createMuleSrcFolderContent();
     } catch (IllegalArgumentException | IOException e) {
       throw new MojoFailureException("Fail to generate sources", e);
     }
 
-    getLog().debug(MessageFormat.format("generate sources done ({0}ms)", System.currentTimeMillis() - start));
+    getLog().debug(MessageFormat.format("Source code generation done ({0}ms)", System.currentTimeMillis() - start));
   }
 }

@@ -17,7 +17,6 @@ import static org.mule.tools.api.packager.structure.FolderNames.MUNIT;
 import static org.mule.tools.api.packager.structure.FolderNames.SRC;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST;
 import static org.mule.tools.api.packager.structure.PackagerFolders.MULE;
-import static org.mule.tools.api.packager.structure.PackagerFolders.POLICY;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -93,8 +92,16 @@ public enum PackagingType {
 
   public String getSourceFolderName() {
     if (MULE_POLICY.equals(defaultClassifier.toString())) {
-      return POLICY;
+      return MULE;
     }
+    if (MULE_APPLICATION.equals(defaultClassifier.toString())) {
+      return MULE;
+    }
+
+    if (MULE_DOMAIN.equals(defaultClassifier.toString())) {
+      return MULE;
+    }
+
     return MULE;
   }
 

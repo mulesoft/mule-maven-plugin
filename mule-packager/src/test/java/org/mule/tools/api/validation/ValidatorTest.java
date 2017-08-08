@@ -41,6 +41,7 @@ public class ValidatorTest {
   private static final String VALIDATE_SHARED_LIBRARIES_MESSAGE =
       "The mule application does not contain the following shared libraries: ";
   public static final String MULE_POLICY = "mule-policy";
+
   protected static final String MULE_ARTIFACT_JSON = "mule-artifact.json";
   protected static final String GROUP_ID = "group-id";
   protected static final String ARTIFACT_ID = "artifact-id";
@@ -122,7 +123,7 @@ public class ValidatorTest {
   @Test(expected = ValidationException.class)
   public void isProjectStructureInvalidValidMulePolicy() throws ValidationException {
     Path muleMainSrcFolder =
-        projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value());
+        projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve("invalid-src-folder");
     muleMainSrcFolder.toFile().mkdirs();
 
     validator.isProjectStructureValid(MULE_POLICY);
@@ -131,7 +132,7 @@ public class ValidatorTest {
   @Test
   public void isProjectStructureValidMulePolicy() throws ValidationException {
     Path muleMainSrcFolder =
-        projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(POLICY.value());
+        projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value());
     muleMainSrcFolder.toFile().mkdirs();
 
     Boolean valid = validator.isProjectStructureValid(MULE_POLICY);

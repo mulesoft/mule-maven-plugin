@@ -30,10 +30,10 @@ import org.junit.Test;
 
 import org.mule.tools.api.packager.ContentGenerator;
 
-public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
+public class CompileMojoTest extends AbstractMuleMojoTest {
 
   private Log logMock;
-  private GenerateSourcesMojo mojoMock;
+  private CompileMojo mojoMock;
 
   @Before
   public void before() throws IOException {
@@ -44,7 +44,7 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
 
     projectMock = mock(MavenProject.class);
 
-    mojoMock = mock(GenerateSourcesMojo.class);
+    mojoMock = mock(CompileMojo.class);
     mojoMock.project = projectMock;
     mojoMock.projectBaseFolder = projectBaseFolder.getRoot();
 
@@ -59,9 +59,8 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
     doCallRealMethod().when(mojoMock).execute();
     mojoMock.execute();
 
-    verify(mojoMock, times(2)).getContentGenerator();
-    verify(contentGeneratorMock, times(1)).createMetaInfMuleSourceFolderContent();
-    verify(contentGeneratorMock, times(1)).createDescriptors();
+    verify(mojoMock, times(1)).getContentGenerator();
+    verify(contentGeneratorMock, times(1)).createMuleSrcFolderContent();
   }
 
   @Test(expected = MojoFailureException.class)
@@ -69,7 +68,7 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
     ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
-    doThrow(new IOException("")).when(contentGeneratorMock).createMetaInfMuleSourceFolderContent();
+    doThrow(new IOException("")).when(contentGeneratorMock).createMuleSrcFolderContent();
 
     doCallRealMethod().when(mojoMock).execute();
     mojoMock.execute();
@@ -80,7 +79,7 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
     ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
-    doThrow(new IllegalArgumentException("")).when(contentGeneratorMock).createDescriptors();
+    doThrow(new IllegalArgumentException("")).when(contentGeneratorMock).createMuleSrcFolderContent();
 
     doCallRealMethod().when(mojoMock).execute();
     mojoMock.execute();

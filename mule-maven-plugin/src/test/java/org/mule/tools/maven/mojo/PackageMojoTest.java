@@ -13,15 +13,19 @@ package org.mule.tools.maven.mojo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
+import org.apache.maven.model.Build;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
 import org.mule.tools.api.packager.PackageBuilder;
 import org.mule.tools.api.packager.packaging.Classifier;
 import org.mule.tools.api.packager.packaging.PackagingType;
@@ -38,11 +42,17 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
   protected PackageMojo mojo = new PackageMojo();
   private static final String TYPE = "jar";
 
+  private Build buildMock;
+
+
   @Before
   public void before() throws IOException {
     mojo = new PackageMojoImpl();
     mojo.project = projectMock;
-    mojo.finalName = PACKAGE_NAME;
+
+    buildMock = mock(Build.class);
+    when(projectMock.getBuild()).thenReturn(buildMock);
+    when(buildMock.getFinalName()).thenReturn(PACKAGE_NAME);
 
     destinationFile = new File(buildFolderFolder.getRoot().getAbsolutePath(), PACKAGE_NAME + "." + TYPE);
 
@@ -58,7 +68,8 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
   public void getFileNameTest() {
     when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
     when(projectMock.getVersion()).thenReturn(VERSION);
-    mojo.finalName = FINAL_NAME;
+
+    when(buildMock.getFinalName()).thenReturn(FINAL_NAME);
 
     mojo.project = projectMock;
     mojo.packagingType = PackagingType.MULE_DOMAIN;
@@ -82,7 +93,8 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
 
   @Test
   public void getDestinationFileTest() throws MojoExecutionException, IOException {
-    mojo.finalName = FINAL_NAME;
+    when(buildMock.getFinalName()).thenReturn(FINAL_NAME);
+
     mojo.packagingType = PackagingType.MULE_APPLICATION;
     File expectedDestinationFile = targetFolder.newFile(FINAL_NAME + "-" + MULE_APPLICATION + "." + TYPE);
     File destinationFile = mojo.getDestinationFile(targetFolder.getRoot().getPath());

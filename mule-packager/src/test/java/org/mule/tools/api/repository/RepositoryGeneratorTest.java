@@ -22,7 +22,6 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.*;
 import org.junit.Before;
 import org.junit.Rule;
@@ -82,7 +81,7 @@ public class RepositoryGeneratorTest {
 
 
   @Test
-  public void generateMarkerFileInRepositoryFolderTest() throws MojoExecutionException {
+  public void generateMarkerFileInRepositoryFolderTest() throws IOException {
     File generatedMarkerFile = new File(temporaryFolder.getRoot(), ".marker");
 
     assertThat("Marker file already exists", !generatedMarkerFile.exists());
@@ -93,8 +92,8 @@ public class RepositoryGeneratorTest {
   }
 
   @Test
-  public void generateMarkerFileInRepositoryFolderWhenFolderIsNotWritableTest() throws MojoExecutionException, IOException {
-    exception.expect(MojoExecutionException.class);
+  public void generateMarkerFileInRepositoryFolderWhenFolderIsNotWritableTest() throws IOException {
+    exception.expect(IOException.class);
     File generatedMarkerFile = new File(temporaryFolder.getRoot(), ".marker");
 
     assertThat("Marker file already exists", !generatedMarkerFile.exists());
@@ -106,7 +105,7 @@ public class RepositoryGeneratorTest {
   }
 
   @Test
-  public void installEmptySetArtifactsTest() throws MojoExecutionException {
+  public void installEmptySetArtifactsTest() throws IOException {
     File repositoryFolder = temporaryFolder.getRoot();
     when(appModelMock.getArtifacts()).thenReturn(Collections.emptySet());
     repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifactInstallerMock, appModelMock);
@@ -115,7 +114,7 @@ public class RepositoryGeneratorTest {
   }
 
   @Test
-  public void installArtifactsTest() throws MojoExecutionException {
+  public void installArtifactsTest() throws IOException {
     File repositoryFolder = temporaryFolder.getRoot();
     buildArtifacts();
     when(appModelMock.getArtifacts()).thenReturn(artifacts);

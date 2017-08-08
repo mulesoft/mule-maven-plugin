@@ -24,7 +24,6 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.mule.tools.api.packager.ContentGenerator;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
@@ -39,7 +38,7 @@ public class ArtifactInstaller {
   }
 
   public void installArtifact(File repositoryFile, Artifact artifact, Optional<ClassLoaderModel> classLoaderModel)
-      throws MojoExecutionException {
+      throws IOException {
     checkArgument(artifact != null, "Artifact to be installed should not be null");
     File artifactFolderDestination = getFormattedOutputDirectory(repositoryFile, artifact);
 
@@ -51,7 +50,7 @@ public class ArtifactInstaller {
       generateArtifactFile(artifact, artifactFolderDestination, repositoryFile);
       generateDependencyDescriptorFile(artifact, artifactFolderDestination, classLoaderModel);
     } catch (IOException e) {
-      throw new MojoExecutionException(
+      throw new IOException(
                                        format("There was a problem while copying the artifact [%s] file [%s] to the application local repository",
                                               artifact.toString(), artifact.getFile().getAbsolutePath()),
                                        e);

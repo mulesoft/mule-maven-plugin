@@ -20,8 +20,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
-import org.mule.tools.api.packager.PackagingType;
-import org.mule.tools.api.ContentGenerator;
+import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.packager.ContentGenerator;
 
 /**
  * Build a Mule application archive.

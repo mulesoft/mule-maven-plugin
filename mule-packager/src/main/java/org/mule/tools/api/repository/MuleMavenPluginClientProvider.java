@@ -14,13 +14,9 @@ import org.apache.maven.plugin.logging.Log;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.repository.AuthenticationContext;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.model.Authentication;
 import org.mule.maven.client.api.model.MavenConfiguration;
-import org.mule.maven.client.internal.AetherMavenClientProvider;
-import org.mule.maven.client.internal.DefaultLocalRepositorySupplierFactory;
-import org.mule.maven.client.internal.DefaultSettingsSupplierFactory;
-import org.mule.maven.client.internal.MavenEnvironmentVariables;
+import org.mule.maven.client.internal.*;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -43,10 +39,10 @@ public class MuleMavenPluginClientProvider {
     this.log = log;
   }
 
-  protected MavenClient buildMavenClient() {
+  public AetherMavenClient buildMavenClient() {
     MavenConfiguration mavenConfiguration = buildMavenConfiguration();
     AetherMavenClientProvider provider = new AetherMavenClientProvider();
-    return provider.createMavenClient(mavenConfiguration);
+    return (AetherMavenClient) provider.createMavenClient(mavenConfiguration);
   }
 
   public MavenConfiguration buildMavenConfiguration() {
@@ -56,17 +52,17 @@ public class MuleMavenPluginClientProvider {
     Optional<File> globalSettings = settingsSupplierFactory.environmentGlobalSettingsSupplier();
     Optional<File> userSettings = settingsSupplierFactory.environmentUserSettingsSupplier();
 
-    globalSettings.ifPresent(mavenConfigurationBuilder::withGlobalSettingsLocation);
-    userSettings.ifPresent(mavenConfigurationBuilder::withUserSettingsLocation);
+    globalSettings.ifPresent(mavenConfigurationBuilder::globalSettingsLocation);
+    userSettings.ifPresent(mavenConfigurationBuilder::userSettingsLocation);
 
     DefaultLocalRepositorySupplierFactory localRepositorySupplierFactory = new DefaultLocalRepositorySupplierFactory();
     Supplier<File> localMavenRepository = localRepositorySupplierFactory.environmentMavenRepositorySupplier();
 
     this.remoteRepositories.stream().filter(this::hasValidURL).map(this::toRemoteRepo)
-        .forEach(mavenConfigurationBuilder::withRemoteRepository);
+        .forEach(mavenConfigurationBuilder::remoteRepository);
 
     return mavenConfigurationBuilder
-        .withLocalMavenRepositoryLocation(localMavenRepository.get())
+        .localMavenRepositoryLocation(localMavenRepository.get())
         .build();
   }
 
@@ -85,10 +81,10 @@ public class MuleMavenPluginClientProvider {
     URL remoteRepositoryUrl = getURL(remoteRepository);
     org.mule.maven.client.api.model.RemoteRepository.RemoteRepositoryBuilder builder =
         new org.mule.maven.client.api.model.RemoteRepository.RemoteRepositoryBuilder();
-    authentication.ifPresent(builder::withAuthentication);
+    authentication.ifPresent(builder::authentication);
     return builder
-        .withId(id)
-        .withUrl(remoteRepositoryUrl)
+        .id(id)
+        .url(remoteRepositoryUrl)
         .build();
   }
 
@@ -115,6 +111,6 @@ public class MuleMavenPluginClientProvider {
     Authentication.AuthenticationBuilder authenticationBuilder = new Authentication.AuthenticationBuilder();
     AuthenticationContext.close(authenticationContext);
 
-    return Optional.of(authenticationBuilder.withPassword(password).withUsername(username).build());
+    return Optional.of(authenticationBuilder.password(password).username(username).build());
   }
 }

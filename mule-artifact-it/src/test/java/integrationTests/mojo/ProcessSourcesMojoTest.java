@@ -26,17 +26,17 @@ public class ProcessSourcesMojoTest extends MojoTest {
 
   private static final String PROCESS_SOURCES = "process-sources";
   private static final String GENERATED_CLASSLOADER_MODEL_FILE =
-          "/empty-classloader-model-project/target/META-INF/mule-artifact/classloader-model.json";
-  private static final String GENERATED_HTTP_PLUGIN_CLASSLOADER_MODEL_FILE =
-          "/empty-classloader-model-project/target/repository/org/mule/connectors/mule-http-connector/1.0.0-SNAPSHOT/classloader-model.json";
-  private static final String GENERATED_SOCKETS_PLUGIN_CLASSLOADER_MODEL_FILE =
-          "/empty-classloader-model-project/target/repository/org/mule/connectors/mule-sockets-connector/1.0.0-SNAPSHOT/classloader-model.json";
+      "/empty-classloader-model-project/target/META-INF/mule-artifact/classloader-model.json";
+  private static final String GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE =
+      "/empty-classloader-model-project/target/repository/org/mule/group/mule-plugin-a/1.0.0/classloader-model.json";
+  private static final String GENERATED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE =
+      "/empty-classloader-model-project/target/repository/org/mule/group/mule-plugin-b/1.0.0/classloader-model.json";
   private static final String EXPECTED_CLASSLOADER_MODEL_FILE =
-          "/expected-files/expected-classloader-model.json";
-  private static final String EXPECTED_HTTP_PLUGIN_CLASSLOADER_MODEL_FILE =
-          "/expected-files/expected-mule-http-connector-classloader-model.json";
-  private static final String EXPECTED_SOCKETS_PLUGIN_CLASSLOADER_MODEL_FILE =
-          "/expected-files/expected-mule-sockets-connector-classloader-model.json";
+      "/expected-files/expected-classloader-model.json";
+  private static final String EXPECTED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE =
+      "/expected-files/expected-mule-plugin-a-classloader-model.json";
+  private static final String EXPECTED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE =
+      "/expected-files/expected-mule-plugin-b-classloader-model.json";
 
   public ProcessSourcesMojoTest() {
     this.goal = PROCESS_SOURCES;
@@ -60,10 +60,23 @@ public class ProcessSourcesMojoTest extends MojoTest {
 
     verifier.verifyErrorFreeLog();
   }
-
+  // Please be aware that the order that the dependencies are installed is important:
+  // For instance, dependency D MUST be installed before C as the former is a transitive dependency of the latter
+  // and so it needs to be installed in the local repository in order to be resolved.
   @Test
   public void testProcessSourcesClassloaderModelGeneratedFile() throws IOException, VerificationException {
-
+    installThirdPartyArtifact(DEPENDENCY_ORG_ID, DEPENDENCY_ARTIFACT_ID, DEPENDENCY_VERSION, DEPENDENCY_TYPE,
+                              DEPENDENCY_PROJECT_NAME);
+    installThirdPartyArtifact(DEPENDENCY_A_GROUP_ID, DEPENDENCY_A_ARTIFACT_ID, DEPENDENCY_A_VERSION, DEPENDENCY_A_TYPE,
+                              DEPENDENCY_A_PROJECT_NAME);
+    installThirdPartyArtifact(DEPENDENCY_B_GROUP_ID, DEPENDENCY_B_ARTIFACT_ID, DEPENDENCY_B_VERSION, DEPENDENCY_B_TYPE,
+                              DEPENDENCY_B_PROJECT_NAME);
+    installThirdPartyArtifact(DEPENDENCY_D_GROUP_ID, DEPENDENCY_D_ARTIFACT_ID, DEPENDENCY_D_VERSION, DEPENDENCY_D_TYPE,
+                              DEPENDENCY_D_PROJECT_NAME);
+    installThirdPartyArtifact(DEPENDENCY_C_GROUP_ID, DEPENDENCY_C_ARTIFACT_ID, DEPENDENCY_C_VERSION, DEPENDENCY_C_TYPE,
+                              DEPENDENCY_C_PROJECT_NAME);
+    installThirdPartyArtifact("org.mule.group", "mule-plugin-b", "1.0.0", DEPENDENCY_TYPE, "mule-plugin-b");
+    installThirdPartyArtifact("org.mule.group", "mule-plugin-a", "1.0.0", DEPENDENCY_TYPE, "mule-plugin-a");
     projectBaseDirectory = builder.createProjectBaseDir("empty-classloader-model-project", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
@@ -80,34 +93,40 @@ public class ProcessSourcesMojoTest extends MojoTest {
     assertThat("The classloader-model.json file is different from the expected", generatedClassloaderModelFileContent,
                equalTo(expectedClassloaderModelFileContent));
 
-    File generatedHttpPluginClassloaderModelFile =
-            getFile(GENERATED_HTTP_PLUGIN_CLASSLOADER_MODEL_FILE);
-    List<String> generatedHttpPluginClassloaderModelFileContent = Files.readAllLines(generatedHttpPluginClassloaderModelFile.toPath());
+    File generatedMulePluginAClassloaderModelFile =
+        getFile(GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
+    List<String> generatedMulePluginAClassloaderModelFileContent =
+        Files.readAllLines(generatedMulePluginAClassloaderModelFile.toPath());
 
-    File expectedHttpPluginClassloaderModelFile =
-            getFile(EXPECTED_HTTP_PLUGIN_CLASSLOADER_MODEL_FILE);
-    List<String> expectedHttpPluginClassloaderModelFileContent = Files.readAllLines(expectedHttpPluginClassloaderModelFile.toPath());
+    File expectedMulePluginAClassloaderModelFile =
+        getFile(EXPECTED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
+    List<String> expectedMulePluginAClassloaderModelFileContent =
+        Files.readAllLines(expectedMulePluginAClassloaderModelFile.toPath());
 
-    assertThat("The classloader-model.json file of the mule-http-connector is different from the expected", generatedHttpPluginClassloaderModelFileContent,
-            equalTo(expectedHttpPluginClassloaderModelFileContent));
+    assertThat("The classloader-model.json file of the mule-plugin-a is different from the expected",
+               generatedMulePluginAClassloaderModelFileContent,
+               equalTo(expectedMulePluginAClassloaderModelFileContent));
 
 
-    File generatedSocketsPluginClassloaderModelFile =
-            getFile(GENERATED_SOCKETS_PLUGIN_CLASSLOADER_MODEL_FILE);
-    List<String> generatedSocketsPluginClassloaderModelFileContent = Files.readAllLines(generatedSocketsPluginClassloaderModelFile.toPath());
+    File generatedMulePluginBClassloaderModelFile =
+        getFile(GENERATED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE);
+    List<String> generatedMulePluginBClassloaderModelFileContent =
+        Files.readAllLines(generatedMulePluginBClassloaderModelFile.toPath());
 
-    File expectedSocketsPluginClassloaderModelFile =
-            getFile(EXPECTED_SOCKETS_PLUGIN_CLASSLOADER_MODEL_FILE);
-    List<String> expectedSocketsPluginClassloaderModelFileContent = Files.readAllLines(expectedSocketsPluginClassloaderModelFile.toPath());
+    File expectedMulePluginBClassloaderModelFile =
+        getFile(EXPECTED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE);
+    List<String> expectedMulePluginBClassloaderModelFileContent =
+        Files.readAllLines(expectedMulePluginBClassloaderModelFile.toPath());
 
-    assertThat("The classloader-model.json file of the mule-sockets-connector is different from the expected", generatedSocketsPluginClassloaderModelFileContent,
-            equalTo(expectedSocketsPluginClassloaderModelFileContent));
+    assertThat("The classloader-model.json file of the mule-plugin-b is different from the expected",
+               generatedMulePluginBClassloaderModelFileContent,
+               equalTo(expectedMulePluginBClassloaderModelFileContent));
 
     File expectedStructure = getExpectedStructure("/expected-classloader-model-project");
     File targetStructure = new File(verifier.getBasedir() + File.separator + TARGET_FOLDER_NAME);
 
     assertThat("The directory structure is different from the expected", targetStructure,
-            hasSameTreeStructure(expectedStructure, excludes));
+               hasSameTreeStructure(expectedStructure, excludes));
 
     verifier.verifyErrorFreeLog();
   }

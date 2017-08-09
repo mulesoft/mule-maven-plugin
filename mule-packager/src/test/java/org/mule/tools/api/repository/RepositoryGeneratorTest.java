@@ -22,9 +22,6 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.*;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,6 +30,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 import org.mockito.Spy;
+import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
 import org.mule.tools.api.util.FileUtils;
 
@@ -51,9 +49,7 @@ public class RepositoryGeneratorTest {
   private MavenProject projectMock;
   private ProjectBuilder projectBuilderMock;
   private ArtifactInstaller artifactInstallerMock;
-  private List<ArtifactRepository> remoteArtifactRepositoriesMock;
   private ProjectBuildingResult resultMock;
-  private Log logMock;
   private ArtifactHandler artifactHandler;
   private Set<Artifact> artifacts;
   private ApplicationClassloaderModel appModelMock;
@@ -73,12 +69,10 @@ public class RepositoryGeneratorTest {
     resultMock = mock(ProjectBuildingResult.class);
     when(resultMock.getProject()).thenReturn(projectMock);
     when(projectBuilderMock.build(Mockito.any(Artifact.class), any(ProjectBuildingRequest.class))).thenReturn(resultMock);
-    remoteArtifactRepositoriesMock = new ArrayList<>();
-    logMock = mock(Log.class);
     artifactInstallerMock = mock(ArtifactInstaller.class);
-    repositoryGenerator = new RepositoryGenerator(projectMock,
-                                                  remoteArtifactRepositoriesMock,
-                                                  temporaryFolder.getRoot(), logMock);
+    ApplicationClassLoaderModelAssembler applicationClassloaderModelAssemblerMock = mock(ApplicationClassLoaderModelAssembler.class);
+    repositoryGenerator = new RepositoryGenerator(temporaryFolder.newFile("pom.xml"),
+                                                  temporaryFolder.getRoot(), artifactInstallerMock, applicationClassloaderModelAssemblerMock);
     repositoryGeneratorSpy = spy(repositoryGenerator);
     artifactHandler = new DefaultArtifactHandler(TYPE);
     appModelMock = mock(ApplicationClassloaderModel.class);
@@ -87,7 +81,7 @@ public class RepositoryGeneratorTest {
 
 
   @Test
-  public void generateMarkerFileInRepositoryFolderTest() throws MojoExecutionException {
+  public void generateMarkerFileInRepositoryFolderTest() throws IOException {
     File generatedMarkerFile = new File(temporaryFolder.getRoot(), ".marker");
 
     assertThat("Marker file already exists", !generatedMarkerFile.exists());
@@ -98,8 +92,8 @@ public class RepositoryGeneratorTest {
   }
 
   @Test
-  public void generateMarkerFileInRepositoryFolderWhenFolderIsNotWritableTest() throws MojoExecutionException, IOException {
-    exception.expect(MojoExecutionException.class);
+  public void generateMarkerFileInRepositoryFolderWhenFolderIsNotWritableTest() throws IOException {
+    exception.expect(IOException.class);
     File generatedMarkerFile = new File(temporaryFolder.getRoot(), ".marker");
 
     assertThat("Marker file already exists", !generatedMarkerFile.exists());
@@ -111,18 +105,20 @@ public class RepositoryGeneratorTest {
   }
 
   @Test
-  public void installEmptySetArtifactsTest() throws MojoExecutionException {
+  public void installEmptySetArtifactsTest() throws IOException {
     File repositoryFolder = temporaryFolder.getRoot();
-    repositoryGeneratorSpy.installArtifacts(repositoryFolder, Collections.emptySet(), artifactInstallerMock, appModelMock);
+    when(appModelMock.getArtifacts()).thenReturn(Collections.emptySet());
+    repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifactInstallerMock, appModelMock);
     verify(repositoryGeneratorSpy, times(1)).generateMarkerFileInRepositoryFolder(repositoryFolder);
     verify(artifactInstallerMock, times(0)).installArtifact(any(), any(), any());
   }
 
   @Test
-  public void installArtifactsTest() throws MojoExecutionException {
+  public void installArtifactsTest() throws IOException {
     File repositoryFolder = temporaryFolder.getRoot();
     buildArtifacts();
-    repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifacts, artifactInstallerMock, appModelMock);
+    when(appModelMock.getArtifacts()).thenReturn(artifacts);
+    repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifactInstallerMock, appModelMock);
     verify(repositoryGeneratorSpy, times(0)).generateMarkerFileInRepositoryFolder(repositoryFolder);
     verify(artifactInstallerMock, times(NUMBER_ARTIFACTS)).installArtifact(any(), any(), any());
   }

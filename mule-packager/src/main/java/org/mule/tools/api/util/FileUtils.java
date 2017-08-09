@@ -10,8 +10,6 @@
 
 package org.mule.tools.api.util;
 
-import org.apache.maven.plugin.MojoExecutionException;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileStore;
@@ -34,7 +32,7 @@ public class FileUtils {
     }
   }
 
-  public static void checkReadOnly(File file) throws IOException, MojoExecutionException {
+  public static void checkReadOnly(File file) throws IOException {
     // This logic check if the file attribute was mark as read only because File#setReadOnly is platform dependent (JDK-6728842)
     Path repositoryPath = file.toPath();
     FileStore fileStore = Files.getFileStore(repositoryPath);

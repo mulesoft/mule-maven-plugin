@@ -9,23 +9,35 @@
  */
 package org.mule.tools.api;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.packager.ContentGenerator;
 import org.mule.tools.api.packager.PackagerTestUtils;
-import org.mule.tools.api.packager.PackagingType;
+import org.mule.tools.api.packager.packaging.PackagingType;
 
 public class ContentGeneratorTest {
 
@@ -35,8 +47,10 @@ public class ContentGeneratorTest {
 
   private static final String POM_FILE_NAME = "pom.xml";
   private static final String FAKE_FILE_NAME = "fakeFile.xml";
-  private static final String MULE_POLICY_DESCRIPTOR_FILE_NAME = "mule-policy.json";
-  private static final String MULE_APPLICATION_DESCRIPTOR_FILE_NAME = "mule-application.json";
+  private static final String MULE_ARTIFACT_DESCRIPTOR_FILE_NAME = "mule-artifact.json";
+  private static final String TYPE = "jar";
+  private static final String CLASSIFIER = "classifier";
+  private static final String CLASSLOADER_MODEL_JSON_FILE_NAME = "classloader-model.json";
 
   @Rule
   public TemporaryFolder projectBaseFolder = new TemporaryFolder();
@@ -177,7 +191,7 @@ public class ContentGeneratorTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void createDescriptorsNoOriginalPom() throws IOException {
-    String descriptorFileName = MULE_APPLICATION_DESCRIPTOR_FILE_NAME;
+    String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
     PackagerTestUtils.createFolder(sourceFolderPath, descriptorFileName, true);
@@ -210,7 +224,7 @@ public class ContentGeneratorTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void createDescriptorsNoDescriptorDestinationFolder() throws IOException {
-    String descriptorFileName = MULE_APPLICATION_DESCRIPTOR_FILE_NAME;
+    String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
     PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
@@ -227,7 +241,7 @@ public class ContentGeneratorTest {
 
   @Test
   public void createDescriptors() throws IOException {
-    String descriptorFileName = MULE_APPLICATION_DESCRIPTOR_FILE_NAME;
+    String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
     PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
@@ -255,7 +269,7 @@ public class ContentGeneratorTest {
     contentGenerator = new ContentGenerator(GROUP_ID, ARTIFACT_ID, VERSION, PackagingType.MULE_POLICY,
                                             projectBaseFolder.getRoot().toPath(), projectTargetFolder.getRoot().toPath());
 
-    String descriptorFileName = MULE_POLICY_DESCRIPTOR_FILE_NAME;
+    String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
     PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
@@ -283,7 +297,7 @@ public class ContentGeneratorTest {
     contentGenerator = new ContentGenerator(GROUP_ID, ARTIFACT_ID, VERSION, PackagingType.MULE_DOMAIN,
                                             projectBaseFolder.getRoot().toPath(), projectTargetFolder.getRoot().toPath());
 
-    String descriptorFileName = MULE_APPLICATION_DESCRIPTOR_FILE_NAME;
+    String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
     PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
@@ -320,5 +334,31 @@ public class ContentGeneratorTest {
     verify(contentGeneratorMock, times(1)).createContent();
     verify(contentGeneratorMock, times(1)).createMetaInfMuleSourceFolderContent();
     verify(contentGeneratorMock, times(1)).createDescriptors();
+  }
+
+  @Test
+  public void classLoaderModelSerializationTest() throws URISyntaxException {
+    ArtifactCoordinates artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, TYPE, CLASSIFIER);
+    ClassLoaderModel expectedClassLoaderModel = new ClassLoaderModel(VERSION, artifactCoordinates);
+    List<Artifact> dependencies = getDependencies();
+    expectedClassLoaderModel.setDependencies(dependencies);
+    File classloaderModelJsonFile = ContentGenerator.createClassLoaderModelJsonFile(expectedClassLoaderModel, projectTargetFolder.getRoot());
+    assertThat("Classloader model json file name is incorrect", classloaderModelJsonFile.getName().endsWith(CLASSLOADER_MODEL_JSON_FILE_NAME), is(true));
+    ClassLoaderModel actualClassloaderModel = ContentGenerator.createClassLoaderModelFromJson(classloaderModelJsonFile);
+    assertThat("Actual classloader model is not equal to the expected", actualClassloaderModel, equalTo(expectedClassLoaderModel));
+  }
+
+  private List<Artifact> getDependencies() throws URISyntaxException {
+    List<Artifact> artifacts = new ArrayList<>();
+    for(int i = 0; i < 10; ++i) {
+      artifacts.add(createArtifact(i));
+    }
+    return artifacts;
+  }
+
+  private Artifact createArtifact(int i) throws URISyntaxException {
+    ArtifactCoordinates coordinates = new ArtifactCoordinates(VERSION, GROUP_ID + i, ARTIFACT_ID + i, TYPE, CLASSIFIER);
+    URI uri = new URI("file:/repository/path/" + i);
+    return new Artifact(coordinates, uri);
   }
 }

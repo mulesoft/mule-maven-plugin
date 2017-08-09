@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.tools.maven</groupId>
     <artifactId>mule-artifact-tools</artifactId>
@@ -10,11 +11,11 @@
 
     <modules>
         <module>mule-packager</module>
-         <module>mule-deployer</module>
+        <module>mule-deployer</module>
         <module>mule-maven-plugin</module>
-         <module>mule-artifact-it</module>
+        <module>mule-artifact-it</module>
     </modules>
-   
+
     <properties>
         <licensePath>LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
@@ -36,6 +37,7 @@
         <mockito.version>1.8.5</mockito.version>
         <mockito.core.version>2.5.6</mockito.core.version>
         <jersey.version>2.25</jersey.version>
+        <groovy.version>2.0.1</groovy.version>
         <hamcrest.version>1.3</hamcrest.version>
         <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
         <formatter.maven.plugin.version>1.8.0</formatter.maven.plugin.version>
@@ -48,8 +50,9 @@
         <skipVerifications>false</skipVerifications>
         <formatterGoal>validate</formatterGoal>
 
-        <maven.dependency.tree.version>1.2</maven.dependency.tree.version>
+        <maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
         <maven.plugin.annotations.version>3.5</maven.plugin.annotations.version>
+        <maven.dependency.tree.version>1.2</maven.dependency.tree.version>
         <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
         <maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
         <maven.invoker.plugin.version>2.0.0</maven.invoker.plugin.version>
@@ -57,9 +60,7 @@
         <maven.verifier.version>1.6</maven.verifier.version>
         <groovy.version>2.4.12</groovy.version>
         <!--Integration tests properties-->
-        <maven.verifier.plugin.version>1.1</maven.verifier.plugin.version>
         <hamcrest.all.version>1.3</hamcrest.all.version>
-        <maven.plugin.testing.harness.version>1.2</maven.plugin.testing.harness.version>
         <plexus.container.default.version>1.0-beta-3.0.5</plexus.container.default.version>
         <plexus.component.annotations.version>1.0-beta-3.0.5</plexus.component.annotations.version>
         <maven.plugin.plugin.version>3.5</maven.plugin.plugin.version>
@@ -70,192 +71,168 @@
         <mule.maven.client.impl.version>1.0.0-SNAPSHOT</mule.maven.client.impl.version>
         <gson.version>2.8.0</gson.version>
         <maven.surefire.plugin.version>2.20</maven.surefire.plugin.version>
+        <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
     </properties>
+
 
     <dependencyManagement>
         <dependencies>
-        	<!-- Maven Plugin Dependencies -->
-	        <dependency>
-	            <groupId>org.apache.maven</groupId>
-	            <artifactId>maven-plugin-api</artifactId>
-	            <version>${maven.version}</version>
-	            <exclusions>
-	                <exclusion>
-	                    <groupId>org.apache.maven</groupId>
-	                    <artifactId>maven-model</artifactId>
-	                </exclusion>
-	                <exclusion>
-	                    <groupId>org.apache.maven</groupId>
-	                    <artifactId>maven-artifact</artifactId>
-	                </exclusion>
-	                <exclusion>
-	                    <groupId>org.eclipse.sisu</groupId>
-	                    <artifactId>org.eclipse.sisu.plexus</artifactId>
-	                </exclusion>
-	            </exclusions>
-	        </dependency>
-	        <!--<dependency>-->
-	            <!--<groupId>org.apache.maven</groupId>-->
-	            <!--<artifactId>maven-artifact</artifactId>-->
-	            <!--<version>${maven.artifact.version}</version>-->
-	        <!--</dependency>-->
-	        <dependency>
-	            <groupId>org.apache.maven</groupId>
-	            <artifactId>maven-core</artifactId>
-	            <version>${maven.version}</version>
-	            <scope>provided</scope>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.apache.maven.plugin-tools</groupId>
-	            <artifactId>maven-plugin-annotations</artifactId>
-	            <version>${maven.plugin.annotations.version}</version>
-	            <scope>provided</scope>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.codehaus.plexus</groupId>
-	            <artifactId>plexus-archiver</artifactId>
-	            <version>${codehaus.plexus.archiver}</version>
-	        </dependency>
-	        
-	        <dependency>
-	            <groupId>log4j</groupId>
-	            <artifactId>log4j</artifactId>
-	            <version>${log4j.version}</version>
-	            <scope>test</scope>
-	        </dependency>
-	        <!-- Other Dependencies -->
-	        <!-- TODO MMP-115 this should not be necessary-->
-	        <dependency>
-	            <groupId>org.mule</groupId>
-	            <artifactId>mule-core</artifactId>
-	            <version>${mule.version}</version>
-	        </dependency>
-	        <!-- TODO MMP-115 this should not be necessary  -->
-	        <dependency>
-	            <groupId>org.mule.tests</groupId>
-	            <artifactId>mule-tests-infrastructure</artifactId>
-	            <version>${mule.version}</version>
-	        </dependency>
-	        <!-- TODO MMP-115 remove this -->
-	        <!--<dependency>-->
-	            <!--<groupId>org.mockito</groupId>-->
-	            <!--<artifactId>mockito-all</artifactId>-->
-	            <!--<version>${mockito.version}</version>-->
-	            <!--<scope>test</scope>-->
-	        <!--</dependency>-->
-	        <!-- TODO MMP-115 this should not be necessary or it should be test -->
-	        <dependency>
-	            <groupId>org.mockito</groupId>
-	            <artifactId>mockito-core</artifactId>
-	            <version>${mockito.core.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.glassfish.jersey.core</groupId>
-	            <artifactId>jersey-client</artifactId>
-	            <version>${jersey.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.glassfish.jersey.media</groupId>
-	            <artifactId>jersey-media-multipart</artifactId>
-	            <version>${jersey.version}</version>
-	        </dependency>
-	        <!-- TODO MMP-115 we should probably use hamcrest-all -->
-	        <dependency>
-	            <groupId>org.hamcrest</groupId>
-	            <artifactId>hamcrest-library</artifactId>
-	            <version>${hamcrest.version}</version>
-	            <scope>test</scope>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.hamcrest</groupId>
-	            <artifactId>hamcrest-all</artifactId>
-	            <version>${hamcrest.all.version}</version>
-	            <scope>test</scope>
-	        </dependency>
-	        <dependency>
-	            <groupId>commons-logging</groupId>
-	            <artifactId>commons-logging</artifactId>
-	            <version>${commons.logging.version}</version>
-	        </dependency>
+            <!-- Maven Plugin Dependencies -->
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-plugin-api</artifactId>
+                <version>${maven.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.maven</groupId>
+                        <artifactId>maven-model</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.maven</groupId>
+                        <artifactId>maven-artifact</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.eclipse.sisu</groupId>
+                        <artifactId>org.eclipse.sisu.plexus</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!--<dependency>-->
+            <!--<groupId>org.apache.maven</groupId>-->
+            <!--<artifactId>maven-artifact</artifactId>-->
+            <!--<version>${maven.artifact.version}</version>-->
+            <!--</dependency>-->
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-core</artifactId>
+                <version>${maven.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.plugin-tools</groupId>
+                <artifactId>maven-plugin-annotations</artifactId>
+                <version>${maven.plugin.annotations.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-archiver</artifactId>
+                <version>${codehaus.plexus.archiver}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- Other Dependencies -->
+            <!-- TODO MMP-115 this should not be necessary  -->
+            <dependency>
+                <groupId>org.mule.tests</groupId>
+                <artifactId>mule-tests-infrastructure</artifactId>
+                <version>${mule.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.core.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-multipart</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-all</artifactId>
+                <version>${hamcrest.all.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${commons.logging.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons.lang.version}</version>
             </dependency>
-	        <dependency>
-	            <groupId>commons-io</groupId>
-	            <artifactId>commons-io</artifactId>
-	            <version>${commons.io.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>commons-cli</groupId>
-	            <artifactId>commons-cli</artifactId>
-	            <version>${commons.cli.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>com.google.guava</groupId>
-	            <artifactId>guava</artifactId>
-	            <version>${guava.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-verifier-plugin</artifactId>
-	            <version>${maven.verifier.plugin.version}</version>
-	            <type>maven-plugin</type>
-	            <scope>test</scope>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.apache.maven.plugin-testing</groupId>
-	            <artifactId>maven-plugin-testing-harness</artifactId>
-	            <version>${maven.plugin.testing.harness.version}</version>
-	            <scope>test</scope>
-	        </dependency>
-	     
-	        
-	        <!-- The Plexus annotations -->
-	        <dependency>
-	            <groupId>org.codehaus.plexus</groupId>
-	            <artifactId>plexus-component-annotations</artifactId>
-	            <version>${plexus.component.annotations.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.apache.maven</groupId>
-	            <artifactId>maven-compat</artifactId>
-	            <version>${maven.compat.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.codehaus.plexus</groupId>
-	            <artifactId>plexus-container-default</artifactId>
-	            <version>${plexus.container.default.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.apache.maven.shared</groupId>
-	            <artifactId>maven-dependency-tree</artifactId>
-	            <version>${maven.dependency.tree.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.mule</groupId>
-	            <artifactId>mule-maven-client-impl</artifactId>
-	            <version>${mule.maven.client.impl.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>com.google.code.gson</groupId>
-	            <artifactId>gson</artifactId>
-	            <version>${gson.version}</version>
-	        </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-cli</groupId>
+                <artifactId>commons-cli</artifactId>
+                <version>${commons.cli.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-verifier-plugin</artifactId>
+                <version>${maven.verifier.plugin.version}</version>
+                <type>maven-plugin</type>
+                <scope>test</scope>
+            </dependency>
 
-	         <dependency>
-	            <groupId>org.apache.maven.shared</groupId>
-	            <artifactId>maven-verifier</artifactId>
-	            <version>${maven.verifier.version}</version>
-	            <scope>test</scope>
-	        </dependency>
-	        <dependency>
-	            <groupId>junit</groupId>
-	            <artifactId>junit</artifactId>
-	            <version>${junit.version}</version>
-	            <scope>test</scope>
-	        </dependency>
+
+            <!-- The Plexus annotations -->
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-component-annotations</artifactId>
+                <version>${plexus.component.annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-compat</artifactId>
+                <version>${maven.compat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-container-default</artifactId>
+                <version>${plexus.container.default.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.shared</groupId>
+                <artifactId>maven-dependency-tree</artifactId>
+                <version>${maven.dependency.tree.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mule</groupId>
+                <artifactId>mule-maven-client-impl</artifactId>
+                <version>${mule.maven.client.impl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.maven.shared</groupId>
+                <artifactId>maven-verifier</artifactId>
+                <version>${maven.verifier.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
                 <artifactId>groovy</artifactId>
@@ -267,65 +244,73 @@
 
     <build>
         <pluginManagement>
-        	<plugins>
-	            <plugin>
-	                <groupId>org.apache.maven.plugins</groupId>
-	                <artifactId>maven-compiler-plugin</artifactId>
-	                <version>${maven.compiler.plugin.version}</version>
-	                <configuration>
-	                    <source>${java.source}</source>
-	                    <target>${java.target}</target>
-	                </configuration>
-	            </plugin>
-	         
-	            
-	            <plugin>
-	                <groupId>com.mycila</groupId>
-	                <artifactId>license-maven-plugin</artifactId>
-	                <version>${license.plugin.version}</version>
-	                <configuration>
-	                    <header>${licensePath}</header>
-	                    <includes>
-	                        <include>**/*.java</include>
-	                    </includes>
-	                    <mapping>
-	                        <java>SLASHSTAR_STYLE</java>
-	                    </mapping>
-	                </configuration>
-	                <executions>
-	                    <execution>
-	                        <phase>compile</phase>
-	                        <goals>
-	                            <goal>check</goal>
-	                        </goals>
-	                    </execution>
-	                </executions>
-	            </plugin>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven.javadoc.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven.dependency.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.plugin.version}</version>
+                    <configuration>
+                        <source>${java.source}</source>
+                        <target>${java.target}</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.mycila</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>${license.plugin.version}</version>
+                    <configuration>
+                        <header>${licensePath}</header>
+                        <includes>
+                            <include>**/*.java</include>
+                        </includes>
+                        <mapping>
+                            <java>SLASHSTAR_STYLE</java>
+                        </mapping>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 
-	            <plugin>
-	                <groupId>com.marvinformatics.formatter</groupId>
-	                <artifactId>formatter-maven-plugin</artifactId>
-	                <version>${javaFormatter.plugin.version}</version>
-	                <configuration>
-	                    <compilerCompliance>${java.source}</compilerCompliance>
-	                    <compilerSource>${java.source}</compilerSource>
-	                    <compilerTargetPlatform>${java.source}</compilerTargetPlatform>
-	                    <configFile>${basedir}/${formatterConfigPath}</configFile>
-	                    <configJsFile>${basedir}/${formatterConfigPath}</configJsFile>
-	                    <lineEnding>LF</lineEnding>
-	                    <aggregator>false</aggregator>
-	                    <executionRoot>true</executionRoot>
-	                    <skipFormatting>${skipVerifications}</skipFormatting>
-	                </configuration>
-	                <executions>
-	                    <execution>
-	                        <phase>compile</phase>
-	                        <goals>
-	                            <goal>${formatterGoal}</goal>
-	                        </goals>
-	                    </execution>
-	                </executions>
-	            </plugin>
+                <plugin>
+                    <groupId>com.marvinformatics.formatter</groupId>
+                    <artifactId>formatter-maven-plugin</artifactId>
+                    <version>${javaFormatter.plugin.version}</version>
+                    <configuration>
+                        <compilerCompliance>${java.source}</compilerCompliance>
+                        <compilerSource>${java.source}</compilerSource>
+                        <compilerTargetPlatform>${java.source}</compilerTargetPlatform>
+                        <configFile>${basedir}/${formatterConfigPath}</configFile>
+                        <configJsFile>${basedir}/${formatterConfigPath}</configJsFile>
+                        <lineEnding>LF</lineEnding>
+                        <aggregator>false</aggregator>
+                        <executionRoot>true</executionRoot>
+                        <skipFormatting>${skipVerifications}</skipFormatting>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>${formatterGoal}</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
@@ -336,16 +321,16 @@
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>
-	        </plugins>
+            </plugins>
         </pluginManagement>
     </build>
 
     <profiles>
         <profile>
-        	<!-- TODO this may need to go to the IT  module OR NOT AT ALL -->
+            <!-- TODO this may need to go to the IT  module OR NOT AT ALL -->
             <id>integration</id>
             <!--<activation>-->
-                <!--<activeByDefault>true</activeByDefault>-->
+            <!--<activeByDefault>true</activeByDefault>-->
             <!--</activation>-->
             <build>
                 <plugins>
@@ -373,7 +358,8 @@
                             </scriptVariables>
                             <properties>
                                 <mule.version>${mule.version}</mule.version>
-                                <maven.antrun.plugin.version>${maven.antrun.plugin.version}</maven.antrun.plugin.version>
+                                <maven.antrun.plugin.version>${maven.antrun.plugin.version}
+                                </maven.antrun.plugin.version>
                                 <username>${username}</username>
                                 <password>${password}</password>
                                 <environment>${environment}</environment>
@@ -410,11 +396,10 @@
             </properties>
             <build>
                 <plugins>
-                    <!-- TODO MMP-119 Review plugin executions. Right now javadoc plugin is failing -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10</version>
+                        <version>${maven.javadoc.plugin.version}</version>
                         <configuration>
                             <additionalparam>${javadoc.opts}</additionalparam>
                         </configuration>
@@ -449,7 +434,7 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin> 
+                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -511,38 +496,6 @@
             <properties>
                 <toolsjar>${java.home}/../Classes/classes.jar</toolsjar>
             </properties>
-        </profile>
-        <profile>
-            <id>mac</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-            <build>
-                <plugins>
-                    <!--<plugin>-->
-                        <!--<artifactId>maven-plugin-plugin</artifactId>-->
-                        <!--<version>${maven.plugin.version}</version>-->
-                        <!--<dependencies>-->
-                            <!--<dependency>-->
-                            <!--<groupId>org.jfrog.maven.annomojo</groupId>-->
-                            <!--<artifactId>maven-plugin-tools-anno</artifactId>-->
-                            <!--<version>${maven.plugin.tools.anno.version}</version>-->
-                            <!--<scope>runtime</scope>-->
-                            <!--</dependency>-->
-                            <!--<dependency>-->
-                            <!--<groupId>com.sun</groupId>-->
-                            <!--<artifactId>tools</artifactId>-->
-                            <!--<version>${java.version}</version>-->
-                            <!--<scope>system</scope>-->
-                            <!--<systemPath>${java.home}/../lib/tools.jar</systemPath>-->
-                            <!--</dependency>-->
-                        <!--</dependencies>-->
-                    <!--</plugin>-->
-
-                </plugins>
-            </build>
         </profile>
     </profiles>
 

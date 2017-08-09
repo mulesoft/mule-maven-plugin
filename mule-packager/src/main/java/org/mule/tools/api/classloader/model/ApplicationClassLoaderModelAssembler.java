@@ -10,12 +10,10 @@
 
 package org.mule.tools.api.classloader.model;
 
-import static java.lang.String.format;
 import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
 import static org.mule.maven.client.internal.util.MavenUtils.getPomModelFromFile;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.*;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifacts;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
 
 import java.io.File;
 import java.util.*;
@@ -28,11 +26,6 @@ import org.mule.maven.client.api.PomFileSupplierFactory;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.classloader.model.util.ArtifactUtils;
-
 
 public class ApplicationClassLoaderModelAssembler {
 
@@ -49,34 +42,65 @@ public class ApplicationClassLoaderModelAssembler {
     this.muleMavenPluginClient = muleMavenPluginClient;
   }
 
-  public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, File targetFolder) {
+  public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, File targetFolder)
+      throws IllegalStateException {
     BundleDescriptor projectBundleDescriptor = getProjectBundleDescriptor(pomFile);
 
     ClassLoaderModel appModel = new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, getArtifactCoordinates(projectBundleDescriptor));
 
-    List<BundleDependency> nonMulePluginDependencies =
+    List<BundleDependency> nonMulePlugins =
         resolveNonMulePluginDependencies(targetFolder, projectBundleDescriptor);
 
-    Map<BundleDependency, List<BundleDependency>> mulePluginDependencies =
-        resolveMulePluginDependencies(targetFolder, projectBundleDescriptor);
+    List<BundleDependency> mulePlugins =
+        resolveMulePlugins(targetFolder, projectBundleDescriptor);
 
     List<BundleDependency> appDependencies = new ArrayList<>();
 
-    appDependencies.addAll(nonMulePluginDependencies);
-    appDependencies.addAll(mulePluginDependencies.keySet());
+    appDependencies.addAll(nonMulePlugins);
+    appDependencies.addAll(mulePlugins);
 
     appModel.setDependencies(toArtifacts(appDependencies));
 
     applicationClassLoaderModel = new ApplicationClassloaderModel(appModel);
 
+    Map<BundleDependency, List<BundleDependency>> mulePluginDependencies = resolveMulePluginDependencies(mulePlugins);
+
+    verifyThatAreNoTransitiveMulePlugins(mulePluginDependencies);
+
     // all mule plugins classloader models are resolved here
-    for(Map.Entry<BundleDependency, List<BundleDependency>> mulePluginEntry : mulePluginDependencies.entrySet()) {
-      ClassLoaderModel mulePluginClassloaderModel = new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, toArtifactCoordinates(mulePluginEntry.getKey().getDescriptor()));
+    for (Map.Entry<BundleDependency, List<BundleDependency>> mulePluginEntry : mulePluginDependencies.entrySet()) {
+      ClassLoaderModel mulePluginClassloaderModel =
+          new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, toArtifactCoordinates(mulePluginEntry.getKey().getDescriptor()));
       mulePluginClassloaderModel.setDependencies(toArtifacts(mulePluginEntry.getValue()));
       applicationClassLoaderModel.addMulePluginClassloaderModel(mulePluginClassloaderModel);
     }
 
     return applicationClassLoaderModel;
+  }
+
+  /**
+   * When method resolveMulePlugins is invoked, AetherMavenClient should resolve all mule plugins that are a direct or transitive
+   * dependency of the application but that are not a mule-plugin transitive dependency. So now we check if all mule plugins that
+   * were resolved as dependencies of other mule plugins were already been resolved by the AetherMavenClient. If they were not, it
+   * means they were some transitive dependency of a mule plugin.
+   * 
+   * @param mulePluginDependencies mule plugins and its dependencies
+   **/
+  protected void verifyThatAreNoTransitiveMulePlugins(Map<BundleDependency, List<BundleDependency>> mulePluginDependencies)
+      throws IllegalStateException {
+    Set<String> validMulePluginsDependencies = mulePluginDependencies.keySet().stream().map(BundleDependency::toString).collect(Collectors.toSet());
+    Set<String> mulePluginsResolvedAsMulePluginsDependencies =
+        mulePluginDependencies.values().stream().flatMap(Collection::stream)
+            .filter(bundleDependency -> bundleDependency.getDescriptor().getClassifier().isPresent())
+            .filter(bundleDependency -> StringUtils.equals(MULE_PLUGIN_CLASSIFIER,
+                                                           bundleDependency.getDescriptor().getClassifier().get()))
+            .map(BundleDependency::toString)
+            .collect(Collectors.toSet());
+    mulePluginsResolvedAsMulePluginsDependencies.removeAll(validMulePluginsDependencies);
+    if (!mulePluginsResolvedAsMulePluginsDependencies.isEmpty()) {
+      throw new IllegalStateException("The following mule plugins are TRANSITIVE dependencies of mule plugins but not a DIRECT dependencies of a mule plugin: "
+          + mulePluginsResolvedAsMulePluginsDependencies);
+    }
   }
 
   protected ArtifactCoordinates getArtifactCoordinates(BundleDescriptor projectBundleDescriptor) {
@@ -102,29 +126,37 @@ public class ApplicationClassLoaderModelAssembler {
   }
 
   /**
-   * Resolve mule plugins that are direct and transitive dependencies of the application and also each of the mule plugins own
-   * dependencies.
+   * Resolve mule plugins that are direct and transitive dependencies of the application.
    * 
    * @param targetFolder target folder of application that is going to be packaged, which need to contain at this stage the pom
    *        file in the folder that is going to be resolved by {@link PomFileSupplierFactory}
    * @param bundleDescriptor bundleDescriptor of application to be packaged
    */
-  private Map<BundleDependency, List<BundleDependency>> resolveMulePluginDependencies(File targetFolder,
-                                                                                      BundleDescriptor bundleDescriptor) {
-    List<BundleDependency> muleDependencies =
-        muleMavenPluginClient.resolveBundleDescriptorDependenciesWithWorkspaceReader(targetFolder, false, false, bundleDescriptor,
-                                                                                     notMulePluginFilter,
-                                                                                     notMulePluginFilter);
-    Map<BundleDependency, List<BundleDependency>> muleDependenciesDependencies = new HashMap<>();
-    for (BundleDependency muleDependency : muleDependencies) {
+  private List<BundleDependency> resolveMulePlugins(File targetFolder,
+                                                    BundleDescriptor bundleDescriptor) {
+    return muleMavenPluginClient.resolveBundleDescriptorDependenciesWithWorkspaceReader(targetFolder, false, false,
+                                                                                        bundleDescriptor,
+                                                                                        notMulePluginFilter,
+                                                                                        notMulePluginFilter);
+  }
+
+  /**
+   * Resolve each of the mule plugins dependencies.
+   *
+   * @param mulePlugins the list of mule plugins that are going to have their dependencies resolved.
+   */
+  private Map<BundleDependency, List<BundleDependency>> resolveMulePluginDependencies(List<BundleDependency> mulePlugins) {
+    Map<BundleDependency, List<BundleDependency>> muleDependenciesDependencies = new LinkedHashMap<>();
+    for (BundleDependency muleDependency : mulePlugins) {
       List<BundleDependency> mulePluginDependencies =
           muleMavenPluginClient.resolveBundleDescriptorDependencies(false, false, muleDependency.getDescriptor());
       muleDependenciesDependencies
           .put(muleDependency, new ArrayList<>(mulePluginDependencies));
     }
-
     return muleDependenciesDependencies;
   }
+
+
 
   protected BundleDescriptor getBundleDescriptor(Model pomModel) {
     final String version =

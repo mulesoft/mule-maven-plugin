@@ -12,16 +12,7 @@ package org.mule.tools.api.packager;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.mule.tools.api.packager.PackagerFolders.CLASSES;
-import static org.mule.tools.api.packager.PackagerFolders.MAVEN;
-import static org.mule.tools.api.packager.PackagerFolders.META_INF;
-import static org.mule.tools.api.packager.PackagerFolders.MULE;
-import static org.mule.tools.api.packager.PackagerFolders.MULE_ARTIFACT;
-import static org.mule.tools.api.packager.PackagerFolders.MULE_SRC;
-import static org.mule.tools.api.packager.PackagerFolders.MUNIT;
-import static org.mule.tools.api.packager.PackagerFolders.PLUGINS;
-
-import org.mule.tools.api.packager.MuleArchiver;
+import static org.mule.tools.api.packager.structure.PackagerFolders.*;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -116,7 +107,7 @@ public class MuleArchiverTest {
     relativePaths.add(tempBasePath.resolve("api").resolve("api.raml").toString());
     relativePaths.add(tempBasePath.resolve("wsdl").resolve("aservice.wsdl").toString());
 
-    tempBasePath = Paths.get(MULE);
+    tempBasePath = Paths.get(CLASSES).resolve(MULE);
     relativePaths.add(tempBasePath.resolve("mule-config1.xml").toString());
     relativePaths.add(tempBasePath.resolve("org.mule.package").resolve("mule-config2.xml").toString());
 
@@ -125,7 +116,7 @@ public class MuleArchiverTest {
     relativePaths.add(tempBasePath.resolve("org.mule.fake").resolve("complete-app").resolve("pom.properties").toString());
 
     tempBasePath = Paths.get(META_INF).resolve(MULE_ARTIFACT);
-    relativePaths.add(tempBasePath.resolve("mule-application.json").toString());
+    relativePaths.add(tempBasePath.resolve("mule-artifact.json").toString());
 
     tempBasePath = Paths.get(META_INF).resolve(MULE_SRC).resolve(REAL_APP);
     relativePaths.add(tempBasePath.resolve("pom.xml").toString());

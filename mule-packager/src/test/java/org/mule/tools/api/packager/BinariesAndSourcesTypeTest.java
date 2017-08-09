@@ -18,9 +18,9 @@ import java.util.Map;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 
-import org.mule.tools.api.PackageBuilder;
-
 import com.google.common.collect.ImmutableMap;
+import org.mule.tools.api.packager.packaging.PackagingMode;
+import org.mule.tools.api.packager.structure.PackagerFolders;
 
 public class BinariesAndSourcesTypeTest extends PackageTypeTest {
 

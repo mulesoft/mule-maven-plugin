@@ -10,8 +10,6 @@
 
 package org.mule.tools.maven.mojo;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -20,7 +18,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.mule.tools.api.ContentGenerator;
+import org.mule.tools.api.packager.ContentGenerator;
 
 import java.io.IOException;
 

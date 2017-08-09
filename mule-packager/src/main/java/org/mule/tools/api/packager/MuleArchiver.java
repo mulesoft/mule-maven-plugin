@@ -10,14 +10,6 @@
 
 package org.mule.tools.api.packager;
 
-import static org.mule.tools.api.packager.PackagerFolders.CLASSES;
-import static org.mule.tools.api.packager.PackagerFolders.MAVEN;
-import static org.mule.tools.api.packager.PackagerFolders.META_INF;
-import static org.mule.tools.api.packager.PackagerFolders.MULE;
-import static org.mule.tools.api.packager.PackagerFolders.MULE_ARTIFACT;
-import static org.mule.tools.api.packager.PackagerFolders.MULE_SRC;
-import static org.mule.tools.api.packager.PackagerFolders.POLICY;
-import static org.mule.tools.api.packager.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 
@@ -25,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.util.DirectoryScanner;
+
+import static org.mule.tools.api.packager.structure.PackagerFolders.*;
 
 /**
  * Creates the structure and archive for a Mule Application
@@ -35,7 +29,7 @@ public class MuleArchiver extends ZipArchiver {
 
   public final static String CLASSES_LOCATION = CLASSES + File.separator;
 
-  public final static String MULE_LOCATION = MULE + File.separator;
+  public final static String MULE_LOCATION = CLASSES_LOCATION + MULE + File.separator;
 
   public final static String POLICY_LOCATION = POLICY + File.separator;
 

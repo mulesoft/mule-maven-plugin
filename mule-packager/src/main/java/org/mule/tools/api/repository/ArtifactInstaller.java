@@ -13,27 +13,20 @@ package org.mule.tools.api.repository;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
 import static org.apache.commons.io.FileUtils.copyFile;
-import static org.mule.tools.api.packager.PackagerFolders.REPOSITORY;
 import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedFileName;
 import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedOutputDirectory;
 import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getPomFileName;
+import static org.mule.tools.api.packager.structure.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
-import org.mule.tools.api.ContentGenerator;
+import org.mule.tools.api.packager.ContentGenerator;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.packager.PackagingType;
 
 public class ArtifactInstaller {
 
@@ -45,7 +38,7 @@ public class ArtifactInstaller {
   }
 
   public void installArtifact(File repositoryFile, Artifact artifact, Optional<ClassLoaderModel> classLoaderModel)
-      throws MojoExecutionException {
+      throws IOException {
     checkArgument(artifact != null, "Artifact to be installed should not be null");
     File artifactFolderDestination = getFormattedOutputDirectory(repositoryFile, artifact);
 
@@ -57,14 +50,14 @@ public class ArtifactInstaller {
       generateArtifactFile(artifact, artifactFolderDestination, repositoryFile);
       generateDependencyDescriptorFile(artifact, artifactFolderDestination, classLoaderModel);
     } catch (IOException e) {
-      throw new MojoExecutionException(
+      throw new IOException(
                                        format("There was a problem while copying the artifact [%s] file [%s] to the application local repository",
                                               artifact.toString(), artifact.getFile().getAbsolutePath()),
                                        e);
     }
   }
 
-  private void generateArtifactFile(Artifact artifact, File artifactFolderDestination, File repositoryFile) throws IOException {
+  protected void generateArtifactFile(Artifact artifact, File artifactFolderDestination, File repositoryFile) throws IOException {
     String artifactFilename = getFormattedFileName(artifact);
 
     File destinationArtifactFile = new File(artifactFolderDestination, artifactFilename);
@@ -77,17 +70,17 @@ public class ArtifactInstaller {
     copyFile(artifact.getFile(), destinationArtifactFile);
   }
 
-  private void generateDependencyDescriptorFile(Artifact artifact, File artifactFolderDestination,
-                                                Optional<ClassLoaderModel> classLoaderModel)
+  protected void generateDependencyDescriptorFile(Artifact artifact, File artifactFolderDestination,
+                                                  Optional<ClassLoaderModel> classLoaderModel)
       throws IOException {
     if (classLoaderModel.isPresent()) {
-      ContentGenerator.createClassLoaderModelJsonFile(classLoaderModel.get(), artifactFolderDestination);
+      generateClassloderModelFile(classLoaderModel.get(), artifactFolderDestination);
     } else {
       generatePomFile(artifact, artifactFolderDestination);
     }
   }
 
-  private void generatePomFile(Artifact artifact, File artifactFolderDestination) throws IOException {
+  protected void generatePomFile(Artifact artifact, File artifactFolderDestination) throws IOException {
     String artifactPomFilename = getPomFileName(artifact);
     File srcPomFile = new File(artifact.getFile().getParent(), artifactPomFilename);
     File destinationPomFile = new File(artifactFolderDestination, artifactPomFilename);
@@ -95,5 +88,9 @@ public class ArtifactInstaller {
       srcPomFile = new File(artifact.getFile().getParent(), POM_FILE_NAME);
     }
     copyFile(srcPomFile, destinationPomFile);
+  }
+
+  protected void generateClassloderModelFile(ClassLoaderModel classLoaderModel, File artifactFolderDestination) {
+    ContentGenerator.createClassLoaderModelJsonFile(classLoaderModel, artifactFolderDestination);
   }
 }

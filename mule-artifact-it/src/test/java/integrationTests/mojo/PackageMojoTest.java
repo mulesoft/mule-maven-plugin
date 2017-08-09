@@ -16,6 +16,9 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.maven.it.VerificationException;
+import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
+import org.codehaus.plexus.logging.Logger;
+import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -134,6 +137,34 @@ public class PackageMojoTest extends MojoTest {
 
     verifier.assertFilePresent("target/testApp-mule-application.jar");
     verifier.verifyErrorFreeLog();
+  }
+
+  @Test
+  public void testPackageAppConfigFiles() throws IOException, VerificationException {
+    String artifactId = "config-files-package-project";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.setMavenDebug(true);
+    verifier.executeGoal(PACKAGE);
+    File sourceJar = new File(projectBaseDirectory, "target/config-files-package-project-1.0-SNAPSHOT-mule-application.jar");
+    File destinationDirectory = new File(getFile("/expected-files"), "extracted-config-files-project-jar-content");
+    destinationDirectory.mkdir();
+    unpackJar(sourceJar, destinationDirectory);
+    File epectedJarStructure = new File(getFile("/expected-files"), "expected-config-files-project-jar-content");
+
+    assertThat("The directory structure is different from the expected", destinationDirectory,
+               hasSameTreeStructure(epectedJarStructure, excludes));
+
+    verifier.verifyErrorFreeLog();
+  }
+
+  private void unpackJar(File sourceFile, File destinationFolder) {
+    final ZipUnArchiver zipUnArchiver = new ZipUnArchiver();
+    zipUnArchiver.setSourceFile(sourceFile);
+    zipUnArchiver.setDestDirectory(destinationFolder);
+    zipUnArchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_DISABLED, "someName"));
+    zipUnArchiver.extract();
   }
 
 }

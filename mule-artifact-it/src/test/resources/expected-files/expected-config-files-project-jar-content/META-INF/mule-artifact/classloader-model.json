@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "artifactCoordinates": {
+    "groupId": "org.apache.maven.plugin.my.unit",
+    "artifactId": "config-files-package-project",
+    "version": "1.0-SNAPSHOT",
+    "type": "pom"
+  },
+  "dependencies": []
+}

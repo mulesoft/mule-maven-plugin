@@ -14,7 +14,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.repository.AuthenticationContext;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.model.Authentication;
 import org.mule.maven.client.api.model.MavenConfiguration;
 import org.mule.maven.client.internal.*;

@@ -22,7 +22,6 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.junit.Before;
 import org.junit.Rule;
@@ -73,7 +72,7 @@ public class ArtifactInstallerTest {
   }
 
   @Test
-  public void installArtifactTest() throws MojoExecutionException, IOException {
+  public void installArtifactTest() throws IOException {
     artifact = new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, SCOPE, TYPE, CLASSIFIER, handler);
     artifact.setFile(artifactFileFolder.newFile(ARTIFACT_FILE_NAME));
     artifact.setFile(artifactFileFolder.newFile(POM_FILE_NAME));
@@ -88,14 +87,14 @@ public class ArtifactInstallerTest {
   }
 
   @Test
-  public void installNullArtifactTest() throws MojoExecutionException {
+  public void installNullArtifactTest() throws IOException {
     exception.expect(IllegalArgumentException.class);
     installer.installArtifact(outputFolder.getRoot(), null, Optional.empty());
   }
 
   @Test
-  public void installArtifactToReadOnlyDestinationTest() throws MojoExecutionException {
-    exception.expect(MojoExecutionException.class);
+  public void installArtifactToReadOnlyDestinationTest() throws IOException {
+    exception.expect(IOException.class);
     File destination = new File(outputFolder.getRoot(), FILE_NAME);
     destination.setReadOnly();
     artifact.setFile(destination);

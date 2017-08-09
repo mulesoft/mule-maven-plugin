@@ -48,7 +48,8 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
         ClassLoaderModel classLoaderModel = repositoryGenerator.generate();
         getContentGenerator().createApplicationClassLoaderModelJsonFile(classLoaderModel);
       } catch (Exception e) {
-        getLog().debug(format("There was an exception while creating the repository of [%s]", project.toString()), e);
+        String message = format("There was an exception while creating the repository of [%s]", project.toString());
+        throw new MojoFailureException(message, e);
       }
     }
 

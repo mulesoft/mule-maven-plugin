@@ -11,7 +11,6 @@
 package org.mule.tools.api.repository;
 
 import static java.lang.String.format;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.isValidMulePlugin;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifactCoordinates;
 import static org.mule.tools.api.packager.structure.PackagerFolders.REPOSITORY;
 
@@ -22,8 +21,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
@@ -45,7 +42,7 @@ public class RepositoryGenerator {
     this.applicationClassLoaderModelAssembler = applicationClassLoaderModelAssembler;
   }
 
-  public ClassLoaderModel generate() throws MojoExecutionException, MojoFailureException {
+  public ClassLoaderModel generate() throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
         applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory);
     installArtifacts(getRepositoryFolder(), artifactInstaller, appModel);
@@ -61,7 +58,7 @@ public class RepositoryGenerator {
   }
 
   protected void installArtifacts(File repositoryFile, ArtifactInstaller installer, ApplicationClassloaderModel appModel)
-      throws MojoExecutionException {
+      throws IOException {
     Map<ArtifactCoordinates, ClassLoaderModel> mulePluginsClassloaderModels = appModel.getMulePluginsClassloaderModels().stream()
         .collect(Collectors.toMap(ClassLoaderModel::getArtifactCoordinates, Function.identity()));
     TreeSet<Artifact> sortedArtifacts = new TreeSet<>(appModel.getArtifacts());
@@ -75,15 +72,15 @@ public class RepositoryGenerator {
     }
   }
 
-  protected void generateMarkerFileInRepositoryFolder(File repositoryFile) throws MojoExecutionException {
+  protected void generateMarkerFileInRepositoryFolder(File repositoryFile) throws IOException {
     File markerFile = new File(repositoryFile, ".marker");
     try {
       FileUtils.checkReadOnly(repositoryFile);
       markerFile.createNewFile();
     } catch (IOException e) {
-      throw new MojoExecutionException(format("The current repository has no artifacts to install, and trying to create [%s] failed",
-                                              markerFile.toString()),
-                                       e);
+      throw new IOException(format("The current repository has no artifacts to install, and trying to create [%s] failed",
+                                   markerFile.toString()),
+                            e);
     }
   }
 }

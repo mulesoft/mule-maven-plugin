@@ -33,6 +33,10 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
@@ -43,7 +47,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>com.mulesoft.muleesb.distributions</groupId>
+                                    <groupId>com.mulesoft.mule.distributions</groupId>
                                     <artifactId>mule-ee-distribution-standalone</artifactId>
                                     <version>${mule.version}</version>
                                     <type>tar.gz</type>

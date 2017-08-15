@@ -9,8 +9,6 @@
  */
 package org.mule.tools.client;
 
-import org.mule.util.IOUtils;
-import org.mule.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,6 +27,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.ext.WriterInterceptorContext;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.logging.Log;
 
 public class ClientLoggingFilter implements ClientRequestFilter, ClientResponseFilter, WriterInterceptor {

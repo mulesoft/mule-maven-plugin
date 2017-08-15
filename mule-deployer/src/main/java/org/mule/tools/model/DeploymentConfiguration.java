@@ -7,12 +7,10 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.maven.mojo.model;
+package org.mule.tools.model;
 
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.client.model.TargetType;
-import org.mule.tools.maven.mojo.deploy.AbstractMuleDeployerMojo.DeploymentType;
-import org.mule.tools.maven.mojo.deploy.DeployMojo;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -293,7 +291,6 @@ public class DeploymentConfiguration {
    * Anypoint Platform target name.
    *
    * @since 2.0
-   * @see DeployMojo#targetType
    */
   public String getTarget() {
     return target;
@@ -410,6 +407,9 @@ public class DeploymentConfiguration {
    * @since 1.0
    */
   public String[] getArguments() {
+    if (arguments == null) {
+      arguments = new String[0];
+    }
     return arguments;
   }
 
@@ -423,6 +423,9 @@ public class DeploymentConfiguration {
    * @since 1.0
    */
   public List<File> getLibs() {
+    if (libs == null) {
+      libs = new ArrayList<>();
+    }
     return libs;
   }
 

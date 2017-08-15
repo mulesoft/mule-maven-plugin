@@ -7,10 +7,10 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.client.standalone;
+package org.mule.tools.client.standalone.deployment;
 
 import org.mule.test.infrastructure.process.MuleProcessController;
-import org.mule.util.FilenameUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,13 +25,13 @@ import org.apache.maven.plugin.logging.Log;
 /**
  *
  */
-public class Undeployer {
+public class StandaloneUndeployer {
 
   private List<File> muleHomes;
   private String applicationName;
   private Log log;
 
-  public Undeployer(Log log, String applicationName, File... muleHomes) {
+  public StandaloneUndeployer(Log log, String applicationName, File... muleHomes) {
     this.muleHomes = Arrays.asList(muleHomes);
     this.applicationName = applicationName;
     this.log = log;

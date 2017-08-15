@@ -19,7 +19,7 @@
             <plugin>
                 <groupId>org.mule.tools.maven</groupId>
                 <artifactId>mule-maven-plugin</artifactId>
-                <version>2.3.0-SNAPSHOT</version>
+                <version>3.0.0-SNAPSHOT</version>
                 <configuration>
                     <deploymentConfiguration>
                         <deploymentType>cloudhub</deploymentType>

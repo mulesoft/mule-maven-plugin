@@ -12,6 +12,7 @@ import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.apache.maven.shared.utils.io.FileUtils;
 import org.junit.rules.TemporaryFolder;
 import org.mule.tools.client.agent.AgentClient;
+import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,11 +43,11 @@ public class StandaloneEnvironment {
   private static final String START_AGENT_COMMAND = "start";
   private static final String ANCHOR_FILE_RELATIVE_PATH = "/apps";
   private static final String STOP_AGENT_COMMAND = "stop";
-  private static String muleExecutable;
   private static List<String> commands = new ArrayList<>();
   private static String muleHome;
   private static Runtime runtime = Runtime.getRuntime();
   private static Process applicationProcess;
+  private static MuleProcessController controller;
 
   public StandaloneEnvironment(String muleVersion) {
     log = LoggerFactory.getLogger(this.getClass());
@@ -59,7 +60,7 @@ public class StandaloneEnvironment {
     String targetFolder = currentRelativePath.toAbsolutePath().toString() + File.separator + "target";
 
     muleHome = targetFolder + MULE_HOME_FOLDER_PREFIX + muleVersion;
-
+    controller = new MuleProcessController(muleHome);
     deleteFile(muleHome + AGENT_JKS_RELATIVE_PATH);
     deleteFile(muleHome + AGENT_YMS_RELATIVE_PATH);
 
@@ -235,5 +236,15 @@ public class StandaloneEnvironment {
 
   public String getMuleExecutable() {
     return muleHome + EXECUTABLE_FOLDER_RELATIVE_PATH;
+  }
+
+  public void runStandalone() throws IOException, InterruptedException {
+    unpackAgent();
+    startMule();
+    checkStandaloneIsAcceptingDeployments();
+  }
+
+  private void checkStandaloneIsAcceptingDeployments() throws InterruptedException, IOException {
+    while (!controller.isRunning());
   }
 }

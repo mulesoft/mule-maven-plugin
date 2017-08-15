@@ -7,13 +7,10 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.client.standalone;
+package org.mule.tools.client.standalone.deployment;
 
-import org.mule.tck.probe.PollingProber;
-import org.mule.tck.probe.Prober;
-import org.mule.test.infrastructure.process.AppDeploymentProbe;
-import org.mule.test.infrastructure.process.MuleControllerException;
-import org.mule.test.infrastructure.process.MuleProcessController;
+
+
 
 import java.io.File;
 import java.util.List;
@@ -21,6 +18,12 @@ import java.util.List;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
+import org.mule.tools.client.standalone.configuration.ClusterConfigurator;
+import org.mule.tools.client.standalone.controller.MuleProcessController;
+import org.mule.tools.client.standalone.controller.probing.AppDeploymentProbe;
+import org.mule.tools.client.standalone.controller.probing.PollingProber;
+import org.mule.tools.client.standalone.controller.probing.Prober;
+import org.mule.tools.client.standalone.exception.MuleControllerException;
 
 public class ClusterDeployer {
 
@@ -53,7 +56,7 @@ public class ClusterDeployer {
   }
 
   public String toString() {
-    return String.format("Deployer with [Controllers=%s, log=%s, application=%s, timeout=%d, pollingDelay=%d ]",
+    return String.format("StandaloneDeployer with [Controllers=%s, log=%s, application=%s, timeout=%d, pollingDelay=%d ]",
                          mules, log, application, timeout, pollingDelay);
   }
 

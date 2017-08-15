@@ -7,9 +7,8 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.client.standalone;
+package org.mule.tools.client.standalone.configuration;
 
-import org.mule.test.infrastructure.process.MuleProcessController;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.maven.plugin.MojoFailureException;
+import org.mule.tools.client.standalone.controller.MuleProcessController;
 
 public class ClusterConfigurator {
 

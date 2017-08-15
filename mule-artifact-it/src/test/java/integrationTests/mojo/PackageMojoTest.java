@@ -106,6 +106,7 @@ public class PackageMojoTest extends MojoTest {
 
   @Test
   public void testPackageMultiModulePolicyModuleCorrectStructure() throws IOException, VerificationException {
+    installMultimoduleApplicationParentPomInLocalRepository();
     String artifactId = "multi-module-application";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
@@ -134,6 +135,16 @@ public class PackageMojoTest extends MojoTest {
 
     verifier.assertFilePresent("target/testApp-mule-application.jar");
     verifier.verifyErrorFreeLog();
+  }
+
+  private void installMultimoduleApplicationParentPomInLocalRepository() throws IOException, VerificationException {
+    String artifactId = "multi-module-application";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.setMavenDebug(true);
+    verifier.addCliOption("-N");
+    verifier.executeGoal(INSTALL);
   }
 
 }

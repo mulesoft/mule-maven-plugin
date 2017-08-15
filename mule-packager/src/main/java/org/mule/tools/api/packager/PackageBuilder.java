@@ -11,8 +11,6 @@
 package org.mule.tools.api.packager;
 
 import org.codehaus.plexus.archiver.ArchiverException;
-import org.mule.tools.api.packager.packaging.PackagingMode;
-import org.mule.tools.api.packager.packaging.PackagingModeFactory;
 import org.mule.tools.api.packager.packaging.PackagingType;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -30,7 +28,6 @@ import java.util.List;
  */
 public class PackageBuilder {
 
-  private PackagingMode packagingMode;
 
   private File muleFolder = null;
   private File policyFolder = null;
@@ -46,14 +43,6 @@ public class PackageBuilder {
   private File destinationFile;
   private MuleArchiver archiver = null;
 
-  @Deprecated
-  public PackageBuilder(PackagingMode packagingMode) {
-    this.packagingMode = packagingMode;
-  }
-
-  public PackageBuilder() {
-    this(PackagingModeFactory.getDefaultPackaging());
-  }
 
   public MuleArchiver getMuleArchiver() {
     if (archiver == null) {

@@ -22,6 +22,7 @@ public class ArtifactCoordinates {
   private String version;
   private String type;
   private String classifier;
+  private String scope;
 
   public ArtifactCoordinates(String groupId, String artifactId, String version) {
     this(groupId, artifactId, version, DEFAULT_ARTIFACT_TYPE, null);
@@ -34,6 +35,16 @@ public class ArtifactCoordinates {
     setVersion(version);
     setType(type);
     setClassifier(classifier);
+  }
+
+  public ArtifactCoordinates(String groupId, String artifactId, String version, String type,
+                             String classifier, String scope) {
+    setGroupId(groupId);
+    setArtifactId(artifactId);
+    setVersion(version);
+    setType(type);
+    setClassifier(classifier);
+    setScope(scope);
   }
 
   public String getGroupId() {
@@ -78,6 +89,14 @@ public class ArtifactCoordinates {
 
   public void setClassifier(String classifier) {
     this.classifier = classifier;
+  }
+
+  public String getScope() {
+    return scope;
+  }
+
+  public void setScope(String scope) {
+    this.scope = scope;
   }
 
   @Override

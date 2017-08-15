@@ -23,8 +23,9 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.validation.MulePluginsCompatibilityValidator;
+import org.mule.tools.maven.utils.DependencyProject;
 import org.mule.tools.maven.utils.MavenProjectBuilder;
-import org.mule.tools.maven.dependency.MulePluginResolver;
+import org.mule.tools.api.validation.MulePluginResolver;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.validation.Validator;
 
@@ -44,7 +45,7 @@ public class ValidateMojo extends AbstractMuleMojo {
       getLog().debug("Validating Mule application...");
       try {
         getValidator().isProjectValid(project.getPackaging());
-        getMulePluginsCompatibilityValidator().validate(toArtifactCoordinates(getResolver().resolveMulePlugins(project)));
+        getMulePluginsCompatibilityValidator().validate(getResolver().resolveMulePlugins(new DependencyProject(project)));
         getValidator().validateSharedLibraries(sharedLibraries, toArtifactCoordinates(project.getDependencies()));
       } catch (ValidationException e) {
         throw new MojoExecutionException("Validation exception", e);

@@ -15,17 +15,22 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.building.ModelProblem;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.*;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.repository.RepositorySystem;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.util.ArtifactUtils;
+import org.mule.tools.api.exception.*;
+import org.mule.tools.api.exception.ProjectBuildingException;
+import org.mule.tools.api.util.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
-public class MavenProjectBuilder {
+public class MavenProjectBuilder implements org.mule.tools.api.util.ProjectBuilder {
 
 
   private static final String CREATION_ERROR_MESSAGE =
@@ -66,20 +71,20 @@ public class MavenProjectBuilder {
     }
   }
 
-  public MavenProject buildMavenProject(Dependency dependency) throws MojoExecutionException {
+  private MavenProject buildMavenProject(Dependency dependency) throws ProjectBuildingException {
     Artifact projectArtifact =
         repositorySystem.createProjectArtifact(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion());
     return buildMavenProjectFromArtifact(projectArtifact);
   }
 
-  private MavenProject buildMavenProjectFromArtifact(Artifact artifact) throws MojoExecutionException {
+  private MavenProject buildMavenProjectFromArtifact(Artifact artifact) throws ProjectBuildingException {
     MavenProject mavenProject;
 
     try {
       Artifact projectArtifact = repositorySystem
           .createProjectArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion());
       mavenProject = projectBuilder.build(projectArtifact, projectBuildingRequest).getProject();
-    } catch (ProjectBuildingException e) {
+    } catch (org.apache.maven.project.ProjectBuildingException e) {
       log.warn(format("The artifact [%s] seems to have some warnings", artifact.toString()));
       log.debug(format("The artifact [%s] had the following issue ", artifact.toString()), e);
       mavenProject = buildMavenMavenProjectWithErrors(artifact, e);
@@ -93,22 +98,27 @@ public class MavenProjectBuilder {
    * @param artifact
    * @param e
    * @return
-   * @throws MojoExecutionException
+   * @throws ValidationException
    */
-  private MavenProject buildMavenMavenProjectWithErrors(Artifact artifact, ProjectBuildingException e)
-      throws MojoExecutionException {
+  private MavenProject buildMavenMavenProjectWithErrors(Artifact artifact, org.apache.maven.project.ProjectBuildingException e)
+      throws ProjectBuildingException {
     List<ProjectBuildingResult> results = e.getResults();
     if (results == null || results.size() != 1) {
-      throw new MojoExecutionException(format(CREATION_ERROR_MESSAGE, artifact.toString()), e);
+      throw new ProjectBuildingException(format(CREATION_ERROR_MESSAGE, artifact.toString()), e);
     }
     ProjectBuildingResult projectBuildingResult = results.get(0);
     List<ModelProblem> fatalProblems = projectBuildingResult.getProblems().stream()
         .filter(modelProblem -> modelProblem.getSeverity().equals(ModelProblem.Severity.FATAL)).collect(
                                                                                                         Collectors.toList());
     if (!fatalProblems.isEmpty()) {
-      throw new MojoExecutionException(format(CREATION_SEVERAL_ERRORS_MESSAGE, artifact.toString()), e);
+      throw new ProjectBuildingException(format(CREATION_SEVERAL_ERRORS_MESSAGE, artifact.toString()), e);
     }
 
     return projectBuildingResult.getProject();
+  }
+
+  @Override
+  public Project buildProject(ArtifactCoordinates artifactCoordinates) throws ProjectBuildingException {
+    return new DependencyProject(buildMavenProject(ArtifactUtils.toDependency(artifactCoordinates)));
   }
 }

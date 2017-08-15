@@ -12,6 +12,7 @@ package org.mule.tools.api.classloader.model.util;
 
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
+import org.apache.maven.model.Dependency;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.Artifact;
@@ -117,4 +118,21 @@ public class ArtifactUtils {
     artifactCoordinates.setClassifier(artifact.getClassifier());
     return artifactCoordinates;
   }
+
+  public static Dependency toDependency(ArtifactCoordinates artifactCoordinates) {
+    Dependency dependency = new Dependency();
+    dependency.setGroupId(artifactCoordinates.getGroupId());
+    dependency.setArtifactId(artifactCoordinates.getArtifactId());
+    dependency.setVersion(artifactCoordinates.getVersion());
+    dependency.setType(artifactCoordinates.getType());
+    dependency.setClassifier(artifactCoordinates.getClassifier());
+    dependency.setScope(artifactCoordinates.getScope());
+    return dependency;
+  }
+
+  public static ArtifactCoordinates toArtifactCoordinates(Dependency dependency) {
+    return new ArtifactCoordinates(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(), dependency.getType(), dependency.getClassifier(), dependency.getScope());
+  }
+
+
 }

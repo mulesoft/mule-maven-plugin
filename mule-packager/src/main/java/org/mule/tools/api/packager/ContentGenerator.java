@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.plugin.MojoExecutionException;
 
 /**
  * It knows how to generate the required content for each of the mandatory folder of the package
@@ -130,7 +129,6 @@ public class ContentGenerator {
    * the {@link PackagingType}
    * 
    * @throws IOException
-   * @throws MojoExecutionException
    */
   public void createDescriptors() throws IOException {
     copyPomFile();

@@ -10,11 +10,14 @@
 
 package org.mule.tools.api.classloader.model;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.apache.commons.io.FilenameUtils.*;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
 import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedFileName;
 import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedOutputDirectory;
@@ -88,10 +91,15 @@ public class Artifact implements Comparable {
     String newUriPath = getFormattedOutputDirectory(repositoryFolder, toArtifact(this)).getPath();
     File newArtifactFile = new File(newUriPath, artifactFilename);
     try {
-      newArtifact.setUri(new URI(newArtifactFile.getPath()));
+      setNewArtifactURI(newArtifact, newArtifactFile);
     } catch (URISyntaxException e) {
       throw new RuntimeException("Could not generate URI for resource, the given path is invalid: " + newUriPath, e);
     }
     return newArtifact;
+  }
+
+  public void setNewArtifactURI(Artifact newArtifact, File newArtifactFile) throws URISyntaxException {
+    String relativePath = normalize(newArtifactFile.getPath(), true);
+    newArtifact.setUri(new URI(relativePath));
   }
 }

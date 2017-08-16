@@ -146,10 +146,13 @@ public class ApplicationClassLoaderModelAssemblerTest {
     ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
 
-    ApplicationClassloaderModel applicationClassloaderModel = applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), mock(File.class));
+    ApplicationClassloaderModel applicationClassloaderModel =
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), mock(File.class));
 
-    assertThat("Application dependencies are not the expected", applicationClassloaderModel.getClassLoaderModel().getDependencies(),
-               containsInAnyOrder(toArtifact(firstMulePlugin), toArtifact(secondMulePlugin), toArtifact(dependency1), toArtifact(dependency2)));
+    assertThat("Application dependencies are not the expected",
+               applicationClassloaderModel.getClassLoaderModel().getDependencies(),
+               containsInAnyOrder(toArtifact(firstMulePlugin), toArtifact(secondMulePlugin), toArtifact(dependency1),
+                                  toArtifact(dependency2)));
   }
 
   @Test
@@ -168,13 +171,16 @@ public class ApplicationClassLoaderModelAssemblerTest {
     ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
 
-    ApplicationClassloaderModel applicationClassloaderModel = applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class),
-                                                                                                    mock(File.class));
+    ApplicationClassloaderModel applicationClassloaderModel =
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class),
+                                                                               mock(File.class));
 
-    assertThat("Application dependencies are not the expected", applicationClassloaderModel.getClassLoaderModel().getDependencies(),
+    assertThat("Application dependencies are not the expected",
+               applicationClassloaderModel.getClassLoaderModel().getDependencies(),
                containsInAnyOrder(toArtifact(dependency1)));
 
-    assertThat("The application should have no mule plugin dependencies", applicationClassloaderModel.getMulePluginsClassloaderModels().size(), equalTo(0));
+    assertThat("The application should have no mule plugin dependencies",
+               applicationClassloaderModel.getMulePluginsClassloaderModels().size(), equalTo(0));
   }
 
   @Test
@@ -198,10 +204,12 @@ public class ApplicationClassLoaderModelAssemblerTest {
     ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
 
-    ApplicationClassloaderModel applicationClassloaderModel = applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class),
-                                                                                                    mock(File.class));
+    ApplicationClassloaderModel applicationClassloaderModel =
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class),
+                                                                               mock(File.class));
 
-    assertThat("The class loader model should have one dependency", applicationClassloaderModel.getClassLoaderModel().getDependencies().size(),
+    assertThat("The class loader model should have one dependency",
+               applicationClassloaderModel.getClassLoaderModel().getDependencies().size(),
                equalTo(1));
 
     assertThat("Mule plugins are not the expected", applicationClassloaderModel.getClassLoaderModel().getDependencies(),

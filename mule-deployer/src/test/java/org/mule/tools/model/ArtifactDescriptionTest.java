@@ -7,8 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
-package org.mule.tools.maven.mojo.model;
+package org.mule.tools.model;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,6 +16,7 @@ import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+
 
 public class ArtifactDescriptionTest {
 
@@ -88,3 +88,4 @@ public class ArtifactDescriptionTest {
     assertThat("Type is not the expected", artifactDescription.getType(), equalTo(TYPE));
   }
 }
+

@@ -342,15 +342,18 @@ public class ContentGeneratorTest {
     ClassLoaderModel expectedClassLoaderModel = new ClassLoaderModel(VERSION, artifactCoordinates);
     List<Artifact> dependencies = getDependencies();
     expectedClassLoaderModel.setDependencies(dependencies);
-    File classloaderModelJsonFile = ContentGenerator.createClassLoaderModelJsonFile(expectedClassLoaderModel, projectTargetFolder.getRoot());
-    assertThat("Classloader model json file name is incorrect", classloaderModelJsonFile.getName().endsWith(CLASSLOADER_MODEL_JSON_FILE_NAME), is(true));
+    File classloaderModelJsonFile =
+        ContentGenerator.createClassLoaderModelJsonFile(expectedClassLoaderModel, projectTargetFolder.getRoot());
+    assertThat("Classloader model json file name is incorrect",
+               classloaderModelJsonFile.getName().endsWith(CLASSLOADER_MODEL_JSON_FILE_NAME), is(true));
     ClassLoaderModel actualClassloaderModel = ContentGenerator.createClassLoaderModelFromJson(classloaderModelJsonFile);
-    assertThat("Actual classloader model is not equal to the expected", actualClassloaderModel, equalTo(expectedClassLoaderModel));
+    assertThat("Actual classloader model is not equal to the expected", actualClassloaderModel,
+               equalTo(expectedClassLoaderModel));
   }
 
   private List<Artifact> getDependencies() throws URISyntaxException {
     List<Artifact> artifacts = new ArrayList<>();
-    for(int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 10; ++i) {
       artifacts.add(createArtifact(i));
     }
     return artifacts;

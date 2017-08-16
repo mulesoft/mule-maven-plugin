@@ -70,9 +70,11 @@ public class RepositoryGeneratorTest {
     when(resultMock.getProject()).thenReturn(projectMock);
     when(projectBuilderMock.build(Mockito.any(Artifact.class), any(ProjectBuildingRequest.class))).thenReturn(resultMock);
     artifactInstallerMock = mock(ArtifactInstaller.class);
-    ApplicationClassLoaderModelAssembler applicationClassloaderModelAssemblerMock = mock(ApplicationClassLoaderModelAssembler.class);
+    ApplicationClassLoaderModelAssembler applicationClassloaderModelAssemblerMock =
+        mock(ApplicationClassLoaderModelAssembler.class);
     repositoryGenerator = new RepositoryGenerator(temporaryFolder.newFile("pom.xml"),
-                                                  temporaryFolder.getRoot(), artifactInstallerMock, applicationClassloaderModelAssemblerMock);
+                                                  temporaryFolder.getRoot(), artifactInstallerMock,
+                                                  applicationClassloaderModelAssemblerMock);
     repositoryGeneratorSpy = spy(repositoryGenerator);
     artifactHandler = new DefaultArtifactHandler(TYPE);
     appModelMock = mock(ApplicationClassloaderModel.class);

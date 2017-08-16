@@ -1,5 +1,8 @@
 /*
+ * Mule ESB Maven Tools
+ * <p>
  * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * <p>
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
@@ -12,6 +15,7 @@ import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.apache.maven.shared.utils.io.FileUtils;
 import org.junit.rules.TemporaryFolder;
 import org.mule.tools.client.agent.AgentClient;
+import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -42,11 +47,11 @@ public class StandaloneEnvironment {
   private static final String START_AGENT_COMMAND = "start";
   private static final String ANCHOR_FILE_RELATIVE_PATH = "/apps";
   private static final String STOP_AGENT_COMMAND = "stop";
-  private static String muleExecutable;
   private static List<String> commands = new ArrayList<>();
   private static String muleHome;
   private static Runtime runtime = Runtime.getRuntime();
   private static Process applicationProcess;
+  private static MuleProcessController controller;
 
   public StandaloneEnvironment(String muleVersion) {
     log = LoggerFactory.getLogger(this.getClass());
@@ -59,7 +64,7 @@ public class StandaloneEnvironment {
     String targetFolder = currentRelativePath.toAbsolutePath().toString() + File.separator + "target";
 
     muleHome = targetFolder + MULE_HOME_FOLDER_PREFIX + muleVersion;
-
+    controller = new MuleProcessController(muleHome);
     deleteFile(muleHome + AGENT_JKS_RELATIVE_PATH);
     deleteFile(muleHome + AGENT_YMS_RELATIVE_PATH);
 
@@ -196,7 +201,7 @@ public class StandaloneEnvironment {
 
 
 
-  private void killMuleProcesses() throws IOException {
+  public void killMuleProcesses() throws IOException {
     commands.clear();
     commands.add("ps");
     commands.add("-ax");
@@ -235,5 +240,23 @@ public class StandaloneEnvironment {
 
   public String getMuleExecutable() {
     return muleHome + EXECUTABLE_FOLDER_RELATIVE_PATH;
+  }
+
+  public void runStandalone() throws IOException, InterruptedException, TimeoutException {
+    startMule();
+    checkStandaloneIsAcceptingDeployments(30);
+  }
+
+  public void checkStandaloneIsAcceptingDeployments(int timeoutInSeconds) throws InterruptedException, TimeoutException {
+    int oneSecond = 1000;
+    int count = 0;
+    while (count != timeoutInSeconds) {
+      Thread.sleep(oneSecond);
+      count++;
+      if (controller.isRunning()) {
+        return;
+      }
+    }
+    throw new TimeoutException("Waiting for Standalone to accept deployments has timeout.");
   }
 }

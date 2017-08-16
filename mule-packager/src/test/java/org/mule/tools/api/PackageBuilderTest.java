@@ -248,7 +248,7 @@ public class PackageBuilderTest {
   @Test
   public void createMuleAppWithBinariesAndSourcesTest() throws IOException {
     packageBuilderSpy.createMuleApp(destinationFile, targetFileFolder.getRoot().getPath(), PackagingType.MULE_APPLICATION, false,
-            false, true);
+                                    false, true);
     verify(packageBuilderSpy, times(1)).withDestinationFile(any());
     verify(packageBuilderSpy, times(1)).withClasses(any());
     verify(packageBuilderSpy, times(1)).withMule(any());

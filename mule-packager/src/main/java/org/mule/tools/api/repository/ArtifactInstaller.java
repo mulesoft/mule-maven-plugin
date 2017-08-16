@@ -51,9 +51,9 @@ public class ArtifactInstaller {
       generateDependencyDescriptorFile(artifact, artifactFolderDestination, classLoaderModel);
     } catch (IOException e) {
       throw new IOException(
-                                       format("There was a problem while copying the artifact [%s] file [%s] to the application local repository",
-                                              artifact.toString(), artifact.getFile().getAbsolutePath()),
-                                       e);
+                            format("There was a problem while copying the artifact [%s] file [%s] to the application local repository",
+                                   artifact.toString(), artifact.getFile().getAbsolutePath()),
+                            e);
     }
   }
 

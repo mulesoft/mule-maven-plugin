@@ -60,6 +60,7 @@ public class ProcessSourcesMojoTest extends MojoTest {
 
     verifier.verifyErrorFreeLog();
   }
+
   // Please be aware that the order that the dependencies are installed is important:
   // For instance, dependency D MUST be installed before C as the former is a transitive dependency of the latter
   // and so it needs to be installed in the local repository in order to be resolved.

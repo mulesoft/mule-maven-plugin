@@ -11,28 +11,36 @@ package org.mule.tools.maven.mojo.deploy;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import groovy.util.ScriptException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.AbstractArtifactResolutionException;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.codehaus.plexus.archiver.ArchiverException;
-import org.codehaus.plexus.archiver.UnArchiver;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
-import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
-import org.mule.test.infrastructure.process.MuleProcessController;
 import org.mule.tools.client.AbstractDeployer;
-import org.mule.tools.client.standalone.ClusterDeployer;
-import org.mule.tools.client.standalone.Deployer;
+import org.mule.tools.client.standalone.controller.MuleProcessController;
+import org.mule.tools.client.standalone.deployment.ClusterDeployer;
+import org.mule.tools.client.standalone.deployment.StandaloneDeployer;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.agent.AgentDeployer;
 import org.mule.tools.client.arm.ArmDeployer;
 import org.mule.tools.client.cloudhub.CloudhubDeployer;
-import org.mule.tools.maven.mojo.model.ArtifactDescription;
-import org.mule.util.FilenameUtils;
+import org.mule.tools.client.standalone.installer.MuleStandaloneInstaller;
+import org.mule.tools.model.ArtifactDescription;
+import org.mule.tools.model.DeploymentConfiguration;
+import org.mule.tools.utils.GroovyUtils;
 
 /**
  * Maven plugin to deploy Mule applications to different kind of servers: Standalone (both Community and Enterprise), Clustered,
@@ -50,37 +58,13 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
 
   private static final long DEFAULT_POLLING_DELAY = 1000;
   private static final Integer MAX_CLUSTER_SIZE = 8;
+  private MuleStandaloneInstaller muleStandaloneInstaller;
 
   @Component
   protected ArchiverManager archiverManager;
 
-
-  public void doExecute() throws MojoExecutionException, MojoFailureException {
-    initializeApplication();
-    initializeEnvironment();
-    switch (deploymentConfiguration.getDeploymentType()) {
-      case standalone:
-        standalone();
-        break;
-      case cluster:
-        cluster();
-        break;
-      case arm:
-        arm();
-        break;
-      case cloudhub:
-        cloudhub();
-        break;
-      case agent:
-        agent();
-        break;
-      default:
-        throw new MojoFailureException("Unsupported deploymentConfiguration type: "
-            + deploymentConfiguration.getDeploymentType());
-    }
-  }
-
-  private void cloudhub() throws MojoFailureException, MojoExecutionException {
+  @Override
+  protected void cloudhub() throws MojoFailureException, MojoExecutionException, ScriptException {
     CloudhubDeployer deployer =
         new CloudhubDeployer(deploymentConfiguration.getUri(), deploymentConfiguration.getUsername(),
                              deploymentConfiguration.getPassword(),
@@ -93,7 +77,8 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
     deployWithDeployer(deployer);
   }
 
-  private void arm() throws MojoFailureException, MojoExecutionException {
+  @Override
+  protected void arm() throws MojoFailureException, MojoExecutionException, ScriptException {
     ArmDeployer deployer =
         new ArmDeployer(deploymentConfiguration.getUri(), deploymentConfiguration.getUsername(),
                         deploymentConfiguration.getPassword(),
@@ -104,15 +89,17 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
     deployWithDeployer(deployer);
   }
 
-  private void agent() throws MojoFailureException, MojoExecutionException {
+  @Override
+  protected void agent() throws MojoFailureException, MojoExecutionException, ScriptException {
     AgentDeployer deployer = new AgentDeployer(getLog(), deploymentConfiguration.getApplicationName(),
                                                deploymentConfiguration.getApplication(), deploymentConfiguration.getUri());
     deployWithDeployer(deployer);
   }
 
-  private void deployWithDeployer(AbstractDeployer deployer) throws MojoExecutionException, MojoFailureException {
+  private void deployWithDeployer(AbstractDeployer deployer)
+      throws MojoExecutionException, MojoFailureException, ScriptException {
     if (null != deploymentConfiguration.getScript()) {
-      executeGroovyScript();
+      GroovyUtils.executeScript(mavenProject, deploymentConfiguration);
     }
     try {
       deployer.deploy();
@@ -122,14 +109,16 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
     }
   }
 
-  private void cluster() throws MojoExecutionException, MojoFailureException {
+  @Override
+  protected void cluster() throws MojoExecutionException, MojoFailureException, ScriptException {
+
     validateSize();
     File[] muleHomes = new File[deploymentConfiguration.getSize()];
     List<MuleProcessController> controllers = new LinkedList();
     for (int i = 0; i < deploymentConfiguration.getSize(); i++) {
       File buildDirectory = new File(mavenProject.getBuild().getDirectory(), "mule" + i);
       buildDirectory.mkdir();
-      File home = doInstallMule(buildDirectory);
+      File home = getMuleStandaloneInstaller().doInstallMule(buildDirectory);
       controllers.add(new MuleProcessController(home.getAbsolutePath(), deploymentConfiguration.getTimeout()));
       muleHomes[i] = home;
     }
@@ -137,7 +126,7 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
     renameApplicationToApplicationName();
 
     if (null != deploymentConfiguration.getScript()) {
-      executeGroovyScript();
+      GroovyUtils.executeScript(mavenProject, deploymentConfiguration);
     }
     new ClusterDeployer(muleHomes, controllers, getLog(), deploymentConfiguration.getApplication(),
                         deploymentConfiguration.getDeploymentTimeout(),
@@ -151,22 +140,55 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
     }
   }
 
-  public void standalone() throws MojoExecutionException, MojoFailureException {
-    File muleHome = installMule(new File(mavenProject.getBuild().getDirectory()));
-    MuleProcessController mule = new MuleProcessController(muleHome.getAbsolutePath(), deploymentConfiguration.getTimeout());
+  @Override
+  protected void standalone() throws DeploymentException, ScriptException, MojoFailureException {
+    // File muleHome = getMuleStandaloneInstaller().installMule(new File(mavenProject.getBuild().getDirectory()));
+    File muleHome = deploymentConfiguration.getMuleHome();
+    MuleProcessController mule =
+        new MuleProcessController(muleHome.getAbsolutePath(), deploymentConfiguration.getTimeout());
 
     renameApplicationToApplicationName();
 
-    Deployer deployer = new Deployer(mule, getLog(), deploymentConfiguration.getApplication(),
-                                     deploymentConfiguration.getDeploymentTimeout(), deploymentConfiguration.getArguments(),
-                                     DEFAULT_POLLING_DELAY)
-                                         .addLibraries(deploymentConfiguration.getLibs());
-    addDomain(deployer);
-    addDependencies(deployer);
+    StandaloneDeployer standaloneDeployer = new StandaloneDeployer(mule, log, deploymentConfiguration.getApplication(),
+                                                                   deploymentConfiguration.getDeploymentTimeout(),
+                                                                   deploymentConfiguration.getArguments(),
+                                                                   DEFAULT_POLLING_DELAY)
+                                                                       .addLibraries(deploymentConfiguration.getLibs());
+    standaloneDeployer.addDomainFromDeploymentConfiguration(deploymentConfiguration);
+    List<File> libs = getDependencies(deploymentConfiguration, artifactFactory, artifactResolver, mavenProject, localRepository);
+    standaloneDeployer.addLibraries(libs);
     if (null != deploymentConfiguration.getScript()) {
-      executeGroovyScript();
+      GroovyUtils.executeScript(mavenProject, deploymentConfiguration);
     }
-    deployer.execute();
+    standaloneDeployer.execute();
+  }
+
+  public List<File> getDependencies(DeploymentConfiguration configuration, ArtifactFactory factory, ArtifactResolver resolver,
+                                    MavenProject project, ArtifactRepository repository)
+      throws DeploymentException {
+    List<File> libraries = new ArrayList<>();
+    for (ArtifactDescription artifact : configuration.getArtifactItems()) {
+      libraries.add(getDependency(artifact, factory, resolver, project, repository));
+    }
+    return libraries;
+  }
+
+  protected File getDependency(ArtifactDescription artifactDescription, ArtifactFactory factory, ArtifactResolver resolver,
+                               MavenProject project, ArtifactRepository repository)
+      throws DeploymentException {
+    try {
+      Artifact artifact = factory.createArtifact(artifactDescription.getGroupId(),
+                                                 artifactDescription.getArtifactId(), artifactDescription.getVersion(),
+                                                 null,
+                                                 artifactDescription.getType());
+      log.info("Resolving " + artifact);
+      resolver.resolve(artifact, project.getRemoteArtifactRepositories(), repository);
+      return artifact.getFile();
+    } catch (AbstractArtifactResolutionException e) {
+      throw new DeploymentException("Couldn't download artifact: " + e.getMessage(), e);
+    } catch (Exception e) {
+      throw new DeploymentException("Couldn't download artifact: " + e.getMessage());
+    }
   }
 
   private void renameApplicationToApplicationName() throws MojoFailureException {
@@ -175,7 +197,7 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
       try {
         File destApplication =
             new File(deploymentConfiguration.getApplication().getParentFile(),
-                     deploymentConfiguration.getApplicationName() + ".zip");
+                     deploymentConfiguration.getApplicationName() + ".jar");
         FileUtils.copyFile(deploymentConfiguration.getApplication(), destApplication);
         deploymentConfiguration.setApplication(destApplication);
       } catch (IOException e) {
@@ -186,68 +208,11 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
     }
   }
 
-  private File installMule(File buildDirectory) throws MojoExecutionException, MojoFailureException {
-    if (deploymentConfiguration.getMuleHome() == null) {
-      deploymentConfiguration.setMuleHome(doInstallMule(buildDirectory));
+  public MuleStandaloneInstaller getMuleStandaloneInstaller() {
+    if (muleStandaloneInstaller == null) {
+      muleStandaloneInstaller = new MuleStandaloneInstaller(deploymentConfiguration, mavenProject, artifactResolver,
+                                                            archiverManager, artifactFactory, localRepository, getLog());
     }
-    mavenProject.getProperties().setProperty("mule.home", deploymentConfiguration.getMuleHome().getAbsolutePath());
-    getLog().info("Using MULE_HOME: " + deploymentConfiguration.getMuleHome());
-    return deploymentConfiguration.getMuleHome();
+    return muleStandaloneInstaller;
   }
-
-  private File doInstallMule(File buildDirectory) throws MojoExecutionException, MojoFailureException {
-    if (deploymentConfiguration.getMuleDistribution() == null) {
-      if (deploymentConfiguration.isCommunity()) {
-        deploymentConfiguration.setMuleDistribution(new ArtifactDescription("org.mule.distributions", "mule-standalone",
-                                                                            deploymentConfiguration.getMuleVersion(), "tar.gz"));
-        this.getLog()
-            .debug("muleDistribution not set, using default community artifact: "
-                + deploymentConfiguration.getMuleDistribution());
-      } else {
-        deploymentConfiguration
-            .setMuleDistribution(new ArtifactDescription("com.mulesoft.muleesb.distributions", "mule-ee-distribution-standalone",
-                                                         deploymentConfiguration.getMuleVersion(), "tar.gz"));
-        this.getLog().debug("muleDistribution not set, using default artifact: " + deploymentConfiguration.getMuleDistribution());
-      }
-    }
-    unpackMule(deploymentConfiguration.getMuleDistribution(), buildDirectory);
-    return new File(buildDirectory, deploymentConfiguration.getMuleDistribution().getContentDirectory());
-  }
-
-  /**
-   * This code was inspired by maven-dependency-plugin GetMojo.
-   */
-  private void unpackMule(ArtifactDescription muleDistribution, File destDir)
-      throws MojoExecutionException, MojoFailureException {
-    File src = getDependency(muleDistribution);
-    getLog().info("Copying " + src.getAbsolutePath() + " to " + destDir.getAbsolutePath());
-    extract(src, destDir, muleDistribution.getType());
-  }
-
-  private void extract(File src, File dest, String type)
-      throws MojoExecutionException, MojoFailureException {
-    try {
-      UnArchiver unArchiver = getArchiver(type);
-      unArchiver.setSourceFile(src);
-      unArchiver.setDestDirectory(dest);
-      unArchiver.extract();
-    } catch (ArchiverException e) {
-      throw new MojoExecutionException("Couldn't extract file " + src + " to " + dest);
-    } catch (Exception e) {
-      throw new MojoFailureException("Couldn't extract file " + src + " to " + dest);
-    }
-  }
-
-  private UnArchiver getArchiver(String type) throws MojoExecutionException {
-    UnArchiver unArchiver;
-    try {
-      unArchiver = archiverManager.getUnArchiver(type);
-      getLog().debug("Found unArchiver by extension: " + unArchiver);
-      return unArchiver;
-    } catch (NoSuchArchiverException e) {
-      throw new MojoExecutionException("Couldn't find archiver for type: " + type);
-    }
-  }
-
-
 }

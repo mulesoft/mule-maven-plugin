@@ -7,13 +7,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.maven.mojo.model;
+
+package org.mule.tools.model;
 
 import org.apache.commons.lang.StringUtils;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
-import static java.lang.String.*;
+import static java.lang.String.format;
+
 
 public class ArtifactDescription {
 
@@ -83,12 +85,5 @@ public class ArtifactDescription {
     checkArgument(StringUtils.isNotEmpty(version), "The type must not be null nor empty");
     this.type = type;
   }
-
-  public String getContentDirectory() {
-    if ("mule-standalone".equals(artifactId)) {
-      return "mule-standalone-" + version;
-    } else {
-      return "mule-enterprise-standalone-" + version;
-    }
-  }
 }
+

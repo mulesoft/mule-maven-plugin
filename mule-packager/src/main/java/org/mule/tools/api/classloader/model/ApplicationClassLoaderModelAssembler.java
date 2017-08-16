@@ -88,7 +88,8 @@ public class ApplicationClassLoaderModelAssembler {
    **/
   protected void verifyThatAreNoTransitiveMulePlugins(Map<BundleDependency, List<BundleDependency>> mulePluginDependencies)
       throws IllegalStateException {
-    Set<String> validMulePluginsDependencies = mulePluginDependencies.keySet().stream().map(BundleDependency::toString).collect(Collectors.toSet());
+    Set<String> validMulePluginsDependencies =
+        mulePluginDependencies.keySet().stream().map(BundleDependency::toString).collect(Collectors.toSet());
     Set<String> mulePluginsResolvedAsMulePluginsDependencies =
         mulePluginDependencies.values().stream().flatMap(Collection::stream)
             .filter(bundleDependency -> bundleDependency.getDescriptor().getClassifier().isPresent())

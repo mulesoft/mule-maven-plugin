@@ -9,7 +9,7 @@
  */
 package org.mule.tools.maven.mojo.deploy;
 
-import org.mule.tools.client.standalone.Undeployer;
+import org.mule.tools.client.standalone.deployment.StandaloneUndeployer;
 import org.mule.tools.client.agent.AgentClient;
 import org.mule.tools.client.arm.ArmClient;
 import org.mule.tools.client.cloudhub.CloudhubClient;
@@ -19,8 +19,7 @@ import java.io.File;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.mule.tools.maven.mojo.deploy.AbstractMuleDeployerMojo;
-import org.mule.tools.maven.mojo.deploy.DeployMojo;
+import org.mule.tools.model.DeploymentConfigurator;
 
 import javax.ws.rs.NotFoundException;
 
@@ -36,32 +35,7 @@ import javax.ws.rs.NotFoundException;
 public class UndeployMojo extends AbstractMuleDeployerMojo {
 
   @Override
-  protected void doExecute() throws MojoExecutionException, MojoFailureException {
-    initializeApplication();
-    initializeEnvironment();
-    switch (deploymentConfiguration.getDeploymentType()) {
-      case standalone:
-        standalone();
-        break;
-      case cluster:
-        cluster();
-        break;
-      case arm:
-        arm();
-        break;
-      case cloudhub:
-        cloudhub();
-        break;
-      case agent:
-        agent();
-        break;
-      default:
-        throw new MojoFailureException("Unsupported deploymentConfiguration type: "
-            + deploymentConfiguration.getDeploymentType());
-    }
-  }
-
-  private void cloudhub() throws MojoFailureException {
+  protected void cloudhub() throws MojoFailureException {
     CloudhubClient cloudhubClient =
         new CloudhubClient(deploymentConfiguration.getUri(), getLog(), deploymentConfiguration.getUsername(),
                            deploymentConfiguration.getPassword(),
@@ -72,7 +46,8 @@ public class UndeployMojo extends AbstractMuleDeployerMojo {
     cloudhubClient.stopApplication(deploymentConfiguration.getApplicationName());
   }
 
-  private void arm() throws MojoFailureException {
+  @Override
+  protected void arm() throws MojoFailureException {
     ArmClient armClient =
         new ArmClient(getLog(), deploymentConfiguration.getUri(), deploymentConfiguration.getUsername(),
                       deploymentConfiguration.getPassword(),
@@ -92,13 +67,15 @@ public class UndeployMojo extends AbstractMuleDeployerMojo {
     }
   }
 
-  private void agent() throws MojoFailureException {
+  @Override
+  protected void agent() throws MojoFailureException {
     AgentClient agentClient = new AgentClient(getLog(), deploymentConfiguration.getUri());
     getLog().info("Undeploying application " + deploymentConfiguration.getApplicationName());
     agentClient.undeployApplication(deploymentConfiguration.getApplicationName());
   }
 
-  private void cluster() throws MojoFailureException, MojoExecutionException {
+  @Override
+  protected void cluster() throws MojoFailureException, MojoExecutionException {
     File[] muleHomes = new File[deploymentConfiguration.getSize()];
     for (int i = 0; i < deploymentConfiguration.getSize(); i++) {
       File parentDir = new File(mavenProject.getBuild().getDirectory(), "mule" + i);
@@ -108,15 +85,16 @@ public class UndeployMojo extends AbstractMuleDeployerMojo {
         throw new MojoFailureException(muleHomes[i].getAbsolutePath() + "directory does not exist.");
       }
     }
-    new Undeployer(getLog(), deploymentConfiguration.getApplicationName(), muleHomes).execute();
+    new StandaloneUndeployer(getLog(), deploymentConfiguration.getApplicationName(), muleHomes).execute();
   }
 
-  public void standalone() throws MojoFailureException, MojoExecutionException {
+  @Override
+  protected void standalone() throws MojoFailureException, MojoExecutionException {
     if (!deploymentConfiguration.getMuleHome().exists()) {
       throw new MojoFailureException("MULE_HOME directory does not exist.");
     }
     getLog().info("Using MULE_HOME: " + deploymentConfiguration.getMuleHome());
-    new Undeployer(getLog(), deploymentConfiguration.getApplicationName(), deploymentConfiguration.getMuleHome()).execute();
+    new StandaloneUndeployer(getLog(), deploymentConfiguration.getApplicationName(), deploymentConfiguration.getMuleHome())
+        .execute();
   }
-
 }

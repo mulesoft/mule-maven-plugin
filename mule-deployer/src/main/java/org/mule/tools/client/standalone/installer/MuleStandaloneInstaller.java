@@ -74,7 +74,13 @@ public class MuleStandaloneInstaller {
       }
     }
     unpackMule(deploymentConfiguration.getMuleDistribution(), buildDirectory);
-    return new File(buildDirectory, deploymentConfiguration.getMuleDistribution().getContentDirectory());
+    String contentDirectory = resolveMuleContentDirectory(deploymentConfiguration.getMuleDistribution());
+    return new File(buildDirectory, contentDirectory);
+  }
+
+  private String resolveMuleContentDirectory(ArtifactDescription muleDistribution) {
+    return "mule-" + ("mule-standalone".equals(muleDistribution.getArtifactId()) ? "" : "enterprise-") + "standalone-"
+        + muleDistribution.getVersion();
   }
 
   /**

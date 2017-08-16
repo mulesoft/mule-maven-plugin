@@ -10,5 +10,5 @@
 package org.mule.tools.model;
 
 public enum DeploymentType {
-    standalone, cluster, cloudhub, arm, agent
+  standalone, cluster, cloudhub, arm, agent
 }

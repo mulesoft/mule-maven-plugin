@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -27,10 +28,13 @@ import org.mule.tools.client.standalone.controller.probing.AppDeploymentProbe;
 import org.mule.tools.client.standalone.controller.probing.PollingProber;
 import org.mule.tools.client.standalone.controller.probing.Prober;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
+import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.mule.tools.model.ArtifactDescription;
 import org.mule.tools.model.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class StandaloneDeployer {
 
@@ -63,15 +67,15 @@ public class StandaloneDeployer {
                          mule, log, application, timeout, pollingDelay);
   }
 
-  public void execute() throws MojoFailureException, MojoExecutionException {
+  public void execute() throws DeploymentException {
     try {
       verifyMuleIsStarted();
       deployApplications();
       waitForDeployments();
     } catch (MuleControllerException e) {
-      throw new MojoFailureException("Error deploying application: [" + application + "]: " + e.getMessage());
+      throw new DeploymentException("Error deploying application: [" + application + "]: " + e.getMessage());
     } catch (RuntimeException e) {
-      throw new MojoExecutionException("Unexpected error deploying application: [" + application
+      throw new DeploymentException("Unexpected error deploying application: [" + application
           + "]", e);
     }
   }
@@ -83,33 +87,27 @@ public class StandaloneDeployer {
     }
   }
 
-  private void waitForDeployments() throws MojoFailureException {
+  private void waitForDeployments() throws DeploymentException {
     if (!application.exists()) {
-      throw new MojoFailureException("Application does not exists: " + application);
+      throw new DeploymentException("Application does not exists: " + application);
     }
-    log.debug("Checking for application [" + application + "] to be deployed.");
-    String app = getApplicationName(application);
+    log.debug("Waiting for application [" + application + "] to be deployed.");
+    String app = FilenameUtils.getBaseName(application.getName());
     try {
       prober.check(AppDeploymentProbe.isDeployed(mule, app));
     } catch (AssertionError e) {
       log.error("Couldn't deploy application [" + app + "] after [" + timeout
           + "] miliseconds. Check Mule Runtime log");
-      throw new MojoFailureException("Application deployment timeout.");
+      throw new DeploymentException("Application deployment timeout.");
     }
   }
 
-  private String getApplicationName(File application) {
-    String name = application.getName();
-    int extensionBeginning = name.lastIndexOf('.');
-    return extensionBeginning == -1 ? name : name.substring(0, extensionBeginning);
-  }
-
-  private void deployApplications() throws MojoFailureException {
+  private void deployApplications() throws DeploymentException {
     log.info("Deploying application [" + application + "]");
     try {
       mule.deploy(application.getAbsolutePath());
     } catch (MuleControllerException e) {
-      log.error("Couldn't deploy application: " + application + ". Check Mule Runtime logs");
+      throw new DeploymentException("Couldn't deploy application: " + application + ". Check Mule Runtime logs");
     }
   }
 
@@ -130,6 +128,7 @@ public class StandaloneDeployer {
   }
 
   public StandaloneDeployer addLibraries(List<File> libs) {
+    checkNotNull(libs, "Libraries cannot be null");
     for (File file : libs) {
       mule.addLibrary(file);
       log.debug(String.format("Adding library %s...", file));
@@ -138,46 +137,19 @@ public class StandaloneDeployer {
   }
 
 
-  public StandaloneDeployer addDomain(File domain) throws MojoFailureException {
+  public StandaloneDeployer addDomain(File domain) throws DeploymentException {
+    checkNotNull(domain, "Domain cannot be null");
     try {
       log.debug(String.format("Deploying domain : %s", domain));
       mule.deployDomain(domain.getAbsolutePath());
       return this;
     } catch (MuleControllerException e) {
       log.error("Couldn't deploy domain: " + domain);
-      throw new MojoFailureException("Couldn't deploy domain: " + domain);
+      throw new DeploymentException("Couldn't deploy domain: " + domain);
     }
   }
 
-  public void addDependencies(DeploymentConfiguration configuration, ArtifactFactory factory, ArtifactResolver resolver,
-                              MavenProject project, ArtifactRepository repository)
-      throws MojoFailureException, MojoExecutionException {
-    List<File> libraries = new ArrayList<>();
-    for (ArtifactDescription artifact : configuration.getArtifactItems()) {
-      libraries.add(getDependency(artifact, factory, resolver, project, repository));
-    }
-    addLibraries(libraries);
-  }
-
-  protected File getDependency(ArtifactDescription artifactDescription, ArtifactFactory factory, ArtifactResolver resolver,
-                               MavenProject project, ArtifactRepository repository)
-      throws MojoExecutionException, MojoFailureException {
-    try {
-      Artifact artifact = factory.createArtifact(artifactDescription.getGroupId(),
-                                                 artifactDescription.getArtifactId(), artifactDescription.getVersion(),
-                                                 null,
-                                                 artifactDescription.getType());
-      log.info("Resolving " + artifact);
-      resolver.resolve(artifact, project.getRemoteArtifactRepositories(), repository);
-      return artifact.getFile();
-    } catch (AbstractArtifactResolutionException e) {
-      throw new MojoExecutionException("Couldn't download artifact: " + e.getMessage(), e);
-    } catch (Exception e) {
-      throw new MojoFailureException("Couldn't download artifact: " + e.getMessage());
-    }
-  }
-
-  public void addDomainFromDeploymentConfiguration(DeploymentConfiguration configuration) throws MojoFailureException {
+  public void addDomainFromDeploymentConfiguration(DeploymentConfiguration configuration) throws DeploymentException {
     if (configuration.getDomain() != null && configuration.getDomain().exists()) {
       log.debug("Adding domain with configuration: " + configuration.getDomain());
       addDomain(configuration.getDomain());

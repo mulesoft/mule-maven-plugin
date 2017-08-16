@@ -1,5 +1,8 @@
 /*
+ * Mule ESB Maven Tools
+ * <p>
  * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * <p>
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
@@ -21,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -197,7 +201,7 @@ public class StandaloneEnvironment {
 
 
 
-  private void killMuleProcesses() throws IOException {
+  public void killMuleProcesses() throws IOException {
     commands.clear();
     commands.add("ps");
     commands.add("-ax");
@@ -238,13 +242,21 @@ public class StandaloneEnvironment {
     return muleHome + EXECUTABLE_FOLDER_RELATIVE_PATH;
   }
 
-  public void runStandalone() throws IOException, InterruptedException {
-    unpackAgent();
+  public void runStandalone() throws IOException, InterruptedException, TimeoutException {
     startMule();
-    checkStandaloneIsAcceptingDeployments();
+    checkStandaloneIsAcceptingDeployments(30);
   }
 
-  private void checkStandaloneIsAcceptingDeployments() throws InterruptedException, IOException {
-    while (!controller.isRunning());
+  public void checkStandaloneIsAcceptingDeployments(int timeoutInSeconds) throws InterruptedException, TimeoutException {
+    int oneSecond = 1000;
+    int count = 0;
+    while (count != timeoutInSeconds) {
+      Thread.sleep(oneSecond);
+      count++;
+      if (controller.isRunning()) {
+        return;
+      }
+    }
+    throw new TimeoutException("Waiting for Standalone to accept deployments has timeout.");
   }
 }

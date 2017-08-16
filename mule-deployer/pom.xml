@@ -71,13 +71,23 @@
         <dependency>
             <groupId>org.mule.distributions</groupId>
             <artifactId>mule-embedded-distribution</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-core</artifactId>
-            <version>4.0.0-BETA-SNAPSHOT</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.marvinformatics.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

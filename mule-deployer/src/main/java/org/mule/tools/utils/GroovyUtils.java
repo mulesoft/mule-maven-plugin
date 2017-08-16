@@ -1,6 +1,16 @@
+/*
+ * Mule ESB Maven Tools
+ * <p>
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * <p>
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 package org.mule.tools.utils;
 
 import groovy.lang.GroovyShell;
+import groovy.util.ScriptException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.mule.tools.model.DeploymentConfiguration;
@@ -12,7 +22,7 @@ import java.util.Map;
 
 public class GroovyUtils {
 
-  public static void executeScript(MavenProject project, DeploymentConfiguration configuration) throws MojoExecutionException {
+  public static void executeScript(MavenProject project, DeploymentConfiguration configuration) throws ScriptException {
     GroovyShell shell = new GroovyShell();
     shell.setProperty("basedir", project.getBasedir());
 
@@ -23,7 +33,7 @@ public class GroovyUtils {
     try {
       shell.evaluate(readFile(configuration.getScript().getAbsolutePath()));
     } catch (IOException e) {
-      throw new MojoExecutionException("error executing script: " + configuration.getScript().getAbsolutePath() + "\n"
+      throw new ScriptException("error executing script: " + configuration.getScript().getAbsolutePath() + "\n"
           + e.getMessage());
     }
   }

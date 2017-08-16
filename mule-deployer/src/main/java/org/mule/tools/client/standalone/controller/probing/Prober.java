@@ -14,5 +14,5 @@ package org.mule.tools.client.standalone.controller.probing;
  */
 public interface Prober {
 
-    void check(Probe probe);
+  void check(Probe probe);
 }

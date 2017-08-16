@@ -19,79 +19,71 @@ import static java.lang.String.format;
 
 public class ArtifactDescription {
 
-    private final String COORDINATES_SEPARATOR = ":";
-    private String groupId;
-    private String artifactId;
-    private String version;
-    private String type;
+  private final String COORDINATES_SEPARATOR = ":";
+  private String groupId;
+  private String artifactId;
+  private String version;
+  private String type;
 
-    public ArtifactDescription() {
+  public ArtifactDescription() {
 
-    }
+  }
 
-    public ArtifactDescription(String artifactCoordinates) {
-        checkArgument(StringUtils.isNotEmpty(artifactCoordinates), "The artifact coordinates must not be null nor empty");
-        String[] coordinateElements = artifactCoordinates.split(COORDINATES_SEPARATOR);
-        checkState(coordinateElements.length == 4, "The artifact coordinates are not in the format groupId:artifactId:version:type");
-        setGroupId(coordinateElements[0]);
-        setArtifactId(coordinateElements[1]);
-        setVersion(coordinateElements[2]);
-        setType(coordinateElements[3]);
-    }
+  public ArtifactDescription(String artifactCoordinates) {
+    checkArgument(StringUtils.isNotEmpty(artifactCoordinates), "The artifact coordinates must not be null nor empty");
+    String[] coordinateElements = artifactCoordinates.split(COORDINATES_SEPARATOR);
+    checkState(coordinateElements.length == 4, "The artifact coordinates are not in the format groupId:artifactId:version:type");
+    setGroupId(coordinateElements[0]);
+    setArtifactId(coordinateElements[1]);
+    setVersion(coordinateElements[2]);
+    setType(coordinateElements[3]);
+  }
 
-    public ArtifactDescription(String groupId, String artifactId, String version, String type) {
-        setGroupId(groupId);
-        setArtifactId(artifactId);
-        setVersion(version);
-        setType(type);
-    }
+  public ArtifactDescription(String groupId, String artifactId, String version, String type) {
+    setGroupId(groupId);
+    setArtifactId(artifactId);
+    setVersion(version);
+    setType(type);
+  }
 
-    public String toString() {
-        return format("%s:%s:%s:%s", groupId, artifactId, version, type);
-    }
+  public String toString() {
+    return format("%s:%s:%s:%s", groupId, artifactId, version, type);
+  }
 
-    public String getGroupId() {
-        return groupId;
-    }
+  public String getGroupId() {
+    return groupId;
+  }
 
-    public void setGroupId(String groupId) {
-        checkArgument(StringUtils.isNotEmpty(groupId), "The groupId must not be null nor empty");
-        this.groupId = groupId;
-    }
+  public void setGroupId(String groupId) {
+    checkArgument(StringUtils.isNotEmpty(groupId), "The groupId must not be null nor empty");
+    this.groupId = groupId;
+  }
 
-    public String getArtifactId() {
-        return artifactId;
-    }
+  public String getArtifactId() {
+    return artifactId;
+  }
 
-    public void setArtifactId(String artifactId) {
-        checkArgument(StringUtils.isNotEmpty(artifactId), "The artifactId must not be null nor empty");
-        this.artifactId = artifactId;
-    }
+  public void setArtifactId(String artifactId) {
+    checkArgument(StringUtils.isNotEmpty(artifactId), "The artifactId must not be null nor empty");
+    this.artifactId = artifactId;
+  }
 
-    public String getVersion() {
-        return version;
-    }
+  public String getVersion() {
+    return version;
+  }
 
-    public void setVersion(String version) {
-        checkArgument(StringUtils.isNotEmpty(version), "The version must not be null nor empty");
-        this.version = version;
-    }
+  public void setVersion(String version) {
+    checkArgument(StringUtils.isNotEmpty(version), "The version must not be null nor empty");
+    this.version = version;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        checkArgument(StringUtils.isNotEmpty(version), "The type must not be null nor empty");
-        this.type = type;
-    }
-
-    public String getContentDirectory() {
-        if ("mule-standalone".equals(artifactId)) {
-            return "mule-standalone-" + version;
-        } else {
-            return "mule-enterprise-standalone-" + version;
-        }
-    }
+  public void setType(String type) {
+    checkArgument(StringUtils.isNotEmpty(version), "The type must not be null nor empty");
+    this.type = type;
+  }
 }
 

@@ -55,7 +55,7 @@ public class DeploymentConfigurator {
     } else {
       // If an application is defined but no application name is provided, use the name of the file instead of
       // the artifact ID (expected behavior in standalone deploymentConfiguration for example).
-      if (configuration.getApplicationName() == null) {
+      if (StringUtils.isBlank(configuration.getApplicationName())) {
         configuration.setApplicationName(configuration.getApplication().getName());
       }
     }

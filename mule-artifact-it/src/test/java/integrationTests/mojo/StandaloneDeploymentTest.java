@@ -1,5 +1,8 @@
 /*
+ * Mule ESB Maven Tools
+ * <p>
  * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * <p>
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
@@ -18,12 +21,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 public class StandaloneDeploymentTest {
 
   private static final String STANDALONE_TEST_ANCHOR_FILENAME = "standalone-anchor.txt";
   private static final String MULE_DEPLOY = "mule:deploy";
-  private static final String MULE_VERSION = "4.0.0-SNAPSHOT"; // System.getProperty("mule.version");
+  private static final String MULE_VERSION = "4.0.0-SNAPSHOT";
   private static final String STANDALONE_DIRECTORY_NAME = "mule-enterprise-standalone-" + MULE_VERSION;
   private static Logger log;
   private static Verifier verifier;
@@ -41,7 +45,7 @@ public class StandaloneDeploymentTest {
   }
 
   @Before
-  public void before() throws VerificationException, InterruptedException, IOException {
+  public void before() throws VerificationException, InterruptedException, IOException, TimeoutException {
     log = LoggerFactory.getLogger(this.getClass());
     log.info("Initializing context...");
     initializeContext();
@@ -49,21 +53,27 @@ public class StandaloneDeploymentTest {
     if (mavenSettings != null) {
       verifier.addCliOption("-s " + mavenSettings);
     }
+    String projectVersion = System.getProperty("mule.maven.plugin.version");
+    if (projectVersion != null) {
+      verifier.setSystemProperty("muleMavenPluginVersion", projectVersion);
+    }
     verifier.setEnvironmentVariable("mule.version", System.getProperty("mule.version"));
     verifier.setEnvironmentVariable("mule.timeout", System.getProperty("mule.timeout"));
     verifier.setEnvironmentVariable("mule.home.test",
                                     System.getProperty("mule.home.test") + File.separator + STANDALONE_DIRECTORY_NAME);
     environment.setMuleHome(verifier.getEnvironmentVariables().get("mule.home.test"));
+    environment.killMuleProcesses();
     environment.start();
     environment.runStandalone();
   }
 
   @After
-  public void after() {
+  public void after() throws IOException, InterruptedException {
+    environment.stop();
     verifier.resetStreams();
   }
 
-  @Test
+  @Test(timeout = 60000)
   public void testStandaloneDeploy() throws IOException, VerificationException, InterruptedException {
     log.info("Executing mule:deploy goal...");
     verifier.executeGoal(INSTALL);

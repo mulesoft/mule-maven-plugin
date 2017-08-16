@@ -132,30 +132,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>${maven.dependency.plugin.version}</version>
-                <configuration>
-                    <artifactItems>
-                        <artifactItem>
-                            <groupId>com.mulesoft.mule.distributions</groupId>
-                            <artifactId>mule-ee-distribution-standalone</artifactId>
-                            <version>${mule.version}</version>
-                            <type>tar.gz</type>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
-                        </artifactItem>
-                    </artifactItems>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <phase>process-test-resources</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>1.8</version>
@@ -203,48 +179,10 @@
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>${license.plugin.version}</version>
-                <configuration>
-                    <header>${licensePath}</header>
-                    <includes>
-                        <include>**/*.java</include>
-                    </includes>
-                    <mapping>
-                        <java>SLASHSTAR_STYLE</java>
-                    </mapping>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>com.marvinformatics.formatter</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
-                <version>${javaFormatter.plugin.version}</version>
-                <configuration>
-                    <compilerCompliance>${java.source}</compilerCompliance>
-                    <compilerSource>${java.source}</compilerSource>
-                    <compilerTargetPlatform>${java.source}</compilerTargetPlatform>
-                    <configFile>${basedir}/${formatterConfigPath}</configFile>
-                    <configJsFile>${basedir}/${formatterConfigPath}</configJsFile>
-                    <lineEnding>LF</lineEnding>
-                    <aggregator>false</aggregator>
-                    <executionRoot>true</executionRoot>
-                    <skipFormatting>${skipVerifications}</skipFormatting>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>${formatterGoal}</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

@@ -9,6 +9,7 @@
  */
 package org.mule.tools.maven.mojo.deploy;
 
+import groovy.util.ScriptException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -21,6 +22,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
+import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
 import org.mule.tools.model.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
@@ -66,11 +68,15 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
     } else {
       deploymentConfigurator = new DeploymentConfigurator(deploymentConfiguration, new MavenDeployerLog(getLog()));
       getLog().debug("Executing mojo, skip=" + deploymentConfiguration.getSkip());
-      doExecute();
+      try {
+        doExecute();
+      } catch (ScriptException | DeploymentException e) {
+        throw new MojoFailureException("Deployment has failed.", e);
+      }
     }
   }
 
-  protected void doExecute() throws MojoExecutionException, MojoFailureException {
+  protected void doExecute() throws MojoExecutionException, MojoFailureException, ScriptException, DeploymentException {
     deploymentConfigurator.initializeApplication(artifactFactory, mavenProject, artifactResolver, localRepository);
     deploymentConfigurator.initializeEnvironment(settings, decrypter);
     switch (deploymentConfiguration.getDeploymentType()) {
@@ -95,14 +101,14 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
     }
   }
 
-  protected abstract void cluster() throws MojoFailureException, MojoExecutionException;
+  protected abstract void cluster() throws MojoFailureException, MojoExecutionException, ScriptException;
 
-  protected abstract void standalone() throws MojoFailureException, MojoExecutionException;
+  protected abstract void standalone() throws MojoFailureException, MojoExecutionException, DeploymentException, ScriptException;
 
-  protected abstract void arm() throws MojoFailureException, MojoExecutionException;
+  protected abstract void arm() throws MojoFailureException, MojoExecutionException, ScriptException;
 
-  protected abstract void cloudhub() throws MojoFailureException, MojoExecutionException;
+  protected abstract void cloudhub() throws MojoFailureException, MojoExecutionException, ScriptException;
 
-  protected abstract void agent() throws MojoFailureException, MojoExecutionException;
+  protected abstract void agent() throws MojoFailureException, MojoExecutionException, ScriptException;
 
 }

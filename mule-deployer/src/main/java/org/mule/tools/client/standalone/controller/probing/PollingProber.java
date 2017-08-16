@@ -12,44 +12,44 @@ package org.mule.tools.client.standalone.controller.probing;
 
 public class PollingProber implements Prober {
 
-    private static final long DEFAULT_TIMEOUT = 1000;
-    private static final long DEFAULT_POLLING_INTERVAL = 100;
+  private static final long DEFAULT_TIMEOUT = 1000;
+  private static final long DEFAULT_POLLING_INTERVAL = 100;
 
-    private final long timeoutMillis;
-    private final long pollDelayMillis;
+  private final long timeoutMillis;
+  private final long pollDelayMillis;
 
-    public PollingProber(Long timeoutMillis, Long pollDelayMillis) {
-        this.timeoutMillis = timeoutMillis == null ? DEFAULT_TIMEOUT : timeoutMillis;
-        this.pollDelayMillis = pollDelayMillis == null ? DEFAULT_POLLING_INTERVAL : pollDelayMillis ;
+  public PollingProber(Long timeoutMillis, Long pollDelayMillis) {
+    this.timeoutMillis = timeoutMillis == null ? DEFAULT_TIMEOUT : timeoutMillis;
+    this.pollDelayMillis = pollDelayMillis == null ? DEFAULT_POLLING_INTERVAL : pollDelayMillis;
+  }
+
+  @Override
+  public void check(Probe probe) {
+    if (!poll(probe)) {
+      throw new AssertionError(probe.describeFailure());
     }
+  }
 
-    @Override
-    public void check(Probe probe) {
-        if (!poll(probe)) {
-            throw new AssertionError(probe.describeFailure());
-        }
+  private boolean poll(Probe probe) {
+    Timeout timeout = new Timeout(timeoutMillis);
+
+    while (true) {
+      if (probe.isSatisfied()) {
+        return true;
+      } else if (timeout.hasTimedOut()) {
+        return false;
+      } else {
+        waitFor(pollDelayMillis);
+      }
     }
+  }
 
-    private boolean poll(Probe probe) {
-        Timeout timeout = new Timeout(timeoutMillis);
-
-        while (true) {
-            if (probe.isSatisfied()) {
-                return true;
-            } else if (timeout.hasTimedOut()) {
-                return false;
-            } else {
-                waitFor(pollDelayMillis);
-            }
-        }
+  private void waitFor(long duration) {
+    try {
+      Thread.sleep(duration);
+    } catch (InterruptedException e) {
+      throw new IllegalStateException("unexpected interrupt", e);
     }
-
-    private void waitFor(long duration) {
-        try {
-            Thread.sleep(duration);
-        } catch (InterruptedException e) {
-            throw new IllegalStateException("unexpected interrupt", e);
-        }
-    }
+  }
 
 }

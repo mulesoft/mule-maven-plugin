@@ -131,7 +131,8 @@ public class ArtifactUtils {
   }
 
   public static ArtifactCoordinates toArtifactCoordinates(Dependency dependency) {
-    return new ArtifactCoordinates(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(), dependency.getType(), dependency.getClassifier(), dependency.getScope());
+    return new ArtifactCoordinates(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(),
+                                   dependency.getType(), dependency.getClassifier(), dependency.getScope());
   }
 
 

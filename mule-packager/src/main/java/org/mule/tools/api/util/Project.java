@@ -15,5 +15,6 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import java.util.List;
 
 public interface Project {
-    List<ArtifactCoordinates> getDependencies();
+
+  List<ArtifactCoordinates> getDependencies();
 }

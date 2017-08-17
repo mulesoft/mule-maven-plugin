@@ -27,7 +27,7 @@ public class StandaloneDeploymentTest {
 
   private static final String STANDALONE_TEST_ANCHOR_FILENAME = "standalone-anchor.txt";
   private static final String MULE_DEPLOY = "mule:deploy";
-  private static final String MULE_VERSION = "4.0.0-SNAPSHOT";
+  private static final String MULE_VERSION = "4.0.0-rc.cyborg";
   private static final String STANDALONE_DIRECTORY_NAME = "mule-enterprise-standalone-" + MULE_VERSION;
   private static Logger log;
   private static Verifier verifier;

@@ -1,6 +1,6 @@
 {
   "name": "new-package",
-  "minMuleVersion": "4.0.0-SNAPSHOT",
+  "minMuleVersion": "4.0.0-rc.cyborg",
   "classLoaderModelLoaderDescriptor": {
     "id": "maven",
     "attributes": {

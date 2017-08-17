@@ -9,7 +9,6 @@
  */
 package org.mule.tools.client.standalone.deployment;
 
-import org.mule.test.infrastructure.process.MuleProcessController;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -21,6 +20,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
+import org.mule.tools.client.standalone.controller.MuleProcessController;
 
 /**
  *

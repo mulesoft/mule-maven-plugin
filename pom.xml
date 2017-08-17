@@ -76,6 +76,7 @@
         <maven.surefire.plugin.version>2.20</maven.surefire.plugin.version>
         <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
         <maven.resources.plugin.version>2.7</maven.resources.plugin.version>
+        <commons.exec.version>1.2</commons.exec.version>
     </properties>
 
 
@@ -124,13 +125,6 @@
                 <artifactId>log4j</artifactId>
                 <version>${log4j.version}</version>
                 <scope>test</scope>
-            </dependency>
-            <!-- Other Dependencies -->
-            <!-- TODO MMP-115 this should not be necessary  -->
-            <dependency>
-                <groupId>org.mule.tests</groupId>
-                <artifactId>mule-tests-infrastructure</artifactId>
-                <version>${mule.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
@@ -246,6 +240,11 @@
                 <groupId>org.mule.runtime</groupId>
                 <artifactId>mule-core</artifactId>
                 <version>${mule.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-exec</artifactId>
+                <version>${commons.exec.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

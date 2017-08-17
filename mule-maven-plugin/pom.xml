@@ -102,11 +102,6 @@
             <artifactId>hamcrest-all</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- Other Dependencies -->
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-tests-infrastructure</artifactId>
-        </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>

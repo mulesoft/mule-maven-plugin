@@ -9,20 +9,19 @@
  */
 package org.mule.tools.client.arm;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import org.mule.tools.client.arm.ArmClient;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.mule.tools.client.arm.model.Applications;
 import org.mule.tools.client.arm.model.Environment;
 import org.mule.tools.client.arm.model.Target;
 
 import java.util.concurrent.Callable;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 
 @Ignore
 public class ArmClientTestCase {

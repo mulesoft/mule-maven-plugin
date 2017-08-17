@@ -17,7 +17,6 @@ import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact
 
 import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Model;
@@ -26,6 +25,7 @@ import org.mule.maven.client.api.PomFileSupplierFactory;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.tools.api.validation.MulePluginDependencyResolutionValidator;
 
 public class ApplicationClassLoaderModelAssembler {
 
@@ -65,7 +65,7 @@ public class ApplicationClassLoaderModelAssembler {
 
     Map<BundleDependency, List<BundleDependency>> mulePluginDependencies = resolveMulePluginDependencies(mulePlugins);
 
-    verifyThatAreNoTransitiveMulePlugins(mulePluginDependencies);
+    MulePluginDependencyResolutionValidator.verifyThatAreNoTransitiveMulePlugins(mulePluginDependencies);
 
     // all mule plugins classloader models are resolved here
     for (Map.Entry<BundleDependency, List<BundleDependency>> mulePluginEntry : mulePluginDependencies.entrySet()) {
@@ -76,32 +76,6 @@ public class ApplicationClassLoaderModelAssembler {
     }
 
     return applicationClassLoaderModel;
-  }
-
-  /**
-   * When method resolveMulePlugins is invoked, AetherMavenClient should resolve all mule plugins that are a direct or transitive
-   * dependency of the application but that are not a mule-plugin transitive dependency. So now we check if all mule plugins that
-   * were resolved as dependencies of other mule plugins were already been resolved by the AetherMavenClient. If they were not, it
-   * means they were some transitive dependency of a mule plugin.
-   * 
-   * @param mulePluginDependencies mule plugins and its dependencies
-   **/
-  protected void verifyThatAreNoTransitiveMulePlugins(Map<BundleDependency, List<BundleDependency>> mulePluginDependencies)
-      throws IllegalStateException {
-    Set<String> validMulePluginsDependencies =
-        mulePluginDependencies.keySet().stream().map(BundleDependency::toString).collect(Collectors.toSet());
-    Set<String> mulePluginsResolvedAsMulePluginsDependencies =
-        mulePluginDependencies.values().stream().flatMap(Collection::stream)
-            .filter(bundleDependency -> bundleDependency.getDescriptor().getClassifier().isPresent())
-            .filter(bundleDependency -> StringUtils.equals(MULE_PLUGIN_CLASSIFIER,
-                                                           bundleDependency.getDescriptor().getClassifier().get()))
-            .map(BundleDependency::toString)
-            .collect(Collectors.toSet());
-    mulePluginsResolvedAsMulePluginsDependencies.removeAll(validMulePluginsDependencies);
-    if (!mulePluginsResolvedAsMulePluginsDependencies.isEmpty()) {
-      throw new IllegalStateException("The following mule plugins are TRANSITIVE dependencies of mule plugins but not a DIRECT dependencies of a mule plugin: "
-          + mulePluginsResolvedAsMulePluginsDependencies);
-    }
   }
 
   protected ArtifactCoordinates getArtifactCoordinates(BundleDescriptor projectBundleDescriptor) {
@@ -156,8 +130,6 @@ public class ApplicationClassLoaderModelAssembler {
     }
     return muleDependenciesDependencies;
   }
-
-
 
   protected BundleDescriptor getBundleDescriptor(Model pomModel) {
     final String version =

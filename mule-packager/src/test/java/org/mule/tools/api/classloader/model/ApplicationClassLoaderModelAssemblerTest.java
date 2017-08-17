@@ -220,48 +220,6 @@ public class ApplicationClassLoaderModelAssemblerTest {
                containsInAnyOrder(toArtifact(mulePluginTransitiveDependency1)));
   }
 
-  @Test
-  public void verifyThatAreNoTransitiveMulePluginsEmptyMapTest() {
-    Map<BundleDependency, List<BundleDependency>> mulePluginDependencies = new HashMap<>();
-    applicationClassLoaderModelAssembler.verifyThatAreNoTransitiveMulePlugins(mulePluginDependencies);
-  }
-
-  @Test
-  public void verifyThatAreNoTransitiveMulePluginsShouldFailTest() throws URISyntaxException {
-    expectedException.expect(IllegalStateException.class);
-    BundleDependency validMulePlugin = buildBundleDependency(0, 0, MULE_PLUGIN_CLASSIFIER);
-    BundleDependency transitiveMulePluginDependencyOfMulePlugin = buildBundleDependency(0, 1, MULE_PLUGIN_CLASSIFIER);
-    BundleDependency directDependencyOfMulePlugin = buildBundleDependency(1, 2, "");
-
-    List<BundleDependency> validMulePluginDependencies = new ArrayList<>();
-    validMulePluginDependencies.add(transitiveMulePluginDependencyOfMulePlugin);
-    validMulePluginDependencies.add(directDependencyOfMulePlugin);
-
-    Map<BundleDependency, List<BundleDependency>> mulePluginDependencies = new HashMap<>();
-    mulePluginDependencies.put(validMulePlugin, validMulePluginDependencies);
-
-    applicationClassLoaderModelAssembler.verifyThatAreNoTransitiveMulePlugins(mulePluginDependencies);
-  }
-
-  @Test
-  public void verifyThatAreNoTransitiveMuleSuccessfulValidTest() throws URISyntaxException {
-    BundleDependency validMulePlugin = buildBundleDependency(0, 0, MULE_PLUGIN_CLASSIFIER);
-    BundleDependency directMulePluginDependencyOfMulePlugin = buildBundleDependency(0, 1, MULE_PLUGIN_CLASSIFIER);
-    BundleDependency transitiveDependencyOfMulePlugin = buildBundleDependency(0, 2, "");
-
-    List<BundleDependency> validMulePluginDependencies = new ArrayList<>();
-    validMulePluginDependencies.add(directMulePluginDependencyOfMulePlugin);
-
-    List<BundleDependency> directMulePluginDependencyDependencies = new ArrayList<>();
-    directMulePluginDependencyDependencies.add(transitiveDependencyOfMulePlugin);
-
-    Map<BundleDependency, List<BundleDependency>> mulePluginDependencies = new HashMap<>();
-    mulePluginDependencies.put(validMulePlugin, validMulePluginDependencies);
-    mulePluginDependencies.put(directMulePluginDependencyOfMulePlugin, directMulePluginDependencyDependencies);
-
-    applicationClassLoaderModelAssembler.verifyThatAreNoTransitiveMulePlugins(mulePluginDependencies);
-  }
-
   private BundleDependency buildBundleDependency(int groupIdSuffix, int artifactIdSuffix, String classifier)
       throws URISyntaxException {
     BundleDescriptor bundleDescriptor = buildBundleDescriptor(groupIdSuffix, artifactIdSuffix, classifier);

@@ -56,7 +56,12 @@ public class MuleMavenPluginClientProvider {
     userSettings.ifPresent(mavenConfigurationBuilder::userSettingsLocation);
 
     DefaultLocalRepositorySupplierFactory localRepositorySupplierFactory = new DefaultLocalRepositorySupplierFactory();
-    Supplier<File> localMavenRepository = localRepositorySupplierFactory.environmentMavenRepositorySupplier();
+    Supplier<File> localMavenRepository;
+    try {
+      localMavenRepository = localRepositorySupplierFactory.environmentMavenRepositorySupplier();
+    } catch (IllegalArgumentException e) {
+      localMavenRepository = () -> new File(System.getenv("WORKSPACE"), ".repository");
+    }
 
     this.remoteRepositories.stream().filter(this::hasValidURL).map(this::toRemoteRepo)
         .forEach(mavenConfigurationBuilder::remoteRepository);

@@ -29,7 +29,7 @@ public class MuleArchiver extends ZipArchiver {
 
   public final static String CLASSES_LOCATION = CLASSES + File.separator;
 
-  public final static String MULE_LOCATION = MULE + File.separator;
+  public final static String MULE_LOCATION = CLASSES_LOCATION + MULE + File.separator;
 
   public final static String POLICY_LOCATION = POLICY + File.separator;
 

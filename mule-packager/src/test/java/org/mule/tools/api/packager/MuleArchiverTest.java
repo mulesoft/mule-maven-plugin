@@ -107,7 +107,7 @@ public class MuleArchiverTest {
     relativePaths.add(tempBasePath.resolve("api").resolve("api.raml").toString());
     relativePaths.add(tempBasePath.resolve("wsdl").resolve("aservice.wsdl").toString());
 
-    tempBasePath = Paths.get(MULE);
+    tempBasePath = Paths.get(CLASSES).resolve(MULE);
     relativePaths.add(tempBasePath.resolve("mule-config1.xml").toString());
     relativePaths.add(tempBasePath.resolve("org.mule.package").resolve("mule-config2.xml").toString());
 

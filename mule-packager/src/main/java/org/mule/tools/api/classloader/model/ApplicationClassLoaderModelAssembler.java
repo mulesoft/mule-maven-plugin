@@ -25,7 +25,6 @@ import org.mule.maven.client.api.PomFileSupplierFactory;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
-import org.mule.tools.api.validation.MulePluginDependencyResolutionValidator;
 
 public class ApplicationClassLoaderModelAssembler {
 
@@ -64,8 +63,6 @@ public class ApplicationClassLoaderModelAssembler {
     applicationClassLoaderModel = new ApplicationClassloaderModel(appModel);
 
     Map<BundleDependency, List<BundleDependency>> mulePluginDependencies = resolveMulePluginDependencies(mulePlugins);
-
-    MulePluginDependencyResolutionValidator.verifyThatAreNoTransitiveMulePlugins(mulePluginDependencies);
 
     // all mule plugins classloader models are resolved here
     for (Map.Entry<BundleDependency, List<BundleDependency>> mulePluginEntry : mulePluginDependencies.entrySet()) {

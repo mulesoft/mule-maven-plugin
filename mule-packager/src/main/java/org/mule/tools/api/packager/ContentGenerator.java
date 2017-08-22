@@ -10,15 +10,16 @@
 package org.mule.tools.api.packager;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.api.packager.structure.PackagerFiles.*;
-import static org.mule.tools.api.packager.structure.PackagerFolders.*;
-
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.util.CopyFileVisitor;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
+import static org.mule.tools.api.packager.structure.PackagerFiles.POM_PROPERTIES;
+import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
+import static org.mule.tools.api.packager.structure.PackagerFolders.CLASSES;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MAVEN;
+import static org.mule.tools.api.packager.structure.PackagerFolders.META_INF;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_SRC;
+import static org.mule.tools.api.packager.structure.PackagerFolders.TARGET;
+import static org.mule.tools.api.packager.structure.PackagerFolders.TEST_MULE;
 
 import java.io.File;
 import java.io.FileReader;
@@ -35,6 +36,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.util.CopyFileVisitor;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * It knows how to generate the required content for each of the mandatory folder of the package
@@ -79,22 +87,21 @@ public class ContentGenerator {
    * @throws IOException
    */
   public void createContent() throws IOException {
-    createSrcFolderContent();
+    createMuleSrcFolderContent();
     createMetaInfMuleSourceFolderContent();
     createDescriptors();
   }
 
   /**
-   * It creates the content that contains the productive Mule source code. The name of the folder depends on the
-   * {@link PackagingType}
+   * It creates the content that contains the productive Mule source code. It leaves it in the classes folder
    *
    * @throws IOException
    */
-  public void createSrcFolderContent() throws IOException {
+  public void createMuleSrcFolderContent() throws IOException {
     Path originPath = packagingType.getSourceFolderLocation(projectBaseFolder);
-    Path destinationPath = projectTargetFolder.resolve(originPath.getFileName());
+    Path destinationPath = projectTargetFolder.resolve(CLASSES);
 
-    copyContent(originPath, destinationPath, Optional.ofNullable(null));
+    copyContent(originPath, destinationPath, Optional.ofNullable(null), true, false);
   }
 
   /**
@@ -110,7 +117,8 @@ public class ContentGenerator {
   }
 
   /**
-   * It creates the {@link org.mule.tools.api.packager.structure.PackagerFolders#MULE_SRC} folder used by IDEs to import the project source code
+   * It creates the {@link org.mule.tools.api.packager.structure.PackagerFolders#MULE_SRC} folder used by IDEs to import the
+   * project source code
    * 
    * @throws IOException
    */

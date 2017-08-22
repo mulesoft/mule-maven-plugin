@@ -92,7 +92,7 @@ public class PackageMojoTest extends MojoTest {
   @Ignore
   @Test
   public void testPackageMultiModuleAppModuleCorrectStructure() throws IOException, VerificationException {
-    installMultimoduleApplicationParentPomInLocalRepository();
+    testPackageAppConfigFiles();
     String artifactId = "multi-module-application";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
@@ -113,7 +113,7 @@ public class PackageMojoTest extends MojoTest {
   @Ignore
   @Test
   public void testPackageMultiModulePolicyModuleCorrectStructure() throws IOException, VerificationException {
-    installMultimoduleApplicationParentPomInLocalRepository();
+    testPackageAppConfigFiles();
     String artifactId = "multi-module-application";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
@@ -143,6 +143,7 @@ public class PackageMojoTest extends MojoTest {
     verifier.assertFilePresent("target/testApp-mule-application.jar");
     verifier.verifyErrorFreeLog();
   }
+
   @Test
   public void testPackageAppConfigFiles() throws IOException, VerificationException {
     String artifactId = "config-files-package-project";

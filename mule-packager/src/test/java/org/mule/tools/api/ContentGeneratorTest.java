@@ -17,6 +17,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
+import static org.mule.tools.api.packager.structure.PackagerFolders.CLASSES;
 
 import java.io.File;
 import java.io.IOException;
@@ -88,36 +89,24 @@ public class ContentGeneratorTest {
     Path destinationFolderPath = projectTargetFolder.getRoot().toPath().resolve(destinationFolderName);
     PackagerTestUtils.createEmptyFolder(destinationFolderPath);
 
-    contentGenerator.createSrcFolderContent();
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void createSrcFolderContentNonExistingDestinationFolder() throws IOException {
-    String sourceFolderName = packagingType.getSourceFolderName();
-
-    Path sourceFolderPath = projectBaseFolder.getRoot().toPath().resolve(PackagerTestUtils.SRC).resolve(
-                                                                                                        PackagerTestUtils.MAIN)
-        .resolve(sourceFolderName);
-    PackagerTestUtils.createFolder(sourceFolderPath, FAKE_FILE_NAME, true);
-
-    contentGenerator.createSrcFolderContent();
+    contentGenerator.createMuleSrcFolderContent();
   }
 
   @Test
   public void createSrcFolderContent() throws IOException {
     String sourceFolderName = packagingType.getSourceFolderName();
-    String destinationFolderName = packagingType.getSourceFolderName();
+    String destinationFolderName = CLASSES;
 
 
-    Path sourceFolderPath = projectBaseFolder.getRoot().toPath().resolve(PackagerTestUtils.SRC).resolve(
-                                                                                                        PackagerTestUtils.MAIN)
-        .resolve(sourceFolderName);
+    Path sourceFolderPath = projectBaseFolder.getRoot().toPath().resolve(PackagerTestUtils.SRC)
+        .resolve(PackagerTestUtils.MAIN).resolve(sourceFolderName);
+
     PackagerTestUtils.createFolder(sourceFolderPath, FAKE_FILE_NAME, true);
 
     Path destinationFolderPath = projectTargetFolder.getRoot().toPath().resolve(destinationFolderName);
     PackagerTestUtils.createEmptyFolder(destinationFolderPath);
 
-    contentGenerator.createSrcFolderContent();
+    contentGenerator.createMuleSrcFolderContent();
 
     PackagerTestUtils.assertFileExists(destinationFolderPath.resolve(FAKE_FILE_NAME));
   }
@@ -324,7 +313,7 @@ public class ContentGeneratorTest {
   public void createContent() throws IOException {
     ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
 
-    doNothing().when(contentGeneratorMock).createSrcFolderContent();
+    doNothing().when(contentGeneratorMock).createMuleSrcFolderContent();
     doNothing().when(contentGeneratorMock).createMetaInfMuleSourceFolderContent();
     doNothing().when(contentGeneratorMock).createDescriptors();
 

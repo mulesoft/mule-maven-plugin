@@ -10,7 +10,19 @@
 
 package org.mule.tools.maven.mojo.model.lifecycle;
 
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.*;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.COMPILE;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.DEPLOY;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.GENERATE_SOURCES;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.GENERATE_TEST_SOURCES;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.INITIALIZE;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.INSTALL;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PACKAGE;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_RESOURCES;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_SOURCES;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_TEST_RESOURCES;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST_COMPILE;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +55,10 @@ public abstract class MuleLifecycleMappingMaven {
     phases.put(PROCESS_SOURCES.id(), buildGoals("org.mule.tools.maven:mule-maven-plugin:process-sources"));
     phases.put(PROCESS_RESOURCES.id(),
                buildGoals("org.apache.maven.plugins:maven-resources-plugin:3.0.2:resources"));
-    phases.put(COMPILE.id(), buildGoals("org.apache.maven.plugins:maven-compiler-plugin:3.6.1:compile"));
+
+    phases
+        .put(COMPILE.id(),
+             buildGoals("org.apache.maven.plugins:maven-compiler-plugin:3.6.1:compile,org.mule.tools.maven:mule-maven-plugin:compile"));
     phases.put(GENERATE_TEST_SOURCES.id(),
                buildGoals("org.mule.tools.maven:mule-maven-plugin:generate-test-sources"));
     phases.put(PROCESS_TEST_RESOURCES.id(),

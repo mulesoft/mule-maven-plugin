@@ -10,18 +10,26 @@
 
 package org.mule.tools.api.packager;
 
-import org.codehaus.plexus.archiver.ArchiverException;
-import org.mule.tools.api.packager.packaging.PackagingType;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.mule.tools.api.packager.structure.PackagerFolders.*;
+import static org.mule.tools.api.packager.structure.PackagerFolders.CLASSES;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MAVEN;
+import static org.mule.tools.api.packager.structure.PackagerFolders.META_INF;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MULE;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_SRC;
+import static org.mule.tools.api.packager.structure.PackagerFolders.POLICY;
+import static org.mule.tools.api.packager.structure.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.codehaus.plexus.archiver.ArchiverException;
+
+import org.mule.tools.api.packager.packaging.PackagingType;
 
 /**
  * Builder for Mule Application archives.
@@ -253,9 +261,9 @@ public class PackageBuilder {
           .withClasses(new File(originFolder + File.separator + CLASSES))
           .withMaven(new File(originFolder + File.separator + META_INF + File.separator + MAVEN))
           .withMuleArtifact(new File(originFolder + File.separator + META_INF + File.separator + MULE_ARTIFACT));
+
       if (PackagingType.MULE_POLICY.equals(packagingType)) {
         builder.withPolicy(new File(originFolder + File.separator + POLICY));
-
       } else {
         builder.withMule(new File(originFolder + File.separator + MULE));
       }

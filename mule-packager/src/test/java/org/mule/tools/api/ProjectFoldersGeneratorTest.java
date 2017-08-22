@@ -22,6 +22,7 @@ import static org.mule.tools.api.packager.PackagerTestUtils.assertFileExists;
 import static org.mule.tools.api.packager.PackagerTestUtils.assertFolderExist;
 import static org.mule.tools.api.packager.PackagerTestUtils.assertFolderIsEmpty;
 import static org.mule.tools.api.packager.PackagerTestUtils.createFolder;
+import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -57,9 +58,6 @@ public class ProjectFoldersGeneratorTest {
     generator = new ProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_APPLICATION);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
-    assertFolderExist(basePath.resolve(MULE));
-    assertFolderIsEmpty(basePath.resolve(MULE));
-
     checkNoPackageDependentFolders();
   }
 
@@ -68,9 +66,6 @@ public class ProjectFoldersGeneratorTest {
     generator = new ProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_POLICY);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
-    assertFolderExist(basePath.resolve(POLICY));
-    assertFolderIsEmpty(basePath.resolve(POLICY));
-
     checkNoPackageDependentFolders();
   }
 
@@ -78,9 +73,6 @@ public class ProjectFoldersGeneratorTest {
   public void generateMuleDomain() {
     generator = new ProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_DOMAIN);
     generator.generate(projectBaseFolder.getRoot().toPath());
-
-    assertFolderExist(basePath.resolve(MULE));
-    assertFolderIsEmpty(basePath.resolve(MULE));
 
     checkNoPackageDependentFolders();
   }

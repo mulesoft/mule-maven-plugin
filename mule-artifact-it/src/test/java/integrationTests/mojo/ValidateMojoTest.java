@@ -94,36 +94,6 @@ public class ValidateMojoTest extends MojoTest {
     verifier.verifyErrorFreeLog();
   }
 
-  @Test
-  public void testFailMissingJsonOnPolicyProject() throws Exception {
-    String artifactId = "missing-json-policy-project";
-    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = buildVerifier(projectBaseDirectory);
-
-    String textInLog = "Invalid Mule project. Missing mule-artifact.json file, it must be present in the root of application";
-    executeGoalAndVerifyText(VALIDATE, textInLog);
-  }
-
-  @Test
-  public void testFailMissingJsonOnDomainProject() throws Exception {
-    String artifactId = "missing-json-domain-project";
-    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = buildVerifier(projectBaseDirectory);
-
-    String textInLog = "Invalid Mule project. Missing mule-artifact.json file, it must be present in the root of application";
-    executeGoalAndVerifyText(VALIDATE, textInLog);
-  }
-
-  @Test
-  public void testFailMissingJsonAppProject() throws Exception {
-    String artifactId = "missing-json-project";
-    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
-    verifier = buildVerifier(projectBaseDirectory);
-
-    String textInLog = "Invalid Mule project. Missing mule-artifact.json file, it must be present in the root of application";
-    executeGoalAndVerifyText(VALIDATE, textInLog);
-  }
-
   private void executeGoalAndVerifyText(String goal, String text) throws VerificationException {
     try {
       verifier.executeGoal(goal);

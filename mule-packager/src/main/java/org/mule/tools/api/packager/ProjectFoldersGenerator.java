@@ -44,7 +44,6 @@ public class ProjectFoldersGenerator {
    * @param targetFolder the target folder path
    */
   public void generate(Path targetFolder) {
-    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), packagingType.getSourceFolderName());
     createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), FolderNames.TEST_MULE.value(), FolderNames.MUNIT.value());
 
     createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), FolderNames.META_INF.value(), FolderNames.MULE_SRC.value(),

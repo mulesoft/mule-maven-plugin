@@ -104,7 +104,7 @@ public class StandaloneEnvironment {
     int tries = 0;
     boolean acceptingDeployments;
     TemporaryFolder folder = new TemporaryFolder();
-    File dummyFile = folder.newFile("dummy.zip");
+    File dummyFile = folder.newFile("dummy.jar");
     AgentClient agentClient = new AgentClient(new SystemStreamLog(), "http://localhost:9999/");
     do {
       try {

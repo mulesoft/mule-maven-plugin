@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.client;
+package org.mule.tools.client.agent;
 
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
@@ -94,6 +94,7 @@ public abstract class AbstractClient {
 
   /**
    * Template method to allow subclasses to configure the request (adding headers for example).
+   * 
    * @param builder The invocation builder for the request.
    */
   protected void configureRequest(Invocation.Builder builder) {

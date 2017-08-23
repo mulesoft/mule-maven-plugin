@@ -6,20 +6,15 @@
     <groupId>com.mulesoft.muleesb.it</groupId>
     <artifactId>agent</artifactId>
     <version>1.0</version>
-    <packaging>mule</packaging>
+    <packaging>mule-application</packaging>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.mule.tools.maven</groupId>
-                <artifactId>mule-app-maven-plugin</artifactId>
-                <version>1.1</version>
-                <extensions>true</extensions>
-            </plugin>
-            <plugin>
-                <groupId>org.mule.tools.maven</groupId>
                 <artifactId>mule-maven-plugin</artifactId>
-                <version>3.0.0-SNAPSHOT</version>
+                <version>${muleMavenPluginVersion}</version>
+                <extensions>true</extensions>
                 <configuration>
                     <deploymentConfiguration>
                         <deploymentType>agent</deploymentType>

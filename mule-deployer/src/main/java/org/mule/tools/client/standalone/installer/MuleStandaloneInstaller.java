@@ -21,6 +21,7 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
+import org.eclipse.aether.deployment.DeploymentException;
 import org.mule.tools.model.ArtifactDescription;
 import org.mule.tools.model.DeploymentConfiguration;
 import org.apache.maven.plugin.logging.Log;
@@ -50,7 +51,7 @@ public class MuleStandaloneInstaller {
     this.log = log;
   }
 
-  public File installMule(File buildDirectory) throws MojoExecutionException, MojoFailureException {
+  public File installMule(File buildDirectory) throws DeploymentException {
     if (deploymentConfiguration.getMuleHome() == null) {
       deploymentConfiguration.setMuleHome(doInstallMule(buildDirectory));
     }
@@ -59,7 +60,7 @@ public class MuleStandaloneInstaller {
     return deploymentConfiguration.getMuleHome();
   }
 
-  public File doInstallMule(File buildDirectory) throws MojoExecutionException, MojoFailureException {
+  public File doInstallMule(File buildDirectory) throws DeploymentException {
     if (deploymentConfiguration.getMuleDistribution() == null) {
       if (deploymentConfiguration.isCommunity()) {
         deploymentConfiguration.setMuleDistribution(new ArtifactDescription("org.mule.distributions", "mule-standalone",
@@ -86,40 +87,36 @@ public class MuleStandaloneInstaller {
   /**
    * This code was inspired by maven-dependency-plugin GetMojo.
    */
-  public void unpackMule(ArtifactDescription muleDistribution, File destDir)
-      throws MojoExecutionException, MojoFailureException {
+  public void unpackMule(ArtifactDescription muleDistribution, File destDir) throws DeploymentException {
     File src = getDependency(muleDistribution);
     log.info("Copying " + src.getAbsolutePath() + " to " + destDir.getAbsolutePath());
     extract(src, destDir, muleDistribution.getType());
   }
 
   private void extract(File src, File dest, String type)
-      throws MojoExecutionException, MojoFailureException {
+      throws DeploymentException {
     try {
       UnArchiver unArchiver = getArchiver(type);
       unArchiver.setSourceFile(src);
       unArchiver.setDestDirectory(dest);
       unArchiver.extract();
     } catch (ArchiverException e) {
-      throw new MojoExecutionException("Couldn't extract file " + src + " to " + dest);
-    } catch (Exception e) {
-      throw new MojoFailureException("Couldn't extract file " + src + " to " + dest);
+      throw new DeploymentException("Couldn't extract file " + src + " to " + dest);
     }
   }
 
-  private UnArchiver getArchiver(String type) throws MojoExecutionException {
+  private UnArchiver getArchiver(String type) throws DeploymentException {
     UnArchiver unArchiver;
     try {
       unArchiver = archiverManager.getUnArchiver(type);
       log.debug("Found unArchiver by extension: " + unArchiver);
       return unArchiver;
     } catch (NoSuchArchiverException e) {
-      throw new MojoExecutionException("Couldn't find archiver for type: " + type);
+      throw new DeploymentException("Couldn't find archiver for type: " + type);
     }
   }
 
-  protected File getDependency(ArtifactDescription artifactDescription)
-      throws MojoExecutionException, MojoFailureException {
+  protected File getDependency(ArtifactDescription artifactDescription) throws DeploymentException {
     try {
       Artifact artifact = artifactFactory.createArtifact(artifactDescription.getGroupId(),
                                                          artifactDescription.getArtifactId(), artifactDescription.getVersion(),
@@ -129,10 +126,7 @@ public class MuleStandaloneInstaller {
       artifactResolver.resolve(artifact, mavenProject.getRemoteArtifactRepositories(), localRepository);
       return artifact.getFile();
     } catch (AbstractArtifactResolutionException e) {
-      throw new MojoExecutionException("Couldn't download artifact: " + e.getMessage(), e);
-    } catch (Exception e) {
-      throw new MojoFailureException("Couldn't download artifact: " + e.getMessage());
+      throw new DeploymentException("Couldn't download artifact: " + e.getMessage(), e);
     }
   }
-
 }

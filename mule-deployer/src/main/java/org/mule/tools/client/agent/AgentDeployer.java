@@ -9,21 +9,25 @@
  */
 package org.mule.tools.client.agent;
 
+import groovy.util.ScriptException;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 
-import java.io.File;
-
 import org.apache.maven.plugin.logging.Log;
+import org.mule.tools.model.DeploymentConfiguration;
 
 public class AgentDeployer extends AbstractDeployer {
 
-  private final AgentClient agentClient;
+  private AgentClient agentClient;
 
-  public AgentDeployer(Log log, String applicationName, File application, String uri) {
-    super(applicationName, application, log);
-    this.agentClient = new AgentClient(log, uri);
+  public AgentDeployer(DeploymentConfiguration deploymentConfiguration, Log log) throws DeploymentException {
+    super(deploymentConfiguration, log);
   }
 
   @Override
@@ -35,6 +39,25 @@ public class AgentDeployer extends AbstractDeployer {
       error("Failure: " + e.getMessage());
       throw new DeploymentException("Failed to deploy application " + getApplicationName(), e);
     }
+  }
+
+  @Override
+  public void undeploy(MavenProject mavenProject) throws DeploymentException {
+    AgentClient agentClient = new AgentClient(log, deploymentConfiguration.getUri());
+    log.info("Undeploying application " + deploymentConfiguration.getApplicationName());
+    agentClient.undeployApplication(deploymentConfiguration.getApplicationName());
+  }
+
+  @Override
+  protected void initialize() {
+    this.agentClient = new AgentClient(log, deploymentConfiguration.getUri());
+  }
+
+  @Override
+  public void resolveDependencies(MavenProject mavenProject, ArtifactResolver artifactResolver, ArchiverManager archiverManager,
+                                  ArtifactFactory artifactFactory, ArtifactRepository localRepository)
+      throws DeploymentException, ScriptException {
+
   }
 
 }

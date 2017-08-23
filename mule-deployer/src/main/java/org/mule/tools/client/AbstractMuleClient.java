@@ -12,6 +12,7 @@ package org.mule.tools.client;
 import static javax.ws.rs.core.Response.Status.Family.SUCCESSFUL;
 import static javax.ws.rs.core.Response.Status.Family.familyOf;
 
+import org.mule.tools.client.agent.AbstractClient;
 import org.mule.tools.client.arm.model.AuthorizationResponse;
 import org.mule.tools.client.arm.model.Environment;
 import org.mule.tools.client.arm.model.Environments;

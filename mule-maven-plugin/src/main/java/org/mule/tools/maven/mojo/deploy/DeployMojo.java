@@ -50,7 +50,7 @@ import org.mule.tools.utils.GroovyUtils;
  *
  * @author <a href="mailto:asequeira@gmail.com">Ale Sequeira</a>
  * @see UndeployMojo
- * @see org.mule.test.infrastructure.process.MuleProcessController
+ * @see MuleProcessController
  * @since 1.0
  */
 @Mojo(name = "deploy", requiresProject = true)

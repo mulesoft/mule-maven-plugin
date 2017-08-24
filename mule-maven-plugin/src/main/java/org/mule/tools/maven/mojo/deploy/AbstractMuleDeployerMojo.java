@@ -84,17 +84,11 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
         standalone();
         break;
       case cluster:
-        cluster();
-        break;
       case arm:
-        arm();
-        break;
       case cloudhub:
-        cloudhub();
-        break;
       case agent:
-        agent();
-        break;
+        throw new MojoExecutionException("The deploymentConfiguration type "
+            + deploymentConfiguration.getDeploymentType() + " is not yet available.");
       default:
         throw new MojoFailureException("Unsupported deploymentConfiguration type: "
             + deploymentConfiguration.getDeploymentType());

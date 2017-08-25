@@ -2,14 +2,14 @@
   "name": "new-package",
   "minMuleVersion": "4.0.0-SNAPSHOT",
   "classLoaderModelLoaderDescriptor": {
-    "id": "maven",
+    "id": "mule",
     "attributes": {
       "exportedPackages": [],
       "exportedResources": []
     }
   },
   "bundleDescriptorLoader": {
-    "id": "maven",
+    "id": "mule",
     "attributes": {}
   },
   "configs": [

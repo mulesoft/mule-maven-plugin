@@ -58,7 +58,6 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
 
     when(packageBuilderMock.withDestinationFile(any())).thenReturn(packageBuilderMock);
     when(packageBuilderMock.withClasses(any())).thenReturn(packageBuilderMock);
-    when(packageBuilderMock.withMule(any())).thenReturn(packageBuilderMock);
     when(packageBuilderMock.withRepository(any())).thenReturn(packageBuilderMock);
     when(packageBuilderMock.withMuleArtifact(any())).thenReturn(packageBuilderMock);
     when(packageBuilderMock.withMaven(any())).thenReturn(packageBuilderMock);

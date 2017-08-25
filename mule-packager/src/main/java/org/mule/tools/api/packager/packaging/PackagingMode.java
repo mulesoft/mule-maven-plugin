@@ -10,14 +10,16 @@
 
 package org.mule.tools.api.packager.packaging;
 
-import org.mule.tools.api.packager.PackageBuilder;
-
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
-import static org.mule.tools.api.packager.structure.PackagerFolders.*;
+import static org.mule.tools.api.packager.structure.PackagerFolders.CLASSES;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_SRC;
+import static org.mule.tools.api.packager.structure.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.util.Map;
+
+import org.mule.tools.api.packager.PackageBuilder;
 
 public enum PackagingMode {
   // TODO we should add a method to inform those folders that are mandatory based on the packaging mode
@@ -34,7 +36,6 @@ public enum PackagingMode {
     @Override
     public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
       return packageBuilder
-          .withMule(fileMap.get(MULE))
           .withClasses(fileMap.get(CLASSES))
           .withRepository(fileMap.get(REPOSITORY));
     }
@@ -45,8 +46,7 @@ public enum PackagingMode {
     @Override
     public PackageBuilder applyPackaging(PackageBuilder packageBuilder, Map<String, File> fileMap) {
       return packageBuilder
-          .withClasses(fileMap.get(CLASSES))
-          .withMule(fileMap.get(MULE));
+          .withClasses(fileMap.get(CLASSES));
     }
   };
 

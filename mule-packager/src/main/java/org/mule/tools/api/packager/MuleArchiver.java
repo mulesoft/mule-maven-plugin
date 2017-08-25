@@ -11,13 +11,10 @@
 package org.mule.tools.api.packager;
 
 
-import static org.mule.tools.api.packager.structure.PackagerFolders.CLASSES;
 import static org.mule.tools.api.packager.structure.PackagerFolders.MAVEN;
 import static org.mule.tools.api.packager.structure.PackagerFolders.META_INF;
-import static org.mule.tools.api.packager.structure.PackagerFolders.MULE;
 import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_SRC;
-import static org.mule.tools.api.packager.structure.PackagerFolders.POLICY;
 import static org.mule.tools.api.packager.structure.PackagerFolders.REPOSITORY;
 
 import java.io.File;
@@ -28,17 +25,11 @@ import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.util.DirectoryScanner;
 
 /**
- * Creates the structure and archive for a Mule Application
+ * Defines and creates the basic structure of Mule .jar file
  */
 public class MuleArchiver extends ZipArchiver {
 
   public final static String ROOT_LOCATION = StringUtils.EMPTY;
-
-  public final static String CLASSES_LOCATION = CLASSES + File.separator;
-
-  public final static String MULE_LOCATION = CLASSES_LOCATION + MULE + File.separator;
-
-  public final static String POLICY_LOCATION = POLICY + File.separator;
 
   public final static String META_INF_LOCATION = META_INF + File.separator;
 
@@ -50,14 +41,6 @@ public class MuleArchiver extends ZipArchiver {
 
   public static final String REPOSITORY_LOCATION = REPOSITORY + File.separator;
 
-
-  public void addClasses(File resource, String[] includes, String[] excludes) throws ArchiverException {
-    if (resource.isFile()) {
-      addFile(resource, CLASSES_LOCATION + resource.getName());
-    } else {
-      addDirectory(resource, CLASSES_LOCATION, includes, addDefaultExcludes(excludes));
-    }
-  }
 
   public void addMuleSrc(File resource, String[] includes, String[] excludes) throws ArchiverException {
     if (resource.isFile()) {
@@ -88,22 +71,6 @@ public class MuleArchiver extends ZipArchiver {
       addFile(resource, REPOSITORY_LOCATION + resource.getName());
     } else {
       addDirectory(resource, REPOSITORY_LOCATION, includes, addDefaultExcludes(excludes));
-    }
-  }
-
-  public void addMule(File resource, String[] includes, String[] excludes) throws ArchiverException {
-    if (resource.isFile()) {
-      addFile(resource, MULE_LOCATION + resource.getName());
-    } else {
-      addDirectory(resource, MULE_LOCATION, includes, addDefaultExcludes(excludes));
-    }
-  }
-
-  public void addPolicy(File resource, String[] includes, String[] excludes) throws ArchiverException {
-    if (resource.isFile()) {
-      addFile(resource, POLICY_LOCATION + resource.getName());
-    } else {
-      addDirectory(resource, POLICY_LOCATION, includes, addDefaultExcludes(excludes));
     }
   }
 

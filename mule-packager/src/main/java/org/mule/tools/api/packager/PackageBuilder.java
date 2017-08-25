@@ -174,7 +174,8 @@ public class PackageBuilder {
     }
 
     if (null != classesFolder && classesFolder.exists() && classesFolder.isDirectory()) {
-      archiver.addClasses(classesFolder, null, null);
+      // archiver.addClasses(classesFolder, null, null);
+      archiver.addToRoot(classesFolder, null, null);
       // Warning
     }
 

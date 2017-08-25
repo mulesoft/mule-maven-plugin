@@ -11,14 +11,21 @@
 package org.mule.tools.api.packager;
 
 
+import static org.mule.tools.api.packager.structure.PackagerFolders.CLASSES;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MAVEN;
+import static org.mule.tools.api.packager.structure.PackagerFolders.META_INF;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MULE;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_SRC;
+import static org.mule.tools.api.packager.structure.PackagerFolders.POLICY;
+import static org.mule.tools.api.packager.structure.PackagerFolders.REPOSITORY;
+
 import java.io.File;
 
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.util.DirectoryScanner;
-
-import static org.mule.tools.api.packager.structure.PackagerFolders.*;
 
 /**
  * Creates the structure and archive for a Mule Application
@@ -100,11 +107,11 @@ public class MuleArchiver extends ZipArchiver {
     }
   }
 
-  public void addToRootDirectory(File resource) throws ArchiverException {
+  public void addToRoot(File resource, String[] includes, String[] excludes) throws ArchiverException {
     if (resource.isFile()) {
       addFile(resource, ROOT_LOCATION + resource.getName());
     } else {
-      addDirectory(resource, ROOT_LOCATION, null, addDefaultExcludes(null));
+      addDirectory(resource, ROOT_LOCATION, includes, addDefaultExcludes(excludes));
     }
   }
 

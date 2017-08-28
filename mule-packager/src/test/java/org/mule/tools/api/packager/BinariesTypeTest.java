@@ -10,7 +10,9 @@
 
 package org.mule.tools.api.packager;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.util.Map;
@@ -18,9 +20,10 @@ import java.util.Map;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 
-import com.google.common.collect.ImmutableMap;
 import org.mule.tools.api.packager.packaging.PackagingMode;
 import org.mule.tools.api.packager.structure.PackagerFolders;
+
+import com.google.common.collect.ImmutableMap;
 
 public class BinariesTypeTest extends PackageTypeTest {
 
@@ -34,7 +37,6 @@ public class BinariesTypeTest extends PackageTypeTest {
     File repository = mockFileWithName(PackagerFolders.REPOSITORY);
 
     when(packageBuilderMock.withClasses(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
-    when(packageBuilderMock.withMule(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
     when(packageBuilderMock.withRepository(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
 
     Map<String, File> fileMapMock =
@@ -43,7 +45,6 @@ public class BinariesTypeTest extends PackageTypeTest {
     packagingMode.applyPackaging(packageBuilderMock, fileMapMock);
 
     verify(packageBuilderMock).withClasses(classes);
-    verify(packageBuilderMock).withMule(mule);
     verify(packageBuilderMock).withRepository(repository);
   }
 

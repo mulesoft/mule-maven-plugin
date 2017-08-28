@@ -33,15 +33,12 @@ public class BinariesAndSourcesTypeTest extends PackageTypeTest {
     File mule = mockFileWithName(PackagerFolders.MULE);
 
     when(packageBuilderMock.withClasses(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
-    when(packageBuilderMock.withMule(ArgumentMatchers.any())).thenReturn(packageBuilderMock);
 
     Map<String, File> fileMapMock = ImmutableMap.of(classes.getName(), classes, mule.getName(), mule);
 
     packagingMode.applyPackaging(packageBuilderMock, fileMapMock);
 
     verify(packageBuilderMock).withClasses(classes);
-    verify(packageBuilderMock).withMule(mule);
-    // verify(packageBuilderMock, times(0)).withMetaInf(ArgumentMatchers.any());
   }
 
 

@@ -15,15 +15,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.mule.tools.api.packager.structure.PackagerFolders.CLASSES;
 import static org.mule.tools.api.packager.structure.PackagerFolders.MAVEN;
 import static org.mule.tools.api.packager.structure.PackagerFolders.META_INF;
-import static org.mule.tools.api.packager.structure.PackagerFolders.MULE;
 import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_SRC;
-import static org.mule.tools.api.packager.structure.PackagerFolders.POLICY;
 import static org.mule.tools.api.packager.structure.PackagerFolders.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,9 +35,6 @@ import org.mule.tools.api.packager.packaging.PackagingType;
  */
 public class PackageBuilder {
 
-
-  private File muleFolder = null;
-  private File policyFolder = null;
   private File classesFolder = null;
   private File repositoryFolder = null;
 
@@ -50,7 +46,6 @@ public class PackageBuilder {
 
   private File destinationFile;
   private MuleArchiver archiver = null;
-
 
   public MuleArchiver getMuleArchiver() {
     if (archiver == null) {
@@ -76,18 +71,6 @@ public class PackageBuilder {
   public PackageBuilder withClasses(File folder) {
     checkArgument(folder != null, "The folder must not be null");
     classesFolder = folder;
-    return this;
-  }
-
-  public PackageBuilder withMule(File folder) {
-    checkArgument(folder != null);
-    muleFolder = folder;
-    return this;
-  }
-
-  public PackageBuilder withPolicy(File folder) {
-    checkArgument(folder != null);
-    policyFolder = folder;
     return this;
   }
 
@@ -142,13 +125,8 @@ public class PackageBuilder {
     // TODO, ensure the paths exits or use the validator
     return this
         .withClasses(workingDirectory.resolve(CLASSES).toFile())
-        // TODO check this
-        .withMule(workingDirectory.resolve(MULE).toFile())
-        .withPolicy(workingDirectory.resolve(POLICY).toFile())
-
         .withMaven(workingDirectory.resolve(META_INF).resolve(MAVEN).toFile())
         .withMuleArtifact(workingDirectory.resolve(META_INF).resolve(MULE_ARTIFACT).toFile())
-
         .withMuleSrc(workingDirectory.resolve(META_INF).resolve(MULE_SRC).toFile())
         .withRepository(workingDirectory.resolve(REPOSITORY).toFile());
   }
@@ -165,37 +143,25 @@ public class PackageBuilder {
     runPrePackageValidations();
 
     MuleArchiver archiver = getMuleArchiver();
-    if (null != muleFolder && muleFolder.exists() && muleFolder.isDirectory()) {
-      archiver.addMule(muleFolder, null, null);
-    }
-
-    if (null != policyFolder && policyFolder.exists() && policyFolder.isDirectory()) {
-      archiver.addPolicy(policyFolder, null, null);
-    }
 
     if (null != classesFolder && classesFolder.exists() && classesFolder.isDirectory()) {
-      archiver.addClasses(classesFolder, null, null);
-      // Warning
+      archiver.addToRoot(classesFolder, null, null);
     }
 
     if (null != mavenFolder && mavenFolder.exists() && mavenFolder.isDirectory()) {
       archiver.addMaven(mavenFolder, null, null);
-      // Warning
     }
 
     if (null != muleArtifactFolder && muleArtifactFolder.exists() && muleArtifactFolder.isDirectory()) {
       archiver.addMuleArtifact(muleArtifactFolder, null, null);
-      // Warning
     }
 
     if (null != muleSrcFolder && muleSrcFolder.exists() && muleSrcFolder.isDirectory()) {
       archiver.addMuleSrc(muleSrcFolder, null, null);
-      // Warning
     }
 
     if (null != repositoryFolder && repositoryFolder.exists() && repositoryFolder.isDirectory()) {
       archiver.addRepository(repositoryFolder, null, null);
-      // Warning
     }
 
     archiver.setDestFile(destinationFile);
@@ -208,17 +174,17 @@ public class PackageBuilder {
    * 
    * <pre>
    *
-   * ├── classes
-   * │   ├── log4j2.xml
-   * │   ├── org
-   * │   │   └── MyClass.class
-   * │   ├── mule
-   * │   │   ├── package
-   * │   │   └── mule-configuration(s).xml
-   * │   ├── api
-   * │   │   └── *.raml
-   * │   └── wsdl
-   * │       └── *.wsdl
+   *
+   * ├── log4j2.xml
+   * ├── org
+   * │   └── MyClass.class
+   * ├── mule
+   * │   ├── package
+   * │   └── mule-configuration(s).xml
+   * ├── api
+   * │   └── *.raml
+   * └── wsdl
+   * │   └── *.wsdl
    * ├── META-INF
    * │   ├── mule-src
    * │   │   └── application-name
@@ -255,28 +221,28 @@ public class PackageBuilder {
   public void createMuleApp(File destinationFile, String originFolder, PackagingType packagingType, boolean onlyMuleSources,
                             boolean lightweightPackage, boolean attachMuleSources)
       throws ArchiverException, IOException {
+
+    Path originFolderPath = Paths.get(originFolder);
+    Path metaInfPath = originFolderPath.resolve(META_INF);
+
     PackageBuilder builder = this.withDestinationFile(destinationFile);
     if (!onlyMuleSources) {
       builder
-          .withClasses(new File(originFolder + File.separator + CLASSES))
-          .withMaven(new File(originFolder + File.separator + META_INF + File.separator + MAVEN))
-          .withMuleArtifact(new File(originFolder + File.separator + META_INF + File.separator + MULE_ARTIFACT));
+          .withClasses(originFolderPath.resolve(CLASSES).toFile())
+          .withMaven(metaInfPath.resolve(MAVEN).toFile())
+          .withMuleArtifact(metaInfPath.resolve(MULE_ARTIFACT).toFile());
 
-      if (PackagingType.MULE_POLICY.equals(packagingType)) {
-        builder.withPolicy(new File(originFolder + File.separator + POLICY));
-      } else {
-        builder.withMule(new File(originFolder + File.separator + MULE));
-      }
       if (!lightweightPackage) {
-        builder.withRepository(new File(originFolder + File.separator + REPOSITORY));
+        builder.withRepository(originFolderPath.resolve(REPOSITORY).toFile());
       }
 
       if (attachMuleSources) {
-        builder.withMuleSrc(new File(originFolder + File.separator + META_INF + File.separator + MULE_SRC));
+        builder.withMuleSrc(metaInfPath.resolve(MULE_SRC).toFile());
       }
     } else {
-      builder.withMuleSrc(new File(originFolder + File.separator + META_INF + File.separator + MULE_SRC));
+      builder.withMuleSrc(metaInfPath.resolve(MULE_SRC).toFile());
     }
+
     builder.createDeployableFile();
   }
 

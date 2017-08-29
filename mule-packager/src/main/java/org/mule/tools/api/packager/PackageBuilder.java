@@ -12,12 +12,12 @@ package org.mule.tools.api.packager;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.mule.tools.api.packager.structure.PackagerFolders.CLASSES;
-import static org.mule.tools.api.packager.structure.PackagerFolders.MAVEN;
-import static org.mule.tools.api.packager.structure.PackagerFolders.META_INF;
-import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_ARTIFACT;
-import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_SRC;
-import static org.mule.tools.api.packager.structure.PackagerFolders.REPOSITORY;
+import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
+import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
+import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
@@ -124,11 +124,11 @@ public class PackageBuilder {
   public PackageBuilder fromWorkingDirectory(Path workingDirectory) {
     // TODO, ensure the paths exits or use the validator
     return this
-        .withClasses(workingDirectory.resolve(CLASSES).toFile())
-        .withMaven(workingDirectory.resolve(META_INF).resolve(MAVEN).toFile())
-        .withMuleArtifact(workingDirectory.resolve(META_INF).resolve(MULE_ARTIFACT).toFile())
-        .withMuleSrc(workingDirectory.resolve(META_INF).resolve(MULE_SRC).toFile())
-        .withRepository(workingDirectory.resolve(REPOSITORY).toFile());
+        .withClasses(workingDirectory.resolve(CLASSES.value()).toFile())
+        .withMaven(workingDirectory.resolve(META_INF.value()).resolve(MAVEN.value()).toFile())
+        .withMuleArtifact(workingDirectory.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile())
+        .withMuleSrc(workingDirectory.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile())
+        .withRepository(workingDirectory.resolve(REPOSITORY.value()).toFile());
   }
 
   /**
@@ -223,24 +223,24 @@ public class PackageBuilder {
       throws ArchiverException, IOException {
 
     Path originFolderPath = Paths.get(originFolder);
-    Path metaInfPath = originFolderPath.resolve(META_INF);
+    Path metaInfPath = originFolderPath.resolve(META_INF.value());
 
     PackageBuilder builder = this.withDestinationFile(destinationFile);
     if (!onlyMuleSources) {
       builder
-          .withClasses(originFolderPath.resolve(CLASSES).toFile())
-          .withMaven(metaInfPath.resolve(MAVEN).toFile())
-          .withMuleArtifact(metaInfPath.resolve(MULE_ARTIFACT).toFile());
+          .withClasses(originFolderPath.resolve(CLASSES.value()).toFile())
+          .withMaven(metaInfPath.resolve(MAVEN.value()).toFile())
+          .withMuleArtifact(metaInfPath.resolve(MULE_ARTIFACT.value()).toFile());
 
       if (!lightweightPackage) {
-        builder.withRepository(originFolderPath.resolve(REPOSITORY).toFile());
+        builder.withRepository(originFolderPath.resolve(REPOSITORY.value()).toFile());
       }
 
       if (attachMuleSources) {
-        builder.withMuleSrc(metaInfPath.resolve(MULE_SRC).toFile());
+        builder.withMuleSrc(metaInfPath.resolve(MULE_SRC.value()).toFile());
       }
     } else {
-      builder.withMuleSrc(metaInfPath.resolve(MULE_SRC).toFile());
+      builder.withMuleSrc(metaInfPath.resolve(MULE_SRC.value()).toFile());
     }
 
     builder.createDeployableFile();

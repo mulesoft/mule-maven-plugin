@@ -17,7 +17,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
-import static org.mule.tools.api.packager.structure.PackagerFolders.CLASSES;
+import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 
 import java.io.File;
 import java.io.IOException;
@@ -95,7 +95,7 @@ public class ContentGeneratorTest {
   @Test
   public void createSrcFolderContent() throws IOException {
     String sourceFolderName = packagingType.getSourceFolderName();
-    String destinationFolderName = CLASSES;
+    String destinationFolderName = CLASSES.value();
 
 
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath().resolve(PackagerTestUtils.SRC)

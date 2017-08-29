@@ -19,12 +19,12 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mule.tools.api.packager.structure.PackagerFolders.CLASSES;
-import static org.mule.tools.api.packager.structure.PackagerFolders.MAVEN;
-import static org.mule.tools.api.packager.structure.PackagerFolders.META_INF;
-import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_ARTIFACT;
-import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_SRC;
-import static org.mule.tools.api.packager.structure.PackagerFolders.REPOSITORY;
+import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
+import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
+import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
@@ -157,13 +157,16 @@ public class PackageBuilderTest {
 
     packageBuilder.createDeployableFile();
 
-    verify(muleArchiverMock, times(0)).addToRoot(workingDirectory.resolve(CLASSES).toFile(), null, null);
+    verify(muleArchiverMock, times(0)).addToRoot(workingDirectory.resolve(CLASSES.value()).toFile(), null, null);
 
-    verify(muleArchiverMock, times(0)).addMaven(workingDirectory.resolve(META_INF).resolve(MAVEN).toFile(), null, null);
-    verify(muleArchiverMock, times(0)).addMuleArtifact(workingDirectory.resolve(META_INF).resolve(MULE_ARTIFACT).toFile(),
-                                                       null, null);
-    verify(muleArchiverMock, times(0)).addMuleSrc(workingDirectory.resolve(META_INF).resolve(MULE_SRC).toFile(), null, null);
-    verify(muleArchiverMock, times(0)).addRepository(workingDirectory.resolve(REPOSITORY).toFile(), null, null);
+    verify(muleArchiverMock, times(0)).addMaven(workingDirectory.resolve(META_INF.value()).resolve(MAVEN.value()).toFile(), null,
+                                                null);
+    verify(muleArchiverMock, times(0))
+        .addMuleArtifact(workingDirectory.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
+                         null, null);
+    verify(muleArchiverMock, times(0)).addMuleSrc(workingDirectory.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(),
+                                                  null, null);
+    verify(muleArchiverMock, times(0)).addRepository(workingDirectory.resolve(REPOSITORY.value()).toFile(), null, null);
     verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
     verify(muleArchiverMock, times(1)).createArchive();
   }
@@ -178,20 +181,23 @@ public class PackageBuilderTest {
     packageBuilder.withDestinationFile(destinationFileMock);
     packageBuilder.fromWorkingDirectory(workingDirectory);
 
-    workingDirectory.resolve(CLASSES).toFile().mkdirs();
-    workingDirectory.resolve(META_INF).resolve(MAVEN).toFile().mkdirs();
-    workingDirectory.resolve(META_INF).resolve(MULE_ARTIFACT).toFile().mkdirs();
-    workingDirectory.resolve(META_INF).resolve(MULE_SRC).toFile().mkdirs();
-    workingDirectory.resolve(REPOSITORY).toFile().mkdirs();
+    workingDirectory.resolve(CLASSES.value()).toFile().mkdirs();
+    workingDirectory.resolve(META_INF.value()).resolve(MAVEN.value()).toFile().mkdirs();
+    workingDirectory.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile().mkdirs();
+    workingDirectory.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile().mkdirs();
+    workingDirectory.resolve(REPOSITORY.value()).toFile().mkdirs();
 
     packageBuilder.createDeployableFile();
 
-    verify(muleArchiverMock, times(1)).addToRoot(workingDirectory.resolve(CLASSES).toFile(), null, null);
-    verify(muleArchiverMock, times(1)).addMaven(workingDirectory.resolve(META_INF).resolve(MAVEN).toFile(), null, null);
-    verify(muleArchiverMock, times(1)).addMuleArtifact(workingDirectory.resolve(META_INF).resolve(MULE_ARTIFACT).toFile(),
-                                                       null, null);
-    verify(muleArchiverMock, times(1)).addMuleSrc(workingDirectory.resolve(META_INF).resolve(MULE_SRC).toFile(), null, null);
-    verify(muleArchiverMock, times(1)).addRepository(workingDirectory.resolve(REPOSITORY).toFile(), null, null);
+    verify(muleArchiverMock, times(1)).addToRoot(workingDirectory.resolve(CLASSES.value()).toFile(), null, null);
+    verify(muleArchiverMock, times(1)).addMaven(workingDirectory.resolve(META_INF.value()).resolve(MAVEN.value()).toFile(), null,
+                                                null);
+    verify(muleArchiverMock, times(1))
+        .addMuleArtifact(workingDirectory.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
+                         null, null);
+    verify(muleArchiverMock, times(1)).addMuleSrc(workingDirectory.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(),
+                                                  null, null);
+    verify(muleArchiverMock, times(1)).addRepository(workingDirectory.resolve(REPOSITORY.value()).toFile(), null, null);
     verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
     verify(muleArchiverMock, times(1)).createArchive();
   }

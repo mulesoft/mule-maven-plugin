@@ -12,11 +12,12 @@ package org.mule.tools.api.packager.packaging;
 
 import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
+import static com.google.common.base.Preconditions.checkArgument;
 import static org.mule.tools.api.packager.structure.FolderNames.MAIN;
 import static org.mule.tools.api.packager.structure.FolderNames.MUNIT;
 import static org.mule.tools.api.packager.structure.FolderNames.SRC;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST;
-import static org.mule.tools.api.packager.structure.PackagerFolders.MULE;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -65,12 +66,9 @@ public enum PackagingType {
   }
 
   public static PackagingType fromString(String name) {
+    checkArgument(name != null, "Packaging type name should not be null");
     String packagingName = LOWER_HYPHEN.to(UPPER_UNDERSCORE, name);
     return valueOf(packagingName);
-  }
-
-  public boolean equals(String name) {
-    return name == null ? false : fromString(name).equals(this);
   }
 
   @Override
@@ -78,12 +76,12 @@ public enum PackagingType {
     return UPPER_UNDERSCORE.to(LOWER_HYPHEN, this.name());
   }
 
-  public Path getSourceFolderLocation(Path projectBasedFolder) {
-    return Paths.get(mainFolder(projectBasedFolder).getAbsolutePath(), getSourceFolderName());
+  public Path getSourceFolderLocation(Path projectBaseFolder) {
+    return Paths.get(mainFolder(projectBaseFolder).getAbsolutePath(), getSourceFolderName());
   }
 
-  public Path getTestSourceFolderLocation(Path projectBasedFolder) {
-    return testFolder(projectBasedFolder).toPath().resolve(getTestFolderName());
+  public Path getTestSourceFolderLocation(Path projectBaseFolder) {
+    return testFolder(projectBaseFolder).toPath().resolve(getTestFolderName());
   }
 
   public String getTestFolderName() {
@@ -91,29 +89,19 @@ public enum PackagingType {
   }
 
   public String getSourceFolderName() {
-    if (MULE_POLICY.equals(defaultClassifier.toString())) {
-      return MULE;
-    }
-    if (MULE_APPLICATION.equals(defaultClassifier.toString())) {
-      return MULE;
-    }
-
-    if (MULE_DOMAIN.equals(defaultClassifier.toString())) {
-      return MULE;
-    }
-
-    return MULE;
+    return MULE.value();
   }
 
-  private File mainFolder(Path projectBasedFolder) {
-    return Paths.get(srcFolder(projectBasedFolder).getAbsolutePath(), MAIN.value()).toFile();
+  private File mainFolder(Path projectBaseFolder) {
+    return Paths.get(srcFolder(projectBaseFolder).getAbsolutePath(), MAIN.value()).toFile();
   }
 
-  private File testFolder(Path projectBasedFolder) {
-    return Paths.get(srcFolder(projectBasedFolder).getAbsolutePath(), TEST.value()).toFile();
+  private File testFolder(Path projectBaseFolder) {
+    return Paths.get(srcFolder(projectBaseFolder).getAbsolutePath(), TEST.value()).toFile();
   }
 
-  private File srcFolder(Path projectBasedFolder) {
-    return Paths.get(projectBasedFolder.toFile().getAbsolutePath(), SRC.value()).toFile();
+  private File srcFolder(Path projectBaseFolder) {
+    checkArgument(projectBaseFolder != null, "Project base folder should not be null");
+    return Paths.get(projectBaseFolder.toFile().getAbsolutePath(), SRC.value()).toFile();
   }
 }

@@ -13,13 +13,13 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 import static org.mule.tools.api.packager.structure.PackagerFiles.POM_PROPERTIES;
 import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
-import static org.mule.tools.api.packager.structure.PackagerFolders.CLASSES;
-import static org.mule.tools.api.packager.structure.PackagerFolders.MAVEN;
-import static org.mule.tools.api.packager.structure.PackagerFolders.META_INF;
-import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_ARTIFACT;
-import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_SRC;
-import static org.mule.tools.api.packager.structure.PackagerFolders.TARGET;
-import static org.mule.tools.api.packager.structure.PackagerFolders.TEST_MULE;
+import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
+import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
+import static org.mule.tools.api.packager.structure.FolderNames.TARGET;
+import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
 
 import java.io.File;
 import java.io.FileReader;
@@ -99,7 +99,7 @@ public class ContentGenerator {
    */
   public void createMuleSrcFolderContent() throws IOException {
     Path originPath = packagingType.getSourceFolderLocation(projectBaseFolder);
-    Path destinationPath = projectTargetFolder.resolve(CLASSES);
+    Path destinationPath = projectTargetFolder.resolve(CLASSES.value());
 
     copyContent(originPath, destinationPath, Optional.ofNullable(null), true, false);
   }
@@ -111,23 +111,23 @@ public class ContentGenerator {
    */
   public void createTestFolderContent() throws IOException {
     Path originPath = packagingType.getTestSourceFolderLocation(projectBaseFolder);
-    Path destinationPath = projectTargetFolder.resolve(TEST_MULE).resolve(originPath.getFileName());
+    Path destinationPath = projectTargetFolder.resolve(TEST_MULE.value()).resolve(originPath.getFileName());
 
     copyContent(originPath, destinationPath, Optional.ofNullable(null), false, true);
   }
 
   /**
-   * It creates the {@link org.mule.tools.api.packager.structure.PackagerFolders#MULE_SRC} folder used by IDEs to import the
-   * project source code
+   * It creates the {@link org.mule.tools.api.packager.structure.FolderNames#MULE_SRC} folder used by IDEs to import the project
+   * source code
    * 
    * @throws IOException
    */
   public void createMetaInfMuleSourceFolderContent() throws IOException {
     Path originPath = projectBaseFolder;
-    Path destinationPath = projectTargetFolder.resolve(META_INF).resolve(MULE_SRC).resolve(artifactId);
+    Path destinationPath = projectTargetFolder.resolve(META_INF.value()).resolve(MULE_SRC.value()).resolve(artifactId);
 
     List<Path> exclusions = new ArrayList<>();
-    exclusions.add(projectBaseFolder.resolve(TARGET));
+    exclusions.add(projectBaseFolder.resolve(TARGET.value()));
 
     copyContent(originPath, destinationPath, Optional.of(exclusions));
   }
@@ -151,7 +151,7 @@ public class ContentGenerator {
    */
   public void createApplicationClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel) {
     File destinationFolder =
-        projectTargetFolder.resolve(META_INF).resolve(MULE_ARTIFACT).toFile();
+        projectTargetFolder.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile();
     createClassLoaderModelJsonFile(classLoaderModel, destinationFolder);
   }
 
@@ -177,7 +177,8 @@ public class ContentGenerator {
 
   private void copyPomFile() throws IOException {
     Path originPath = projectBaseFolder.resolve(POM_XML);
-    Path destinationPath = projectTargetFolder.resolve(META_INF).resolve(MAVEN).resolve(groupId).resolve(artifactId);
+    Path destinationPath =
+        projectTargetFolder.resolve(META_INF.value()).resolve(MAVEN.value()).resolve(groupId).resolve(artifactId);
     String destinationFileName = originPath.getFileName().toString();
 
     copyFile(originPath, destinationPath, destinationFileName);
@@ -185,14 +186,15 @@ public class ContentGenerator {
 
   private void copyDescriptorFile() throws IOException {
     Path originPath = projectBaseFolder.resolve(MULE_ARTIFACT_JSON);
-    Path destinationPath = projectTargetFolder.resolve(META_INF).resolve(MULE_ARTIFACT);
+    Path destinationPath = projectTargetFolder.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value());
     String destinationFileName = originPath.getFileName().toString();
 
     copyFile(originPath, destinationPath, destinationFileName);
   }
 
   protected void createPomProperties() {
-    Path pomPropertiesDestinationPath = projectTargetFolder.resolve(META_INF).resolve(MAVEN).resolve(groupId).resolve(artifactId);
+    Path pomPropertiesDestinationPath =
+        projectTargetFolder.resolve(META_INF.value()).resolve(MAVEN.value()).resolve(groupId).resolve(artifactId);
     checkPathExist(pomPropertiesDestinationPath);
 
     Path pomPropertiesFilePath = pomPropertiesDestinationPath.resolve(POM_PROPERTIES);

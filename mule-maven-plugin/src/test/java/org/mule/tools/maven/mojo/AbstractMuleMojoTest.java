@@ -12,7 +12,7 @@ package org.mule.tools.maven.mojo;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.tools.api.packager.structure.PackagerFolders.META_INF;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -56,7 +56,7 @@ public class AbstractMuleMojoTest {
 
   @Before
   public void beforeTest() throws IOException {
-    metaInfFolder = buildFolderFolder.newFolder(META_INF);
+    metaInfFolder = buildFolderFolder.newFolder(META_INF.value());
     System.setOut(new PrintStream(outContent));
 
     buildMock = mock(Build.class);

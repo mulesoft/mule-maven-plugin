@@ -11,11 +11,11 @@
 package org.mule.tools.api.packager;
 
 
-import static org.mule.tools.api.packager.structure.PackagerFolders.MAVEN;
-import static org.mule.tools.api.packager.structure.PackagerFolders.META_INF;
-import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_ARTIFACT;
-import static org.mule.tools.api.packager.structure.PackagerFolders.MULE_SRC;
-import static org.mule.tools.api.packager.structure.PackagerFolders.REPOSITORY;
+import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
+import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
 
 import java.io.File;
 
@@ -31,15 +31,15 @@ public class MuleArchiver extends ZipArchiver {
 
   public final static String ROOT_LOCATION = StringUtils.EMPTY;
 
-  public final static String META_INF_LOCATION = META_INF + File.separator;
+  public final static String META_INF_LOCATION = META_INF.value() + File.separator;
 
-  public final static String MAVEN_LOCATION = META_INF_LOCATION + MAVEN + File.separator;
+  public final static String MAVEN_LOCATION = META_INF_LOCATION + MAVEN.value() + File.separator;
 
-  public final static String MULE_SRC_LOCATION = META_INF_LOCATION + MULE_SRC + File.separator;
+  public final static String MULE_SRC_LOCATION = META_INF_LOCATION + MULE_SRC.value() + File.separator;
 
-  public final static String MULE_ARTIFACT_LOCATION = META_INF_LOCATION + MULE_ARTIFACT + File.separator;
+  public final static String MULE_ARTIFACT_LOCATION = META_INF_LOCATION + MULE_ARTIFACT.value() + File.separator;
 
-  public static final String REPOSITORY_LOCATION = REPOSITORY + File.separator;
+  public static final String REPOSITORY_LOCATION = REPOSITORY.value() + File.separator;
 
 
   public void addMuleSrc(File resource, String[] includes, String[] excludes) throws ArchiverException {

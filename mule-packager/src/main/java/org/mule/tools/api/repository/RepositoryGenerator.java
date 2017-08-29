@@ -12,7 +12,7 @@ package org.mule.tools.api.repository;
 
 import static java.lang.String.format;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifactCoordinates;
-import static org.mule.tools.api.packager.structure.PackagerFolders.REPOSITORY;
+import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class RepositoryGenerator {
   }
 
   protected File getRepositoryFolder() {
-    File repositoryFolder = new File(outputDirectory, REPOSITORY);
+    File repositoryFolder = new File(outputDirectory, REPOSITORY.value());
     if (!repositoryFolder.exists()) {
       repositoryFolder.mkdirs();
     }

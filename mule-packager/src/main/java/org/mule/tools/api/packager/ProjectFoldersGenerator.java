@@ -25,7 +25,6 @@ public class ProjectFoldersGenerator {
 
   private String groupId;
   private String artifactId;
-  private PackagingType packagingType;
 
   public ProjectFoldersGenerator(String groupId, String artifactId, PackagingType packagingType) {
     checkArgument(StringUtils.isNotEmpty(groupId), "The groupId must not be null nor empty");
@@ -34,7 +33,6 @@ public class ProjectFoldersGenerator {
 
     this.groupId = groupId;
     this.artifactId = artifactId;
-    this.packagingType = packagingType;
   }
 
   /**

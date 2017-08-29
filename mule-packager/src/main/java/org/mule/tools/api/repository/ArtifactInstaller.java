@@ -16,7 +16,7 @@ import static org.apache.commons.io.FileUtils.copyFile;
 import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedFileName;
 import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedOutputDirectory;
 import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getPomFileName;
-import static org.mule.tools.api.packager.structure.PackagerFolders.REPOSITORY;
+import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +62,7 @@ public class ArtifactInstaller {
 
     File destinationArtifactFile = new File(artifactFolderDestination, artifactFilename);
     log.info(format("Adding artifact <%s%s>",
-                    REPOSITORY,
+                    REPOSITORY.value(),
                     destinationArtifactFile.getAbsolutePath()
                         .replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
                                       "")));

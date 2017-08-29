@@ -71,6 +71,7 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     when(buildMock.getFinalName()).thenReturn(FINAL_NAME);
 
     mojo.project = projectMock;
+    mojo.classifier = Classifier.MULE_APPLICATION.toString();
     mojo.packagingType = PackagingType.MULE_DOMAIN;
 
     assertThat("Final name is not the expected", mojo.getFileName(),
@@ -94,6 +95,7 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
   public void getDestinationFileTest() throws MojoExecutionException, IOException {
     when(buildMock.getFinalName()).thenReturn(FINAL_NAME);
 
+    mojo.classifier = Classifier.MULE_APPLICATION.toString();
     mojo.packagingType = PackagingType.MULE_APPLICATION;
     File expectedDestinationFile = targetFolder.newFile(FINAL_NAME + "-" + MULE_APPLICATION + "." + TYPE);
     File destinationFile = mojo.getDestinationFile(targetFolder.getRoot().getPath());

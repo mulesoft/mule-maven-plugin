@@ -9,24 +9,14 @@
  */
 package org.mule.tools.maven.mojo.deploy;
 
-import groovy.util.ScriptException;
 import org.mule.tools.client.AbstractDeployer;
-import org.mule.tools.client.AbstractDeployerFactory;
-import org.mule.tools.client.standalone.deployment.StandaloneUndeployer;
-import org.mule.tools.client.agent.AgentClient;
-import org.mule.tools.client.arm.ArmClient;
-import org.mule.tools.client.cloudhub.CloudhubClient;
-
-import java.io.File;
+import org.mule.tools.client.DeployerFactory;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.mule.tools.client.standalone.exception.DeploymentException;
-import org.mule.tools.model.DeploymentConfigurator;
-import org.mule.tools.utils.GroovyUtils;
-
-import javax.ws.rs.NotFoundException;
+import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
 
 /**
  * Undeploys all the applications on a Mule Runtime Standalone server, regardless of whether it was started using start or deploy
@@ -42,7 +32,8 @@ public class UndeployMojo extends AbstractMuleDeployerMojo {
   public void execute() throws MojoFailureException, MojoExecutionException {
     super.execute();
     try {
-      AbstractDeployer deployer = new AbstractDeployerFactory().getDeployer(deploymentConfiguration, getLog());
+      AbstractDeployer deployer =
+          new DeployerFactory().createDeployer(deploymentConfiguration, new MavenDeployerLog(getLog()));
       deployer.undeploy(mavenProject);
     } catch (DeploymentException e) {
       getLog().error("Failed to undeploy " + deploymentConfiguration.getApplicationName() + ": " + e.getMessage(), e);

@@ -10,19 +10,19 @@
 
 package org.mule.tools.client;
 
-import org.apache.maven.plugin.logging.Log;
 import org.mule.tools.client.agent.AgentDeployer;
 import org.mule.tools.client.arm.ArmDeployer;
 import org.mule.tools.client.cloudhub.CloudhubDeployer;
 import org.mule.tools.client.standalone.deployment.ClusterDeployer;
 import org.mule.tools.client.standalone.deployment.StandaloneDeployer;
 import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.model.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
 
 
-public class AbstractDeployerFactory {
+public class DeployerFactory {
 
-  public AbstractDeployer getDeployer(DeploymentConfiguration deploymentConfiguration, Log log)
+  public AbstractDeployer createDeployer(DeploymentConfiguration deploymentConfiguration, DeployerLog log)
       throws DeploymentException {
     switch (deploymentConfiguration.getDeploymentType()) {
       case standalone:

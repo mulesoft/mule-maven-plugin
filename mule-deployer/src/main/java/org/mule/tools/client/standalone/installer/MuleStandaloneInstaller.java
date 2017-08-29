@@ -14,8 +14,6 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.AbstractArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
@@ -23,8 +21,8 @@ import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.eclipse.aether.deployment.DeploymentException;
 import org.mule.tools.model.ArtifactDescription;
+import org.mule.tools.model.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
-import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
 
@@ -35,13 +33,13 @@ public class MuleStandaloneInstaller {
   private ArtifactResolver artifactResolver;
   private ArchiverManager archiverManager;
   private ArtifactFactory artifactFactory;
-  private Log log;
+  private DeployerLog log;
   private ArtifactRepository localRepository;
 
   public MuleStandaloneInstaller(DeploymentConfiguration deploymentConfiguration, MavenProject mavenProject,
                                  ArtifactResolver artifactResolver, ArchiverManager archiverManager,
                                  ArtifactFactory artifactFactory, ArtifactRepository localRepository,
-                                 Log log) {
+                                 DeployerLog log) {
     this.deploymentConfiguration = deploymentConfiguration;
     this.mavenProject = mavenProject;
     this.artifactResolver = artifactResolver;
@@ -126,7 +124,7 @@ public class MuleStandaloneInstaller {
       artifactResolver.resolve(artifact, mavenProject.getRemoteArtifactRepositories(), localRepository);
       return artifact.getFile();
     } catch (AbstractArtifactResolutionException e) {
-      throw new DeploymentException("Couldn't download artifact: " + e.getMessage(), e);
+      throw new DeploymentException("Fail download artifact: " + artifactDescription.toString(), e);
     }
   }
 }

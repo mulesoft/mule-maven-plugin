@@ -20,4 +20,6 @@ public interface DeployerLog {
   void debug(String s);
 
   void error(String s, Throwable e);
+
+  boolean isDebugEnabled();
 }

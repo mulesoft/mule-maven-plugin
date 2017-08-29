@@ -17,12 +17,12 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
-import org.apache.maven.plugin.logging.Log;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.mule.tools.client.AbstractMuleClient;
 import org.mule.tools.client.exception.ClientException;
+import org.mule.tools.model.DeployerLog;
 
 public class CloudhubClient extends AbstractMuleClient {
 
@@ -46,7 +46,7 @@ public class CloudhubClient extends AbstractMuleClient {
       "    }" +
       "  }";
 
-  public CloudhubClient(String uri, Log log, String username, String password, String environment, String businessGroup) {
+  public CloudhubClient(String uri, DeployerLog log, String username, String password, String environment, String businessGroup) {
     super(uri, log, username, password, environment, businessGroup);
   }
 

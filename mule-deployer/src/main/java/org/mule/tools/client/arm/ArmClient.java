@@ -33,6 +33,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
+import org.mule.tools.model.DeployerLog;
 
 public class ArmClient extends AbstractMuleClient {
 
@@ -42,7 +43,7 @@ public class ArmClient extends AbstractMuleClient {
   private static final String CLUSTERS = "/hybrid/api/v1/clusters";
   private boolean armInsecure;
 
-  public ArmClient(Log log, String uri, String username, String password, String environment, String businessGroup,
+  public ArmClient(DeployerLog log, String uri, String username, String password, String environment, String businessGroup,
                    boolean armInsecure) {
     super(uri, log, username, password, environment, businessGroup);
     this.armInsecure = armInsecure;

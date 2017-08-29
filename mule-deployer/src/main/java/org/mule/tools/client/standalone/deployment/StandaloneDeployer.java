@@ -24,7 +24,6 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.AbstractArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.mule.tools.client.AbstractDeployer;
@@ -35,6 +34,7 @@ import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.mule.tools.model.ArtifactDescription;
+import org.mule.tools.model.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
 import org.mule.tools.utils.GroovyUtils;
 
@@ -47,7 +47,7 @@ public class StandaloneDeployer extends AbstractDeployer {
   private MuleProcessController mule;
   private Prober prober;
 
-  public StandaloneDeployer(DeploymentConfiguration deploymentConfiguration, Log log) throws DeploymentException {
+  public StandaloneDeployer(DeploymentConfiguration deploymentConfiguration, DeployerLog log) throws DeploymentException {
     super(deploymentConfiguration, log);
   }
 
@@ -197,7 +197,7 @@ public class StandaloneDeployer extends AbstractDeployer {
         FileUtils.copyFile(deploymentConfiguration.getApplication(), destApplication);
         deploymentConfiguration.setApplication(destApplication);
       } catch (IOException e) {
-        throw new DeploymentException("Couldn't rename [" + deploymentConfiguration.getApplication() + "] to ["
+        throw new DeploymentException("Fail to rename [" + deploymentConfiguration.getApplication() + "] to ["
             + deploymentConfiguration.getApplicationName()
             + "]");
       }

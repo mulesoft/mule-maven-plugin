@@ -15,6 +15,7 @@ import org.apache.maven.shared.utils.io.FileUtils;
 import org.junit.rules.TemporaryFolder;
 import org.mule.tools.client.agent.AgentClient;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
+import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +106,7 @@ public class StandaloneEnvironment {
     boolean acceptingDeployments;
     TemporaryFolder folder = new TemporaryFolder();
     File dummyFile = folder.newFile("dummy.jar");
-    AgentClient agentClient = new AgentClient(new SystemStreamLog(), "http://localhost:9999/");
+    AgentClient agentClient = new AgentClient(new MavenDeployerLog(new SystemStreamLog()), "http://localhost:9999/");
     do {
       try {
         log.info("Checking if agent is accepting deployments...");

@@ -17,7 +17,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.maven.plugin.logging.Log;
+import org.mule.tools.model.DeployerLog;
 
 public class AgentClient extends AbstractClient {
 
@@ -26,7 +26,7 @@ public class AgentClient extends AbstractClient {
 
   private final String uri;
 
-  public AgentClient(Log log, String uri) {
+  public AgentClient(DeployerLog log, String uri) {
     super(log);
     this.uri = uri;
   }

@@ -17,9 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.plugin.logging.Log;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.model.DeployerLog;
 
 /**
  *
@@ -28,9 +28,9 @@ public class StandaloneUndeployer {
 
   private List<File> muleHomes;
   private String applicationName;
-  private Log log;
+  private DeployerLog log;
 
-  public StandaloneUndeployer(Log log, String applicationName, File... muleHomes) {
+  public StandaloneUndeployer(DeployerLog log, String applicationName, File... muleHomes) {
     this.muleHomes = Arrays.asList(muleHomes);
     this.applicationName = applicationName;
     this.log = log;

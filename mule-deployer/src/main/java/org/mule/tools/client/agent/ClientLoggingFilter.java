@@ -29,15 +29,15 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.plugin.logging.Log;
+import org.mule.tools.model.DeployerLog;
 
 public class ClientLoggingFilter implements ClientRequestFilter, ClientResponseFilter, WriterInterceptor {
 
   private static final String REQUEST_LOGGING_STREAM = "requestLoggingStream";
 
-  private Log log;
+  private DeployerLog log;
 
-  public ClientLoggingFilter(Log log) {
+  public ClientLoggingFilter(DeployerLog log) {
     this.log = log;
   }
 

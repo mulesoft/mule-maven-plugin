@@ -9,39 +9,17 @@
  */
 package org.mule.tools.maven.mojo.deploy;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import groovy.util.ScriptException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.AbstractArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.mule.tools.client.AbstractDeployer;
-import org.mule.tools.client.AbstractDeployerFactory;
+import org.mule.tools.client.DeployerFactory;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
-import org.mule.tools.client.standalone.deployment.ClusterDeployer;
-import org.mule.tools.client.standalone.deployment.StandaloneDeployer;
 import org.mule.tools.client.standalone.exception.DeploymentException;
-import org.mule.tools.client.agent.AgentDeployer;
-import org.mule.tools.client.arm.ArmDeployer;
-import org.mule.tools.client.cloudhub.CloudhubDeployer;
-import org.mule.tools.client.standalone.installer.MuleStandaloneInstaller;
-import org.mule.tools.model.ArtifactDescription;
-import org.mule.tools.model.DeployerLog;
-import org.mule.tools.model.DeploymentConfiguration;
+import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
 import org.mule.tools.utils.GroovyUtils;
 
 /**
@@ -73,7 +51,8 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
       }
     }
     try {
-      AbstractDeployer deployer = new AbstractDeployerFactory().getDeployer(deploymentConfiguration, getLog());
+      AbstractDeployer deployer =
+          new DeployerFactory().createDeployer(deploymentConfiguration, new MavenDeployerLog(getLog()));
       deployer.resolveDependencies(mavenProject, artifactResolver, archiverManager, artifactFactory, localRepository);
       deployer.deploy();
     } catch (DeploymentException | ScriptException e) {

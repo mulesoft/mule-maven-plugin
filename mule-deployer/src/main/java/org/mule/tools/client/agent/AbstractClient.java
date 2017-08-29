@@ -20,15 +20,15 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
-import org.apache.maven.plugin.logging.Log;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.mule.tools.model.DeployerLog;
 
 public abstract class AbstractClient {
 
   protected static final String LOGIN = "/accounts/login";
-  protected final Log log;
+  protected final DeployerLog log;
 
-  public AbstractClient(Log log) {
+  public AbstractClient(DeployerLog log) {
     this.log = log;
   }
 

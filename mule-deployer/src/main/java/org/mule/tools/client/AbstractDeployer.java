@@ -10,29 +10,26 @@
 package org.mule.tools.client;
 
 import java.io.File;
-import java.util.Optional;
 
 import groovy.util.ScriptException;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.model.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
 
 
 public abstract class AbstractDeployer {
 
   protected final DeploymentConfiguration deploymentConfiguration;
-  protected final Log log;
+  protected final DeployerLog log;
 
 
 
-  public AbstractDeployer(DeploymentConfiguration deploymentConfiguration, Log log) throws DeploymentException {
+  public AbstractDeployer(DeploymentConfiguration deploymentConfiguration, DeployerLog log) throws DeploymentException {
     this.deploymentConfiguration = deploymentConfiguration;
     this.log = log;
     initialize();
@@ -54,7 +51,7 @@ public abstract class AbstractDeployer {
 
   /**
    * Logs an info message in the plugin.
-   * 
+   *
    * @param message The message to log.
    */
   protected void info(String message) {

@@ -25,10 +25,10 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.plugin.logging.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.tools.client.exception.ClientException;
+import org.mule.tools.model.DeployerLog;
 
 public abstract class AbstractMuleClient extends AbstractClient {
 
@@ -49,7 +49,8 @@ public abstract class AbstractMuleClient extends AbstractClient {
   private String envId;
   private String orgId;
 
-  public AbstractMuleClient(String uri, Log log, String username, String password, String environment, String businessGroup) {
+  public AbstractMuleClient(String uri, DeployerLog log, String username, String password, String environment,
+                            String businessGroup) {
     super(log);
     this.uri = uri;
     this.username = username;

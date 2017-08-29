@@ -20,7 +20,7 @@ import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.model.TargetType;
 
-import org.apache.maven.plugin.logging.Log;
+import org.mule.tools.model.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
 
 import javax.ws.rs.NotFoundException;
@@ -31,7 +31,7 @@ public class ArmDeployer extends AbstractDeployer {
   private String target;
   private ArmClient armClient;
 
-  public ArmDeployer(DeploymentConfiguration deploymentConfiguration, Log log) throws DeploymentException {
+  public ArmDeployer(DeploymentConfiguration deploymentConfiguration, DeployerLog log) throws DeploymentException {
     super(deploymentConfiguration, log);
   }
 

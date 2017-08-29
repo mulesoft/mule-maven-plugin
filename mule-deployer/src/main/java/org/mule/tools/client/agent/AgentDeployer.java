@@ -19,14 +19,14 @@ import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 
-import org.apache.maven.plugin.logging.Log;
+import org.mule.tools.model.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
 
 public class AgentDeployer extends AbstractDeployer {
 
   private AgentClient agentClient;
 
-  public AgentDeployer(DeploymentConfiguration deploymentConfiguration, Log log) throws DeploymentException {
+  public AgentDeployer(DeploymentConfiguration deploymentConfiguration, DeployerLog log) throws DeploymentException {
     super(deploymentConfiguration, log);
   }
 

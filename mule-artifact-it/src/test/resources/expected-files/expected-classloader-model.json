@@ -4,7 +4,8 @@
     "groupId": "org.apache.maven.plugin.my.unit",
     "artifactId": "empty-classloader-model-project",
     "version": "1.0-SNAPSHOT",
-    "type": "pom"
+    "type": "jar",
+    "classifier": "mule-application"
   },
   "dependencies": [
     {

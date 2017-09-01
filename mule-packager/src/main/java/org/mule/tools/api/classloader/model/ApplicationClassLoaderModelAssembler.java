@@ -30,6 +30,7 @@ public class ApplicationClassLoaderModelAssembler {
 
   private static final String POM_TYPE = "pom";
   private static final String CLASS_LOADER_MODEL_VERSION = "1.0.0";
+  private static final String PACKAGE_TYPE = "jar";
   private final AetherMavenClient muleMavenPluginClient;
   private ApplicationClassloaderModel applicationClassLoaderModel;
 
@@ -39,12 +40,14 @@ public class ApplicationClassLoaderModelAssembler {
 
   public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, File targetFolder)
       throws IllegalStateException {
-    BundleDescriptor projectBundleDescriptor = getProjectBundleDescriptor(pomFile);
+    ArtifactCoordinates appCoordinates = getApplicationArtifactCoordinates(pomFile);
 
-    ClassLoaderModel appModel = new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, getArtifactCoordinates(projectBundleDescriptor));
+    ClassLoaderModel appModel = new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, appCoordinates);
+
+    BundleDescriptor pomBundleDescriptor = getPomProjectBundleDescriptor(pomFile);
 
     List<BundleDependency> appDependencies =
-        resolveApplicationDependencies(targetFolder, projectBundleDescriptor);
+        resolveApplicationDependencies(targetFolder, pomBundleDescriptor);
 
     List<BundleDependency> mulePlugins = appDependencies.stream()
         .filter(dep -> dep.getDescriptor().getClassifier().isPresent())
@@ -68,6 +71,18 @@ public class ApplicationClassLoaderModelAssembler {
     return applicationClassLoaderModel;
   }
 
+  protected ArtifactCoordinates getApplicationArtifactCoordinates(File pomFile) {
+    ArtifactCoordinates appCoordinates = toArtifactCoordinates(getPomProjectBundleDescriptor(pomFile));
+    appCoordinates.setType(PACKAGE_TYPE);
+    appCoordinates.setClassifier(getPomModelFromFile(pomFile).getPackaging());
+    return appCoordinates;
+  }
+
+  protected BundleDescriptor getPomProjectBundleDescriptor(File pomFile) {
+    Model pomModel = getPomModelFromFile(pomFile);
+    return getBundleDescriptor(pomModel);
+  }
+
   /**
    * Resolve the application dependencies.
    *
@@ -78,15 +93,6 @@ public class ApplicationClassLoaderModelAssembler {
   private List<BundleDependency> resolveApplicationDependencies(File targetFolder, BundleDescriptor projectBundleDescriptor) {
     return muleMavenPluginClient.resolveBundleDescriptorDependenciesWithWorkspaceReader(targetFolder, false, false,
                                                                                         projectBundleDescriptor);
-  }
-
-  protected ArtifactCoordinates getArtifactCoordinates(BundleDescriptor projectBundleDescriptor) {
-    return toArtifactCoordinates(projectBundleDescriptor);
-  }
-
-  protected BundleDescriptor getProjectBundleDescriptor(File pomFile) {
-    Model pomModel = getPomModelFromFile(pomFile);
-    return getBundleDescriptor(pomModel);
   }
 
   /**

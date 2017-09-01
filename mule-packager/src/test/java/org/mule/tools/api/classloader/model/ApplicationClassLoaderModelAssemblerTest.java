@@ -242,9 +242,9 @@ public class ApplicationClassLoaderModelAssemblerTest {
     ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
         spy(new ApplicationClassLoaderModelAssembler(aetherMavenClientMock));
     ArtifactCoordinates projectArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
-    doReturn(projectArtifactCoordinates).when(applicationClassLoaderModelAssemblerSpy).getArtifactCoordinates(any());
+    doReturn(projectArtifactCoordinates).when(applicationClassLoaderModelAssemblerSpy).getApplicationArtifactCoordinates(any());
     BundleDescriptor projectBundleDescriptor = mock(BundleDescriptor.class);
-    doReturn(projectBundleDescriptor).when(applicationClassLoaderModelAssemblerSpy).getProjectBundleDescriptor(any());
+    doReturn(projectBundleDescriptor).when(applicationClassLoaderModelAssemblerSpy).getPomProjectBundleDescriptor(any());
     return applicationClassLoaderModelAssemblerSpy;
   }
 

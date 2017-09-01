@@ -258,17 +258,10 @@ public class ApplicationClassLoaderModelAssemblerTest {
   private AetherMavenClient getAetherMavenClientMock(List<BundleDependency> appDependencies,
                                                      List<BundleDependency> appMulePluginDependencies) {
     AetherMavenClient aetherMavenClientMock = mock(AetherMavenClient.class);
+    appDependencies.addAll(appMulePluginDependencies);
     when(aetherMavenClientMock.resolveBundleDescriptorDependenciesWithWorkspaceReader(any(File.class), anyBoolean(),
-                                                                                      anyBoolean(), any(BundleDescriptor.class),
-                                                                                      eq(applicationClassLoaderModelAssembler.mulePluginFilter),
-                                                                                      eq(applicationClassLoaderModelAssembler.mulePluginFilter)))
+                                                                                      anyBoolean(), any(BundleDescriptor.class)))
                                                                                           .thenReturn(appDependencies);
-
-    when(aetherMavenClientMock.resolveBundleDescriptorDependenciesWithWorkspaceReader(any(File.class), anyBoolean(),
-                                                                                      anyBoolean(), any(BundleDescriptor.class),
-                                                                                      eq(applicationClassLoaderModelAssembler.notMulePluginFilter),
-                                                                                      eq(applicationClassLoaderModelAssembler.notMulePluginFilter)))
-                                                                                          .thenReturn(appMulePluginDependencies);
 
     return aetherMavenClientMock;
   }

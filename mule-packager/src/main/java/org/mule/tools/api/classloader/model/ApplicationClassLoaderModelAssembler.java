@@ -17,10 +17,10 @@ import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Model;
-import org.eclipse.aether.graph.DependencyFilter;
 import org.mule.maven.client.api.PomFileSupplierFactory;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
@@ -32,10 +32,6 @@ public class ApplicationClassLoaderModelAssembler {
   private static final String CLASS_LOADER_MODEL_VERSION = "1.0.0";
   private final AetherMavenClient muleMavenPluginClient;
   private ApplicationClassloaderModel applicationClassLoaderModel;
-  protected DependencyFilter mulePluginFilter = (node, parents) -> node != null && node.getArtifact() != null
-      && !MULE_PLUGIN_CLASSIFIER.equals(node.getArtifact().getClassifier());
-  protected DependencyFilter notMulePluginFilter = (node, parents) -> node != null && node.getArtifact() != null
-      && MULE_PLUGIN_CLASSIFIER.equals(node.getArtifact().getClassifier());
 
   public ApplicationClassLoaderModelAssembler(AetherMavenClient muleMavenPluginClient) {
     this.muleMavenPluginClient = muleMavenPluginClient;
@@ -47,16 +43,13 @@ public class ApplicationClassLoaderModelAssembler {
 
     ClassLoaderModel appModel = new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, getArtifactCoordinates(projectBundleDescriptor));
 
-    List<BundleDependency> nonMulePlugins =
-        resolveNonMulePluginDependencies(targetFolder, projectBundleDescriptor);
+    List<BundleDependency> appDependencies =
+        resolveApplicationDependencies(targetFolder, projectBundleDescriptor);
 
-    List<BundleDependency> mulePlugins =
-        resolveMulePlugins(targetFolder, projectBundleDescriptor);
-
-    List<BundleDependency> appDependencies = new ArrayList<>();
-
-    appDependencies.addAll(nonMulePlugins);
-    appDependencies.addAll(mulePlugins);
+    List<BundleDependency> mulePlugins = appDependencies.stream()
+        .filter(dep -> dep.getDescriptor().getClassifier().isPresent())
+        .filter(dep -> dep.getDescriptor().getClassifier().get().equals(MULE_PLUGIN_CLASSIFIER))
+        .collect(Collectors.toList());
 
     appModel.setDependencies(toArtifacts(appDependencies));
 
@@ -75,6 +68,18 @@ public class ApplicationClassLoaderModelAssembler {
     return applicationClassLoaderModel;
   }
 
+  /**
+   * Resolve the application dependencies.
+   *
+   * @param targetFolder target folder of application that is going to be packaged, which need to contain at this stage the pom
+   *        file in the folder that is going to be resolved by {@link PomFileSupplierFactory}
+   * @param projectBundleDescriptor bundleDescriptor of application to be packaged
+   */
+  private List<BundleDependency> resolveApplicationDependencies(File targetFolder, BundleDescriptor projectBundleDescriptor) {
+    return muleMavenPluginClient.resolveBundleDescriptorDependenciesWithWorkspaceReader(targetFolder, false, false,
+                                                                                        projectBundleDescriptor);
+  }
+
   protected ArtifactCoordinates getArtifactCoordinates(BundleDescriptor projectBundleDescriptor) {
     return toArtifactCoordinates(projectBundleDescriptor);
   }
@@ -82,34 +87,6 @@ public class ApplicationClassLoaderModelAssembler {
   protected BundleDescriptor getProjectBundleDescriptor(File pomFile) {
     Model pomModel = getPomModelFromFile(pomFile);
     return getBundleDescriptor(pomModel);
-  }
-
-  /**
-   * Resolve the application dependencies, excluding mule plugins.
-   *
-   * @param targetFolder target folder of application that is going to be packaged, which need to contain at this stage the pom
-   *        file in the folder that is going to be resolved by {@link PomFileSupplierFactory}
-   * @param bundleDescriptor bundleDescriptor of application to be packaged
-   */
-  private List<BundleDependency> resolveNonMulePluginDependencies(File targetFolder, BundleDescriptor bundleDescriptor) {
-    return muleMavenPluginClient.resolveBundleDescriptorDependenciesWithWorkspaceReader(targetFolder, false, false,
-                                                                                        bundleDescriptor, mulePluginFilter,
-                                                                                        mulePluginFilter);
-  }
-
-  /**
-   * Resolve mule plugins that are direct and transitive dependencies of the application.
-   * 
-   * @param targetFolder target folder of application that is going to be packaged, which need to contain at this stage the pom
-   *        file in the folder that is going to be resolved by {@link PomFileSupplierFactory}
-   * @param bundleDescriptor bundleDescriptor of application to be packaged
-   */
-  private List<BundleDependency> resolveMulePlugins(File targetFolder,
-                                                    BundleDescriptor bundleDescriptor) {
-    return muleMavenPluginClient.resolveBundleDescriptorDependenciesWithWorkspaceReader(targetFolder, false, false,
-                                                                                        bundleDescriptor,
-                                                                                        notMulePluginFilter,
-                                                                                        notMulePluginFilter);
   }
 
   /**

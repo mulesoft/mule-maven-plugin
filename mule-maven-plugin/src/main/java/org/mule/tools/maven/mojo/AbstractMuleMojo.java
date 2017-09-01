@@ -13,17 +13,26 @@ package org.mule.tools.maven.mojo;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.repository.RepositorySystem;
-import org.mule.tools.api.packager.ContentGenerator;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.util.ArtifactUtils;
+import org.mule.tools.api.packager.resources.content.ResourcesContent;
+import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.repository.MuleMavenPluginClientProvider;
 
 
 /**
@@ -67,14 +76,23 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   @Parameter
   protected String classifier;
 
-  protected ContentGenerator contentGenerator;
+  protected MuleContentGenerator contentGenerator;
 
-  protected ContentGenerator getContentGenerator() {
-    if (contentGenerator == null) {
-      contentGenerator = new ContentGenerator(project.getGroupId(), project.getArtifactId(), project.getVersion(),
-                                              PackagingType.fromString(project.getPackaging()),
-                                              Paths.get(projectBaseFolder.toURI()), Paths.get(project.getBuild().getDirectory()));
+  protected static ResourcesContent resourcesContent;
+
+  protected AetherMavenClient aetherMavenClient;
+
+  protected AetherMavenClient getAetherMavenClient() {
+    if (aetherMavenClient == null) {
+      List<RemoteRepository> remoteRepositories = RepositoryUtils.toRepos(remoteArtifactRepositories);
+      aetherMavenClient = new MuleMavenPluginClientProvider(remoteRepositories,
+                                                            getLog())
+                                                                .buildMavenClient();
     }
-    return contentGenerator;
+    return aetherMavenClient;
+  }
+
+  protected List<ArtifactCoordinates> toArtifactCoordinates(List<Dependency> dependencies) {
+    return dependencies.stream().map(ArtifactUtils::toArtifactCoordinates).collect(Collectors.toList());
   }
 }

@@ -8,10 +8,11 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.packager;
+package org.mule.tools.api.packager.builder;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
@@ -28,12 +29,15 @@ import java.util.List;
 
 import org.codehaus.plexus.archiver.ArchiverException;
 
+import org.mule.tools.api.packager.archiver.Archiver;
+import org.mule.tools.api.packager.archiver.MuleArchiver;
+import org.mule.tools.api.packager.packaging.PackagingOptions;
 import org.mule.tools.api.packager.packaging.PackagingType;
 
 /**
  * Builder for Mule Application archives.
  */
-public class PackageBuilder {
+public class MulePackageBuilder implements PackageBuilder {
 
   private File classesFolder = null;
   private File repositoryFolder = null;
@@ -46,6 +50,7 @@ public class PackageBuilder {
 
   private File destinationFile;
   private MuleArchiver archiver = null;
+  private PackagingOptions packagingOptions;
 
   public MuleArchiver getMuleArchiver() {
     if (archiver == null) {
@@ -55,12 +60,22 @@ public class PackageBuilder {
   }
 
   /**
+   * @param packagingOptions
+   * @return builder
+   */
+  public MulePackageBuilder withPackagingOptions(PackagingOptions packagingOptions) {
+    checkNotNull(packagingOptions, "The PackagingOptions must not be null");
+    this.packagingOptions = packagingOptions;
+    return this;
+  }
+
+  /**
    * @param archiver
    * @return builder
    */
-  public PackageBuilder withArchiver(MuleArchiver archiver) {
-    checkNotNull(archiver, "The org.mule.tools.artifact.org.mule.tools.artifact.archiver must not be null");
-    this.archiver = archiver;
+  public MulePackageBuilder withArchiver(Archiver archiver) {
+    checkNotNull(archiver, "Archiver must not be null");
+    this.archiver = (MuleArchiver) archiver;
     return this;
   }
 
@@ -68,37 +83,37 @@ public class PackageBuilder {
    * @param folder folder with all the configuration files of the application
    * @return builder
    */
-  public PackageBuilder withClasses(File folder) {
+  public MulePackageBuilder withClasses(File folder) {
     checkArgument(folder != null, "The folder must not be null");
     classesFolder = folder;
     return this;
   }
 
-  public PackageBuilder withMaven(File folder) {
+  public MulePackageBuilder withMaven(File folder) {
     checkArgument(folder != null, "The folder must not be null");
     mavenFolder = folder;
     return this;
   }
 
-  public PackageBuilder withMuleSrc(File folder) {
+  public MulePackageBuilder withMuleSrc(File folder) {
     checkArgument(folder != null, "The folder must not be null");
     muleSrcFolder = folder;
     return this;
   }
 
-  public PackageBuilder withMuleArtifact(File folder) {
+  public MulePackageBuilder withMuleArtifact(File folder) {
     checkArgument(folder != null, "The folder must not be null");
     muleArtifactFolder = folder;
     return this;
   }
 
-  public PackageBuilder withRepository(File folder) {
+  public MulePackageBuilder withRepository(File folder) {
     checkArgument(folder != null, "The folder must not be null");
     repositoryFolder = folder;
     return this;
   }
 
-  public PackageBuilder withRootResource(File resource) {
+  public MulePackageBuilder withRootResource(File resource) {
     checkArgument(resource != null, "The resource must not be null");
     rootResources.add(resource);
     return this;
@@ -140,7 +155,7 @@ public class PackageBuilder {
    * @throws IOException
    */
   public void createDeployableFile() throws IOException {
-    runPrePackageValidations();
+    checkState(destinationFile != null, "The destination file has not been set");
 
     MuleArchiver archiver = getMuleArchiver();
 
@@ -211,32 +226,28 @@ public class PackageBuilder {
    *
    * @param destinationFile file that represents the resource that is going to represent the final package.
    * @param originFolder folder containing the source files.
-   * @param packagingType packaging type of the app that is being built.
-   * @param onlyMuleSources when set to true, generates a package that is restricted to contain only mule sources.
-   * @param lightweightPackage when set to true, generates a package with an empty repository folder.
-   * @param attachMuleSources when set to true, adds the mule source files to final package.
    * @throws ArchiverException
    * @throws IOException
    */
-  public void createMuleApp(File destinationFile, String originFolder, PackagingType packagingType, boolean onlyMuleSources,
-                            boolean lightweightPackage, boolean attachMuleSources)
+  public void createPackage(File destinationFile, String originFolder)
       throws ArchiverException, IOException {
+    checkState(packagingOptions != null, "Packaging options should not be null when creating a mule package");
 
     Path originFolderPath = Paths.get(originFolder);
     Path metaInfPath = originFolderPath.resolve(META_INF.value());
 
-    PackageBuilder builder = this.withDestinationFile(destinationFile);
-    if (!onlyMuleSources) {
+    MulePackageBuilder builder = (MulePackageBuilder) this.withDestinationFile(destinationFile);
+    if (!packagingOptions.isOnlyMuleSources()) {
       builder
           .withClasses(originFolderPath.resolve(CLASSES.value()).toFile())
           .withMaven(metaInfPath.resolve(MAVEN.value()).toFile())
           .withMuleArtifact(metaInfPath.resolve(MULE_ARTIFACT.value()).toFile());
 
-      if (!lightweightPackage) {
+      if (!packagingOptions.isLightweightPackage()) {
         builder.withRepository(originFolderPath.resolve(REPOSITORY.value()).toFile());
       }
 
-      if (attachMuleSources) {
+      if (packagingOptions.isAttachMuleSources()) {
         builder.withMuleSrc(metaInfPath.resolve(MULE_SRC.value()).toFile());
       }
     } else {
@@ -244,10 +255,6 @@ public class PackageBuilder {
     }
 
     builder.createDeployableFile();
-  }
-
-  private void runPrePackageValidations() {
-    checkArgument(destinationFile != null, "The destination file has not been set");
   }
 
 }

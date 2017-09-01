@@ -18,7 +18,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.mule.tools.api.packager.ContentGenerator;
+import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
 import java.io.IOException;
 
@@ -53,7 +53,7 @@ public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
 
   @Test
   public void execute() throws MojoFailureException, MojoExecutionException, IOException {
-    ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
+    MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
     doCallRealMethod().when(mojoMock).execute();
@@ -65,7 +65,7 @@ public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
 
   @Test(expected = MojoFailureException.class)
   public void executeFailIOException() throws MojoFailureException, MojoExecutionException, IOException {
-    ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
+    MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
     doThrow(new IOException("")).when(contentGeneratorMock).createTestFolderContent();
@@ -76,7 +76,7 @@ public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
 
   @Test(expected = MojoFailureException.class)
   public void executeFailIllegalArgument() throws MojoFailureException, MojoExecutionException, IOException {
-    ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
+    MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
     doThrow(new IllegalArgumentException("")).when(contentGeneratorMock).createTestFolderContent();

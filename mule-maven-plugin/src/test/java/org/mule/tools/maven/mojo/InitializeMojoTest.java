@@ -25,6 +25,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.mule.tools.api.packager.AbstractProjectFoldersGenerator;
 import org.mule.tools.api.packager.ProjectFoldersGenerator;
 
 public class InitializeMojoTest extends AbstractMuleMojoTest {
@@ -42,7 +43,7 @@ public class InitializeMojoTest extends AbstractMuleMojoTest {
   @Test
   public void execute() throws MojoFailureException, MojoExecutionException, IOException {
     Log logMock = mock(Log.class);
-    ProjectFoldersGenerator projectFoldersGeneratorMock = mock(ProjectFoldersGenerator.class);
+    AbstractProjectFoldersGenerator projectFoldersGeneratorMock = mock(AbstractProjectFoldersGenerator.class);
 
     when(mojoMock.getLog()).thenReturn(logMock);
     doReturn(projectFoldersGeneratorMock).when(mojoMock).getProjectFoldersGenerator();

@@ -21,7 +21,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.packager.ContentGenerator;
+import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
 /**
  * Build a Mule application archive.
@@ -44,10 +44,10 @@ public class GenerateTestSourcesMojo extends AbstractMuleMojo {
     getLog().debug(MessageFormat.format("Test source code generation done ({0}ms)", System.currentTimeMillis() - start));
   }
 
-  protected ContentGenerator getContentGenerator() {
-    return new ContentGenerator(project.getGroupId(), project.getArtifactId(), project.getVersion(),
-                                PackagingType.fromString(project.getPackaging()),
-                                Paths.get(projectBaseFolder.toURI()), Paths.get(project.getBuild().getDirectory()));
+  protected MuleContentGenerator getContentGenerator() {
+    return new MuleContentGenerator(project.getGroupId(), project.getArtifactId(), project.getVersion(),
+                                    PackagingType.fromString(project.getPackaging()),
+                                    Paths.get(projectBaseFolder.toURI()), Paths.get(project.getBuild().getDirectory()));
   }
 
 }

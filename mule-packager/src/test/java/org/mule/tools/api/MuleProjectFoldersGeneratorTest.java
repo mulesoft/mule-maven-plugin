@@ -22,7 +22,6 @@ import static org.mule.tools.api.packager.PackagerTestUtils.assertFileExists;
 import static org.mule.tools.api.packager.PackagerTestUtils.assertFolderExist;
 import static org.mule.tools.api.packager.PackagerTestUtils.assertFolderIsEmpty;
 import static org.mule.tools.api.packager.PackagerTestUtils.createFolder;
-import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -32,10 +31,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import org.mule.tools.api.packager.MuleProjectFoldersGenerator;
 import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.packager.ProjectFoldersGenerator;
 
-public class ProjectFoldersGeneratorTest {
+public class MuleProjectFoldersGeneratorTest {
 
   protected static final String GROUP_ID = "org.mule.munit";
   protected static final String ARTIFACT_ID = "fake-id";
@@ -46,7 +45,7 @@ public class ProjectFoldersGeneratorTest {
 
   private Path basePath;
 
-  private ProjectFoldersGenerator generator;
+  private MuleProjectFoldersGenerator generator;
 
   @Before
   public void setUp() {
@@ -55,7 +54,7 @@ public class ProjectFoldersGeneratorTest {
 
   @Test
   public void generateMuleApplication() {
-    generator = new ProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_APPLICATION);
+    generator = new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_APPLICATION);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     checkNoPackageDependentFolders();
@@ -63,7 +62,7 @@ public class ProjectFoldersGeneratorTest {
 
   @Test
   public void generateMulePolicy() {
-    generator = new ProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_POLICY);
+    generator = new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_POLICY);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     checkNoPackageDependentFolders();
@@ -71,7 +70,7 @@ public class ProjectFoldersGeneratorTest {
 
   @Test
   public void generateMuleDomain() {
-    generator = new ProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_DOMAIN);
+    generator = new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_DOMAIN);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     checkNoPackageDependentFolders();
@@ -82,7 +81,7 @@ public class ProjectFoldersGeneratorTest {
     Path muleBasePath = basePath.resolve(MULE);
     createFolder(muleBasePath, FAKE_FILE_NAME, true);
 
-    generator = new ProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_APPLICATION);
+    generator = new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_APPLICATION);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     assertFolderExist(basePath.resolve(MULE));
@@ -94,7 +93,7 @@ public class ProjectFoldersGeneratorTest {
     Path muleBasePath = basePath.resolve(POLICY);
     createFolder(muleBasePath, FAKE_FILE_NAME, true);
 
-    generator = new ProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_POLICY);
+    generator = new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_POLICY);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     assertFolderExist(basePath.resolve(POLICY));
@@ -106,7 +105,7 @@ public class ProjectFoldersGeneratorTest {
     Path muleBasePath = basePath.resolve(MULE);
     createFolder(muleBasePath, FAKE_FILE_NAME, true);
 
-    generator = new ProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_DOMAIN);
+    generator = new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_DOMAIN);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     assertFolderExist(basePath.resolve(MULE));
@@ -132,7 +131,7 @@ public class ProjectFoldersGeneratorTest {
     createFolder(repositoryPath, FAKE_FILE_NAME, true);
 
 
-    generator = new ProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_APPLICATION);
+    generator = new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_APPLICATION);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     assertFolderExist(munitTestMulePath);

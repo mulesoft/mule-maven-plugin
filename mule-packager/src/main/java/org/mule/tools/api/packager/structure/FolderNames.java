@@ -44,7 +44,11 @@ public enum FolderNames {
 
   APPLICATION("application"),
 
-  CONTAINER("container");
+  CONTAINER("container"),
+
+  APPLICATIONS("applications"),
+
+  DOMAIN("domain");
 
   private String value;
 

@@ -10,6 +10,7 @@
 package org.mule.tools.maven.mojo;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -17,6 +18,12 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.packager.sources.ContentGenerator;
+import org.mule.tools.api.packager.sources.DomainBundleContentGenerator;
+import org.mule.tools.api.packager.sources.MuleContentGenerator;
+
+import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BUNDLE;
 
 /**
  * Mojo that runs on the {@link LifecyclePhase#GENERATE_RESOURCES}
@@ -32,12 +39,22 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
     getLog().debug("Generating mule source code...");
 
     try {
-      getContentGenerator().createMetaInfMuleSourceFolderContent();
-      getContentGenerator().createDescriptors();
+      getContentGenerator().createContent();
     } catch (IllegalArgumentException | IOException e) {
       throw new MojoFailureException("Fail to generate sources", e);
     }
 
     getLog().debug(MessageFormat.format("generate sources done ({0}ms)", System.currentTimeMillis() - start));
+  }
+
+  protected ContentGenerator getContentGenerator() {
+    if (MULE_DOMAIN_BUNDLE.toString().equals(project.getPackaging())) {
+      return new DomainBundleContentGenerator(project.getGroupId(), project.getArtifactId(), project.getVersion(),
+                                              PackagingType.fromString(project.getPackaging()),
+                                              Paths.get(projectBaseFolder.toURI()), Paths.get(project.getBuild().getDirectory()));
+    }
+    return new MuleContentGenerator(project.getGroupId(), project.getArtifactId(), project.getVersion(),
+                                    PackagingType.fromString(project.getPackaging()),
+                                    Paths.get(projectBaseFolder.toURI()), Paths.get(project.getBuild().getDirectory()));
   }
 }

@@ -24,16 +24,16 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.logging.Log;
-import org.mule.tools.api.packager.ContentGenerator;
+import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.util.PackagerLog;
 
 public class ArtifactInstaller {
 
   private static final String POM_FILE_NAME = "pom.xml";
-  private Log log;
+  private PackagerLog log;
 
-  public ArtifactInstaller(Log log) {
+  public ArtifactInstaller(PackagerLog log) {
     this.log = log;
   }
 
@@ -91,6 +91,6 @@ public class ArtifactInstaller {
   }
 
   protected void generateClassloderModelFile(ClassLoaderModel classLoaderModel, File artifactFolderDestination) {
-    ContentGenerator.createClassLoaderModelJsonFile(classLoaderModel, artifactFolderDestination);
+    MuleContentGenerator.createClassLoaderModelJsonFile(classLoaderModel, artifactFolderDestination);
   }
 }

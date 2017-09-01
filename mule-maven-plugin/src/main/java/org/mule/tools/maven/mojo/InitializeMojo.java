@@ -19,8 +19,10 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
+import org.mule.tools.api.packager.AbstractProjectFoldersGenerator;
+import org.mule.tools.api.packager.BundleDomainProjectFoldersGenerator;
+import org.mule.tools.api.packager.MuleProjectFoldersGenerator;
 import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.packager.ProjectFoldersGenerator;
 
 /**
  * It creates all the required folders in the project.build.directory
@@ -39,10 +41,13 @@ public class InitializeMojo extends AbstractMuleMojo {
     getLog().debug(MessageFormat.format("Mule Maven Plugin Initialize done ({0}ms)", System.currentTimeMillis() - start));
   }
 
-  protected ProjectFoldersGenerator getProjectFoldersGenerator() {
+  protected AbstractProjectFoldersGenerator getProjectFoldersGenerator() {
     String groupId = project.getGroupId();
     String artifactId = project.getArtifactId();
     PackagingType packagingType = PackagingType.fromString(project.getPackaging());
-    return new ProjectFoldersGenerator(groupId, artifactId, packagingType);
+    if (packagingType.equals(PackagingType.MULE_DOMAIN_BUNDLE)) {
+      return new BundleDomainProjectFoldersGenerator(groupId, artifactId, packagingType);
+    }
+    return new MuleProjectFoldersGenerator(groupId, artifactId, packagingType);
   }
 }

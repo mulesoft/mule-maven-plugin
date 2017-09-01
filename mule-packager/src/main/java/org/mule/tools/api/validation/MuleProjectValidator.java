@@ -7,11 +7,11 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
 package org.mule.tools.api.validation;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,52 +26,28 @@ import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_
 /**
  * Ensures the project is valid
  */
-public class Validator {
+public class MuleProjectValidator extends AbstractProjectValidator {
 
-  private Path projectBaseDir;
 
-  public Validator(Path projectBaseDir) {
-    this.projectBaseDir = projectBaseDir;
+  private final List<SharedLibraryDependency> sharedLibraries;
+
+  public MuleProjectValidator(Path projectBaseDir, String packagingType,
+                              List<ArtifactCoordinates> projectDependencies, List<ArtifactCoordinates> resolvedMulePlugins,
+                              List<SharedLibraryDependency> sharedLibraries) {
+    super(projectBaseDir, packagingType, projectDependencies, resolvedMulePlugins);
+    this.sharedLibraries = sharedLibraries;
   }
 
-  /**
-   * Ensure a project contained in the projectBaseDir is valid based on its packagin type.
-   *
-   * @param packagingType defines the package type of the project to validate
-   * @return true if the project is valid
-   * @throws ValidationException if the project is invalid
-   */
-  public Boolean isProjectValid(String packagingType) throws ValidationException {
-    isPackagingTypeValid(packagingType);
+  @Override
+  protected void additionalValidation() throws ValidationException {
     isProjectStructureValid(packagingType);
     isDescriptorFilePresent();
-
-    return true;
-  }
-
-  /**
-   * It validates that the provided packaging types is a valid one
-   *
-   * @param packagingType defines the package type of the project to validate
-   * @return true if the project's packaging type is valid
-   * @throws ValidationException if the packaging type is unknown
-   */
-  public Boolean isPackagingTypeValid(String packagingType) throws ValidationException {
-    try {
-      PackagingType.fromString(packagingType);
-    } catch (IllegalArgumentException e) {
-      List<String> packagingTypeNames = Arrays.stream(PackagingType.values()).map(type -> type.toString())
-          .collect(Collectors.toList());
-      throw new ValidationException("Unknown packaging type " + packagingType
-          + ". Please specify a valid mule packaging type: " + String.join(", ", packagingTypeNames));
-    }
-    return true;
+    validateSharedLibraries(sharedLibraries, projectDependencies);
   }
 
   /**
    * It validates the project folder structure is valid
    * 
-   * @param packagingType defines the package type of the project to validate
    * @return true if the project's structure is valid
    * @throws ValidationException if the project's structure is invalid
    */

@@ -28,7 +28,7 @@ import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.mule.tools.api.packager.ContentGenerator;
+import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
 public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
 
@@ -53,23 +53,22 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
 
   @Test
   public void execute() throws MojoFailureException, MojoExecutionException, IOException {
-    ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
+    MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
     doCallRealMethod().when(mojoMock).execute();
     mojoMock.execute();
 
-    verify(mojoMock, times(2)).getContentGenerator();
-    verify(contentGeneratorMock, times(1)).createMetaInfMuleSourceFolderContent();
-    verify(contentGeneratorMock, times(1)).createDescriptors();
+    verify(mojoMock, times(1)).getContentGenerator();
+    verify(contentGeneratorMock, times(1)).createContent();
   }
 
   @Test(expected = MojoFailureException.class)
   public void executeFailIOException() throws MojoFailureException, MojoExecutionException, IOException {
-    ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
+    MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
-    doThrow(new IOException("")).when(contentGeneratorMock).createMetaInfMuleSourceFolderContent();
+    doThrow(new IOException("")).when(contentGeneratorMock).createContent();
 
     doCallRealMethod().when(mojoMock).execute();
     mojoMock.execute();
@@ -77,10 +76,10 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
 
   @Test(expected = MojoFailureException.class)
   public void executeFailIllegalArgument() throws MojoFailureException, MojoExecutionException, IOException {
-    ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
+    MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
-    doThrow(new IllegalArgumentException("")).when(contentGeneratorMock).createDescriptors();
+    doThrow(new IllegalArgumentException("")).when(contentGeneratorMock).createContent();
 
     doCallRealMethod().when(mojoMock).execute();
     mojoMock.execute();
@@ -100,7 +99,7 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
     verify(projectMock, times(1)).getGroupId();
     verify(projectMock, times(1)).getArtifactId();
     verify(projectMock, times(1)).getVersion();
-    verify(projectMock, times(1)).getPackaging();
+    verify(projectMock, times(2)).getPackaging();
     verify(projectMock, times(1)).getBuild();
     verify(buildMock, times(1)).getDirectory();
   }

@@ -10,11 +10,9 @@
 
 package org.mule.tools.maven.mojo;
 
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -22,12 +20,13 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.validation.MulePluginsCompatibilityValidator;
+import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.validation.*;
 import org.mule.tools.maven.utils.DependencyProject;
 import org.mule.tools.maven.utils.MavenProjectBuilder;
-import org.mule.tools.api.validation.MulePluginResolver;
 import org.mule.tools.api.exception.ValidationException;
-import org.mule.tools.api.validation.Validator;
+
+import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BUNDLE;
 
 /**
  * It creates all the required folders in the project.build.directory
@@ -37,16 +36,15 @@ import org.mule.tools.api.validation.Validator;
     requiresDependencyResolution = ResolutionScope.TEST)
 public class ValidateMojo extends AbstractMuleMojo {
 
-  private Validator validator;
+  private AbstractProjectValidator validator;
 
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (!skipValidation) {
       long start = System.currentTimeMillis();
       getLog().debug("Validating Mule application...");
       try {
-        getValidator().isProjectValid(project.getPackaging());
-        getMulePluginsCompatibilityValidator().validate(getResolver().resolveMulePlugins(new DependencyProject(project)));
-        getValidator().validateSharedLibraries(sharedLibraries, toArtifactCoordinates(project.getDependencies()));
+        AbstractProjectValidator.isPackagingTypeValid(project.getPackaging());
+        getValidator().isProjectValid();
       } catch (ValidationException e) {
         throw new MojoExecutionException("Validation exception", e);
       }
@@ -56,18 +54,17 @@ public class ValidateMojo extends AbstractMuleMojo {
     }
   }
 
-  private List<ArtifactCoordinates> toArtifactCoordinates(List<Dependency> dependencies) {
-    return dependencies
-        .stream().map(d -> new ArtifactCoordinates(d.getGroupId(), d.getArtifactId(), d.getVersion(), d.getType(),
-                                                   d.getClassifier()))
-        .collect(Collectors.toList());
-  }
+  protected AbstractProjectValidator getValidator() throws ValidationException {
+    Path projectBaseDir = project.getBasedir().toPath();
+    String projectPackagingType = project.getPackaging();
+    List<ArtifactCoordinates> projectDependencies = toArtifactCoordinates(project.getDependencies());
+    List<ArtifactCoordinates> resolvedMulePlugins = getResolver().resolveMulePlugins(new DependencyProject(project));
 
-  protected Validator getValidator() {
-    if (validator == null) {
-      validator = new Validator(projectBaseFolder.toPath());
+    if (PackagingType.fromString(projectPackagingType).equals(MULE_DOMAIN_BUNDLE)) {
+      return new DomainBundleProjectValidator(projectBaseDir, projectDependencies, resolvedMulePlugins, getAetherMavenClient());
     }
-    return validator;
+    return new MuleProjectValidator(projectBaseDir, projectPackagingType, projectDependencies, resolvedMulePlugins,
+                                    sharedLibraries);
   }
 
   protected MulePluginResolver getResolver() {
@@ -76,7 +73,4 @@ public class ValidateMojo extends AbstractMuleMojo {
     return new MulePluginResolver(builder);
   }
 
-  protected MulePluginsCompatibilityValidator getMulePluginsCompatibilityValidator() {
-    return new MulePluginsCompatibilityValidator();
-  }
 }

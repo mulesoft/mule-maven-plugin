@@ -20,20 +20,21 @@ import java.util.List;
 
 import org.apache.maven.plugin.MojoFailureException;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
+import org.mule.tools.client.standalone.exception.DeploymentException;
 
 public class ClusterConfigurator {
 
-  public boolean configureCluster(File[] paths, List<MuleProcessController> mules) throws MojoFailureException {
+  public boolean configureCluster(File[] paths, List<MuleProcessController> mules) throws DeploymentException {
     int nodeNumber = 1;
     for (File f : paths) {
       try {
         if (!new File(f.getAbsolutePath() + "/.mule").mkdirs()) {
-          throw new MojoFailureException("Couldn't create .mule dir at: " + f.getAbsolutePath());
+          throw new DeploymentException("Couldn't create .mule dir at: " + f.getAbsolutePath());
         }
         createClusterConfig(paths, mules, nodeNumber, f);
         nodeNumber++;
       } catch (IOException ex) {
-        throw new MojoFailureException("Couldn't create mule-cluster.properties in one of the mules" + ex.getMessage());
+        throw new DeploymentException("Couldn't create mule-cluster.properties in one of the mules" + ex.getMessage());
       }
 
     }
@@ -41,7 +42,7 @@ public class ClusterConfigurator {
   }
 
   private void createClusterConfig(File[] paths, List<MuleProcessController> mules, int nodeNumber, File f)
-      throws IOException, MojoFailureException {
+      throws IOException, DeploymentException {
     BufferedWriter writer = null;
     try {
 
@@ -58,7 +59,7 @@ public class ClusterConfigurator {
       try {
         writer.close();
       } catch (IOException e) {
-        throw new MojoFailureException("Couldn't close mule-cluster.properties file: " + f.getAbsolutePath());
+        throw new DeploymentException("Couldn't close mule-cluster.properties file: " + f.getAbsolutePath());
       }
     }
   }

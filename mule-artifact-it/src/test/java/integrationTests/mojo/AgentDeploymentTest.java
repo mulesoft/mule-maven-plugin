@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Ignore
 public class AgentDeploymentTest {
 
   private static final String AGENT_TEST_ANCHOR_FILENAME = "agent-anchor.txt";
@@ -40,6 +39,10 @@ public class AgentDeploymentTest {
     builder = new ProjectFactory();
     projectBaseDirectory = builder.createProjectBaseDir("empty-mule-deploy-agent-project", this.getClass());
     verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    String projectVersion = System.getProperty("mule.maven.plugin.version");
+    if (projectVersion != null) {
+      verifier.setSystemProperty("muleMavenPluginVersion", projectVersion);
+    }
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
   }
@@ -50,7 +53,7 @@ public class AgentDeploymentTest {
     log.info("Initializing context...");
     initializeContext();
     verifier.executeGoal(INSTALL);
-    standaloneEnvironment = new StandaloneEnvironment("3.8.1");
+    standaloneEnvironment = new StandaloneEnvironment("4.0.0-SNAPSHOT");
     standaloneEnvironment.start();
     standaloneEnvironment.runAgent();
   }

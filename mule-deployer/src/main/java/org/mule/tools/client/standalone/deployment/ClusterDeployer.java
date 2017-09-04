@@ -12,80 +12,63 @@ package org.mule.tools.client.standalone.deployment;
 
 
 import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
+import groovy.util.ScriptException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.standalone.configuration.ClusterConfigurator;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.mule.tools.client.standalone.controller.probing.AppDeploymentProbe;
 import org.mule.tools.client.standalone.controller.probing.PollingProber;
-import org.mule.tools.client.standalone.controller.probing.Prober;
+import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
+import org.mule.tools.client.standalone.installer.MuleStandaloneInstaller;
+import org.mule.tools.model.DeployerLog;
+import org.mule.tools.model.DeploymentConfiguration;
+import org.mule.tools.utils.GroovyUtils;
 
-public class ClusterDeployer {
+public class ClusterDeployer extends AbstractDeployer {
 
+  public static final double MAX_CLUSTER_SIZE = 8;
+  public static final long DEFAULT_POLLING_DELAY = 1000;
   private List<MuleProcessController> mules;
   private File[] paths;
-  private Log log;
-  private File application;
-  private Prober prober;
-  private long timeout;
-  private long pollingDelay;
-  private String[] arguments;
   private ClusterConfigurator configurator = new ClusterConfigurator();
 
-  public ClusterDeployer(File[] paths,
-                         List<MuleProcessController> mules,
-                         Log log,
-                         File application,
-                         long timeout,
-                         String[] arguments,
-                         long pollingDelay) {
-    this.mules = mules;
-    this.log = log;
-    this.application = application;
-    this.timeout = timeout;
-    this.pollingDelay = pollingDelay;
-    this.arguments = arguments;
-    this.prober = new PollingProber(timeout, pollingDelay);
-    this.paths = paths;
-    log.debug(toString());
+  public ClusterDeployer(DeploymentConfiguration deploymentConfiguration, DeployerLog log) throws DeploymentException {
+    super(deploymentConfiguration, log);
   }
 
   public String toString() {
     return String.format("StandaloneDeployer with [Controllers=%s, log=%s, application=%s, timeout=%d, pollingDelay=%d ]",
-                         mules, log, application, timeout, pollingDelay);
+                         mules, log, deploymentConfiguration.getApplication(), deploymentConfiguration.getDeploymentTimeout(),
+                         DEFAULT_POLLING_DELAY);
   }
 
-  public void execute() throws MojoFailureException, MojoExecutionException {
-    try {
-      configurator.configureCluster(paths, mules);
-      startMulesIfStopped();
-      deployApplications();
-      waitForDeployments();
-    } catch (MuleControllerException e) {
-      throw new MojoFailureException("Error deploying application: [" + application + "]");
-    } catch (RuntimeException e) {
-      throw new MojoExecutionException("Unexpected error deploying application: [" + application
-          + "]", e);
-    }
-  }
-
-  private void waitForDeployments() throws MojoFailureException {
+  private void waitForDeployments() throws DeploymentException {
     for (MuleProcessController m : mules) {
-      if (!application.exists()) {
-        throw new MojoFailureException("Application does not exists: " + application);
+      if (!deploymentConfiguration.getApplication().exists()) {
+        throw new DeploymentException("Application does not exists: " + deploymentConfiguration.getApplication());
       }
-      log.debug("Checking for application [" + application + "] to be deployed.");
-      String app = getApplicationName(application);
+      log.debug("Checking for application [" + deploymentConfiguration.getApplication() + "] to be deployed.");
+      String app = getApplicationName(deploymentConfiguration.getApplication());
       try {
-        prober.check(AppDeploymentProbe.isDeployed(m, app));
+        new PollingProber(deploymentConfiguration.getDeploymentTimeout(), DEFAULT_POLLING_DELAY)
+            .check(AppDeploymentProbe.isDeployed(m, app));
       } catch (AssertionError e) {
-        log.error("Couldn't deploy application [" + application + "] after [" + timeout
+        log.error("Couldn't deploy application [" + deploymentConfiguration.getApplication() + "] after ["
+            + deploymentConfiguration.getDeploymentTimeout()
             + "] miliseconds. Check Mule Runtime log");
-        throw new MojoFailureException("Application deployment timeout.");
+        throw new DeploymentException("Application deployment timeout.");
       }
 
     }
@@ -97,16 +80,17 @@ public class ClusterDeployer {
     return extensionBeginning == -1 ? name : name.substring(0, extensionBeginning);
   }
 
-  private void deployApplications() throws MojoFailureException {
+  private void deployApplications() throws DeploymentException {
     for (MuleProcessController m : mules) {
-      if (!application.exists()) {
-        throw new MojoFailureException("Application does not exists: " + application.getAbsolutePath());
+      if (!deploymentConfiguration.getApplication().exists()) {
+        throw new DeploymentException("Application does not exists: "
+            + deploymentConfiguration.getApplication().getAbsolutePath());
       }
-      log.info("Deploying application [" + application + "]");
+      log.info("Deploying application [" + deploymentConfiguration.getApplication() + "]");
       try {
-        m.deploy(application.getAbsolutePath());
+        m.deploy(deploymentConfiguration.getApplication().getAbsolutePath());
       } catch (MuleControllerException e) {
-        log.error("Couldn't deploy application: " + application + ". Check Mule Runtime logs");
+        log.error("Couldn't deploy application: " + deploymentConfiguration.getApplication() + ". Check Mule Runtime logs");
       }
     }
   }
@@ -117,29 +101,99 @@ public class ClusterDeployer {
       if (!m.isRunning()) {
         try {
           log.info("Starting Mule Runtime");
-          if (arguments == null) {
+          if (deploymentConfiguration.getArguments() == null) {
             m.start();
           } else {
-            m.start(arguments);
+            m.start(deploymentConfiguration.getArguments());
           }
         } catch (MuleControllerException e) {
           log.error("Couldn't start Mule Runtime. Check Mule Runtime logs");
         }
       }
     }
-
   }
 
-  public ClusterDeployer addLibraries(List<File> libs) {
-    for (File file : libs) {
-      for (MuleProcessController c : mules) {
-        c.addLibrary(file);
-      }
-
-      log.debug(String.format("Adding library %s...", file));
+  @Override
+  public void deploy() throws DeploymentException {
+    try {
+      configurator.configureCluster(paths, mules);
+      startMulesIfStopped();
+      deployApplications();
+      waitForDeployments();
+    } catch (MuleControllerException e) {
+      throw new DeploymentException("Error deploying application: [" + deploymentConfiguration.getApplication() + "]");
+    } catch (RuntimeException e) {
+      throw new DeploymentException("Unexpected error deploying application: [" + deploymentConfiguration.getApplication()
+          + "]", e);
     }
-    return this;
   }
 
+  @Override
+  public void undeploy(MavenProject mavenProject) throws DeploymentException {
+    File[] muleHomes = new File[deploymentConfiguration.getSize()];
+    for (int i = 0; i < deploymentConfiguration.getSize(); i++) {
+      File parentDir = new File(mavenProject.getBuild().getDirectory(), "mule" + i);
+      muleHomes[i] = new File(parentDir, "mule-enterprise-standalone-" + deploymentConfiguration.getMuleVersion());
 
+      if (!muleHomes[i].exists()) {
+        throw new DeploymentException(muleHomes[i].getAbsolutePath() + "directory does not exist.");
+      }
+    }
+    new StandaloneUndeployer(log, deploymentConfiguration.getApplicationName(), muleHomes).execute();
+  }
+
+  @Override
+  protected void initialize() throws DeploymentException {
+    validateSize();
+    renameApplicationToApplicationName();
+  }
+
+  @Override
+  public void resolveDependencies(MavenProject mavenProject, ArtifactResolver artifactResolver, ArchiverManager archiverManager,
+                                  ArtifactFactory artifactFactory, ArtifactRepository localRepository)
+      throws DeploymentException, ScriptException {
+    paths = new File[deploymentConfiguration.getSize()];
+    List<MuleProcessController> controllers = new LinkedList();
+    for (int i = 0; i < deploymentConfiguration.getSize(); i++) {
+      File buildDirectory = new File(mavenProject.getBuild().getDirectory(), "mule" + i);
+      buildDirectory.mkdir();
+      File home = null;
+      try {
+        new MuleStandaloneInstaller(deploymentConfiguration, mavenProject, artifactResolver,
+                                    archiverManager, artifactFactory, localRepository, log).doInstallMule(buildDirectory);
+      } catch (org.eclipse.aether.deployment.DeploymentException e) {
+        throw new DeploymentException("Could not install mule standalone. Aborting.", e);
+      }
+      controllers.add(new MuleProcessController(home.getAbsolutePath(), deploymentConfiguration.getTimeout()));
+      paths[i] = home;
+    }
+
+
+    if (null != deploymentConfiguration.getScript()) {
+      GroovyUtils.executeScript(mavenProject, deploymentConfiguration);
+    }
+  }
+
+  private void validateSize() throws DeploymentException {
+    if (deploymentConfiguration.getSize() > MAX_CLUSTER_SIZE) {
+      throw new DeploymentException("Cannot create cluster with more than 8 nodes");
+    }
+  }
+
+  private void renameApplicationToApplicationName() throws DeploymentException {
+    if (!FilenameUtils.getBaseName(deploymentConfiguration.getApplication().getName())
+        .equals(deploymentConfiguration.getApplicationName())) {
+      try {
+        File destApplication =
+            new File(deploymentConfiguration.getApplication().getParentFile(),
+                     deploymentConfiguration.getApplicationName() + ".jar");
+        FileUtils.copyFile(deploymentConfiguration.getApplication(), destApplication);
+        deploymentConfiguration.setApplication(destApplication);
+      } catch (IOException e) {
+        throw new DeploymentException("Couldn't rename [" + deploymentConfiguration.getApplication() + "] to ["
+            + deploymentConfiguration.getApplicationName()
+            + "]");
+      }
+    }
+  }
 }

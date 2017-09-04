@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.client;
+package org.mule.tools.client.agent;
 
 
 import java.io.ByteArrayInputStream;
@@ -29,15 +29,15 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.plugin.logging.Log;
+import org.mule.tools.model.DeployerLog;
 
 public class ClientLoggingFilter implements ClientRequestFilter, ClientResponseFilter, WriterInterceptor {
 
   private static final String REQUEST_LOGGING_STREAM = "requestLoggingStream";
 
-  private Log log;
+  private DeployerLog log;
 
-  public ClientLoggingFilter(Log log) {
+  public ClientLoggingFilter(DeployerLog log) {
     this.log = log;
   }
 

@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.client;
+package org.mule.tools.client.agent;
 
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
@@ -20,15 +20,15 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
-import org.apache.maven.plugin.logging.Log;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.mule.tools.model.DeployerLog;
 
 public abstract class AbstractClient {
 
   protected static final String LOGIN = "/accounts/login";
-  protected final Log log;
+  protected final DeployerLog log;
 
-  public AbstractClient(Log log) {
+  public AbstractClient(DeployerLog log) {
     this.log = log;
   }
 
@@ -94,6 +94,7 @@ public abstract class AbstractClient {
 
   /**
    * Template method to allow subclasses to configure the request (adding headers for example).
+   * 
    * @param builder The invocation builder for the request.
    */
   protected void configureRequest(Invocation.Builder builder) {

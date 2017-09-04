@@ -9,27 +9,30 @@
  */
 package org.mule.tools.client.arm;
 
+import groovy.util.ScriptException;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.model.TargetType;
 
-import java.io.File;
+import org.mule.tools.model.DeployerLog;
+import org.mule.tools.model.DeploymentConfiguration;
 
-import org.apache.maven.plugin.logging.Log;
+import javax.ws.rs.NotFoundException;
 
 public class ArmDeployer extends AbstractDeployer {
 
-  private final TargetType targetType;
-  private final String target;
-  private final ArmClient armClient;
+  private TargetType targetType;
+  private String target;
+  private ArmClient armClient;
 
-  public ArmDeployer(String uri, String username, String password, String environment, TargetType targetType, String target,
-                     File application, String applicationName, Log log, String businessGroup, boolean armInsecure) {
-    super(applicationName, application, log);
-    this.targetType = targetType;
-    this.target = target;
-    armClient = new ArmClient(log, uri, username, password, environment, businessGroup, armInsecure);
+  public ArmDeployer(DeploymentConfiguration deploymentConfiguration, DeployerLog log) throws DeploymentException {
+    super(deploymentConfiguration, log);
   }
 
   @Override
@@ -49,6 +52,43 @@ public class ArmDeployer extends AbstractDeployer {
       error("Failed: " + e.getMessage());
       throw new DeploymentException("Failed to deploy application " + getApplicationName(), e);
     }
+  }
+
+  @Override
+  public void undeploy(MavenProject mavenProject) throws DeploymentException {
+    ArmClient armClient =
+        new ArmClient(log, deploymentConfiguration.getUri(), deploymentConfiguration.getUsername(),
+                      deploymentConfiguration.getPassword(),
+                      deploymentConfiguration.getEnvironment(), deploymentConfiguration.getBusinessGroup(),
+                      deploymentConfiguration.isArmInsecure());
+    armClient.init();
+    log.info("Undeploying application " + deploymentConfiguration.getApplicationName());
+    try {
+      armClient.undeployApplication(deploymentConfiguration.getApplicationName(), deploymentConfiguration.getTargetType(),
+                                    deploymentConfiguration.getTarget());
+    } catch (NotFoundException e) {
+      if (deploymentConfiguration.isFailIfNotExists()) {
+        throw e;
+      } else {
+        log.warn("Application not found: " + deploymentConfiguration.getApplicationName());
+      }
+    }
+  }
+
+  @Override
+  protected void initialize() {
+    targetType = deploymentConfiguration.getTargetType();
+    target = deploymentConfiguration.getTarget();
+    armClient = new ArmClient(log, deploymentConfiguration.getUri(), deploymentConfiguration.getUsername(),
+                              deploymentConfiguration.getPassword(), deploymentConfiguration.getEnvironment(),
+                              deploymentConfiguration.getBusinessGroup(), deploymentConfiguration.isArmInsecure());
+  }
+
+  @Override
+  public void resolveDependencies(MavenProject mavenProject, ArtifactResolver artifactResolver, ArchiverManager archiverManager,
+                                  ArtifactFactory artifactFactory, ArtifactRepository localRepository)
+      throws DeploymentException, ScriptException {
+
   }
 
 }

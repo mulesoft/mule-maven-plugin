@@ -44,4 +44,9 @@ public class MavenDeployerLog implements DeployerLog {
   public void error(String charSequence, Throwable e) {
     log.error(charSequence, e);
   }
+
+  @Override
+  public boolean isDebugEnabled() {
+    return log.isDebugEnabled();
+  }
 }

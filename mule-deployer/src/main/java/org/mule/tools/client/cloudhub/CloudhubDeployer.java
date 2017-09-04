@@ -9,36 +9,25 @@
  */
 package org.mule.tools.client.cloudhub;
 
+import groovy.util.ScriptException;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 
-import java.io.File;
-import java.util.Map;
-
-import org.apache.maven.plugin.logging.Log;
+import org.mule.tools.model.DeployerLog;
+import org.mule.tools.model.DeploymentConfiguration;
 
 public class CloudhubDeployer extends AbstractDeployer {
 
-  private final CloudhubClient cloudhubClient;
+  private CloudhubClient cloudhubClient;
 
-  private final String region;
-  private final String muleVersion;
-  private final Integer workers;
-  private final String workerType;
-  private final Map<String, String> properties;
-
-  public CloudhubDeployer(String uri, String username, String password, String environment, String applicationName,
-                          File application,
-                          String region, String muleVersion, Integer workers, String workerType, Log log,
-                          Map<String, String> properties, String businessGroup) {
-    super(applicationName, application, log);
-    this.cloudhubClient = new CloudhubClient(uri, log, username, password, environment, businessGroup);
-    this.region = region;
-    this.muleVersion = muleVersion;
-    this.workers = workers;
-    this.workerType = workerType;
-    this.properties = properties;
+  public CloudhubDeployer(DeploymentConfiguration deploymentConfiguration, DeployerLog log) throws DeploymentException {
+    super(deploymentConfiguration, log);
   }
 
   @Override
@@ -56,20 +45,25 @@ public class CloudhubDeployer extends AbstractDeployer {
 
       if (domainAvailable) {
         info("Creating application " + getApplicationName());
-        cloudhubClient.createApplication(getApplicationName(), region, muleVersion, workers, workerType, properties);
+        cloudhubClient.createApplication(getApplicationName(), deploymentConfiguration.getRegion(),
+                                         deploymentConfiguration.getMuleVersion(), deploymentConfiguration.getWorkers(),
+                                         deploymentConfiguration.getWorkerType(), deploymentConfiguration.getProperties());
       } else {
         Application app = findApplicationFromCurrentUser(getApplicationName());
 
         if (app != null) {
           info("Application " + getApplicationName() + " already exists, redeploying");
 
-          String updateRegion = (region == null) ? app.region : region;
-          String updateMuleVersion = (muleVersion == null) ? app.muleVersion : muleVersion;
-          Integer updateWorkers = (workers == null) ? app.workers : workers;
-          String updateWorkerType = (workerType == null) ? app.workerType : workerType;
+          String updateRegion = (deploymentConfiguration.getRegion() == null) ? app.region : deploymentConfiguration.getRegion();
+          String updateMuleVersion =
+              (deploymentConfiguration.getMuleVersion() == null) ? app.muleVersion : deploymentConfiguration.getMuleVersion();
+          Integer updateWorkers =
+              (deploymentConfiguration.getWorkers() == null) ? app.workers : deploymentConfiguration.getWorkers();
+          String updateWorkerType =
+              (deploymentConfiguration.getWorkerType() == null) ? app.workerType : deploymentConfiguration.getWorkerType();
 
           cloudhubClient.updateApplication(getApplicationName(), updateRegion, updateMuleVersion, updateWorkers, updateWorkerType,
-                                           properties);
+                                           deploymentConfiguration.getProperties());
         } else {
           error("Domain " + getApplicationName() + " is not available. Aborting.");
           throw new DeploymentException("Domain " + getApplicationName() + " is not available. Aborting.");
@@ -85,6 +79,32 @@ public class CloudhubDeployer extends AbstractDeployer {
       error("Failed: " + e.getMessage());
       throw new DeploymentException("Failed to deploy application " + getApplicationName(), e);
     }
+  }
+
+  @Override
+  public void undeploy(MavenProject mavenProject) throws DeploymentException {
+    CloudhubClient cloudhubClient =
+        new CloudhubClient(deploymentConfiguration.getUri(), log, deploymentConfiguration.getUsername(),
+                           deploymentConfiguration.getPassword(),
+                           deploymentConfiguration.getEnvironment(),
+                           deploymentConfiguration.getBusinessGroup());
+    cloudhubClient.init();
+    log.info("Stopping application " + deploymentConfiguration.getApplicationName());
+    cloudhubClient.stopApplication(deploymentConfiguration.getApplicationName());
+  }
+
+  @Override
+  protected void initialize() {
+    this.cloudhubClient = new CloudhubClient(deploymentConfiguration.getUri(), log, deploymentConfiguration.getUsername(),
+                                             deploymentConfiguration.getPassword(), deploymentConfiguration.getEnvironment(),
+                                             deploymentConfiguration.getBusinessGroup());
+  }
+
+  @Override
+  public void resolveDependencies(MavenProject mavenProject, ArtifactResolver artifactResolver, ArchiverManager archiverManager,
+                                  ArtifactFactory artifactFactory, ArtifactRepository localRepository)
+      throws DeploymentException, ScriptException {
+
   }
 
   private Application findApplicationFromCurrentUser(String appName) {

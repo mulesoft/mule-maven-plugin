@@ -9,7 +9,6 @@
  */
 package org.mule.tools.client.agent;
 
-import org.mule.tools.client.AbstractClient;
 import org.mule.tools.client.exception.ClientException;
 
 import java.io.File;
@@ -18,15 +17,16 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.maven.plugin.logging.Log;
+import org.mule.tools.model.DeployerLog;
 
 public class AgentClient extends AbstractClient {
 
   public static final String APPLICATIONS_PATH = "/mule/applications/";
+  public static final int ACCEPTED = 202;
 
   private final String uri;
 
-  public AgentClient(Log log, String uri) {
+  public AgentClient(DeployerLog log, String uri) {
     super(log);
     this.uri = uri;
   }
@@ -35,8 +35,7 @@ public class AgentClient extends AbstractClient {
     Response response =
         put(uri, APPLICATIONS_PATH + applicationName, Entity.entity(file, MediaType.APPLICATION_OCTET_STREAM_TYPE));
 
-    if (response.getStatus() != 202) // Created
-    {
+    if (response.getStatus() != ACCEPTED) {
       throw new ClientException(response, uri + APPLICATIONS_PATH + applicationName);
     }
   }
@@ -44,7 +43,7 @@ public class AgentClient extends AbstractClient {
   public void undeployApplication(String appName) {
     Response response = delete(uri, APPLICATIONS_PATH + appName);
 
-    if (response.getStatus() != 202) {
+    if (response.getStatus() != ACCEPTED) {
       throw new ClientException(response, uri + APPLICATIONS_PATH + appName);
     }
   }

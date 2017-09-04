@@ -17,10 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
+import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.model.DeployerLog;
 
 /**
  *
@@ -29,15 +28,15 @@ public class StandaloneUndeployer {
 
   private List<File> muleHomes;
   private String applicationName;
-  private Log log;
+  private DeployerLog log;
 
-  public StandaloneUndeployer(Log log, String applicationName, File... muleHomes) {
+  public StandaloneUndeployer(DeployerLog log, String applicationName, File... muleHomes) {
     this.muleHomes = Arrays.asList(muleHomes);
     this.applicationName = applicationName;
     this.log = log;
   }
 
-  public void execute() throws MojoFailureException, MojoExecutionException {
+  public void execute() throws DeploymentException {
     for (File muleHome : muleHomes) {
       log.info("Undeploying application " + applicationName + " from " + muleHome.getAbsolutePath());
       undeploy(muleHome);
@@ -50,7 +49,7 @@ public class StandaloneUndeployer {
     }
   }
 
-  private void undeploy(File muleHome) throws MojoExecutionException {
+  private void undeploy(File muleHome) throws DeploymentException {
     File appsDir = new File(muleHome + "/apps/");
 
     for (File file : appsDir.listFiles()) {
@@ -61,11 +60,11 @@ public class StandaloneUndeployer {
           return;
         } catch (IOException e) {
           log.error("Could not delete " + file.getAbsolutePath());
-          throw new MojoExecutionException("Could not delete directory [" + file.getAbsolutePath() + "]", e);
+          throw new DeploymentException("Could not delete directory [" + file.getAbsolutePath() + "]", e);
         }
       }
     }
 
-    throw new MojoExecutionException("Application " + applicationName + " not found.");
+    throw new DeploymentException("Application " + applicationName + " not found.");
   }
 }

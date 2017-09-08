@@ -39,6 +39,10 @@ public class AgentDeploymentTest {
     builder = new ProjectFactory();
     projectBaseDirectory = builder.createProjectBaseDir("empty-mule-deploy-agent-project", this.getClass());
     verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    String mavenSettings = System.getenv("MAVEN_SETTINGS");
+    if (mavenSettings != null) {
+      verifier.addCliOption("-s " + mavenSettings);
+    }
     String projectVersion = System.getProperty("mule.maven.plugin.version");
     if (projectVersion != null) {
       verifier.setSystemProperty("muleMavenPluginVersion", projectVersion);

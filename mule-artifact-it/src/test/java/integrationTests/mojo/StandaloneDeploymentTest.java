@@ -9,8 +9,10 @@
  */
 package integrationTests.mojo;
 
-import integrationTests.ProjectFactory;
-import integrationTests.mojo.environmentSetup.StandaloneEnvironment;
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
@@ -19,15 +21,14 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.TimeoutException;
+import integrationTests.ProjectFactory;
+import integrationTests.mojo.environmentSetup.StandaloneEnvironment;
 
 public class StandaloneDeploymentTest {
 
   private static final String STANDALONE_TEST_ANCHOR_FILENAME = "standalone-anchor.txt";
   private static final String MULE_DEPLOY = "mule:deploy";
-  private static final String MULE_VERSION = "4.0.0-SNAPSHOT";
+  private static final String MULE_VERSION = "4.0.0-rc-SNAPSHOT";
   private static final String STANDALONE_DIRECTORY_NAME = "mule-enterprise-standalone-" + MULE_VERSION;
   private static Logger log;
   private static Verifier verifier;

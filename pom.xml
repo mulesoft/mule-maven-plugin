@@ -21,11 +21,11 @@
         <java.target>1.8</java.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <mule.version>4.0.0-SNAPSHOT</mule.version>
+        <mule.version>4.0.0-rc-SNAPSHOT</mule.version>
         <mule.core.version>${mule.version}</mule.core.version>
         <mule.embedded.distribution.version>${mule.version}</mule.embedded.distribution.version>
 
-        <mule.maven.client.impl.version>1.0.0-SNAPSHOT</mule.maven.client.impl.version>
+        <mule.maven.client.impl.version>1.0.0-rc-SNAPSHOT</mule.maven.client.impl.version>
 
         <gson.version>2.8.0</gson.version>
         <guava.version>18.0</guava.version>

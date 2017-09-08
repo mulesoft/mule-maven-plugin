@@ -8,6 +8,9 @@
  * LICENSE.txt file.
  */
 
+/**
+ * DTO that represents the options of packaging mule applications.
+ */
 package org.mule.tools.api.packager.packaging;
 
 public class PackagingOptions {

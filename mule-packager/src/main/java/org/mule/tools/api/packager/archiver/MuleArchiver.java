@@ -20,16 +20,15 @@ import java.io.File;
 import org.codehaus.plexus.archiver.ArchiverException;
 
 /**
- * Defines and creates the basic structure of Mule .jar file
+ * Defines and creates the basic structure of Mule final archive file
  */
-public class MuleArchiver extends Archiver {
+public class MuleArchiver extends AbstractArchiver {
 
   public final static String MULE_SRC_LOCATION = META_INF_LOCATION + MULE_SRC.value() + File.separator;
 
   public final static String MULE_ARTIFACT_LOCATION = META_INF_LOCATION + MULE_ARTIFACT.value() + File.separator;
 
   public static final String REPOSITORY_LOCATION = REPOSITORY.value() + File.separator;
-
 
   public void addMuleSrc(File resource, String[] includes, String[] excludes) throws ArchiverException {
     addResource(MULE_SRC_LOCATION, resource, includes, excludes);

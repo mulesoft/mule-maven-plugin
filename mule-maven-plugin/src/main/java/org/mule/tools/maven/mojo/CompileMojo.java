@@ -20,6 +20,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.packager.sources.ContentGenerator;
+import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
 /**
@@ -36,17 +38,11 @@ public class CompileMojo extends AbstractMuleMojo {
     getLog().debug("Generating mule source code...");
 
     try {
-      getContentGenerator().createMuleSrcFolderContent();
+      ((MuleContentGenerator) getContentGenerator()).createMuleSrcFolderContent();
     } catch (IllegalArgumentException | IOException e) {
       throw new MojoFailureException("Fail to generate sources", e);
     }
 
     getLog().debug(MessageFormat.format("Source code generation done ({0}ms)", System.currentTimeMillis() - start));
-  }
-
-  protected MuleContentGenerator getContentGenerator() {
-    return new MuleContentGenerator(project.getGroupId(), project.getArtifactId(), project.getVersion(),
-                                    PackagingType.fromString(project.getPackaging()),
-                                    Paths.get(projectBaseFolder.toURI()), Paths.get(project.getBuild().getDirectory()));
   }
 }

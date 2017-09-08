@@ -17,7 +17,10 @@ import java.io.File;
 import static org.mule.tools.api.packager.structure.FolderNames.APPLICATIONS;
 import static org.mule.tools.api.packager.structure.FolderNames.DOMAIN;
 
-public class DomainBundleArchiver extends Archiver {
+/**
+ * Defines and creates the basic structure of Mule domain bundle file
+ */
+public class DomainBundleArchiver extends AbstractArchiver {
 
   public final static String APPLICATIONS_LOCATION = APPLICATIONS.value() + File.separator;
 

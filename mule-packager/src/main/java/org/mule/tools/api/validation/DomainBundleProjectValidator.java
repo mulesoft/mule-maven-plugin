@@ -11,21 +11,25 @@
 package org.mule.tools.api.validation;
 
 import org.mule.maven.client.internal.AetherMavenClient;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.util.Project;
 
 import java.nio.file.Path;
-import java.util.List;
 
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BUNDLE;
 
+/**
+ * Validates if the project has an existent packaging type, the compatibility of mule plugins that are dependencies of this
+ * project (if any) and the existence of a unique domain. Besides that, validates if every application refers to this domain and
+ * to no other.
+ */
 public class DomainBundleProjectValidator extends AbstractProjectValidator {
 
   private final AetherMavenClient muleMavenPluginClient;
 
-  public DomainBundleProjectValidator(Path projectBaseDir, List<ArtifactCoordinates> projectDependencies,
-                                      List<ArtifactCoordinates> resolvedMulePlugins, AetherMavenClient aetherMavenClient) {
-    super(projectBaseDir, MULE_DOMAIN_BUNDLE.toString(), projectDependencies, resolvedMulePlugins);
+  public DomainBundleProjectValidator(Path projectBaseDir, Project dependencyProject,
+                                      MulePluginResolver resolver, AetherMavenClient aetherMavenClient) {
+    super(projectBaseDir, MULE_DOMAIN_BUNDLE.toString(), dependencyProject, resolver);
     this.muleMavenPluginClient = aetherMavenClient;
   }
 

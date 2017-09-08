@@ -42,23 +42,36 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mule.tools.api.packager.archiver.MuleArchiver;
 import org.mule.tools.api.packager.builder.MulePackageBuilder;
 import org.mule.tools.api.packager.builder.PackageBuilder;
+import org.mule.tools.api.packager.packaging.PackagingOptions;
 import org.mule.tools.api.packager.packaging.PackagingType;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PackageBuilderTest {
+public class MulePackageBuilderTest {
 
   private File destinationFileMock;
   private MulePackageBuilder packageBuilder;
+  private MulePackageBuilder packageBuilderSpy;
 
   @Rule
   public TemporaryFolder targetFileFolder = new TemporaryFolder();
   @Rule
   public TemporaryFolder destinationFileParent = new TemporaryFolder();
+  private File destinationFile;
 
   @Before
   public void setUp() throws IOException {
     this.packageBuilder = new MulePackageBuilder();
     this.destinationFileMock = mock(File.class);
+    destinationFileParent.create();
+    packageBuilder.withClasses(targetFileFolder.newFolder("classes"));
+    packageBuilder.withRepository(targetFileFolder.newFolder("repository"));
+    packageBuilder.withMuleArtifact(targetFileFolder.newFile("mule-artifact.json"));
+    packageBuilder.withMaven(targetFileFolder.newFolder("maven"));
+    packageBuilder.withMuleSrc(targetFileFolder.newFolder("src/main/mule"));
+    destinationFile = new File(destinationFileParent.getRoot(), "destination.jar");
+    if (destinationFile.exists()) {
+      destinationFile.delete();
+    }
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -142,32 +155,6 @@ public class PackageBuilderTest {
   }
 
   @Test
-  public void fromWorkingDirectoryWithNonExistingFoldersInWorkingDir() throws IOException {
-    Path workingDirectory = targetFileFolder.getRoot().toPath();
-    MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
-
-    packageBuilder = new MulePackageBuilder();
-    packageBuilder.withArchiver(muleArchiverMock);
-    packageBuilder.withDestinationFile(destinationFileMock);
-    packageBuilder.fromWorkingDirectory(workingDirectory);
-
-    packageBuilder.createDeployableFile();
-
-    verify(muleArchiverMock, times(0)).addToRoot(workingDirectory.resolve(CLASSES.value()).toFile(), null, null);
-
-    verify(muleArchiverMock, times(0)).addMaven(workingDirectory.resolve(META_INF.value()).resolve(MAVEN.value()).toFile(), null,
-                                                null);
-    verify(muleArchiverMock, times(0))
-        .addMuleArtifact(workingDirectory.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
-                         null, null);
-    verify(muleArchiverMock, times(0)).addMuleSrc(workingDirectory.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(),
-                                                  null, null);
-    verify(muleArchiverMock, times(0)).addRepository(workingDirectory.resolve(REPOSITORY.value()).toFile(), null, null);
-    verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
-    verify(muleArchiverMock, times(1)).createArchive();
-  }
-
-  @Test
   public void fromWorkingDirectory() throws IOException {
     Path workingDirectory = targetFileFolder.getRoot().toPath();
     MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
@@ -197,34 +184,34 @@ public class PackageBuilderTest {
     verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
     verify(muleArchiverMock, times(1)).createArchive();
   }
-  //
-  // @Test
-  // public void createMuleAppOnlyMuleSourcesTest() throws IOException {
-  // packageBuilderSpy.createMuleApp(destinationFile, targetFileFolder.getRoot().getPath(), PackagingType.MULE_APPLICATION, true,
-  // true, true);
-  // verify(packageBuilderSpy, times(1)).withDestinationFile(any());
-  // verify(packageBuilderSpy, times(0)).withClasses(any());
-  // verify(packageBuilderSpy, times(0)).withRepository(any());
-  // }
-  //
-  // @Test
-  // public void createMuleAppWithBinariesTest() throws IOException {
-  // packageBuilderSpy.createMuleApp(destinationFile, targetFileFolder.getRoot().getPath(), PackagingType.MULE_APPLICATION, false,
-  // false, false);
-  // verify(packageBuilderSpy, times(1)).withDestinationFile(any());
-  // verify(packageBuilderSpy, times(1)).withClasses(any());
-  // verify(packageBuilderSpy, times(1)).withRepository(any());
-  // verify(packageBuilderSpy, times(1)).withMuleArtifact(any());
-  // verify(packageBuilderSpy, times(1)).withMaven(any());
-  // }
-  //
-  // @Test
-  // public void createMuleAppWithBinariesAndSourcesTest() throws IOException {
-  // packageBuilderSpy.createMuleApp(destinationFile, targetFileFolder.getRoot().getPath(), PackagingType.MULE_APPLICATION, false,
-  // false, true);
-  // verify(packageBuilderSpy, times(1)).withDestinationFile(any());
-  // verify(packageBuilderSpy, times(1)).withClasses(any());
-  // verify(packageBuilderSpy, times(1)).withRepository(any());
-  // }
+
+  @Test
+  public void createMuleAppOnlyMuleSourcesTest() throws IOException {
+    packageBuilderSpy = spy(packageBuilder.withPackagingOptions(new PackagingOptions(true, false, false)));
+    packageBuilderSpy.createPackage(destinationFile, targetFileFolder.getRoot().getPath());
+    verify(packageBuilderSpy, times(1)).withDestinationFile(any());
+    verify(packageBuilderSpy, times(0)).withClasses(any());
+    verify(packageBuilderSpy, times(0)).withRepository(any());
+  }
+
+  @Test
+  public void createMuleAppWithBinariesTest() throws IOException {
+    packageBuilderSpy = spy(packageBuilder.withPackagingOptions(new PackagingOptions(false, false, false)));
+    packageBuilderSpy.createPackage(destinationFile, targetFileFolder.getRoot().getPath());
+    verify(packageBuilderSpy, times(1)).withDestinationFile(any());
+    verify(packageBuilderSpy, times(1)).withClasses(any());
+    verify(packageBuilderSpy, times(1)).withRepository(any());
+    verify(packageBuilderSpy, times(1)).withMuleArtifact(any());
+    verify(packageBuilderSpy, times(1)).withMaven(any());
+  }
+
+  @Test
+  public void createMuleAppWithBinariesAndSourcesTest() throws IOException {
+    packageBuilderSpy = spy(packageBuilder.withPackagingOptions(new PackagingOptions(false, false, true)));
+    packageBuilderSpy.createPackage(destinationFile, targetFileFolder.getRoot().getPath());
+    verify(packageBuilderSpy, times(1)).withDestinationFile(any());
+    verify(packageBuilderSpy, times(1)).withClasses(any());
+    verify(packageBuilderSpy, times(1)).withRepository(any());
+  }
 
 }

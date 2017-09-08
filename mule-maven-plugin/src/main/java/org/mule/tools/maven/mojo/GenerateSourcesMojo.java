@@ -20,6 +20,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.packager.sources.ContentGenerator;
+import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
 import org.mule.tools.api.packager.sources.DomainBundleContentGenerator;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
@@ -45,16 +46,5 @@ public class GenerateSourcesMojo extends AbstractMuleMojo {
     }
 
     getLog().debug(MessageFormat.format("generate sources done ({0}ms)", System.currentTimeMillis() - start));
-  }
-
-  protected ContentGenerator getContentGenerator() {
-    if (MULE_DOMAIN_BUNDLE.toString().equals(project.getPackaging())) {
-      return new DomainBundleContentGenerator(project.getGroupId(), project.getArtifactId(), project.getVersion(),
-                                              PackagingType.fromString(project.getPackaging()),
-                                              Paths.get(projectBaseFolder.toURI()), Paths.get(project.getBuild().getDirectory()));
-    }
-    return new MuleContentGenerator(project.getGroupId(), project.getArtifactId(), project.getVersion(),
-                                    PackagingType.fromString(project.getPackaging()),
-                                    Paths.get(projectBaseFolder.toURI()), Paths.get(project.getBuild().getDirectory()));
   }
 }

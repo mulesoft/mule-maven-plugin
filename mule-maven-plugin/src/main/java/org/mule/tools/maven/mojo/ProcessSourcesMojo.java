@@ -18,6 +18,8 @@ import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.packager.sources.ContentGenerator;
+import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.repository.ArtifactInstaller;
 import org.mule.tools.api.repository.MuleMavenPluginClientProvider;
@@ -35,6 +37,8 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
 import org.mule.tools.maven.utils.MavenPackagerLog;
 
+import javax.swing.text.AbstractDocument;
+
 @Mojo(name = "process-sources",
     defaultPhase = LifecyclePhase.PROCESS_SOURCES,
     requiresDependencyResolution = ResolutionScope.RUNTIME)
@@ -51,7 +55,7 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
                                   getClassLoaderModelAssembler());
       try {
         ClassLoaderModel classLoaderModel = repositoryGenerator.generate();
-        getContentGenerator().createApplicationClassLoaderModelJsonFile(classLoaderModel);
+        ((MuleContentGenerator) getContentGenerator()).createApplicationClassLoaderModelJsonFile(classLoaderModel);
       } catch (Exception e) {
         String message = format("There was an exception while creating the repository of [%s]", project.toString());
         throw new MojoFailureException(message, e);
@@ -64,11 +68,5 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
 
   protected ApplicationClassLoaderModelAssembler getClassLoaderModelAssembler() {
     return new ApplicationClassLoaderModelAssembler(getAetherMavenClient());
-  }
-
-  protected MuleContentGenerator getContentGenerator() {
-    return new MuleContentGenerator(project.getGroupId(), project.getArtifactId(), project.getVersion(),
-                                    PackagingType.fromString(project.getPackaging()),
-                                    Paths.get(projectBaseFolder.toURI()), Paths.get(project.getBuild().getDirectory()));
   }
 }

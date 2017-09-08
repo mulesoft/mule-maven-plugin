@@ -13,8 +13,10 @@ package org.mule.tools.maven.mojo.model.lifecycle;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.COMPILE;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.DEPLOY;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.GENERATE_SOURCES;
@@ -37,52 +39,52 @@ import org.apache.maven.lifecycle.mapping.Lifecycle;
 import org.junit.Test;
 
 import com.google.common.collect.Sets;
+import org.mule.tools.maven.mojo.model.lifecycle.mapping.project.MuleLifecycleMapping;
+import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenVersionless;
 
 public class MuleLifecycleMappingMavenVersionlessTest {
 
   private final String DEFAULT_LIFECYCLE = DefaultLifecycles.STANDARD_LIFECYCLES[0];
 
-  // @Test
-  // public void getLifecyclePhases() {
-  //
-  // Set<MavenLifecyclePhase> expectedLifecyclePhases =
-  // Sets.newHashSet(VALIDATE, INITIALIZE, GENERATE_SOURCES, PROCESS_SOURCES, PROCESS_RESOURCES, COMPILE,
-  // GENERATE_TEST_SOURCES, PROCESS_TEST_RESOURCES, TEST_COMPILE, TEST, PACKAGE, INSTALL, DEPLOY);
-  //
-  // MuleLifecycleMappingMaven muleLifecycleMappingMavenMock = mock(MuleLifecycleMappingMaven.class);
-  //
-  // doCallRealMethod().when(muleLifecycleMappingMavenMock).getLifecyclePhases();
-  // Map lifecyclePhases = muleLifecycleMappingMavenMock.getLifecyclePhases();
-  //
-  //
-  // assertThat("The number of lifecycle phases is wrong", lifecyclePhases.keySet().size(),
-  // is(expectedLifecyclePhases.size()));
-  //
-  // expectedLifecyclePhases.forEach(expectedPhase -> assertThat("Missing lifecycle phase: " + expectedPhase.id(),
-  // lifecyclePhases.containsKey(expectedPhase.id()), is(true)));
-  //
-  //
-  // }
-  //
-  // @Test
-  // public void getMuleDefaultLifecycleTest() {
-  // MuleLifecycleMappingMaven muleLifecycleMappingMaven = new MuleLifecycleMapping().getMuleLifecycleMappingMaven();
-  //
-  // Map lifecycles = muleLifecycleMappingMaven.getLifecycles();
-  // Lifecycle defaultLifecycle = (Lifecycle) lifecycles.get(DEFAULT_LIFECYCLE);
-  // Map phases = defaultLifecycle.getLifecyclePhases();
-  //
-  //
-  // Map expectedPhases = muleLifecycleMappingMaven.getLifecyclePhases();
-  // for (Object phase : phases.keySet()) {
-  // assertThat("Current phase is not defined in the expected lifecycle map", expectedPhases.containsKey(phase), is(true));
-  // assertThat("Current phase is not attached to the same goals in the expected lifecycle map",
-  // expectedPhases.get(phase).toString(), equalTo(phases.get(phase).toString()));
-  // }
-  //
-  // for (Object phase : expectedPhases.keySet()) {
-  // assertThat("Current phase is not defined in the actual lifecycle map", phases.containsKey(phase), is(true));
-  // }
-  // }
+  @Test
+  public void getLifecyclePhases() {
+
+    Set<MavenLifecyclePhase> expectedLifecyclePhases =
+        Sets.newHashSet(VALIDATE, INITIALIZE, GENERATE_SOURCES, PROCESS_SOURCES, PROCESS_RESOURCES, COMPILE,
+                        GENERATE_TEST_SOURCES, PROCESS_TEST_RESOURCES, TEST_COMPILE, TEST, PACKAGE, INSTALL, DEPLOY);
+
+    LifecycleMappingMavenVersionless lifecycleMappingMavenVersionlessMock = mock(LifecycleMappingMavenVersionless.class);
+    when(lifecycleMappingMavenVersionlessMock.buildGoals(any())).thenReturn("");
+    Map lifecyclePhases = (new MuleLifecycleMapping()).getLifecyclePhases(lifecycleMappingMavenVersionlessMock);
+
+
+    assertThat("The number of lifecycle phases is wrong", lifecyclePhases.keySet().size(),
+               is(expectedLifecyclePhases.size()));
+
+    expectedLifecyclePhases.forEach(expectedPhase -> assertThat("Missing lifecycle phase: " + expectedPhase.id(),
+                                                                lifecyclePhases.containsKey(expectedPhase.id()), is(true)));
+
+
+  }
+
+  @Test
+  public void getMuleDefaultLifecycleTest() {
+    MuleLifecycleMapping muleLifecycleMappingMaven = new MuleLifecycleMapping();
+
+    Map lifecycles = muleLifecycleMappingMaven.getLifecycles();
+    Lifecycle defaultLifecycle = (Lifecycle) lifecycles.get(DEFAULT_LIFECYCLE);
+    Map phases = defaultLifecycle.getLifecyclePhases();
+
+    LifecycleMappingMavenVersionless lifecycleMappingMavenVersionlessMock = mock(LifecycleMappingMavenVersionless.class);
+    when(lifecycleMappingMavenVersionlessMock.buildGoals(any())).thenReturn("");
+    Map expectedPhases = (new MuleLifecycleMapping()).getLifecyclePhases(lifecycleMappingMavenVersionlessMock);
+    for (Object phase : phases.keySet()) {
+      assertThat("Current phase is not defined in the expected lifecycle map", expectedPhases.containsKey(phase), is(true));
+    }
+
+    for (Object phase : expectedPhases.keySet()) {
+      assertThat("Current phase is not defined in the actual lifecycle map", phases.containsKey(phase), is(true));
+    }
+  }
 
 }

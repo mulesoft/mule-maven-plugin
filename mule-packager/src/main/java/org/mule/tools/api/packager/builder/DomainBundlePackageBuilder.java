@@ -11,7 +11,7 @@
 package org.mule.tools.api.packager.builder;
 
 import org.codehaus.plexus.archiver.ArchiverException;
-import org.mule.tools.api.packager.archiver.Archiver;
+import org.mule.tools.api.packager.archiver.AbstractArchiver;
 import org.mule.tools.api.packager.archiver.DomainBundleArchiver;
 
 import java.io.File;
@@ -24,6 +24,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static org.mule.tools.api.packager.structure.FolderNames.*;
 
+/**
+ * Builder for Mule Domain Bundle packages.
+ */
 public class DomainBundlePackageBuilder implements PackageBuilder {
 
   private File destinationFile;
@@ -51,12 +54,8 @@ public class DomainBundlePackageBuilder implements PackageBuilder {
     return this;
   }
 
-  /**
-   * @param archiver
-   * @return builder
-   */
-  public DomainBundlePackageBuilder withArchiver(Archiver archiver) {
-    checkNotNull(archiver, "Archiver must not be null");
+  public DomainBundlePackageBuilder withArchiver(AbstractArchiver archiver) {
+    checkNotNull(archiver, "AbstractArchiver must not be null");
     this.archiver = (DomainBundleArchiver) archiver;
     return this;
   }
@@ -79,6 +78,31 @@ public class DomainBundlePackageBuilder implements PackageBuilder {
     return this;
   }
 
+  /**
+   * Creates a mule domain bundle package based on the contents of the origin folder, writing them to the destination jar file.
+   * The target file is supposed to have more or less the structure of the example below:
+   *
+   * <pre>
+   *
+   * ├── applications
+   * │   ├── mule-app-a-1.0.0-mule-application.jar
+   * │   ├── mule-app-b-1.0.0-mule-application.jar
+   * │   └── mule-app-c-1.0.0-mule-application.jar
+   * ├── domain
+   * │   └── mule-domain-a-1.0.0-mule-domain.jar
+   * └── META-INF
+   *     └── maven
+   *         ├── group-id
+   *         └── artifact-id
+   *             ├── pom.xml
+   *             └── pom.properties
+   * </pre>
+   *
+   * @param destinationFile file that represents the resource that is going to represent the final package.
+   * @param originFolder folder containing the source files.
+   * @throws ArchiverException
+   * @throws IOException
+   */
   @Override
   public void createPackage(File destinationFile, String originFolder) throws ArchiverException, IOException {
     Path originFolderPath = Paths.get(originFolder);

@@ -15,6 +15,9 @@ import org.mule.tools.api.packager.structure.FolderNames;
 
 import java.nio.file.Path;
 
+/**
+ * Generates the basic working folder structure to create a mule application package.
+ */
 public class MuleProjectFoldersGenerator extends AbstractProjectFoldersGenerator {
 
   public MuleProjectFoldersGenerator(String groupId, String artifactId, PackagingType packagingType) {

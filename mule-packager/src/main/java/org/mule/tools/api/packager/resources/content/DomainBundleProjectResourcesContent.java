@@ -15,6 +15,9 @@ import org.mule.tools.api.classloader.model.Artifact;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * Resources present in a domain bundle, namely, applications and a domain jar files.
+ */
 public class DomainBundleProjectResourcesContent implements ResourcesContent {
 
   private final List<Artifact> dependencies = new ArrayList<>();

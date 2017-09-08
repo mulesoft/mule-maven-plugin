@@ -10,7 +10,7 @@
 
 package org.mule.tools.api.packager.sources;
 
-import org.apache.commons.lang3.StringUtils;
+import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 
 import java.io.IOException;
@@ -27,35 +27,17 @@ import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_
 import static org.mule.tools.api.packager.structure.PackagerFiles.POM_PROPERTIES;
 import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
 
+/**
+ * Generates the required content for each of the mandatory folders of a mule package
+ */
 public abstract class ContentGenerator {
 
-  protected String groupId;
-  protected String artifactId;
-  protected String version;
-  protected PackagingType packagingType;
+  protected final ProjectInformation projectInformation;
 
-  protected Path projectBaseFolder;
-  protected Path projectTargetFolder;
-
-  public ContentGenerator(String groupId, String artifactId, String version, PackagingType packagingType, Path projectBaseFolder,
-                          Path projectTargetFolder) {
-    checkArgument(StringUtils.isNotEmpty(groupId), "The groupId must not be null nor empty");
-    checkArgument(StringUtils.isNotEmpty(artifactId), "The artifactId must not be null nor empty");
-    checkArgument(StringUtils.isNotEmpty(version), "The version must not be null nor empty");
-
-    checkArgument(packagingType != null, "The packagingType must not be null");
-
-    checkPathExist(projectBaseFolder);
-    checkPathExist(projectTargetFolder);
-
-    this.groupId = groupId;
-    this.artifactId = artifactId;
-    this.version = version;
-
-    this.packagingType = packagingType;
-
-    this.projectBaseFolder = projectBaseFolder;
-    this.projectTargetFolder = projectTargetFolder;
+  public ContentGenerator(ProjectInformation projectInformation) {
+    checkArgument(projectInformation.getProjectBaseFolder().toFile().exists(), "Project base folder should exist");
+    checkArgument(projectInformation.getBuildDirectory().toFile().exists(), "Project build folder should exist");
+    this.projectInformation = projectInformation;
   }
 
   /**
@@ -66,9 +48,10 @@ public abstract class ContentGenerator {
   public abstract void createContent() throws IOException;
 
   protected void copyPomFile() throws IOException {
-    Path originPath = projectBaseFolder.resolve(POM_XML);
+    Path originPath = projectInformation.getProjectBaseFolder().resolve(POM_XML);
     Path destinationPath =
-        projectTargetFolder.resolve(META_INF.value()).resolve(MAVEN.value()).resolve(groupId).resolve(artifactId);
+        projectInformation.getBuildDirectory().resolve(META_INF.value()).resolve(MAVEN.value())
+            .resolve(projectInformation.getGroupId()).resolve(projectInformation.getArtifactId());
     String destinationFileName = originPath.getFileName().toString();
 
     copyFile(originPath, destinationPath, destinationFileName);
@@ -86,15 +69,16 @@ public abstract class ContentGenerator {
 
   protected void createPomProperties() {
     Path pomPropertiesDestinationPath =
-        projectTargetFolder.resolve(META_INF.value()).resolve(MAVEN.value()).resolve(groupId).resolve(artifactId);
+        projectInformation.getBuildDirectory().resolve(META_INF.value()).resolve(MAVEN.value())
+            .resolve(projectInformation.getGroupId()).resolve(projectInformation.getArtifactId());
     checkPathExist(pomPropertiesDestinationPath);
 
     Path pomPropertiesFilePath = pomPropertiesDestinationPath.resolve(POM_PROPERTIES);
     try {
       PrintWriter writer = new PrintWriter(pomPropertiesFilePath.toString(), "UTF-8");
-      writer.println("version=" + version);
-      writer.println("groupId=" + groupId);
-      writer.println("artifactId=" + artifactId);
+      writer.println("version=" + projectInformation.getVersion());
+      writer.println("groupId=" + projectInformation.getGroupId());
+      writer.println("artifactId=" + projectInformation.getArtifactId());
       writer.close();
     } catch (IOException e) {
       throw new RuntimeException("Could not create pom.properties", e);
@@ -118,8 +102,8 @@ public abstract class ContentGenerator {
   }
 
   private void copyDescriptorFile() throws IOException {
-    Path originPath = projectBaseFolder.resolve(MULE_ARTIFACT_JSON);
-    Path destinationPath = projectTargetFolder.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value());
+    Path originPath = projectInformation.getProjectBaseFolder().resolve(MULE_ARTIFACT_JSON);
+    Path destinationPath = projectInformation.getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value());
     String destinationFileName = originPath.getFileName().toString();
 
     copyFile(originPath, destinationPath, destinationFileName);

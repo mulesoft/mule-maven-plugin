@@ -10,16 +10,17 @@
 
 package org.mule.tools.api.packager.sources;
 
-import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.packager.ProjectInformation;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
+/**
+ * Generates the required content for each of the mandatory folders of a mule domain bundle package
+ */
 public class DomainBundleContentGenerator extends ContentGenerator {
 
-  public DomainBundleContentGenerator(String groupId, String artifactId, String version, PackagingType packagingType,
-                                      Path projectBaseFolder, Path projectTargetFolder) {
-    super(groupId, artifactId, version, packagingType, projectBaseFolder, projectTargetFolder);
+  public DomainBundleContentGenerator(ProjectInformation projectInformation) {
+    super(projectInformation);
   }
 
   @Override

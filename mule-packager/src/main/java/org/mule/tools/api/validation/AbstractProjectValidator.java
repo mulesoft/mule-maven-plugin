@@ -10,9 +10,9 @@
 
 package org.mule.tools.api.validation;
 
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.util.Project;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -21,20 +21,24 @@ import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkState;
 
+/**
+ * Validates if the project has an existent packaging type, the compatibility of mule plugins that are dependencies of this
+ * project and performs any additional validation defined by its subclasses.
+ */
 public abstract class AbstractProjectValidator {
 
   protected final Path projectBaseDir;
   protected final String packagingType;
-  protected final List<ArtifactCoordinates> projectDependencies;
-  private final List<ArtifactCoordinates> resolvedMulePlugins;
+  protected final Project dependencyProject;
+  private final MulePluginResolver resolver;
   protected final MulePluginsCompatibilityValidator mulePluginsCompatibilityValidator = new MulePluginsCompatibilityValidator();
 
-  public AbstractProjectValidator(Path projectBaseDir, String packagingType, List<ArtifactCoordinates> projectDependencies,
-                                  List<ArtifactCoordinates> resolvedMulePlugins) {
+  public AbstractProjectValidator(Path projectBaseDir, String packagingType, Project dependencyProject,
+                                  MulePluginResolver resolver) {
     this.projectBaseDir = projectBaseDir;
     this.packagingType = packagingType;
-    this.projectDependencies = projectDependencies;
-    this.resolvedMulePlugins = resolvedMulePlugins;
+    this.dependencyProject = dependencyProject;
+    this.resolver = resolver;
   }
 
   /**
@@ -46,7 +50,7 @@ public abstract class AbstractProjectValidator {
   public Boolean isProjectValid() throws ValidationException {
     checkState(packagingType != null, "Packaging type should not be null");
     isPackagingTypeValid(packagingType);
-    mulePluginsCompatibilityValidator.validate(resolvedMulePlugins);
+    mulePluginsCompatibilityValidator.validate(resolver.resolveMulePlugins(dependencyProject));
     additionalValidation();
     return true;
   }

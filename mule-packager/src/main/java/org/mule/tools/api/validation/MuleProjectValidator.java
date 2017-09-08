@@ -20,6 +20,7 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.util.Project;
 
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 
@@ -32,17 +33,17 @@ public class MuleProjectValidator extends AbstractProjectValidator {
   private final List<SharedLibraryDependency> sharedLibraries;
 
   public MuleProjectValidator(Path projectBaseDir, String packagingType,
-                              List<ArtifactCoordinates> projectDependencies, List<ArtifactCoordinates> resolvedMulePlugins,
+                              Project dependencyProject, MulePluginResolver resolver,
                               List<SharedLibraryDependency> sharedLibraries) {
-    super(projectBaseDir, packagingType, projectDependencies, resolvedMulePlugins);
+    super(projectBaseDir, packagingType, dependencyProject, resolver);
     this.sharedLibraries = sharedLibraries;
   }
 
   @Override
   protected void additionalValidation() throws ValidationException {
-    isProjectStructureValid(packagingType);
+    isProjectStructureValid(packagingType, projectBaseDir);
     isDescriptorFilePresent();
-    validateSharedLibraries(sharedLibraries, projectDependencies);
+    validateSharedLibraries(sharedLibraries, dependencyProject.getDependencies());
   }
 
   /**
@@ -51,8 +52,8 @@ public class MuleProjectValidator extends AbstractProjectValidator {
    * @return true if the project's structure is valid
    * @throws ValidationException if the project's structure is invalid
    */
-  public Boolean isProjectStructureValid(String packagingType) throws ValidationException {
-    File mainSrcApplication = mainSrcApplication(packagingType);
+  public static Boolean isProjectStructureValid(String packagingType, Path projectBaseDir) throws ValidationException {
+    File mainSrcApplication = mainSrcApplication(packagingType, projectBaseDir);
     if (!mainSrcApplication.exists()) {
       throw new ValidationException("The folder " + mainSrcApplication.getAbsolutePath() + " is mandatory");
     }
@@ -96,7 +97,7 @@ public class MuleProjectValidator extends AbstractProjectValidator {
     }
   }
 
-  private File mainSrcApplication(String packagingType) throws ValidationException {
+  private static File mainSrcApplication(String packagingType, Path projectBaseDir) throws ValidationException {
     return PackagingType.fromString(packagingType).getSourceFolderLocation(projectBaseDir).toFile();
   }
 

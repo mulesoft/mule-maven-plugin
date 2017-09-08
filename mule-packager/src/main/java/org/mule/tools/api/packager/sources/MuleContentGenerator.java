@@ -10,7 +10,6 @@
 
 package org.mule.tools.api.packager.sources;
 
-import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
@@ -31,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.util.CopyFileVisitor;
 
@@ -38,21 +38,18 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * It knows how to generate the required content for each of the mandatory folder of the package
- * 
+ * Generates the required content for each of the mandatory folders of a mule application package
  */
 public class MuleContentGenerator extends ContentGenerator {
 
   private static final String CLASSLOADER_MODEL_FILE_NAME = "classloader-model.json";
 
-  public MuleContentGenerator(String groupId, String artifactId, String version, PackagingType packagingType,
-                              Path projectBaseFolder, Path projectTargetFolder) {
-
-    super(groupId, artifactId, version, packagingType, projectBaseFolder, projectTargetFolder);
+  public MuleContentGenerator(ProjectInformation projectInformation) {
+    super(projectInformation);
   }
 
   /**
-   * It create all the package content in the required folders
+   * It creates all the package content in the required folders
    * 
    * @throws IOException
    */
@@ -68,8 +65,9 @@ public class MuleContentGenerator extends ContentGenerator {
    * @throws IOException
    */
   public void createMuleSrcFolderContent() throws IOException {
-    Path originPath = packagingType.getSourceFolderLocation(projectBaseFolder);
-    Path destinationPath = projectTargetFolder.resolve(CLASSES.value());
+    Path originPath = PackagingType.fromString(projectInformation.getPackaging())
+        .getSourceFolderLocation(projectInformation.getProjectBaseFolder());
+    Path destinationPath = projectInformation.getBuildDirectory().resolve(CLASSES.value());
 
     copyContent(originPath, destinationPath, Optional.ofNullable(null), true, false);
   }
@@ -80,8 +78,9 @@ public class MuleContentGenerator extends ContentGenerator {
    * @throws IOException
    */
   public void createTestFolderContent() throws IOException {
-    Path originPath = packagingType.getTestSourceFolderLocation(projectBaseFolder);
-    Path destinationPath = projectTargetFolder.resolve(TEST_MULE.value()).resolve(originPath.getFileName());
+    Path originPath = PackagingType.fromString(projectInformation.getPackaging())
+        .getTestSourceFolderLocation(projectInformation.getProjectBaseFolder());
+    Path destinationPath = projectInformation.getBuildDirectory().resolve(TEST_MULE.value()).resolve(originPath.getFileName());
 
     copyContent(originPath, destinationPath, Optional.ofNullable(null), false, true);
   }
@@ -93,11 +92,12 @@ public class MuleContentGenerator extends ContentGenerator {
    * @throws IOException
    */
   public void createMetaInfMuleSourceFolderContent() throws IOException {
-    Path originPath = projectBaseFolder;
-    Path destinationPath = projectTargetFolder.resolve(META_INF.value()).resolve(MULE_SRC.value()).resolve(artifactId);
+    Path originPath = projectInformation.getProjectBaseFolder();
+    Path destinationPath = projectInformation.getBuildDirectory().resolve(META_INF.value()).resolve(MULE_SRC.value())
+        .resolve(projectInformation.getArtifactId());
 
     List<Path> exclusions = new ArrayList<>();
-    exclusions.add(projectBaseFolder.resolve(TARGET.value()));
+    exclusions.add(projectInformation.getProjectBaseFolder().resolve(TARGET.value()));
 
     copyContent(originPath, destinationPath, Optional.of(exclusions));
   }
@@ -109,7 +109,7 @@ public class MuleContentGenerator extends ContentGenerator {
    */
   public void createApplicationClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel) {
     File destinationFolder =
-        projectTargetFolder.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile();
+        projectInformation.getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile();
     createClassLoaderModelJsonFile(classLoaderModel, destinationFolder);
   }
 

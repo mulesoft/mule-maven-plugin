@@ -119,6 +119,12 @@ public class ArtifactUtils {
     return artifactCoordinates;
   }
 
+  /**
+   * Converts a {@link ArtifactCoordinates} instance to a {@link org.apache.maven.model.Dependency} instance.
+   *
+   * @param artifactCoordinates the artifact coordinates to be converted.
+   * @return the corresponding {@link org.apache.maven.model.Dependency} instance.
+   */
   public static Dependency toDependency(ArtifactCoordinates artifactCoordinates) {
     Dependency dependency = new Dependency();
     dependency.setGroupId(artifactCoordinates.getGroupId());
@@ -130,10 +136,30 @@ public class ArtifactUtils {
     return dependency;
   }
 
+  /**
+   * Converts a {@link org.apache.maven.model.Dependency} instance to a {@link ArtifactCoordinates} instance.
+   *
+   * @param dependency the dependency to be converted.
+   * @return the corresponding {@link ArtifactCoordinates} instance.
+   */
   public static ArtifactCoordinates toArtifactCoordinates(Dependency dependency) {
     return new ArtifactCoordinates(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(),
                                    dependency.getType(), dependency.getClassifier(), dependency.getScope());
   }
 
-
+  /**
+   * Converts a {@link ArtifactCoordinates} instance to a {@link org.mule.maven.client.api.model.BundleDescriptor} instance.
+   *
+   * @param artifactCoordinates the artifact coordinates to be converted.
+   * @return the corresponding {@link org.mule.maven.client.api.model.BundleDescriptor} instance.
+   */
+  public static BundleDescriptor toBundleDescriptor(ArtifactCoordinates artifactCoordinates) {
+    return new BundleDescriptor.Builder()
+        .setGroupId(artifactCoordinates.getGroupId())
+        .setArtifactId(artifactCoordinates.getArtifactId())
+        .setVersion(artifactCoordinates.getVersion())
+        .setBaseVersion(artifactCoordinates.getVersion())
+        .setClassifier(artifactCoordinates.getClassifier())
+        .setType(artifactCoordinates.getType()).build();
+  }
 }

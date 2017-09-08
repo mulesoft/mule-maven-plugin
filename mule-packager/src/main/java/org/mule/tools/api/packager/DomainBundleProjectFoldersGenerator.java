@@ -15,9 +15,12 @@ import org.mule.tools.api.packager.structure.FolderNames;
 
 import java.nio.file.Path;
 
-public class BundleDomainProjectFoldersGenerator extends AbstractProjectFoldersGenerator {
+/**
+ * Generates the basic working folder structure to create a domain bundle package.
+ */
+public class DomainBundleProjectFoldersGenerator extends AbstractProjectFoldersGenerator {
 
-  public BundleDomainProjectFoldersGenerator(String groupId, String artifactId, PackagingType packagingType) {
+  public DomainBundleProjectFoldersGenerator(String groupId, String artifactId, PackagingType packagingType) {
     super(groupId, artifactId, packagingType);
   }
 

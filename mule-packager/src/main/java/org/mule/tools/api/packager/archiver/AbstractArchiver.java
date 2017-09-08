@@ -20,7 +20,10 @@ import java.io.File;
 import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 
-public class Archiver extends ZipArchiver {
+/**
+ * Defines and creates the basic structure of package file. All package implementations should subclass this archiver.
+ */
+public class AbstractArchiver extends ZipArchiver {
 
   public final static String ROOT_LOCATION = StringUtils.EMPTY;
 
@@ -28,10 +31,18 @@ public class Archiver extends ZipArchiver {
 
   public final static String MAVEN_LOCATION = META_INF_LOCATION + MAVEN.value() + File.separator;
 
+  /**
+   * @param resource Folder or file that is going to be added to the added to the maven folder.
+   * @return
+   */
   public void addMaven(File resource, String[] includes, String[] excludes) throws ArchiverException {
     addResource(MAVEN_LOCATION, resource, includes, excludes);
   }
 
+  /**
+   * @param resource Folder/file that is going to be added to the package root location.
+   * @return
+   */
   public void addToRoot(File resource, String[] includes, String[] excludes) throws ArchiverException {
     addResource(ROOT_LOCATION, resource, includes, excludes);
   }

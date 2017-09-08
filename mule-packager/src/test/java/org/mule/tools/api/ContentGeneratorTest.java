@@ -37,6 +37,7 @@ import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.packager.PackagerTestUtils;
+import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
@@ -63,23 +64,40 @@ public class ContentGeneratorTest {
 
   private MuleContentGenerator contentGenerator;
 
-
   @Before
   public void setUp() {
-    contentGenerator = new MuleContentGenerator(GROUP_ID, ARTIFACT_ID, VERSION, packagingType,
-                                                projectBaseFolder.getRoot().toPath(), projectTargetFolder.getRoot().toPath());
+    ProjectInformation info = new ProjectInformation.Builder()
+        .withGroupId(GROUP_ID)
+        .withArtifactId(ARTIFACT_ID)
+        .withVersion(VERSION)
+        .withPackaging(packagingType.toString())
+        .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
+        .withBuildDirectory(projectTargetFolder.getRoot().toPath()).build();
+    contentGenerator = new MuleContentGenerator(info);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void failCreationProjectBaseFolderNonExistent() {
-    new MuleContentGenerator(GROUP_ID, ARTIFACT_ID, VERSION, packagingType,
-                             Paths.get("/fake/project/base/folder"), projectTargetFolder.getRoot().toPath());
+    ProjectInformation info = new ProjectInformation.Builder()
+        .withGroupId(GROUP_ID)
+        .withArtifactId(ARTIFACT_ID)
+        .withVersion(VERSION)
+        .withPackaging(packagingType.toString())
+        .withProjectBaseFolder(Paths.get("/fake/project/base/folder"))
+        .withBuildDirectory(projectTargetFolder.getRoot().toPath()).build();
+    new MuleContentGenerator(info);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void failCreationProjectTargetFolderNonExistent() {
-    new MuleContentGenerator(GROUP_ID, ARTIFACT_ID, VERSION, packagingType,
-                             projectBaseFolder.getRoot().toPath(), Paths.get("/fake/project/base/folder"));
+    ProjectInformation info = new ProjectInformation.Builder()
+        .withGroupId(GROUP_ID)
+        .withArtifactId(ARTIFACT_ID)
+        .withVersion(VERSION)
+        .withPackaging(packagingType.toString())
+        .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
+        .withBuildDirectory(Paths.get("/fake/project/base/folder")).build();
+    new MuleContentGenerator(info);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -255,8 +273,14 @@ public class ContentGeneratorTest {
 
   @Test
   public void createDescriptorsPolicy() throws IOException {
-    contentGenerator = new MuleContentGenerator(GROUP_ID, ARTIFACT_ID, VERSION, PackagingType.MULE_POLICY,
-                                                projectBaseFolder.getRoot().toPath(), projectTargetFolder.getRoot().toPath());
+    ProjectInformation info = new ProjectInformation.Builder()
+        .withGroupId(GROUP_ID)
+        .withArtifactId(ARTIFACT_ID)
+        .withVersion(VERSION)
+        .withPackaging(PackagingType.MULE_POLICY.toString())
+        .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
+        .withBuildDirectory(projectTargetFolder.getRoot().toPath()).build();
+    contentGenerator = new MuleContentGenerator(info);
 
     String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
@@ -283,8 +307,14 @@ public class ContentGeneratorTest {
 
   @Test
   public void createDescriptorsMuleDomain() throws IOException {
-    contentGenerator = new MuleContentGenerator(GROUP_ID, ARTIFACT_ID, VERSION, PackagingType.MULE_DOMAIN,
-                                                projectBaseFolder.getRoot().toPath(), projectTargetFolder.getRoot().toPath());
+    ProjectInformation info = new ProjectInformation.Builder()
+        .withGroupId(GROUP_ID)
+        .withArtifactId(ARTIFACT_ID)
+        .withVersion(VERSION)
+        .withPackaging(PackagingType.MULE_DOMAIN.toString())
+        .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
+        .withBuildDirectory(projectTargetFolder.getRoot().toPath()).build();
+    contentGenerator = new MuleContentGenerator(info);
 
     String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 

@@ -33,6 +33,7 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.mule.tools.api.packager.builder.DomainBundlePackageBuilder;
 import org.mule.tools.api.packager.builder.MulePackageBuilder;
 import org.mule.tools.api.packager.builder.PackageBuilder;
+import org.mule.tools.api.packager.builder.PackageBuilderFactory;
 import org.mule.tools.api.packager.packaging.PackagingOptions;
 import org.mule.tools.api.packager.packaging.PackagingType;
 
@@ -107,10 +108,7 @@ public class PackageMojo extends AbstractMuleMojo {
   }
 
   public PackageBuilder getPackageBuilder() {
-    if (packagingType.equals(MULE_DOMAIN_BUNDLE)) {
-      return new DomainBundlePackageBuilder();
-    }
     PackagingOptions options = new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources);
-    return new MulePackageBuilder().withPackagingOptions(options);
+    return PackageBuilderFactory.create(packagingType, options);
   }
 }

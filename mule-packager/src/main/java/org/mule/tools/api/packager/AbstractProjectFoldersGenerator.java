@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.api.packager.structure.FolderNames;
 
 /**
- * The goal of this class it ot generate the basic working folder structure to create a package.
+ * Generates the basic working folder structure to create a package.
  */
 public abstract class AbstractProjectFoldersGenerator {
 

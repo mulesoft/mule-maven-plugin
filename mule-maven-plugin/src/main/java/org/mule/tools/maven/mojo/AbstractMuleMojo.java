@@ -29,7 +29,10 @@ import org.eclipse.aether.repository.RemoteRepository;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.util.ArtifactUtils;
+import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.resources.content.ResourcesContent;
+import org.mule.tools.api.packager.sources.ContentGenerator;
+import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.repository.MuleMavenPluginClientProvider;
@@ -76,11 +79,12 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   @Parameter
   protected String classifier;
 
-  protected MuleContentGenerator contentGenerator;
+  protected ContentGenerator contentGenerator;
 
   protected static ResourcesContent resourcesContent;
 
   protected AetherMavenClient aetherMavenClient;
+  protected ProjectInformation projectInformation;
 
   protected AetherMavenClient getAetherMavenClient() {
     if (aetherMavenClient == null) {
@@ -94,5 +98,26 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
 
   protected List<ArtifactCoordinates> toArtifactCoordinates(List<Dependency> dependencies) {
     return dependencies.stream().map(ArtifactUtils::toArtifactCoordinates).collect(Collectors.toList());
+  }
+
+  protected ProjectInformation getProjectInformation() {
+    if (projectInformation == null) {
+      projectInformation = new ProjectInformation.Builder()
+          .withGroupId(project.getGroupId())
+          .withArtifactId(project.getArtifactId())
+          .withVersion(project.getVersion())
+          .withPackaging(project.getPackaging())
+          .withProjectBaseFolder(Paths.get(projectBaseFolder.toURI()))
+          .withBuildDirectory(Paths.get(project.getBuild().getDirectory()))
+          .build();
+    }
+    return projectInformation;
+  }
+
+  public ContentGenerator getContentGenerator() {
+    if (contentGenerator == null) {
+      contentGenerator = ContentGeneratorFactory.create(getProjectInformation());
+    }
+    return contentGenerator;
   }
 }

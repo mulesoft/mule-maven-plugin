@@ -29,13 +29,12 @@ import java.util.List;
 
 import org.codehaus.plexus.archiver.ArchiverException;
 
-import org.mule.tools.api.packager.archiver.Archiver;
+import org.mule.tools.api.packager.archiver.AbstractArchiver;
 import org.mule.tools.api.packager.archiver.MuleArchiver;
 import org.mule.tools.api.packager.packaging.PackagingOptions;
-import org.mule.tools.api.packager.packaging.PackagingType;
 
 /**
- * Builder for Mule Application archives.
+ * Builder for Mule Application packages.
  */
 public class MulePackageBuilder implements PackageBuilder {
 
@@ -59,30 +58,18 @@ public class MulePackageBuilder implements PackageBuilder {
     return archiver;
   }
 
-  /**
-   * @param packagingOptions
-   * @return builder
-   */
   public MulePackageBuilder withPackagingOptions(PackagingOptions packagingOptions) {
     checkNotNull(packagingOptions, "The PackagingOptions must not be null");
     this.packagingOptions = packagingOptions;
     return this;
   }
 
-  /**
-   * @param archiver
-   * @return builder
-   */
-  public MulePackageBuilder withArchiver(Archiver archiver) {
-    checkNotNull(archiver, "Archiver must not be null");
+  public MulePackageBuilder withArchiver(AbstractArchiver archiver) {
+    checkNotNull(archiver, "AbstractArchiver must not be null");
     this.archiver = (MuleArchiver) archiver;
     return this;
   }
 
-  /**
-   * @param folder folder with all the configuration files of the application
-   * @return builder
-   */
   public MulePackageBuilder withClasses(File folder) {
     checkArgument(folder != null, "The folder must not be null");
     classesFolder = folder;

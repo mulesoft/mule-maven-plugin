@@ -10,22 +10,12 @@
 
 package org.mule.tools.api.packager.resources.generator;
 
-import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.packager.resources.content.ResourcesContent;
 
-
+/**
+ * Generates the resources of a mule package, resolving the resources locations.
+ */
 public interface ResourcesContentGenerator {
-
-  default BundleDescriptor toBundleDescriptor(ArtifactCoordinates artifactCoordinates) {
-    return new BundleDescriptor.Builder()
-        .setGroupId(artifactCoordinates.getGroupId())
-        .setArtifactId(artifactCoordinates.getArtifactId())
-        .setVersion(artifactCoordinates.getVersion())
-        .setBaseVersion(artifactCoordinates.getVersion())
-        .setClassifier(artifactCoordinates.getClassifier())
-        .setType(artifactCoordinates.getType()).build();
-  }
 
   ResourcesContent generate();
 }

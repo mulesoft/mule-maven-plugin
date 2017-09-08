@@ -17,66 +17,72 @@
     </modules>
 
     <properties>
-        <licensePath>LICENSE_HEADER.txt</licensePath>
-        <formatterConfigPath>formatter.xml</formatterConfigPath>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mule.version>4.0.0-SNAPSHOT</mule.version>
-        <suite>standalone</suite>
-
-        <environment>Production</environment>
-        <target>server-name</target>
-
         <java.source>1.8</java.source>
         <java.target>1.8</java.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <javaFormatter.plugin.version>1.8.0</javaFormatter.plugin.version>
-        <license.plugin.version>2.6</license.plugin.version>
+        <mule.version>4.0.0-SNAPSHOT</mule.version>
+        <mule.core.version>${mule.version}</mule.core.version>
+        <mule.embedded.distribution.version>${mule.version}</mule.embedded.distribution.version>
+
+        <mule.maven.client.impl.version>1.0.0-SNAPSHOT</mule.maven.client.impl.version>
+
+        <gson.version>2.8.0</gson.version>
         <guava.version>18.0</guava.version>
         <maven.version>3.5.0</maven.version>
         <junit.version>4.8.2</junit.version>
-        <mockito.version>1.8.5</mockito.version>
-        <mockito.core.version>2.5.6</mockito.core.version>
         <jersey.version>2.25</jersey.version>
-        <groovy.version>2.0.1</groovy.version>
-        <hamcrest.version>1.3</hamcrest.version>
-        <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
-        <formatter.maven.plugin.version>1.8.0</formatter.maven.plugin.version>
         <log4j.version>1.2.17</log4j.version>
+        <groovy.version>2.4.12</groovy.version>
 
-        <commons.lang.version>3.6</commons.lang.version>
+        <mockito.version>1.8.5</mockito.version>
+        <hamcrest.version>1.3</hamcrest.version>
+        <hamcrest.all.version>1.3</hamcrest.all.version>
+        <mockito.core.version>2.5.6</mockito.core.version>
+
         <commons.io.version>2.5</commons.io.version>
+        <commons.lang.version>3.6</commons.lang.version>
         <commons.cli.version>1.3.1</commons.cli.version>
         <commons.logging.version>1.2</commons.logging.version>
-        <skipVerifications>false</skipVerifications>
-        <formatterGoal>validate</formatterGoal>
+        <commons.exec.version>1.2</commons.exec.version>
+        <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
 
-        <maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
-        <maven.plugin.annotations.version>3.5</maven.plugin.annotations.version>
-        <maven.dependency.tree.version>1.2</maven.dependency.tree.version>
-        <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
-        <maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
-        <maven.invoker.plugin.version>2.0.0</maven.invoker.plugin.version>
-        <maven.plugin.version>3.4</maven.plugin.version>
+        <codehaus.plexus.archiver>3.4</codehaus.plexus.archiver>
+
+        <maven.compat.version>3.3.9</maven.compat.version>
         <maven.verifier.version>1.6</maven.verifier.version>
-        <groovy.version>2.4.12</groovy.version>
-        <mule.embedded.distribution.version>4.0.0-SNAPSHOT</mule.embedded.distribution.version>
-        <mule.core.version>4.0.0-SNAPSHOT</mule.core.version>
+        <maven.dependency.tree.version>1.2</maven.dependency.tree.version>
 
-        <!--Integration tests properties-->
-        <hamcrest.all.version>1.3</hamcrest.all.version>
+        <!-- Plugin Versions -->
+        <license.plugin.version>2.6</license.plugin.version>
+        <javaFormatter.plugin.version>1.8.0</javaFormatter.plugin.version>
+        <formatter.maven.plugin.version>1.8.0</formatter.maven.plugin.version>
+
+        <maven.plugin.version>3.4</maven.plugin.version>
+        <maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
+        <maven.plugin.plugin.version>3.5</maven.plugin.plugin.version>
+        <maven.invoker.plugin.version>2.0.0</maven.invoker.plugin.version>
+        <maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
+        <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
+        <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
+        <maven.plugin.annotations.version>3.5</maven.plugin.annotations.version>
+
         <plexus.container.default.version>1.0-beta-3.0.5</plexus.container.default.version>
         <plexus.component.annotations.version>1.0-beta-3.0.5</plexus.component.annotations.version>
-        <maven.plugin.plugin.version>3.5</maven.plugin.plugin.version>
-        <maven.compat.version>3.3.9</maven.compat.version>
-        <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
-        <codehaus.plexus.archiver>3.4</codehaus.plexus.archiver>
+
         <project.info.plugin.version>2.9</project.info.plugin.version>
-        <mule.maven.client.impl.version>1.0.0-SNAPSHOT</mule.maven.client.impl.version>
-        <gson.version>2.8.0</gson.version>
         <maven.surefire.plugin.version>2.20</maven.surefire.plugin.version>
-        <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
         <maven.resources.plugin.version>2.7</maven.resources.plugin.version>
-        <commons.exec.version>1.2</commons.exec.version>
+
+        <suite>standalone</suite>
+        <target>server-name</target>
+        <environment>Production</environment>
+
+        <formatterGoal>validate</formatterGoal>
+        <skipVerifications>false</skipVerifications>
+
+        <licensePath>LICENSE_HEADER.txt</licensePath>
+        <formatterConfigPath>formatter.xml</formatterConfigPath>
     </properties>
 
 

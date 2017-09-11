@@ -20,6 +20,15 @@ public class ValidateMojoTest extends MojoTest {
   private static final String MISSING_PACKAGE_TYPE_PROJECT = "missing-package-type-project";
   private static final String INVALID_PACKAGE_PROJECT = "invalid-package-project";
   private static final String VALIDATE_SHARED_LIBRARIES_PROJECT = "validate-shared-libraries-project";
+  // Domain bundle constants
+  private static final String MULE_APP_DEPENDENCY_A_ARTIFACT_ID = "mule-app-a";
+  private static final String MULE_APP_DEPENDENCY_B_ARTIFACT_ID = "mule-app-b";
+  private static final String MULE_DOMAIN_X_ARTIFACT_ID = "mule-domain-x";
+  private static final String MULE_DOMAIN_Y_ARTIFACT_ID = "mule-domain-y";
+  private static final String GROUP_ID = "org.mule.app";
+  private static final String MULE_APP_DEPENDENCY_VERSION = "1.0.0";
+  private static final String MULE_DOMAIN_VERSION = "1.0.0";
+  private static final String VALIDATE_DOMAIN_BUNDLE_PROJECT = "validate-domain-bundle-project";
 
 
   public ValidateMojoTest() {
@@ -106,5 +115,23 @@ public class ValidateMojoTest extends MojoTest {
     }
   }
 
+  @Test
+  public void testValidateBundleDomainWithApplicationReferringToDifferentDomainsProject() throws Exception {
+    installThirdPartyArtifact(GROUP_ID, MULE_DOMAIN_X_ARTIFACT_ID, MULE_DOMAIN_VERSION, DEPENDENCY_TYPE,
+                              MULE_DOMAIN_X_ARTIFACT_ID);
+    installThirdPartyArtifact(GROUP_ID, MULE_DOMAIN_Y_ARTIFACT_ID, MULE_DOMAIN_VERSION, DEPENDENCY_TYPE,
+                              MULE_DOMAIN_Y_ARTIFACT_ID);
+    installThirdPartyArtifact(GROUP_ID, MULE_APP_DEPENDENCY_A_ARTIFACT_ID, MULE_APP_DEPENDENCY_VERSION, DEPENDENCY_TYPE,
+                              MULE_APP_DEPENDENCY_A_ARTIFACT_ID);
+    installThirdPartyArtifact(GROUP_ID, MULE_APP_DEPENDENCY_B_ARTIFACT_ID, MULE_APP_DEPENDENCY_VERSION, DEPENDENCY_TYPE,
+                              MULE_APP_DEPENDENCY_B_ARTIFACT_ID);
 
+    projectBaseDirectory = builder.createProjectBaseDir(VALIDATE_DOMAIN_BUNDLE_PROJECT, this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+
+    String textInLog = "Validation exception: Every application in the domain bundle must refer to the specified domain:" +
+        " org.mule.app:mule-domain-x:1.0.0:jar:mule-domain. However, the application refers to the following domain(s): " +
+        "[org.mule.app:mule-domain-y:1.0.0:jar:mule-domain]";
+    executeGoalAndVerifyText(VALIDATE, textInLog);
+  }
 }

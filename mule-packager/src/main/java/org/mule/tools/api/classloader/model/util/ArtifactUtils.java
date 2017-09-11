@@ -19,6 +19,7 @@ import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 
 import java.io.File;
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -161,5 +162,12 @@ public class ArtifactUtils {
         .setBaseVersion(artifactCoordinates.getVersion())
         .setClassifier(artifactCoordinates.getClassifier())
         .setType(artifactCoordinates.getType()).build();
+  }
+
+  public static BundleDependency toBundleDependency(Artifact artifact) {
+    return new BundleDependency.Builder()
+        .setBundleUri(artifact.getUri())
+        .setDescriptor(toBundleDescriptor(artifact.getArtifactCoordinates()))
+        .build();
   }
 }

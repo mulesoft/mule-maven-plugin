@@ -111,6 +111,10 @@ public class MojoTest {
     if (mavenSettings != null) {
       auxVerifier.addCliOption("-s " + mavenSettings);
     }
+    String projectVersion = System.getProperty("mule.maven.plugin.version");
+    if (projectVersion != null) {
+      auxVerifier.setSystemProperty("muleMavenPluginVersion", projectVersion);
+    }
     auxVerifier.deleteArtifact(groupId, artifactId, version, type);
     auxVerifier.assertArtifactNotPresent(groupId, artifactId, version, type);
     auxVerifier.executeGoal(INSTALL);

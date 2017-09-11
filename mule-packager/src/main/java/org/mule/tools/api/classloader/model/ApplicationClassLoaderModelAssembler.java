@@ -14,6 +14,7 @@ import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASS
 import static org.mule.maven.client.internal.util.MavenUtils.getPomModelFromFile;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.*;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifacts;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
 
 import java.io.File;
 import java.util.*;
@@ -84,15 +85,24 @@ public class ApplicationClassLoaderModelAssembler {
   }
 
   /**
-   * Resolve the application dependencies.
+   * Resolve the application dependencies, excluding mule domains.
    *
    * @param targetFolder target folder of application that is going to be packaged, which need to contain at this stage the pom
    *        file in the folder that is going to be resolved by {@link PomFileSupplierFactory}
    * @param projectBundleDescriptor bundleDescriptor of application to be packaged
    */
   private List<BundleDependency> resolveApplicationDependencies(File targetFolder, BundleDescriptor projectBundleDescriptor) {
-    return muleMavenPluginClient.resolveBundleDescriptorDependenciesWithWorkspaceReader(targetFolder, false, false,
-                                                                                        projectBundleDescriptor);
+    List<BundleDependency> resolvedApplicationDependencies =
+        muleMavenPluginClient.resolveBundleDescriptorDependenciesWithWorkspaceReader(targetFolder, false, false,
+                                                                                     projectBundleDescriptor);
+    return removeMuleDomains(resolvedApplicationDependencies);
+  }
+
+  protected List<BundleDependency> removeMuleDomains(List<BundleDependency> resolvedApplicationDependencies) {
+    return resolvedApplicationDependencies.stream()
+        .filter(d -> !(d.getDescriptor().getClassifier().isPresent()
+            && d.getDescriptor().getClassifier().get().equals(MULE_DOMAIN.toString())))
+        .collect(Collectors.toList());
   }
 
   /**

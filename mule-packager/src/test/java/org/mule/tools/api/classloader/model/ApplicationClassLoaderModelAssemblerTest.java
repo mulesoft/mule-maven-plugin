@@ -13,6 +13,7 @@ package org.mule.tools.api.classloader.model;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.core.IsNot.not;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.doReturn;
@@ -52,6 +53,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
   private static final String SEPARATOR = "/";
   private static final String MULE_PLUGIN_CLASSIFIER = "mule-plugin";
   private static final String GROUP_ID_SEPARATOR = ".";
+  private static final String MULE_DOMAIN_CLASSIFIER = "mule-domain";
   private ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssembler;
   private static final String GROUP_ID = "group.id";
   private static final String ARTIFACT_ID = "artifact-id";
@@ -111,8 +113,11 @@ public class ApplicationClassLoaderModelAssemblerTest {
     BundleDependency dependency1 = buildBundleDependency(1, 1, StringUtils.EMPTY);
     BundleDependency dependency2 =
         buildBundleDependency(1, 2, StringUtils.EMPTY);
+    BundleDependency dependency3 =
+        buildBundleDependency(1, 3, MULE_DOMAIN_CLASSIFIER);
     appDependencies.add(dependency1);
     appDependencies.add(dependency2);
+    appDependencies.add(dependency3);
 
     List<BundleDependency> appMulePluginDependencies = new ArrayList<>();
     BundleDependency firstMulePlugin =
@@ -153,6 +158,10 @@ public class ApplicationClassLoaderModelAssemblerTest {
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
                containsInAnyOrder(toArtifact(firstMulePlugin), toArtifact(secondMulePlugin), toArtifact(dependency1),
                                   toArtifact(dependency2)));
+
+    assertThat("Application dependencies are not the expected",
+               applicationClassloaderModel.getClassLoaderModel().getDependencies(),
+               not(containsInAnyOrder(toArtifact(dependency3))));
   }
 
   @Test
@@ -220,6 +229,26 @@ public class ApplicationClassLoaderModelAssemblerTest {
                containsInAnyOrder(toArtifact(mulePluginTransitiveDependency1)));
   }
 
+  @Test
+  public void removeMuleDomainsOneDomainTest() throws URISyntaxException {
+
+    List<BundleDependency> dependencies = new ArrayList<>();
+
+    BundleDependency muleDomain = buildBundleDependency(0, 0, MULE_DOMAIN_CLASSIFIER);
+    BundleDependency mulePlugin = buildBundleDependency(0, 1, MULE_PLUGIN_CLASSIFIER);
+    BundleDependency ordinaryDependency = buildBundleDependency(1, 2, "");
+
+    dependencies.add(muleDomain);
+    dependencies.add(mulePlugin);
+    dependencies.add(ordinaryDependency);
+
+    dependencies = applicationClassLoaderModelAssembler.removeMuleDomains(dependencies);
+
+    assertThat("Filtered dependencies list is not the expected", dependencies, not(containsInAnyOrder(muleDomain)));
+    assertThat("Filtered dependencies list is not the expected", dependencies,
+               containsInAnyOrder(mulePlugin, ordinaryDependency));
+  }
+
   private BundleDependency buildBundleDependency(int groupIdSuffix, int artifactIdSuffix, String classifier)
       throws URISyntaxException {
     BundleDescriptor bundleDescriptor = buildBundleDescriptor(groupIdSuffix, artifactIdSuffix, classifier);
@@ -265,5 +294,4 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
     return aetherMavenClientMock;
   }
-
 }

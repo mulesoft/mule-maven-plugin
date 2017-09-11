@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AgentDeploymentTest {
+public class AgentDeploymentTest implements AbstractMojoTest {
 
   private static final String AGENT_TEST_ANCHOR_FILENAME = "agent-anchor.txt";
   private static Logger log;
@@ -38,15 +38,7 @@ public class AgentDeploymentTest {
   public void initializeContext() throws IOException, VerificationException {
     builder = new ProjectFactory();
     projectBaseDirectory = builder.createProjectBaseDir("empty-mule-deploy-agent-project", this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
-    String mavenSettings = System.getenv("MAVEN_SETTINGS");
-    if (mavenSettings != null) {
-      verifier.addCliOption("-s " + mavenSettings);
-    }
-    String projectVersion = System.getProperty("mule.maven.plugin.version");
-    if (projectVersion != null) {
-      verifier.setSystemProperty("muleMavenPluginVersion", projectVersion);
-    }
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
   }

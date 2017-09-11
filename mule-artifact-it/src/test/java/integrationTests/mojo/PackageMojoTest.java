@@ -24,7 +24,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 
-public class PackageMojoTest extends MojoTest {
+public class PackageMojoTest extends MojoTest implements AbstractMojoTest {
 
   private static final String PACKAGE = "package";
   private static final String TARGET_FOLDER_NAME = "target";

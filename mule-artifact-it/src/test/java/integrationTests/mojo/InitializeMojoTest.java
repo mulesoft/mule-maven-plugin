@@ -19,7 +19,7 @@ import org.apache.maven.it.VerificationException;
 import org.junit.Before;
 import org.junit.Test;
 
-public class InitializeMojoTest extends MojoTest {
+public class InitializeMojoTest extends MojoTest implements AbstractMojoTest {
 
   private static final String INITIALIZE = "initialize";
 
@@ -32,6 +32,8 @@ public class InitializeMojoTest extends MojoTest {
     clearResources();
     verifier.setSystemProperty(PROJECT_BASE_DIR_PROPERTY, projectBaseDirectory.getAbsolutePath());
     verifier.setSystemProperty(PROJECT_BUILD_DIRECTORY_PROPERTY, targetFolder.getAbsolutePath());
+    setSettings(verifier);
+    setMuleMavenPluginVersion(verifier);
   }
 
   @Test

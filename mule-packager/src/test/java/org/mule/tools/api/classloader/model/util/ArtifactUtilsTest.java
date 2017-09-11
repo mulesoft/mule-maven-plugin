@@ -10,6 +10,7 @@
 
 package org.mule.tools.api.classloader.model.util;
 
+import org.eclipse.aether.util.artifact.ArtifactIdUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,6 +22,7 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -32,6 +34,7 @@ public class ArtifactUtilsTest {
   private static final String GROUP_ID = "group.id";
   private static final String ARTIFACT_ID = "artifact-id";
   private static final String VERSION = "1.0.0";
+  private static final String MULE_APP_CLASSIFIER = "mule-application";
   private static final String DEFAULT_ARTIFACT_DESCRIPTOR_TYPE = "jar";
   private static final String POM_TYPE = "pom";
   private static final String MULE_PLUGIN = "mule-plugin";
@@ -113,5 +116,19 @@ public class ArtifactUtilsTest {
     artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, MULE_PLUGIN);
     Artifact mulePluginArtifact = new Artifact(artifactCoordinates, bundleURI);
     assertThat("Mule plugin validation method should have returned true", isValidMulePlugin(mulePluginArtifact), is(true));
+  }
+
+  @Test
+  public void toBundleDescriptorTest() {
+    artifactCoordinates.setClassifier(MULE_APP_CLASSIFIER);
+    artifactCoordinates.setVersion(VERSION);
+    BundleDescriptor actualBundleDescriptor = ArtifactUtils.toBundleDescriptor(artifactCoordinates);
+    assertThat("The group id is not the expected", actualBundleDescriptor.getGroupId(), equalTo(GROUP_ID));
+    assertThat("The artifact id is not the expected", actualBundleDescriptor.getArtifactId(), equalTo(ARTIFACT_ID));
+    assertThat("The version is not the expected", actualBundleDescriptor.getVersion(), equalTo(VERSION));
+    assertThat("The base version is not the expected", actualBundleDescriptor.getBaseVersion(), equalTo(VERSION));
+    assertThat("The classifier is not the expected", actualBundleDescriptor.getClassifier(),
+               equalTo(Optional.of(MULE_APP_CLASSIFIER)));
+    assertThat("The type is not the expected", actualBundleDescriptor.getType(), equalTo(DEFAULT_ARTIFACT_DESCRIPTOR_TYPE));
   }
 }

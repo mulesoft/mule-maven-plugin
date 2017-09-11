@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.util.PackagerLog;
 
 public class ArtifactInstallerTest {
 
@@ -47,7 +48,7 @@ public class ArtifactInstallerTest {
       PREFIX_GROUP_ID + File.separator + POSFIX_GROUP_ID + File.separator + ARTIFACT_ID + File.separator + VERSION;
   private static final String POM_FILE_NAME = ARTIFACT_ID + "-" + VERSION + ".pom";
   private static final String DEFAULT_POM_FILE_NAME = "pom.xml";
-  private Log logMock;
+  private PackagerLog logMock;
   private ArtifactHandler handler;
   private ArtifactInstaller installer;
   private Artifact artifact;
@@ -62,7 +63,7 @@ public class ArtifactInstallerTest {
 
   @Before
   public void before() throws IOException {
-    logMock = mock(Log.class);
+    logMock = mock(PackagerLog.class);
     handler = new DefaultArtifactHandler(TYPE);
     installer = new ArtifactInstaller(logMock);
     outputFolder.create();

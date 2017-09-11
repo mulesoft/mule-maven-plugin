@@ -17,10 +17,15 @@ import org.eclipse.aether.repository.RemoteRepository;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.packager.sources.ContentGenerator;
+import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
+import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.repository.ArtifactInstaller;
 import org.mule.tools.api.repository.MuleMavenPluginClientProvider;
 import org.mule.tools.api.repository.RepositoryGenerator;
 
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -29,6 +34,10 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
+import org.mule.tools.maven.utils.MavenPackagerLog;
+
+import javax.swing.text.AbstractDocument;
 
 @Mojo(name = "process-sources",
     defaultPhase = LifecyclePhase.PROCESS_SOURCES,
@@ -42,11 +51,11 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
 
     if (!lightweightPackage) {
       RepositoryGenerator repositoryGenerator =
-          new RepositoryGenerator(project.getFile(), outputDirectory, new ArtifactInstaller(getLog()),
+          new RepositoryGenerator(project.getFile(), outputDirectory, new ArtifactInstaller(new MavenPackagerLog(getLog())),
                                   getClassLoaderModelAssembler());
       try {
         ClassLoaderModel classLoaderModel = repositoryGenerator.generate();
-        getContentGenerator().createApplicationClassLoaderModelJsonFile(classLoaderModel);
+        ((MuleContentGenerator) getContentGenerator()).createApplicationClassLoaderModelJsonFile(classLoaderModel);
       } catch (Exception e) {
         String message = format("There was an exception while creating the repository of [%s]", project.toString());
         throw new MojoFailureException(message, e);
@@ -58,10 +67,6 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
 
 
   protected ApplicationClassLoaderModelAssembler getClassLoaderModelAssembler() {
-    List<RemoteRepository> remoteRepositories = RepositoryUtils.toRepos(remoteArtifactRepositories);
-    AetherMavenClient aetherMavenClient = new MuleMavenPluginClientProvider(remoteRepositories,
-                                                                            getLog())
-                                                                                .buildMavenClient();
-    return new ApplicationClassLoaderModelAssembler(aetherMavenClient);
+    return new ApplicationClassLoaderModelAssembler(getAetherMavenClient());
   }
 }

@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.mule.tools.api.packager.ContentGenerator;
+import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
 public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
 
@@ -53,56 +54,24 @@ public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
 
   @Test
   public void execute() throws MojoFailureException, MojoExecutionException, IOException {
-    ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
+    MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
     doCallRealMethod().when(mojoMock).execute();
     mojoMock.execute();
 
-    verify(mojoMock, times(2)).getContentGenerator();
-    verify(contentGeneratorMock, times(1)).createMetaInfMuleSourceFolderContent();
-    verify(contentGeneratorMock, times(1)).createDescriptors();
+    verify(mojoMock, times(1)).getContentGenerator();
+    verify(contentGeneratorMock, times(1)).createContent();
   }
 
   @Test(expected = MojoFailureException.class)
   public void executeFailIOException() throws MojoFailureException, MojoExecutionException, IOException {
-    ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
+    MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
-    doThrow(new IOException("")).when(contentGeneratorMock).createMetaInfMuleSourceFolderContent();
+    doThrow(new IOException("")).when(contentGeneratorMock).createContent();
 
     doCallRealMethod().when(mojoMock).execute();
     mojoMock.execute();
   }
-
-  @Test(expected = MojoFailureException.class)
-  public void executeFailIllegalArgument() throws MojoFailureException, MojoExecutionException, IOException {
-    ContentGenerator contentGeneratorMock = mock(ContentGenerator.class);
-    doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
-
-    doThrow(new IllegalArgumentException("")).when(contentGeneratorMock).createDescriptors();
-
-    doCallRealMethod().when(mojoMock).execute();
-    mojoMock.execute();
-  }
-
-  @Test
-  public void getContentGenerator() {
-    when(projectMock.getGroupId()).thenReturn(GROUP_ID);
-    when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
-    when(projectMock.getVersion()).thenReturn("1.0.0-SNAPSHOT");
-    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
-    when(projectMock.getBuild()).thenReturn(buildMock);
-
-    doCallRealMethod().when(mojoMock).getContentGenerator();
-    mojoMock.getContentGenerator();
-
-    verify(projectMock, times(1)).getGroupId();
-    verify(projectMock, times(1)).getArtifactId();
-    verify(projectMock, times(1)).getVersion();
-    verify(projectMock, times(1)).getPackaging();
-    verify(projectMock, times(1)).getBuild();
-    verify(buildMock, times(1)).getDirectory();
-  }
-
 }

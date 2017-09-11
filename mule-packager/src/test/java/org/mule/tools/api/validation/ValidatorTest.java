@@ -9,7 +9,6 @@
  */
 package org.mule.tools.api.validation;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
@@ -23,7 +22,7 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -35,6 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
+import org.mule.tools.api.util.Project;
 
 public class ValidatorTest {
 
@@ -47,18 +47,18 @@ public class ValidatorTest {
   protected static final String ARTIFACT_ID = "artifact-id";
   protected static final String MULE_APPLICATION = "mule-application";
   protected static final String MULE_DOMAIN = "mule-domain";
-  protected final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
   @Rule
   public TemporaryFolder projectBaseFolder = new TemporaryFolder();
 
-  private Validator validator;
+  private MuleProjectValidator validator;
 
   @Before
   public void before() throws IOException, MojoExecutionException {
-    validator = new Validator(projectBaseFolder.getRoot().toPath());
+    validator = new MuleProjectValidator(projectBaseFolder.getRoot().toPath(), MULE_APPLICATION, mock(Project.class),
+                                         mock(MulePluginResolver.class), new ArrayList<>());
   }
 
   @Test
@@ -90,7 +90,7 @@ public class ValidatorTest {
     Path mainSrcFolder = projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value());
     mainSrcFolder.toFile().mkdirs();
 
-    validator.isProjectStructureValid(MULE_APPLICATION);
+    validator.isProjectStructureValid(MULE_APPLICATION, projectBaseFolder.getRoot().toPath());
   }
 
   @Test(expected = ValidationException.class)
@@ -99,7 +99,7 @@ public class ValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(POLICY.value());
     muleMainSrcFolder.toFile().mkdirs();
 
-    validator.isProjectStructureValid(MULE_APPLICATION);
+    validator.isProjectStructureValid(MULE_APPLICATION, projectBaseFolder.getRoot().toPath());
   }
 
   @Test
@@ -108,7 +108,7 @@ public class ValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value());
     muleMainSrcFolder.toFile().mkdirs();
 
-    Boolean valid = validator.isProjectStructureValid(MULE_APPLICATION);
+    Boolean valid = validator.isProjectStructureValid(MULE_APPLICATION, projectBaseFolder.getRoot().toPath());
     assertThat("Project structure should be valid", valid, is(true));
   }
 
@@ -117,7 +117,7 @@ public class ValidatorTest {
     Path mainSrcFolder = projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value());
     mainSrcFolder.toFile().mkdirs();
 
-    validator.isProjectStructureValid(MULE_POLICY);
+    validator.isProjectStructureValid(MULE_POLICY, projectBaseFolder.getRoot().toPath());
   }
 
   @Test(expected = ValidationException.class)
@@ -126,7 +126,7 @@ public class ValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve("invalid-src-folder");
     muleMainSrcFolder.toFile().mkdirs();
 
-    validator.isProjectStructureValid(MULE_POLICY);
+    validator.isProjectStructureValid(MULE_POLICY, projectBaseFolder.getRoot().toPath());
   }
 
   @Test
@@ -135,7 +135,7 @@ public class ValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value());
     muleMainSrcFolder.toFile().mkdirs();
 
-    Boolean valid = validator.isProjectStructureValid(MULE_POLICY);
+    Boolean valid = validator.isProjectStructureValid(MULE_POLICY, projectBaseFolder.getRoot().toPath());
     assertThat("Project structure should be valid", valid, is(true));
   }
 
@@ -144,7 +144,7 @@ public class ValidatorTest {
     Path mainSrcFolder = projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value());
     mainSrcFolder.toFile().mkdirs();
 
-    validator.isProjectStructureValid(MULE_DOMAIN);
+    validator.isProjectStructureValid(MULE_DOMAIN, projectBaseFolder.getRoot().toPath());
   }
 
   @Test(expected = ValidationException.class)
@@ -153,7 +153,7 @@ public class ValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(POLICY.value());
     muleMainSrcFolder.toFile().mkdirs();
 
-    validator.isProjectStructureValid(MULE_DOMAIN);
+    validator.isProjectStructureValid(MULE_DOMAIN, projectBaseFolder.getRoot().toPath());
   }
 
   @Test
@@ -162,7 +162,7 @@ public class ValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value());
     muleMainSrcFolder.toFile().mkdirs();
 
-    Boolean valid = validator.isProjectStructureValid(MULE_DOMAIN);
+    Boolean valid = validator.isProjectStructureValid(MULE_DOMAIN, projectBaseFolder.getRoot().toPath());
     assertThat("Project structure should be valid", valid, is(true));
   }
 
@@ -181,20 +181,17 @@ public class ValidatorTest {
   }
 
   @Test
-  public void isProjectValid() throws ValidationException {
-    validator = Mockito.mock(Validator.class);
-    String packagingType = MULE_APPLICATION;
+  public void isProjectValid() throws ValidationException, IOException {
+    MuleProjectValidator validatorSpy = spy(validator);
+    File muleFolder =
+        projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value()).toFile();
+    muleFolder.mkdirs();
+    projectBaseFolder.newFile("mule-artifact.json");
 
-    doReturn(true).when(validator).isPackagingTypeValid(packagingType);
-    doReturn(true).when(validator).isProjectStructureValid(packagingType);
-    doReturn(true).when(validator).isDescriptorFilePresent();
+    doCallRealMethod().when(validatorSpy).isProjectValid();
+    validatorSpy.isProjectValid();
 
-    doCallRealMethod().when(validator).isProjectValid(packagingType);
-    validator.isProjectValid(packagingType);
-
-    verify(validator, times(1)).isPackagingTypeValid(packagingType);
-    verify(validator, times(1)).isProjectStructureValid(packagingType);
-    verify(validator, times(1)).isDescriptorFilePresent();
+    verify(validatorSpy, times(1)).isDescriptorFilePresent();
   }
 
   @Test
@@ -204,10 +201,10 @@ public class ValidatorTest {
     List<SharedLibraryDependency> sharedLibraries = new ArrayList<>();
     sharedLibraries.add(buildSharedLibraryDependency(GROUP_ID, ARTIFACT_ID));
 
+    expectedException.expectMessage(VALIDATE_SHARED_LIBRARIES_MESSAGE + "[artifact-id:group-id]");
+
     validator.validateSharedLibraries(sharedLibraries, new ArrayList<>());
 
-    assertThat("Validate goal message was not the expected", VALIDATE_SHARED_LIBRARIES_MESSAGE + sharedLibraries.toString(),
-               equalTo(outContent.toString()));
   }
 
   @Test

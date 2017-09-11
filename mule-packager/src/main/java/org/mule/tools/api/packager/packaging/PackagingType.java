@@ -48,6 +48,14 @@ public enum PackagingType {
     protected Classifier[] getClassifiers() {
       return new Classifier[] {Classifier.MULE_POLICY};
     }
+  },
+
+  MULE_DOMAIN_BUNDLE(Classifier.MULE_DOMAIN_BUNDLE) {
+
+    @Override
+    protected Classifier[] getClassifiers() {
+      return new Classifier[] {Classifier.MULE_DOMAIN_BUNDLE};
+    }
   };
 
 
@@ -69,6 +77,10 @@ public enum PackagingType {
     checkArgument(name != null, "Packaging type name should not be null");
     String packagingName = LOWER_HYPHEN.to(UPPER_UNDERSCORE, name);
     return valueOf(packagingName);
+  }
+
+  public boolean equals(String name) {
+    return name == null ? false : fromString(name).equals(this);
   }
 
   @Override

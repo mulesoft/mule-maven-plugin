@@ -26,7 +26,8 @@ import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import org.mule.tools.api.packager.PackageBuilder;
+import org.mule.tools.api.packager.builder.MulePackageBuilder;
+import org.mule.tools.api.packager.builder.PackageBuilder;
 
 public class AbstractMuleMojoTest {
 
@@ -43,7 +44,7 @@ public class AbstractMuleMojoTest {
   protected File destinationFile;
   protected MavenProject projectMock;
   protected File muleSourceFolderMock;
-  protected PackageBuilder packageBuilderMock;
+  protected MulePackageBuilder packageBuilderMock;
 
   @Rule
   public TemporaryFolder projectBaseFolder = new TemporaryFolder();
@@ -61,7 +62,7 @@ public class AbstractMuleMojoTest {
 
     buildMock = mock(Build.class);
     projectMock = mock(MavenProject.class);
-    packageBuilderMock = mock(PackageBuilder.class);
+    packageBuilderMock = mock(MulePackageBuilder.class);
     muleSourceFolderMock = mock(File.class);
 
     when(projectMock.getBuild()).thenReturn(buildMock);

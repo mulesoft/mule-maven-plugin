@@ -25,7 +25,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.mule.tools.api.packager.ProjectFoldersGenerator;
+import org.mule.tools.api.packager.MuleProjectFoldersGenerator;
 
 public class InitializeMojoTest extends AbstractMuleMojoTest {
 
@@ -42,7 +42,7 @@ public class InitializeMojoTest extends AbstractMuleMojoTest {
   @Test
   public void execute() throws MojoFailureException, MojoExecutionException, IOException {
     Log logMock = mock(Log.class);
-    ProjectFoldersGenerator projectFoldersGeneratorMock = mock(ProjectFoldersGenerator.class);
+    MuleProjectFoldersGenerator projectFoldersGeneratorMock = mock(MuleProjectFoldersGenerator.class);
 
     when(mojoMock.getLog()).thenReturn(logMock);
     doReturn(projectFoldersGeneratorMock).when(mojoMock).getProjectFoldersGenerator();
@@ -54,17 +54,4 @@ public class InitializeMojoTest extends AbstractMuleMojoTest {
     verify(projectFoldersGeneratorMock, times(1)).generate(projectBaseFolder.getRoot().toPath());
   }
 
-  @Test
-  public void getProjectFoldersGenerator() throws MojoFailureException, MojoExecutionException, IOException {
-    when(projectMock.getGroupId()).thenReturn(GROUP_ID);
-    when(projectMock.getArtifactId()).thenReturn(ARTIFACT_ID);
-    when(projectMock.getArtifactId()).thenReturn("mule-application");
-
-    doCallRealMethod().when(mojoMock).getProjectFoldersGenerator();
-    mojoMock.getProjectFoldersGenerator();
-
-    verify(projectMock, times(1)).getGroupId();
-    verify(projectMock, times(1)).getArtifactId();
-    verify(projectMock, times(1)).getPackaging();
-  }
 }

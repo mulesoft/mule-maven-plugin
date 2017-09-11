@@ -24,22 +24,25 @@ import static org.mule.tools.api.packager.structure.FolderNames.DOMAIN;
 
 public class DomainBundleProjectResourcesContentProcessor implements ResourcesContentProcessor {
 
-  private final Path targetFolder;
+  private Path domainFolderPath;
+  private Path applicationsFolderPath;
 
   public DomainBundleProjectResourcesContentProcessor(Path targetFolder) {
-    this.targetFolder = targetFolder;
+    domainFolderPath = targetFolder.resolve(DOMAIN.value());
+    applicationsFolderPath = targetFolder.resolve(APPLICATIONS.value());
   }
 
   @Override
   public void process(ResourcesContent resourcesContent) throws IOException {
-    Path domainFolderPath = targetFolder.resolve(DOMAIN.value());
-    Path applicationsFolderPath = targetFolder.resolve(APPLICATIONS.value());
-    Path destinationPath;
     for (Artifact artifact : resourcesContent.getResources()) {
-      Path originPath = Paths.get(artifact.getUri());
-      String packagingType = artifact.getArtifactCoordinates().getClassifier();
-      destinationPath = packagingType.equals(MULE_DOMAIN.toString()) ? domainFolderPath : applicationsFolderPath;
-      MuleContentGenerator.copyFile(originPath, destinationPath, originPath.getFileName().toString());
+      copyAsDomainOrApplication(artifact);
     }
+  }
+
+  protected void copyAsDomainOrApplication(Artifact artifact) throws IOException {
+    Path originPath = Paths.get(artifact.getUri());
+    String packagingType = artifact.getArtifactCoordinates().getClassifier();
+    Path destinationPath = packagingType.equals(MULE_DOMAIN.toString()) ? domainFolderPath : applicationsFolderPath;
+    MuleContentGenerator.copyFile(originPath, destinationPath, originPath.getFileName().toString());
   }
 }

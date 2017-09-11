@@ -18,7 +18,7 @@ import static org.mule.tools.api.packager.structure.FolderNames.APPLICATIONS;
 import static org.mule.tools.api.packager.structure.FolderNames.DOMAIN;
 
 /**
- * Defines and creates the basic structure of Mule domain bundle file
+ * Defines and creates the basic structure of Mule domain bundle before packaging
  */
 public class DomainBundleArchiver extends AbstractArchiver {
 

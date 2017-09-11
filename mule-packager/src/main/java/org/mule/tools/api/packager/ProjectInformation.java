@@ -28,8 +28,8 @@ public class ProjectInformation {
   private Path projectBaseFolder;
   private Path buildDirectory;
 
-  public ProjectInformation(String groupId, String artifactId, String version, String packaging, Path projectBaseFolder,
-                            Path buildDirectory) {
+  private ProjectInformation(String groupId, String artifactId, String version, String packaging, Path projectBaseFolder,
+                             Path buildDirectory) {
     this.groupId = groupId;
     this.artifactId = artifactId;
     this.version = version;

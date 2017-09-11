@@ -22,6 +22,7 @@ import java.io.IOException;
 public interface PackageBuilder {
 
   /**
+   * Cretes the package.
    * @param destinationFile file to be created with the content of the package.
    * @param originFolder location containing the resources that are going to be shipped in the package. It is expected that the
    *        folder structure in this location is going to have the same structure of the contents of the generated package.

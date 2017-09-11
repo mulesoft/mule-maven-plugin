@@ -164,10 +164,4 @@ public class ArtifactUtils {
         .setType(artifactCoordinates.getType()).build();
   }
 
-  public static BundleDependency toBundleDependency(Artifact artifact) {
-    return new BundleDependency.Builder()
-        .setBundleUri(artifact.getUri())
-        .setDescriptor(toBundleDescriptor(artifact.getArtifactCoordinates()))
-        .build();
-  }
 }

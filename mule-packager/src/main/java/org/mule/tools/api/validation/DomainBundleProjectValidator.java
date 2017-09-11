@@ -72,7 +72,7 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
    */
   protected void validateApplications(ArtifactCoordinates domain, List<ArtifactCoordinates> applications)
       throws ValidationException {
-    if (applications == null || applications.size() == 0) {
+    if (applications == null || applications.isEmpty()) {
       throw new ValidationException("A domain bundle should contain at least one application");
     }
     for (ArtifactCoordinates applicationCoordinates : applications) {
@@ -91,9 +91,14 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
     Set<ArtifactCoordinates> applicationDomains = getApplicationDomains(applicationCoordinates);
 
     if (applicationDomains.size() != DOMAIN_BUNDLE_VALID_NUMBER_OF_DOMAINS || !applicationDomains.contains(domain)) {
-      throw new ValidationException("Every application in the domain bundle must refer to the specified domain: " + domain
-          + ". However, the application refers to the following domain(s): "
-          + applicationDomains.stream().collect(Collectors.toList()));
+      String message = "Every application in the domain bundle must refer to the specified domain: " + domain + ". ";
+      if (applicationDomains.isEmpty()) {
+        message += "However, the application has reference to no domain";
+      } else {
+        message += "However, the application refers to the following domain(s): "
+            + applicationDomains.stream().collect(Collectors.toList());
+      }
+      throw new ValidationException(message);
     }
   }
 
@@ -142,7 +147,7 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
     }
     if (domains.size() != DOMAIN_BUNDLE_VALID_NUMBER_OF_DOMAINS) {
       String message = "A mule domain bundle must contain exactly one mule domain. ";
-      if (domains.size() == 0) {
+      if (domains.isEmpty()) {
         message += "However, the project has no reference to domains in its dependencies.";
       } else {
         message += "However, the project has reference to the following domains: "

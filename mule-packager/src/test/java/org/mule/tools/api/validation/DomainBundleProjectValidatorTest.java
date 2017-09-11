@@ -192,7 +192,7 @@ public class DomainBundleProjectValidatorTest {
     ArtifactCoordinates domain = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID + MULE_DOMAIN, MULE_DOMAIN);
 
     expectedException.expectMessage("Every application in the domain bundle must refer to the specified domain: " + domain
-        + ". However, the application refers to the following domain(s): ");
+        + ". However, the application has reference to no domain");
 
     DomainBundleProjectValidator validatorSpy = spy(validator);
 

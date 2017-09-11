@@ -28,7 +28,6 @@ import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.mule.tools.api.packager.ContentGenerator;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
 public class GenerateSourcesMojoTest extends AbstractMuleMojoTest {

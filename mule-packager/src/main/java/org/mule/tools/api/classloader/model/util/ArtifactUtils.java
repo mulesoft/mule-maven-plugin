@@ -19,6 +19,7 @@ import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 
 import java.io.File;
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -162,4 +163,5 @@ public class ArtifactUtils {
         .setClassifier(artifactCoordinates.getClassifier())
         .setType(artifactCoordinates.getType()).build();
   }
+
 }

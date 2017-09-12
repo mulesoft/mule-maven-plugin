@@ -26,7 +26,7 @@ import integrationTests.ProjectFactory;
 import integrationTests.mojo.verifier.CloudHubDeploymentVerifier;
 
 @Ignore
-public class CloudHubDeploymentTest {
+public class CloudHubDeploymentTest implements SettingsConfigurator {
 
   private static final String MULE_UNDEPLOY = "mule:undeploy";
   private static Logger log;
@@ -42,7 +42,7 @@ public class CloudHubDeploymentTest {
   public void initializeContext() throws IOException, VerificationException {
     builder = new ProjectFactory();
     projectBaseDirectory = builder.createProjectBaseDir("empty-mule-deploy-cloudhub-project", this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
   }

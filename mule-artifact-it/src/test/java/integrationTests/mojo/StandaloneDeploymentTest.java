@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-public class StandaloneDeploymentTest {
+public class StandaloneDeploymentTest implements SettingsConfigurator {
 
   private static final String STANDALONE_TEST_ANCHOR_FILENAME = "standalone-anchor.txt";
   private static final String MULE_DEPLOY = "mule:deploy";
@@ -35,11 +35,13 @@ public class StandaloneDeploymentTest {
   private static ProjectFactory builder;
   private static final String INSTALL = "install";
   private static StandaloneEnvironment environment = new StandaloneEnvironment(MULE_VERSION);
+  private Verifier settings;
+  private Verifier muleMavenPluginVersion;
 
   public void initializeContext() throws IOException, VerificationException {
     builder = new ProjectFactory();
     projectBaseDirectory = builder.createProjectBaseDir("empty-mule-deploy-standalone-project", this.getClass());
-    verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
+    verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
   }
@@ -49,14 +51,8 @@ public class StandaloneDeploymentTest {
     log = LoggerFactory.getLogger(this.getClass());
     log.info("Initializing context...");
     initializeContext();
-    String mavenSettings = System.getenv("MAVEN_SETTINGS");
-    if (mavenSettings != null) {
-      verifier.addCliOption("-s " + mavenSettings);
-    }
-    String projectVersion = System.getProperty("mule.maven.plugin.version");
-    if (projectVersion != null) {
-      verifier.setSystemProperty("muleMavenPluginVersion", projectVersion);
-    }
+    setSettings(verifier);
+    setMuleMavenPluginVersion(verifier);
     verifier.setEnvironmentVariable("mule.version", System.getProperty("mule.version"));
     verifier.setEnvironmentVariable("mule.timeout", System.getProperty("mule.timeout"));
     verifier.setEnvironmentVariable("mule.home.test",

@@ -22,7 +22,7 @@ import org.junit.Before;
 import integrationTests.ProjectFactory;
 
 
-public class MojoTest {
+public class MojoTest implements SettingsConfigurator {
 
   protected static final String TARGET_FOLDER_NAME = "target";
   protected static final String EMPTY_PROJECT_NAME = "empty-project";
@@ -106,33 +106,14 @@ public class MojoTest {
                                            String dependencyProjectName)
       throws IOException, VerificationException {
     File dependencyProjectRootFolder = builder.createProjectBaseDir(dependencyProjectName, this.getClass());
-    Verifier auxVerifier = new Verifier(dependencyProjectRootFolder.getAbsolutePath());
-    String mavenSettings = System.getenv("MAVEN_SETTINGS");
-    if (mavenSettings != null) {
-      auxVerifier.addCliOption("-s " + mavenSettings);
-    }
-    String projectVersion = System.getProperty("mule.maven.plugin.version");
-    if (projectVersion != null) {
-      auxVerifier.setSystemProperty("muleMavenPluginVersion", projectVersion);
-    }
+    Verifier auxVerifier = buildVerifier(dependencyProjectRootFolder);
     auxVerifier.deleteArtifact(groupId, artifactId, version, type);
     auxVerifier.assertArtifactNotPresent(groupId, artifactId, version, type);
     auxVerifier.executeGoal(INSTALL);
     auxVerifier.verifyErrorFreeLog();
   }
 
-  protected Verifier buildVerifier(File projectBaseDirectory) throws VerificationException {
-    Verifier verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
-    String mavenSettings = System.getenv("MAVEN_SETTINGS");
-    if (mavenSettings != null) {
-      verifier.addCliOption("-s " + mavenSettings);
-    }
-    String projectVersion = System.getProperty("mule.maven.plugin.version");
-    if (projectVersion != null) {
-      verifier.setSystemProperty("muleMavenPluginVersion", projectVersion);
-    }
-    return verifier;
-  }
+
 
   protected void enableVerifierDebugMode() {
     verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=y");

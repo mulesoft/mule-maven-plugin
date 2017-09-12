@@ -17,7 +17,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
-import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.validation.*;
 import org.mule.tools.maven.utils.DependencyProject;
 import org.mule.tools.maven.utils.MavenProjectBuilder;

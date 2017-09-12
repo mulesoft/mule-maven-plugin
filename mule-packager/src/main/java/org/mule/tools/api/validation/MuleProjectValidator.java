@@ -16,12 +16,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.util.Project;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 
 /**
@@ -30,6 +33,7 @@ import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_
 public class MuleProjectValidator extends AbstractProjectValidator {
 
 
+  private static final int MULE_PROJECT_MAXIMUM_NUMBER_OF_DOMAINS = 1;
   private final List<SharedLibraryDependency> sharedLibraries;
 
   public MuleProjectValidator(Path projectBaseDir, String packagingType,
@@ -44,6 +48,43 @@ public class MuleProjectValidator extends AbstractProjectValidator {
     isProjectStructureValid(packagingType, projectBaseDir);
     isDescriptorFilePresent();
     validateSharedLibraries(sharedLibraries, dependencyProject.getDependencies());
+    validateReferencedDomainsIfPresent(dependencyProject.getDependencies());
+  }
+
+  /**
+   * Validates if a list of dependencies of a mule project conforms to the cardinality restrictions of domains referenced by a
+   * mule project.
+   * 
+   * @throws ValidationException if the condition above does not hold
+   */
+  protected void validateReferencedDomainsIfPresent(List<ArtifactCoordinates> dependencies) throws ValidationException {
+    checkArgument(dependencies != null, "List of dependencies should not be null");
+    Set<ArtifactCoordinates> domains = dependencies.stream()
+        .filter(d -> StringUtils.equals(MULE_DOMAIN.toString(), d.getClassifier()))
+        .collect(Collectors.toSet());
+    validateDomain(domains);
+  }
+
+  /**
+   * Validates if a set of artifact coordinates is a valid set of domains referenced by a mule project. Nevertheless, the set is
+   * valid if it is not null, contains at most one element and this element is a mule domain coordinate.
+   *
+   * @throws ValidationException if at least one of the conditions above does not hold
+   */
+  protected void validateDomain(Set<ArtifactCoordinates> domains) throws ValidationException {
+    checkArgument(domains != null, "Set of domains should not be null");
+    if (!domains.stream()
+        .allMatch(artifactCoordinates -> StringUtils.equals(artifactCoordinates.getClassifier(), MULE_DOMAIN.toString()))) {
+      String message = "Not all dependencies are mule domains";
+      throw new ValidationException(message);
+    }
+    if (domains.size() > MULE_PROJECT_MAXIMUM_NUMBER_OF_DOMAINS) {
+      String message =
+          "A mule project of type " + packagingType + " should reference at most " + MULE_PROJECT_MAXIMUM_NUMBER_OF_DOMAINS +
+              ". However, the project has references to the following domains: "
+              + domains.stream().collect(Collectors.toList());
+      throw new ValidationException(message);
+    }
   }
 
   /**

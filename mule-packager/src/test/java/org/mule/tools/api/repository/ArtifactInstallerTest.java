@@ -18,16 +18,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.plugin.logging.Log;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.util.PackagerLog;
 
@@ -35,21 +32,19 @@ public class ArtifactInstallerTest {
 
   private static final String ARTIFACT_ID = "artifact-id";
   private static final String VERSION = "1.0.0";
-  private static final String SCOPE = "compile";
-  private static final String TYPE = "zip";
+  private static final String TYPE = "jar";
   private static final String CLASSIFIER = "classifier";
   private static final String FILE_NAME = "file";
   private static final String PREFIX_GROUP_ID = "group";
   private static final String POSFIX_GROUP_ID = "id";
   private static final String GROUP_ID = PREFIX_GROUP_ID + "." + POSFIX_GROUP_ID;
   private static final String ARTIFACT_FILE_NAME = "artifact-file";
-  private static final String GENERATED_PACKAGE_NAME = "artifact-id-1.0.0-classifier.zip";
+  private static final String GENERATED_PACKAGE_NAME = "artifact-id-1.0.0-classifier.jar";
   private static final String OUTPUT_DIRECTORY =
       PREFIX_GROUP_ID + File.separator + POSFIX_GROUP_ID + File.separator + ARTIFACT_ID + File.separator + VERSION;
   private static final String POM_FILE_NAME = ARTIFACT_ID + "-" + VERSION + ".pom";
   private static final String DEFAULT_POM_FILE_NAME = "pom.xml";
   private PackagerLog logMock;
-  private ArtifactHandler handler;
   private ArtifactInstaller installer;
   private Artifact artifact;
 
@@ -64,20 +59,19 @@ public class ArtifactInstallerTest {
   @Before
   public void before() throws IOException {
     logMock = mock(PackagerLog.class);
-    handler = new DefaultArtifactHandler(TYPE);
     installer = new ArtifactInstaller(logMock);
     outputFolder.create();
     artifactFileFolder.create();
-    artifact = new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, SCOPE, TYPE, CLASSIFIER, handler);
+    ArtifactCoordinates coordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, TYPE, CLASSIFIER);
+    artifact = new Artifact(coordinates, artifactFileFolder.getRoot().toURI());
     classLoaderModel = mock(ClassLoaderModel.class);
   }
 
   @Test
   public void installArtifactTest() throws IOException {
-    artifact = new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, SCOPE, TYPE, CLASSIFIER, handler);
-    artifact.setFile(artifactFileFolder.newFile(ARTIFACT_FILE_NAME));
-    artifact.setFile(artifactFileFolder.newFile(POM_FILE_NAME));
-
+    ArtifactCoordinates coordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, TYPE, CLASSIFIER);
+    artifact = new Artifact(coordinates, artifactFileFolder.newFile(ARTIFACT_FILE_NAME).toURI());
+    artifactFileFolder.newFile(POM_FILE_NAME);
     File installedFile = new File(outputFolder.getRoot(), OUTPUT_DIRECTORY + File.separator + GENERATED_PACKAGE_NAME);
     File pomFile = new File(outputFolder.getRoot(), OUTPUT_DIRECTORY + File.separator + POM_FILE_NAME);
 
@@ -98,7 +92,7 @@ public class ArtifactInstallerTest {
     exception.expect(IOException.class);
     File destination = new File(outputFolder.getRoot(), FILE_NAME);
     destination.setReadOnly();
-    artifact.setFile(destination);
+    artifact.setUri(destination.toURI());
     installer.installArtifact(outputFolder.getRoot(), artifact, Optional.empty());
   }
 
@@ -115,7 +109,7 @@ public class ArtifactInstallerTest {
 
   @Test
   public void generatePomFileWhenPomFileNameDoesNotExistTest() throws IOException {
-    artifact.setFile(artifactFileFolder.newFile(DEFAULT_POM_FILE_NAME));
+    artifact.setUri(artifactFileFolder.newFile(DEFAULT_POM_FILE_NAME).toURI());
     File generatedPomFile = new File(outputFolder.getRoot(), POM_FILE_NAME);
 
     assertThat("Pom file should not exist", generatedPomFile.exists(), is(false));

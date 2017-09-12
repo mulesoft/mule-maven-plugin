@@ -8,15 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.classloader.model.util;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.core.Is.is;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Optional;
+package org.mule.tools.maven.utils;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +18,13 @@ import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Optional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 public class ArtifactUtilsTest {
 
@@ -37,7 +36,6 @@ public class ArtifactUtilsTest {
   private static final String POM_TYPE = "pom";
   private static final String MULE_PLUGIN = "mule-plugin";
   private static final String RESOURCE_LOCATION = "/Users/username/.m2/group/id/artifact-id/1.0.0/artifact-id-1.0.0.jar";
-  private static final String NOT_MULE_PLUGIN = "javadoc";
   private BundleDescriptor bundleDescriptor;
   private ArtifactCoordinates artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
   private URI bundleURI;
@@ -91,32 +89,6 @@ public class ArtifactUtilsTest {
                equalTo(type));
     assertThat("Classifier is not the expected", actualArtifactCoordinates.getClassifier(), equalTo(classifier));
 
-  }
-
-  @Test
-  public void isNotValidMulePluginMissingClassifierTest() {
-    Artifact notAMulePluginDependency = new Artifact(artifactCoordinates, bundleURI);
-    assertThat("Mule plugin validation method should have returned false",
-               ArtifactUtils.isValidMulePlugin(notAMulePluginDependency),
-               is(false));
-  }
-
-  @Test
-  public void isNotValidMulePluginWrongClassifierTest() {
-    artifactCoordinates =
-        new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, NOT_MULE_PLUGIN);
-    Artifact notAMulePluginArtifact = new Artifact(artifactCoordinates, bundleURI);
-    assertThat("Mule plugin validation method should have returned false",
-               ArtifactUtils.isValidMulePlugin(notAMulePluginArtifact),
-               is(false));
-  }
-
-  @Test
-  public void isValidMulePluginTest() {
-    artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, MULE_PLUGIN);
-    Artifact mulePluginArtifact = new Artifact(artifactCoordinates, bundleURI);
-    assertThat("Mule plugin validation method should have returned true", ArtifactUtils.isValidMulePlugin(mulePluginArtifact),
-               is(true));
   }
 
   @Test

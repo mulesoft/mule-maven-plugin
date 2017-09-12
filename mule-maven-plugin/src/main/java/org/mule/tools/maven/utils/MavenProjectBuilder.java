@@ -20,7 +20,6 @@ import org.apache.maven.project.*;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.repository.RepositorySystem;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 import org.mule.tools.api.exception.*;
 import org.mule.tools.api.exception.ProjectBuildingException;
 import org.mule.tools.api.util.*;

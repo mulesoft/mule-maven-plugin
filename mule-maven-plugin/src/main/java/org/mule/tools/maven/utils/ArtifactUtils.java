@@ -8,15 +8,9 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.classloader.model.util;
+package org.mule.tools.maven.utils;
 
-import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import org.apache.maven.model.Dependency;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.Artifact;
@@ -29,7 +23,7 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 public class ArtifactUtils {
 
   /**
-   * Convert a {@link BundleDescriptor} instance to {@link ArtifactCoordinates}.
+   * Convert a {@link org.mule.maven.client.api.model.BundleDescriptor} instance to {@link ArtifactCoordinates}.
    *
    * @param bundleDescriptor the bundle descriptor to be converted.
    * @return the corresponding artifact coordinates with normalized version.
@@ -43,7 +37,7 @@ public class ArtifactUtils {
   }
 
   /**
-   * Convert a {@link BundleDependency} instance to {@link Artifact}.
+   * Convert a {@link org.mule.maven.client.api.model.BundleDependency} instance to {@link Artifact}.
    *
    * @param bundleDependency the bundle dependency to be converted.
    * @return the corresponding artifact with normalized version.
@@ -54,32 +48,38 @@ public class ArtifactUtils {
   }
 
   /**
-   * Converts a {@link List<BundleDependency>} to a {@link List<Artifact>}.
-   *
-   * @param dependencies the bundle dependency list to be converted.
-   * @return the corresponding artifact list, each one with normalized version.
-   */
-  public static List<Artifact> toArtifacts(Collection<BundleDependency> dependencies) {
-    return dependencies.stream().map(ArtifactUtils::toArtifact).collect(Collectors.toList());
-  }
-
-  /**
-   * Checks if a {@link Artifact} instance represents a mule-plugin.
-   *
-   * @param artifact the artifact to be checked.
-   * @return true if the artifact is a mule-plugin, false otherwise.
-   */
-  public static boolean isValidMulePlugin(Artifact artifact) {
-    ArtifactCoordinates pluginCoordinates = artifact.getArtifactCoordinates();
-    Optional<String> pluginClassifier = Optional.ofNullable(pluginCoordinates.getClassifier());
-    return pluginClassifier.isPresent() && MULE_PLUGIN_CLASSIFIER.equals(pluginClassifier.get());
-  }
-
-  /**
-   * Converts a {@link ArtifactCoordinates} instance to a {@link BundleDescriptor} instance.
+   * Converts a {@link ArtifactCoordinates} instance to a {@link org.apache.maven.model.Dependency} instance.
    *
    * @param artifactCoordinates the artifact coordinates to be converted.
-   * @return the corresponding {@link BundleDescriptor} instance.
+   * @return the corresponding {@link org.apache.maven.model.Dependency} instance.
+   */
+  public static Dependency toDependency(ArtifactCoordinates artifactCoordinates) {
+    Dependency dependency = new Dependency();
+    dependency.setGroupId(artifactCoordinates.getGroupId());
+    dependency.setArtifactId(artifactCoordinates.getArtifactId());
+    dependency.setVersion(artifactCoordinates.getVersion());
+    dependency.setType(artifactCoordinates.getType());
+    dependency.setClassifier(artifactCoordinates.getClassifier());
+    dependency.setScope(artifactCoordinates.getScope());
+    return dependency;
+  }
+
+  /**
+   * Converts a {@link org.apache.maven.model.Dependency} instance to a {@link ArtifactCoordinates} instance.
+   *
+   * @param dependency the dependency to be converted.
+   * @return the corresponding {@link ArtifactCoordinates} instance.
+   */
+  public static ArtifactCoordinates toArtifactCoordinates(Dependency dependency) {
+    return new ArtifactCoordinates(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(),
+                                   dependency.getType(), dependency.getClassifier(), dependency.getScope());
+  }
+
+  /**
+   * Converts a {@link ArtifactCoordinates} instance to a {@link org.mule.maven.client.api.model.BundleDescriptor} instance.
+   *
+   * @param artifactCoordinates the artifact coordinates to be converted.
+   * @return the corresponding {@link org.mule.maven.client.api.model.BundleDescriptor} instance.
    */
   public static BundleDescriptor toBundleDescriptor(ArtifactCoordinates artifactCoordinates) {
     return new BundleDescriptor.Builder()

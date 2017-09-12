@@ -35,5 +35,8 @@ public class MuleProjectFoldersGenerator extends AbstractProjectFoldersGenerator
     createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), FolderNames.META_INF.value(),
                             FolderNames.MULE_ARTIFACT.value());
     createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), FolderNames.REPOSITORY.value());
+
+    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), FolderNames.CLASSES.value());
+
   }
 }

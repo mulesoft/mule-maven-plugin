@@ -21,6 +21,8 @@ import java.nio.file.Path;
  */
 public class PackagerTestUtils {
 
+  public static final String CLASSES = "classes";
+
   public static final String SRC = "src";
   public static final String MAIN = "main";
 

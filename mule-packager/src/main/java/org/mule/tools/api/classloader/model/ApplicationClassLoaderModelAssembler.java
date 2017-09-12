@@ -12,7 +12,7 @@ package org.mule.tools.api.classloader.model;
 
 import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
 import static org.mule.maven.client.internal.util.MavenUtils.getPomModelFromFile;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.*;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifactCoordinates;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifacts;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
 

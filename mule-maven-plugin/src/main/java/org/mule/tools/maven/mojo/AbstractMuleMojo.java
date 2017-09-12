@@ -28,7 +28,7 @@ import org.apache.maven.repository.RepositorySystem;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.util.ArtifactUtils;
+import org.mule.tools.maven.utils.ArtifactUtils;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.resources.content.ResourcesContent;
 import org.mule.tools.api.packager.sources.ContentGenerator;

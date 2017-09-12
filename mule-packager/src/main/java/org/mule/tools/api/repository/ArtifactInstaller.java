@@ -13,9 +13,6 @@ package org.mule.tools.api.repository;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
 import static org.apache.commons.io.FileUtils.copyFile;
-import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedFileName;
-import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedOutputDirectory;
-import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getPomFileName;
 import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
 
 import java.io.File;
@@ -23,7 +20,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import org.apache.maven.artifact.Artifact;
+import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.util.PackagerLog;
@@ -40,7 +37,7 @@ public class ArtifactInstaller {
   public void installArtifact(File repositoryFile, Artifact artifact, Optional<ClassLoaderModel> classLoaderModel)
       throws IOException {
     checkArgument(artifact != null, "Artifact to be installed should not be null");
-    File artifactFolderDestination = getFormattedOutputDirectory(repositoryFile, artifact);
+    File artifactFolderDestination = artifact.getFormattedMavenDirectory(repositoryFile);
 
     if (!artifactFolderDestination.exists()) {
       artifactFolderDestination.mkdirs();
@@ -52,13 +49,13 @@ public class ArtifactInstaller {
     } catch (IOException e) {
       throw new IOException(
                             format("There was a problem while copying the artifact [%s] file [%s] to the application local repository",
-                                   artifact.toString(), artifact.getFile().getAbsolutePath()),
+                                   artifact.toString(), artifact.getUri().getPath()),
                             e);
     }
   }
 
   protected void generateArtifactFile(Artifact artifact, File artifactFolderDestination, File repositoryFile) throws IOException {
-    String artifactFilename = getFormattedFileName(artifact);
+    String artifactFilename = artifact.getFormattedArtifactFileName();
 
     File destinationArtifactFile = new File(artifactFolderDestination, artifactFilename);
     log.info(format("Adding artifact <%s%s>",
@@ -67,7 +64,7 @@ public class ArtifactInstaller {
                         .replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
                                       "")));
 
-    copyFile(artifact.getFile(), destinationArtifactFile);
+    copyFile(new File(artifact.getUri()), destinationArtifactFile);
   }
 
   protected void generateDependencyDescriptorFile(Artifact artifact, File artifactFolderDestination,
@@ -81,11 +78,12 @@ public class ArtifactInstaller {
   }
 
   protected void generatePomFile(Artifact artifact, File artifactFolderDestination) throws IOException {
-    String artifactPomFilename = getPomFileName(artifact);
-    File srcPomFile = new File(artifact.getFile().getParent(), artifactPomFilename);
+    String artifactPomFilename = artifact.getPomFileName();
+    File srcPomFolder = new File(artifact.getUri()).getParentFile();
+    File srcPomFile = new File(srcPomFolder, artifactPomFilename);
     File destinationPomFile = new File(artifactFolderDestination, artifactPomFilename);
     if (!srcPomFile.exists()) {
-      srcPomFile = new File(artifact.getFile().getParent(), POM_FILE_NAME);
+      srcPomFile = new File(srcPomFolder, POM_FILE_NAME);
     }
     copyFile(srcPomFile, destinationPomFile);
   }

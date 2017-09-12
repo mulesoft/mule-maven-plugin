@@ -10,8 +10,6 @@
 
 package org.mule.tools.api.classloader.model;
 
-import org.mule.tools.api.classloader.model.util.ArtifactUtils;
-
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -54,10 +52,10 @@ public class ClassLoaderModel {
     this.dependencies = dependencies;
   }
 
-  public Set<org.apache.maven.artifact.Artifact> getArtifacts() {
+  public Set<Artifact> getArtifacts() {
     Set<Artifact> allDependencies = new TreeSet<>();
     allDependencies.addAll(dependencies);
-    return allDependencies.stream().map(ArtifactUtils::toArtifact).collect(toSet());
+    return allDependencies.stream().collect(toSet());
   }
 
   public ClassLoaderModel getParametrizedUriModel() {

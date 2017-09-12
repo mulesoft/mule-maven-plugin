@@ -12,7 +12,6 @@ package org.mule.tools.maven.utils;
 
 import org.apache.maven.project.MavenProject;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 import org.mule.tools.api.util.Project;
 
 import java.util.List;

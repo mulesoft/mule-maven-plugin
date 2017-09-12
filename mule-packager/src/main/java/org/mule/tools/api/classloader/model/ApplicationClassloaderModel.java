@@ -9,8 +9,6 @@
  */
 package org.mule.tools.api.classloader.model;
 
-import org.apache.maven.artifact.Artifact;
-
 import java.util.*;
 import java.util.stream.Collectors;
 

@@ -20,11 +20,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.maven.artifact.Artifact;
-import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
+import org.mule.tools.api.classloader.model.*;
 import org.mule.tools.api.util.FileUtils;
 
 public class RepositoryGenerator {
@@ -67,7 +63,7 @@ public class RepositoryGenerator {
     }
     for (Artifact artifact : sortedArtifacts) {
       Optional<ClassLoaderModel> mulePluginClassloaderOptional =
-          Optional.ofNullable(mulePluginsClassloaderModels.get(toArtifactCoordinates(artifact)));
+          Optional.ofNullable(mulePluginsClassloaderModels.get(artifact.getArtifactCoordinates()));
       installer.installArtifact(repositoryFile, artifact, mulePluginClassloaderOptional);
     }
   }

@@ -16,22 +16,20 @@ import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.*;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.project.*;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
+import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.util.FileUtils;
 
 public class RepositoryGeneratorTest {
@@ -40,8 +38,7 @@ public class RepositoryGeneratorTest {
   private static final String GROUP_ID = "group.id";
   private static final String ARTIFACT_ID = "artifact-id";
   private static final String VERSION = "1.0.0";
-  private static final String SCOPE = "compile";
-  private static final String TYPE = "zip";
+  private static final String TYPE = "jar";
   private static final String CLASSIFIER = "classifier";
   private static final String REPOSITORY_FOLDER = "repository";
   private TemporaryFolder temporaryFolder;
@@ -50,7 +47,6 @@ public class RepositoryGeneratorTest {
   private ProjectBuilder projectBuilderMock;
   private ArtifactInstaller artifactInstallerMock;
   private ProjectBuildingResult resultMock;
-  private ArtifactHandler artifactHandler;
   private Set<Artifact> artifacts;
   private ApplicationClassloaderModel appModelMock;
 
@@ -68,7 +64,6 @@ public class RepositoryGeneratorTest {
     projectBuilderMock = mock(ProjectBuilder.class);
     resultMock = mock(ProjectBuildingResult.class);
     when(resultMock.getProject()).thenReturn(projectMock);
-    when(projectBuilderMock.build(Mockito.any(Artifact.class), any(ProjectBuildingRequest.class))).thenReturn(resultMock);
     artifactInstallerMock = mock(ArtifactInstaller.class);
     ApplicationClassLoaderModelAssembler applicationClassloaderModelAssemblerMock =
         mock(ApplicationClassLoaderModelAssembler.class);
@@ -76,7 +71,6 @@ public class RepositoryGeneratorTest {
                                                   temporaryFolder.getRoot(), artifactInstallerMock,
                                                   applicationClassloaderModelAssemblerMock);
     repositoryGeneratorSpy = spy(repositoryGenerator);
-    artifactHandler = new DefaultArtifactHandler(TYPE);
     appModelMock = mock(ApplicationClassloaderModel.class);
   }
 
@@ -150,7 +144,8 @@ public class RepositoryGeneratorTest {
   }
 
   private Artifact createArtifact(int i) {
-    return new DefaultArtifact(GROUP_ID + "." + i, ARTIFACT_ID + "-" + i, VERSION, SCOPE, TYPE,
-                               CLASSIFIER, artifactHandler);
+    return new Artifact(new ArtifactCoordinates(GROUP_ID + "." + i, ARTIFACT_ID + "-" + i, VERSION, TYPE,
+                                                CLASSIFIER),
+                        URI.create("/"));
   }
 }

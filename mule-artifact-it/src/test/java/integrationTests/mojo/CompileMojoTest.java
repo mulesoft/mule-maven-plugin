@@ -19,7 +19,7 @@ import org.apache.maven.it.VerificationException;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CompileMojoTest extends MojoTest implements AbstractMojoTest {
+public class CompileMojoTest extends MojoTest implements SettingsConfigurator {
 
   private static final String GOAL = "compile";
 

@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-public class StandaloneDeploymentTest implements AbstractMojoTest {
+public class StandaloneDeploymentTest implements SettingsConfigurator {
 
   private static final String STANDALONE_TEST_ANCHOR_FILENAME = "standalone-anchor.txt";
   private static final String MULE_DEPLOY = "mule:deploy";

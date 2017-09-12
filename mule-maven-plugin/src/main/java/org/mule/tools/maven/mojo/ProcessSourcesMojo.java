@@ -12,32 +12,21 @@ package org.mule.tools.maven.mojo;
 
 import static java.lang.String.format;
 
-import org.apache.maven.RepositoryUtils;
-import org.eclipse.aether.repository.RemoteRepository;
-import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.packager.sources.ContentGenerator;
-import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.repository.ArtifactInstaller;
-import org.mule.tools.api.repository.MuleMavenPluginClientProvider;
 import org.mule.tools.api.repository.RepositoryGenerator;
 
-import java.nio.file.Paths;
 import java.text.MessageFormat;
-import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
 import org.mule.tools.maven.utils.MavenPackagerLog;
 
-import javax.swing.text.AbstractDocument;
 
 @Mojo(name = "process-sources",
     defaultPhase = LifecyclePhase.PROCESS_SOURCES,

@@ -19,7 +19,7 @@ import org.apache.maven.it.VerificationException;
 import org.junit.Before;
 import org.junit.Test;
 
-public class InitializeMojoTest extends MojoTest implements AbstractMojoTest {
+public class InitializeMojoTest extends MojoTest implements SettingsConfigurator {
 
   private static final String INITIALIZE = "initialize";
 

@@ -33,8 +33,6 @@ import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.resources.content.ResourcesContent;
 import org.mule.tools.api.packager.sources.ContentGenerator;
 import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
-import org.mule.tools.api.packager.sources.MuleContentGenerator;
-import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.repository.MuleMavenPluginClientProvider;
 
 

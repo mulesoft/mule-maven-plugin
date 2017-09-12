@@ -22,7 +22,7 @@ import org.junit.Before;
 import integrationTests.ProjectFactory;
 
 
-public class MojoTest implements AbstractMojoTest {
+public class MojoTest implements SettingsConfigurator {
 
   protected static final String TARGET_FOLDER_NAME = "target";
   protected static final String EMPTY_PROJECT_NAME = "empty-project";

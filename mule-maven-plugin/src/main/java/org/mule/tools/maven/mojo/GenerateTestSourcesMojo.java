@@ -11,7 +11,6 @@
 package org.mule.tools.maven.mojo;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.text.MessageFormat;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -20,10 +19,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
-import org.mule.tools.api.packager.ProjectInformation;
-import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.packager.sources.ContentGenerator;
-import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
 /**

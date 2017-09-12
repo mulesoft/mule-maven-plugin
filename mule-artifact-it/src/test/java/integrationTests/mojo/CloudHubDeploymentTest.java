@@ -19,7 +19,6 @@ import org.apache.maven.it.Verifier;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mule.tools.maven.mojo.AbstractMuleMojo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,7 @@ import integrationTests.ProjectFactory;
 import integrationTests.mojo.verifier.CloudHubDeploymentVerifier;
 
 @Ignore
-public class CloudHubDeploymentTest implements AbstractMojoTest {
+public class CloudHubDeploymentTest implements SettingsConfigurator {
 
   private static final String MULE_UNDEPLOY = "mule:undeploy";
   private static Logger log;

@@ -15,7 +15,7 @@ import org.apache.maven.it.Verifier;
 
 import java.io.File;
 
-public interface AbstractMojoTest {
+public interface SettingsConfigurator {
 
   default void setSettings(Verifier verifier) {
     String mavenSettings = System.getenv("MAVEN_SETTINGS");

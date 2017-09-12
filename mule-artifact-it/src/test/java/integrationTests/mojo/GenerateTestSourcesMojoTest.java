@@ -20,7 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class GenerateTestSourcesMojoTest extends MojoTest implements AbstractMojoTest {
+public class GenerateTestSourcesMojoTest extends MojoTest implements SettingsConfigurator {
 
   private static final String GENERATE_TEST_SOURCES = "generate-test-sources";
 

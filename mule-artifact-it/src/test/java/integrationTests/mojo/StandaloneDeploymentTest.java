@@ -15,6 +15,7 @@ import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+@Ignore // Remove this with MMP-125
 public class StandaloneDeploymentTest implements SettingsConfigurator {
 
   private static final String STANDALONE_TEST_ANCHOR_FILENAME = "standalone-anchor.txt";
@@ -35,8 +37,6 @@ public class StandaloneDeploymentTest implements SettingsConfigurator {
   private static ProjectFactory builder;
   private static final String INSTALL = "install";
   private static StandaloneEnvironment environment = new StandaloneEnvironment(MULE_VERSION);
-  private Verifier settings;
-  private Verifier muleMavenPluginVersion;
 
   public void initializeContext() throws IOException, VerificationException {
     builder = new ProjectFactory();
@@ -51,7 +51,6 @@ public class StandaloneDeploymentTest implements SettingsConfigurator {
     log = LoggerFactory.getLogger(this.getClass());
     log.info("Initializing context...");
     initializeContext();
-    setSettings(verifier);
     setMuleMavenPluginVersion(verifier);
     verifier.setEnvironmentVariable("mule.version", System.getProperty("mule.version"));
     verifier.setEnvironmentVariable("mule.timeout", System.getProperty("mule.timeout"));

@@ -32,7 +32,6 @@ public class InitializeMojoTest extends MojoTest implements SettingsConfigurator
     clearResources();
     verifier.setSystemProperty(PROJECT_BASE_DIR_PROPERTY, projectBaseDirectory.getAbsolutePath());
     verifier.setSystemProperty(PROJECT_BUILD_DIRECTORY_PROPERTY, targetFolder.getAbsolutePath());
-    setSettings(verifier);
     setMuleMavenPluginVersion(verifier);
   }
 

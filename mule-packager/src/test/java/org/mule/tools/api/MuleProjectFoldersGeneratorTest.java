@@ -10,20 +10,6 @@
 
 package org.mule.tools.api;
 
-import static org.mule.tools.api.packager.PackagerTestUtils.MAVEN;
-import static org.mule.tools.api.packager.PackagerTestUtils.META_INF;
-import static org.mule.tools.api.packager.PackagerTestUtils.MULE;
-import static org.mule.tools.api.packager.PackagerTestUtils.MULE_ARTIFACT;
-import static org.mule.tools.api.packager.PackagerTestUtils.MULE_SRC;
-import static org.mule.tools.api.packager.PackagerTestUtils.MUNIT;
-import static org.mule.tools.api.packager.PackagerTestUtils.POLICY;
-import static org.mule.tools.api.packager.PackagerTestUtils.REPOSITORY;
-import static org.mule.tools.api.packager.PackagerTestUtils.TEST_MULE;
-import static org.mule.tools.api.packager.PackagerTestUtils.assertFileExists;
-import static org.mule.tools.api.packager.PackagerTestUtils.assertFolderExist;
-import static org.mule.tools.api.packager.PackagerTestUtils.assertFolderIsEmpty;
-import static org.mule.tools.api.packager.PackagerTestUtils.createFolder;
-
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -34,6 +20,8 @@ import org.junit.rules.TemporaryFolder;
 
 import org.mule.tools.api.packager.MuleProjectFoldersGenerator;
 import org.mule.tools.api.packager.packaging.PackagingType;
+
+import static org.mule.tools.api.packager.PackagerTestUtils.*;
 
 public class MuleProjectFoldersGeneratorTest {
 
@@ -75,6 +63,18 @@ public class MuleProjectFoldersGeneratorTest {
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     checkNoPackageDependentFolders();
+  }
+
+  @Test
+  public void generateClassesFolderAlreadyPresent() throws IOException {
+    Path classesBasePath = basePath.resolve(CLASSES);
+    createFolder(classesBasePath, FAKE_FILE_NAME, true);
+
+    generator = new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_APPLICATION);
+    generator.generate(projectBaseFolder.getRoot().toPath());
+
+    assertFolderExist(basePath.resolve(CLASSES));
+    assertFileExists(classesBasePath.resolve(FAKE_FILE_NAME));
   }
 
   @Test
@@ -152,6 +152,9 @@ public class MuleProjectFoldersGeneratorTest {
   }
 
   private void checkNoPackageDependentFolders() {
+    assertFolderExist(basePath.resolve(CLASSES));
+    assertFolderIsEmpty(basePath.resolve(CLASSES));
+
     assertFolderExist(basePath.resolve(TEST_MULE).resolve(MUNIT));
     assertFolderIsEmpty(basePath.resolve(TEST_MULE).resolve(MUNIT));
 

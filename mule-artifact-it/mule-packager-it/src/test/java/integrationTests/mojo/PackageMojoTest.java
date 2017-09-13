@@ -133,6 +133,7 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
 
   @Test
   public void testPackageAppWithDefinedFinalName() throws IOException, VerificationException {
+    installThirdPartyArtifact(DEPENDENCY_ORG_ID, DEPENDENCY_NAME, DEPENDENCY_VERSION, DEPENDENCY_TYPE, DEPENDENCY_PROJECT_NAME);
     String artifactId = "check-finalName-package-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);

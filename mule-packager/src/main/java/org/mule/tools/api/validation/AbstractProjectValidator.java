@@ -10,6 +10,7 @@
 
 package org.mule.tools.api.validation;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.util.Project;
@@ -42,7 +43,7 @@ public abstract class AbstractProjectValidator {
   }
 
   /**
-   * Ensure a project contained in the projectBaseDir is valid based on its packagin type.
+   * Ensure a project contained in the projectBaseDir is valid based on its packaging type.
    *
    * @return true if the project is valid
    * @throws ValidationException if the project is invalid
@@ -70,7 +71,7 @@ public abstract class AbstractProjectValidator {
     } catch (IllegalArgumentException e) {
       List<String> packagingTypeNames = Arrays.stream(PackagingType.values()).map(type -> type.toString())
           .collect(Collectors.toList());
-      throw new ValidationException("Unknown packaging type " + packagingType
+      throw new ValidationException(packagingType == null ? e.getMessage() : "Unknown packaging type " + packagingType
           + ". Please specify a valid mule packaging type: " + String.join(", ", packagingTypeNames));
     }
     return true;

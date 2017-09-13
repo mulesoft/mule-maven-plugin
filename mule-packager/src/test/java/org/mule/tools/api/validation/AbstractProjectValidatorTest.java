@@ -11,20 +11,13 @@ package org.mule.tools.api.validation;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mule.tools.api.validation.AbstractProjectValidator.isPackagingTypeValid;
 
+import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.mule.tools.api.exception.ValidationException;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
-import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.mule.tools.api.util.Project;
 
 public class AbstractProjectValidatorTest {
 
@@ -36,38 +29,32 @@ public class AbstractProjectValidatorTest {
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
-  @Rule
-  public TemporaryFolder projectBaseFolder = new TemporaryFolder();
 
-  private MuleProjectValidator validator;
-
-  @Before
-  public void before() throws IOException, MojoExecutionException {
-    validator = new MuleProjectValidator(projectBaseFolder.getRoot().toPath(), MULE_APPLICATION, mock(Project.class),
-                                         mock(MulePluginResolver.class), new ArrayList<>());
+  @Test
+  public void isMuleApplicationPackagingTypeValidTest() throws ValidationException {
+    assertThat("Packaging type should be valid", isPackagingTypeValid(MULE_APPLICATION), is(true));
   }
 
   @Test
-  public void isMuleApplicationPackagingTypeValid() throws ValidationException {
-    Boolean valid = validator.isPackagingTypeValid(MULE_APPLICATION);
-    assertThat("Packaging type should be valid", valid, is(true));
+  public void isMuleDomainPackagingTypeValidTest() throws ValidationException {
+    assertThat("Packaging type should be valid", isPackagingTypeValid(MULE_DOMAIN), is(true));
   }
 
   @Test
-  public void isMuleDomainPackagingTypeValid() throws ValidationException {
-    Boolean valid = validator.isPackagingTypeValid(MULE_DOMAIN);
-    assertThat("Packaging type should be valid", valid, is(true));
+  public void isMulePolicyPackagingTypeValidTest() throws ValidationException {
+    assertThat("Packaging type should be valid", isPackagingTypeValid(MULE_POLICY), is(true));
   }
 
   @Test
-  public void isMulePolicyPackagingTypeValid() throws ValidationException {
-    Boolean valid = validator.isPackagingTypeValid(MULE_POLICY);
-    assertThat("Packaging type should be valid", valid, is(true));
+  public void isPackagingTypeValidInvalidPackagingTest() throws ValidationException {
+    expectedException.expect(ValidationException.class);
+    isPackagingTypeValid("no-valid-packaging");
   }
 
-  @Test(expected = ValidationException.class)
-  public void isPackagingTypeValid() throws ValidationException {
-    Boolean valid = validator.isPackagingTypeValid("no-valid-packagin");
-    assertThat("Packaging type should be valid", valid, is(true));
+  @Test
+  public void isPackagingTypeValidNullTest() throws ValidationException {
+    expectedException.expect(ValidationException.class);
+    expectedException.expectMessage("Packaging type name should not be null");
+    isPackagingTypeValid(null);
   }
 }

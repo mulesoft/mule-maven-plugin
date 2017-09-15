@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Ignore
 public class AgentDeploymentTest implements SettingsConfigurator {
 
   private static final String AGENT_TEST_ANCHOR_FILENAME = "agent-anchor.txt";

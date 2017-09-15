@@ -13,3 +13,4 @@ target/
 *.settings
 bin/
 mule-artifact-it/wrapper.log
+/mule-artifact-it/mule-deployer-it/dummy.jar

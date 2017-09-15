@@ -11,14 +11,35 @@
     <artifactId>mule-artifact-it</artifactId>
     <packaging>pom</packaging>
 
-    <modules>
-        <module>mule-packager-it</module>
-        <module>mule-deployer-it</module>
-    </modules>
 
     <properties>
         <licensePath>../LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>mule-packager-it</module>
+                <module>mule-deployer-it</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>deployerIT</id>
+            <modules>
+                <module>mule-deployer-it</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>packagerIT</id>
+            <modules>
+                <module>mule-packager-it</module>
+            </modules>
+        </profile>
+    </profiles>
 
 </project>

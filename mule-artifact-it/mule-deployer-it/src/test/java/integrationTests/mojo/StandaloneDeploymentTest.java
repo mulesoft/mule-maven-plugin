@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-@Ignore // Remove this with MMP-125
 public class StandaloneDeploymentTest implements SettingsConfigurator {
 
   private static final String STANDALONE_TEST_ANCHOR_FILENAME = "standalone-anchor.txt";

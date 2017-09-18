@@ -23,7 +23,6 @@
 
         <mule.version>4.0.0-rc-SNAPSHOT</mule.version>
         <mule.core.version>${mule.version}</mule.core.version>
-        <mule.embedded.distribution.version>${mule.version}</mule.embedded.distribution.version>
 
         <mule.maven.client.impl.version>1.0.0-rc-SNAPSHOT</mule.maven.client.impl.version>
 
@@ -236,11 +235,6 @@
                 <groupId>org.codehaus.groovy</groupId>
                 <artifactId>groovy</artifactId>
                 <version>${groovy.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mule.distributions</groupId>
-                <artifactId>mule-embedded-distribution</artifactId>
-                <version>${mule.embedded.distribution.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mule.runtime</groupId>

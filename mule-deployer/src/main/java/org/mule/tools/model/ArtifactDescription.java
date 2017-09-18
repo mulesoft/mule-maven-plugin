@@ -10,11 +10,11 @@
 
 package org.mule.tools.model;
 
-import org.apache.commons.lang.StringUtils;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
+
+import org.apache.commons.lang3.StringUtils;
 
 
 public class ArtifactDescription {

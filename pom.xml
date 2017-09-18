@@ -540,14 +540,6 @@
         </profile>
     </profiles>
 
-    <repositories>
-        <repository>
-            <id>mulesoft-private</id>
-            <name>Redirect to internal repository</name>
-            <url>https://repository.mulesoft.org/nexus/content/repositories/private</url>
-        </repository>
-    </repositories>
-
     <distributionManagement>
         <repository>
             <id>mule-releases</id>

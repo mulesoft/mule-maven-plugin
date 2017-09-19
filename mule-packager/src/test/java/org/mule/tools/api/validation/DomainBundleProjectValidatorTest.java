@@ -190,13 +190,13 @@ public class DomainBundleProjectValidatorTest {
     expectedException.expect(ValidationException.class);
 
     ArtifactCoordinates domain = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID + MULE_DOMAIN, MULE_DOMAIN);
+    ArtifactCoordinates applicationCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
 
     expectedException.expectMessage("Every application in the domain bundle must refer to the specified domain: " + domain
-        + ". However, the application has reference to no domain");
+        + ". However, the application: " + applicationCoordinates.toString() + " has reference to no domain");
 
     DomainBundleProjectValidator validatorSpy = spy(validator);
 
-    ArtifactCoordinates applicationCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
     doReturn(Collections.emptySet()).when(validatorSpy).getApplicationDomains(applicationCoordinates);
 
     validatorSpy.validateApplication(domain, applicationCoordinates);
@@ -208,13 +208,12 @@ public class DomainBundleProjectValidatorTest {
 
     ArtifactCoordinates domainA = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID + MULE_DOMAIN + "a", MULE_DOMAIN);
     ArtifactCoordinates domainB = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID + MULE_DOMAIN + "b", MULE_DOMAIN);
+    ArtifactCoordinates applicationCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
 
     expectedException.expectMessage("Every application in the domain bundle must refer to the specified domain: " + domainA
-        + ". However, the application refers to the following domain(s): ");
+        + ". However, the application: " + applicationCoordinates.toString() + " refers to the following domain(s): ");
 
     DomainBundleProjectValidator validatorSpy = spy(validator);
-
-    ArtifactCoordinates applicationCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
 
     Set<ArtifactCoordinates> domains = new HashSet<>();
     domains.add(domainA);
@@ -230,14 +229,13 @@ public class DomainBundleProjectValidatorTest {
 
     ArtifactCoordinates domainBundleDomain = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID + MULE_DOMAIN + "a", MULE_DOMAIN);
     ArtifactCoordinates applicationDomain = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID + MULE_DOMAIN + "b", MULE_DOMAIN);
+    ArtifactCoordinates applicationCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
 
     expectedException
         .expectMessage("Every application in the domain bundle must refer to the specified domain: " + domainBundleDomain
-            + ". However, the application refers to the following domain(s): ");
+            + ". However, the application: " + applicationCoordinates.toString() + " refers to the following domain(s): ");
 
     DomainBundleProjectValidator validatorSpy = spy(validator);
-
-    ArtifactCoordinates applicationCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
 
     Set<ArtifactCoordinates> domains = new HashSet<>();
     domains.add(applicationDomain);

@@ -93,9 +93,9 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
     if (applicationDomains.size() != DOMAIN_BUNDLE_VALID_NUMBER_OF_DOMAINS || !applicationDomains.contains(domain)) {
       String message = "Every application in the domain bundle must refer to the specified domain: " + domain + ". ";
       if (applicationDomains.isEmpty()) {
-        message += "However, the application has reference to no domain";
+        message += "However, the application: " + applicationCoordinates.toString() + " has reference to no domain";
       } else {
-        message += "However, the application refers to the following domain(s): "
+        message += "However, the application: " + applicationCoordinates.toString() + " refers to the following domain(s): "
             + applicationDomains.stream().collect(Collectors.toList());
       }
       throw new ValidationException(message);

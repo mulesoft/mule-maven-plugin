@@ -26,6 +26,7 @@ public abstract class AbstractProjectFoldersGenerator {
 
   private String groupId;
   private String artifactId;
+  private PackagingType packagingType;
 
   public AbstractProjectFoldersGenerator(String groupId, String artifactId, PackagingType packagingType) {
     checkArgument(StringUtils.isNotEmpty(groupId), "The groupId must not be null nor empty");
@@ -34,6 +35,7 @@ public abstract class AbstractProjectFoldersGenerator {
 
     this.groupId = groupId;
     this.artifactId = artifactId;
+    this.packagingType = packagingType;
   }
 
   protected String getGroupId() {

@@ -129,9 +129,11 @@ public class ValidateMojoTest extends MojoTest {
     projectBaseDirectory = builder.createProjectBaseDir(VALIDATE_DOMAIN_BUNDLE_PROJECT, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
-    String textInLog = "Validation exception: Every application in the domain bundle must refer to the specified domain:" +
-        " org.mule.app:mule-domain-x:1.0.0:jar:mule-domain. However, the application refers to the following domain(s): " +
+    String textInLog = "Validation exception: Every application in the domain bundle must refer to the specified domain: " +
+        "org.mule.app:mule-domain-x:1.0.0:jar:mule-domain. However, the application: " +
+        "org.mule.app:mule-app-b:1.0.0:jar:mule-application refers to the following domain(s): " +
         "[org.mule.app:mule-domain-y:1.0.0:jar:mule-domain]";
     executeGoalAndVerifyText(VALIDATE, textInLog);
   }
 }
+

@@ -26,9 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,7 +44,6 @@ public class MuleProjectValidatorTest {
       "The mule application does not contain the following shared libraries: ";
   public static final String MULE_POLICY = "mule-policy";
 
-  protected static final String MULE_ARTIFACT_JSON = "mule-artifact.json";
   protected static final String GROUP_ID = "group-id";
   protected static final String ARTIFACT_ID = "artifact-id";
   protected static final String MULE_APPLICATION = "mule-application";
@@ -88,8 +85,7 @@ public class MuleProjectValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value());
     muleMainSrcFolder.toFile().mkdirs();
 
-    Boolean valid = isProjectStructureValid(MULE_APPLICATION, projectBaseFolder.getRoot().toPath());
-    assertThat("Project structure should be valid", valid, is(true));
+    isProjectStructureValid(MULE_APPLICATION, projectBaseFolder.getRoot().toPath());
   }
 
   @Test(expected = ValidationException.class)
@@ -115,8 +111,7 @@ public class MuleProjectValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value());
     muleMainSrcFolder.toFile().mkdirs();
 
-    Boolean valid = isProjectStructureValid(MULE_POLICY, projectBaseFolder.getRoot().toPath());
-    assertThat("Project structure should be valid", valid, is(true));
+    isProjectStructureValid(MULE_POLICY, projectBaseFolder.getRoot().toPath());
   }
 
   @Test(expected = ValidationException.class)
@@ -142,22 +137,12 @@ public class MuleProjectValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value());
     muleMainSrcFolder.toFile().mkdirs();
 
-    Boolean valid = isProjectStructureValid(MULE_DOMAIN, projectBaseFolder.getRoot().toPath());
-    assertThat("Project structure should be valid", valid, is(true));
+    isProjectStructureValid(MULE_DOMAIN, projectBaseFolder.getRoot().toPath());
   }
 
   @Test(expected = ValidationException.class)
   public void isDescriptorFilePresentMuleApplicationInvalid() throws IOException, ValidationException {
-    validator.isDescriptorFilePresent();
-  }
-
-  @Test
-  public void isDescriptorFilePresentMuleApplication() throws IOException, ValidationException {
-    Path descriptorFilePath = projectBaseFolder.getRoot().toPath().resolve(MULE_ARTIFACT_JSON);
-    descriptorFilePath.toFile().createNewFile();
-
-    Boolean valid = validator.isDescriptorFilePresent();
-    assertThat("Project's descriptor file should be present", valid, is(true));
+    validator.validateDescriptorFile(projectBaseFolder.getRoot().toPath());
   }
 
   @Test
@@ -167,11 +152,11 @@ public class MuleProjectValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value()).toFile();
     muleFolder.mkdirs();
     projectBaseFolder.newFile("mule-artifact.json");
-
+    doNothing().when(validatorSpy).validateDescriptorFile(any());
     doCallRealMethod().when(validatorSpy).isProjectValid();
     validatorSpy.isProjectValid();
 
-    verify(validatorSpy, times(1)).isDescriptorFilePresent();
+    verify(validatorSpy, times(1)).validateDescriptorFile(projectBaseFolder.getRoot().toPath());
   }
 
   @Test

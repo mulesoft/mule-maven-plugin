@@ -28,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,22 +58,21 @@ public class ContentGeneratorTest {
   @Rule
   public TemporaryFolder projectBaseFolder = new TemporaryFolder();
 
-  @Rule
-  public TemporaryFolder projectTargetFolder = new TemporaryFolder();
-
   private PackagingType packagingType = PackagingType.MULE_APPLICATION;
 
   private MuleContentGenerator contentGenerator;
+  private File projectTargetFolder;
 
   @Before
   public void setUp() {
+    projectTargetFolder = projectBaseFolder.newFolder("target");
     ProjectInformation info = new ProjectInformation.Builder()
         .withGroupId(GROUP_ID)
         .withArtifactId(ARTIFACT_ID)
         .withVersion(VERSION)
         .withPackaging(packagingType.toString())
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
-        .withBuildDirectory(projectTargetFolder.getRoot().toPath()).build();
+        .withBuildDirectory(projectTargetFolder.toPath()).build();
     contentGenerator = new MuleContentGenerator(info);
   }
 
@@ -84,7 +84,7 @@ public class ContentGeneratorTest {
         .withVersion(VERSION)
         .withPackaging(packagingType.toString())
         .withProjectBaseFolder(Paths.get("/fake/project/base/folder"))
-        .withBuildDirectory(projectTargetFolder.getRoot().toPath()).build();
+        .withBuildDirectory(projectTargetFolder.toPath()).build();
     new MuleContentGenerator(info);
   }
 
@@ -104,7 +104,7 @@ public class ContentGeneratorTest {
   public void createSrcFolderContentNonExistingSourceFolder() throws IOException {
     String destinationFolderName = packagingType.getSourceFolderName();
 
-    Path destinationFolderPath = projectTargetFolder.getRoot().toPath().resolve(destinationFolderName);
+    Path destinationFolderPath = projectTargetFolder.toPath().resolve(destinationFolderName);
     PackagerTestUtils.createEmptyFolder(destinationFolderPath);
 
     contentGenerator.createMuleSrcFolderContent();
@@ -121,7 +121,7 @@ public class ContentGeneratorTest {
 
     PackagerTestUtils.createFolder(sourceFolderPath, FAKE_FILE_NAME, true);
 
-    Path destinationFolderPath = projectTargetFolder.getRoot().toPath().resolve(destinationFolderName);
+    Path destinationFolderPath = projectTargetFolder.toPath().resolve(destinationFolderName);
     PackagerTestUtils.createEmptyFolder(destinationFolderPath);
 
     contentGenerator.createMuleSrcFolderContent();
@@ -133,8 +133,8 @@ public class ContentGeneratorTest {
   public void createTestFolderContentNonExistingSourceFolder() throws IOException {
     String destinationFolderName = packagingType.getTestFolderName();
 
-    Path destinationFolderPath = projectTargetFolder.getRoot().toPath().resolve(
-                                                                                PackagerTestUtils.TEST_MULE)
+    Path destinationFolderPath = projectTargetFolder.toPath().resolve(
+                                                                      PackagerTestUtils.TEST_MULE)
         .resolve(destinationFolderName);
     PackagerTestUtils.createEmptyFolder(destinationFolderPath);
 
@@ -164,8 +164,8 @@ public class ContentGeneratorTest {
         .resolve(sourceFolderName);
     PackagerTestUtils.createFolder(sourceFolderPath, FAKE_FILE_NAME, true);
 
-    Path destinationFolderPath = projectTargetFolder.getRoot().toPath().resolve(
-                                                                                PackagerTestUtils.TEST_MULE)
+    Path destinationFolderPath = projectTargetFolder.toPath().resolve(
+                                                                      PackagerTestUtils.TEST_MULE)
         .resolve(destinationFolderName);
     PackagerTestUtils.createEmptyFolder(destinationFolderPath);
 
@@ -187,8 +187,8 @@ public class ContentGeneratorTest {
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
     PackagerTestUtils.createFolder(sourceFolderPath, FAKE_FILE_NAME, true);
 
-    Path destinationFolderPath = projectTargetFolder.getRoot().toPath().resolve(PackagerTestUtils.META_INF).resolve(
-                                                                                                                    PackagerTestUtils.MULE_SRC)
+    Path destinationFolderPath = projectTargetFolder.toPath().resolve(PackagerTestUtils.META_INF).resolve(
+                                                                                                          PackagerTestUtils.MULE_SRC)
         .resolve(ARTIFACT_ID);
     PackagerTestUtils.createEmptyFolder(destinationFolderPath);
 
@@ -221,8 +221,8 @@ public class ContentGeneratorTest {
     PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
 
     Path pomPropertiesDestinationPath =
-        projectTargetFolder.getRoot().toPath().resolve(PackagerTestUtils.META_INF).resolve(
-                                                                                           PackagerTestUtils.MAVEN)
+        projectTargetFolder.toPath().resolve(PackagerTestUtils.META_INF).resolve(
+                                                                                 PackagerTestUtils.MAVEN)
             .resolve(GROUP_ID).resolve(ARTIFACT_ID);
     PackagerTestUtils.createEmptyFolder(pomPropertiesDestinationPath);
 
@@ -238,8 +238,8 @@ public class ContentGeneratorTest {
     PackagerTestUtils.createFolder(sourceFolderPath, descriptorFileName, true);
 
     Path pomPropertiesDestinationPath =
-        projectTargetFolder.getRoot().toPath().resolve(PackagerTestUtils.META_INF).resolve(
-                                                                                           PackagerTestUtils.MAVEN)
+        projectTargetFolder.toPath().resolve(PackagerTestUtils.META_INF).resolve(
+                                                                                 PackagerTestUtils.MAVEN)
             .resolve(GROUP_ID).resolve(ARTIFACT_ID);
     PackagerTestUtils.createEmptyFolder(pomPropertiesDestinationPath);
 
@@ -253,15 +253,17 @@ public class ContentGeneratorTest {
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
     PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
     PackagerTestUtils.createFolder(sourceFolderPath, descriptorFileName, true);
+    FileUtils.writeStringToFile(new File(sourceFolderPath.toFile(), descriptorFileName),
+                                "{ name: lala, minMuleVersion: 4.0.0, classLoaderModelLoaderDescriptor: { id: mule } }",
+                                (String) null);
 
     Path pomPropertiesDestinationPath =
-        projectTargetFolder.getRoot().toPath().resolve(PackagerTestUtils.META_INF).resolve(
-                                                                                           PackagerTestUtils.MAVEN)
+        projectTargetFolder.toPath().resolve(PackagerTestUtils.META_INF).resolve(PackagerTestUtils.MAVEN)
             .resolve(GROUP_ID).resolve(ARTIFACT_ID);
     PackagerTestUtils.createEmptyFolder(pomPropertiesDestinationPath);
 
-    Path descriptorDestinationPath = projectTargetFolder.getRoot().toPath().resolve(PackagerTestUtils.META_INF).resolve(
-                                                                                                                        PackagerTestUtils.MULE_ARTIFACT);
+    Path descriptorDestinationPath =
+        projectTargetFolder.toPath().resolve(PackagerTestUtils.META_INF).resolve(PackagerTestUtils.MULE_ARTIFACT);
     PackagerTestUtils.createEmptyFolder(descriptorDestinationPath);
 
     contentGenerator.createDescriptors();
@@ -279,7 +281,7 @@ public class ContentGeneratorTest {
         .withVersion(VERSION)
         .withPackaging(PackagingType.MULE_POLICY.toString())
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
-        .withBuildDirectory(projectTargetFolder.getRoot().toPath()).build();
+        .withBuildDirectory(projectTargetFolder.toPath()).build();
     contentGenerator = new MuleContentGenerator(info);
 
     String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
@@ -287,15 +289,18 @@ public class ContentGeneratorTest {
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
     PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
     PackagerTestUtils.createFolder(sourceFolderPath, descriptorFileName, true);
+    FileUtils.writeStringToFile(new File(sourceFolderPath.toFile(), descriptorFileName),
+                                "{ name: lala, minMuleVersion: 4.0.0, classLoaderModelLoaderDescriptor: { id: mule } }",
+                                (String) null);
 
     Path pomPropertiesDestinationPath =
-        projectTargetFolder.getRoot().toPath().resolve(PackagerTestUtils.META_INF).resolve(
-                                                                                           PackagerTestUtils.MAVEN)
+        projectTargetFolder.toPath().resolve(PackagerTestUtils.META_INF).resolve(
+                                                                                 PackagerTestUtils.MAVEN)
             .resolve(GROUP_ID).resolve(ARTIFACT_ID);
     PackagerTestUtils.createEmptyFolder(pomPropertiesDestinationPath);
 
-    Path descriptorDestinationPath = projectTargetFolder.getRoot().toPath().resolve(PackagerTestUtils.META_INF).resolve(
-                                                                                                                        PackagerTestUtils.MULE_ARTIFACT);
+    Path descriptorDestinationPath = projectTargetFolder.toPath().resolve(PackagerTestUtils.META_INF).resolve(
+                                                                                                              PackagerTestUtils.MULE_ARTIFACT);
     PackagerTestUtils.createEmptyFolder(descriptorDestinationPath);
 
     contentGenerator.createDescriptors();
@@ -313,7 +318,7 @@ public class ContentGeneratorTest {
         .withVersion(VERSION)
         .withPackaging(PackagingType.MULE_DOMAIN.toString())
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
-        .withBuildDirectory(projectTargetFolder.getRoot().toPath()).build();
+        .withBuildDirectory(projectTargetFolder.toPath()).build();
     contentGenerator = new MuleContentGenerator(info);
 
     String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
@@ -321,15 +326,18 @@ public class ContentGeneratorTest {
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
     PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
     PackagerTestUtils.createFolder(sourceFolderPath, descriptorFileName, true);
+    FileUtils.writeStringToFile(new File(sourceFolderPath.toFile(), descriptorFileName),
+                                "{ name: lala, minMuleVersion: 4.0.0, classLoaderModelLoaderDescriptor: { id: mule } }",
+                                (String) null);
 
     Path pomPropertiesDestinationPath =
-        projectTargetFolder.getRoot().toPath().resolve(PackagerTestUtils.META_INF).resolve(
-                                                                                           PackagerTestUtils.MAVEN)
+        projectTargetFolder.toPath().resolve(PackagerTestUtils.META_INF).resolve(
+                                                                                 PackagerTestUtils.MAVEN)
             .resolve(GROUP_ID).resolve(ARTIFACT_ID);
     PackagerTestUtils.createEmptyFolder(pomPropertiesDestinationPath);
 
-    Path descriptorDestinationPath = projectTargetFolder.getRoot().toPath().resolve(PackagerTestUtils.META_INF).resolve(
-                                                                                                                        PackagerTestUtils.MULE_ARTIFACT);
+    Path descriptorDestinationPath = projectTargetFolder.toPath().resolve(PackagerTestUtils.META_INF).resolve(
+                                                                                                              PackagerTestUtils.MULE_ARTIFACT);
     PackagerTestUtils.createEmptyFolder(descriptorDestinationPath);
 
     contentGenerator.createDescriptors();
@@ -362,7 +370,7 @@ public class ContentGeneratorTest {
     List<Artifact> dependencies = getDependencies();
     expectedClassLoaderModel.setDependencies(dependencies);
     File classloaderModelJsonFile =
-        MuleContentGenerator.createClassLoaderModelJsonFile(expectedClassLoaderModel, projectTargetFolder.getRoot());
+        MuleContentGenerator.createClassLoaderModelJsonFile(expectedClassLoaderModel, projectTargetFolder);
     assertThat("Classloader model json file name is incorrect",
                classloaderModelJsonFile.getName().endsWith(CLASSLOADER_MODEL_JSON_FILE_NAME), is(true));
     ClassLoaderModel actualClassloaderModel = MuleContentGenerator.createClassLoaderModelFromJson(classloaderModelJsonFile);

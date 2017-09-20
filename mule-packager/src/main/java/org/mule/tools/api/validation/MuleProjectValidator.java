@@ -25,7 +25,6 @@ import org.mule.tools.api.util.Project;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
-import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 
 /**
  * Ensures the project is valid
@@ -46,9 +45,13 @@ public class MuleProjectValidator extends AbstractProjectValidator {
   @Override
   protected void additionalValidation() throws ValidationException {
     isProjectStructureValid(packagingType, projectBaseDir);
-    isDescriptorFilePresent();
+    validateDescriptorFile(projectBaseDir);
     validateSharedLibraries(sharedLibraries, dependencyProject.getDependencies());
     validateReferencedDomainsIfPresent(dependencyProject.getDependencies());
+  }
+
+  protected void validateDescriptorFile(Path projectBaseDir) throws ValidationException {
+    MuleArtifactJsonValidator.validate(projectBaseDir);
   }
 
   /**
@@ -91,28 +94,13 @@ public class MuleProjectValidator extends AbstractProjectValidator {
    * It validates the project folder structure is valid
    * 
    * @return true if the project's structure is valid
-   * @throws ValidationException if the project's structure is invalid
+   * @throws ValidationException if the project structure is invalid
    */
-  public static Boolean isProjectStructureValid(String packagingType, Path projectBaseDir) throws ValidationException {
+  public static void isProjectStructureValid(String packagingType, Path projectBaseDir) throws ValidationException {
     File mainSrcApplication = mainSrcApplication(packagingType, projectBaseDir);
     if (!mainSrcApplication.exists()) {
       throw new ValidationException("The folder " + mainSrcApplication.getAbsolutePath() + " is mandatory");
     }
-    return true;
-  }
-
-  /**
-   * It validates that the mandatory descriptor files are present
-   * 
-   * @return true if the project's descriptor files are preset
-   * @throws ValidationException if the project's descriptor files are missing
-   */
-  public Boolean isDescriptorFilePresent() throws ValidationException {
-    String errorMessage = "Invalid Mule project. Missing %s file, it must be present in the root of application";
-    if (!projectBaseDir.resolve(MULE_ARTIFACT_JSON).toFile().exists()) {
-      throw new ValidationException(String.format(errorMessage, MULE_ARTIFACT_JSON));
-    }
-    return true;
   }
 
   /**

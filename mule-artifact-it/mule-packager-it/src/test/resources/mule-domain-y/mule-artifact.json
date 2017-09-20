@@ -1,0 +1,17 @@
+{
+  "name": "example-package",
+  "minMuleVersion": "4.0.0",
+  "redeploymentEnabled": "true",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedPackages": [],
+      "exportedResources": []
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  },
+  "configs": []
+}

@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static org.mule.tools.api.packager.sources.DefaultValuesMuleArtifactJsonGenerator.generate;
 import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
@@ -105,8 +106,8 @@ public abstract class ContentGenerator {
     Path originPath = projectInformation.getProjectBaseFolder().resolve(MULE_ARTIFACT_JSON);
     Path destinationPath = projectInformation.getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value());
     String destinationFileName = originPath.getFileName().toString();
-
     copyFile(originPath, destinationPath, destinationFileName);
+    generate(projectInformation.getProjectBaseFolder());
   }
 
 }

@@ -23,6 +23,7 @@
 
         <mule.version>4.0.0-SNAPSHOT</mule.version>
         <mule.core.version>${mule.version}</mule.core.version>
+        <mule.api.version>1.0.0-SNAPSHOT</mule.api.version>
 
         <mule.maven.client.impl.version>1.0.0-SNAPSHOT</mule.maven.client.impl.version>
 
@@ -245,6 +246,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-exec</artifactId>
                 <version>${commons.exec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mule.runtime</groupId>
+                <artifactId>mule-api</artifactId>
+                <version>${mule.api.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

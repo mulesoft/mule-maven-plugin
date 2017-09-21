@@ -9,9 +9,9 @@
  */
 package integrationTests.mojo;
 
+import static integrationTests.FileTreeMatcher.hasSameTreeStructure;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static integrationTests.FileTreeMatcher.hasSameTreeStructure;
 
 import java.io.File;
 import java.io.IOException;
@@ -83,24 +83,20 @@ public class ProcessSourcesMojoTest extends MojoTest {
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.executeGoal(PROCESS_SOURCES);
 
-    File generatedClassloaderModelFile =
-        getFile(GENERATED_CLASSLOADER_MODEL_FILE);
+    File generatedClassloaderModelFile = getFile(GENERATED_CLASSLOADER_MODEL_FILE);
     List<String> generatedClassloaderModelFileContent = Files.readAllLines(generatedClassloaderModelFile.toPath());
 
-    File expectedClassloaderModelFile =
-        getFile(EXPECTED_CLASSLOADER_MODEL_FILE);
+    File expectedClassloaderModelFile = getFile(EXPECTED_CLASSLOADER_MODEL_FILE);
     List<String> expectedClassloaderModelFileContent = Files.readAllLines(expectedClassloaderModelFile.toPath());
 
     assertThat("The classloader-model.json file is different from the expected", generatedClassloaderModelFileContent,
                equalTo(expectedClassloaderModelFileContent));
 
-    File generatedMulePluginAClassloaderModelFile =
-        getFile(GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
+    File generatedMulePluginAClassloaderModelFile = getFile(GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
     List<String> generatedMulePluginAClassloaderModelFileContent =
         Files.readAllLines(generatedMulePluginAClassloaderModelFile.toPath());
 
-    File expectedMulePluginAClassloaderModelFile =
-        getFile(EXPECTED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
+    File expectedMulePluginAClassloaderModelFile = getFile(EXPECTED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
     List<String> expectedMulePluginAClassloaderModelFileContent =
         Files.readAllLines(expectedMulePluginAClassloaderModelFile.toPath());
 

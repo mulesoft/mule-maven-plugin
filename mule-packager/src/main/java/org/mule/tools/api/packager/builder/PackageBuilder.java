@@ -10,11 +10,10 @@
 
 package org.mule.tools.api.packager.builder;
 
+import java.io.IOException;
+import java.nio.file.Path;
 
 import org.codehaus.plexus.archiver.ArchiverException;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Builder for packages.
@@ -22,14 +21,24 @@ import java.io.IOException;
 public interface PackageBuilder {
 
   /**
-   * Cretes the package.
-   * @param destinationFile file to be created with the content of the package.
-   * @param originFolder location containing the resources that are going to be shipped in the package. It is expected that the
-   *        folder structure in this location is going to have the same structure of the contents of the generated package.
-   * @return
+   * Creates a package and it leaves it in the destinationPath. It does so based on a folder naming convention, it will look for
+   * them resources properly named in the originFolderPath.
+   * 
+   * @param originFolderPath folder location where to look for resources. It's expected that the folder structure follows a
+   *        predefined structure.
+   * @param destinationPath path where to leave the created package.
+   * @throws ArchiverException
+   * @throws IOException
    */
-  void createPackage(File destinationFile, String originFolder)
-      throws ArchiverException, IOException;
+  void createPackage(Path originFolderPath, Path destinationPath) throws ArchiverException, IOException;
 
-  void createDeployableFile() throws IOException;
+  /**
+   * Creates a package and it leaves it in the destinationPath.
+   * 
+   * @param destinationPath path where to leave the created package.
+   * @throws ArchiverException
+   * @throws IOException
+   */
+  void createPackage(Path destinationPath) throws ArchiverException, IOException;
+
 }

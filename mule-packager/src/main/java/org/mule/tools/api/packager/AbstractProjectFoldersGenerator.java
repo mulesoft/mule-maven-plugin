@@ -46,6 +46,10 @@ public abstract class AbstractProjectFoldersGenerator {
     return artifactId;
   }
 
+  public PackagingType getPackagingType() {
+    return packagingType;
+  }
+
   /**
    * Generates all the folders required for a project to be properly build If any of the folders is already present on the
    * targetFolder they will not be overwritten

@@ -55,6 +55,9 @@ public class PackageMojo extends AbstractMuleMojo {
   @Parameter(defaultValue = "${attachMuleSources}")
   protected boolean attachMuleSources = false;
 
+  @Parameter(defaultValue = "${testPackage}")
+  protected boolean testPackage = false;
+
 
   public void execute() throws MojoExecutionException, MojoFailureException {
     long start = System.currentTimeMillis();
@@ -63,7 +66,7 @@ public class PackageMojo extends AbstractMuleMojo {
     String targetFolder = project.getBuild().getDirectory();
     File destinationFile = getDestinationFile(targetFolder);
     try {
-      getPackageBuilder().createPackage(destinationFile, targetFolder);
+      getPackageBuilder().createPackage(Paths.get(targetFolder), destinationFile.toPath());
     } catch (ArchiverException | IOException e) {
       throw new MojoExecutionException("Exception creating the Mule App", e);
     }
@@ -97,7 +100,7 @@ public class PackageMojo extends AbstractMuleMojo {
   }
 
   protected PackageBuilder getPackageBuilder() {
-    PackagingOptions options = new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources);
+    PackagingOptions options = new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage);
     return PackageBuilderFactory.create(getPackagingType(), options);
   }
 

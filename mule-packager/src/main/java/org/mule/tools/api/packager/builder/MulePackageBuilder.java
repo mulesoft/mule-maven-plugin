@@ -19,17 +19,17 @@ import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
 import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
+import static org.mule.tools.api.packager.structure.FolderNames.TEST_CLASSES;
+import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.codehaus.plexus.archiver.ArchiverException;
 
-import org.mule.tools.api.packager.archiver.AbstractArchiver;
 import org.mule.tools.api.packager.archiver.MuleArchiver;
 import org.mule.tools.api.packager.packaging.PackagingOptions;
 
@@ -38,24 +38,77 @@ import org.mule.tools.api.packager.packaging.PackagingOptions;
  */
 public class MulePackageBuilder implements PackageBuilder {
 
+  private PackagingOptions packagingOptions;
+
   private File classesFolder = null;
+  private File testClassesFolder = null;
+  private File testMule = null;
+
   private File repositoryFolder = null;
 
+  // All this is META-INF
   private File mavenFolder = null;
   private File muleSrcFolder = null;
   private File muleArtifactFolder = null;
 
-  private List<File> rootResources = new ArrayList<>();
+  protected List<File> rootResources = new ArrayList<>();
 
-  private File destinationFile;
   private MuleArchiver archiver = null;
-  private PackagingOptions packagingOptions;
 
-  public MuleArchiver getMuleArchiver() {
-    if (archiver == null) {
-      archiver = new MuleArchiver();
-    }
-    return archiver;
+  public MulePackageBuilder withClasses(File folder) {
+    checkArgument(folder != null, "The folder must not be null");
+    checkArgument(folder.exists(), "The folder must must exists");
+    classesFolder = folder;
+    return this;
+  }
+
+  public MulePackageBuilder withTestClasses(File folder) {
+    checkArgument(folder != null, "The folder must not be null");
+    checkArgument(folder.exists(), "The folder must must exists");
+    testClassesFolder = folder;
+    return this;
+  }
+
+  public MulePackageBuilder withTestMule(File folder) {
+    checkArgument(folder != null, "The folder must not be null");
+    checkArgument(folder.exists(), "The folder must must exists");
+    testMule = folder;
+    return this;
+  }
+
+  public MulePackageBuilder withMaven(File folder) {
+    checkArgument(folder != null, "The folder must not be null");
+    checkArgument(folder.exists(), "The folder must must exists");
+    mavenFolder = folder;
+    return this;
+  }
+
+  public MulePackageBuilder withMuleSrc(File folder) {
+    checkArgument(folder != null, "The folder must not be null");
+    checkArgument(folder.exists(), "The folder must must exists");
+    muleSrcFolder = folder;
+    return this;
+  }
+
+  public MulePackageBuilder withMuleArtifact(File folder) {
+    checkArgument(folder != null, "The folder must not be null");
+    checkArgument(folder.exists(), "The folder must must exists");
+    muleArtifactFolder = folder;
+    return this;
+  }
+
+  public MulePackageBuilder withRepository(File folder) {
+    checkArgument(folder != null, "The folder must not be null");
+    checkArgument(folder.exists(), "The folder must must exists");
+    repositoryFolder = folder;
+    return this;
+  }
+
+  public MulePackageBuilder withRootResource(File resource) {
+    checkArgument(resource != null, "The resource must not be null");
+    checkArgument(resource.exists(), "The resource must must exists");
+    rootResources.add(resource);
+    return this;
   }
 
   public MulePackageBuilder withPackagingOptions(PackagingOptions packagingOptions) {
@@ -64,110 +117,10 @@ public class MulePackageBuilder implements PackageBuilder {
     return this;
   }
 
-  public MulePackageBuilder withArchiver(AbstractArchiver archiver) {
-    checkNotNull(archiver, "AbstractArchiver must not be null");
-    this.archiver = (MuleArchiver) archiver;
+  public MulePackageBuilder withArchiver(MuleArchiver archiver) {
+    checkNotNull(archiver, "The archiver must not be null");
+    this.archiver = archiver;
     return this;
-  }
-
-  public MulePackageBuilder withClasses(File folder) {
-    checkArgument(folder != null, "The folder must not be null");
-    classesFolder = folder;
-    return this;
-  }
-
-  public MulePackageBuilder withMaven(File folder) {
-    checkArgument(folder != null, "The folder must not be null");
-    mavenFolder = folder;
-    return this;
-  }
-
-  public MulePackageBuilder withMuleSrc(File folder) {
-    checkArgument(folder != null, "The folder must not be null");
-    muleSrcFolder = folder;
-    return this;
-  }
-
-  public MulePackageBuilder withMuleArtifact(File folder) {
-    checkArgument(folder != null, "The folder must not be null");
-    muleArtifactFolder = folder;
-    return this;
-  }
-
-  public MulePackageBuilder withRepository(File folder) {
-    checkArgument(folder != null, "The folder must not be null");
-    repositoryFolder = folder;
-    return this;
-  }
-
-  public MulePackageBuilder withRootResource(File resource) {
-    checkArgument(resource != null, "The resource must not be null");
-    rootResources.add(resource);
-    return this;
-  }
-
-  /**
-   * @param file file to be created with the content of the app
-   * @return
-   */
-  public PackageBuilder withDestinationFile(File file) {
-    checkArgument(file != null, "The file must not be null");
-    checkArgument(!file.exists(), "The file must not be duplicated");
-    this.destinationFile = file;
-    return this;
-  }
-
-  /**
-   * It wires all the possible folders that should be properly name from the workingDirectory to the package.
-   * 
-   * @param workingDirectory a directory containing all the folders properly named
-   * @return a PackageBuilder
-   */
-  public PackageBuilder fromWorkingDirectory(Path workingDirectory) {
-    // TODO, ensure the paths exits or use the validator
-    return this
-        .withClasses(workingDirectory.resolve(CLASSES.value()).toFile())
-        .withMaven(workingDirectory.resolve(META_INF.value()).resolve(MAVEN.value()).toFile())
-        .withMuleArtifact(workingDirectory.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile())
-        .withMuleSrc(workingDirectory.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile())
-        .withRepository(workingDirectory.resolve(REPOSITORY.value()).toFile());
-  }
-
-  /**
-   * Creates the application package.
-   *
-   * It does so using the provided directories. If a directory does not exits or a directory path is not an actual directory then
-   * such element will not be added to the final package.
-   *
-   * @throws IOException
-   */
-  public void createDeployableFile() throws IOException {
-    checkState(destinationFile != null, "The destination file has not been set");
-
-    MuleArchiver archiver = getMuleArchiver();
-
-    if (null != classesFolder && classesFolder.exists() && classesFolder.isDirectory()) {
-      archiver.addToRoot(classesFolder, null, null);
-    }
-
-    if (null != mavenFolder && mavenFolder.exists() && mavenFolder.isDirectory()) {
-      archiver.addMaven(mavenFolder, null, null);
-    }
-
-    if (null != muleArtifactFolder && muleArtifactFolder.exists() && muleArtifactFolder.isDirectory()) {
-      archiver.addMuleArtifact(muleArtifactFolder, null, null);
-    }
-
-    if (null != muleSrcFolder && muleSrcFolder.exists() && muleSrcFolder.isDirectory()) {
-      archiver.addMuleSrc(muleSrcFolder, null, null);
-    }
-
-    if (null != repositoryFolder && repositoryFolder.exists() && repositoryFolder.isDirectory()) {
-      archiver.addRepository(repositoryFolder, null, null);
-    }
-
-    archiver.setDestFile(destinationFile);
-    archiver.createArchive();
   }
 
   /**
@@ -211,37 +164,119 @@ public class MulePackageBuilder implements PackageBuilder {
    *                 └── pom.xml
    * </pre>
    *
-   * @param destinationFile file that represents the resource that is going to represent the final package.
-   * @param originFolder folder containing the source files.
+   * @param originFolderPath folder containing the source files.
+   * @param destinationPath location where to leave the final package.
    * @throws ArchiverException
    * @throws IOException
    */
-  public void createPackage(File destinationFile, String originFolder)
-      throws ArchiverException, IOException {
-    checkState(packagingOptions != null, "Packaging options should not be null when creating a mule package");
+  @Override
+  public void createPackage(Path originFolderPath, Path destinationPath) throws ArchiverException, IOException {
+    checkArgument(originFolderPath != null, "The origin path must not be null");
+    checkArgument(originFolderPath.toFile().exists(), "The origin path must exists");
 
-    Path originFolderPath = Paths.get(originFolder);
     Path metaInfPath = originFolderPath.resolve(META_INF.value());
+    this
+        .withClasses(originFolderPath.resolve(CLASSES.value()).toFile())
+        .withMaven(metaInfPath.resolve(MAVEN.value()).toFile())
+        .withMuleArtifact(metaInfPath.resolve(MULE_ARTIFACT.value()).toFile())
+        .withTestClasses(originFolderPath.resolve(TEST_CLASSES.value()).toFile())
+        .withTestMule(originFolderPath.resolve(TEST_MULE.value()).toFile())
+        .withRepository(originFolderPath.resolve(REPOSITORY.value()).toFile())
+        .withMuleSrc(metaInfPath.resolve(MULE_SRC.value()).toFile());
 
-    MulePackageBuilder builder = (MulePackageBuilder) this.withDestinationFile(destinationFile);
+    this.createArchive(destinationPath);
+  }
+
+  @Override
+  public void createPackage(Path destinationPath) throws ArchiverException, IOException {
+    createArchive(destinationPath);
+  }
+
+  /**
+   * Creates the application package.
+   *
+   * It does so using the provided directories. If a directory does not exits or a directory path is not an actual directory then
+   * such element will not be added to the final package.
+   *
+   * @throws IOException
+   */
+  private void createArchive(Path destinationPath) throws IOException {
+    checkArgument(destinationPath != null, "The destination path must not be null");
+    checkArgument(!destinationPath.toFile().exists(), "The destination file must not be duplicated");
+
+    validateState(packagingOptions);
+
+    MuleArchiver archiver = getArchiver();
     if (!packagingOptions.isOnlyMuleSources()) {
-      builder
-          .withClasses(originFolderPath.resolve(CLASSES.value()).toFile())
-          .withMaven(metaInfPath.resolve(MAVEN.value()).toFile())
-          .withMuleArtifact(metaInfPath.resolve(MULE_ARTIFACT.value()).toFile());
+      archiver.addToRoot(classesFolder, null, null);
+      archiver.addMaven(mavenFolder, null, null);
+      archiver.addMuleArtifact(muleArtifactFolder, null, null);
+
+      if (packagingOptions.isTestPackage()) {
+        archiver.addToRoot(testClassesFolder, null, null);
+        archiver.addToRoot(testMule, null, null);
+      }
 
       if (!packagingOptions.isLightweightPackage()) {
-        builder.withRepository(originFolderPath.resolve(REPOSITORY.value()).toFile());
+        archiver.addRepository(repositoryFolder, null, null);
       }
 
       if (packagingOptions.isAttachMuleSources()) {
-        builder.withMuleSrc(metaInfPath.resolve(MULE_SRC.value()).toFile());
+        archiver.addMuleSrc(muleSrcFolder, null, null);
       }
     } else {
-      builder.withMuleSrc(metaInfPath.resolve(MULE_SRC.value()).toFile());
+      archiver.addMuleSrc(muleSrcFolder, null, null);
     }
 
-    builder.createDeployableFile();
+    archiver.setDestFile(destinationPath.toFile());
+    archiver.createArchive();
+  }
+
+  /**
+   * Ensures that all the required folders have been provided based on the {@link PackagingOptions}
+   * 
+   * @param packagingOptions
+   */
+  private void validateState(PackagingOptions packagingOptions) {
+    checkState(packagingOptions != null, "Packaging options should not be null when creating a mule package");
+
+    if (!packagingOptions.isOnlyMuleSources()) {
+      isValidFolder(classesFolder, "The classes folder has not been defined");
+      isValidFolder(mavenFolder, "The maven folder has not been defined");
+      isValidFolder(muleArtifactFolder, "The mule-artifact folder has not been defined");
+
+      if (packagingOptions.isTestPackage()) {
+        isValidFolder(testClassesFolder, "The test-classes folder has not been defined");
+        isValidFolder(testMule, "The test-mule folder has not been defined");
+      }
+
+      if (!packagingOptions.isLightweightPackage()) {
+        isValidFolder(repositoryFolder, "The repository folder has not been defined");
+      }
+
+      if (packagingOptions.isAttachMuleSources()) {
+        isValidFolder(muleSrcFolder, "The mules-src folder has not been defined");
+      }
+    } else {
+      isValidFolder(muleSrcFolder, "The mules-src folder has not been defined");
+    }
+  }
+
+  /**
+   * Ensures the provided file is a valid folder.
+   * 
+   * @param file the file to validate
+   * @param message the error message to show
+   */
+  private void isValidFolder(File file, String message) {
+    checkState(file != null && file.exists() && file.isDirectory(), message);
+  }
+
+  protected MuleArchiver getArchiver() {
+    if (archiver == null) {
+      archiver = new MuleArchiver();
+    }
+    return archiver;
   }
 
 }

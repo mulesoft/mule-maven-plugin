@@ -35,7 +35,7 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
   private static final String TYPE = "jar";
   private static final String VERSION = "1.0";
   private static final String LIGHT_PACKAGE_CLASSIFIER = "light-package";
-  private static final java.lang.String FINAL_NAME = ARTIFACT_ID + "-" + VERSION;
+  private static final String FINAL_NAME = ARTIFACT_ID + "-" + VERSION;
 
   @Rule
   public TemporaryFolder targetFolder = new TemporaryFolder();
@@ -55,7 +55,6 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
 
     destinationFile = new File(buildFolderFolder.getRoot().getAbsolutePath(), PACKAGE_NAME + "." + TYPE);
 
-    when(packageBuilderMock.withDestinationFile(any())).thenReturn(packageBuilderMock);
     when(packageBuilderMock.withClasses(any())).thenReturn(packageBuilderMock);
     when(packageBuilderMock.withRepository(any())).thenReturn(packageBuilderMock);
     when(packageBuilderMock.withMuleArtifact(any())).thenReturn(packageBuilderMock);

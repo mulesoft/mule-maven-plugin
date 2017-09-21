@@ -23,6 +23,8 @@ public class PackagerTestUtils {
 
   public static final String CLASSES = "classes";
 
+  public static final String TEST_CLASSES = "test-classes";
+
   public static final String SRC = "src";
   public static final String MAIN = "main";
 
@@ -69,5 +71,6 @@ public class PackagerTestUtils {
   public static void assertFileDoesNotExists(Path path) {
     assertThat("The file" + path.toString() + " should not not exits", path.toFile().exists(), is(false));
   }
+
 
 }

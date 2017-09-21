@@ -10,10 +10,10 @@
 
 package org.mule.tools.api.packager.builder;
 
+import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BUNDLE;
+
 import org.mule.tools.api.packager.packaging.PackagingOptions;
 import org.mule.tools.api.packager.packaging.PackagingType;
-
-import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BUNDLE;
 
 /**
  * Factory for package builders.

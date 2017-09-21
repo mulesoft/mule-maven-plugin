@@ -10,10 +10,14 @@
 
 package org.mule.tools.api.packager;
 
-import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.packager.structure.FolderNames;
+import static org.mule.tools.api.packager.structure.FolderNames.APPLICATIONS;
+import static org.mule.tools.api.packager.structure.FolderNames.DOMAIN;
+import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 
 import java.nio.file.Path;
+
+import org.mule.tools.api.packager.packaging.PackagingType;
 
 /**
  * Generates the basic working folder structure to create a domain bundle package.
@@ -26,9 +30,9 @@ public class DomainBundleProjectFoldersGenerator extends AbstractProjectFoldersG
 
   @Override
   public void generate(Path targetFolder) {
-    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), FolderNames.DOMAIN.value());
-    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), FolderNames.APPLICATIONS.value());
-    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), FolderNames.META_INF.value(), FolderNames.MAVEN.value(),
-                            getGroupId(), getArtifactId());
+    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), DOMAIN.value());
+    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), APPLICATIONS.value());
+    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), META_INF.value(), MAVEN.value(), getGroupId(),
+                            getArtifactId());
   }
 }

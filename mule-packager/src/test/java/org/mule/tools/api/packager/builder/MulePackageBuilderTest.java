@@ -10,11 +10,11 @@
 
 package org.mule.tools.api.packager.builder;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,269 +29,602 @@ import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import org.mule.tools.api.packager.MuleProjectFoldersGenerator;
 import org.mule.tools.api.packager.archiver.MuleArchiver;
-import org.mule.tools.api.packager.builder.MulePackageBuilder;
 import org.mule.tools.api.packager.packaging.PackagingOptions;
+import org.mule.tools.api.packager.packaging.PackagingType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MulePackageBuilderTest {
 
-  private File destinationFileMock;
-  private MulePackageBuilder packageBuilder;
-  private MulePackageBuilder packageBuilderSpy;
+  private static final String GROUP_ID = "com.fake.group";
+  private static final String ARTIFACT_ID = "fake-id";
+  private static final PackagingType PACKAGING_TYPE = PackagingType.MULE_APPLICATION;
+
+  private MuleArchiver archiverMock;
+
+  private File destinationFile;
+
+  private MulePackageBuilder builder;
 
   @Rule
-  public TemporaryFolder targetFileFolder = new TemporaryFolder();
+  public TemporaryFolder fakeTargetFolder = new TemporaryFolder();
+
   @Rule
-  public TemporaryFolder destinationFileParent = new TemporaryFolder();
-  private File destinationFile;
+  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void setUp() throws IOException {
-    destinationFileMock = mock(File.class);
+    archiverMock = mock(MuleArchiver.class);
 
-    destinationFileParent.create();
+    new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PACKAGING_TYPE).generate(fakeTargetFolder.getRoot().toPath());
 
-    packageBuilder = new MulePackageBuilder();
-    packageBuilder.withClasses(targetFileFolder.newFolder("classes"));
-    packageBuilder.withRepository(targetFileFolder.newFolder("repository"));
-    packageBuilder.withMuleArtifact(targetFileFolder.newFile("mule-artifact.json"));
-    packageBuilder.withMaven(targetFileFolder.newFolder("maven"));
-    packageBuilder.withMuleSrc(targetFileFolder.newFolder("src/main/mule"));
-    destinationFile = new File(destinationFileParent.getRoot(), "destination.jar");
+    destinationFile = new File(fakeTargetFolder.getRoot(), "destination.jar");
+
+    builder = new MulePackageBuilder();
+    builder.withArchiver(archiverMock);
 
     if (destinationFile.exists()) {
       destinationFile.delete();
     }
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void setNullClassesFolderTest() {
-    this.packageBuilder.withClasses(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void setNullTestClassesFolderTest() {
-    this.packageBuilder.withTestClasses(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void setNullTestMuleFolderTest() {
-    this.packageBuilder.withTestMule(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void setNullMavenFolderTest() {
-    this.packageBuilder.withMaven(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void setNullMuleSrcFolderTest() {
-    this.packageBuilder.withMuleSrc(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void setNullMuleArtifactFolderTest() {
-    this.packageBuilder.withMuleArtifact(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void setNullRepositoryFolderTest() {
-    this.packageBuilder.withRepository(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void setNullRootResourceFileTest() {
-    this.packageBuilder.withRootResource(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void setNullPackagingOptionsTest() {
-    this.packageBuilder.withPackagingOptions(null);
-  }
-
-  @Test(expected = NullPointerException.class)
-  public void setNullArchiverTest() {
-    this.packageBuilder.withArchiver(null);
+  @Test
+  public void setNullClassesFolder() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The folder must not be null");
+    this.builder.withClasses(null);
   }
 
   @Test
-  public void addRootResourcesTest() throws NoSuchFieldException, IllegalAccessException {
-    Field field = MulePackageBuilder.class.getDeclaredField("rootResources");
-    field.setAccessible(true);
-//    List<File> actualRootResourcesList = (List<File>) field.get(this.packageBuilder);
-    List<File> actualRootResourcesList = packageBuilder.rootResources;
+  public void setNonExistentClassesFolder() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The folder must must exists");
+    builder.withClasses(new File("fake"));
+  }
 
+  @Test
+  public void setNullTestClassesFolder() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The folder must not be null");
+    this.builder.withTestClasses(null);
+  }
 
+  @Test
+  public void setNonExistentTestClassesFolder() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The folder must must exists");
+    this.builder.withTestClasses(new File("fake"));
+  }
+
+  @Test
+  public void setNullTestMuleFolder() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The folder must not be null");
+    this.builder.withTestMule(null);
+  }
+
+  @Test
+  public void setNonExistentTestMuleFolder() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The folder must must exists");
+    this.builder.withTestMule(new File("fake"));
+  }
+
+  @Test
+  public void setNullMavenFolder() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The folder must not be null");
+    this.builder.withMaven(null);
+  }
+
+  @Test
+  public void setNonExistentMavenFolder() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The folder must must exists");
+    this.builder.withMaven(new File("fake"));
+  }
+
+  @Test
+  public void setNullMuleSrcFolder() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The folder must not be null");
+    this.builder.withMuleSrc(null);
+  }
+
+  @Test
+  public void setNonExistentMuleSrcFolder() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The folder must must exists");
+    this.builder.withMuleSrc(new File("fake"));
+  }
+
+  @Test
+  public void setNullMuleArtifactFolderTest() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The folder must not be null");
+    this.builder.withMuleArtifact(null);
+  }
+
+  @Test
+  public void setNonExistentMuleArtifactFolderTest() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The folder must must exists");
+    this.builder.withMuleArtifact(new File("fake"));
+  }
+
+  @Test
+  public void setNullRepositoryFolder() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The folder must not be null");
+    this.builder.withRepository(null);
+  }
+
+  @Test
+  public void setNonExistentRepositoryFolder() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The folder must must exists");
+    this.builder.withRepository(new File("fake"));
+  }
+
+  @Test
+  public void setNullRootResourceFile() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The resource must not be null");
+    this.builder.withRootResource(null);
+  }
+
+  @Test
+  public void setNonExistentRootResourceFile() {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The resource must must exists");
+    this.builder.withRootResource(new File("fake"));
+  }
+
+  @Test
+  public void addRootResources() throws NoSuchFieldException, IllegalAccessException {
+    List<File> actualRootResourcesList = builder.rootResources;
     assertTrue("The list of root resources should be empty", actualRootResourcesList.isEmpty());
 
-    packageBuilder.withRootResource(mock(File.class));
+    File rootResourceMock = mock(File.class);
+    when(rootResourceMock.exists()).thenReturn(true);
+    builder.withRootResource(rootResourceMock);
     assertEquals("The list of root resources should contain one element", 1, actualRootResourcesList.size());
   }
 
+  @Test(expected = NullPointerException.class)
+  public void setNullPackagingOptions() {
+    this.builder.withPackagingOptions(null);
+  }
 
+  @Test(expected = NullPointerException.class)
+  public void setNullArchiver() {
+    this.builder.withArchiver(null);
+  }
 
   @Test
-  public void setArchiverTest() {
-    Class expectedDefaultMuleArchiverClass = MuleArchiver.class;
-    // Class actualDefaultMuleArchiverClass = this.packageBuilder.getMuleArchiver().getClass();
-    // assertEquals("Expected and actual default mule org.mule.tools.artifact.archiver does not match",
-    // expectedDefaultMuleArchiverClass, actualDefaultMuleArchiverClass);
+  public void setArchiver() {
+    assertThat("Default archiver type is wrong", builder.getArchiver(), instanceOf(MuleArchiver.class));
 
     class MuleArchiverSubclass extends MuleArchiver {
-    };
-    Class expectedMuleArchiverClass = MuleArchiverSubclass.class;
-    this.packageBuilder.withArchiver(new MuleArchiverSubclass());
-    // Class actualMuleArchiverClass = this.packageBuilder.getMuleArchiver().getClass();
-    // assertEquals("Expected and actual mule org.mule.tools.artifact.archiver does not match", expectedMuleArchiverClass,
-    // actualMuleArchiverClass);
-  }
-
-
-
-
-
-
-  @Test(expected = IllegalArgumentException.class)
-  public void setNullDestinationFileTest() {
-    // this.packageBuilder.withDestinationFile(null);
+    }
+    builder.withArchiver(new MuleArchiverSubclass());
+    assertThat("archiver type is wrong", builder.getArchiver(), instanceOf(MuleArchiverSubclass.class));
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void setExistentDestinationFileTest() {
-    when(destinationFileMock.exists()).thenReturn(true);
-    // this.packageBuilder.withDestinationFile(destinationFileMock);
+  public void createPackageNullOriginFolderPath() throws IOException {
+    builder.createPackage(null, destinationFile.toPath());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void createPackageNonExistingOriginFolderPath() throws IOException {
+    builder.createPackage(new File("fake").toPath(), destinationFile.toPath());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void createPackageNullDestinationPath() throws IOException {
+    boolean onlyMuleSources = true;
+    boolean lightweightPackage = false;
+    boolean attachMuleSources = false;
+    boolean testPackage = false;
+
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
+
+    builder.createPackage(fakeTargetFolder.getRoot().toPath(), null);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void createPackageAlreadyExistingDestinationPath() throws IOException {
+    boolean onlyMuleSources = true;
+    boolean lightweightPackage = false;
+    boolean attachMuleSources = false;
+    boolean testPackage = false;
+
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
+
+    destinationFile.createNewFile();
+    builder.createPackage(fakeTargetFolder.getRoot().toPath(), destinationFile.toPath());
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void createPackageNoPackagingOptionsProvided() throws IOException {
+    builder.createPackage(fakeTargetFolder.getRoot().toPath(), destinationFile.toPath());
   }
 
   @Test
-  public void setDestinationFileTest() {
-    when(destinationFileMock.exists()).thenReturn(false);
-    // this.packageBuilder.withDestinationFile(destinationFileMock);
-    verify(destinationFileMock, times(1)).exists();
+  public void createPackageOnlyMuleSources() throws IOException {
+    boolean onlyMuleSources = true;
+    boolean lightweightPackage = false;
+    boolean attachMuleSources = false;
+    boolean testPackage = false;
+
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
+
+    builder.createPackage(fakeTargetFolder.getRoot().toPath(), destinationFile.toPath());
+
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+    verify(archiverMock, times(0)).addToRoot(targetPath.resolve(CLASSES.value()).toFile(), null, null);
+    verify(archiverMock, times(0)).addMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile(), null, null);
+    verify(archiverMock, times(0)).addMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
+                                                   null, null);
+    verify(archiverMock, times(1)).addMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(), null,
+                                              null);
+    verify(archiverMock, times(0)).addRepository(targetPath.resolve(REPOSITORY.value()).toFile(), null, null);
+    verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_MULE.value()).toFile(), null, null);
+    verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_CLASSES.value()).toFile(), null, null);
+
+    verify(archiverMock, times(1)).setDestFile(destinationFile);
+    verify(archiverMock, times(1)).createArchive();
   }
 
   @Test
-  public void createDeployableFileSettingClassesFolderTest() throws IOException {
-    File classesFolderMock = mock(File.class);
-    when(classesFolderMock.exists()).thenReturn(true);
-    when(classesFolderMock.isDirectory()).thenReturn(true);
-    this.packageBuilder.withClasses(classesFolderMock);
+  public void createPackageLightweight() throws IOException {
+    boolean onlyMuleSources = false;
+    boolean lightweightPackage = true;
+    boolean attachMuleSources = true;
+    boolean testPackage = false;
 
-    MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
-    this.packageBuilder.withArchiver(muleArchiverMock);
-    // this.packageBuilder.withDestinationFile(destinationFileMock);
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
 
-    // this.packageBuilder.createArchive();
+    builder.createPackage(fakeTargetFolder.getRoot().toPath(), destinationFile.toPath());
 
-    verify(muleArchiverMock, times(1)).addToRoot(classesFolderMock, null, null);
-    verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
-    verify(muleArchiverMock, times(1)).createArchive();
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+    verify(archiverMock, times(1)).addToRoot(targetPath.resolve(CLASSES.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
+                                                   null, null);
+    verify(archiverMock, times(1)).addMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(), null,
+                                              null);
+    verify(archiverMock, times(0)).addRepository(targetPath.resolve(REPOSITORY.value()).toFile(), null, null);
+    verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_MULE.value()).toFile(), null, null);
+    verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_CLASSES.value()).toFile(), null, null);
+
+    verify(archiverMock, times(1)).setDestFile(destinationFile);
+    verify(archiverMock, times(1)).createArchive();
   }
 
   @Test
-  public void fromWorkingDirectory() throws IOException {
-    Path workingDirectory = targetFileFolder.getRoot().toPath();
-    MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
+  public void createPackageAttachMuleSources() throws IOException {
+    boolean onlyMuleSources = false;
+    boolean lightweightPackage = false;
+    boolean attachMuleSources = true;
+    boolean testPackage = false;
 
-    packageBuilder = new MulePackageBuilder();
-    packageBuilder.withArchiver(muleArchiverMock);
-    // packageBuilder.withDestinationFile(destinationFileMock);
-    // packageBuilder.fromWorkingDirectory(workingDirectory);
 
-    workingDirectory.resolve(CLASSES.value()).toFile().mkdirs();
-    workingDirectory.resolve(META_INF.value()).resolve(MAVEN.value()).toFile().mkdirs();
-    workingDirectory.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile().mkdirs();
-    workingDirectory.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile().mkdirs();
-    workingDirectory.resolve(REPOSITORY.value()).toFile().mkdirs();
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
 
-    // packageBuilder.createArchive();
+    builder.createPackage(fakeTargetFolder.getRoot().toPath(), destinationFile.toPath());
 
-    verify(muleArchiverMock, times(1)).addToRoot(workingDirectory.resolve(CLASSES.value()).toFile(), null, null);
-    verify(muleArchiverMock, times(1)).addMaven(workingDirectory.resolve(META_INF.value()).resolve(MAVEN.value()).toFile(), null,
-                                                null);
-    verify(muleArchiverMock, times(1))
-        .addMuleArtifact(workingDirectory.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
-                         null, null);
-    verify(muleArchiverMock, times(1)).addMuleSrc(workingDirectory.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(),
-                                                  null, null);
-    verify(muleArchiverMock, times(1)).addRepository(workingDirectory.resolve(REPOSITORY.value()).toFile(), null, null);
-    verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
-    verify(muleArchiverMock, times(1)).createArchive();
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+    verify(archiverMock, times(1)).addToRoot(targetPath.resolve(CLASSES.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
+                                                   null, null);
+    verify(archiverMock, times(1)).addMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(), null,
+                                              null);
+    verify(archiverMock, times(1)).addRepository(targetPath.resolve(REPOSITORY.value()).toFile(), null, null);
+    verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_MULE.value()).toFile(), null, null);
+    verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_CLASSES.value()).toFile(), null, null);
+
+    verify(archiverMock, times(1)).setDestFile(destinationFile);
+    verify(archiverMock, times(1)).createArchive();
   }
 
   @Test
-  public void testPackagefromWorkingDirectory() throws IOException {
-    Path workingDirectory = targetFileFolder.getRoot().toPath();
-    MuleArchiver muleArchiverMock = mock(MuleArchiver.class);
+  public void createPackageTestPackage() throws IOException {
+    boolean onlyMuleSources = false;
+    boolean lightweightPackage = false;
+    boolean attachMuleSources = true;
+    boolean testPackage = true;
 
-    packageBuilder = new MulePackageBuilder();
-    packageBuilder.withArchiver(muleArchiverMock);
-    // packageBuilder.withDestinationFile(destinationFileMock);
-    // packageBuilder.fromWorkingDirectory(workingDirectory);
 
-    packageBuilder.withPackagingOptions(new PackagingOptions(false, false, true, true));
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
 
-    workingDirectory.resolve(CLASSES.value()).toFile().mkdirs();
-    workingDirectory.resolve(TEST_CLASSES.value()).toFile().mkdirs();
-    workingDirectory.resolve(TEST_MULE.value()).toFile().mkdirs();
-    workingDirectory.resolve(META_INF.value()).resolve(MAVEN.value()).toFile().mkdirs();
-    workingDirectory.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile().mkdirs();
-    workingDirectory.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile().mkdirs();
-    workingDirectory.resolve(REPOSITORY.value()).toFile().mkdirs();
+    builder.createPackage(fakeTargetFolder.getRoot().toPath(), destinationFile.toPath());
 
-    // packageBuilder.createArchive();
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+    verify(archiverMock, times(1)).addToRoot(targetPath.resolve(CLASSES.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
+                                                   null, null);
+    verify(archiverMock, times(1)).addMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(), null,
+                                              null);
+    verify(archiverMock, times(1)).addRepository(targetPath.resolve(REPOSITORY.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addToRoot(targetPath.resolve(TEST_MULE.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addToRoot(targetPath.resolve(TEST_CLASSES.value()).toFile(), null, null);
 
-    verify(muleArchiverMock, times(1)).addToRoot(workingDirectory.resolve(CLASSES.value()).toFile(), null, null);
-    verify(muleArchiverMock, times(1)).addMaven(workingDirectory.resolve(META_INF.value()).resolve(MAVEN.value()).toFile(), null,
-                                                null);
-    verify(muleArchiverMock, times(1))
-        .addMuleArtifact(workingDirectory.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
-                         null, null);
-    verify(muleArchiverMock, times(1)).addMuleSrc(workingDirectory.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(),
-                                                  null, null);
-    verify(muleArchiverMock, times(1)).addRepository(workingDirectory.resolve(REPOSITORY.value()).toFile(), null, null);
-    verify(muleArchiverMock, times(1)).setDestFile(destinationFileMock);
-    verify(muleArchiverMock, times(1)).createArchive();
+    verify(archiverMock, times(1)).setDestFile(destinationFile);
+    verify(archiverMock, times(1)).createArchive();
   }
 
   @Test
-  public void createMuleAppOnlyMuleSourcesTest() throws IOException {
-    packageBuilderSpy = spy(packageBuilder.withPackagingOptions(new PackagingOptions(true, false, false, false)));
-    // packageBuilderSpy.createPackage(destinationFile, targetFileFolder.getRoot().getPath());
-    // verify(packageBuilderSpy, times(1)).withDestinationFile(any());
-    verify(packageBuilderSpy, times(0)).withClasses(any());
-    verify(packageBuilderSpy, times(0)).withRepository(any());
+  public void createPackage() throws IOException {
+    boolean onlyMuleSources = false;
+    boolean lightweightPackage = false;
+    boolean attachMuleSources = true;
+    boolean testPackage = false;
+
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
+
+    builder.createPackage(fakeTargetFolder.getRoot().toPath(), destinationFile.toPath());
+
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+    verify(archiverMock, times(1)).addToRoot(targetPath.resolve(CLASSES.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
+                                                   null, null);
+    verify(archiverMock, times(1)).addMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(), null,
+                                              null);
+    verify(archiverMock, times(1)).addRepository(targetPath.resolve(REPOSITORY.value()).toFile(), null, null);
+    verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_MULE.value()).toFile(), null, null);
+    verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_CLASSES.value()).toFile(), null, null);
+
+    verify(archiverMock, times(1)).setDestFile(destinationFile);
+    verify(archiverMock, times(1)).createArchive();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void wiredCreatePackageNoClasses() throws IOException {
+    boolean onlyMuleSources = false;
+    boolean lightweightPackage = false;
+    boolean attachMuleSources = true;
+    boolean testPackage = false;
+
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
+
+    builder.withMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile());
+    builder.withMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile());
+    builder.withMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile());
+    builder.withRepository(targetPath.resolve(REPOSITORY.value()).toFile());
+
+    builder.createPackage(destinationFile.toPath());
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void wiredCreatePackageNoMaven() throws IOException {
+    boolean onlyMuleSources = false;
+    boolean lightweightPackage = false;
+    boolean attachMuleSources = true;
+    boolean testPackage = false;
+
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
+
+    builder.withClasses(targetPath.resolve(CLASSES.value()).toFile());
+
+    builder.withMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile());
+    builder.withMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile());
+    builder.withRepository(targetPath.resolve(REPOSITORY.value()).toFile());
+
+    builder.createPackage(destinationFile.toPath());
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void wiredCreatePackageNMuleArtifact() throws IOException {
+    boolean onlyMuleSources = false;
+    boolean lightweightPackage = false;
+    boolean attachMuleSources = true;
+    boolean testPackage = false;
+
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
+
+    builder.withClasses(targetPath.resolve(CLASSES.value()).toFile());
+    builder.withMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile());
+    builder.withMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile());
+    builder.withRepository(targetPath.resolve(REPOSITORY.value()).toFile());
+
+    builder.createPackage(destinationFile.toPath());
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void wiredCreatePackageNoMuleSources() throws IOException {
+    boolean onlyMuleSources = false;
+    boolean lightweightPackage = false;
+    boolean attachMuleSources = true;
+    boolean testPackage = false;
+
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
+
+    builder.withClasses(targetPath.resolve(CLASSES.value()).toFile());
+    builder.withMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile());
+    builder.withMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile());
+    builder.withRepository(targetPath.resolve(REPOSITORY.value()).toFile());
+
+    builder.createPackage(destinationFile.toPath());
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void wiredCreatePackageNoRepository() throws IOException {
+    boolean onlyMuleSources = false;
+    boolean lightweightPackage = false;
+    boolean attachMuleSources = true;
+    boolean testPackage = false;
+
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
+
+    builder.withClasses(targetPath.resolve(CLASSES.value()).toFile());
+    builder.withMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile());
+    builder.withMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile());
+    builder.withMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile());
+
+    builder.createPackage(destinationFile.toPath());
   }
 
   @Test
-  public void createMuleAppWithBinariesTest() throws IOException {
-    packageBuilderSpy = spy(packageBuilder.withPackagingOptions(new PackagingOptions(false, false, false, false)));
-    // packageBuilderSpy.createPackage(destinationFile, targetFileFolder.getRoot().getPath());
-    // verify(packageBuilderSpy, times(1)).withDestinationFile(any());
-    verify(packageBuilderSpy, times(1)).withClasses(any());
-    verify(packageBuilderSpy, times(1)).withRepository(any());
-    verify(packageBuilderSpy, times(1)).withMuleArtifact(any());
-    verify(packageBuilderSpy, times(1)).withMaven(any());
+  public void wiredCreatePackageNoRepositoryLightWeightPackage() throws IOException {
+    boolean onlyMuleSources = false;
+    boolean lightweightPackage = true;
+    boolean attachMuleSources = true;
+    boolean testPackage = false;
+
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
+
+    builder.withClasses(targetPath.resolve(CLASSES.value()).toFile());
+    builder.withMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile());
+    builder.withMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile());
+    builder.withMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile());
+
+    builder.createPackage(destinationFile.toPath());
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void wiredCreatePackageNoTestClassesTestPackage() throws IOException {
+    boolean onlyMuleSources = false;
+    boolean lightweightPackage = false;
+    boolean attachMuleSources = true;
+    boolean testPackage = true;
+
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
+
+    builder.withClasses(targetPath.resolve(CLASSES.value()).toFile());
+
+    builder.withTestMule(targetPath.resolve(TEST_MULE.value()).toFile());
+
+    builder.withMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile());
+    builder.withMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile());
+    builder.withMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile());
+    builder.withRepository(targetPath.resolve(REPOSITORY.value()).toFile());
+
+    builder.createPackage(destinationFile.toPath());
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void wiredCreatePackageNoTestMuleTestPackage() throws IOException {
+    boolean onlyMuleSources = false;
+    boolean lightweightPackage = false;
+    boolean attachMuleSources = true;
+    boolean testPackage = true;
+
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
+
+    builder.withClasses(targetPath.resolve(CLASSES.value()).toFile());
+
+    builder.withTestClasses(targetPath.resolve(TEST_CLASSES.value()).toFile());
+
+    builder.withMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile());
+    builder.withMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile());
+    builder.withMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile());
+    builder.withRepository(targetPath.resolve(REPOSITORY.value()).toFile());
+
+    builder.createPackage(destinationFile.toPath());
   }
 
   @Test
-  public void createMuleAppWithBinariesAndSourcesTest() throws IOException {
-    packageBuilderSpy = spy(packageBuilder.withPackagingOptions(new PackagingOptions(false, false, true, false)));
-    // packageBuilderSpy.createPackage(destinationFile, targetFileFolder.getRoot().getPath());
-    // verify(packageBuilderSpy, times(1)).withDestinationFile(any());
-    verify(packageBuilderSpy, times(1)).withClasses(any());
-    verify(packageBuilderSpy, times(1)).withRepository(any());
+  public void wiredCreatePackageTestPackage() throws IOException {
+    boolean onlyMuleSources = false;
+    boolean lightweightPackage = false;
+    boolean attachMuleSources = true;
+    boolean testPackage = true;
+
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
+
+    builder.withClasses(targetPath.resolve(CLASSES.value()).toFile());
+    builder.withTestClasses(targetPath.resolve(TEST_CLASSES.value()).toFile());
+    builder.withTestMule(targetPath.resolve(TEST_MULE.value()).toFile());
+    builder.withMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile());
+    builder.withMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile());
+    builder.withMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile());
+    builder.withRepository(targetPath.resolve(REPOSITORY.value()).toFile());
+
+    builder.createPackage(destinationFile.toPath());
+
+    verify(archiverMock, times(1)).addToRoot(targetPath.resolve(CLASSES.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
+                                                   null, null);
+    verify(archiverMock, times(1)).addMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(), null,
+                                              null);
+    verify(archiverMock, times(1)).addRepository(targetPath.resolve(REPOSITORY.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addToRoot(targetPath.resolve(TEST_MULE.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addToRoot(targetPath.resolve(TEST_CLASSES.value()).toFile(), null, null);
+
+    verify(archiverMock, times(1)).setDestFile(destinationFile);
+    verify(archiverMock, times(1)).createArchive();
   }
+
+  @Test
+  public void wiredCreatePackage() throws IOException {
+    boolean onlyMuleSources = false;
+    boolean lightweightPackage = false;
+    boolean attachMuleSources = true;
+    boolean testPackage = false;
+
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
+
+    builder.withClasses(targetPath.resolve(CLASSES.value()).toFile());
+
+    builder.withMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile());
+    builder.withMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile());
+    builder.withMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile());
+
+    builder.withRepository(targetPath.resolve(REPOSITORY.value()).toFile());
+
+    builder.createPackage(destinationFile.toPath());
+
+    verify(archiverMock, times(1)).addToRoot(targetPath.resolve(CLASSES.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
+                                                   null, null);
+    verify(archiverMock, times(1)).addMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(), null,
+                                              null);
+    verify(archiverMock, times(1)).addRepository(targetPath.resolve(REPOSITORY.value()).toFile(), null, null);
+    verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_MULE.value()).toFile(), null, null);
+    verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_CLASSES.value()).toFile(), null, null);
+
+    verify(archiverMock, times(1)).setDestFile(destinationFile);
+    verify(archiverMock, times(1)).createArchive();
+  }
+
 
 }

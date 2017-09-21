@@ -29,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.model.DeployerLog;
+import org.mule.tools.model.DeploymentConfiguration;
 
 public abstract class AbstractMuleClient extends AbstractClient {
 
@@ -49,14 +50,13 @@ public abstract class AbstractMuleClient extends AbstractClient {
   private String envId;
   private String orgId;
 
-  public AbstractMuleClient(String uri, DeployerLog log, String username, String password, String environment,
-                            String businessGroup) {
+  public AbstractMuleClient(DeploymentConfiguration deploymentConfiguration, DeployerLog log) {
     super(log);
-    this.uri = uri;
-    this.username = username;
-    this.password = password;
-    this.environment = environment;
-    this.businessGroup = businessGroup;
+    this.uri = deploymentConfiguration.getUri();
+    this.username = deploymentConfiguration.getUsername();
+    this.password = deploymentConfiguration.getPassword();
+    this.environment = deploymentConfiguration.getEnvironment();
+    this.businessGroup = deploymentConfiguration.getBusinessGroup();
   }
 
   public void init() {

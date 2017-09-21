@@ -34,6 +34,7 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.mule.tools.model.DeployerLog;
+import org.mule.tools.model.DeploymentConfiguration;
 
 public class ArmClient extends AbstractMuleClient {
 
@@ -43,10 +44,9 @@ public class ArmClient extends AbstractMuleClient {
   private static final String CLUSTERS = "/hybrid/api/v1/clusters";
   private boolean armInsecure;
 
-  public ArmClient(DeployerLog log, String uri, String username, String password, String environment, String businessGroup,
-                   boolean armInsecure) {
-    super(uri, log, username, password, environment, businessGroup);
-    this.armInsecure = armInsecure;
+  public ArmClient(DeploymentConfiguration deploymentConfiguration, DeployerLog log) {
+    super(deploymentConfiguration, log);
+    armInsecure = deploymentConfiguration.isArmInsecure();
     if (armInsecure) {
       log.warn("Using insecure mode for connecting to ARM, please consider configuring your truststore with ARM certificates. This option is insecure and not intended for production use.");
     }

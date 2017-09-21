@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import integrationTests.ProjectFactory;
 import integrationTests.mojo.verifier.CloudHubDeploymentVerifier;
 
-@Ignore
 public class CloudHubDeploymentTest implements SettingsConfigurator {
 
   private static final String MULE_UNDEPLOY = "mule:undeploy";
@@ -56,13 +55,14 @@ public class CloudHubDeploymentTest implements SettingsConfigurator {
     verifier.setEnvironmentVariable("username", System.getProperty("username"));
     verifier.setEnvironmentVariable("password", System.getProperty("password"));
     verifier.setEnvironmentVariable("environment", "Production");
-    verifier.setEnvironmentVariable("mule.version", System.getProperty("mule.version"));
+    verifier.setEnvironmentVariable("mule.version", "4.0.0-FD");
     verifier.setEnvironmentVariable("cloudhub.application.name", APPLICATION_NAME);
 
   }
 
   @Test
   public void testCloudHubDeploy() throws VerificationException, InterruptedException, TimeoutException {
+    verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=y");
     log.info("Executing mule:deploy goal...");
     verifier.executeGoal(MULE_DEPLOY);
     cloudHubDeploymentVerifier.verifyIsDeployed(APPLICATION_NAME);

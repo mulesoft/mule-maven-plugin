@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.mule.tools.client.arm.model.Applications;
 import org.mule.tools.client.arm.model.Environment;
 import org.mule.tools.client.arm.model.Target;
+import org.mule.tools.model.DeploymentConfiguration;
 
 import java.util.concurrent.Callable;
 
@@ -30,10 +31,18 @@ public class ArmClientTestCase {
   private static final String PASSWORD = System.getProperty("password");
   private static final String ENVIRONMENT = "Production";
   private ArmClient armClient;
+  private DeploymentConfiguration deploymentConfiguration;
 
   @Before
   public void setup() {
-    armClient = new ArmClient(null, "https://anypoint.mulesoft.com", USERNAME, PASSWORD, ENVIRONMENT, "", false);
+    deploymentConfiguration = new DeploymentConfiguration();
+    deploymentConfiguration.setUri("https://anypoint.mulesoft.com");
+    deploymentConfiguration.setUsername(USERNAME);
+    deploymentConfiguration.setPassword(PASSWORD);
+    deploymentConfiguration.setEnvironment(ENVIRONMENT);
+    deploymentConfiguration.setBusinessGroup("");
+    deploymentConfiguration.setArmInsecure(false);
+    armClient = new ArmClient(deploymentConfiguration, null);
     armClient.init();
   }
 
@@ -66,13 +75,7 @@ public class ArmClientTestCase {
   }
 
   private Callable<Boolean> appIsStarted(final int applicationId) {
-    return new Callable<Boolean>() {
-
-      @Override
-      public Boolean call() throws Exception {
-        return armClient.isStarted(applicationId);
-      }
-    };
+    return () -> armClient.isStarted(applicationId);
   }
 
 }

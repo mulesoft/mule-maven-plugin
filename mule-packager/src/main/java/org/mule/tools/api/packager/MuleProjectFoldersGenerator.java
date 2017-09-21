@@ -10,10 +10,19 @@
 
 package org.mule.tools.api.packager;
 
-import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.packager.structure.FolderNames;
+import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
+import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
+import static org.mule.tools.api.packager.structure.FolderNames.MUNIT;
+import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
+import static org.mule.tools.api.packager.structure.FolderNames.TEST_CLASSES;
+import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
 
 import java.nio.file.Path;
+
+import org.mule.tools.api.packager.packaging.PackagingType;
 
 /**
  * Generates the basic working folder structure to create a mule application package.
@@ -26,17 +35,20 @@ public class MuleProjectFoldersGenerator extends AbstractProjectFoldersGenerator
 
   @Override
   public void generate(Path targetFolder) {
-    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), FolderNames.TEST_MULE.value(), FolderNames.MUNIT.value());
+    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), CLASSES.value());
 
-    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), FolderNames.META_INF.value(), FolderNames.MULE_SRC.value(),
+    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), TEST_CLASSES.value());
+
+    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), TEST_MULE.value(), MUNIT.value());
+
+    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), META_INF.value(), MULE_SRC.value(), getArtifactId());
+
+    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), META_INF.value(), MAVEN.value(), getGroupId(),
                             getArtifactId());
-    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), FolderNames.META_INF.value(), FolderNames.MAVEN.value(),
-                            getGroupId(), getArtifactId());
-    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), FolderNames.META_INF.value(),
-                            FolderNames.MULE_ARTIFACT.value());
-    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), FolderNames.REPOSITORY.value());
+    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), META_INF.value(), MULE_ARTIFACT.value());
 
-    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), FolderNames.CLASSES.value());
+    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), REPOSITORY.value());
+
 
   }
 }

@@ -39,21 +39,21 @@ public class DomainBundlePackageBuilder implements PackageBuilder {
 
   public DomainBundlePackageBuilder withMaven(File folder) {
     checkArgument(folder != null, "The folder must not be null");
-    checkArgument(folder.exists(), "The folder must must exists");
+    checkArgument(folder.exists(), "The folder must exist");
     mavenFolder = folder;
     return this;
   }
 
   public DomainBundlePackageBuilder withDomain(File folder) {
     checkArgument(folder != null, "The folder must not be null");
-    checkArgument(folder.exists(), "The folder must must exists");
+    checkArgument(folder.exists(), "The folder must exist");
     domainFolder = folder;
     return this;
   }
 
   public DomainBundlePackageBuilder withApplications(File folder) {
     checkArgument(folder != null, "The folder must not be null");
-    checkArgument(folder.exists(), "The folder must exists");
+    checkArgument(folder.exists(), "The folder must exist");
     applicationsFolder = folder;
     return this;
   }
@@ -92,7 +92,7 @@ public class DomainBundlePackageBuilder implements PackageBuilder {
   @Override
   public void createPackage(Path originFolderPath, Path destinationPath) throws ArchiverException, IOException {
     checkArgument(originFolderPath != null, "The origin path must not be null");
-    checkArgument(originFolderPath.toFile().exists(), "The origin path must exists");
+    checkArgument(originFolderPath.toFile().exists(), "The origin path must exist");
 
     Path metaInfPath = originFolderPath.resolve(META_INF.value());
     this.withDomain(originFolderPath.resolve(DOMAIN.value()).toFile())

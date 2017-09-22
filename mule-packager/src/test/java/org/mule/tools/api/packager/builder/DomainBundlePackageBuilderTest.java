@@ -93,7 +93,7 @@ public class DomainBundlePackageBuilderTest {
   @Test
   public void setNonExistentMavenFolder() {
     expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage("The folder must must exists");
+    expectedException.expectMessage("The folder must exist");
     builder.withMaven(new File("fake"));
   }
 
@@ -107,7 +107,7 @@ public class DomainBundlePackageBuilderTest {
   @Test
   public void setNonExistentDomainFolder() {
     expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage("The folder must must exists");
+    expectedException.expectMessage("The folder must exist");
     builder.withDomain(new File("fake"));
   }
 
@@ -121,7 +121,7 @@ public class DomainBundlePackageBuilderTest {
   @Test
   public void setNonExistentApplicationsFolder() {
     expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage("The folder must exists");
+    expectedException.expectMessage("The folder must exist");
     builder.withApplications(new File("fake"));
   }
 
@@ -135,7 +135,7 @@ public class DomainBundlePackageBuilderTest {
   @Test
   public void createPackageNonExistentOriginalFolderPath() throws IOException {
     expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage("The origin path must exists");
+    expectedException.expectMessage("The origin path must exist");
 
     File fileMock = mock(File.class);
     when(fileMock.exists()).thenReturn(false);

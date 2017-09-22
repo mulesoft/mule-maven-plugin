@@ -195,7 +195,7 @@ public class MulePackageBuilder implements PackageBuilder {
   /**
    * Creates the application package.
    *
-   * It does so using the provided directories. If a directory does not exits or a directory path is not an actual directory then
+   * It does so using the provided directories. If a directory does not exist or a directory path is not an actual directory then
    * such element will not be added to the final package.
    *
    * @throws IOException

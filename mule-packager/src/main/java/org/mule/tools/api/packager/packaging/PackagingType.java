@@ -14,10 +14,10 @@ import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.mule.tools.api.packager.structure.FolderNames.MAIN;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE;
 import static org.mule.tools.api.packager.structure.FolderNames.MUNIT;
 import static org.mule.tools.api.packager.structure.FolderNames.SRC;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST;
-import static org.mule.tools.api.packager.structure.FolderNames.MULE;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -67,10 +67,21 @@ public enum PackagingType {
 
   public abstract Classifier[] getClassifiers();
 
-  public String resolveClassifier(String classifierName, boolean lightwayPackage) {
-    return Arrays.stream(getClassifiers())
-        .filter(allowedClassifier -> allowedClassifier.equals(classifierName)).findFirst()
-        .orElse(defaultClassifier).toString() + (lightwayPackage ? "-light-package" : "");
+  public String resolveClassifier(String classifierName, boolean lightweight, boolean testPackage) {
+    String baseClassifier = Arrays.stream(getClassifiers())
+        .filter(allowedClassifier -> allowedClassifier.equals(classifierName))
+        .findFirst()
+        .orElse(defaultClassifier).toString();
+
+    if (lightweight) {
+      baseClassifier += "-" + Classifier.LIGHT_PACKAGE.toString();
+    }
+
+    if (testPackage) {
+      baseClassifier += "-" + Classifier.TEST_JAR;
+    }
+
+    return baseClassifier;
   }
 
   public static PackagingType fromString(String name) {

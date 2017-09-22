@@ -18,6 +18,7 @@ import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
+import static org.mule.tools.api.packager.structure.FolderNames.MUNIT;
 import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST_CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
@@ -180,7 +181,7 @@ public class MulePackageBuilder implements PackageBuilder {
         .withMaven(metaInfPath.resolve(MAVEN.value()).toFile())
         .withMuleArtifact(metaInfPath.resolve(MULE_ARTIFACT.value()).toFile())
         .withTestClasses(originFolderPath.resolve(TEST_CLASSES.value()).toFile())
-        .withTestMule(originFolderPath.resolve(TEST_MULE.value()).toFile())
+        .withTestMule(originFolderPath.resolve(TEST_MULE.value()).resolve(MUNIT.value()).toFile())
         .withRepository(originFolderPath.resolve(REPOSITORY.value()).toFile())
         .withMuleSrc(metaInfPath.resolve(MULE_SRC.value()).toFile());
 

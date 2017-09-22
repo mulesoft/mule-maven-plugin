@@ -55,8 +55,8 @@ public class PackageMojo extends AbstractMuleMojo {
   @Parameter(defaultValue = "${attachMuleSources}")
   protected boolean attachMuleSources = false;
 
-  @Parameter(defaultValue = "${testPackage}")
-  protected boolean testPackage = false;
+  @Parameter(defaultValue = "${testJar}")
+  protected boolean testJar = false;
 
 
   public void execute() throws MojoExecutionException, MojoFailureException {
@@ -70,7 +70,7 @@ public class PackageMojo extends AbstractMuleMojo {
     } catch (ArchiverException | IOException e) {
       throw new MojoExecutionException("Exception creating the Mule App", e);
     }
-    helper.attachArtifact(this.project, getType(), getPackagingType().resolveClassifier(classifier, lightweightPackage),
+    helper.attachArtifact(this.project, getType(), getPackagingType().resolveClassifier(classifier, lightweightPackage, testJar),
                           destinationFile);
     getLog().debug(MessageFormat.format("Package done ({0}ms)", System.currentTimeMillis() - start));
   }
@@ -95,12 +95,13 @@ public class PackageMojo extends AbstractMuleMojo {
   }
 
   protected String getFileName() {
-    return project.getBuild().getFinalName() + "-" + getPackagingType().resolveClassifier(classifier, lightweightPackage) + "."
+    return project.getBuild().getFinalName() + "-" + getPackagingType().resolveClassifier(classifier, lightweightPackage, testJar)
+        + "."
         + getType();
   }
 
   protected PackageBuilder getPackageBuilder() {
-    PackagingOptions options = new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage);
+    PackagingOptions options = new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testJar);
     return PackageBuilderFactory.create(getPackagingType(), options);
   }
 

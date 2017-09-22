@@ -23,6 +23,7 @@ import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
+import static org.mule.tools.api.packager.structure.FolderNames.MUNIT;
 import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST_CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
@@ -362,7 +363,7 @@ public class MulePackageBuilderTest {
     verify(archiverMock, times(1)).addMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(), null,
                                               null);
     verify(archiverMock, times(1)).addRepository(targetPath.resolve(REPOSITORY.value()).toFile(), null, null);
-    verify(archiverMock, times(1)).addToRoot(targetPath.resolve(TEST_MULE.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addToRoot(targetPath.resolve(TEST_MULE.value()).resolve(MUNIT.value()).toFile(), null, null);
     verify(archiverMock, times(1)).addToRoot(targetPath.resolve(TEST_CLASSES.value()).toFile(), null, null);
 
     verify(archiverMock, times(1)).setDestFile(destinationFile);

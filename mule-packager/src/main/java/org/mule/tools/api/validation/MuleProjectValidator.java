@@ -10,6 +10,9 @@
 
 package org.mule.tools.api.validation;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
@@ -17,14 +20,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
-import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.util.Project;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
 
 /**
  * Ensures the project is valid
@@ -35,8 +36,7 @@ public class MuleProjectValidator extends AbstractProjectValidator {
   private static final int MULE_PROJECT_MAXIMUM_NUMBER_OF_DOMAINS = 1;
   private final List<SharedLibraryDependency> sharedLibraries;
 
-  public MuleProjectValidator(Path projectBaseDir, String packagingType,
-                              Project dependencyProject, MulePluginResolver resolver,
+  public MuleProjectValidator(Path projectBaseDir, String packagingType, Project dependencyProject, MulePluginResolver resolver,
                               List<SharedLibraryDependency> sharedLibraries) {
     super(projectBaseDir, packagingType, dependencyProject, resolver);
     this.sharedLibraries = sharedLibraries;

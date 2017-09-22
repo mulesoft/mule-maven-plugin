@@ -18,11 +18,13 @@ public class PackagingOptions {
   private final boolean onlyMuleSources;
   private final boolean lightweightPackage;
   private final boolean attachMuleSources;
+  private final boolean testPackage;
 
-  public PackagingOptions(boolean onlyMuleSources, boolean lightweightPackage, boolean attachMuleSources) {
+  public PackagingOptions(boolean onlyMuleSources, boolean lightweightPackage, boolean attachMuleSources, boolean testPackage) {
     this.onlyMuleSources = onlyMuleSources;
     this.lightweightPackage = lightweightPackage;
     this.attachMuleSources = attachMuleSources;
+    this.testPackage = testPackage;
   }
 
   public boolean isOnlyMuleSources() {
@@ -35,5 +37,9 @@ public class PackagingOptions {
 
   public boolean isAttachMuleSources() {
     return attachMuleSources;
+  }
+
+  public boolean isTestPackage() {
+    return testPackage;
   }
 }

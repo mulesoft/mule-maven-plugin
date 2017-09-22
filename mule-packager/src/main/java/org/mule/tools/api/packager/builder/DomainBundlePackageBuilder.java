@@ -10,71 +10,57 @@
 
 package org.mule.tools.api.packager.builder;
 
-import org.codehaus.plexus.archiver.ArchiverException;
-import org.mule.tools.api.packager.archiver.AbstractArchiver;
-import org.mule.tools.api.packager.archiver.DomainBundleArchiver;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+import static org.mule.tools.api.packager.structure.FolderNames.APPLICATIONS;
+import static org.mule.tools.api.packager.structure.FolderNames.DOMAIN;
+import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
-import static org.mule.tools.api.packager.structure.FolderNames.*;
+import org.codehaus.plexus.archiver.ArchiverException;
+
+import org.mule.tools.api.packager.archiver.AbstractArchiver;
+import org.mule.tools.api.packager.archiver.DomainBundleArchiver;
 
 /**
  * Builder for Mule Domain Bundle packages.
  */
 public class DomainBundlePackageBuilder implements PackageBuilder {
 
-  private File destinationFile;
-  private DomainBundleArchiver archiver;
   private File domainFolder = null;
   private File applicationsFolder = null;
   private File mavenFolder = null;
 
-
-  public DomainBundleArchiver getDomainBundleArchiver() {
-    if (archiver == null) {
-      archiver = new DomainBundleArchiver();
-    }
-    return archiver;
-  }
-
-  /**
-   * @param file file to be created with the content of the domain bundle
-   * @return
-   */
-  public DomainBundlePackageBuilder withDestinationFile(File file) {
-    checkArgument(file != null, "The file must not be null");
-    checkArgument(!file.exists(), "The file must not be duplicated");
-    this.destinationFile = file;
-    return this;
-  }
-
-  public DomainBundlePackageBuilder withArchiver(AbstractArchiver archiver) {
-    checkNotNull(archiver, "AbstractArchiver must not be null");
-    this.archiver = (DomainBundleArchiver) archiver;
-    return this;
-  }
+  private DomainBundleArchiver archiver;
 
   public DomainBundlePackageBuilder withMaven(File folder) {
     checkArgument(folder != null, "The folder must not be null");
+    checkArgument(folder.exists(), "The folder must exist");
     mavenFolder = folder;
     return this;
   }
 
   public DomainBundlePackageBuilder withDomain(File folder) {
     checkArgument(folder != null, "The folder must not be null");
+    checkArgument(folder.exists(), "The folder must exist");
     domainFolder = folder;
     return this;
   }
 
   public DomainBundlePackageBuilder withApplications(File folder) {
     checkArgument(folder != null, "The folder must not be null");
+    checkArgument(folder.exists(), "The folder must exist");
     applicationsFolder = folder;
+    return this;
+  }
+
+  public DomainBundlePackageBuilder withArchiver(AbstractArchiver archiver) {
+    checkArgument(archiver != null, "Archiver must not be null");
+    this.archiver = (DomainBundleArchiver) archiver;
     return this;
   }
 
@@ -98,42 +84,68 @@ public class DomainBundlePackageBuilder implements PackageBuilder {
    *             └── pom.properties
    * </pre>
    *
-   * @param destinationFile file that represents the resource that is going to represent the final package.
-   * @param originFolder folder containing the source files.
+   * @param originFolderPath folder containing the source files.
+   * @param destinationPath location where to leave the final package.
    * @throws ArchiverException
    * @throws IOException
    */
   @Override
-  public void createPackage(File destinationFile, String originFolder) throws ArchiverException, IOException {
-    Path originFolderPath = Paths.get(originFolder);
+  public void createPackage(Path originFolderPath, Path destinationPath) throws ArchiverException, IOException {
+    checkArgument(originFolderPath != null, "The origin path must not be null");
+    checkArgument(originFolderPath.toFile().exists(), "The origin path must exist");
+
     Path metaInfPath = originFolderPath.resolve(META_INF.value());
-    DomainBundlePackageBuilder builder =
-        this.withDestinationFile(destinationFile)
-            .withDomain(originFolderPath.resolve(DOMAIN.value()).toFile())
-            .withApplications(originFolderPath.resolve(APPLICATIONS.value()).toFile())
-            .withMaven(metaInfPath.resolve(MAVEN.value()).toFile());
-    builder.createDeployableFile();
+    this.withDomain(originFolderPath.resolve(DOMAIN.value()).toFile())
+        .withApplications(originFolderPath.resolve(APPLICATIONS.value()).toFile())
+        .withMaven(metaInfPath.resolve(MAVEN.value()).toFile());
+
+    this.createArchive(destinationPath);
   }
 
   @Override
-  public void createDeployableFile() throws IOException {
-    checkState(destinationFile != null, "The destination file has not been set");
+  public void createPackage(Path destinationPath) throws ArchiverException, IOException {
+    this.createArchive(destinationPath);
+  }
 
-    DomainBundleArchiver archiver = getDomainBundleArchiver();
+  private void createArchive(Path destinationPath) throws IOException {
+    checkArgument(destinationPath != null, "The destination path must not be null");
+    checkArgument(!destinationPath.toFile().exists(), "The destination file must not be duplicated");
 
-    if (null != domainFolder && domainFolder.exists() && domainFolder.isDirectory()) {
-      archiver.addDomain(domainFolder, null, null);
-    }
+    validateState();
+    DomainBundleArchiver archiver = getArchiver();
 
-    if (null != applicationsFolder && applicationsFolder.exists() && applicationsFolder.isDirectory()) {
-      archiver.addApplications(applicationsFolder, null, null);
-    }
+    archiver.addDomain(domainFolder, null, null);
+    archiver.addApplications(applicationsFolder, null, null);
+    archiver.addMaven(mavenFolder, null, null);
 
-    if (null != mavenFolder && mavenFolder.exists() && mavenFolder.isDirectory()) {
-      archiver.addMaven(mavenFolder, null, null);
-    }
-
-    archiver.setDestFile(destinationFile);
+    archiver.setDestFile(destinationPath.toFile());
     archiver.createArchive();
+  }
+
+  /**
+   * Ensures that all the required folders have been provided
+   *
+   */
+  private void validateState() {
+    isValidFolder(domainFolder, "The domain folders has not been properly defined");
+    isValidFolder(applicationsFolder, "The applications folders has not been properly defined");
+    isValidFolder(mavenFolder, "The maven folders has not been properly defined");
+  }
+
+  /**
+   * Ensures the provided file is a valid folder.
+   *
+   * @param file the file to validate
+   * @param message the error message to show
+   */
+  private void isValidFolder(File file, String message) {
+    checkState(file != null && file.exists() && file.isDirectory(), message);
+  }
+
+  protected DomainBundleArchiver getArchiver() {
+    if (archiver == null) {
+      archiver = new DomainBundleArchiver();
+    }
+    return archiver;
   }
 }

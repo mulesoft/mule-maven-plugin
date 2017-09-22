@@ -14,10 +14,10 @@ import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.mule.tools.api.packager.structure.FolderNames.MAIN;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE;
 import static org.mule.tools.api.packager.structure.FolderNames.MUNIT;
 import static org.mule.tools.api.packager.structure.FolderNames.SRC;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST;
-import static org.mule.tools.api.packager.structure.FolderNames.MULE;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -28,7 +28,7 @@ public enum PackagingType {
   MULE_APPLICATION(Classifier.MULE_APPLICATION) {
 
     @Override
-    protected Classifier[] getClassifiers() {
+    public Classifier[] getClassifiers() {
       return new Classifier[] {Classifier.MULE_APPLICATION, Classifier.MULE_APPLICATION_EXAMPLE,
           Classifier.MULE_APPLICATION_TEMPLATE};
     }
@@ -37,7 +37,7 @@ public enum PackagingType {
   MULE_DOMAIN(Classifier.MULE_DOMAIN) {
 
     @Override
-    protected Classifier[] getClassifiers() {
+    public Classifier[] getClassifiers() {
       return new Classifier[] {Classifier.MULE_DOMAIN};
     }
   },
@@ -45,7 +45,7 @@ public enum PackagingType {
   MULE_POLICY(Classifier.MULE_POLICY) {
 
     @Override
-    protected Classifier[] getClassifiers() {
+    public Classifier[] getClassifiers() {
       return new Classifier[] {Classifier.MULE_POLICY};
     }
   },
@@ -53,7 +53,7 @@ public enum PackagingType {
   MULE_DOMAIN_BUNDLE(Classifier.MULE_DOMAIN_BUNDLE) {
 
     @Override
-    protected Classifier[] getClassifiers() {
+    public Classifier[] getClassifiers() {
       return new Classifier[] {Classifier.MULE_DOMAIN_BUNDLE};
     }
   };
@@ -65,12 +65,23 @@ public enum PackagingType {
     this.defaultClassifier = defaultClassifier;
   }
 
-  protected abstract Classifier[] getClassifiers();
+  public abstract Classifier[] getClassifiers();
 
-  public String resolveClassifier(String classifierName, boolean lightwayPackage) {
-    return Arrays.stream(getClassifiers())
-        .filter(allowedClassifier -> allowedClassifier.equals(classifierName)).findFirst()
-        .orElse(defaultClassifier).toString() + (lightwayPackage ? "-light-package" : "");
+  public String resolveClassifier(String classifierName, boolean lightweight, boolean testPackage) {
+    String baseClassifier = Arrays.stream(getClassifiers())
+        .filter(allowedClassifier -> allowedClassifier.equals(classifierName))
+        .findFirst()
+        .orElse(defaultClassifier).toString();
+
+    if (lightweight) {
+      baseClassifier += "-" + Classifier.LIGHT_PACKAGE.toString();
+    }
+
+    if (testPackage) {
+      baseClassifier += "-" + Classifier.TEST_JAR;
+    }
+
+    return baseClassifier;
   }
 
   public static PackagingType fromString(String name) {

@@ -30,8 +30,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.ArchiverException;
 
-import org.mule.tools.api.packager.builder.DomainBundlePackageBuilder;
-import org.mule.tools.api.packager.builder.MulePackageBuilder;
 import org.mule.tools.api.packager.builder.PackageBuilder;
 import org.mule.tools.api.packager.builder.PackageBuilderFactory;
 import org.mule.tools.api.packager.packaging.PackagingOptions;
@@ -51,30 +49,28 @@ public class PackageMojo extends AbstractMuleMojo {
   @Component
   protected MavenProjectHelper helper;
 
-
   @Parameter(defaultValue = "${onlyMuleSources}")
   protected boolean onlyMuleSources = false;
 
   @Parameter(defaultValue = "${attachMuleSources}")
   protected boolean attachMuleSources = false;
 
-  protected PackagingType packagingType;
+  @Parameter(defaultValue = "${testJar}")
+  protected boolean testJar = false;
 
-  protected String finalName;
 
   public void execute() throws MojoExecutionException, MojoFailureException {
     long start = System.currentTimeMillis();
     getLog().debug("Packaging...");
-    finalName = project.getBuild().getFinalName();
-    packagingType = PackagingType.fromString(project.getPackaging());
+
     String targetFolder = project.getBuild().getDirectory();
     File destinationFile = getDestinationFile(targetFolder);
     try {
-      getPackageBuilder().createPackage(destinationFile, targetFolder);
+      getPackageBuilder().createPackage(Paths.get(targetFolder), destinationFile.toPath());
     } catch (ArchiverException | IOException e) {
       throw new MojoExecutionException("Exception creating the Mule App", e);
     }
-    helper.attachArtifact(this.project, getType(), packagingType.resolveClassifier(classifier, lightweightPackage),
+    helper.attachArtifact(this.project, getType(), getPackagingType().resolveClassifier(classifier, lightweightPackage, testJar),
                           destinationFile);
     getLog().debug(MessageFormat.format("Package done ({0}ms)", System.currentTimeMillis() - start));
   }
@@ -89,7 +85,7 @@ public class PackageMojo extends AbstractMuleMojo {
    */
   protected File getDestinationFile(String targetFolder) throws MojoExecutionException {
     checkArgument(targetFolder != null, "The target folder must not be null");
-    final Path destinationPath = Paths.get(targetFolder, getFileName());
+    Path destinationPath = Paths.get(targetFolder, getFileName());
     try {
       Files.deleteIfExists(destinationPath);
     } catch (IOException e) {
@@ -99,16 +95,22 @@ public class PackageMojo extends AbstractMuleMojo {
   }
 
   protected String getFileName() {
-    return project.getBuild().getFinalName() + "-" + packagingType.resolveClassifier(classifier, lightweightPackage) + "."
+    return project.getBuild().getFinalName() + "-" + getPackagingType().resolveClassifier(classifier, lightweightPackage, testJar)
+        + "."
         + getType();
   }
 
-  private String getType() {
-    return packagingType.equals(MULE_DOMAIN_BUNDLE) ? ZIP_EXTENSION : JAR_EXTENSION;
+  protected PackageBuilder getPackageBuilder() {
+    PackagingOptions options = new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testJar);
+    return PackageBuilderFactory.create(getPackagingType(), options);
   }
 
-  public PackageBuilder getPackageBuilder() {
-    PackagingOptions options = new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources);
-    return PackageBuilderFactory.create(packagingType, options);
+  private String getType() {
+    return getPackagingType().equals(MULE_DOMAIN_BUNDLE) ? ZIP_EXTENSION : JAR_EXTENSION;
   }
+
+  private PackagingType getPackagingType() {
+    return PackagingType.fromString(project.getPackaging());
+  }
+
 }

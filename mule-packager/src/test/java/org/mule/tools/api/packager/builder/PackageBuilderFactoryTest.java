@@ -10,13 +10,14 @@
 
 package org.mule.tools.api.packager.builder;
 
-import org.junit.Test;
-import org.mule.tools.api.packager.packaging.PackagingOptions;
-import org.mule.tools.api.packager.packaging.PackagingType;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.mockito.Mockito.mock;
+
+import org.junit.Test;
+
+import org.mule.tools.api.packager.packaging.PackagingOptions;
+import org.mule.tools.api.packager.packaging.PackagingType;
 
 public class PackageBuilderFactoryTest {
 

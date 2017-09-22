@@ -27,7 +27,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.mule.tools.api.packager.builder.MulePackageBuilder;
-import org.mule.tools.api.packager.builder.PackageBuilder;
 
 public class AbstractMuleMojoTest {
 

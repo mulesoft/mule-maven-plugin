@@ -22,6 +22,7 @@ public class ProjectFoldersGeneratorFactory {
     String groupId = projectInformation.getGroupId();
     String artifactId = projectInformation.getArtifactId();
     PackagingType packagingType = PackagingType.fromString(projectInformation.getPackaging());
+
     if (packagingType.equals(PackagingType.MULE_DOMAIN_BUNDLE)) {
       return new DomainBundleProjectFoldersGenerator(groupId, artifactId, packagingType);
     }

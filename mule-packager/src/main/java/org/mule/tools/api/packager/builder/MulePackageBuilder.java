@@ -11,7 +11,6 @@
 package org.mule.tools.api.packager.builder;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
@@ -58,68 +57,68 @@ public class MulePackageBuilder implements PackageBuilder {
 
   public MulePackageBuilder withClasses(File folder) {
     checkArgument(folder != null, "The folder must not be null");
-    checkArgument(folder.exists(), "The folder must must exists");
+    checkArgument(folder.exists(), "The folder must exists");
     classesFolder = folder;
     return this;
   }
 
   public MulePackageBuilder withTestClasses(File folder) {
     checkArgument(folder != null, "The folder must not be null");
-    checkArgument(folder.exists(), "The folder must must exists");
+    checkArgument(folder.exists(), "The folder must exists");
     testClassesFolder = folder;
     return this;
   }
 
   public MulePackageBuilder withTestMule(File folder) {
     checkArgument(folder != null, "The folder must not be null");
-    checkArgument(folder.exists(), "The folder must must exists");
+    checkArgument(folder.exists(), "The folder must exists");
     testMule = folder;
     return this;
   }
 
   public MulePackageBuilder withMaven(File folder) {
     checkArgument(folder != null, "The folder must not be null");
-    checkArgument(folder.exists(), "The folder must must exists");
+    checkArgument(folder.exists(), "The folder must exists");
     mavenFolder = folder;
     return this;
   }
 
   public MulePackageBuilder withMuleSrc(File folder) {
     checkArgument(folder != null, "The folder must not be null");
-    checkArgument(folder.exists(), "The folder must must exists");
+    checkArgument(folder.exists(), "The folder must exists");
     muleSrcFolder = folder;
     return this;
   }
 
   public MulePackageBuilder withMuleArtifact(File folder) {
     checkArgument(folder != null, "The folder must not be null");
-    checkArgument(folder.exists(), "The folder must must exists");
+    checkArgument(folder.exists(), "The folder must exists");
     muleArtifactFolder = folder;
     return this;
   }
 
   public MulePackageBuilder withRepository(File folder) {
     checkArgument(folder != null, "The folder must not be null");
-    checkArgument(folder.exists(), "The folder must must exists");
+    checkArgument(folder.exists(), "The folder must exists");
     repositoryFolder = folder;
     return this;
   }
 
   public MulePackageBuilder withRootResource(File resource) {
     checkArgument(resource != null, "The resource must not be null");
-    checkArgument(resource.exists(), "The resource must must exists");
+    checkArgument(resource.exists(), "The resource must exists");
     rootResources.add(resource);
     return this;
   }
 
   public MulePackageBuilder withPackagingOptions(PackagingOptions packagingOptions) {
-    checkNotNull(packagingOptions, "The PackagingOptions must not be null");
+    checkArgument(packagingOptions != null, "The PackagingOptions must not be null");
     this.packagingOptions = packagingOptions;
     return this;
   }
 
   public MulePackageBuilder withArchiver(MuleArchiver archiver) {
-    checkNotNull(archiver, "The archiver must not be null");
+    checkArgument(archiver != null, "The archiver must not be null");
     this.archiver = archiver;
     return this;
   }

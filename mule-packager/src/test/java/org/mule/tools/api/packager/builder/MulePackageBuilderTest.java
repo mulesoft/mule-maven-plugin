@@ -91,7 +91,7 @@ public class MulePackageBuilderTest {
   @Test
   public void setNonExistentClassesFolder() {
     expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage("The folder must must exists");
+    expectedException.expectMessage("The folder must exists");
     builder.withClasses(new File("fake"));
   }
 
@@ -105,7 +105,7 @@ public class MulePackageBuilderTest {
   @Test
   public void setNonExistentTestClassesFolder() {
     expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage("The folder must must exists");
+    expectedException.expectMessage("The folder must exists");
     this.builder.withTestClasses(new File("fake"));
   }
 
@@ -119,7 +119,7 @@ public class MulePackageBuilderTest {
   @Test
   public void setNonExistentTestMuleFolder() {
     expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage("The folder must must exists");
+    expectedException.expectMessage("The folder must exists");
     this.builder.withTestMule(new File("fake"));
   }
 
@@ -133,7 +133,7 @@ public class MulePackageBuilderTest {
   @Test
   public void setNonExistentMavenFolder() {
     expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage("The folder must must exists");
+    expectedException.expectMessage("The folder must exists");
     this.builder.withMaven(new File("fake"));
   }
 
@@ -147,7 +147,7 @@ public class MulePackageBuilderTest {
   @Test
   public void setNonExistentMuleSrcFolder() {
     expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage("The folder must must exists");
+    expectedException.expectMessage("The folder must exists");
     this.builder.withMuleSrc(new File("fake"));
   }
 
@@ -161,7 +161,7 @@ public class MulePackageBuilderTest {
   @Test
   public void setNonExistentMuleArtifactFolderTest() {
     expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage("The folder must must exists");
+    expectedException.expectMessage("The folder must exists");
     this.builder.withMuleArtifact(new File("fake"));
   }
 
@@ -175,7 +175,7 @@ public class MulePackageBuilderTest {
   @Test
   public void setNonExistentRepositoryFolder() {
     expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage("The folder must must exists");
+    expectedException.expectMessage("The folder must exists");
     this.builder.withRepository(new File("fake"));
   }
 
@@ -189,7 +189,7 @@ public class MulePackageBuilderTest {
   @Test
   public void setNonExistentRootResourceFile() {
     expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage("The resource must must exists");
+    expectedException.expectMessage("The resource must exists");
     this.builder.withRootResource(new File("fake"));
   }
 
@@ -204,12 +204,12 @@ public class MulePackageBuilderTest {
     assertEquals("The list of root resources should contain one element", 1, actualRootResourcesList.size());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void setNullPackagingOptions() {
     this.builder.withPackagingOptions(null);
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void setNullArchiver() {
     this.builder.withArchiver(null);
   }

@@ -11,7 +11,6 @@
 package org.mule.tools.api.packager.builder;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static org.mule.tools.api.packager.structure.FolderNames.APPLICATIONS;
 import static org.mule.tools.api.packager.structure.FolderNames.DOMAIN;
@@ -54,13 +53,13 @@ public class DomainBundlePackageBuilder implements PackageBuilder {
 
   public DomainBundlePackageBuilder withApplications(File folder) {
     checkArgument(folder != null, "The folder must not be null");
-    checkArgument(folder.exists(), "The folder must must exists");
+    checkArgument(folder.exists(), "The folder must exists");
     applicationsFolder = folder;
     return this;
   }
 
   public DomainBundlePackageBuilder withArchiver(AbstractArchiver archiver) {
-    checkNotNull(archiver, "AbstractArchiver must not be null");
+    checkArgument(archiver != null, "Archiver must not be null");
     this.archiver = (DomainBundleArchiver) archiver;
     return this;
   }

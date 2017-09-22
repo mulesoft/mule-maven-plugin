@@ -21,8 +21,8 @@ import org.codehaus.plexus.archiver.ArchiverException;
 public interface PackageBuilder {
 
   /**
-   * Creates a package and it leaves it in the destinationPath. It does so based on a folder naming convention, it will look for
-   * them resources properly named in the originFolderPath.
+   * Creates a package and leaves that in the destinationPath. It does so based on a folder naming convention, it will look for
+   * the resources properly named in the originFolderPath.
    * 
    * @param originFolderPath folder location where to look for resources. It's expected that the folder structure follows a
    *        predefined structure.
@@ -33,7 +33,7 @@ public interface PackageBuilder {
   void createPackage(Path originFolderPath, Path destinationPath) throws ArchiverException, IOException;
 
   /**
-   * Creates a package and it leaves it in the destinationPath.
+   * Creates a package and leaves that in the destinationPath.
    * 
    * @param destinationPath path where to leave the created package.
    * @throws ArchiverException

@@ -67,8 +67,9 @@ public class DomainBundlePackageBuilderTest {
     builder.withArchiver(archiverMock);
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void setNullArchiver() {
+    expectedException.expect(IllegalArgumentException.class);
     this.builder.withArchiver(null);
   }
 
@@ -120,29 +121,39 @@ public class DomainBundlePackageBuilderTest {
   @Test
   public void setNonExistentApplicationsFolder() {
     expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage("The folder must must exists");
+    expectedException.expectMessage("The folder must exists");
     builder.withApplications(new File("fake"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void createPackageNullOriginalFolderPath() throws IOException {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The origin path must not be null");
     builder.createPackage(null, destinationFile.toPath());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void createPackageNonExistentOriginalFolderPath() throws IOException {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The origin path must exists");
+
     File fileMock = mock(File.class);
     when(fileMock.exists()).thenReturn(false);
     builder.createPackage(new File("fake").toPath(), destinationFile.toPath());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void createPackageNullDestinationPath() throws IOException {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The destination path must not be null");
     builder.createPackage(fakeTargetFolder.getRoot().toPath(), null);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void createPackageAllreadyExistentNullDestinationPath() throws IOException {
+  @Test
+  public void createPackageAlreadyExistentNullDestinationPath() throws IOException {
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("The destination file must not be duplicated");
+
     destinationFile.createNewFile();
     builder.createPackage(fakeTargetFolder.getRoot().toPath(), destinationFile.toPath());
   }
@@ -160,8 +171,10 @@ public class DomainBundlePackageBuilderTest {
     verify(archiverMock, times(1)).createArchive();
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void wiredCreatePackageNoDomain() throws IOException {
+    expectedException.expect(IllegalStateException.class);
+
     Path targetPath = fakeTargetFolder.getRoot().toPath();
 
     builder.withApplications(targetPath.resolve(APPLICATIONS.value()).toFile());
@@ -170,8 +183,10 @@ public class DomainBundlePackageBuilderTest {
     builder.createPackage(destinationFile.toPath());
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void wiredCreatePackageNoApplications() throws IOException {
+    expectedException.expect(IllegalStateException.class);
+
     Path targetPath = fakeTargetFolder.getRoot().toPath();
 
     builder.withDomain(targetPath.resolve(DOMAIN.value()).toFile());
@@ -180,8 +195,10 @@ public class DomainBundlePackageBuilderTest {
     builder.createPackage(destinationFile.toPath());
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void wiredCreatePackageNoMaven() throws IOException {
+    expectedException.expect(IllegalStateException.class);
+
     Path targetPath = fakeTargetFolder.getRoot().toPath();
 
     builder.withDomain(targetPath.resolve(DOMAIN.value()).toFile());
@@ -190,8 +207,10 @@ public class DomainBundlePackageBuilderTest {
     builder.createPackage(destinationFile.toPath());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void wiredCreatePackageNullDestinationPath() throws IOException {
+    expectedException.expect(IllegalArgumentException.class);
+
     Path targetPath = fakeTargetFolder.getRoot().toPath();
 
     builder.withDomain(targetPath.resolve(DOMAIN.value()).toFile());
@@ -201,8 +220,10 @@ public class DomainBundlePackageBuilderTest {
     builder.createPackage(null);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void wiredCreatePackageAllreadyExistentDestinationPath() throws IOException {
+  @Test
+  public void wiredCreatePackageAlreadyExistentDestinationPath() throws IOException {
+    expectedException.expect(IllegalArgumentException.class);
+
     Path targetPath = fakeTargetFolder.getRoot().toPath();
 
     builder.withDomain(targetPath.resolve(DOMAIN.value()).toFile());

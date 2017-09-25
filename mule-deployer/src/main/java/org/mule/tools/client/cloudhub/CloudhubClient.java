@@ -61,8 +61,7 @@ public class CloudhubClient extends AbstractMuleClient {
                                        Map<String, String> properties) {
     Entity<String> json = createApplicationRequest(appName, region, muleVersion, workers, workerType, properties);
     Response response = post(uri, APPLICATIONS_PATH, json);
-    if (response.getStatus() == CREATED) // Created
-    {
+    if (response.getStatus() == CREATED) {
       return response.readEntity(Application.class);
     } else {
       throw new ClientException(response);
@@ -113,6 +112,7 @@ public class CloudhubClient extends AbstractMuleClient {
 
   /**
    * Looks up an application by its name.
+   * 
    * @param appName The application name to look up.
    * @return The details of an application, or null if it doesn't exist.
    */
@@ -121,8 +121,7 @@ public class CloudhubClient extends AbstractMuleClient {
 
     if (response.getStatus() == OK) {
       return response.readEntity(Application.class);
-    } else if (response.getStatus() == NOT_FOUND) // Not found
-    {
+    } else if (response.getStatus() == NOT_FOUND) {
       return null;
     } else {
       throw new ClientException(response);

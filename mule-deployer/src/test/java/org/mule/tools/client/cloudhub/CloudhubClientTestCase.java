@@ -34,7 +34,7 @@ public class CloudhubClientTestCase {
   private static final String PASSWORD = System.getProperty("password");
   private static final String ENVIRONMENT = "Production";
   private static final String REGION = "us-east-1";
-  private static final String MULE_VERSION = "4.0.0-SNAPSHOT";
+  private static final String MULE_VERSION = "4.0.0-FD";
   private static final int WORKERS = 1;
   private static final String WORKER_TYPE = "Medium";
 
@@ -89,6 +89,7 @@ public class CloudhubClientTestCase {
     }
   }
 
+  @Ignore
   @Test
   public void uploadFile() {
     verifyAppDoesntExist(APP_NAME);
@@ -97,6 +98,7 @@ public class CloudhubClientTestCase {
     cloudhubClient.uploadFile(APP_NAME, APP);
   }
 
+  @Ignore
   @Test
   public void startApplication() {
     verifyAppDoesntExist(APP_NAME);
@@ -106,9 +108,9 @@ public class CloudhubClientTestCase {
     cloudhubClient.startApplication(APP_NAME);
   }
 
+  @Ignore
   @Test
   public void deleteApplication() {
-    // verifyAppDoesntExist(APP_NAME);
     cloudhubClient.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE, properties);
     verifyAppExists(APP_NAME);
     cloudhubClient.deleteApplication(APP_NAME);

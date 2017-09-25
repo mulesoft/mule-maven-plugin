@@ -18,9 +18,12 @@ import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
 import java.io.File;
 
 import org.codehaus.plexus.archiver.ArchiverException;
+import org.codehaus.plexus.archiver.zip.ZipArchiver;
 
 /**
- * Defines and creates the basic structure of Mule final archive file
+ * Defines and creates the basic structure of Mule archive.
+ *
+ * It saves it in a compressed file.
  */
 public class MuleArchiver extends AbstractArchiver {
 
@@ -29,6 +32,14 @@ public class MuleArchiver extends AbstractArchiver {
   public final static String MULE_ARTIFACT_LOCATION = META_INF_LOCATION + MULE_ARTIFACT.value() + File.separator;
 
   public static final String REPOSITORY_LOCATION = REPOSITORY.value() + File.separator;
+
+  public MuleArchiver() {
+    this(new ZipArchiver());
+  }
+
+  public MuleArchiver(org.codehaus.plexus.archiver.AbstractArchiver archiver) {
+    super(archiver);
+  }
 
   public void addMuleSrc(File resource, String[] includes, String[] excludes) throws ArchiverException {
     addResource(MULE_SRC_LOCATION, resource, includes, excludes);

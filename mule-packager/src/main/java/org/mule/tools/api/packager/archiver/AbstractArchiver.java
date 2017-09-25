@@ -10,26 +10,32 @@
 
 package org.mule.tools.api.packager.archiver;
 
-import org.apache.commons.lang3.StringUtils;
-import org.codehaus.plexus.archiver.ArchiverException;
-import org.codehaus.plexus.archiver.zip.ZipArchiver;
-import org.codehaus.plexus.util.DirectoryScanner;
-
-import java.io.File;
-
 import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.lang3.StringUtils;
+import org.codehaus.plexus.archiver.ArchiverException;
+import org.codehaus.plexus.util.DirectoryScanner;
+
 /**
- * Defines and creates the basic structure of package file. All package implementations should subclass this archiver.
+ * Defines and creates the basic structure of archives.
  */
-public class AbstractArchiver extends ZipArchiver {
+public class AbstractArchiver {
 
   public final static String ROOT_LOCATION = StringUtils.EMPTY;
 
   public final static String META_INF_LOCATION = META_INF.value() + File.separator;
 
   public final static String MAVEN_LOCATION = META_INF_LOCATION + MAVEN.value() + File.separator;
+
+  protected org.codehaus.plexus.archiver.AbstractArchiver archiver;
+
+  public AbstractArchiver(org.codehaus.plexus.archiver.AbstractArchiver archiver) {
+    this.archiver = archiver;
+  }
 
   /**
    * @param resource Folder or file that is going to be added to the added to the maven folder.
@@ -47,7 +53,33 @@ public class AbstractArchiver extends ZipArchiver {
     addResource(ROOT_LOCATION, resource, includes, excludes);
   }
 
-  protected String[] addDefaultExcludes(String[] excludes) {
+  /**
+   * Defines the file in which to store the archive
+   * 
+   * @param destFile the destination file
+   */
+  public void setDestFile(final File destFile) {
+    archiver.setDestFile(destFile);
+  }
+
+  /**
+   * It saves the archive in the file sytem
+   * 
+   * @throws IOException in case of failure to write
+   */
+  public void createArchive() throws IOException {
+    archiver.createArchive();
+  }
+
+  protected void addResource(String resourceLocation, File resource, String[] includes, String[] excludes) {
+    if (resource.isFile()) {
+      archiver.addFile(resource, resourceLocation + resource.getName());
+    } else {
+      archiver.addDirectory(resource, resourceLocation, includes, addDefaultExcludes(excludes));
+    }
+  }
+
+  private String[] addDefaultExcludes(String[] excludes) {
     if ((excludes == null) || (excludes.length == 0)) {
       return DirectoryScanner.DEFAULTEXCLUDES;
     } else {
@@ -57,14 +89,6 @@ public class AbstractArchiver extends ZipArchiver {
       System.arraycopy(excludes, 0, newExcludes, DirectoryScanner.DEFAULTEXCLUDES.length, excludes.length);
 
       return newExcludes;
-    }
-  }
-
-  protected void addResource(String resourceLocation, File resource, String[] includes, String[] excludes) {
-    if (resource.isFile()) {
-      addFile(resource, resourceLocation + resource.getName());
-    } else {
-      addDirectory(resource, resourceLocation, includes, addDefaultExcludes(excludes));
     }
   }
 }

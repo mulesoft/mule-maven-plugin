@@ -27,6 +27,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mule.tools.model.DeploymentConfiguration;
 
+@Ignore
 public class CloudhubClientTestCase {
 
   private static final String URI = "https://anypoint.mulesoft.com";

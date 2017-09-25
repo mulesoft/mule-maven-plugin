@@ -91,4 +91,8 @@ public class AbstractArchiver {
       return newExcludes;
     }
   }
+
+  public org.codehaus.plexus.archiver.AbstractArchiver getArchiver() {
+    return archiver;
+  }
 }

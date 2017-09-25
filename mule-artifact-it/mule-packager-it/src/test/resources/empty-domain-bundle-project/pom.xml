@@ -17,6 +17,7 @@
             <classifier>mule-application</classifier>
         </dependency>
         <dependency>
+            
             <groupId>org.apache.maven.plugin.my.unit</groupId>
             <artifactId>mule-application-b</artifactId>
             <version>1.0-SNAPSHOT</version>

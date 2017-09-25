@@ -28,7 +28,7 @@ public class MuleExplodedArchiverTest {
 
   @Test
   public void validateArchiverType() {
-    assertThat("The archiver type is not as expected", archiver.archiver, instanceOf(DirectoryArchiver.class));
+    assertThat("The archiver type is not as expected", archiver.getArchiver(), instanceOf(DirectoryArchiver.class));
   }
 
 }

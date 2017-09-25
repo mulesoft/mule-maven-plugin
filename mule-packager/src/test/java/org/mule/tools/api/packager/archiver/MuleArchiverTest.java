@@ -63,7 +63,7 @@ public class MuleArchiverTest {
 
   @Test
   public void validateArchiverType() {
-    assertThat("The archiver type is not as expected", archiver.archiver, instanceOf(ZipArchiver.class));
+    assertThat("The archiver type is not as expected", archiver.getArchiver(), instanceOf(ZipArchiver.class));
   }
 
   @Test

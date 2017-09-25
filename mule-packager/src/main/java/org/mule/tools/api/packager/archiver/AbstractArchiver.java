@@ -31,7 +31,7 @@ public class AbstractArchiver {
 
   public final static String MAVEN_LOCATION = META_INF_LOCATION + MAVEN.value() + File.separator;
 
-  protected org.codehaus.plexus.archiver.AbstractArchiver archiver;
+  private org.codehaus.plexus.archiver.AbstractArchiver archiver;
 
   public AbstractArchiver(org.codehaus.plexus.archiver.AbstractArchiver archiver) {
     this.archiver = archiver;

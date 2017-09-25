@@ -37,7 +37,7 @@ public class MuleArchiver extends AbstractArchiver {
     this(new ZipArchiver());
   }
 
-  public MuleArchiver(org.codehaus.plexus.archiver.AbstractArchiver archiver) {
+  protected MuleArchiver(org.codehaus.plexus.archiver.AbstractArchiver archiver) {
     super(archiver);
   }
 

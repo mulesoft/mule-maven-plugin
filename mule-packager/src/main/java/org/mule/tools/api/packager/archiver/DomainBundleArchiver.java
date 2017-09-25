@@ -33,7 +33,7 @@ public class DomainBundleArchiver extends AbstractArchiver {
     this(new ZipArchiver());
   }
 
-  public DomainBundleArchiver(org.codehaus.plexus.archiver.AbstractArchiver archiver) {
+  protected DomainBundleArchiver(org.codehaus.plexus.archiver.AbstractArchiver archiver) {
     super(archiver);
   }
 

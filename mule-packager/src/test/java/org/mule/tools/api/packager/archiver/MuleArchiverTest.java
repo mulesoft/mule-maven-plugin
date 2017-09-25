@@ -8,18 +8,24 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.packager;
+package org.mule.tools.api.packager.archiver;
 
 import static java.nio.file.Paths.get;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
+import static org.mule.tools.api.packager.structure.FolderNames.JAVA;
+import static org.mule.tools.api.packager.structure.FolderNames.MAIN;
 import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
 import static org.mule.tools.api.packager.structure.FolderNames.MUNIT;
+import static org.mule.tools.api.packager.structure.FolderNames.RESOURCES;
+import static org.mule.tools.api.packager.structure.FolderNames.SRC;
+import static org.mule.tools.api.packager.structure.FolderNames.TEST;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -31,6 +37,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
@@ -38,27 +45,25 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mule.tools.api.packager.archiver.MuleArchiver;
 
 public class MuleArchiverTest {
 
-  private static final String REAL_APP_TARGET = "real-app-target";
-
   private static final String REAL_APP = "real-app";
-  private static final String SRC = "src";
-  private static final String MAIN = "main";
-  private static final String RESOURCES = "resources";
-  private static final String TEST = "test";
-  private static final String JAVA = "java";
+  private static final String REAL_APP_TARGET = REAL_APP + "-target";
 
   @Rule
   public TemporaryFolder targetFileFolder = new TemporaryFolder();
 
-  public MuleArchiver muleArchiver;
+  public MuleArchiver archiver;
 
   @Before
   public void setUp() {
-    muleArchiver = new MuleArchiver();
+    archiver = new MuleArchiver();
+  }
+
+  @Test
+  public void validateArchiverType() {
+    assertThat("The archiver type is not as expected", archiver.archiver, instanceOf(ZipArchiver.class));
   }
 
   @Test
@@ -68,14 +73,14 @@ public class MuleArchiverTest {
 
     File destinationFile = new File(targetFileFolder.getRoot(), REAL_APP_TARGET + ".zip");
 
-    muleArchiver.addToRoot(getTestResourceFile(appBasePath.resolve(CLASSES.value())), null, null);
-    muleArchiver.addMaven(getTestResourceFile(appMetaInfPath.resolve(MAVEN.value())), null, null);
-    muleArchiver.addMuleSrc(getTestResourceFile(appMetaInfPath.resolve(MULE_SRC.value())), null, null);
-    muleArchiver.addMuleArtifact(getTestResourceFile(appMetaInfPath.resolve(MULE_ARTIFACT.value())), null, null);
+    archiver.addToRoot(getTestResourceFile(appBasePath.resolve(CLASSES.value())), null, null);
+    archiver.addMaven(getTestResourceFile(appMetaInfPath.resolve(MAVEN.value())), null, null);
+    archiver.addMuleSrc(getTestResourceFile(appMetaInfPath.resolve(MULE_SRC.value())), null, null);
+    archiver.addMuleArtifact(getTestResourceFile(appMetaInfPath.resolve(MULE_ARTIFACT.value())), null, null);
 
-    muleArchiver.setDestFile(destinationFile);
+    archiver.setDestFile(destinationFile);
 
-    muleArchiver.createArchive();
+    archiver.createArchive();
 
     File destinationDirectoryForUnzip = uncompressArchivedApp(destinationFile);
     assertCompleteAppContent(destinationDirectoryForUnzip);
@@ -140,28 +145,34 @@ public class MuleArchiverTest {
     relativePaths.add(tempBasePath.resolve("catalog").resolve("something.json"));
 
     tempBasePath =
-        get(META_INF.value()).resolve(MULE_SRC.value()).resolve(REAL_APP).resolve(SRC).resolve(MAIN).resolve(MULE.value());
+        get(META_INF.value()).resolve(MULE_SRC.value()).resolve(REAL_APP).resolve(SRC.value()).resolve(MAIN.value())
+            .resolve(MULE.value());
     relativePaths.add(tempBasePath.resolve("mule-config1.xml"));
     relativePaths.add(tempBasePath.resolve("org.mule.package").resolve("mule-config2.xml"));
 
-    tempBasePath = get(META_INF.value()).resolve(MULE_SRC.value()).resolve(REAL_APP).resolve(SRC).resolve(MAIN).resolve(JAVA);
+    tempBasePath = get(META_INF.value()).resolve(MULE_SRC.value()).resolve(REAL_APP).resolve(SRC.value()).resolve(MAIN.value())
+        .resolve(JAVA.value());
     relativePaths.add(tempBasePath.resolve("class3.clazz"));
     relativePaths.add(tempBasePath.resolve("org.fake.core").resolve("class1.clazz"));
     relativePaths.add(tempBasePath.resolve("org.fake.core").resolve("class2.clazz"));
 
     tempBasePath =
-        get(META_INF.value()).resolve(MULE_SRC.value()).resolve(REAL_APP).resolve(SRC).resolve(MAIN).resolve(RESOURCES);
+        get(META_INF.value()).resolve(MULE_SRC.value()).resolve(REAL_APP).resolve(SRC.value()).resolve(MAIN.value())
+            .resolve(RESOURCES.value());
     relativePaths.add(tempBasePath.resolve("resource1"));
     relativePaths.add(tempBasePath.resolve("resource2"));
     relativePaths.add(tempBasePath.resolve("resourceFolder").resolve("resource3"));
 
-    tempBasePath = get(META_INF.value()).resolve(MULE_SRC.value()).resolve(REAL_APP).resolve(SRC).resolve(TEST).resolve(JAVA);
+    tempBasePath =
+        get(META_INF.value()).resolve(MULE_SRC.value()).resolve(REAL_APP).resolve(SRC.value()).resolve(TEST.value())
+            .resolve(JAVA.value());
     relativePaths.add(tempBasePath.resolve("class3Test.clazz"));
     relativePaths.add(tempBasePath.resolve("org.fake.core").resolve("class2Test.clazz"));
     relativePaths.add(tempBasePath.resolve("org.fake.core").resolve("class1Test.clazz"));
 
     tempBasePath =
-        get(META_INF.value()).resolve(MULE_SRC.value()).resolve(REAL_APP).resolve(SRC).resolve(TEST).resolve(MUNIT.value());
+        get(META_INF.value()).resolve(MULE_SRC.value()).resolve(REAL_APP).resolve(SRC.value()).resolve(TEST.value())
+            .resolve(MUNIT.value());
     relativePaths.add(tempBasePath.resolve("mule-config1-test.xml"));
     relativePaths.add(tempBasePath.resolve("org.mule.package").resolve("mule-config2-test.xml"));
     return relativePaths;

@@ -11,21 +11,30 @@
 
 package org.mule.tools.api.packager.archiver;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.File;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.codehaus.plexus.archiver.zip.ZipArchiver;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DomainBundleArchiverTest {
 
   private static final String APPLICATIONS_LOCATION = "applications" + File.separator;
   private static final String DOMAIN_LOCATION = "domain" + File.separator;
+
+  private File fileMock;
+
   private DomainBundleArchiver archiver;
   private DomainBundleArchiver archiverSpy;
-  private File fileMock;
 
   @Before
   public void setUp() {
@@ -33,6 +42,11 @@ public class DomainBundleArchiverTest {
     archiverSpy = spy(archiver);
     doNothing().when(archiverSpy).addResource(any(), any(), any(), any());
     fileMock = mock(File.class);
+  }
+
+  @Test
+  public void validateArchiverType() {
+    assertThat("The archiver type is not as expected", archiver.archiver, instanceOf(ZipArchiver.class));
   }
 
   @Test

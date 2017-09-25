@@ -57,10 +57,7 @@ public class ArmDeployer extends AbstractDeployer {
   @Override
   public void undeploy(MavenProject mavenProject) throws DeploymentException {
     ArmClient armClient =
-        new ArmClient(log, deploymentConfiguration.getUri(), deploymentConfiguration.getUsername(),
-                      deploymentConfiguration.getPassword(),
-                      deploymentConfiguration.getEnvironment(), deploymentConfiguration.getBusinessGroup(),
-                      deploymentConfiguration.isArmInsecure());
+        new ArmClient(deploymentConfiguration, log);
     armClient.init();
     log.info("Undeploying application " + deploymentConfiguration.getApplicationName());
     try {
@@ -79,9 +76,7 @@ public class ArmDeployer extends AbstractDeployer {
   protected void initialize() {
     targetType = deploymentConfiguration.getTargetType();
     target = deploymentConfiguration.getTarget();
-    armClient = new ArmClient(log, deploymentConfiguration.getUri(), deploymentConfiguration.getUsername(),
-                              deploymentConfiguration.getPassword(), deploymentConfiguration.getEnvironment(),
-                              deploymentConfiguration.getBusinessGroup(), deploymentConfiguration.isArmInsecure());
+    armClient = new ArmClient(deploymentConfiguration, log);
   }
 
   @Override

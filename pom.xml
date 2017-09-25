@@ -52,6 +52,8 @@
         <maven.compat.version>3.3.9</maven.compat.version>
         <maven.verifier.version>1.6</maven.verifier.version>
         <maven.dependency.tree.version>1.2</maven.dependency.tree.version>
+        <jersey.media.json.jackson.version>2.26</jersey.media.json.jackson.version>
+        <jersey.media.moxy>2.15</jersey.media.moxy>
 
         <!-- Plugin Versions -->
         <license.plugin.version>2.6</license.plugin.version>
@@ -185,6 +187,16 @@
                 <version>${maven.verifier.plugin.version}</version>
                 <type>maven-plugin</type>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <version>${jersey.media.json.jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-moxy</artifactId>
+                <version>${jersey.media.moxy}</version>
             </dependency>
 
 

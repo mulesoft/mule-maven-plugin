@@ -25,8 +25,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mule.tools.model.DeploymentConfiguration;
 
-@Ignore
 public class CloudhubClientTestCase {
 
   private static final String URI = "https://anypoint.mulesoft.com";
@@ -34,7 +34,7 @@ public class CloudhubClientTestCase {
   private static final String PASSWORD = System.getProperty("password");
   private static final String ENVIRONMENT = "Production";
   private static final String REGION = "us-east-1";
-  private static final String MULE_VERSION = "3.6.1";
+  private static final String MULE_VERSION = "4.0.0-FD";
   private static final int WORKERS = 1;
   private static final String WORKER_TYPE = "Medium";
 
@@ -42,10 +42,17 @@ public class CloudhubClientTestCase {
   private static final File APP = new File("/tmp/echo-test4.zip");
   private CloudhubClient cloudhubClient;
   private Map<String, String> properties = new HashMap();
+  private DeploymentConfiguration deploymentConfiguration;
 
   @Before
   public void setup() {
-    cloudhubClient = new CloudhubClient(URI, null, USERNAME, PASSWORD, ENVIRONMENT, "");
+    deploymentConfiguration = new DeploymentConfiguration();
+    deploymentConfiguration.setUri(URI);
+    deploymentConfiguration.setUsername(USERNAME);
+    deploymentConfiguration.setPassword(PASSWORD);
+    deploymentConfiguration.setEnvironment(ENVIRONMENT);
+    deploymentConfiguration.setBusinessGroup("");
+    cloudhubClient = new CloudhubClient(deploymentConfiguration, null);
     cloudhubClient.init();
   }
 
@@ -82,6 +89,7 @@ public class CloudhubClientTestCase {
     }
   }
 
+  @Ignore
   @Test
   public void uploadFile() {
     verifyAppDoesntExist(APP_NAME);
@@ -90,6 +98,7 @@ public class CloudhubClientTestCase {
     cloudhubClient.uploadFile(APP_NAME, APP);
   }
 
+  @Ignore
   @Test
   public void startApplication() {
     verifyAppDoesntExist(APP_NAME);
@@ -99,9 +108,9 @@ public class CloudhubClientTestCase {
     cloudhubClient.startApplication(APP_NAME);
   }
 
+  @Ignore
   @Test
   public void deleteApplication() {
-    //verifyAppDoesntExist(APP_NAME);
     cloudhubClient.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE, properties);
     verifyAppExists(APP_NAME);
     cloudhubClient.deleteApplication(APP_NAME);

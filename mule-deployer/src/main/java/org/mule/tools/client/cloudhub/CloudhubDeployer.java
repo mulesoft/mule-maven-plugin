@@ -10,6 +10,7 @@
 package org.mule.tools.client.cloudhub;
 
 import groovy.util.ScriptException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
@@ -21,6 +22,10 @@ import org.mule.tools.client.standalone.exception.DeploymentException;
 
 import org.mule.tools.model.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
+
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 public class CloudhubDeployer extends AbstractDeployer {
 
@@ -84,10 +89,7 @@ public class CloudhubDeployer extends AbstractDeployer {
   @Override
   public void undeploy(MavenProject mavenProject) throws DeploymentException {
     CloudhubClient cloudhubClient =
-        new CloudhubClient(deploymentConfiguration.getUri(), log, deploymentConfiguration.getUsername(),
-                           deploymentConfiguration.getPassword(),
-                           deploymentConfiguration.getEnvironment(),
-                           deploymentConfiguration.getBusinessGroup());
+        new CloudhubClient(deploymentConfiguration, log);
     cloudhubClient.init();
     log.info("Stopping application " + deploymentConfiguration.getApplicationName());
     cloudhubClient.stopApplication(deploymentConfiguration.getApplicationName());
@@ -95,9 +97,7 @@ public class CloudhubDeployer extends AbstractDeployer {
 
   @Override
   protected void initialize() {
-    this.cloudhubClient = new CloudhubClient(deploymentConfiguration.getUri(), log, deploymentConfiguration.getUsername(),
-                                             deploymentConfiguration.getPassword(), deploymentConfiguration.getEnvironment(),
-                                             deploymentConfiguration.getBusinessGroup());
+    this.cloudhubClient = new CloudhubClient(deploymentConfiguration, log);
   }
 
   @Override
@@ -107,13 +107,17 @@ public class CloudhubDeployer extends AbstractDeployer {
 
   }
 
-  private Application findApplicationFromCurrentUser(String appName) {
-    for (Application app : cloudhubClient.getApplications()) {
-      if (appName.equals(app.domain)) {
+  protected Application findApplicationFromCurrentUser(String appName) {
+    checkArgument(StringUtils.isNotBlank(appName), "Application name should not be blank nor null");
+    for (Application app : getApplications()) {
+      if (appName.equalsIgnoreCase(app.domain)) {
         return app;
       }
     }
     return null;
   }
 
+  public List<Application> getApplications() {
+    return cloudhubClient.getApplications();
+  }
 }

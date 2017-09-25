@@ -23,6 +23,7 @@ import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.mule.tools.client.AbstractMuleClient;
 import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.model.DeployerLog;
+import org.mule.tools.model.DeploymentConfiguration;
 
 public class CloudhubClient extends AbstractMuleClient {
 
@@ -45,17 +46,22 @@ public class CloudhubClient extends AbstractMuleClient {
       "        \"name\": \"%s\"" +
       "    }" +
       "  }";
+  private static final int OK = 200;
+  private static final int CREATED = 201;
+  private static final int NO_CONTENT = 204;
+  private static final int MOVED_PERMANENTLY = 301;
+  private static final int NOT_MODIFIED = 304;
+  private static final int NOT_FOUND = 404;
 
-  public CloudhubClient(String uri, DeployerLog log, String username, String password, String environment, String businessGroup) {
-    super(uri, log, username, password, environment, businessGroup);
+  public CloudhubClient(DeploymentConfiguration deploymentConfiguration, DeployerLog log) {
+    super(deploymentConfiguration, log);
   }
 
   public Application createApplication(String appName, String region, String muleVersion, Integer workers, String workerType,
                                        Map<String, String> properties) {
     Entity<String> json = createApplicationRequest(appName, region, muleVersion, workers, workerType, properties);
     Response response = post(uri, APPLICATIONS_PATH, json);
-    if (response.getStatus() == 201) // Created
-    {
+    if (response.getStatus() == CREATED) {
       return response.readEntity(Application.class);
     } else {
       throw new ClientException(response);
@@ -99,24 +105,23 @@ public class CloudhubClient extends AbstractMuleClient {
                                 Map<String, String> properties) {
     Entity<String> json = updateApplicationRequest(region, muleVersion, workers, workerType, properties);
     Response response = put(uri, String.format(APPLICATION_UPDATE_PATH, appName), json);
-    if (response.getStatus() != 200 && response.getStatus() != 301) // OK || Not modified
-    {
+    if (response.getStatus() != OK && response.getStatus() != MOVED_PERMANENTLY) {
       throw new ClientException(response);
     }
   }
 
   /**
    * Looks up an application by its name.
+   * 
    * @param appName The application name to look up.
    * @return The details of an application, or null if it doesn't exist.
    */
   public Application getApplication(String appName) {
     Response response = get(uri, APPLICATIONS_PATH + "/" + appName);
 
-    if (response.getStatus() == 200) {
+    if (response.getStatus() == OK) {
       return response.readEntity(Application.class);
-    } else if (response.getStatus() == 404) // Not found
-    {
+    } else if (response.getStatus() == NOT_FOUND) {
       return null;
     } else {
       throw new ClientException(response);
@@ -126,7 +131,7 @@ public class CloudhubClient extends AbstractMuleClient {
   public List<Application> getApplications() {
     Response response = get(uri, APPLICATIONS_PATH);
 
-    if (response.getStatus() == 200) {
+    if (response.getStatus() == OK) {
       return response.readEntity(new GenericType<List<Application>>() {});
     } else {
       throw new ClientException(response);
@@ -140,7 +145,7 @@ public class CloudhubClient extends AbstractMuleClient {
     Response response =
         post(uri, String.format(APPLICATIONS_FILES_PATH, appName), Entity.entity(multipart, multipart.getMediaType()));
 
-    if (response.getStatus() != 200) {
+    if (response.getStatus() != OK) {
       throw new ClientException(response);
     }
   }
@@ -157,7 +162,7 @@ public class CloudhubClient extends AbstractMuleClient {
     Entity<String> json = Entity.json("{\"status\": \"" + state + "\"}");
     Response response = post(uri, APPLICATIONS_PATH + "/" + appName + "/status", json);
 
-    if (response.getStatus() != 200 && response.getStatus() != 304) {
+    if (response.getStatus() != OK && response.getStatus() != NOT_MODIFIED) {
       throw new ClientException(response);
     }
 
@@ -167,7 +172,7 @@ public class CloudhubClient extends AbstractMuleClient {
   public void deleteApplication(String appName) {
     Response response = delete(uri, APPLICATIONS_PATH + "/" + appName);
 
-    if (response.getStatus() != 200 && response.getStatus() != 204) {
+    if (response.getStatus() != OK && response.getStatus() != NO_CONTENT) {
       throw new ClientException(response);
     }
 
@@ -177,7 +182,7 @@ public class CloudhubClient extends AbstractMuleClient {
   public boolean isNameAvailable(String appName) {
     Response response = get(uri, DOMAINS_PATH + appName);
 
-    if (response.getStatus() == 200) {
+    if (response.getStatus() == OK) {
       DomainAvailability availability = response.readEntity(DomainAvailability.class);
       return availability.available;
     } else {

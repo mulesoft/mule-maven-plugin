@@ -10,6 +10,8 @@
 
 package org.mule.tools.api.packager.sources;
 
+import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.deserialize;
+import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.serializeToFile;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
@@ -18,11 +20,7 @@ import static org.mule.tools.api.packager.structure.FolderNames.TARGET;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -34,15 +32,10 @@ import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.util.CopyFileVisitor;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
  * Generates the required content for each of the mandatory folders of a mule application package
  */
 public class MuleContentGenerator extends ContentGenerator {
-
-  private static final String CLASSLOADER_MODEL_FILE_NAME = "classloader-model.json";
 
   public MuleContentGenerator(ProjectInformation projectInformation) {
     super(projectInformation);
@@ -120,17 +113,7 @@ public class MuleContentGenerator extends ContentGenerator {
    * @return a non null {@link ClassLoaderModel} matching the provided JSON content
    */
   public static ClassLoaderModel createClassLoaderModelFromJson(File classLoaderModelDescriptor) {
-    try {
-      Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
-
-      Reader reader = new FileReader(classLoaderModelDescriptor);
-      ClassLoaderModel classLoaderModel = gson.fromJson(reader, ClassLoaderModel.class);
-      reader.close();
-
-      return classLoaderModel;
-    } catch (IOException e) {
-      throw new RuntimeException("Could not create classloadermodel.json", e);
-    }
+    return deserialize(classLoaderModelDescriptor);
   }
 
   private void copyContent(Path originPath, Path destinationPath, Optional<List<Path>> exclusions) throws IOException {
@@ -154,23 +137,12 @@ public class MuleContentGenerator extends ContentGenerator {
   }
 
   /**
-   * It creates classloader-model.json in META-INF/mule-artifact
+   * It creates classloader-model.json in the destination folder
    *
    * @param classLoaderModel the classloader model of the application being packaged
    * @return the created File containing the classloader model's JSON representation
    */
   public static File createClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel, File destinationFolder) {
-    File destinationFile = new File(destinationFolder, CLASSLOADER_MODEL_FILE_NAME);
-    try {
-      destinationFile.createNewFile();
-      Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
-      Writer writer = new FileWriter(destinationFile.getAbsolutePath());
-      ClassLoaderModel parameterizedClassloaderModel = classLoaderModel.getParametrizedUriModel();
-      gson.toJson(parameterizedClassloaderModel, writer);
-      writer.close();
-      return destinationFile;
-    } catch (IOException e) {
-      throw new RuntimeException("Could not create classloadermodel.json", e);
-    }
+    return serializeToFile(classLoaderModel, destinationFolder);
   }
 }

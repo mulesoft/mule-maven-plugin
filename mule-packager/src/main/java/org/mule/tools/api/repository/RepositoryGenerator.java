@@ -11,7 +11,6 @@
 package org.mule.tools.api.repository;
 
 import static java.lang.String.format;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifactCoordinates;
 import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
 
 import java.io.File;

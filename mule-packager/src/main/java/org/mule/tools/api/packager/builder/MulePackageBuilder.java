@@ -32,12 +32,14 @@ import org.codehaus.plexus.archiver.ArchiverException;
 
 import org.mule.tools.api.packager.archiver.MuleArchiver;
 import org.mule.tools.api.packager.packaging.PackagingOptions;
+import org.mule.tools.api.packager.structure.FolderNames;
 
 /**
  * Builder for Mule Application packages.
  */
 public class MulePackageBuilder implements PackageBuilder {
 
+  public static final String CLASSLOADER_MODEL_JSON = "classloader-model.json";
   private PackagingOptions packagingOptions;
 
   private File classesFolder = null;
@@ -210,7 +212,12 @@ public class MulePackageBuilder implements PackageBuilder {
     if (!packagingOptions.isOnlyMuleSources()) {
       archiver.addToRoot(classesFolder, null, null);
       archiver.addMaven(mavenFolder, null, null);
-      archiver.addMuleArtifact(muleArtifactFolder, null, null);
+
+      if (packagingOptions.isLightweightPackage()) {
+        archiver.addMuleArtifact(muleArtifactFolder, null, new String[] {CLASSLOADER_MODEL_JSON});
+      } else {
+        archiver.addMuleArtifact(muleArtifactFolder, null, null);
+      }
 
       if (packagingOptions.isTestPackage()) {
         archiver.addToRoot(testClassesFolder, null, null);

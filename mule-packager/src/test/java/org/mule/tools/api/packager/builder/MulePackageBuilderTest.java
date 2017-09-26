@@ -18,6 +18,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mule.tools.api.packager.builder.MulePackageBuilder.CLASSLOADER_MODEL_JSON;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
@@ -305,7 +306,7 @@ public class MulePackageBuilderTest {
     verify(archiverMock, times(1)).addToRoot(targetPath.resolve(CLASSES.value()).toFile(), null, null);
     verify(archiverMock, times(1)).addMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile(), null, null);
     verify(archiverMock, times(1)).addMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
-                                                   null, null);
+                                                   null, new String[] {CLASSLOADER_MODEL_JSON});
     verify(archiverMock, times(1)).addMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(), null,
                                               null);
     verify(archiverMock, times(0)).addRepository(targetPath.resolve(REPOSITORY.value()).toFile(), null, null);

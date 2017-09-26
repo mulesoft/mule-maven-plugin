@@ -11,7 +11,6 @@
 package org.mule.tools.api.classloader.model;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 
 import java.io.File;
 import java.net.URI;
@@ -124,7 +123,7 @@ public class Artifact implements Comparable {
   public static String getFormattedArtifactFileName(Artifact artifact) {
     ArtifactCoordinates artifactCoordinates = artifact.getArtifactCoordinates();
     String destFileName = buildMainFileName(artifactCoordinates);
-    String extension = new DefaultArtifactHandler(artifactCoordinates.getType()).getExtension();
+    String extension = artifactCoordinates.getType();
     return destFileName + "." + extension;
   }
 

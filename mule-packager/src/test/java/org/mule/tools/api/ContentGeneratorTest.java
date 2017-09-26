@@ -51,9 +51,6 @@ public class ContentGeneratorTest {
   private static final String POM_FILE_NAME = "pom.xml";
   private static final String FAKE_FILE_NAME = "fakeFile.xml";
   private static final String MULE_ARTIFACT_DESCRIPTOR_FILE_NAME = "mule-artifact.json";
-  private static final String TYPE = "jar";
-  private static final String CLASSIFIER = "classifier";
-  private static final String CLASSLOADER_MODEL_JSON_FILE_NAME = "classloader-model.json";
 
   @Rule
   public TemporaryFolder projectBaseFolder = new TemporaryFolder();
@@ -361,34 +358,5 @@ public class ContentGeneratorTest {
     verify(contentGeneratorMock, times(1)).createContent();
     verify(contentGeneratorMock, times(1)).createMetaInfMuleSourceFolderContent();
     verify(contentGeneratorMock, times(1)).createDescriptors();
-  }
-
-  @Test
-  public void classLoaderModelSerializationTest() throws URISyntaxException {
-    ArtifactCoordinates artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, TYPE, CLASSIFIER);
-    ClassLoaderModel expectedClassLoaderModel = new ClassLoaderModel(VERSION, artifactCoordinates);
-    List<Artifact> dependencies = getDependencies();
-    expectedClassLoaderModel.setDependencies(dependencies);
-    File classloaderModelJsonFile =
-        MuleContentGenerator.createClassLoaderModelJsonFile(expectedClassLoaderModel, projectTargetFolder);
-    assertThat("Classloader model json file name is incorrect",
-               classloaderModelJsonFile.getName().endsWith(CLASSLOADER_MODEL_JSON_FILE_NAME), is(true));
-    ClassLoaderModel actualClassloaderModel = MuleContentGenerator.createClassLoaderModelFromJson(classloaderModelJsonFile);
-    assertThat("Actual classloader model is not equal to the expected", actualClassloaderModel,
-               equalTo(expectedClassLoaderModel));
-  }
-
-  private List<Artifact> getDependencies() throws URISyntaxException {
-    List<Artifact> artifacts = new ArrayList<>();
-    for (int i = 0; i < 10; ++i) {
-      artifacts.add(createArtifact(i));
-    }
-    return artifacts;
-  }
-
-  private Artifact createArtifact(int i) throws URISyntaxException {
-    ArtifactCoordinates coordinates = new ArtifactCoordinates(VERSION, GROUP_ID + i, ARTIFACT_ID + i, TYPE, CLASSIFIER);
-    URI uri = new URI("file:/repository/path/" + i);
-    return new Artifact(coordinates, uri);
   }
 }

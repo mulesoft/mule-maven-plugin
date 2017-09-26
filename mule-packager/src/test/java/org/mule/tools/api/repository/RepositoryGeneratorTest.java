@@ -129,7 +129,7 @@ public class RepositoryGeneratorTest {
   }
 
   @Test
-  public void getRepositoryFolderIfAlreadyExistsTest() {
+  public void getRepositoryFolderIfAlreadyExistsTest() throws IOException {
     File expectedRepositoryFolder = temporaryFolder.newFolder(REPOSITORY_FOLDER);
     assertThat("Repository folder does not exist", expectedRepositoryFolder.exists());
     File actualRepositoryFolder = repositoryGenerator.getRepositoryFolder();

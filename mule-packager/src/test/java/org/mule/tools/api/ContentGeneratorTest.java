@@ -64,7 +64,7 @@ public class ContentGeneratorTest {
   private File projectTargetFolder;
 
   @Before
-  public void setUp() {
+  public void setUp() throws IOException {
     projectTargetFolder = projectBaseFolder.newFolder("target");
     ProjectInformation info = new ProjectInformation.Builder()
         .withGroupId(GROUP_ID)

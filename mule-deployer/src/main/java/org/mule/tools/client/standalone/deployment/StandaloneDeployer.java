@@ -26,6 +26,7 @@ import org.apache.maven.artifact.resolver.AbstractArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.standalone.controller.probing.AppDeploymentProbe;
 import org.mule.tools.client.standalone.controller.probing.PollingProber;
@@ -33,7 +34,6 @@ import org.mule.tools.client.standalone.controller.probing.Prober;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
-import org.mule.tools.model.ArtifactDescription;
 import org.mule.tools.model.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
 import org.mule.tools.utils.GroovyUtils;
@@ -208,13 +208,13 @@ public class StandaloneDeployer extends AbstractDeployer {
                                     MavenProject project, ArtifactRepository repository)
       throws DeploymentException {
     List<File> libraries = new ArrayList<>();
-    for (ArtifactDescription artifact : configuration.getArtifactItems()) {
+    for (ArtifactCoordinates artifact : configuration.getArtifactItems()) {
       libraries.add(getDependency(artifact, factory, resolver, project, repository));
     }
     return libraries;
   }
 
-  protected File getDependency(ArtifactDescription artifactDescription, ArtifactFactory factory, ArtifactResolver resolver,
+  protected File getDependency(ArtifactCoordinates artifactDescription, ArtifactFactory factory, ArtifactResolver resolver,
                                MavenProject project, ArtifactRepository repository)
       throws DeploymentException {
     try {

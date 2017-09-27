@@ -9,6 +9,7 @@
  */
 package org.mule.tools.client.standalone.installer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -20,7 +21,7 @@ import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.eclipse.aether.deployment.DeploymentException;
-import org.mule.tools.model.ArtifactDescription;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.model.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
 
@@ -61,14 +62,15 @@ public class MuleStandaloneInstaller {
   public File doInstallMule(File buildDirectory) throws DeploymentException {
     if (deploymentConfiguration.getMuleDistribution() == null) {
       if (deploymentConfiguration.isCommunity()) {
-        deploymentConfiguration.setMuleDistribution(new ArtifactDescription("org.mule.distributions", "mule-standalone",
-                                                                            deploymentConfiguration.getMuleVersion(), "tar.gz"));
+        deploymentConfiguration.setMuleDistribution(new ArtifactCoordinates("org.mule.distributions", "mule-standalone",
+                                                                            deploymentConfiguration.getMuleVersion(), "tar.gz",
+                                                                            StringUtils.EMPTY));
         log.debug("muleDistribution not set, using default community artifact: "
             + deploymentConfiguration.getMuleDistribution());
       } else {
         deploymentConfiguration
-            .setMuleDistribution(new ArtifactDescription("com.mulesoft.mule.distributions", "mule-ee-distribution-standalone",
-                                                         deploymentConfiguration.getMuleVersion(), "tar.gz"));
+            .setMuleDistribution(new ArtifactCoordinates("com.mulesoft.mule.distributions", "mule-ee-distribution-standalone",
+                                                         deploymentConfiguration.getMuleVersion(), "tar.gz", StringUtils.EMPTY));
         log.debug("muleDistribution not set, using default artifact: " + deploymentConfiguration.getMuleDistribution());
       }
     }
@@ -77,7 +79,7 @@ public class MuleStandaloneInstaller {
     return new File(buildDirectory, contentDirectory);
   }
 
-  private String resolveMuleContentDirectory(ArtifactDescription muleDistribution) {
+  private String resolveMuleContentDirectory(ArtifactCoordinates muleDistribution) {
     return "mule-" + ("mule-standalone".equals(muleDistribution.getArtifactId()) ? "" : "enterprise-") + "standalone-"
         + muleDistribution.getVersion();
   }
@@ -85,7 +87,7 @@ public class MuleStandaloneInstaller {
   /**
    * This code was inspired by maven-dependency-plugin GetMojo.
    */
-  public void unpackMule(ArtifactDescription muleDistribution, File destDir) throws DeploymentException {
+  public void unpackMule(ArtifactCoordinates muleDistribution, File destDir) throws DeploymentException {
     File src = getDependency(muleDistribution);
     log.info("Copying " + src.getAbsolutePath() + " to " + destDir.getAbsolutePath());
     extract(src, destDir, muleDistribution.getType());
@@ -114,7 +116,7 @@ public class MuleStandaloneInstaller {
     }
   }
 
-  protected File getDependency(ArtifactDescription artifactDescription) throws DeploymentException {
+  protected File getDependency(ArtifactCoordinates artifactDescription) throws DeploymentException {
     try {
       Artifact artifact = artifactFactory.createArtifact(artifactDescription.getGroupId(),
                                                          artifactDescription.getArtifactId(), artifactDescription.getVersion(),

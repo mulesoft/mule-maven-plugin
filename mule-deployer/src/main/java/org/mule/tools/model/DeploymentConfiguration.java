@@ -10,6 +10,7 @@
 package org.mule.tools.model;
 
 import org.apache.maven.plugins.annotations.Parameter;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.client.model.TargetType;
 
 import java.io.File;
@@ -77,7 +78,7 @@ public class DeploymentConfiguration {
   protected int timeout;
 
   @Parameter
-  protected List<ArtifactDescription> artifactItems = new ArrayList<ArtifactDescription>();
+  protected List<ArtifactCoordinates> artifactItems = new ArrayList<>();
 
 
   // DeployMojo configuration parameters
@@ -86,7 +87,7 @@ public class DeploymentConfiguration {
   protected boolean community;
 
   @Parameter(readonly = true)
-  protected ArtifactDescription muleDistribution;
+  protected ArtifactCoordinates muleDistribution;
 
   @Parameter(property = "mule.deploymentConfiguration.timeout", defaultValue = "60000", required = true)
   protected Long deploymentTimeout;
@@ -345,11 +346,11 @@ public class DeploymentConfiguration {
     this.timeout = timeout;
   }
 
-  public List<ArtifactDescription> getArtifactItems() {
+  public List<ArtifactCoordinates> getArtifactItems() {
     return artifactItems;
   }
 
-  public void setArtifactItems(List<ArtifactDescription> artifactItems) {
+  public void setArtifactItems(List<ArtifactCoordinates> artifactItems) {
     this.artifactItems = artifactItems;
   }
 
@@ -375,11 +376,11 @@ public class DeploymentConfiguration {
    * @since 1.0
    * @deprecated Use the official maven artifact descriptor, if you need to use Community distribution @see community property
    */
-  public ArtifactDescription getMuleDistribution() {
+  public ArtifactCoordinates getMuleDistribution() {
     return muleDistribution;
   }
 
-  public void setMuleDistribution(ArtifactDescription muleDistribution) {
+  public void setMuleDistribution(ArtifactCoordinates muleDistribution) {
     this.muleDistribution = muleDistribution;
   }
 

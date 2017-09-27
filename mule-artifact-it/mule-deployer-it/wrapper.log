@@ -1,0 +1,1126 @@
+INFO  2017-10-09 11:19:27,122 [AsyncHttpClient-Callback] com.mulesoft.agent.services.security.HandshakeAuthorizationService: WebSocket Client connection authorized
+Unable to write to the configured log file: /Users/ms0374/Documents/projects/mule-artifact-tools/mule-artifact-it/mule-deployer-it/target/mule-enterprise-standalone-4.0.0-SNAPSHOT/logs/mule_ee.log (No such file or directory)
+  Falling back to the default file in the current working directory: wrapper.log
+WARN  2017-10-09 11:19:27,782 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 11:19:27,932 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 11:19:27,938 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-334626383082327676/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 11:21:00,149 [pool-23-thread-1] com.mulesoft.agent.util.client.DefaultAuthenticationProxyClient: There was an error executing a post request to the auth proxy.
+WARN  2017-10-09 11:21:00,209 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest, cause: TimeoutException: Request timed out to arm-auth-proxy.prod.cloudhub.io/34.232.38.247:443 of 60000 ms
+INFO  2017-10-09 11:21:00,210 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 11:21:00,210 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+INFO  2017-10-09 11:21:28,876 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.module.deployment.internal.DefaultArchiveDeployer: ================== Request to Undeploy Artifact: default
+INFO  2017-10-09 11:21:30,195 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.module.deployment.impl.internal.domain.DefaultMuleDomain: 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++ Disposing domain 'default'                               +
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+INFO  2017-10-09 11:21:30,213 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.core.privileged.lifecycle.AbstractLifecycleManager: Disposing RegistryBroker
+INFO  2017-10-09 11:21:30,907 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.config.internal.MuleArtifactContext: Closing org.mule.runtime.config.internal.MuleArtifactContext@7eef1039: startup date [Fri Oct 06 14:31:19 ART 2017]; root of context hierarchy
+INFO  2017-10-09 11:21:31,043 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.core.internal.context.DefaultMuleContext: 
+**********************************************************************
+* Application "default" shut down normally on: 10/9/17 11:21 AM      *
+* Up for: 2 days, 20 hours, 50 mins, 10.764 sec                      *
+**********************************************************************
+ERROR 2017-10-09 11:21:32,084 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.module.deployment.internal.DefaultArtifactDeployer: Unable to cleanly dispose artifact 'default'. Restart Mule if you get errors redeploying this artifact
+java.lang.LinkageError: loader (instance of  org/mule/runtime/deployment/model/internal/domain/MuleSharedDomainClassLoader): attempted  duplicate class definition for name: "org/mule/module/artifact/classloader/DefaultResourceReleaser"
+	at java.lang.ClassLoader.defineClass1(Native Method) ~[?:1.8.0_111]
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:763) ~[?:1.8.0_111]
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:642) ~[?:1.8.0_111]
+	at org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader.createCustomInstance(MuleArtifactClassLoader.java:120) ~[mule-module-artifact-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader.createResourceReleaserInstance(MuleArtifactClassLoader.java:133) ~[mule-module-artifact-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader.dispose(MuleArtifactClassLoader.java:93) ~[mule-module-artifact-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.impl.internal.domain.DefaultMuleDomain.dispose(DefaultMuleDomain.java:235) ~[mule-module-deployment-model-impl-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.impl.internal.domain.DomainWrapper.dispose(DomainWrapper.java:35) ~[mule-module-deployment-model-impl-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DefaultArtifactDeployer.tryToDisposeArtifact(DefaultArtifactDeployer.java:53) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DefaultArtifactDeployer.undeploy(DefaultArtifactDeployer.java:40) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DefaultArchiveDeployer.undeploy(DefaultArchiveDeployer.java:338) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DefaultArchiveDeployer.undeployArtifact(DefaultArchiveDeployer.java:123) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DomainArchiveDeployer.undeployArtifact(DomainArchiveDeployer.java:84) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DeploymentDirectoryWatcher.undeployRemovedArtifacts(DeploymentDirectoryWatcher.java:379) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DeploymentDirectoryWatcher.undeployRemovedDomains(DeploymentDirectoryWatcher.java:343) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DeploymentDirectoryWatcher.run(DeploymentDirectoryWatcher.java:279) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) [?:1.8.0_111]
+	at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308) [?:1.8.0_111]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180) [?:1.8.0_111]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294) [?:1.8.0_111]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_111]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_111]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_111]
+INFO  2017-10-09 11:21:32,171 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.module.deployment.internal.DefaultArchiveDeployer: 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++ Undeployed artifact 'default'                            +
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+WARN  2017-10-09 11:25:47,004 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 11:25:47,270 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 11:25:47,298 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-848546528400674245/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 11:27:48,243 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 11:27:48,666 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 11:27:48,674 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-815328177792571237/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 11:28:58,618 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 11:28:58,804 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 11:28:58,921 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-1909864324201361326/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 11:29:58,148 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 11:29:58,276 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 11:29:58,277 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-8337280354946927255/arm-deploy.zip' exists but is not a directory
+INFO  2017-10-09 11:30:12,832 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.module.deployment.internal.DefaultArchiveDeployer: ================== New Exploded Artifact: default
+INFO  2017-10-09 11:30:15,743 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.module.deployment.impl.internal.domain.DefaultMuleDomain: 
+**********************************************************************
+* Started domain 'default'                                           *
+**********************************************************************
+INFO  2017-10-09 11:30:40,788 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.module.deployment.internal.DefaultArchiveDeployer: ================== Request to Undeploy Artifact: default
+INFO  2017-10-09 11:30:40,813 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.module.deployment.impl.internal.domain.DefaultMuleDomain: 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++ Disposing domain 'default'                               +
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+INFO  2017-10-09 11:30:40,816 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.core.privileged.lifecycle.AbstractLifecycleManager: Disposing RegistryBroker
+INFO  2017-10-09 11:30:40,972 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.config.internal.MuleArtifactContext: Closing org.mule.runtime.config.internal.MuleArtifactContext@4a882104: startup date [Mon Oct 09 11:30:14 ART 2017]; root of context hierarchy
+INFO  2017-10-09 11:30:41,007 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.core.internal.context.DefaultMuleContext: 
+**********************************************************************
+* Application "default" shut down normally on: 10/9/17 11:30 AM      *
+* Up for: 0 days, 0 hours, 0 mins, 25.294 sec                        *
+**********************************************************************
+ERROR 2017-10-09 11:30:41,043 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.module.deployment.internal.DefaultArtifactDeployer: Unable to cleanly dispose artifact 'default'. Restart Mule if you get errors redeploying this artifact
+java.lang.LinkageError: loader (instance of  org/mule/runtime/deployment/model/internal/domain/MuleSharedDomainClassLoader): attempted  duplicate class definition for name: "org/mule/module/artifact/classloader/DefaultResourceReleaser"
+	at java.lang.ClassLoader.defineClass1(Native Method) ~[?:1.8.0_111]
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:763) ~[?:1.8.0_111]
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:642) ~[?:1.8.0_111]
+	at org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader.createCustomInstance(MuleArtifactClassLoader.java:120) ~[mule-module-artifact-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader.createResourceReleaserInstance(MuleArtifactClassLoader.java:133) ~[mule-module-artifact-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader.dispose(MuleArtifactClassLoader.java:93) ~[mule-module-artifact-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.impl.internal.domain.DefaultMuleDomain.dispose(DefaultMuleDomain.java:235) ~[mule-module-deployment-model-impl-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.impl.internal.domain.DomainWrapper.dispose(DomainWrapper.java:35) ~[mule-module-deployment-model-impl-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DefaultArtifactDeployer.tryToDisposeArtifact(DefaultArtifactDeployer.java:53) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DefaultArtifactDeployer.undeploy(DefaultArtifactDeployer.java:40) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DefaultArchiveDeployer.undeploy(DefaultArchiveDeployer.java:338) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DefaultArchiveDeployer.undeployArtifact(DefaultArchiveDeployer.java:123) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DomainArchiveDeployer.undeployArtifact(DomainArchiveDeployer.java:84) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DeploymentDirectoryWatcher.undeployRemovedArtifacts(DeploymentDirectoryWatcher.java:379) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DeploymentDirectoryWatcher.undeployRemovedDomains(DeploymentDirectoryWatcher.java:343) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at org.mule.runtime.module.deployment.internal.DeploymentDirectoryWatcher.run(DeploymentDirectoryWatcher.java:279) [mule-module-deployment-4.0.0-SNAPSHOT.jar:4.0.0-SNAPSHOT]
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) [?:1.8.0_111]
+	at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308) [?:1.8.0_111]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180) [?:1.8.0_111]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294) [?:1.8.0_111]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_111]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_111]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_111]
+INFO  2017-10-09 11:30:41,058 [Mule.app.deployer.monitor.1.thread.1] org.mule.runtime.module.deployment.internal.DefaultArchiveDeployer: 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++ Undeployed artifact 'default'                            +
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+WARN  2017-10-09 11:33:28,402 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 11:33:28,638 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 11:33:28,672 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-4412286957291993919/arm-deploy.zip' exists but is not a directory
+INFO  2017-10-09 11:43:48,267 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 11:43:48,368 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-2468137985659519557/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 12:05:19,104 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 12:05:20,800 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 12:05:20,811 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-4103143460687047391/arm-deploy.zip' exists but is not a directory
+INFO  2017-10-09 13:05:45,879 [pool-4-thread-1] com.mulesoft.agent.transport.WSConnection: Failed attempt to connect nro. 1 to the web socket client at mule-manager.anypoint.mulesoft.com: Connection refused.
+INFO  2017-10-09 13:06:17,888 [AsyncHttpClient-Callback] com.mulesoft.agent.services.security.HandshakeAuthorizationService: WebSocket Client connection authorized
+WARN  2017-10-09 13:06:18,169 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 13:06:18,736 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 13:06:18,758 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-3790823235258790394/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 13:07:06,776 [pool-23-thread-1] com.mulesoft.agent.util.client.DefaultAuthenticationProxyClient: There was an error executing a post request to the auth proxy.
+WARN  2017-10-09 13:07:06,818 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest, cause: TimeoutException: Request timed out to arm-auth-proxy.prod.cloudhub.io/52.1.75.224:443 of 60000 ms
+INFO  2017-10-09 13:07:06,823 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 13:07:06,825 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 14:16:07,060 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 14:16:07,343 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 14:16:07,443 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-1853368412502707176/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 14:17:06,151 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 14:17:06,509 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 14:17:06,529 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-1689744877798862263/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 14:18:06,543 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 14:18:06,838 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 14:18:06,839 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-1922836361735041021/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 14:19:06,551 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 14:19:06,911 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 14:19:06,913 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-2745471563040995085/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 14:20:06,444 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 14:20:06,959 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 14:20:06,963 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-1107667877884945785/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 14:25:20,032 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 14:25:20,348 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 14:25:20,355 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-3417106892598689666/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 15:08:16,195 [pool-23-thread-1] com.mulesoft.agent.util.client.DefaultAuthenticationProxyClient: There was an error executing a post request to the auth proxy.
+WARN  2017-10-09 15:08:16,287 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest, cause: UnknownHostException: arm-auth-proxy.prod.cloudhub.io: nodename nor servname provided, or not known
+INFO  2017-10-09 15:08:16,293 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 15:08:16,301 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+INFO  2017-10-09 15:08:18,572 [pool-4-thread-1] com.mulesoft.agent.transport.WSConnection: Failed attempt to connect nro. 1 to the web socket client at mule-manager.anypoint.mulesoft.com: Connection refused.
+INFO  2017-10-09 15:08:50,841 [AsyncHttpClient-Callback] com.mulesoft.agent.services.security.HandshakeAuthorizationService: WebSocket Client connection authorized
+WARN  2017-10-09 15:08:51,173 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 15:08:51,343 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 15:08:51,351 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-2262095436416544325/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 16:04:51,622 [pool-23-thread-1] com.mulesoft.agent.util.client.DefaultAuthenticationProxyClient: There was an error executing a post request to the auth proxy.
+WARN  2017-10-09 16:04:51,698 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest, cause: TimeoutException: Request timed out to arm-auth-proxy.prod.cloudhub.io/34.232.38.247:443 of 60000 ms
+INFO  2017-10-09 16:04:51,709 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 16:04:51,716 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+INFO  2017-10-09 16:05:03,496 [pool-4-thread-1] com.mulesoft.agent.transport.WSConnection: Failed attempt to connect nro. 1 to the web socket client at mule-manager.anypoint.mulesoft.com: Connection refused.
+INFO  2017-10-09 16:05:34,990 [AsyncHttpClient-Callback] com.mulesoft.agent.services.security.HandshakeAuthorizationService: WebSocket Client connection authorized
+WARN  2017-10-09 16:05:35,226 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 16:05:35,474 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 16:05:35,491 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-2474661316308763858/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 16:12:07,911 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 16:12:08,165 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 16:12:08,183 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-4885793723628696357/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 16:14:56,508 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 16:14:56,655 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 16:14:56,680 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-5396384827509784281/arm-deploy.zip' exists but is not a directory
+INFO  2017-10-09 16:40:06,663 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 16:40:06,760 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-3030576136549109320/arm-deploy.zip' exists but is not a directory
+INFO  2017-10-09 16:41:48,794 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 16:41:48,824 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-8395764080315713763/arm-deploy.zip' exists but is not a directory
+INFO  2017-10-09 16:48:58,894 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 16:48:58,911 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-7877125448983086041/arm-deploy.zip' exists but is not a directory
+INFO  2017-10-09 17:17:44,750 [AsyncHttpClient-Callback] com.mulesoft.agent.services.security.HandshakeAuthorizationService: WebSocket Client connection authorized
+WARN  2017-10-09 17:17:45,549 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 17:17:45,700 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 17:17:45,705 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-5723128018561994466/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 17:18:17,920 [pool-23-thread-1] com.mulesoft.agent.util.client.DefaultAuthenticationProxyClient: There was an error executing a post request to the auth proxy.
+WARN  2017-10-09 17:18:17,958 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest, cause: TimeoutException: Request timed out to arm-auth-proxy.prod.cloudhub.io/34.232.38.247:443 of 60000 ms
+INFO  2017-10-09 17:18:17,962 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 17:18:17,971 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 17:21:32,119 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 17:21:32,384 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 17:21:32,397 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-1647195599741621691/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 17:22:42,028 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 17:22:42,420 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 17:22:42,449 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-8329580527118884820/arm-deploy.zip' exists but is not a directory
+INFO  2017-10-09 17:35:43,369 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 17:35:43,439 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-1539984523175746183/arm-deploy.zip' exists but is not a directory
+INFO  2017-10-09 17:39:08,500 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 17:39:08,538 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-2513484449886533676/arm-deploy.zip' exists but is not a directory
+INFO  2017-10-09 17:40:50,082 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 17:40:50,095 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-6859141936057006102/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 17:48:51,619 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 17:48:51,857 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 17:48:51,895 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-940290843584675434/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 17:51:35,932 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 17:51:36,270 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 17:51:36,301 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-4180817347853200694/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 17:54:34,290 [AsyncHttpClient-Callback] com.mulesoft.agent.services.clustering.AgentClusteringService: Clustering is not supported for this server instance
+INFO  2017-10-09 17:54:34,554 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: Deploying the arm-deploy application from zip file.
+ERROR 2017-10-09 17:54:34,577 [AsyncHttpClient-Callback] com.mulesoft.agent.services.application.AgentApplicationService: There was an error on the Mule Runtime while deploying the application arm-deploy. Error: IOException: Source '/var/folders/89/3h73mphj7g35q22718mh8rnw0000gn/T/mule-received-artifact-7751194119299559087/arm-deploy.zip' exists but is not a directory
+WARN  2017-10-09 17:56:19,254 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 17:56:19,256 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 17:56:19,260 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 17:56:19,261 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 17:57:21,922 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 17:57:21,927 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 17:57:21,927 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 17:57:21,929 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 17:58:23,471 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 17:58:23,474 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 17:58:23,474 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 17:58:23,477 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 17:59:24,879 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 17:59:24,881 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 17:59:24,881 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 17:59:24,883 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:00:26,469 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:00:26,469 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:00:26,471 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:00:26,473 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:01:27,869 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:01:27,869 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:01:27,869 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:01:27,871 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:02:29,586 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:02:29,588 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:02:29,588 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:02:29,590 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:03:31,133 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:03:31,135 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:03:31,135 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:03:31,138 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:04:32,828 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:04:32,829 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:04:32,829 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:04:32,831 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:05:34,376 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:05:34,377 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:05:34,377 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:05:34,379 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:06:35,971 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:06:35,971 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:06:35,971 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:06:35,974 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:07:37,663 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:07:37,663 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:07:37,664 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:07:37,666 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 2 messages.
+WARN  2017-10-09 18:08:39,182 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:08:39,188 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:08:39,188 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:08:39,191 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:09:40,746 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:09:40,747 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:09:40,749 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:09:40,751 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:10:42,379 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:10:42,392 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:10:42,393 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:10:42,396 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:11:43,823 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:11:43,824 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:11:43,824 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:11:43,826 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:12:45,496 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:12:45,496 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:12:45,498 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:12:45,500 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:13:46,848 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:13:46,849 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:13:46,849 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:13:46,851 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:14:48,172 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:14:48,178 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:14:48,178 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:14:48,180 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:15:49,696 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:15:49,697 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:15:49,703 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:15:49,705 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:16:51,031 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:16:51,031 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:16:51,031 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:16:51,036 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 18:45:55,654 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 18:45:55,657 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 18:45:55,659 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 18:45:55,661 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:06:01,866 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:06:01,868 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:06:01,870 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:06:01,870 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:07:03,204 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:07:03,204 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:07:03,206 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:07:03,206 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:08:04,013 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:08:04,013 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:08:04,015 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:08:04,015 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:09:05,086 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:09:05,088 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:09:05,090 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:09:05,095 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:10:06,100 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:10:06,102 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:10:06,104 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:10:06,104 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:11:07,299 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:11:07,301 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:11:07,303 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:11:07,303 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:12:08,504 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:12:08,510 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:12:08,514 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:12:08,514 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:13:09,719 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:13:09,722 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:13:09,724 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:13:09,727 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:14:10,803 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:14:10,809 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:14:10,813 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:14:10,813 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:15:11,932 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:15:11,935 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:15:11,940 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:15:11,940 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:16:13,102 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:16:13,106 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:16:13,108 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:16:13,108 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:17:14,825 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:17:14,825 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:17:14,830 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:17:14,830 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:18:16,144 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:18:16,144 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:18:16,146 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:18:16,146 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:19:17,712 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:19:17,713 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:19:17,718 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:19:17,718 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:20:19,098 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:20:19,101 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:20:19,104 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:20:19,104 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:21:20,700 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:21:20,701 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:21:20,705 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:21:20,705 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:22:22,223 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:22:22,223 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:22:22,225 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:22:22,225 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 2 messages.
+WARN  2017-10-09 19:23:23,460 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:23:23,460 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:23:23,462 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:23:23,464 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:24:24,897 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:24:24,897 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:24:24,899 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:24:24,899 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:25:26,580 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:25:26,582 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:25:26,584 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:25:26,584 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:26:27,952 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:26:27,952 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:26:27,954 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:26:27,954 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:27:29,504 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:27:29,505 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:27:29,507 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:27:29,508 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:28:30,946 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:28:30,947 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:28:30,949 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:28:30,949 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:29:32,206 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:29:32,206 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:29:32,211 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:29:32,213 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:30:33,657 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:30:33,660 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:30:33,660 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:30:33,662 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:31:35,271 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:31:35,273 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:31:35,273 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:31:35,273 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:32:36,821 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:32:36,823 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:32:36,823 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:32:36,823 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:33:38,297 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:33:38,299 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:33:38,299 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:33:38,299 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:34:40,027 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:34:40,031 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:34:40,031 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:34:40,031 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:35:41,225 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:35:41,230 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:35:41,230 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:35:41,230 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:36:42,623 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:36:42,628 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:36:42,628 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:36:42,628 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:37:43,829 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:37:43,832 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:37:43,832 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:37:43,832 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:38:45,178 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:38:45,181 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:38:45,181 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:38:45,181 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:39:46,740 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:39:46,743 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:39:46,743 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:39:46,743 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:40:48,238 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:40:48,241 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:40:48,241 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:40:48,241 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:41:49,746 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:41:49,751 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:41:49,751 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:41:49,751 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:42:51,606 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:42:51,609 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:42:51,609 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:42:51,611 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:43:52,887 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:43:52,890 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:43:52,890 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:43:52,890 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:44:54,087 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:44:54,090 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:44:54,090 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:44:54,092 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:45:55,868 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:45:55,872 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:45:55,872 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:45:55,885 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:46:57,095 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:46:57,100 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:46:57,100 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:46:57,100 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:47:58,732 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:47:58,737 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:47:58,737 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:47:58,737 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:48:59,974 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:48:59,976 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:48:59,977 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:48:59,977 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:50:01,414 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:50:01,415 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:50:01,415 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:50:01,415 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:51:02,845 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:51:02,851 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:51:02,851 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:51:02,851 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:52:04,495 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:52:04,499 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:52:04,499 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:52:04,499 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:53:06,221 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:53:06,223 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:53:06,223 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:53:06,225 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:54:07,801 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:54:07,803 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:54:07,803 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:54:07,804 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:55:09,001 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:55:09,002 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:55:09,002 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:55:09,002 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:56:10,381 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:56:10,382 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:56:10,382 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:56:10,382 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:57:12,342 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:57:12,345 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:57:12,345 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:57:12,365 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:58:13,579 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:58:13,581 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:58:13,581 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:58:13,581 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 19:59:14,860 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 19:59:14,860 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 19:59:14,860 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 19:59:14,860 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 20:00:16,099 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:00:16,099 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:00:16,099 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:00:16,099 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 20:01:17,439 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:01:17,442 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:01:17,442 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:01:17,442 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 20:02:18,984 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:02:18,987 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:02:18,987 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:02:18,988 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 20:03:20,582 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:03:20,586 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:03:20,586 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:03:20,586 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 20:04:21,799 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:04:21,801 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:04:21,801 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:04:21,801 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 20:05:23,117 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:05:23,123 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:05:23,123 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:05:23,123 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 2 messages.
+WARN  2017-10-09 20:06:24,338 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:06:24,339 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:06:24,339 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:06:24,339 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 20:07:26,306 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:07:26,307 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:07:26,307 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:07:26,307 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 20:08:27,675 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:08:27,676 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:08:27,676 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:08:27,676 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 20:09:28,980 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:09:28,983 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:09:28,983 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:09:28,983 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 20:10:30,810 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:10:30,810 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:10:30,810 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:10:30,810 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 20:11:32,305 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:11:32,305 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:11:32,305 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:11:32,305 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 20:12:33,577 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:12:33,578 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:12:33,580 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:12:33,580 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 20:13:35,047 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:13:35,048 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:13:35,048 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:13:35,048 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 20:14:36,771 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:14:36,772 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:14:36,823 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:14:36,823 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 20:15:38,215 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-09 20:15:38,216 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-09 20:15:38,216 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 20:15:38,216 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-09 21:26:40,336 [pool-23-thread-1] com.mulesoft.agent.util.client.DefaultAuthenticationProxyClient: There was an error executing a post request to the auth proxy.
+WARN  2017-10-09 21:26:40,543 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest, cause: UnknownHostException: arm-auth-proxy.prod.cloudhub.io: nodename nor servname provided, or not known
+INFO  2017-10-09 21:26:40,543 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-09 21:26:40,543 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+INFO  2017-10-10 12:05:34,344 [pool-4-thread-1] com.mulesoft.agent.transport.WSConnection: Failed attempt to connect nro. 14 to the web socket client at mule-manager.anypoint.mulesoft.com: Connection refused.
+WARN  2017-10-10 12:05:48,974 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-10 12:05:48,974 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-10 12:05:48,974 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-10 12:05:48,977 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-10 12:06:51,177 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-10 12:06:51,188 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-10 12:06:51,195 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-10 12:06:51,195 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-10 12:07:52,822 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-10 12:07:52,822 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-10 12:07:52,824 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-10 12:07:52,824 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-10 12:08:54,826 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-10 12:08:54,827 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-10 12:08:54,831 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-10 12:08:54,831 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-10 12:09:56,827 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-10 12:09:56,827 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-10 12:09:56,832 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-10 12:09:56,835 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-10 12:10:58,485 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-10 12:10:58,487 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-10 12:10:58,489 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-10 12:10:58,489 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-10 12:12:00,004 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-10 12:12:00,005 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-10 12:12:00,006 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-10 12:12:00,006 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-10 12:13:01,671 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-10 12:13:01,672 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-10 12:13:01,675 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-10 12:13:01,676 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-10 12:14:03,130 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-10 12:14:03,132 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-10 12:14:03,134 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-10 12:14:03,134 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-10 12:15:04,495 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-10 12:15:04,496 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-10 12:15:04,497 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-10 12:15:04,497 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-10 12:16:06,432 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-10 12:16:06,434 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-10 12:16:06,438 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-10 12:16:06,442 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-10 12:17:08,152 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-10 12:17:08,153 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-10 12:17:08,155 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-10 12:17:08,155 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-10 12:18:10,072 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-10 12:18:10,074 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-10 12:18:10,076 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-10 12:18:10,078 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-10 12:19:11,603 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-10 12:19:11,609 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-10 12:19:11,613 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-10 12:19:11,613 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-10 12:20:14,517 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-10 12:20:14,523 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-10 12:20:14,527 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-10 12:20:14,527 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 18:14:42,040 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 18:14:42,044 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 18:14:42,044 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 18:14:42,045 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+Unable to write to the configured log file: /Users/ms0374/Documents/projects/mule-artifact-tools/mule-artifact-it/mule-deployer-it/target/mule-enterprise-standalone-4.0.0-greenarrow/logs/mule_ee.log (No such file or directory)
+  Falling back to the default file in the current working directory: wrapper.log
+WARN  2017-10-23 18:15:43,285 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 18:15:43,286 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 18:15:43,286 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 18:15:43,286 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 18:16:44,206 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 18:16:44,207 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 18:16:44,208 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 18:16:44,208 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 18:17:45,243 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 18:17:45,244 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 18:17:45,244 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 18:17:45,245 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 18:18:46,293 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 18:18:46,297 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 18:18:46,297 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 18:18:46,297 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 18:19:47,323 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 18:19:47,327 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 18:19:47,327 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 18:19:47,327 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 18:20:48,856 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 18:20:48,857 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 18:20:48,857 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 18:20:48,857 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 18:21:50,354 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 18:21:50,354 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 18:21:50,354 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 18:21:50,355 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 18:22:51,259 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 18:22:51,259 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 18:22:51,260 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 18:22:51,260 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 18:23:53,719 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 18:23:53,720 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 18:23:53,720 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 18:23:53,721 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 18:24:55,552 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 18:24:55,553 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 18:24:55,553 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 18:24:55,554 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 18:25:58,130 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 18:25:58,131 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 18:25:58,132 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 18:25:58,132 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 18:26:59,471 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 18:26:59,472 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 18:26:59,472 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 18:26:59,473 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 18:28:00,623 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 18:28:00,625 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 18:28:00,625 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 18:28:00,625 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 21:48:03,483 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 21:48:03,486 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 21:48:03,486 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 21:48:03,486 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 21:49:04,667 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 21:49:04,669 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 21:49:04,669 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 21:49:04,670 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 21:50:06,134 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 21:50:06,135 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 21:50:06,135 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 21:50:06,135 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 21:51:07,613 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 21:51:07,614 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 21:51:07,614 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 21:51:07,614 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 21:52:09,321 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 21:52:09,321 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 21:52:09,321 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 21:52:09,321 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 21:53:11,031 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 21:53:11,033 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 21:53:11,033 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 21:53:11,033 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 21:54:12,074 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 21:54:12,076 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 21:54:12,076 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 21:54:12,076 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 21:55:13,547 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 21:55:13,548 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 21:55:13,548 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 21:55:13,548 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 21:56:15,409 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 21:56:15,410 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 21:56:15,410 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 21:56:15,410 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 21:57:16,459 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 21:57:16,460 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 21:57:16,460 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 21:57:16,460 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 21:58:17,590 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 21:58:17,591 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 21:58:17,591 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 21:58:17,591 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 21:59:18,905 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 21:59:18,906 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 21:59:18,906 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 21:59:18,906 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:00:20,027 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:00:20,028 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:00:20,028 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:00:20,029 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:01:21,002 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:01:21,003 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:01:21,003 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:01:21,003 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:02:22,381 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:02:22,382 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:02:22,382 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:02:22,383 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:03:23,907 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:03:23,908 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:03:23,908 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:03:23,909 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:04:25,061 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:04:25,062 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:04:25,062 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:04:25,062 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:05:26,440 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:05:26,440 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:05:26,441 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:05:26,441 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:06:27,743 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:06:27,744 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:06:27,744 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:06:27,744 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:07:29,112 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:07:29,113 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:07:29,113 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:07:29,113 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:08:30,815 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:08:30,816 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:08:30,816 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:08:30,816 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:09:31,865 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:09:31,873 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:09:31,873 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:09:31,873 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 2 messages.
+WARN  2017-10-23 22:10:33,180 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:10:33,180 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:10:33,180 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:10:33,181 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:11:34,551 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:11:34,553 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:11:34,553 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:11:34,553 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:12:36,395 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:12:36,396 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:12:36,396 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:12:36,396 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:13:38,098 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:13:38,100 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:13:38,100 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:13:38,100 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:14:39,486 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:14:39,487 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:14:39,487 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:14:39,487 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:15:41,175 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:15:41,176 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:15:41,176 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:15:41,176 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:16:42,637 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:16:42,638 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:16:42,638 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:16:42,638 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:17:43,689 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:17:43,691 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:17:43,691 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:17:43,691 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:18:44,668 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:18:44,669 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:18:44,669 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:18:44,669 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:19:45,632 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:19:45,633 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:19:45,633 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:19:45,633 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:20:46,796 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:20:46,796 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:20:46,797 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:20:46,797 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:21:47,774 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:21:47,776 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:21:47,776 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:21:47,776 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:22:48,818 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:22:48,819 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:22:48,819 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:22:48,819 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:23:49,796 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:23:49,797 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:23:49,797 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:23:49,797 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:24:50,786 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:24:50,787 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:24:50,788 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:24:50,788 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:25:51,669 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:25:51,670 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:25:51,670 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:25:51,670 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:26:52,586 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:26:52,587 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:26:52,587 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:26:52,587 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:27:53,633 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:27:53,635 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:27:53,635 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:27:53,635 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:28:54,611 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:28:54,613 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:28:54,614 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:28:54,614 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:29:55,591 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:29:55,592 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:29:55,592 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:29:55,592 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:30:56,737 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:30:56,739 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:30:56,739 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:30:56,739 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:31:57,714 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:31:57,714 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:31:57,714 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:31:57,714 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:32:58,770 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:32:58,771 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:32:58,771 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:32:58,771 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:33:59,744 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:33:59,748 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:33:59,748 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:33:59,750 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:35:00,718 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:35:00,719 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:35:00,719 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:35:00,721 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:36:01,865 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:36:01,866 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:36:01,867 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:36:01,867 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:37:02,841 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:37:02,841 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:37:02,842 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:37:02,842 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:38:03,888 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:38:03,889 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:38:03,889 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:38:03,889 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:39:04,863 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:39:04,864 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:39:04,864 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:39:04,864 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:40:05,859 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:40:05,860 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:40:05,860 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:40:05,863 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:41:06,996 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:41:06,996 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:41:06,996 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:41:06,998 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:42:07,968 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:42:07,969 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:42:07,969 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:42:07,969 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:43:09,017 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:43:09,018 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:43:09,018 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:43:09,018 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:44:10,285 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:44:10,286 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:44:10,286 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:44:10,288 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:45:11,304 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:45:11,307 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:45:11,307 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:45:11,307 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:46:12,840 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:46:12,841 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:46:12,842 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:46:12,844 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:47:13,987 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:47:13,989 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:47:13,989 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:47:13,991 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:48:14,959 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:48:14,960 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:48:14,960 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:48:14,960 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:49:16,012 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:49:16,012 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:49:16,012 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:49:16,012 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:50:16,985 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:50:16,987 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:50:16,987 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:50:16,987 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:51:17,961 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:51:17,962 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:51:17,963 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:51:17,965 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:52:18,846 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:52:18,849 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:52:18,849 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:52:18,851 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:53:19,775 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:53:19,776 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:53:19,776 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:53:19,778 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:54:20,825 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:54:20,826 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:54:20,826 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:54:20,826 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:55:21,803 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:55:21,805 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:55:21,805 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:55:21,805 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:56:22,665 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:56:22,666 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:56:22,668 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:56:22,670 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:57:23,615 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:57:23,616 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:57:23,616 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:57:23,616 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:58:24,589 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:58:24,591 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:58:24,592 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:58:24,592 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 22:59:25,566 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 22:59:25,568 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 22:59:25,568 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 22:59:25,568 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:00:26,718 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:00:26,719 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:00:26,719 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:00:26,721 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:01:28,077 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:01:28,078 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:01:28,078 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:01:28,084 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:02:29,122 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:02:29,123 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:02:29,123 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:02:29,123 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:03:30,098 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:03:30,099 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:03:30,099 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:03:30,099 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:04:31,081 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:04:31,082 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:04:31,083 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:04:31,085 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:05:32,225 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:05:32,226 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:05:32,226 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:05:32,228 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:06:33,214 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:06:33,214 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:06:33,215 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:06:33,218 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 2 messages.
+WARN  2017-10-23 23:07:34,250 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:07:34,253 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:07:34,253 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:07:34,255 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:08:35,141 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:08:35,142 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:08:35,142 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:08:35,142 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:09:36,036 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:09:36,038 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:09:36,038 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:09:36,038 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:10:36,892 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:10:36,892 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:10:36,893 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:10:36,893 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:11:37,756 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:11:37,757 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:11:37,757 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:11:37,757 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:12:38,618 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:12:38,619 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:12:38,619 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:12:38,619 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:13:39,511 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:13:39,513 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:13:39,513 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:13:39,513 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:14:40,378 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:14:40,380 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:14:40,380 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:14:40,380 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:15:41,263 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:15:41,264 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:15:41,265 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:15:41,265 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:16:42,139 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:16:42,140 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:16:42,140 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:16:42,140 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:17:43,014 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:17:43,015 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:17:43,015 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:17:43,015 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:18:43,889 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:18:43,890 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:18:43,890 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:18:43,891 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-23 23:33:52,133 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-23 23:33:52,134 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-23 23:33:52,134 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-23 23:33:52,134 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:40:24,549 [pool-23-thread-1] com.mulesoft.agent.util.client.DefaultAuthenticationProxyClient: There was an error executing a post request to the auth proxy.
+WARN  2017-10-24 10:40:25,318 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest, cause: UnknownHostException: arm-auth-proxy.prod.cloudhub.io: nodename nor servname provided, or not known
+INFO  2017-10-24 10:40:25,318 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:40:25,319 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:41:26,359 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:41:26,360 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:41:26,360 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:41:26,360 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 2 messages.
+WARN  2017-10-24 10:42:27,499 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:42:27,499 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:42:27,499 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:42:27,500 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:43:29,774 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:43:29,774 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:43:29,775 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:43:29,775 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:44:30,784 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:44:30,785 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:44:30,785 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:44:30,785 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:45:31,852 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:45:31,853 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:45:31,853 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:45:31,853 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:46:33,105 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:46:33,106 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:46:33,106 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:46:33,106 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:47:34,196 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:47:34,197 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:47:34,197 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:47:34,198 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:48:35,299 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:48:35,300 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:48:35,300 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:48:35,300 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:49:36,346 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:49:36,347 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:49:36,347 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:49:36,347 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:50:37,349 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:50:37,349 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:50:37,349 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:50:37,349 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:51:38,451 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:51:38,451 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:51:38,451 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:51:38,451 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:52:39,667 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:52:39,667 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:52:39,667 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:52:39,667 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:53:40,739 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:53:40,740 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:53:40,740 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:53:40,740 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:54:42,087 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:54:42,087 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:54:42,087 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:54:42,089 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:55:43,139 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:55:43,144 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:55:43,144 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:55:43,144 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:56:44,427 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:56:44,428 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:56:44,428 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:56:44,428 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.
+WARN  2017-10-24 10:57:45,665 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient: Post of target metrics failed with status 403
+WARN  2017-10-24 10:57:45,667 [pool-23-thread-1] com.mulesoft.agent.monitoring.publisher.ingest.IngestTargetMonitorPublisher: Could not publish target metrics to Ingest.
+INFO  2017-10-24 10:57:45,667 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Trying to retry flushing on buffer. Remaining attempts: 0
+ERROR 2017-10-24 10:57:45,667 [pool-23-thread-1] com.mulesoft.agent.buffer.BufferedHandler: Buffer is configured to discard messages on flush failure. Discarding 1 messages.

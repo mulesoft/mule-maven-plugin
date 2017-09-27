@@ -7,12 +7,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package integrationTests.mojo.verifier;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+package integrationTests.mojo.environment.verifier;
 
-import java.util.concurrent.TimeoutException;
+import integrationTests.mojo.environment.ID;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -20,27 +21,25 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
+public class ArmDeploymentVerifier {
 
-public class CloudHubDeploymentVerifier {
-
-  private static final String URI = "https://anypoint.mulesoft.com";
+  private static final String uri = "https://anypoint.mulesoft.com";
   private static final String ME = "/accounts/api/me";
   private static final String LOGIN = "/accounts/login";
-  private static final String APPLICATION_PATH = "/cloudhub/api/applications/";
   private static final String ENVIRONMENTS_PATH = "/accounts/api/organizations/%s/environments";
   private static final String AUTHORIZATION_HEADER = "Authorization";
   private static final String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
   private static final String ORG_ID_HEADER = "X-ANYPNT-ORG-ID";
   private static final ClientBuilder clientBuilder = ClientBuilder.newBuilder();
   private static final Client client = clientBuilder.newClient();
-  private static final int ATTEMPTS = 10;
   private static final String DATA = "data";
+  private static final String SERVERS = "/hybrid/api/v1/servers";
   private static final String ENVIRONMENT_NAME_KEY = "name";
   private static final String BEARER_FIELD = "bearer ";
   private static final String ENVIRONMENT_ID_KEY = "id";
@@ -50,31 +49,34 @@ public class CloudHubDeploymentVerifier {
   private static final String ORGANIZATION_ID_KEY = "id";
   private static final String USERNAME_ENVIRONMENT_VARIABLE = "username";
   private static final String PASSWORD_ENVIRONMENT_VARIABLE = "password";
+  private static final String STARTED_STATUS = "STARTED";
+  private static final String APPLICATIONS = "/hybrid/api/v1/applications";
+
+
+
   private static final String ACCESS_TOKEN_KEY = "access_token";
-  private static final String APPLICATIONS = "/cloudhub/api/applications";
+  public static final int ATTEMPTS = 30;
   private static final long SLEEP_TIME = 30000;
-  public static final String DEPLOYED_STATUS = "STARTED";
-  public static final String UNDEPLOYED_STATUS = "UNDEPLOYED";
-  private static final String STATUS_JSON_KEY = "status";
+  private static final String DESIRED_STATUS = "desiredStatus";
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
+
   private WebTarget target;
   private String response;
   private JSONObject responseJson;
-  private IDs ids = new IDs();
+  private ID ids = new ID();
   private String bearerToken;
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private static Runtime runtime = Runtime.getRuntime();
 
 
   public void verifyIsDeployed(String applicationName) throws InterruptedException, TimeoutException {
     loginAndGetNecessaryIds();
-    assertThat("Application was not deployed", validateStatus(applicationName, DEPLOYED_STATUS), is(true));
-    deleteApplication(applicationName);
+    assertThat("Application was not deployed", validateStatus(applicationName, STARTED_STATUS), is(true));
   }
 
   public boolean validateStatus(String applicationName, String status) throws InterruptedException, TimeoutException {
-    log.info("Checking application " + applicationName + " for status " + status + "...");
     int repeat = ATTEMPTS;
-    boolean keepValidating = false;
-    while (repeat > 0 && !keepValidating) {
+    boolean keepValidating = true;
+    while (repeat > 0 && keepValidating) {
       JSONObject application = getApplication(applicationName, getApplications());
       keepValidating = !isExpectedStatus(status, application);
       if (keepValidating) {
@@ -82,27 +84,15 @@ public class CloudHubDeploymentVerifier {
       }
       repeat--;
     }
-    if (repeat == 0 && !keepValidating) {
+    if (repeat == 0 && keepValidating) {
       throw new TimeoutException("Validating status " + status + " for application " + applicationName
           + " has exceed the maximum number of attempts.");
     }
-    return keepValidating;
+    return !keepValidating;
   }
 
   private boolean isExpectedStatus(String status, JSONObject application) {
-    if (DEPLOYED_STATUS.equals(status) && application != null) {
-      return status.equals(application.getString(STATUS_JSON_KEY));
-    }
-    if (UNDEPLOYED_STATUS.equals(status)) {
-      return application == null || UNDEPLOYED_STATUS.equals(application.getString(STATUS_JSON_KEY));
-    }
-    return false;
-  }
-
-  public void verifyIsUndeployed(String applicationName) throws InterruptedException, TimeoutException {
-    loginAndGetNecessaryIds();
-    assertThat("Application was not undeployed", validateStatus(applicationName, UNDEPLOYED_STATUS), is(true));
-    deleteApplication(applicationName);
+    return status.equals(application.getString(DESIRED_STATUS));
   }
 
   private void loginAndGetNecessaryIds() {
@@ -111,21 +101,8 @@ public class CloudHubDeploymentVerifier {
     obtainEnvironmentId();
   }
 
-  private void deleteApplication(String applicationName) {
-    target = client.target(URI).path(APPLICATION_PATH + applicationName);
-    Response deleteResponse = delete(target);
-    assertThat("Application was not deleted", deleteResponse.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL);
-  }
-
-  private Response delete(WebTarget target) {
-    log.info("Deleting application " + target.getUri());
-    return target.request(MediaType.APPLICATION_JSON_TYPE).header(AUTHORIZATION_HEADER, BEARER_FIELD + bearerToken)
-        .header(ENV_ID_HEADER, ids.getEnvironmentId()).header(ORG_ID_HEADER, ids.getOrganizationId()).delete();
-  }
-
   private void obtainEnvironmentId() {
-    log.info("Getting environment ID...");
-    target = client.target(URI).path(String.format(ENVIRONMENTS_PATH, ids.getOrganizationId()));
+    target = client.target(uri).path(String.format(ENVIRONMENTS_PATH, ids.getOrganizationId()));
     response =
         target.request(MediaType.APPLICATION_JSON_TYPE).header(AUTHORIZATION_HEADER, BEARER_FIELD + bearerToken)
             .get(String.class);
@@ -141,8 +118,7 @@ public class CloudHubDeploymentVerifier {
   }
 
   private void obtainOrganizationId() {
-    log.info("Getting organization ID...");
-    target = client.target(URI).path(ME);
+    target = client.target(uri).path(ME);
     response =
         target.request(MediaType.APPLICATION_JSON_TYPE).header(AUTHORIZATION_HEADER, BEARER_FIELD + bearerToken)
             .get(String.class);
@@ -151,58 +127,37 @@ public class CloudHubDeploymentVerifier {
   }
 
   private void login() {
-    log.info("Trying to log in to Anypoint...");
-    WebTarget target = client.target(URI).path(LOGIN);;
+    WebTarget target = client.target(uri).path(LOGIN);;
     String username = System.getProperty(USERNAME_ENVIRONMENT_VARIABLE);
     String password = System.getProperty(PASSWORD_ENVIRONMENT_VARIABLE);
     Entity requestJson = Entity.json("{\"username\": \"" + username + "\", \"password\": \"" + password + "\"}");
     String response = target.request(MediaType.APPLICATION_JSON_TYPE).post(requestJson, String.class);
     JSONObject responseJson = new JSONObject(response);
     bearerToken = responseJson.getString(ACCESS_TOKEN_KEY);
-    log.info("Login is successful, bearer token is " + bearerToken);
   }
 
   public JSONObject getApplication(String applicationName, JSONArray applications) {
-    log.info("Trying to find application " + applicationName + " within all existent applications in CloudHub account...");
     for (int i = 0; i < applications.length(); ++i) {
-      if (applicationName.equals(applications.getJSONObject(i).getString("domain"))) {
-        log.info("The application " + applicationName + " was found.");
+      if ("arm-deploy".equals(applications.getJSONObject(i).getJSONObject("artifact").getString("name"))) {
         return applications.getJSONObject(i);
       }
     }
-    log.info("The application " + applicationName + " could not be found.");
     return null;
   }
 
   public JSONArray getApplications() {
-    log.info("Fetching all applications from CloudHub account...");
-    target = ClientBuilder.newClient().target(URI).path(APPLICATIONS);
+    target = ClientBuilder.newClient().target(uri).path(APPLICATIONS);
     response = target.request(MediaType.APPLICATION_JSON_TYPE).header(AUTHORIZATION_HEADER, "bearer " + bearerToken)
         .header(ENV_ID_HEADER, ids.getEnvironmentId()).header(ORG_ID_HEADER, ids.getOrganizationId()).get(String.class);
-    log.info("Applications fetched.");
-    return new JSONArray(response);
+    responseJson = new JSONObject(response);
+    return responseJson.getJSONArray(DATA);
+
   }
 
-
-  private class IDs {
-
-    private String organizationId;
-    private String environmentId;
-
-    public String getOrganizationId() {
-      return organizationId;
-    }
-
-    public void setOrganizationId(String organizationId) {
-      this.organizationId = organizationId;
-    }
-
-    public String getEnvironmentId() {
-      return environmentId;
-    }
-
-    public void setEnvironmentId(String environmentId) {
-      this.environmentId = environmentId;
-    }
+  public void killMuleProcesses() throws IOException {
+    String[] commands =
+        {"ps", "-ax", "|", "grep", "mule", "|", "grep", "wrapper", "|", "cut", "-c", "1-5", "|", "xargs", "kill", "-9"};
+    runtime.exec(commands);
   }
+
 }

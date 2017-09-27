@@ -22,8 +22,8 @@
         <java.target>1.8</java.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <mule.version>4.0.0-SNAPSHOT</mule.version>
-        <mule.core.version>${mule.version}</mule.core.version>
+        <mule.distribution.standalone.version>4.0.0-SNAPSHOT</mule.distribution.standalone.version>
+        <mule.core.version>4.0.0-SNAPSHOT</mule.core.version>
         <mule.api.version>1.0.0-SNAPSHOT</mule.api.version>
 
         <mule.maven.client.impl.version>1.0.0-SNAPSHOT</mule.maven.client.impl.version>
@@ -295,7 +295,7 @@
                             <artifactItem>
                                 <groupId>com.mulesoft.mule.distributions</groupId>
                                 <artifactId>mule-ee-distribution-standalone</artifactId>
-                                <version>${mule.version}</version>
+                                <version>${mule.distribution.standalone.version}</version>
                                 <type>tar.gz</type>
                                 <outputDirectory>${project.build.directory}</outputDirectory>
                             </artifactItem>

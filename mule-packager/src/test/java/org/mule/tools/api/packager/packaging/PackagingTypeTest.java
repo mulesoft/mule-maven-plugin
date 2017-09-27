@@ -20,6 +20,11 @@ import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_APPLICATION;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_POLICY;
+import static org.mule.tools.api.packager.structure.FolderNames.MAIN;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE;
+import static org.mule.tools.api.packager.structure.FolderNames.MUNIT;
+import static org.mule.tools.api.packager.structure.FolderNames.SRC;
+import static org.mule.tools.api.packager.structure.FolderNames.TEST;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -35,8 +40,6 @@ public class PackagingTypeTest {
   public static final String TEST_JAR_CLASSIFIER = "-" + Classifier.TEST_JAR.toString();
   public static final String LIGHT_PACKAGE_CLASSIFIER = "-" + Classifier.LIGHT_PACKAGE.toString();
 
-  private static final String MULE_SOURCE_FOLDER_RELATIVE_PATH = "src/main/mule";
-  private static final String MUNIT_SOURCE_FOLDER_RELATIVE_PATH = "src/test/munit";
   private static final String UNKNOWN_CLASSIFIER = "mule-unknown";
 
   @Rule
@@ -132,8 +135,8 @@ public class PackagingTypeTest {
   }
 
   @Test
-  public void getSourceFolderLocation() {
-    Path expectedPath = temporaryFolder.newFolder(MULE_SOURCE_FOLDER_RELATIVE_PATH).toPath();
+  public void getSourceFolderLocation() throws IOException {
+    Path expectedPath = temporaryFolder.newFolder(SRC.value(), MAIN.value(), MULE.value()).toPath();
     stream(PackagingType.values())
         .forEach(packagingType -> assertThat("The packaging type does not define the expected source folder location",
                                              packagingType.getSourceFolderLocation(projectBasedFolder),
@@ -141,8 +144,8 @@ public class PackagingTypeTest {
   }
 
   @Test
-  public void getTestSourceFolderLocation() {
-    Path expectedPath = temporaryFolder.newFolder(MUNIT_SOURCE_FOLDER_RELATIVE_PATH).toPath();
+  public void getTestSourceFolderLocation() throws IOException {
+    Path expectedPath = temporaryFolder.newFolder(SRC.value(), TEST.value(), MUNIT.value()).toPath();
     stream(PackagingType.values())
         .forEach(packagingType -> assertThat("The packaging type does not define the expected test source folder location",
                                              packagingType.getTestSourceFolderLocation(projectBasedFolder),

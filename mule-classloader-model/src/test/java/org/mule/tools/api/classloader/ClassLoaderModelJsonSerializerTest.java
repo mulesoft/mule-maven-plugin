@@ -20,6 +20,7 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class ClassLoaderModelJsonSerializerTest {
   private File projectTargetFolder;
 
   @Before
-  public void setUp() {
+  public void setUp() throws IOException {
     projectTargetFolder = projectBaseFolder.newFolder("target");
   }
 

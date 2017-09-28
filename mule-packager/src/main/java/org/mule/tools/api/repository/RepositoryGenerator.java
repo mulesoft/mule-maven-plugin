@@ -19,11 +19,13 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.api.classloader.model.*;
 import org.mule.tools.api.util.FileUtils;
 
 public class RepositoryGenerator {
 
+  private static final String PROVIDED_SCOPE = "provided";
   private final ArtifactInstaller artifactInstaller;
   private final ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssembler;
   protected File outputDirectory;
@@ -56,7 +58,7 @@ public class RepositoryGenerator {
       throws IOException {
     Map<ArtifactCoordinates, ClassLoaderModel> mulePluginsClassloaderModels = appModel.getMulePluginsClassloaderModels().stream()
         .collect(Collectors.toMap(ClassLoaderModel::getArtifactCoordinates, Function.identity()));
-    TreeSet<Artifact> sortedArtifacts = new TreeSet<>(appModel.getArtifacts());
+    TreeSet<Artifact> sortedArtifacts = new TreeSet<>(removeProvidedArtifacts(appModel.getArtifacts()));
     if (sortedArtifacts.isEmpty()) {
       generateMarkerFileInRepositoryFolder(repositoryFile);
     }
@@ -65,6 +67,12 @@ public class RepositoryGenerator {
           Optional.ofNullable(mulePluginsClassloaderModels.get(artifact.getArtifactCoordinates()));
       installer.installArtifact(repositoryFile, artifact, mulePluginClassloaderOptional);
     }
+  }
+
+  private Set<Artifact> removeProvidedArtifacts(Set<Artifact> artifacts) {
+    return artifacts.stream()
+        .filter(artifact -> !StringUtils.equals(artifact.getArtifactCoordinates().getScope(), PROVIDED_SCOPE))
+        .collect(Collectors.toSet());
   }
 
   protected void generateMarkerFileInRepositoryFolder(File repositoryFile) throws IOException {

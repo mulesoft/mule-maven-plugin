@@ -155,11 +155,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
     assertThat("Application dependencies are not the expected",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
                containsInAnyOrder(toArtifact(firstMulePlugin), toArtifact(secondMulePlugin), toArtifact(dependency1),
-                                  toArtifact(dependency2)));
-
-    assertThat("Application dependencies are not the expected",
-               applicationClassloaderModel.getClassLoaderModel().getDependencies(),
-               not(containsInAnyOrder(toArtifact(dependency3))));
+                                  toArtifact(dependency2), toArtifact(dependency3)));
   }
 
   @Test
@@ -225,26 +221,6 @@ public class ApplicationClassLoaderModelAssemblerTest {
     assertThat("First mule plugin dependencies are not the expected",
                applicationClassloaderModel.getMulePluginsClassloaderModels().get(0).getDependencies(),
                containsInAnyOrder(toArtifact(mulePluginTransitiveDependency1)));
-  }
-
-  @Test
-  public void removeMuleDomainsOneDomainTest() throws URISyntaxException {
-
-    List<BundleDependency> dependencies = new ArrayList<>();
-
-    BundleDependency muleDomain = buildBundleDependency(0, 0, MULE_DOMAIN_CLASSIFIER);
-    BundleDependency mulePlugin = buildBundleDependency(0, 1, MULE_PLUGIN_CLASSIFIER);
-    BundleDependency ordinaryDependency = buildBundleDependency(1, 2, "");
-
-    dependencies.add(muleDomain);
-    dependencies.add(mulePlugin);
-    dependencies.add(ordinaryDependency);
-
-    dependencies = applicationClassLoaderModelAssembler.removeMuleDomains(dependencies);
-
-    assertThat("Filtered dependencies list is not the expected", dependencies, not(containsInAnyOrder(muleDomain)));
-    assertThat("Filtered dependencies list is not the expected", dependencies,
-               containsInAnyOrder(mulePlugin, ordinaryDependency));
   }
 
   private BundleDependency buildBundleDependency(int groupIdSuffix, int artifactIdSuffix, String classifier)

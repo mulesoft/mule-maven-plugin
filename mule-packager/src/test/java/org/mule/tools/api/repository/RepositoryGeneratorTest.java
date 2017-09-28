@@ -44,7 +44,6 @@ public class RepositoryGeneratorTest {
   private TemporaryFolder temporaryFolder;
   private RepositoryGenerator repositoryGenerator;
   private MavenProject projectMock;
-  private ProjectBuilder projectBuilderMock;
   private ArtifactInstaller artifactInstallerMock;
   private ProjectBuildingResult resultMock;
   private Set<Artifact> artifacts;
@@ -61,7 +60,6 @@ public class RepositoryGeneratorTest {
     temporaryFolder = new TemporaryFolder();
     temporaryFolder.create();
     projectMock = mock(MavenProject.class);
-    projectBuilderMock = mock(ProjectBuilder.class);
     resultMock = mock(ProjectBuildingResult.class);
     when(resultMock.getProject()).thenReturn(projectMock);
     artifactInstallerMock = mock(ArtifactInstaller.class);

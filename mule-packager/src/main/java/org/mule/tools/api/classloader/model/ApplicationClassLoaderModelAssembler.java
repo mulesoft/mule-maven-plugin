@@ -17,6 +17,8 @@ import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,6 +34,8 @@ public class ApplicationClassLoaderModelAssembler {
   private static final String POM_TYPE = "pom";
   private static final String CLASS_LOADER_MODEL_VERSION = "1.0.0";
   private static final String PACKAGE_TYPE = "jar";
+  private static final String PROVIDED = "provided";
+  private static final URI EMPTY_RESOURCE = URI.create("");
   private final AetherMavenClient muleMavenPluginClient;
   private ApplicationClassloaderModel applicationClassLoaderModel;
 
@@ -55,7 +59,7 @@ public class ApplicationClassLoaderModelAssembler {
         .filter(dep -> dep.getDescriptor().getClassifier().get().equals(MULE_PLUGIN_CLASSIFIER))
         .collect(Collectors.toList());
 
-    appModel.setDependencies(toArtifacts(appDependencies));
+    appModel.setDependencies(toApplicationModelArtifacts(appDependencies));
 
     applicationClassLoaderModel = new ApplicationClassloaderModel(appModel);
 
@@ -71,6 +75,21 @@ public class ApplicationClassLoaderModelAssembler {
 
     return applicationClassLoaderModel;
   }
+
+  private List<Artifact> toApplicationModelArtifacts(List<BundleDependency> appDependencies) {
+    List<Artifact> dependencies = toArtifacts(appDependencies);
+    dependencies.forEach(this::updateScopeIfDomain);
+    return dependencies;
+  }
+
+  private void updateScopeIfDomain(Artifact artifact) {
+    String classifier = artifact.getArtifactCoordinates().getClassifier();
+    if (StringUtils.equals(classifier, MULE_DOMAIN.toString())) {
+      artifact.getArtifactCoordinates().setScope(PROVIDED);
+      artifact.setUri(EMPTY_RESOURCE);
+    }
+  }
+
 
   protected ArtifactCoordinates getApplicationArtifactCoordinates(File pomFile) {
     ArtifactCoordinates appCoordinates = toArtifactCoordinates(getPomProjectBundleDescriptor(pomFile));
@@ -95,14 +114,7 @@ public class ApplicationClassLoaderModelAssembler {
     List<BundleDependency> resolvedApplicationDependencies =
         muleMavenPluginClient.resolveBundleDescriptorDependenciesWithWorkspaceReader(targetFolder, false, false,
                                                                                      projectBundleDescriptor);
-    return removeMuleDomains(resolvedApplicationDependencies);
-  }
-
-  protected List<BundleDependency> removeMuleDomains(List<BundleDependency> resolvedApplicationDependencies) {
-    return resolvedApplicationDependencies.stream()
-        .filter(d -> !(d.getDescriptor().getClassifier().isPresent()
-            && d.getDescriptor().getClassifier().get().equals(MULE_DOMAIN.toString())))
-        .collect(Collectors.toList());
+    return resolvedApplicationDependencies;
   }
 
   /**

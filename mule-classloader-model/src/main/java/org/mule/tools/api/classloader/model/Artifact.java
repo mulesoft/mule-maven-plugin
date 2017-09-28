@@ -22,6 +22,7 @@ import static org.apache.commons.io.FilenameUtils.*;
 
 public class Artifact implements Comparable {
 
+  private static final String MULE_DOMAIN = "mule-domain";
   private ArtifactCoordinates artifactCoordinates;
   private URI uri;
 
@@ -83,6 +84,9 @@ public class Artifact implements Comparable {
   }
 
   public Artifact copyWithParameterizedUri() {
+    if (StringUtils.equals(artifactCoordinates.getClassifier(), MULE_DOMAIN)) {
+      return new Artifact(artifactCoordinates, uri);
+    }
     Artifact newArtifact = new Artifact(artifactCoordinates, uri);
     File repositoryFolder = new File("repository");
     String artifactFilename = getFormattedArtifactFileName(newArtifact);

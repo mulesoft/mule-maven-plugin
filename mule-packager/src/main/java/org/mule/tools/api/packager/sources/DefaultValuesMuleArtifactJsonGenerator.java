@@ -10,7 +10,10 @@
 
 package org.mule.tools.api.packager.sources;
 
-import org.apache.commons.io.FileUtils;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.structure.FolderNames.TARGET;
+import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
@@ -19,10 +22,11 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static org.mule.tools.api.packager.structure.FolderNames.*;
-import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Generates default value for any non-defined fields in a mule-artifact.json file
@@ -230,7 +234,6 @@ public class DefaultValuesMuleArtifactJsonGenerator {
     MuleApplicationModel.MuleApplicationModelBuilder builder = new MuleApplicationModel.MuleApplicationModelBuilder();
     builder.setName(muleArtifact.getName());
     builder.withClassLoaderModelDescriptorLoader(muleArtifact.getClassLoaderModelLoaderDescriptor());
-    muleArtifact.getDomain().ifPresent(builder::setDomain);
     builder.setMinMuleVersion(muleArtifact.getMinMuleVersion());
     builder.setRequiredProduct(muleArtifact.getRequiredProduct());
     setBuilderWithDefaultBundleDescriptorLoaderValue(builder, muleArtifact);

@@ -180,6 +180,40 @@
 
     <profiles>
         <profile>
+            <id>uber</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>uber</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <configuration>
+                            <minimizeJar>true</minimizeJar>
+                            <artifactSet>
+                              <includes>
+                                  <include>org.mule.runtime:*</include>
+                              </includes>
+                            </artifactSet>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>integration</id>
             <build>
                 <plugins>

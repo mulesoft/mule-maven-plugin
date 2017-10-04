@@ -129,7 +129,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
     setBuilderWithDefaultRedeploymentEnabled(builder, originalMuleArtifact);
     setBuilderWithDefaultConfigsValue(builder, originalMuleArtifact, muleArtifactContentResolver);
     // setBuilderWithDefaultExportedPackagesValue(builder, muleArtifactContentResolver);
-    // setBuilderWithDefaultExportedResourcesValue(builder, muleArtifactContentResolver);
+    setBuilderWithDefaultExportedResourcesValue(builder, muleArtifactContentResolver);
   }
 
   /**

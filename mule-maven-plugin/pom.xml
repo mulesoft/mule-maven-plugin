@@ -197,6 +197,7 @@
                             <minimizeJar>true</minimizeJar>
                             <artifactSet>
                               <includes>
+                                  <include>org.mule:*</include>
                                   <include>org.mule.runtime:*</include>
                               </includes>
                             </artifactSet>

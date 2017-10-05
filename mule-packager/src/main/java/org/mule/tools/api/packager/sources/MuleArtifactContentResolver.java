@@ -12,6 +12,7 @@ package org.mule.tools.api.packager.sources;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.mule.tools.api.packager.structure.ProjectStructure;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,36 +20,42 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.api.packager.structure.FolderNames.MAIN;
-import static org.mule.tools.api.packager.structure.FolderNames.MULE;
-import static org.mule.tools.api.packager.structure.FolderNames.SRC;
-import static org.mule.tools.api.packager.structure.FolderNames.RESOURCES;
-import static org.mule.tools.api.packager.structure.FolderNames.JAVA;
+import static org.mule.tools.api.packager.structure.FolderNames.*;
 
 /**
  * Resolves the content of resources defined in mule-artifact.json based on the project base folder.
  */
 public class MuleArtifactContentResolver {
 
-  private final Path projectBaseFolder;
+  private final ProjectStructure projectStructure;
   private List<String> configs;
+  private List<String> testConfigs;
   private List<String> exportedPackages;
   private List<String> exportedResources;
 
-  public MuleArtifactContentResolver(Path projectBaseFolder) {
-    checkArgument(projectBaseFolder != null, "Project base folder should not be null");
-    this.projectBaseFolder = projectBaseFolder;
+  public MuleArtifactContentResolver(ProjectStructure projectStructure) {
+    checkArgument(projectStructure != null, "Project structure should not be null");
+    this.projectStructure = projectStructure;
   }
+
+  /**
+   * Returns the resolved list of exported packages paths.
+   */
+  public ProjectStructure getProjectStructure() throws IOException {
+    return projectStructure;
+  }
+
 
   /**
    * Returns the resolved list of exported packages paths.
    */
   public List<String> getExportedPackages() throws IOException {
     if (exportedPackages == null) {
-      exportedPackages = getResources(resolveExportedPackagesPath());
+      exportedPackages = getResources(projectStructure.getExportedPackagesPath());
     }
     return exportedPackages;
   }
@@ -58,7 +65,7 @@ public class MuleArtifactContentResolver {
    */
   public List<String> getExportedResources() throws IOException {
     if (exportedResources == null) {
-      exportedResources = getResources(resolveExportedResourcesPath());
+      exportedResources = getResources(projectStructure.getExportedResourcesPath());
     }
     return exportedResources;
   }
@@ -68,9 +75,20 @@ public class MuleArtifactContentResolver {
    */
   public List<String> getConfigs() throws IOException {
     if (configs == null) {
-      configs = getResources(resolveConfigsPath());
+      configs = getResources(projectStructure.getConfigsPath());
     }
     return configs;
+  }
+
+  /**
+   * Returns the resolved list of test configs paths.
+   */
+  public List<String> getTestConfigs() throws IOException {
+    if (testConfigs == null) {
+      Optional<Path> testConfigsPath = projectStructure.getTestConfigsPath();
+      testConfigs = testConfigsPath.isPresent() ? getResources(testConfigsPath.get()) : Collections.emptyList();
+    }
+    return testConfigs;
   }
 
   /**
@@ -91,26 +109,5 @@ public class MuleArtifactContentResolver {
 
     return resourcesFolderContent.stream().map(File::toPath).map(p -> resourcesFolder.toPath().relativize(p)).map(Path::toString)
         .collect(Collectors.toList());
-  }
-
-  /**
-   * Resolves the exported packages path based on the project base folder
-   */
-  public Path resolveExportedPackagesPath() {
-    return projectBaseFolder.resolve(SRC.value()).resolve(MAIN.value()).resolve(JAVA.value());
-  }
-
-  /**
-   * Resolves the exported packages path based on the project base folder
-   */
-  public Path resolveExportedResourcesPath() {
-    return projectBaseFolder.resolve(SRC.value()).resolve(MAIN.value()).resolve(RESOURCES.value());
-  }
-
-  /**
-   * Resolves the configs path based on the project base folder
-   */
-  public Path resolveConfigsPath() {
-    return projectBaseFolder.resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value());
   }
 }

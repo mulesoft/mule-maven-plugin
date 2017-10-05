@@ -20,11 +20,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.api.packager.sources.DefaultValuesMuleArtifactJsonGenerator.generate;
 import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
-import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
-import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 import static org.mule.tools.api.packager.structure.PackagerFiles.POM_PROPERTIES;
 import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
 
@@ -86,28 +83,8 @@ public abstract class ContentGenerator {
     }
   }
 
-  /**
-   * It creates the descriptors files, pom.xml, pom.properties, and the mule-*.json file. The name of the the last one depends on
-   * the {@link PackagingType}
-   *
-   * @throws IOException
-   */
-  public void createDescriptors() throws IOException {
-    createMavenDescriptors();
-    copyDescriptorFile();
-  }
-
   protected void createMavenDescriptors() throws IOException {
     copyPomFile();
     createPomProperties();
   }
-
-  private void copyDescriptorFile() throws IOException {
-    Path originPath = projectInformation.getProjectBaseFolder().resolve(MULE_ARTIFACT_JSON);
-    Path destinationPath = projectInformation.getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value());
-    String destinationFileName = originPath.getFileName().toString();
-    copyFile(originPath, destinationPath, destinationFileName);
-    generate(projectInformation.getProjectBaseFolder());
-  }
-
 }

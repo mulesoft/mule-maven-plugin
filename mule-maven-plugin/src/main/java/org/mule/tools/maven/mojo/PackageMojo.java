@@ -55,10 +55,6 @@ public class PackageMojo extends AbstractMuleMojo {
   @Parameter(defaultValue = "${attachMuleSources}")
   protected boolean attachMuleSources = false;
 
-  @Parameter(defaultValue = "${testJar}")
-  protected boolean testJar = false;
-
-
   public void execute() throws MojoExecutionException, MojoFailureException {
     long start = System.currentTimeMillis();
     getLog().debug("Packaging...");

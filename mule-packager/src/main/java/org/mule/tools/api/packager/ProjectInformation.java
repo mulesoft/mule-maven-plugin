@@ -27,15 +27,17 @@ public class ProjectInformation {
   private String packaging;
   private Path projectBaseFolder;
   private Path buildDirectory;
+  private boolean isTestProject;
 
   private ProjectInformation(String groupId, String artifactId, String version, String packaging, Path projectBaseFolder,
-                             Path buildDirectory) {
+                             Path buildDirectory, boolean isTestProject) {
     this.groupId = groupId;
     this.artifactId = artifactId;
     this.version = version;
     this.packaging = packaging;
     this.projectBaseFolder = projectBaseFolder;
     this.buildDirectory = buildDirectory;
+    this.isTestProject = isTestProject;
   }
 
   public String getGroupId() {
@@ -62,6 +64,10 @@ public class ProjectInformation {
     return buildDirectory;
   }
 
+  public boolean isTestProject() {
+    return isTestProject;
+  }
+
   public static class Builder {
 
     private String groupId;
@@ -70,6 +76,7 @@ public class ProjectInformation {
     private String packaging;
     private Path projectBaseFolder;
     private Path buildDirectory;
+    private Boolean isTestProject;
 
     public Builder withGroupId(String groupId) {
       this.groupId = groupId;
@@ -101,6 +108,11 @@ public class ProjectInformation {
       return this;
     }
 
+    public Builder setTestProject(Boolean isTestProject) {
+      this.isTestProject = isTestProject;
+      return this;
+    }
+
     public ProjectInformation build() {
       checkArgument(StringUtils.isNotBlank(groupId), "Group id should not be null nor blank");
       checkArgument(StringUtils.isNotBlank(artifactId), "Artifact id should not be null nor blank");
@@ -108,7 +120,9 @@ public class ProjectInformation {
       checkArgument(StringUtils.isNotBlank(packaging), "Version should not be null nor blank");
       checkArgument(projectBaseFolder != null, "Project base folder should not be null");
       checkArgument(buildDirectory != null, "Project build directory should not be null");
-      return new ProjectInformation(groupId, artifactId, version, packaging, projectBaseFolder, buildDirectory);
+      checkArgument(isTestProject != null, "Project isTestProject property was not set");
+
+      return new ProjectInformation(groupId, artifactId, version, packaging, projectBaseFolder, buildDirectory, isTestProject);
     }
 
   }

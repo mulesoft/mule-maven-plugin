@@ -10,9 +10,6 @@
 
 package org.mule.tools.api.packager.sources;
 
-import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
-import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
-import static org.mule.tools.api.packager.structure.FolderNames.TARGET;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
@@ -27,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.mule.tools.api.packager.structure.ProjectStructure;
 
 /**
  * Generates default value for any non-defined fields in a mule-artifact.json file
@@ -40,22 +38,20 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * Generates the default value for every non-defined fields in a mule-artifact.json file during build time and updates
    * accordingly
    * 
-   * @param projectBaseFolder root location of project being built
+   * @param muleArtifactContentResolver muleArtifactContentResolver of project being built
    */
-  public static void generate(Path projectBaseFolder) throws IOException {
-    Path muleArtifactJsonLocation = resolveMuleArtifactJsonLocation(projectBaseFolder);
-    MuleArtifactContentResolver muleArtifactContentResolver =
-        new MuleArtifactContentResolver(projectBaseFolder);
+  public static void generate(MuleArtifactContentResolver muleArtifactContentResolver) throws IOException {
+    Path muleArtifactJsonLocation = resolveMuleArtifactJsonLocation(muleArtifactContentResolver.getProjectStructure());
     generate(muleArtifactJsonLocation, muleArtifactJsonLocation, muleArtifactContentResolver);
   }
 
   /**
    * Resolves the mule-artifact.json location based on the project base folder during build time
    *
-   * @param projectBaseFolder root location of project being built
+   * @param projectStructure projectStructure of project being built
    */
-  protected static Path resolveMuleArtifactJsonLocation(Path projectBaseFolder) {
-    return projectBaseFolder.resolve(TARGET.value()).resolve(META_INF.value()).resolve(MULE_ARTIFACT.value());
+  protected static Path resolveMuleArtifactJsonLocation(ProjectStructure projectStructure) {
+    return projectStructure.getMuleArtifactJsonPath();
   }
 
   /**
@@ -130,6 +126,17 @@ public class DefaultValuesMuleArtifactJsonGenerator {
     setBuilderWithDefaultConfigsValue(builder, originalMuleArtifact, muleArtifactContentResolver);
     // setBuilderWithDefaultExportedPackagesValue(builder, muleArtifactContentResolver);
     setBuilderWithDefaultExportedResourcesValue(builder, muleArtifactContentResolver);
+    setBuilderWithIncludeTestDependencies(builder, muleArtifactContentResolver);
+  }
+
+  protected static void setBuilderWithIncludeTestDependencies(MuleApplicationModel.MuleApplicationModelBuilder builder,
+                                                              MuleArtifactContentResolver muleArtifactContentResolver)
+      throws IOException {
+    MuleArtifactLoaderDescriptor descriptorLoader = builder.getClassLoaderModelDescriptorLoader();
+    if (muleArtifactContentResolver.getProjectStructure().getTestConfigsPath().isPresent()) {
+      Map<String, Object> attributesCopy = getUpdatedAttributes(descriptorLoader, "includeTestDependencies", true);
+      builder.withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(descriptorLoader.getId(), attributesCopy));
+    }
   }
 
   /**
@@ -143,12 +150,8 @@ public class DefaultValuesMuleArtifactJsonGenerator {
                                                                     MuleArtifactContentResolver muleArtifactContentResolver)
       throws IOException {
     MuleArtifactLoaderDescriptor descriptorLoader = builder.getClassLoaderModelDescriptorLoader();
-    Map<String, Object> originalAttributes = descriptorLoader.getAttributes();
-    Map<String, Object> attributesCopy = new HashMap<>();
-    if (originalAttributes != null) {
-      attributesCopy.putAll(originalAttributes);
-    }
-    attributesCopy.putIfAbsent("exportedResources", muleArtifactContentResolver.getExportedResources());
+    Map<String, Object> attributesCopy =
+        getUpdatedAttributes(descriptorLoader, "exportedResources", muleArtifactContentResolver.getExportedResources());
     builder.withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(descriptorLoader.getId(), attributesCopy));
   }
 
@@ -162,14 +165,22 @@ public class DefaultValuesMuleArtifactJsonGenerator {
   protected static void setBuilderWithDefaultExportedPackagesValue(MuleApplicationModel.MuleApplicationModelBuilder builder,
                                                                    MuleArtifactContentResolver muleArtifactContentResolver)
       throws IOException {
+
     MuleArtifactLoaderDescriptor descriptorLoader = builder.getClassLoaderModelDescriptorLoader();
+    Map<String, Object> attributesCopy =
+        getUpdatedAttributes(descriptorLoader, "exportedPackages", muleArtifactContentResolver.getExportedPackages());
+    builder.withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(descriptorLoader.getId(), attributesCopy));
+  }
+
+  private static Map<String, Object> getUpdatedAttributes(MuleArtifactLoaderDescriptor descriptorLoader, String attribute,
+                                                          Object value) {
     Map<String, Object> originalAttributes = descriptorLoader.getAttributes();
     Map<String, Object> attributesCopy = new HashMap<>();
     if (originalAttributes != null) {
       attributesCopy.putAll(originalAttributes);
     }
-    attributesCopy.putIfAbsent("exportedPackages", muleArtifactContentResolver.getExportedPackages());
-    builder.withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(descriptorLoader.getId(), attributesCopy));
+    attributesCopy.putIfAbsent(attribute, value);
+    return attributesCopy;
   }
 
   /**
@@ -193,7 +204,11 @@ public class DefaultValuesMuleArtifactJsonGenerator {
     } catch (NoSuchFieldException | IllegalAccessException e) {
       configs = muleArtifactContentResolver.getConfigs();
     }
-    builder.setConfigs(configs != null ? configs : muleArtifactContentResolver.getConfigs());
+    if (configs == null) {
+      configs = muleArtifactContentResolver.getConfigs();
+    }
+    configs.addAll(muleArtifactContentResolver.getTestConfigs());
+    builder.setConfigs(configs);
   }
 
   /**

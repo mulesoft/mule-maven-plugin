@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.mule.tools.api.packager.structure.ProjectStructure;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +37,7 @@ public class MuleArtifactContentResolverTest {
   private static final String CONFIG_3 = "config3.xml";
   private static final String JAVA_FOLDER_LOCATION = "src/main/java";
   private static final String MULE_FOLDER_LOCATION = "src/main/mule";
+  private static final String MUNIT_FOLDER_LOCATION = "src/test/munit";
   private static final String RESOURCES_FOLDER_LOCATION = "src/main/resources";
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -46,24 +48,27 @@ public class MuleArtifactContentResolverTest {
   private MuleArtifactContentResolver resolver;
   private File javaFolder;
   private File muleFolder;
+  private File munitFolder;
   private File resourcesFolder;
 
   @Before
   public void setUp() throws IOException {
     temporaryFolder.create();
-    resolver = new MuleArtifactContentResolver(temporaryFolder.getRoot().toPath());
+    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), false));
     javaFolder = new File(temporaryFolder.getRoot(), JAVA_FOLDER_LOCATION);
     muleFolder = new File(temporaryFolder.getRoot(), MULE_FOLDER_LOCATION);
+    munitFolder = new File(temporaryFolder.getRoot(), MUNIT_FOLDER_LOCATION);
     resourcesFolder = new File(temporaryFolder.getRoot(), RESOURCES_FOLDER_LOCATION);
     muleFolder.mkdirs();
+    munitFolder.mkdirs();
     javaFolder.mkdirs();
     resourcesFolder.mkdirs();
   }
 
   @Test
-  public void muleArtifactContentResolverNullPathArgumentinConstructorTest() {
+  public void muleArtifactContentResolverNullPathArgumentInConstructorTest() {
     expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage("Project base folder should not be null");
+    expectedException.expectMessage("Project structure should not be null");
     new MuleArtifactContentResolver(null);
   }
 
@@ -115,6 +120,24 @@ public class MuleArtifactContentResolverTest {
     config3.createNewFile();
 
     List<String> actualConfigs = resolver.getConfigs();
+
+    assertThat("Configs does not contain all expected elements", actualConfigs,
+               containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + File.separator + CONFIG_3));
+    assertThat("Configs contains more elements than expected", actualConfigs.size(), equalTo(3));
+  }
+
+  @Test
+  public void getTestConfigsTest() throws IOException {
+    File config1 = new File(munitFolder, CONFIG_1);
+    File config2 = new File(munitFolder, CONFIG_2);
+    File config3Folder = new File(munitFolder, CONFIG_3_LOCATION);
+    File config3 = new File(config3Folder, CONFIG_3);
+    config1.createNewFile();
+    config2.createNewFile();
+    config3Folder.mkdirs();
+    config3.createNewFile();
+    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true));
+    List<String> actualConfigs = resolver.getTestConfigs();
 
     assertThat("Configs does not contain all expected elements", actualConfigs,
                containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + File.separator + CONFIG_3));

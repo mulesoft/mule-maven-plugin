@@ -9,9 +9,6 @@
  */
 package org.mule.tools.api;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -21,12 +18,8 @@ import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -34,9 +27,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.packager.PackagerTestUtils;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
@@ -69,6 +59,7 @@ public class ContentGeneratorTest {
         .withVersion(VERSION)
         .withPackaging(packagingType.toString())
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
+        .setTestProject(false)
         .withBuildDirectory(projectTargetFolder.toPath()).build();
     contentGenerator = new MuleContentGenerator(info);
   }
@@ -81,6 +72,7 @@ public class ContentGeneratorTest {
         .withVersion(VERSION)
         .withPackaging(packagingType.toString())
         .withProjectBaseFolder(Paths.get("/fake/project/base/folder"))
+        .setTestProject(false)
         .withBuildDirectory(projectTargetFolder.toPath()).build();
     new MuleContentGenerator(info);
   }
@@ -93,6 +85,7 @@ public class ContentGeneratorTest {
         .withVersion(VERSION)
         .withPackaging(packagingType.toString())
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
+        .setTestProject(false)
         .withBuildDirectory(Paths.get("/fake/project/base/folder")).build();
     new MuleContentGenerator(info);
   }
@@ -278,6 +271,8 @@ public class ContentGeneratorTest {
         .withVersion(VERSION)
         .withPackaging(PackagingType.MULE_POLICY.toString())
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
+        .setTestProject(false)
+
         .withBuildDirectory(projectTargetFolder.toPath()).build();
     contentGenerator = new MuleContentGenerator(info);
 
@@ -315,6 +310,7 @@ public class ContentGeneratorTest {
         .withVersion(VERSION)
         .withPackaging(PackagingType.MULE_DOMAIN.toString())
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
+        .setTestProject(false)
         .withBuildDirectory(projectTargetFolder.toPath()).build();
     contentGenerator = new MuleContentGenerator(info);
 

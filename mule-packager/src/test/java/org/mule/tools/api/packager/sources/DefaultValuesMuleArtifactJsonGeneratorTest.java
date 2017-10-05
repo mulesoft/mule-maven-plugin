@@ -17,14 +17,13 @@ import org.junit.rules.TemporaryFolder;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
+import org.mule.tools.api.packager.structure.ProjectStructure;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 import static org.mule.tools.api.packager.sources.DefaultValuesMuleArtifactJsonGenerator.*;
@@ -134,13 +133,12 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
 
     setBuilderWithDefaultConfigsValue(defaultBuilder, muleArtifactMock, resolverMock);
 
-    assertThat("Configs are not the expected", defaultBuilder.build().getConfigs(), equalTo(configs));
+    assertThat("Configs are not the expected", defaultBuilder.build().getConfigs(),
+               containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3));
   }
 
   @Test
   public void setBuilderWithDefaultConfigsValueIfConfigsAreDefinedTest() throws IOException {
-    MuleApplicationModel muleArtifactMock = mock(MuleApplicationModel.class);
-
     MuleArtifactContentResolver resolverMock = mock(MuleArtifactContentResolver.class);
 
     List<String> originalConfigs = new ArrayList<>();
@@ -148,13 +146,18 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
     originalConfigs.add(CONFIG_2);
     doReturn(originalConfigs).when(resolverMock).getConfigs();
 
+    List<String> testConfigs = new ArrayList<>();
+    originalConfigs.add(CONFIG_3);
+    doReturn(testConfigs).when(resolverMock).getTestConfigs();
+    doReturn(new ProjectStructure(temporaryFolder.getRoot().toPath(), true)).when(resolverMock).getProjectStructure();
     muleArtifact =
         new MuleApplicationModelJsonSerializer()
             .deserialize("{  }");
 
     setBuilderWithDefaultConfigsValue(defaultBuilder, muleArtifact, resolverMock);
 
-    assertThat("Configs are not the expected", defaultBuilder.build().getConfigs(), equalTo(originalConfigs));
+    assertThat("Configs are not the expected", defaultBuilder.build().getConfigs(),
+               containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3));
   }
 
   @Test
@@ -191,6 +194,20 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
     assertThat("Exported resources are not the expected",
                defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("exportedResources"),
                equalTo(exportedResources));
+  }
+
+
+  @Test
+  public void setBuilderWithIncludeTestDependenciesTest() throws IOException {
+    MuleArtifactContentResolver resolverMock = mock(MuleArtifactContentResolver.class);
+
+    when(resolverMock.getProjectStructure()).thenReturn(new ProjectStructure(temporaryFolder.getRoot().toPath(), true));
+
+    setBuilderWithIncludeTestDependencies(defaultBuilder, resolverMock);
+
+    assertThat("Include test dependencies are not the expected",
+               defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("includeTestDependencies"),
+               equalTo(true));
   }
 
 

@@ -74,6 +74,9 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   @Parameter(property = "shared.libraries")
   protected List<org.mule.tools.api.classloader.model.SharedLibraryDependency> sharedLibraries;
 
+  @Parameter(defaultValue = "${testJar}")
+  protected boolean testJar = false;
+
   @Parameter
   protected String classifier;
 
@@ -107,6 +110,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
           .withPackaging(project.getPackaging())
           .withProjectBaseFolder(Paths.get(projectBaseFolder.toURI()))
           .withBuildDirectory(Paths.get(project.getBuild().getDirectory()))
+          .setTestProject(testJar)
           .build();
     }
     return projectInformation;

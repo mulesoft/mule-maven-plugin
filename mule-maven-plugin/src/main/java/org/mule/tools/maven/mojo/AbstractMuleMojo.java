@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
@@ -33,7 +34,7 @@ import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.resources.content.ResourcesContent;
 import org.mule.tools.api.packager.sources.ContentGenerator;
 import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
-import org.mule.tools.api.repository.MuleMavenPluginClientProvider;
+import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
 
 
 /**
@@ -89,10 +90,15 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
 
   protected AetherMavenClient getAetherMavenClient() {
     if (aetherMavenClient == null) {
+      MavenExecutionRequest request = session.getRequest();
       List<RemoteRepository> remoteRepositories = RepositoryUtils.toRepos(remoteArtifactRepositories);
-      aetherMavenClient = new MuleMavenPluginClientProvider(remoteRepositories,
-                                                            getLog())
-                                                                .buildMavenClient();
+      aetherMavenClient = new MuleMavenPluginClientBuilder()
+          .withRemoteRepositories(remoteRepositories)
+          .withLog(getLog())
+          .withLocalRepository(request.getLocalRepositoryPath())
+          .withUserSettings(request.getUserSettingsFile())
+          .withGlobalSettings(request.getGlobalSettingsFile())
+          .build();
     }
     return aetherMavenClient;
   }

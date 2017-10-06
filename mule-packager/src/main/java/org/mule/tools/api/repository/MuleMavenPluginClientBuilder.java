@@ -28,40 +28,61 @@ import java.util.function.Supplier;
 import static com.google.common.base.Preconditions.checkArgument;
 
 
-public class MuleMavenPluginClientProvider {
+public class MuleMavenPluginClientBuilder {
 
-  private final Log log;
+  private Log log;
   private List<RemoteRepository> remoteRepositories;
+  private File localRepository;
+  private File globalSettings;
+  private File userSettings;
 
-  public MuleMavenPluginClientProvider(List<RemoteRepository> remoteRepositories, Log log) {
+  public MuleMavenPluginClientBuilder withRemoteRepositories(List<RemoteRepository> remoteRepositories) {
     checkArgument(remoteRepositories != null, "Remote repositories list can not be null");
     this.remoteRepositories = remoteRepositories;
-    this.log = log;
+    return this;
   }
 
-  public AetherMavenClient buildMavenClient() {
+  public MuleMavenPluginClientBuilder withLocalRepository(File localRepository) {
+    this.localRepository = localRepository;
+    return this;
+  }
+
+  public MuleMavenPluginClientBuilder withGlobalSettings(File globalSettings) {
+    this.globalSettings = globalSettings;
+    return this;
+  }
+
+  public MuleMavenPluginClientBuilder withUserSettings(File userSettings) {
+    this.userSettings = userSettings;
+    return this;
+  }
+
+  public MuleMavenPluginClientBuilder withLog(Log log) {
+    this.log = log;
+    return this;
+  }
+
+  public AetherMavenClient build() {
     MavenConfiguration mavenConfiguration = buildMavenConfiguration();
     AetherMavenClientProvider provider = new AetherMavenClientProvider();
     return (AetherMavenClient) provider.createMavenClient(mavenConfiguration);
   }
 
-  public MavenConfiguration buildMavenConfiguration() {
+  protected MavenConfiguration buildMavenConfiguration() {
     MavenConfiguration.MavenConfigurationBuilder mavenConfigurationBuilder = new MavenConfiguration.MavenConfigurationBuilder();
-
     DefaultSettingsSupplierFactory settingsSupplierFactory = new DefaultSettingsSupplierFactory(new MavenEnvironmentVariables());
-    Optional<File> globalSettings = settingsSupplierFactory.environmentGlobalSettingsSupplier();
-    Optional<File> userSettings = settingsSupplierFactory.environmentUserSettingsSupplier();
+
+    Optional<File> globalSettings = this.globalSettings != null ? Optional.of(this.globalSettings)
+        : settingsSupplierFactory.environmentGlobalSettingsSupplier();
+    Optional<File> userSettings =
+        this.userSettings != null ? Optional.of(this.userSettings) : settingsSupplierFactory.environmentUserSettingsSupplier();
 
     globalSettings.ifPresent(mavenConfigurationBuilder::globalSettingsLocation);
     userSettings.ifPresent(mavenConfigurationBuilder::userSettingsLocation);
 
     DefaultLocalRepositorySupplierFactory localRepositorySupplierFactory = new DefaultLocalRepositorySupplierFactory();
-    Supplier<File> localMavenRepository;
-    try {
-      localMavenRepository = localRepositorySupplierFactory.environmentMavenRepositorySupplier();
-    } catch (IllegalArgumentException e) {
-      localMavenRepository = () -> new File(System.getenv("WORKSPACE"), ".repository");
-    }
+    Supplier<File> localMavenRepository =
+        localRepository != null ? () -> localRepository : localRepositorySupplierFactory.environmentMavenRepositorySupplier();
 
     this.remoteRepositories.stream().filter(this::hasValidURL).map(this::toRemoteRepo)
         .forEach(mavenConfigurationBuilder::remoteRepository);

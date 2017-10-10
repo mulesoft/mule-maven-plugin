@@ -15,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
+import org.mule.runtime.api.deployment.meta.Product;
 import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
 import org.mule.tools.api.exception.ValidationException;
 
@@ -24,6 +25,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mule.runtime.api.deployment.meta.Product.MULE;
+import static org.mule.runtime.api.deployment.meta.Product.MULE_EE;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 
 public class MuleArtifactJsonValidator {
@@ -74,7 +77,7 @@ public class MuleArtifactJsonValidator {
   }
 
   /**
-   * Validates that the mandatory fields in the mule-artifact.json file are present.
+   * Validates that the mandatory fields in the mule-artifact.json file are present and have valid values.
    *
    * @throws ValidationException if the project descriptor file does not have set all mandatory fields
    * @param muleArtifact
@@ -85,9 +88,29 @@ public class MuleArtifactJsonValidator {
     checkName(muleArtifact, missingFields);
     checkMinMuleVersionValue(muleArtifact, missingFields);
     checkClassLoaderModelDescriptor(muleArtifact, missingFields);
+    checkRequiredProduct(muleArtifact, missingFields);
 
     if (!missingFields.isEmpty()) {
-      throw new ValidationException("The following mandatory fields in the mule-artifact.json are missing: " + missingFields);
+      String message = "The following mandatory fields in the mule-artifact.json are missing or invalid: "
+          + missingFields;
+      if (missingFields.contains("requiredProduct")) {
+        message += ". requiredProduct valid values are: MULE, MULE_EE";
+      }
+      throw new ValidationException(message);
+    }
+  }
+
+  /**
+   * Checks that the requiredProduct field is present in the mule artifact instance. If it is not defined or if it has a invalid
+   * value, the field name is added to the missing fields list.
+   *
+   * @param muleArtifact the mule artifact to be checked
+   * @param missingFields list of required fields that are missing
+   */
+  private static void checkRequiredProduct(MuleApplicationModel muleArtifact, List<String> missingFields) {
+    Product requiredProduct = muleArtifact.getRequiredProduct();
+    if (requiredProduct == null) {
+      missingFields.add("requiredProduct");
     }
   }
 

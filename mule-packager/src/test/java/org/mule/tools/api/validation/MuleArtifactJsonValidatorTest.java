@@ -34,8 +34,6 @@ import static org.mule.tools.api.validation.MuleArtifactJsonValidator.*;
 
 public class MuleArtifactJsonValidatorTest {
 
-  private MuleArtifactJsonValidator validator;
-
   @Rule
   public TemporaryFolder projectBaseFolder = new TemporaryFolder();
 
@@ -167,7 +165,7 @@ public class MuleArtifactJsonValidatorTest {
   public void validateMuleArtifactMandatoryFieldsMissingTest() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException
-        .expectMessage("The following mandatory fields in the mule-artifact.json are missing: [name, minMuleVersion, classLoaderModelLoaderDescriptor, classLoaderModelLoaderDescriptor.id]");
+        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [name, minMuleVersion, classLoaderModelLoaderDescriptor, classLoaderModelLoaderDescriptor.id, requiredProduct]");
 
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer()
@@ -179,11 +177,11 @@ public class MuleArtifactJsonValidatorTest {
   @Test
   public void validateMuleArtifactMandatoryFieldsMissingNameTest() throws ValidationException {
     expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("The following mandatory fields in the mule-artifact.json are missing: [name]");
+    expectedException.expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [name]");
 
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer()
-            .deserialize("{ minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: { id:mule } }");
+            .deserialize("{ minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: { id:mule }, requiredProduct: MULE }");
 
     validateMuleArtifactMandatoryFields(muleArtifact);
   }
@@ -191,11 +189,12 @@ public class MuleArtifactJsonValidatorTest {
   @Test
   public void validateMuleArtifactMandatoryFieldsMissingMinMuleVersionTest() throws ValidationException {
     expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("The following mandatory fields in the mule-artifact.json are missing: [minMuleVersion]");
+    expectedException
+        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [minMuleVersion]");
 
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer()
-            .deserialize("{ name:lala, classLoaderModelLoaderDescriptor: { id:mule } }");
+            .deserialize("{ name:lala, classLoaderModelLoaderDescriptor: { id:mule }, requiredProduct: MULE }");
 
     validateMuleArtifactMandatoryFields(muleArtifact);
   }
@@ -204,11 +203,11 @@ public class MuleArtifactJsonValidatorTest {
   public void validateMuleArtifactMandatoryFieldsMissingclassLoaderModelLoaderDescriptorTest() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException
-        .expectMessage("The following mandatory fields in the mule-artifact.json are missing: [classLoaderModelLoaderDescriptor, classLoaderModelLoaderDescriptor.id]");
+        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [classLoaderModelLoaderDescriptor, classLoaderModelLoaderDescriptor.id, requiredProduct]. requiredProduct valid values are: MULE, MULE_EE");
 
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer()
-            .deserialize("{ name:lala, minMuleVersion:4.0.0 }");
+            .deserialize("{ name:lala, minMuleVersion:4.0.0, requiredProduct: MULE_EEa }");
 
     validateMuleArtifactMandatoryFields(muleArtifact);
   }
@@ -217,11 +216,11 @@ public class MuleArtifactJsonValidatorTest {
   public void validateMuleArtifactMandatoryFieldsMissingclassLoaderModelLoaderDescriptorIdTest() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException
-        .expectMessage("The following mandatory fields in the mule-artifact.json are missing: [classLoaderModelLoaderDescriptor.id]");
+        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [classLoaderModelLoaderDescriptor.id]");
 
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer()
-            .deserialize("{ name:lala, minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: {  } }");
+            .deserialize("{ name:lala, minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: {  }, requiredProduct: MULE_EE }");
 
     validateMuleArtifactMandatoryFields(muleArtifact);
   }
@@ -231,11 +230,25 @@ public class MuleArtifactJsonValidatorTest {
       throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException
-        .expectMessage("The following mandatory fields in the mule-artifact.json are missing: [name, classLoaderModelLoaderDescriptor.id]");
+        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [name, classLoaderModelLoaderDescriptor.id]");
 
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer()
-            .deserialize("{ minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: {  } }");
+            .deserialize("{ minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: {  }, requiredProduct: MULE }");
+
+    validateMuleArtifactMandatoryFields(muleArtifact);
+  }
+
+  @Test
+  public void validateMuleArtifactMandatoryFieldsMissingRequiredProductTest()
+      throws ValidationException {
+    expectedException.expect(ValidationException.class);
+    expectedException
+        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [requiredProduct]");
+
+    MuleApplicationModel muleArtifact =
+        new MuleApplicationModelJsonSerializer()
+            .deserialize("{ name:lala, minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: { id:mule } }");
 
     validateMuleArtifactMandatoryFields(muleArtifact);
   }

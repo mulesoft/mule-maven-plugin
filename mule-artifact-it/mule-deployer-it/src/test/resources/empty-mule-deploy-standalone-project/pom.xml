@@ -5,7 +5,7 @@
 
     <groupId>org.mule.tools.muleesb.it</groupId>
     <artifactId>standalone</artifactId>
-    <version>1.0</version>
+    <version>1.0.0</version>
     <packaging>mule-application</packaging>
 
     <build>

@@ -20,6 +20,7 @@ import org.junit.rules.TemporaryFolder;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.util.Project;
 
 import java.io.File;
@@ -53,12 +54,23 @@ public class MuleProjectValidatorTest {
   public ExpectedException expectedException = ExpectedException.none();
   @Rule
   public TemporaryFolder projectBaseFolder = new TemporaryFolder();
+  @Rule
+  public TemporaryFolder projectBuildFolder = new TemporaryFolder();
 
   private MuleProjectValidator validator;
 
   @Before
   public void before() throws IOException, MojoExecutionException {
-    validator = new MuleProjectValidator(projectBaseFolder.getRoot().toPath(), MULE_APPLICATION, mock(Project.class),
+    ProjectInformation projectInformation = new ProjectInformation.Builder()
+        .withGroupId(GROUP_ID)
+        .withArtifactId(ARTIFACT_ID)
+        .withVersion(VERSION)
+        .withPackaging(MULE_APPLICATION)
+        .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
+        .withBuildDirectory(projectBuildFolder.getRoot().toPath())
+        .setTestProject(false)
+        .build();
+    validator = new MuleProjectValidator(projectInformation, mock(Project.class),
                                          mock(MulePluginResolver.class), new ArrayList<>());
   }
 

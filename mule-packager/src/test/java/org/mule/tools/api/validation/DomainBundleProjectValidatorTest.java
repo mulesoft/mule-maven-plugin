@@ -22,6 +22,7 @@ import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.util.Project;
 
 import java.io.IOException;
@@ -34,6 +35,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BUNDLE;
 import static org.mule.tools.api.validation.AbstractProjectValidatorTest.MULE_APPLICATION;
 import static org.mule.tools.api.validation.AbstractProjectValidatorTest.MULE_DOMAIN;
 import static org.mule.tools.api.validation.AbstractProjectValidatorTest.MULE_POLICY;
@@ -55,6 +57,8 @@ public class DomainBundleProjectValidatorTest {
 
   @Rule
   public TemporaryFolder projectBaseDir = new TemporaryFolder();
+  @Rule
+  public TemporaryFolder projectBuildFolder = new TemporaryFolder();
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -62,6 +66,7 @@ public class DomainBundleProjectValidatorTest {
   public Project dependencyProjectMock;
   private MulePluginResolver resolverMock;
   private AetherMavenClient aetherMavenClientMock;
+  private ProjectInformation projectInformation;
 
   @Before
   public void setUp() throws IOException {
@@ -69,7 +74,16 @@ public class DomainBundleProjectValidatorTest {
     dependencyProjectMock = mock(Project.class);
     resolverMock = mock(MulePluginResolver.class);
     aetherMavenClientMock = mock(AetherMavenClient.class);
-    validator = new DomainBundleProjectValidator(projectBaseDir.getRoot().toPath(), dependencyProjectMock,
+    projectInformation = new ProjectInformation.Builder()
+        .withGroupId(GROUP_ID)
+        .withArtifactId(ARTIFACT_ID)
+        .withVersion(VERSION)
+        .withPackaging(MULE_DOMAIN_BUNDLE.toString())
+        .withProjectBaseFolder(projectBaseDir.getRoot().toPath())
+        .withBuildDirectory(projectBuildFolder.getRoot().toPath())
+        .setTestProject(false)
+        .build();
+    validator = new DomainBundleProjectValidator(projectInformation, dependencyProjectMock,
                                                  resolverMock, aetherMavenClientMock);
   }
 
@@ -285,7 +299,7 @@ public class DomainBundleProjectValidatorTest {
     when(dependencyProjectMock.getDependencies()).thenReturn(applicationDependencies);
 
     DomainBundleProjectValidator validatorSpy =
-        spy(new DomainBundleProjectValidator(projectBaseDir.getRoot().toPath(), dependencyProjectMock,
+        spy(new DomainBundleProjectValidator(projectInformation, dependencyProjectMock,
                                              resolverMock, aetherMavenClientMock));
     doNothing().when(validatorSpy).validateDomain(domains);
     doNothing().when(validatorSpy).validateApplications(eq(applicationDomain), any());

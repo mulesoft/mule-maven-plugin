@@ -3,7 +3,7 @@
   "artifactCoordinates": {
     "groupId": "org.apache.maven.plugin.my.unit",
     "artifactId": "empty-compile-project",
-    "version": "1.0-SNAPSHOT",
+    "version": "1.0.0-SNAPSHOT",
     "type": "pom"
   },
   "dependencies": []

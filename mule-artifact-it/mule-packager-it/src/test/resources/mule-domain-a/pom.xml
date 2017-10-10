@@ -5,7 +5,7 @@
 
     <groupId>org.apache.maven.plugin.my.unit</groupId>
     <artifactId>mule-domain-a</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>mule-domain</packaging>
     <name>Test MyMojo</name>
     <build>

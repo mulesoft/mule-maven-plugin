@@ -10,13 +10,13 @@
 
 package org.mule.tools.api.repository;
 
-import org.apache.maven.plugin.logging.Log;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.repository.AuthenticationContext;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.mule.maven.client.api.model.Authentication;
 import org.mule.maven.client.api.model.MavenConfiguration;
 import org.mule.maven.client.internal.*;
+import org.mule.tools.api.util.PackagerLog;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -30,11 +30,15 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 public class MuleMavenPluginClientBuilder {
 
-  private Log log;
+  private PackagerLog log;
   private List<RemoteRepository> remoteRepositories;
   private File localRepository;
   private File globalSettings;
   private File userSettings;
+
+  public MuleMavenPluginClientBuilder(PackagerLog log) {
+    this.log = log;
+  }
 
   public MuleMavenPluginClientBuilder withRemoteRepositories(List<RemoteRepository> remoteRepositories) {
     checkArgument(remoteRepositories != null, "Remote repositories list can not be null");
@@ -57,11 +61,6 @@ public class MuleMavenPluginClientBuilder {
     return this;
   }
 
-  public MuleMavenPluginClientBuilder withLog(Log log) {
-    this.log = log;
-    return this;
-  }
-
   public AetherMavenClient build() {
     MavenConfiguration mavenConfiguration = buildMavenConfiguration();
     AetherMavenClientProvider provider = new AetherMavenClientProvider();
@@ -71,7 +70,6 @@ public class MuleMavenPluginClientBuilder {
   protected MavenConfiguration buildMavenConfiguration() {
     MavenConfiguration.MavenConfigurationBuilder mavenConfigurationBuilder = new MavenConfiguration.MavenConfigurationBuilder();
     DefaultSettingsSupplierFactory settingsSupplierFactory = new DefaultSettingsSupplierFactory(new MavenEnvironmentVariables());
-
     Optional<File> globalSettings = this.globalSettings != null ? Optional.of(this.globalSettings)
         : settingsSupplierFactory.environmentGlobalSettingsSupplier();
     Optional<File> userSettings =
@@ -118,7 +116,7 @@ public class MuleMavenPluginClientBuilder {
     try {
       return new URL(remoteRepository.getUrl());
     } catch (MalformedURLException e) {
-      log.info("Could not resolve remote repository URL: " + remoteRepository);
+      log.warn("Could not resolve remote repository URL: " + remoteRepository);
     }
     return null;
   }

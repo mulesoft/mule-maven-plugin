@@ -35,6 +35,7 @@ import org.mule.tools.api.packager.resources.content.ResourcesContent;
 import org.mule.tools.api.packager.sources.ContentGenerator;
 import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
 import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
+import org.mule.tools.maven.utils.MavenPackagerLog;
 
 
 /**
@@ -92,9 +93,8 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
     if (aetherMavenClient == null) {
       MavenExecutionRequest request = session.getRequest();
       List<RemoteRepository> remoteRepositories = RepositoryUtils.toRepos(remoteArtifactRepositories);
-      aetherMavenClient = new MuleMavenPluginClientBuilder()
+      aetherMavenClient = new MuleMavenPluginClientBuilder(new MavenPackagerLog(getLog()))
           .withRemoteRepositories(remoteRepositories)
-          .withLog(getLog())
           .withLocalRepository(request.getLocalRepositoryPath())
           .withUserSettings(request.getUserSettingsFile())
           .withGlobalSettings(request.getGlobalSettingsFile())

@@ -11,9 +11,6 @@
 package org.mule.tools.api.packager.sources;
 
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
-import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
-import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
-import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +21,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+
+import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
+import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
+import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
 /**
@@ -62,8 +63,8 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * @param muleArtifactContentResolver resolves all the contents that are going to be defaulted in the generated the
    *        mule-artifact.json
    */
-  protected static void generate(Path originFolder, Path destinationFolder,
-                                 MuleArtifactContentResolver muleArtifactContentResolver)
+  public static void generate(Path originFolder, Path destinationFolder,
+                              MuleArtifactContentResolver muleArtifactContentResolver)
       throws IOException {
     MuleApplicationModel originalMuleArtifact = getOriginalMuleArtifact(originFolder);
 

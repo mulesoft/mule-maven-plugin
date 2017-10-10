@@ -10,9 +10,7 @@
 
 package org.mule.tools.api.packager.sources;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.mule.tools.api.packager.structure.ProjectStructure;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,15 +21,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.api.packager.structure.FolderNames.*;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+
+import org.mule.tools.api.packager.structure.ProjectStructure;
 
 /**
  * Resolves the content of resources defined in mule-artifact.json based on the project base folder.
  */
 public class MuleArtifactContentResolver {
 
+  private static final String CONFIG_FILE_EXTENSION = ".xml";
+
   private final ProjectStructure projectStructure;
+
   private List<String> configs;
   private List<String> testConfigs;
   private List<String> exportedPackages;
@@ -75,7 +80,7 @@ public class MuleArtifactContentResolver {
    */
   public List<String> getConfigs() throws IOException {
     if (configs == null) {
-      configs = getResources(projectStructure.getConfigsPath());
+      configs = getResources(projectStructure.getConfigsPath(), new SuffixFileFilter(CONFIG_FILE_EXTENSION));
     }
     return configs;
   }
@@ -86,28 +91,39 @@ public class MuleArtifactContentResolver {
   public List<String> getTestConfigs() throws IOException {
     if (testConfigs == null) {
       Optional<Path> testConfigsPath = projectStructure.getTestConfigsPath();
-      testConfigs = testConfigsPath.isPresent() ? getResources(testConfigsPath.get()) : Collections.emptyList();
+
+      testConfigs = testConfigsPath.isPresent() ? getResources(testConfigsPath.get(), new SuffixFileFilter(CONFIG_FILE_EXTENSION))
+          : Collections.emptyList();
     }
     return testConfigs;
+  }
+
+  private List<String> getResources(Path resourcesFolderPath) throws IOException {
+    return getResources(resourcesFolderPath, TrueFileFilter.INSTANCE);
   }
 
   /**
    * Returns a list of resources within a given path.
    *
-   * @param path base path of resources that are going to be listed.
+   * @param resourcesFolderPath base path of resources that are going to be listed.
    */
-  private List<String> getResources(Path path) throws IOException {
-    File resourcesFolder = path.toFile();
-    if (resourcesFolder == null) {
+  private List<String> getResources(Path resourcesFolderPath, IOFileFilter fileFilter) throws IOException {
+    if (resourcesFolderPath == null) {
       throw new IOException("The resources folder is invalid");
     }
+
+    File resourcesFolder = resourcesFolderPath.toFile();
     if (!resourcesFolder.exists()) {
       return Collections.emptyList();
     }
-    Collection<File> resourcesFolderContent =
-        FileUtils.listFiles(path.toFile(), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 
-    return resourcesFolderContent.stream().map(File::toPath).map(p -> resourcesFolder.toPath().relativize(p)).map(Path::toString)
+    Collection<File> resourcesFolderContent = FileUtils.listFiles(resourcesFolder, fileFilter, TrueFileFilter.INSTANCE);
+
+    return resourcesFolderContent.stream()
+        .filter(f -> !f.isHidden())
+        .map(File::toPath)
+        .map(p -> resourcesFolder.toPath().relativize(p))
+        .map(Path::toString)
         .collect(Collectors.toList());
   }
 }

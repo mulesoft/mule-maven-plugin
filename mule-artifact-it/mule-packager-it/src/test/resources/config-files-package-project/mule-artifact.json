@@ -9,6 +9,7 @@
       "exportedResources": []
     }
   },
+  "requiredProduct": "MULE",
   "bundleDescriptorLoader": {
     "id": "mule",
     "attributes": {}

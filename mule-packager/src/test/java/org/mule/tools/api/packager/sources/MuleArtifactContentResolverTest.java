@@ -17,6 +17,7 @@ import static org.hamcrest.core.Is.is;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 import org.junit.Before;
@@ -102,7 +103,12 @@ public class MuleArtifactContentResolverTest {
     File jar2 = new File(resourcesFolder, JAR_2);
     File jar3Folder = new File(resourcesFolder, JAR_3_LOCATION);
     File jar3 = new File(jar3Folder, JAR_3);
+
     File hiddenFile = new File(munitFolder, HIDDEN_FILE);
+    // Ensure hidden fin in win based systems
+    if (System.getProperty("os.name").toLowerCase().equals("win")) {
+      Files.setAttribute(hiddenFile.toPath(), "dos:hidden", true);
+    }
 
     jar1.createNewFile();
     jar2.createNewFile();

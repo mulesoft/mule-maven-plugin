@@ -41,6 +41,7 @@ public class MuleArtifactContentResolver {
   private List<String> testConfigs;
   private List<String> exportedPackages;
   private List<String> exportedResources;
+  private List<String> testExportedResources;
 
   public MuleArtifactContentResolver(ProjectStructure projectStructure) {
     checkArgument(projectStructure != null, "Project structure should not be null");
@@ -73,6 +74,18 @@ public class MuleArtifactContentResolver {
       exportedResources = getResources(projectStructure.getExportedResourcesPath());
     }
     return exportedResources;
+  }
+
+  /**
+   * Returns the resolved list of test exported resources paths.
+   */
+  public List<String> getTestExportedResources() throws IOException {
+    if (testExportedResources == null) {
+      Optional<Path> testExportedResourcesPath = projectStructure.getTestExportedResourcesPath();
+      testExportedResources =
+          testExportedResourcesPath.isPresent() ? getResources(testExportedResourcesPath.get()) : Collections.emptyList();
+    }
+    return testExportedResources;
   }
 
   /**

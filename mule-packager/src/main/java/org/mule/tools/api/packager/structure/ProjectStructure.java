@@ -60,6 +60,15 @@ public class ProjectStructure {
         : Optional.empty();
   }
 
+  /**
+   * Resolves the test exported resources path based on the project base folder
+   */
+  public Optional<Path> getTestExportedResourcesPath() {
+    return includeTestSuites
+        ? Optional.of(projectBaseFolder.resolve(SRC.value()).resolve(TEST.value()).resolve(RESOURCES.value()))
+        : Optional.empty();
+  }
+
   public Path getMuleArtifactJsonPath() {
     return projectBaseFolder.resolve(TARGET.value()).resolve(META_INF.value()).resolve(MULE_ARTIFACT.value());
   }

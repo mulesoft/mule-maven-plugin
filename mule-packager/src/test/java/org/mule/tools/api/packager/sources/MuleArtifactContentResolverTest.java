@@ -46,6 +46,7 @@ public class MuleArtifactContentResolverTest {
   private static final String MUNIT_FOLDER_LOCATION = "src/test/munit";
   private static final String RESOURCES_FOLDER_LOCATION = "src/main/resources";
   public static final String HIDDEN_FILE = ".hiddenFile";
+  private static final String TEST_RESOURCES_FOLDER_LOCATION = "src/test/resources";
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
@@ -57,6 +58,7 @@ public class MuleArtifactContentResolverTest {
   private File muleFolder;
   private File munitFolder;
   private File resourcesFolder;
+  private File testResourcesFolder;
 
   @Before
   public void setUp() throws IOException {
@@ -66,10 +68,12 @@ public class MuleArtifactContentResolverTest {
     muleFolder = new File(temporaryFolder.getRoot(), MULE_FOLDER_LOCATION);
     munitFolder = new File(temporaryFolder.getRoot(), MUNIT_FOLDER_LOCATION);
     resourcesFolder = new File(temporaryFolder.getRoot(), RESOURCES_FOLDER_LOCATION);
+    testResourcesFolder = new File(temporaryFolder.getRoot(), TEST_RESOURCES_FOLDER_LOCATION);
     muleFolder.mkdirs();
     munitFolder.mkdirs();
     javaFolder.mkdirs();
     resourcesFolder.mkdirs();
+    testResourcesFolder.mkdirs();
   }
 
   @Test
@@ -123,6 +127,24 @@ public class MuleArtifactContentResolverTest {
 
     assertThat("Configs contain an unexpected elements", actualExportedResources.contains(hiddenFile), is(false));
 
+    assertThat("Exported resources contains more elements than expected", actualExportedResources.size(), equalTo(3));
+  }
+
+  @Test
+  public void getTestExportedResourcesTest() throws IOException {
+    File jar1 = new File(testResourcesFolder, JAR_1);
+    File jar2 = new File(testResourcesFolder, JAR_2);
+    File jar3Folder = new File(testResourcesFolder, JAR_3_LOCATION);
+    File jar3 = new File(jar3Folder, JAR_3);
+    jar1.createNewFile();
+    jar2.createNewFile();
+    jar3Folder.mkdirs();
+    jar3.createNewFile();
+    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true));
+    List<String> actualExportedResources = resolver.getTestExportedResources();
+
+    assertThat("Exported resources does not contain all expected elements", actualExportedResources,
+               containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + File.separator + JAR_3));
     assertThat("Exported resources contains more elements than expected", actualExportedResources.size(), equalTo(3));
   }
 

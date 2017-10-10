@@ -43,6 +43,9 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
   private static final String JAR_1 = "jar1.jar";
   private static final String JAR_2 = "jar2.jar";
   private static final String JAR_3 = "jar3.jar";
+  private static final String JAR_4 = "jar4.jar";
+  private static final String JAR_5 = "jar5.jar";
+  private static final String JAR_6 = "jar6.jar";
   private static MuleApplicationModel muleArtifact;
   private MuleApplicationModel.MuleApplicationModelBuilder builder;
   private MuleApplicationModel.MuleApplicationModelBuilder defaultBuilder;
@@ -196,6 +199,51 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
                equalTo(exportedResources));
   }
 
+  @Test
+  public void setBuilderWithDefaultExportedResourcesValueIncludingTestResourcesTest() throws IOException {
+    MuleArtifactContentResolver resolverMock = mock(MuleArtifactContentResolver.class);
+
+    List<String> exportedResources = new ArrayList<>();
+    exportedResources.add(JAR_1);
+    exportedResources.add(JAR_2);
+    exportedResources.add(JAR_3);
+
+    List<String> testExportedResources = new ArrayList<>();
+    testExportedResources.add(JAR_4);
+    testExportedResources.add(JAR_5);
+    testExportedResources.add(JAR_6);
+
+    when(resolverMock.getExportedResources()).thenReturn(exportedResources);
+    when(resolverMock.getTestExportedResources()).thenReturn(testExportedResources);
+
+    setBuilderWithDefaultExportedResourcesValue(defaultBuilder, resolverMock);
+
+    assertThat("Exported resources are not the expected",
+               (List<String>) defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes()
+                   .get("exportedResources"),
+               containsInAnyOrder(JAR_1, JAR_2, JAR_3, JAR_4, JAR_5, JAR_6));
+  }
+
+  @Test
+  public void setBuilderWithDefaultExportedResourcesValueOnlyTestResourcesTest() throws IOException {
+    MuleArtifactContentResolver resolverMock = mock(MuleArtifactContentResolver.class);
+
+    List<String> exportedResources = new ArrayList<>();
+    List<String> testExportedResources = new ArrayList<>();
+    testExportedResources.add(JAR_4);
+    testExportedResources.add(JAR_5);
+    testExportedResources.add(JAR_6);
+
+    when(resolverMock.getExportedResources()).thenReturn(exportedResources);
+    when(resolverMock.getTestExportedResources()).thenReturn(testExportedResources);
+
+    setBuilderWithDefaultExportedResourcesValue(defaultBuilder, resolverMock);
+
+    assertThat("Exported resources are not the expected",
+               (List<String>) defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes()
+                   .get("exportedResources"),
+               containsInAnyOrder(JAR_4, JAR_5, JAR_6));
+  }
 
   @Test
   public void setBuilderWithIncludeTestDependenciesTest() throws IOException {

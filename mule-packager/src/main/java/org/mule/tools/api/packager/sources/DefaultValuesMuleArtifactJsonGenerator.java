@@ -151,8 +151,11 @@ public class DefaultValuesMuleArtifactJsonGenerator {
                                                                     MuleArtifactContentResolver muleArtifactContentResolver)
       throws IOException {
     MuleArtifactLoaderDescriptor descriptorLoader = builder.getClassLoaderModelDescriptorLoader();
+
+    List<String> exportedResources = muleArtifactContentResolver.getExportedResources();
+    exportedResources.addAll(muleArtifactContentResolver.getTestExportedResources());
     Map<String, Object> attributesCopy =
-        getUpdatedAttributes(descriptorLoader, "exportedResources", muleArtifactContentResolver.getExportedResources());
+        getUpdatedAttributes(descriptorLoader, "exportedResources", exportedResources);
     builder.withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(descriptorLoader.getId(), attributesCopy));
   }
 

@@ -255,7 +255,7 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
 
     assertThat("Include test dependencies are not the expected",
                defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("includeTestDependencies"),
-               equalTo(true));
+               equalTo("true"));
   }
 
 

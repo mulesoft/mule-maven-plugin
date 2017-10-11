@@ -135,7 +135,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
       throws IOException {
     MuleArtifactLoaderDescriptor descriptorLoader = builder.getClassLoaderModelDescriptorLoader();
     if (muleArtifactContentResolver.getProjectStructure().getTestConfigsPath().isPresent()) {
-      Map<String, Object> attributesCopy = getUpdatedAttributes(descriptorLoader, "includeTestDependencies", true);
+      Map<String, Object> attributesCopy = getUpdatedAttributes(descriptorLoader, "includeTestDependencies", "true");
       builder.withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(descriptorLoader.getId(), attributesCopy));
     }
   }

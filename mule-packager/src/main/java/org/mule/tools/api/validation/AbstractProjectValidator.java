@@ -30,14 +30,11 @@ public abstract class AbstractProjectValidator {
 
   protected final ProjectInformation projectInformation;
   protected final Project dependencyProject;
-  private final MulePluginResolver resolver;
-  protected final MulePluginsCompatibilityValidator mulePluginsCompatibilityValidator = new MulePluginsCompatibilityValidator();
 
-  public AbstractProjectValidator(ProjectInformation projectInformation, Project dependencyProject,
-                                  MulePluginResolver resolver) {
+
+  public AbstractProjectValidator(ProjectInformation projectInformation, Project dependencyProject) {
     this.projectInformation = projectInformation;
     this.dependencyProject = dependencyProject;
-    this.resolver = resolver;
   }
 
   /**
@@ -50,7 +47,6 @@ public abstract class AbstractProjectValidator {
     checkState(projectInformation.getPackaging() != null, "Packaging type should not be null");
     isProjectVersionValid(projectInformation.getVersion());
     isPackagingTypeValid(projectInformation.getPackaging());
-    mulePluginsCompatibilityValidator.validate(resolver.resolveMulePlugins(dependencyProject));
     additionalValidation();
     return true;
   }

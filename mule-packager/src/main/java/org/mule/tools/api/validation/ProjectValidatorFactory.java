@@ -24,13 +24,13 @@ import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BU
 public class ProjectValidatorFactory {
 
   public static AbstractProjectValidator create(ProjectInformation info, Project dependencyProject,
-                                                MulePluginResolver resolver, AetherMavenClient aetherMavenClient,
+                                                AetherMavenClient aetherMavenClient,
                                                 List<SharedLibraryDependency> sharedLibraries) {
     if (PackagingType.fromString(info.getPackaging()).equals(MULE_DOMAIN_BUNDLE)) {
-      return new DomainBundleProjectValidator(info, dependencyProject, resolver,
+      return new DomainBundleProjectValidator(info, dependencyProject,
                                               aetherMavenClient);
     }
-    return new MuleProjectValidator(info, dependencyProject, resolver,
+    return new MuleProjectValidator(info, dependencyProject,
                                     sharedLibraries);
   }
 }

@@ -40,8 +40,8 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
   private final AetherMavenClient muleMavenPluginClient;
 
   public DomainBundleProjectValidator(ProjectInformation projectInformation, Project dependencyProject,
-                                      MulePluginResolver resolver, AetherMavenClient aetherMavenClient) {
-    super(projectInformation, dependencyProject, resolver);
+                                      AetherMavenClient aetherMavenClient) {
+    super(projectInformation, dependencyProject);
     this.muleMavenPluginClient = aetherMavenClient;
   }
 

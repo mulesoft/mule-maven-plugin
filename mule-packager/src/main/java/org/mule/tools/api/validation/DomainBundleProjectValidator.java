@@ -17,6 +17,7 @@ import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.util.Project;
 
 import java.nio.file.Path;
@@ -38,9 +39,9 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
   private static final int DOMAIN_BUNDLE_VALID_NUMBER_OF_DOMAINS = 1;
   private final AetherMavenClient muleMavenPluginClient;
 
-  public DomainBundleProjectValidator(Path projectBaseDir, Project dependencyProject,
+  public DomainBundleProjectValidator(ProjectInformation projectInformation, Project dependencyProject,
                                       MulePluginResolver resolver, AetherMavenClient aetherMavenClient) {
-    super(projectBaseDir, MULE_DOMAIN_BUNDLE.toString(), dependencyProject, resolver);
+    super(projectInformation, dependencyProject, resolver);
     this.muleMavenPluginClient = aetherMavenClient;
   }
 

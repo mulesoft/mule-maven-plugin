@@ -5,7 +5,7 @@
 
     <groupId>com.mulesoft.muleesb.it</groupId>
     <artifactId>agent</artifactId>
-    <version>1.0</version>
+    <version>1.0.0</version>
     <packaging>mule-application</packaging>
 
     <build>

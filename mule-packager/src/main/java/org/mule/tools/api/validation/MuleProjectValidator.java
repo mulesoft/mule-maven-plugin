@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.util.Project;
 
@@ -36,16 +37,16 @@ public class MuleProjectValidator extends AbstractProjectValidator {
   private static final int MULE_PROJECT_MAXIMUM_NUMBER_OF_DOMAINS = 1;
   private final List<SharedLibraryDependency> sharedLibraries;
 
-  public MuleProjectValidator(Path projectBaseDir, String packagingType, Project dependencyProject, MulePluginResolver resolver,
+  public MuleProjectValidator(ProjectInformation projectInformation, Project dependencyProject, MulePluginResolver resolver,
                               List<SharedLibraryDependency> sharedLibraries) {
-    super(projectBaseDir, packagingType, dependencyProject, resolver);
+    super(projectInformation, dependencyProject, resolver);
     this.sharedLibraries = sharedLibraries;
   }
 
   @Override
   protected void additionalValidation() throws ValidationException {
-    isProjectStructureValid(packagingType, projectBaseDir);
-    validateDescriptorFile(projectBaseDir);
+    isProjectStructureValid(projectInformation.getPackaging(), projectInformation.getProjectBaseFolder());
+    validateDescriptorFile(projectInformation.getProjectBaseFolder());
     validateSharedLibraries(sharedLibraries, dependencyProject.getDependencies());
     validateReferencedDomainsIfPresent(dependencyProject.getDependencies());
   }
@@ -83,7 +84,8 @@ public class MuleProjectValidator extends AbstractProjectValidator {
     }
     if (domains.size() > MULE_PROJECT_MAXIMUM_NUMBER_OF_DOMAINS) {
       String message =
-          "A mule project of type " + packagingType + " should reference at most " + MULE_PROJECT_MAXIMUM_NUMBER_OF_DOMAINS +
+          "A mule project of type " + projectInformation.getPackaging() + " should reference at most "
+              + MULE_PROJECT_MAXIMUM_NUMBER_OF_DOMAINS +
               ". However, the project has references to the following domains: "
               + domains.stream().collect(Collectors.toList());
       throw new ValidationException(message);

@@ -27,10 +27,10 @@ public class ProjectValidatorFactory {
                                                 MulePluginResolver resolver, AetherMavenClient aetherMavenClient,
                                                 List<SharedLibraryDependency> sharedLibraries) {
     if (PackagingType.fromString(info.getPackaging()).equals(MULE_DOMAIN_BUNDLE)) {
-      return new DomainBundleProjectValidator(info.getProjectBaseFolder(), dependencyProject, resolver,
+      return new DomainBundleProjectValidator(info, dependencyProject, resolver,
                                               aetherMavenClient);
     }
-    return new MuleProjectValidator(info.getProjectBaseFolder(), info.getPackaging(), dependencyProject, resolver,
+    return new MuleProjectValidator(info, dependencyProject, resolver,
                                     sharedLibraries);
   }
 }

@@ -12,10 +12,10 @@ package org.mule.tools.api.validation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.util.Project;
 
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,16 +28,14 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public abstract class AbstractProjectValidator {
 
-  protected final Path projectBaseDir;
-  protected final String packagingType;
+  protected final ProjectInformation projectInformation;
   protected final Project dependencyProject;
   private final MulePluginResolver resolver;
   protected final MulePluginsCompatibilityValidator mulePluginsCompatibilityValidator = new MulePluginsCompatibilityValidator();
 
-  public AbstractProjectValidator(Path projectBaseDir, String packagingType, Project dependencyProject,
+  public AbstractProjectValidator(ProjectInformation projectInformation, Project dependencyProject,
                                   MulePluginResolver resolver) {
-    this.projectBaseDir = projectBaseDir;
-    this.packagingType = packagingType;
+    this.projectInformation = projectInformation;
     this.dependencyProject = dependencyProject;
     this.resolver = resolver;
   }
@@ -49,11 +47,33 @@ public abstract class AbstractProjectValidator {
    * @throws ValidationException if the project is invalid
    */
   public Boolean isProjectValid() throws ValidationException {
-    checkState(packagingType != null, "Packaging type should not be null");
-    isPackagingTypeValid(packagingType);
+    checkState(projectInformation.getPackaging() != null, "Packaging type should not be null");
+    isProjectVersionValid(projectInformation.getVersion());
+    isPackagingTypeValid(projectInformation.getPackaging());
     mulePluginsCompatibilityValidator.validate(resolver.resolveMulePlugins(dependencyProject));
     additionalValidation();
     return true;
+  }
+
+  protected static void isProjectVersionValid(String version) throws ValidationException {
+    String prefixPattern = "^(0|([1-9]\\d*))\\.(0|([1-9]\\d*))\\.(0|([1-9]\\d*))$"; // X.Y.Z with X, Y, Z integers with no leading
+                                                                                    // zeroes
+    String suffixPattern = "^([a-zA-Z0-9]|\\.|-)*$"; // contains only alphanumeric characters, dots (.) or dashes (-)
+    int separatorIndex = getSeparatorIndex(version);
+    String prefix = separatorIndex == -1 ? version : version.substring(0, separatorIndex);
+    String suffix = separatorIndex == -1 ? StringUtils.EMPTY : version.substring(separatorIndex + 1);
+    if (!prefix.matches(prefixPattern) || !suffix.matches(suffixPattern) || separatorIndex == version.length() - 1) {
+      throw new ValidationException("Project version does not comply with semantic versioning specification");
+    }
+  }
+
+  protected static int getSeparatorIndex(String version) {
+    int plusPosition = version.indexOf('+');
+    int minusPosition = version.indexOf('-');
+    if (plusPosition == -1 || minusPosition == -1) {
+      return Math.max(plusPosition, minusPosition);
+    }
+    return Math.min(plusPosition, minusPosition);
   }
 
   protected abstract void additionalValidation() throws ValidationException;

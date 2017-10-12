@@ -155,7 +155,7 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     verifier.addCliOption("-N");
     verifier.executeGoal(INSTALL);
     verifier.executeGoal(PACKAGE);
-    File sourceJar = new File(projectBaseDirectory, "target/config-files-package-project-1.0-SNAPSHOT-mule-application.jar");
+    File sourceJar = new File(projectBaseDirectory, "target/config-files-package-project-1.0.0-SNAPSHOT-mule-application.jar");
     File destinationDirectory = new File(getFile("/expected-files"), "extracted-config-files-project-jar-content");
     destinationDirectory.mkdir();
     unpackJar(sourceJar, destinationDirectory);

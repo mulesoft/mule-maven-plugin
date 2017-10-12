@@ -15,6 +15,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -127,7 +128,7 @@ public class MuleArtifactContentResolver {
 
     File resourcesFolder = resourcesFolderPath.toFile();
     if (!resourcesFolder.exists()) {
-      return Collections.emptyList();
+      return new ArrayList<>();
     }
 
     Collection<File> resourcesFolderContent = FileUtils.listFiles(resourcesFolder, fileFilter, TrueFileFilter.INSTANCE);

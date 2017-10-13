@@ -22,6 +22,7 @@ import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.util.Project;
+import org.mule.tools.model.DeploymentConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,6 +59,7 @@ public class MuleProjectValidatorTest {
   public TemporaryFolder projectBuildFolder = new TemporaryFolder();
 
   private MuleProjectValidator validator;
+  private DeploymentConfiguration deploymentConfigurationMock;
 
   @Before
   public void before() throws IOException, MojoExecutionException {
@@ -69,8 +71,10 @@ public class MuleProjectValidatorTest {
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
         .withBuildDirectory(projectBuildFolder.getRoot().toPath())
         .setTestProject(false)
+        .withDependencyProject(Collections::emptyList)
         .build();
-    validator = new MuleProjectValidator(projectInformation, mock(Project.class), new ArrayList<>());
+    deploymentConfigurationMock = mock(DeploymentConfiguration.class);
+    validator = new MuleProjectValidator(projectInformation, new ArrayList<>(), deploymentConfigurationMock);
   }
 
   @Test(expected = ValidationException.class)
@@ -153,7 +157,7 @@ public class MuleProjectValidatorTest {
 
   @Test(expected = ValidationException.class)
   public void isDescriptorFilePresentMuleApplicationInvalid() throws IOException, ValidationException {
-    validator.validateDescriptorFile(projectBaseFolder.getRoot().toPath());
+    validator.validateDescriptorFile(projectBaseFolder.getRoot().toPath(), mock(DeploymentConfiguration.class));
   }
 
   @Test
@@ -163,11 +167,11 @@ public class MuleProjectValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value()).toFile();
     muleFolder.mkdirs();
     projectBaseFolder.newFile("mule-artifact.json");
-    doNothing().when(validatorSpy).validateDescriptorFile(any());
+    doNothing().when(validatorSpy).validateDescriptorFile(any(), any());
     doCallRealMethod().when(validatorSpy).isProjectValid();
     validatorSpy.isProjectValid();
 
-    verify(validatorSpy, times(1)).validateDescriptorFile(projectBaseFolder.getRoot().toPath());
+    verify(validatorSpy, times(1)).validateDescriptorFile(projectBaseFolder.getRoot().toPath(), deploymentConfigurationMock);
   }
 
   @Test

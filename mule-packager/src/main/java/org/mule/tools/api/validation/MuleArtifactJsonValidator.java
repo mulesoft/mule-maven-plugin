@@ -18,16 +18,19 @@ import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.deployment.meta.Product;
 import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.model.DeploymentConfiguration;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static org.mule.runtime.api.deployment.meta.Product.MULE;
-import static org.mule.runtime.api.deployment.meta.Product.MULE_EE;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
+import static org.mule.tools.api.validation.AbstractProjectValidator.getSeparatorIndex;
+import static org.mule.tools.api.validation.AbstractProjectValidator.isProjectVersionValid;
 
 public class MuleArtifactJsonValidator {
 
@@ -37,9 +40,9 @@ public class MuleArtifactJsonValidator {
    * @throws ValidationException if the project descriptor file is missing and/or is invalid
    * @param projectBaseDir
    */
-  public static void validate(Path projectBaseDir) throws ValidationException {
+  public static void validate(Path projectBaseDir, DeploymentConfiguration deploymentConfiguration) throws ValidationException {
     isMuleArtifactJsonPresent(projectBaseDir);
-    isMuleArtifactJsonValid(projectBaseDir);
+    isMuleArtifactJsonValid(projectBaseDir, deploymentConfiguration);
   }
 
   /**
@@ -60,8 +63,10 @@ public class MuleArtifactJsonValidator {
    *
    * @throws ValidationException if the project descriptor file is invalid
    * @param projectBaseDir
+   * @param deploymentConfiguration
    */
-  public static void isMuleArtifactJsonValid(Path projectBaseDir) throws ValidationException {
+  public static void isMuleArtifactJsonValid(Path projectBaseDir, DeploymentConfiguration deploymentConfiguration)
+      throws ValidationException {
     File muleArtifactJsonFile = projectBaseDir.resolve(MULE_ARTIFACT_JSON).toFile();
     MuleApplicationModel muleArtifact;
     try {
@@ -73,7 +78,7 @@ public class MuleArtifactJsonValidator {
     } catch (IOException | JsonSyntaxException e) {
       throw new ValidationException(e);
     }
-    validateMuleArtifactMandatoryFields(muleArtifact);
+    validateMuleArtifactMandatoryFields(muleArtifact, deploymentConfiguration);
   }
 
   /**
@@ -82,11 +87,13 @@ public class MuleArtifactJsonValidator {
    * @throws ValidationException if the project descriptor file does not have set all mandatory fields
    * @param muleArtifact
    */
-  protected static void validateMuleArtifactMandatoryFields(MuleApplicationModel muleArtifact) throws ValidationException {
+  protected static void validateMuleArtifactMandatoryFields(MuleApplicationModel muleArtifact,
+                                                            DeploymentConfiguration deploymentConfiguration)
+      throws ValidationException {
     List<String> missingFields = new ArrayList<>();
 
     checkName(muleArtifact, missingFields);
-    checkMinMuleVersionValue(muleArtifact, missingFields);
+    checkMinMuleVersionValue(muleArtifact, missingFields, deploymentConfiguration);
     checkClassLoaderModelDescriptor(muleArtifact, missingFields);
     checkRequiredProduct(muleArtifact, missingFields);
 
@@ -135,11 +142,58 @@ public class MuleArtifactJsonValidator {
    * @param muleArtifact the mule artifact to be checked
    * @param missingFields list of required fields that are missing
    */
-  protected static void checkMinMuleVersionValue(MuleApplicationModel muleArtifact, List<String> missingFields) {
+  protected static void checkMinMuleVersionValue(MuleApplicationModel muleArtifact, List<String> missingFields,
+                                                 DeploymentConfiguration deploymentConfiguration)
+      throws ValidationException {
     String minMuleVersionValue = muleArtifact.getMinMuleVersion();
     if (StringUtils.isBlank(minMuleVersionValue)) {
       missingFields.add("minMuleVersion");
+    } else if (deploymentConfiguration != null && StringUtils.isNotBlank(deploymentConfiguration.getMuleVersion())) {
+      areVersionCompatible(deploymentConfiguration.getMuleVersion(), minMuleVersionValue);
     }
+  }
+
+  /**
+   * Verifies if mule version is contained in the interval [minMuleVersion,∞).
+   *
+   * @param muleVersion mule version that is going to be checked against the specified range.
+   * @param minMuleVersion the infimum of the set of compatible mule versions.
+   */
+  private static void areVersionCompatible(String muleVersion, String minMuleVersion) throws ValidationException {
+    isProjectVersionValid(minMuleVersion);
+    isProjectVersionValid(muleVersion);
+    String minMuleVersionBaseValue = getBaseVersion(minMuleVersion);
+    String muleVersionBaseValue = getBaseVersion(muleVersion);
+    if (!isVersionBiggerOrEqual(muleVersionBaseValue, minMuleVersionBaseValue)) {
+      throw new ValidationException("Mule version that is set in the deployment configuration is not compatible with the minMuleVersion in mule-artifact.json. deploymentConfiguration.muleVersion: "
+          + muleVersion + ", minMuleVersion: " + minMuleVersion);
+    }
+  }
+
+  /**
+   * Returns true if version1 >= version2.
+   *
+   * @param version1 String in the format X.Y.Z, where all values comply with the semantic versioning specification.
+   * @param version2 String in the format X.Y.Z, where all values comply with the semantic versioning specification.
+   */
+  private static boolean isVersionBiggerOrEqual(String version1, String version2) {
+    List<Integer> version1Split = Arrays.stream(version1.split("\\.")).map(Integer::parseInt).collect(Collectors.toList());
+    List<Integer> version2Split = Arrays.stream(version2.split("\\.")).map(Integer::parseInt).collect(Collectors.toList());
+
+    int major1 = version1Split.get(0);
+    int minor1 = version1Split.get(1);
+    int patch1 = version1Split.get(2);
+
+    int major2 = version2Split.get(0);
+    int minor2 = version2Split.get(1);
+    int patch2 = version2Split.get(2);
+
+    return major1 > major2 || (major1 == major2 && ((minor1 > minor2) || (minor1 == minor2 && patch1 >= patch2)));
+  }
+
+  private static String getBaseVersion(String version) {
+    int separator = getSeparatorIndex(version);
+    return separator == -1 ? version : version.substring(0, separator);
   }
 
   /**

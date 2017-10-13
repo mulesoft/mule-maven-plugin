@@ -82,8 +82,9 @@ public class DomainBundleProjectValidatorTest {
         .withProjectBaseFolder(projectBaseDir.getRoot().toPath())
         .withBuildDirectory(projectBuildFolder.getRoot().toPath())
         .setTestProject(false)
+        .withDependencyProject(dependencyProjectMock)
         .build();
-    validator = new DomainBundleProjectValidator(projectInformation, dependencyProjectMock, aetherMavenClientMock);
+    validator = new DomainBundleProjectValidator(projectInformation, aetherMavenClientMock);
   }
 
   @Test
@@ -298,7 +299,7 @@ public class DomainBundleProjectValidatorTest {
     when(dependencyProjectMock.getDependencies()).thenReturn(applicationDependencies);
 
     DomainBundleProjectValidator validatorSpy =
-        spy(new DomainBundleProjectValidator(projectInformation, dependencyProjectMock, aetherMavenClientMock));
+        spy(new DomainBundleProjectValidator(projectInformation, aetherMavenClientMock));
     doNothing().when(validatorSpy).validateDomain(domains);
     doNothing().when(validatorSpy).validateApplications(eq(applicationDomain), any());
 

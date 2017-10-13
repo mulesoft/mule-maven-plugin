@@ -11,8 +11,11 @@ package org.mule.tools.api.packager;
 
 
 import org.apache.commons.lang3.StringUtils;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.util.Project;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -28,9 +31,11 @@ public class ProjectInformation {
   private Path projectBaseFolder;
   private Path buildDirectory;
   private boolean isTestProject;
+  private Project project;
+
 
   private ProjectInformation(String groupId, String artifactId, String version, String packaging, Path projectBaseFolder,
-                             Path buildDirectory, boolean isTestProject) {
+                             Path buildDirectory, boolean isTestProject, Project project) {
     this.groupId = groupId;
     this.artifactId = artifactId;
     this.version = version;
@@ -38,6 +43,7 @@ public class ProjectInformation {
     this.projectBaseFolder = projectBaseFolder;
     this.buildDirectory = buildDirectory;
     this.isTestProject = isTestProject;
+    this.project = project;
   }
 
   public String getGroupId() {
@@ -68,6 +74,10 @@ public class ProjectInformation {
     return isTestProject;
   }
 
+  public Project getProject() {
+    return project;
+  }
+
   public static class Builder {
 
     private String groupId;
@@ -77,6 +87,7 @@ public class ProjectInformation {
     private Path projectBaseFolder;
     private Path buildDirectory;
     private Boolean isTestProject;
+    private Project project;
 
     public Builder withGroupId(String groupId) {
       this.groupId = groupId;
@@ -113,6 +124,11 @@ public class ProjectInformation {
       return this;
     }
 
+    public Builder withDependencyProject(Project project) {
+      this.project = project;
+      return this;
+    }
+
     public ProjectInformation build() {
       checkArgument(StringUtils.isNotBlank(groupId), "Group id should not be null nor blank");
       checkArgument(StringUtils.isNotBlank(artifactId), "Artifact id should not be null nor blank");
@@ -121,8 +137,10 @@ public class ProjectInformation {
       checkArgument(projectBaseFolder != null, "Project base folder should not be null");
       checkArgument(buildDirectory != null, "Project build directory should not be null");
       checkArgument(isTestProject != null, "Project isTestProject property was not set");
+      checkArgument(project != null, "Project should not be null");
 
-      return new ProjectInformation(groupId, artifactId, version, packaging, projectBaseFolder, buildDirectory, isTestProject);
+      return new ProjectInformation(groupId, artifactId, version, packaging, projectBaseFolder, buildDirectory, isTestProject,
+                                    project);
     }
 
   }

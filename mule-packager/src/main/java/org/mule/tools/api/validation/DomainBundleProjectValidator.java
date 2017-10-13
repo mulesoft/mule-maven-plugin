@@ -39,9 +39,9 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
   private static final int DOMAIN_BUNDLE_VALID_NUMBER_OF_DOMAINS = 1;
   private final AetherMavenClient muleMavenPluginClient;
 
-  public DomainBundleProjectValidator(ProjectInformation projectInformation, Project dependencyProject,
+  public DomainBundleProjectValidator(ProjectInformation projectInformation,
                                       AetherMavenClient aetherMavenClient) {
-    super(projectInformation, dependencyProject);
+    super(projectInformation);
     this.muleMavenPluginClient = aetherMavenClient;
   }
 
@@ -53,13 +53,13 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
   @Override
   protected void additionalValidation() throws ValidationException {
     Set<ArtifactCoordinates> domains =
-        dependencyProject.getDependencies().stream().filter(d -> MULE_DOMAIN.equals(d.getClassifier()))
+        projectInformation.getProject().getDependencies().stream().filter(d -> MULE_DOMAIN.equals(d.getClassifier()))
             .collect(Collectors.toSet());
 
     validateDomain(domains);
 
     List<ArtifactCoordinates> applications =
-        dependencyProject.getDependencies().stream().filter(d -> !MULE_DOMAIN.equals(d.getClassifier()))
+        projectInformation.getProject().getDependencies().stream().filter(d -> !MULE_DOMAIN.equals(d.getClassifier()))
             .collect(Collectors.toList());
 
     validateApplications(domains.iterator().next(), applications);

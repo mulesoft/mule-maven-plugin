@@ -70,8 +70,7 @@ public class MuleProjectValidatorTest {
         .withBuildDirectory(projectBuildFolder.getRoot().toPath())
         .setTestProject(false)
         .build();
-    validator = new MuleProjectValidator(projectInformation, mock(Project.class),
-                                         mock(MulePluginResolver.class), new ArrayList<>());
+    validator = new MuleProjectValidator(projectInformation, mock(Project.class), new ArrayList<>());
   }
 
   @Test(expected = ValidationException.class)

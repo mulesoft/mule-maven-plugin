@@ -37,9 +37,9 @@ public class MuleProjectValidator extends AbstractProjectValidator {
   private static final int MULE_PROJECT_MAXIMUM_NUMBER_OF_DOMAINS = 1;
   private final List<SharedLibraryDependency> sharedLibraries;
 
-  public MuleProjectValidator(ProjectInformation projectInformation, Project dependencyProject, MulePluginResolver resolver,
+  public MuleProjectValidator(ProjectInformation projectInformation, Project dependencyProject,
                               List<SharedLibraryDependency> sharedLibraries) {
-    super(projectInformation, dependencyProject, resolver);
+    super(projectInformation, dependencyProject);
     this.sharedLibraries = sharedLibraries;
   }
 

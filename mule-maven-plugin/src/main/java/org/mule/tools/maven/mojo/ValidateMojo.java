@@ -19,7 +19,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.mule.tools.api.validation.*;
 import org.mule.tools.maven.utils.DependencyProject;
-import org.mule.tools.maven.utils.MavenProjectBuilder;
 import org.mule.tools.api.exception.ValidationException;
 
 
@@ -48,15 +47,11 @@ public class ValidateMojo extends AbstractMuleMojo {
     }
   }
 
-  protected MulePluginResolver getResolver() {
-    MavenProjectBuilder builder = new MavenProjectBuilder(getLog(), session, projectBuilder, repositorySystem, localRepository,
-                                                          remoteArtifactRepositories);
-    return new MulePluginResolver(builder);
-  }
+
 
   public AbstractProjectValidator getProjectValidator() {
     DependencyProject dependencyProject = new DependencyProject(project);
     return ProjectValidatorFactory
-        .create(getProjectInformation(), dependencyProject, getResolver(), getAetherMavenClient(), sharedLibraries);
+        .create(getProjectInformation(), dependencyProject, getAetherMavenClient(), sharedLibraries);
   }
 }

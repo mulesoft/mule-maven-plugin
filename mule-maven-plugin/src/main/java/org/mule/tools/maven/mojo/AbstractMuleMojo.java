@@ -29,6 +29,7 @@ import org.apache.maven.repository.RepositorySystem;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.validation.MulePluginResolver;
 import org.mule.tools.maven.utils.ArtifactUtils;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.resources.content.ResourcesContent;
@@ -36,6 +37,7 @@ import org.mule.tools.api.packager.sources.ContentGenerator;
 import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
 import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
 import org.mule.tools.maven.utils.MavenPackagerLog;
+import org.mule.tools.maven.utils.MavenProjectBuilder;
 
 
 /**
@@ -127,5 +129,11 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
       contentGenerator = ContentGeneratorFactory.create(getProjectInformation());
     }
     return contentGenerator;
+  }
+
+  protected MulePluginResolver getResolver() {
+    MavenProjectBuilder builder = new MavenProjectBuilder(getLog(), session, projectBuilder, repositorySystem, localRepository,
+                                                          remoteArtifactRepositories);
+    return new MulePluginResolver(builder);
   }
 }

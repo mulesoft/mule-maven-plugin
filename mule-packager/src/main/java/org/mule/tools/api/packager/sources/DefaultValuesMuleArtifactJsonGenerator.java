@@ -183,7 +183,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
     if (originalAttributes != null) {
       attributesCopy.putAll(originalAttributes);
     }
-    attributesCopy.putIfAbsent(attribute, value);
+    attributesCopy.put(attribute, value);
     return attributesCopy;
   }
 

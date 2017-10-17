@@ -16,6 +16,7 @@ import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.util.Project;
+import org.mule.tools.model.DeploymentConfiguration;
 
 import java.util.ArrayList;
 
@@ -27,23 +28,23 @@ import static org.mockito.Mockito.when;
 public class ProjectValidatorFactoryTest {
 
   private ProjectInformation infoMock;
-  private Project dependencyProjectMock;
   private AetherMavenClient aetherMavenClientMock;
   private ArrayList sharedLibrariesMock;
+  private DeploymentConfiguration deploymentConfigurationMock;
 
   @Before
   public void setUp() {
     infoMock = mock(ProjectInformation.class);
-    dependencyProjectMock = mock(Project.class);
     aetherMavenClientMock = mock(AetherMavenClient.class);
     sharedLibrariesMock = new ArrayList<>();
+    deploymentConfigurationMock = mock(DeploymentConfiguration.class);
   }
 
   @Test
   public void createDomainBundleProjectValidatorTest() {
     when(infoMock.getPackaging()).thenReturn(PackagingType.MULE_DOMAIN_BUNDLE.toString());
     AbstractProjectValidator actualProjectValidator =
-        ProjectValidatorFactory.create(infoMock, dependencyProjectMock, aetherMavenClientMock, sharedLibrariesMock);
+        ProjectValidatorFactory.create(infoMock, aetherMavenClientMock, sharedLibrariesMock, deploymentConfigurationMock);
     assertThat("Project validator type is not the expected", actualProjectValidator,
                instanceOf(DomainBundleProjectValidator.class));
   }
@@ -52,7 +53,7 @@ public class ProjectValidatorFactoryTest {
   public void createMuleProjectValidatorMuleApplicationPackagingTest() {
     when(infoMock.getPackaging()).thenReturn(PackagingType.MULE_APPLICATION.toString());
     AbstractProjectValidator actualProjectValidator =
-        ProjectValidatorFactory.create(infoMock, dependencyProjectMock, aetherMavenClientMock, sharedLibrariesMock);
+        ProjectValidatorFactory.create(infoMock, aetherMavenClientMock, sharedLibrariesMock, deploymentConfigurationMock);
     assertThat("Project validator type is not the expected", actualProjectValidator, instanceOf(MuleProjectValidator.class));
   }
 
@@ -60,7 +61,7 @@ public class ProjectValidatorFactoryTest {
   public void createMuleProjectValidatorMuleDomainPackagingTest() {
     when(infoMock.getPackaging()).thenReturn(PackagingType.MULE_DOMAIN.toString());
     AbstractProjectValidator actualProjectValidator =
-        ProjectValidatorFactory.create(infoMock, dependencyProjectMock, aetherMavenClientMock, sharedLibrariesMock);
+        ProjectValidatorFactory.create(infoMock, aetherMavenClientMock, sharedLibrariesMock, deploymentConfigurationMock);
     assertThat("Project validator type is not the expected", actualProjectValidator, instanceOf(MuleProjectValidator.class));
   }
 
@@ -68,7 +69,7 @@ public class ProjectValidatorFactoryTest {
   public void createMuleProjectValidatorMulePolicyPackagingTest() {
     when(infoMock.getPackaging()).thenReturn(PackagingType.MULE_POLICY.toString());
     AbstractProjectValidator actualProjectValidator =
-        ProjectValidatorFactory.create(infoMock, dependencyProjectMock, aetherMavenClientMock, sharedLibrariesMock);
+        ProjectValidatorFactory.create(infoMock, aetherMavenClientMock, sharedLibrariesMock, deploymentConfigurationMock);
     assertThat("Project validator type is not the expected", actualProjectValidator, instanceOf(MuleProjectValidator.class));
   }
 }

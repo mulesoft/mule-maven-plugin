@@ -15,11 +15,14 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.mule.tools.api.validation.*;
 import org.mule.tools.maven.utils.DependencyProject;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.model.DeploymentConfiguration;
+import org.mule.tools.model.DeploymentConfigurator;
 
 
 /**
@@ -30,6 +33,8 @@ import org.mule.tools.api.exception.ValidationException;
     requiresDependencyResolution = ResolutionScope.TEST)
 public class ValidateMojo extends AbstractMuleMojo {
 
+  @Parameter
+  protected DeploymentConfiguration deploymentConfiguration;
 
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (!skipValidation) {
@@ -50,8 +55,7 @@ public class ValidateMojo extends AbstractMuleMojo {
 
 
   public AbstractProjectValidator getProjectValidator() {
-    DependencyProject dependencyProject = new DependencyProject(project);
     return ProjectValidatorFactory
-        .create(getProjectInformation(), dependencyProject, getAetherMavenClient(), sharedLibraries);
+        .create(getProjectInformation(), getAetherMavenClient(), sharedLibraries, deploymentConfiguration);
   }
 }

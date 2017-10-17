@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -60,7 +61,9 @@ public class ContentGeneratorTest {
         .withPackaging(packagingType.toString())
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
         .setTestProject(false)
-        .withBuildDirectory(projectTargetFolder.toPath()).build();
+        .withBuildDirectory(projectTargetFolder.toPath())
+        .withDependencyProject(Collections::emptyList)
+        .build();
     contentGenerator = new MuleContentGenerator(info);
   }
 
@@ -272,7 +275,7 @@ public class ContentGeneratorTest {
         .withPackaging(PackagingType.MULE_POLICY.toString())
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
         .setTestProject(false)
-
+        .withDependencyProject(() -> Collections.emptyList())
         .withBuildDirectory(projectTargetFolder.toPath()).build();
     contentGenerator = new MuleContentGenerator(info);
 
@@ -311,6 +314,7 @@ public class ContentGeneratorTest {
         .withPackaging(PackagingType.MULE_DOMAIN.toString())
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
         .setTestProject(false)
+        .withDependencyProject(() -> Collections.emptyList())
         .withBuildDirectory(projectTargetFolder.toPath()).build();
     contentGenerator = new MuleContentGenerator(info);
 

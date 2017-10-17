@@ -36,6 +36,7 @@ import org.mule.tools.api.packager.resources.content.ResourcesContent;
 import org.mule.tools.api.packager.sources.ContentGenerator;
 import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
 import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
+import org.mule.tools.maven.utils.DependencyProject;
 import org.mule.tools.maven.utils.MavenPackagerLog;
 import org.mule.tools.maven.utils.MavenProjectBuilder;
 
@@ -119,6 +120,7 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
           .withProjectBaseFolder(Paths.get(projectBaseFolder.toURI()))
           .withBuildDirectory(Paths.get(project.getBuild().getDirectory()))
           .setTestProject(testJar)
+          .withDependencyProject(new DependencyProject(project))
           .build();
     }
     return projectInformation;

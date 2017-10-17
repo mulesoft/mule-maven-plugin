@@ -19,6 +19,7 @@ import org.junit.rules.TemporaryFolder;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.model.DeploymentConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +30,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 import static org.mule.tools.api.validation.MuleArtifactJsonValidator.*;
 
@@ -41,12 +44,15 @@ public class MuleArtifactJsonValidatorTest {
   public ExpectedException expectedException = ExpectedException.none();
   private File muleArtifactJsonFile;
   private List<String> missingFields;
+  private DeploymentConfiguration deploymentConfigurationMock;
 
   @Before
   public void setUp() throws IOException {
     projectBaseFolder.create();
     muleArtifactJsonFile = projectBaseFolder.newFile(MULE_ARTIFACT_JSON);
     missingFields = new ArrayList<>();
+    deploymentConfigurationMock = mock(DeploymentConfiguration.class);
+    when(deploymentConfigurationMock.getMuleVersion()).thenReturn("4.0.0");
   }
 
   @Test
@@ -67,7 +73,7 @@ public class MuleArtifactJsonValidatorTest {
   public void isMuleArtifactJsonValidEmptyFileTest() throws IOException, ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException.expectMessage("The mule-artifact.json file is empty");
-    isMuleArtifactJsonValid(projectBaseFolder.getRoot().toPath());
+    isMuleArtifactJsonValid(projectBaseFolder.getRoot().toPath(), deploymentConfigurationMock);
   }
 
   @Test
@@ -75,7 +81,7 @@ public class MuleArtifactJsonValidatorTest {
     expectedException.expect(ValidationException.class);
     expectedException.expectMessage("JsonSyntaxException");
     FileUtils.writeStringToFile(muleArtifactJsonFile, "{}}}", (String) null);
-    isMuleArtifactJsonValid(projectBaseFolder.getRoot().toPath());
+    isMuleArtifactJsonValid(projectBaseFolder.getRoot().toPath(), deploymentConfigurationMock);
   }
 
   @Test
@@ -83,7 +89,7 @@ public class MuleArtifactJsonValidatorTest {
     expectedException.expect(ValidationException.class);
     expectedException.expectMessage("cannot be read");
     muleArtifactJsonFile.setReadable(false);
-    isMuleArtifactJsonValid(projectBaseFolder.getRoot().toPath());
+    isMuleArtifactJsonValid(projectBaseFolder.getRoot().toPath(), deploymentConfigurationMock);
   }
 
   @Test
@@ -107,22 +113,22 @@ public class MuleArtifactJsonValidatorTest {
   }
 
   @Test
-  public void checkMinMuleVersionValueMissingTest() throws IOException {
+  public void checkMinMuleVersionValueMissingTest() throws IOException, ValidationException {
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer().deserialize("{ }");
 
-    checkMinMuleVersionValue(muleArtifact, missingFields);
+    checkMinMuleVersionValue(muleArtifact, missingFields, deploymentConfigurationMock);
 
     assertThat("Missing fields should contain the minMuleVersion field name", missingFields,
                containsInAnyOrder("minMuleVersion"));
   }
 
   @Test
-  public void checkMinMuleVersionValueTest() throws IOException {
+  public void checkMinMuleVersionValueTest() throws IOException, ValidationException {
     MuleApplicationModel muleArtifact =
-        new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:true }");
+        new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.0.0 }");
 
-    checkMinMuleVersionValue(muleArtifact, missingFields);
+    checkMinMuleVersionValue(muleArtifact, missingFields, deploymentConfigurationMock);
 
     assertThat("Missing fields should be empty", missingFields.isEmpty(), is(true));
   }
@@ -171,7 +177,7 @@ public class MuleArtifactJsonValidatorTest {
         new MuleApplicationModelJsonSerializer()
             .deserialize("{ }");
 
-    validateMuleArtifactMandatoryFields(muleArtifact);
+    validateMuleArtifactMandatoryFields(muleArtifact, deploymentConfigurationMock);
   }
 
   @Test
@@ -183,8 +189,10 @@ public class MuleArtifactJsonValidatorTest {
         new MuleApplicationModelJsonSerializer()
             .deserialize("{ minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: { id:mule }, requiredProduct: MULE }");
 
-    validateMuleArtifactMandatoryFields(muleArtifact);
+    validateMuleArtifactMandatoryFields(muleArtifact, deploymentConfigurationMock);
   }
+
+
 
   @Test
   public void validateMuleArtifactMandatoryFieldsMissingMinMuleVersionTest() throws ValidationException {
@@ -196,7 +204,7 @@ public class MuleArtifactJsonValidatorTest {
         new MuleApplicationModelJsonSerializer()
             .deserialize("{ name:lala, classLoaderModelLoaderDescriptor: { id:mule }, requiredProduct: MULE }");
 
-    validateMuleArtifactMandatoryFields(muleArtifact);
+    validateMuleArtifactMandatoryFields(muleArtifact, deploymentConfigurationMock);
   }
 
   @Test
@@ -209,7 +217,7 @@ public class MuleArtifactJsonValidatorTest {
         new MuleApplicationModelJsonSerializer()
             .deserialize("{ name:lala, minMuleVersion:4.0.0, requiredProduct: MULE_EEa }");
 
-    validateMuleArtifactMandatoryFields(muleArtifact);
+    validateMuleArtifactMandatoryFields(muleArtifact, deploymentConfigurationMock);
   }
 
   @Test
@@ -222,7 +230,7 @@ public class MuleArtifactJsonValidatorTest {
         new MuleApplicationModelJsonSerializer()
             .deserialize("{ name:lala, minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: {  }, requiredProduct: MULE_EE }");
 
-    validateMuleArtifactMandatoryFields(muleArtifact);
+    validateMuleArtifactMandatoryFields(muleArtifact, deploymentConfigurationMock);
   }
 
   @Test
@@ -236,7 +244,7 @@ public class MuleArtifactJsonValidatorTest {
         new MuleApplicationModelJsonSerializer()
             .deserialize("{ minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: {  }, requiredProduct: MULE }");
 
-    validateMuleArtifactMandatoryFields(muleArtifact);
+    validateMuleArtifactMandatoryFields(muleArtifact, deploymentConfigurationMock);
   }
 
   @Test
@@ -250,7 +258,65 @@ public class MuleArtifactJsonValidatorTest {
         new MuleApplicationModelJsonSerializer()
             .deserialize("{ name:lala, minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: { id:mule } }");
 
-    validateMuleArtifactMandatoryFields(muleArtifact);
+    validateMuleArtifactMandatoryFields(muleArtifact, deploymentConfigurationMock);
+  }
+
+  @Test
+  public void checkMinMuleVersionInvalidValueTest() throws IOException, ValidationException {
+    expectedException.expect(ValidationException.class);
+    expectedException.expectMessage("Version 4.0 does not comply with semantic versioning specification");
+    MuleApplicationModel muleArtifact =
+        new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.0 }");
+
+    checkMinMuleVersionValue(muleArtifact, missingFields, deploymentConfigurationMock);
+  }
+
+  @Test
+  public void checkMinMuleVersionAgainstDeploymentConfigurationInvalidValueTest() throws IOException, ValidationException {
+    expectedException.expect(ValidationException.class);
+    MuleApplicationModel muleArtifact =
+        new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.0.0 }");
+
+    when(deploymentConfigurationMock.getMuleVersion()).thenReturn("3.8.0");
+    checkMinMuleVersionValue(muleArtifact, missingFields, deploymentConfigurationMock);
+  }
+
+  @Test
+  public void checkMinMuleVersionAgainstDeploymentConfigurationInvalidValue2Test() throws IOException, ValidationException {
+    expectedException.expect(ValidationException.class);
+    MuleApplicationModel muleArtifact =
+        new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.1.0 }");
+
+    when(deploymentConfigurationMock.getMuleVersion()).thenReturn("4.0.0");
+    checkMinMuleVersionValue(muleArtifact, missingFields, deploymentConfigurationMock);
+  }
+
+  @Test
+  public void checkMinMuleVersionAgainstDeploymentConfigurationInvalidValue3Test() throws IOException, ValidationException {
+    expectedException.expect(ValidationException.class);
+    MuleApplicationModel muleArtifact =
+        new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.0.1 }");
+
+    when(deploymentConfigurationMock.getMuleVersion()).thenReturn("4.0.0");
+    checkMinMuleVersionValue(muleArtifact, missingFields, deploymentConfigurationMock);
+  }
+
+  @Test
+  public void checkMinMuleVersionAgainstDeploymentConfigurationValidValueTest() throws IOException, ValidationException {
+    MuleApplicationModel muleArtifact =
+        new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.0.1 }");
+
+    when(deploymentConfigurationMock.getMuleVersion()).thenReturn("4.1.0");
+    checkMinMuleVersionValue(muleArtifact, missingFields, deploymentConfigurationMock);
+  }
+
+  @Test
+  public void checkMinMuleVersionAgainstDeploymentConfigurationValidValue2Test() throws IOException, ValidationException {
+    MuleApplicationModel muleArtifact =
+        new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.10.10 }");
+
+    when(deploymentConfigurationMock.getMuleVersion()).thenReturn("5.0.0");
+    checkMinMuleVersionValue(muleArtifact, missingFields, deploymentConfigurationMock);
   }
 
 }

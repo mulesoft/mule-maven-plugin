@@ -27,6 +27,7 @@ import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.util.Project;
+import org.mule.tools.model.DeploymentConfiguration;
 
 /**
  * Ensures the project is valid
@@ -36,23 +37,26 @@ public class MuleProjectValidator extends AbstractProjectValidator {
 
   private static final int MULE_PROJECT_MAXIMUM_NUMBER_OF_DOMAINS = 1;
   private final List<SharedLibraryDependency> sharedLibraries;
+  private final DeploymentConfiguration deploymentConfiguration;
 
-  public MuleProjectValidator(ProjectInformation projectInformation, Project dependencyProject,
-                              List<SharedLibraryDependency> sharedLibraries) {
-    super(projectInformation, dependencyProject);
+  public MuleProjectValidator(ProjectInformation projectInformation, List<SharedLibraryDependency> sharedLibraries,
+                              DeploymentConfiguration deploymentConfiguration) {
+    super(projectInformation);
     this.sharedLibraries = sharedLibraries;
+    this.deploymentConfiguration = deploymentConfiguration;
   }
 
   @Override
   protected void additionalValidation() throws ValidationException {
     isProjectStructureValid(projectInformation.getPackaging(), projectInformation.getProjectBaseFolder());
-    validateDescriptorFile(projectInformation.getProjectBaseFolder());
-    validateSharedLibraries(sharedLibraries, dependencyProject.getDependencies());
-    validateReferencedDomainsIfPresent(dependencyProject.getDependencies());
+    validateDescriptorFile(projectInformation.getProjectBaseFolder(), deploymentConfiguration);
+    validateSharedLibraries(sharedLibraries, projectInformation.getProject().getDependencies());
+    validateReferencedDomainsIfPresent(projectInformation.getProject().getDependencies());
   }
 
-  protected void validateDescriptorFile(Path projectBaseDir) throws ValidationException {
-    MuleArtifactJsonValidator.validate(projectBaseDir);
+  protected void validateDescriptorFile(Path projectBaseDir, DeploymentConfiguration deploymentConfiguration)
+      throws ValidationException {
+    MuleArtifactJsonValidator.validate(projectBaseDir, deploymentConfiguration);
   }
 
   /**

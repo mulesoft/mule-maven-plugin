@@ -29,12 +29,10 @@ import static com.google.common.base.Preconditions.checkState;
 public abstract class AbstractProjectValidator {
 
   protected final ProjectInformation projectInformation;
-  protected final Project dependencyProject;
 
 
-  public AbstractProjectValidator(ProjectInformation projectInformation, Project dependencyProject) {
+  public AbstractProjectValidator(ProjectInformation projectInformation) {
     this.projectInformation = projectInformation;
-    this.dependencyProject = dependencyProject;
   }
 
   /**
@@ -59,7 +57,7 @@ public abstract class AbstractProjectValidator {
     String prefix = separatorIndex == -1 ? version : version.substring(0, separatorIndex);
     String suffix = separatorIndex == -1 ? StringUtils.EMPTY : version.substring(separatorIndex + 1);
     if (!prefix.matches(prefixPattern) || !suffix.matches(suffixPattern) || separatorIndex == version.length() - 1) {
-      throw new ValidationException("Project version does not comply with semantic versioning specification");
+      throw new ValidationException("Version " + version + " does not comply with semantic versioning specification");
     }
   }
 

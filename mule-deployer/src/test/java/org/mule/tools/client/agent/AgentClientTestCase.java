@@ -9,8 +9,6 @@
  */
 package org.mule.tools.client.agent;
 
-import org.mule.tools.client.agent.AgentClient;
-
 import java.io.File;
 
 import org.junit.Before;

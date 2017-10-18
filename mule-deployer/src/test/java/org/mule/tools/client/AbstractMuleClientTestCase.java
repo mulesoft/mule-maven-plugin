@@ -13,21 +13,21 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import org.mule.tools.model.DeploymentConfiguration;
+import org.mule.tools.model.anypoint.CloudHubDeployment;
 
 public class AbstractMuleClientTestCase {
 
   private AbstractMuleClient client;
-  private DeploymentConfiguration deploymentConfiguration;
+  private CloudHubDeployment cloudHubDeployment;
 
   private AbstractMuleClient createClient(String businessgroup) {
-    deploymentConfiguration = new DeploymentConfiguration();
-    deploymentConfiguration.setUri(null);
-    deploymentConfiguration.setUsername(null);
-    deploymentConfiguration.setPassword(null);
-    deploymentConfiguration.setEnvironment(null);
-    deploymentConfiguration.setBusinessGroup(businessgroup);
-    return new AbstractMuleClient(deploymentConfiguration, null) {};
+    cloudHubDeployment = new CloudHubDeployment();
+    cloudHubDeployment.setUri(null);
+    cloudHubDeployment.setUsername(null);
+    cloudHubDeployment.setPassword(null);
+    cloudHubDeployment.setEnvironment(null);
+    cloudHubDeployment.setBusinessGroup(businessgroup);
+    return new AbstractMuleClient(cloudHubDeployment, null) {};
   }
 
   @Test

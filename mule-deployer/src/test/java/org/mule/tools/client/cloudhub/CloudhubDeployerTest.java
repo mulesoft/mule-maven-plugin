@@ -16,7 +16,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mule.tools.client.standalone.exception.DeploymentException;
-import org.mule.tools.model.DeployerLog;
+import org.mule.tools.model.anypoint.CloudHubDeployment;
+import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class CloudhubDeployerTest {
 
   @Before
   public void setUp() throws DeploymentException {
-    cloudhubDeployerSpy = spy(new CloudhubDeployer(new DeploymentConfiguration(), mock(DeployerLog.class)));
+    cloudhubDeployerSpy = spy(new CloudhubDeployer(new CloudHubDeployment(), mock(DeployerLog.class)));
     applications = buildApplications();
     doReturn(applications).when(cloudhubDeployerSpy).getApplications();
   }

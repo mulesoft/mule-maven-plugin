@@ -19,10 +19,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.mule.tools.api.validation.*;
-import org.mule.tools.maven.utils.DependencyProject;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.model.DeploymentConfiguration;
-import org.mule.tools.model.DeploymentConfigurator;
 
 
 /**

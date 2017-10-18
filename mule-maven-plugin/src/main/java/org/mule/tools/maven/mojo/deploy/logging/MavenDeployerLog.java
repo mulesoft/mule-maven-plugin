@@ -10,7 +10,7 @@
 package org.mule.tools.maven.mojo.deploy.logging;
 
 import org.apache.maven.plugin.logging.Log;
-import org.mule.tools.model.DeployerLog;
+import org.mule.tools.utils.DeployerLog;
 
 public class MavenDeployerLog implements DeployerLog {
 

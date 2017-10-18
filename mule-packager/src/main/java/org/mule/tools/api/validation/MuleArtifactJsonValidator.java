@@ -148,8 +148,9 @@ public class MuleArtifactJsonValidator {
     String minMuleVersionValue = muleArtifact.getMinMuleVersion();
     if (StringUtils.isBlank(minMuleVersionValue)) {
       missingFields.add("minMuleVersion");
-    } else if (deploymentConfiguration != null && StringUtils.isNotBlank(deploymentConfiguration.getMuleVersion())) {
-      areVersionCompatible(deploymentConfiguration.getMuleVersion(), minMuleVersionValue);
+    } else if (deploymentConfiguration != null && deploymentConfiguration.getMuleVersion().isPresent()
+        && StringUtils.isNotBlank(deploymentConfiguration.getMuleVersion().get())) {
+      areVersionCompatible(deploymentConfiguration.getMuleVersion().get(), minMuleVersionValue);
     }
   }
 

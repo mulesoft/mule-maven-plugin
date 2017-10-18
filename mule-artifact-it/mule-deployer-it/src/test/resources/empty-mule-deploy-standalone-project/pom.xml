@@ -16,13 +16,12 @@
                 <version>${muleMavenPluginVersion}</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <deploymentConfiguration>
-                        <deploymentType>standalone</deploymentType>
+                    <standaloneDeployment>
                         <muleVersion>${mule.version}</muleVersion>
                         <muleHome>${mule.home.test}</muleHome>
                         <deploymentTimeout>30000</deploymentTimeout>
                         <timeout>30000</timeout>
-                    </deploymentConfiguration>
+                    </standaloneDeployment>
                 </configuration>
             </plugin>
         </plugins>

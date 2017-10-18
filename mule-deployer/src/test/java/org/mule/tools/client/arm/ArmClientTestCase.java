@@ -16,6 +16,7 @@ import org.mule.tools.client.arm.model.Applications;
 import org.mule.tools.client.arm.model.Environment;
 import org.mule.tools.client.arm.model.Target;
 import org.mule.tools.model.DeploymentConfiguration;
+import org.mule.tools.model.anypoint.ArmDeployment;
 
 import java.util.concurrent.Callable;
 
@@ -31,18 +32,18 @@ public class ArmClientTestCase {
   private static final String PASSWORD = System.getProperty("password");
   private static final String ENVIRONMENT = "Production";
   private ArmClient armClient;
-  private DeploymentConfiguration deploymentConfiguration;
+  private ArmDeployment armDeployment;
 
   @Before
   public void setup() {
-    deploymentConfiguration = new DeploymentConfiguration();
-    deploymentConfiguration.setUri("https://anypoint.mulesoft.com");
-    deploymentConfiguration.setUsername(USERNAME);
-    deploymentConfiguration.setPassword(PASSWORD);
-    deploymentConfiguration.setEnvironment(ENVIRONMENT);
-    deploymentConfiguration.setBusinessGroup("");
-    deploymentConfiguration.setArmInsecure(false);
-    armClient = new ArmClient(deploymentConfiguration, null);
+    armDeployment = new ArmDeployment();
+    armDeployment.setUri("https://anypoint.mulesoft.com");
+    armDeployment.setUsername(USERNAME);
+    armDeployment.setPassword(PASSWORD);
+    armDeployment.setEnvironment(ENVIRONMENT);
+    armDeployment.setBusinessGroup("");
+    armDeployment.setArmInsecure(false);
+    armClient = new ArmClient(armDeployment, null);
     armClient.init();
   }
 

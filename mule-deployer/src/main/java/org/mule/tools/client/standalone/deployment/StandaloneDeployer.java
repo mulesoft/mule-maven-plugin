@@ -34,7 +34,8 @@ import org.mule.tools.client.standalone.controller.probing.Prober;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
-import org.mule.tools.model.DeployerLog;
+import org.mule.tools.model.standalone.StandaloneDeployment;
+import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
 import org.mule.tools.utils.GroovyUtils;
 
@@ -43,17 +44,19 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class StandaloneDeployer extends AbstractDeployer {
 
   private static final long DEFAULT_POLLING_DELAY = 1000;
+  private final StandaloneDeployment standaloneDeployment;
 
   private MuleProcessController mule;
   private Prober prober;
 
-  public StandaloneDeployer(DeploymentConfiguration deploymentConfiguration, DeployerLog log) throws DeploymentException {
-    super(deploymentConfiguration, log);
+  public StandaloneDeployer(StandaloneDeployment standaloneDeployment, DeployerLog log) throws DeploymentException {
+    super(standaloneDeployment, log);
+    this.standaloneDeployment = standaloneDeployment;
   }
 
   public String toString() {
     return String.format("StandaloneDeployer with [Controller=%s, log=%s, application=%s, timeout=%d, pollingDelay=%d ]",
-                         mule, log, deploymentConfiguration.getApplication(), deploymentConfiguration.getDeploymentTimeout(),
+                         mule, log, standaloneDeployment.getApplication(), standaloneDeployment.getDeploymentTimeout(),
                          DEFAULT_POLLING_DELAY);
   }
 
@@ -65,26 +68,26 @@ public class StandaloneDeployer extends AbstractDeployer {
   }
 
   private void waitForDeployments() throws DeploymentException {
-    if (!deploymentConfiguration.getApplication().exists()) {
-      throw new DeploymentException("Application does not exists: " + deploymentConfiguration.getApplication());
+    if (!standaloneDeployment.getApplication().exists()) {
+      throw new DeploymentException("Application does not exists: " + standaloneDeployment.getApplication());
     }
-    log.debug("Waiting for application [" + deploymentConfiguration.getApplication() + "] to be deployed.");
-    String app = FilenameUtils.getBaseName(deploymentConfiguration.getApplication().getName());
+    log.debug("Waiting for application [" + standaloneDeployment.getApplication() + "] to be deployed.");
+    String app = FilenameUtils.getBaseName(standaloneDeployment.getApplication().getName());
     try {
       prober.check(AppDeploymentProbe.isDeployed(mule, app));
     } catch (AssertionError e) {
-      log.error("Couldn't deploy application [" + app + "] after [" + deploymentConfiguration.getDeploymentTimeout()
+      log.error("Couldn't deploy application [" + app + "] after [" + standaloneDeployment.getDeploymentTimeout()
           + "] miliseconds. Check Mule Runtime log");
       throw new DeploymentException("Application deployment timeout.");
     }
   }
 
   private void deployApplications() throws DeploymentException {
-    log.info("Deploying application [" + deploymentConfiguration.getApplication() + "]");
+    log.info("Deploying application [" + standaloneDeployment.getApplication() + "]");
     try {
-      mule.deploy(deploymentConfiguration.getApplication().getAbsolutePath());
+      mule.deploy(standaloneDeployment.getApplication().getAbsolutePath());
     } catch (MuleControllerException e) {
-      throw new DeploymentException("Couldn't deploy application: " + deploymentConfiguration.getApplication()
+      throw new DeploymentException("Couldn't deploy application: " + standaloneDeployment.getApplication()
           + ". Check Mule Runtime logs");
     }
   }
@@ -94,10 +97,10 @@ public class StandaloneDeployer extends AbstractDeployer {
     if (!mule.isRunning()) {
       try {
         log.info("Starting Mule Runtime");
-        if (deploymentConfiguration.getArguments() == null) {
+        if (standaloneDeployment.getArguments() == null) {
           mule.start();
         } else {
-          mule.start(deploymentConfiguration.getArguments());
+          mule.start(standaloneDeployment.getArguments());
         }
       } catch (MuleControllerException e) {
         log.error("Couldn't start Mule Runtime. Check Mule Runtime logs.");
@@ -127,7 +130,7 @@ public class StandaloneDeployer extends AbstractDeployer {
     }
   }
 
-  public void addDomainFromDeploymentConfiguration(DeploymentConfiguration configuration) throws DeploymentException {
+  public void addDomainFromstandaloneDeployment(StandaloneDeployment configuration) throws DeploymentException {
     if (configuration.getDomain() != null && configuration.getDomain().exists()) {
       log.debug("Adding domain with configuration: " + configuration.getDomain());
       addDomain(configuration.getDomain());
@@ -143,33 +146,33 @@ public class StandaloneDeployer extends AbstractDeployer {
       deployApplications();
       waitForDeployments();
     } catch (MuleControllerException e) {
-      throw new DeploymentException("Error deploying application: [" + deploymentConfiguration.getApplication() + "]: "
+      throw new DeploymentException("Error deploying application: [" + standaloneDeployment.getApplication() + "]: "
           + e.getMessage());
     } catch (RuntimeException e) {
-      throw new DeploymentException("Unexpected error deploying application: [" + deploymentConfiguration.getApplication()
+      throw new DeploymentException("Unexpected error deploying application: [" + standaloneDeployment.getApplication()
           + "]", e);
     }
   }
 
   @Override
   public void undeploy(MavenProject mavenProject) throws DeploymentException {
-    if (!deploymentConfiguration.getMuleHome().exists()) {
+    if (!standaloneDeployment.getMuleHome().exists()) {
       throw new DeploymentException("MULE_HOME directory does not exist.");
     }
-    log.info("Using MULE_HOME: " + deploymentConfiguration.getMuleHome());
-    new StandaloneUndeployer(log, deploymentConfiguration.getApplicationName(), deploymentConfiguration.getMuleHome())
+    log.info("Using MULE_HOME: " + standaloneDeployment.getMuleHome());
+    new StandaloneUndeployer(log, standaloneDeployment.getApplicationName(), standaloneDeployment.getMuleHome())
         .execute();
   }
 
   @Override
   protected void initialize() throws DeploymentException {
     this.mule =
-        new MuleProcessController(deploymentConfiguration.getMuleHome().getAbsolutePath(), deploymentConfiguration.getTimeout());
+        new MuleProcessController(standaloneDeployment.getMuleHome().getAbsolutePath(), standaloneDeployment.getTimeout());
 
     renameApplicationToApplicationName();
 
-    this.prober = new PollingProber(deploymentConfiguration.getDeploymentTimeout(), DEFAULT_POLLING_DELAY);
-    addDomainFromDeploymentConfiguration(deploymentConfiguration);
+    this.prober = new PollingProber(standaloneDeployment.getDeploymentTimeout(), DEFAULT_POLLING_DELAY);
+    addDomainFromstandaloneDeployment(standaloneDeployment);
 
   }
 
@@ -178,37 +181,37 @@ public class StandaloneDeployer extends AbstractDeployer {
                                   ArchiverManager archiverManager, ArtifactFactory artifactFactory,
                                   ArtifactRepository localRepository)
       throws DeploymentException, ScriptException {
-    List<File> libs = getDependencies(deploymentConfiguration, artifactFactory, artifactResolver, mavenProject, localRepository);
+    List<File> libs = getDependencies(standaloneDeployment, artifactFactory, artifactResolver, mavenProject, localRepository);
     addLibraries(libs);
-    if (null != deploymentConfiguration.getScript()) {
-      GroovyUtils.executeScript(mavenProject, deploymentConfiguration);
+    if (null != standaloneDeployment.getScript()) {
+      GroovyUtils.executeScript(mavenProject, standaloneDeployment.getScript());
     }
   }
 
 
 
   private void renameApplicationToApplicationName() throws DeploymentException {
-    if (!FilenameUtils.getBaseName(deploymentConfiguration.getApplication().getName())
-        .equals(deploymentConfiguration.getApplicationName())) {
+    if (!FilenameUtils.getBaseName(standaloneDeployment.getApplication().getName())
+        .equals(standaloneDeployment.getApplicationName())) {
       try {
         File destApplication =
-            new File(deploymentConfiguration.getApplication().getParentFile(),
-                     deploymentConfiguration.getApplicationName() + ".jar");
-        FileUtils.copyFile(deploymentConfiguration.getApplication(), destApplication);
-        deploymentConfiguration.setApplication(destApplication);
+            new File(standaloneDeployment.getApplication().getParentFile(),
+                     standaloneDeployment.getApplicationName() + ".jar");
+        FileUtils.copyFile(standaloneDeployment.getApplication(), destApplication);
+        standaloneDeployment.setApplication(destApplication);
       } catch (IOException e) {
-        throw new DeploymentException("Fail to rename [" + deploymentConfiguration.getApplication() + "] to ["
-            + deploymentConfiguration.getApplicationName()
+        throw new DeploymentException("Fail to rename [" + standaloneDeployment.getApplication() + "] to ["
+            + standaloneDeployment.getApplicationName()
             + "]");
       }
     }
   }
 
-  public List<File> getDependencies(DeploymentConfiguration configuration, ArtifactFactory factory, ArtifactResolver resolver,
+  public List<File> getDependencies(StandaloneDeployment standaloneDeployment, ArtifactFactory factory, ArtifactResolver resolver,
                                     MavenProject project, ArtifactRepository repository)
       throws DeploymentException {
     List<File> libraries = new ArrayList<>();
-    for (ArtifactCoordinates artifact : configuration.getArtifactItems()) {
+    for (ArtifactCoordinates artifact : standaloneDeployment.getArtifactItems()) {
       libraries.add(getDependency(artifact, factory, resolver, project, repository));
     }
     return libraries;

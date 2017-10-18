@@ -16,10 +16,9 @@
                 <version>${muleMavenPluginVersion}</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <deploymentConfiguration>
-                        <deploymentType>agent</deploymentType>
+                    <agentDeployment>
                         <uri>http://localhost:9999/</uri>
-                    </deploymentConfiguration>
+                    </agentDeployment>
                 </configuration>
             </plugin>
         </plugins>

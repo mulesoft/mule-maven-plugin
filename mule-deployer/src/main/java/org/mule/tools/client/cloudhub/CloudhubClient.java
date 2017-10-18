@@ -22,7 +22,8 @@ import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.mule.tools.client.AbstractMuleClient;
 import org.mule.tools.client.exception.ClientException;
-import org.mule.tools.model.DeployerLog;
+import org.mule.tools.model.anypoint.CloudHubDeployment;
+import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
 
 public class CloudhubClient extends AbstractMuleClient {
@@ -53,8 +54,8 @@ public class CloudhubClient extends AbstractMuleClient {
   private static final int NOT_MODIFIED = 304;
   private static final int NOT_FOUND = 404;
 
-  public CloudhubClient(DeploymentConfiguration deploymentConfiguration, DeployerLog log) {
-    super(deploymentConfiguration, log);
+  public CloudhubClient(CloudHubDeployment cloudhubDeployment, DeployerLog log) {
+    super(cloudhubDeployment, log);
   }
 
   public Application createApplication(String appName, String region, String muleVersion, Integer workers, String workerType,

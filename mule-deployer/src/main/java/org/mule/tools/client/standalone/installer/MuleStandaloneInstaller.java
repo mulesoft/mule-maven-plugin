@@ -22,14 +22,16 @@ import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.eclipse.aether.deployment.DeploymentException;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.model.DeployerLog;
+import org.mule.tools.model.standalone.ClusterDeployment;
+import org.mule.tools.model.standalone.StandaloneDeployment;
+import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
 
 import java.io.File;
 
 public class MuleStandaloneInstaller {
 
-  private DeploymentConfiguration deploymentConfiguration;
+  private ClusterDeployment clusterDeployment;
   private MavenProject mavenProject;
   private ArtifactResolver artifactResolver;
   private ArchiverManager archiverManager;
@@ -37,11 +39,11 @@ public class MuleStandaloneInstaller {
   private DeployerLog log;
   private ArtifactRepository localRepository;
 
-  public MuleStandaloneInstaller(DeploymentConfiguration deploymentConfiguration, MavenProject mavenProject,
+  public MuleStandaloneInstaller(ClusterDeployment clusterDeployment, MavenProject mavenProject,
                                  ArtifactResolver artifactResolver, ArchiverManager archiverManager,
                                  ArtifactFactory artifactFactory, ArtifactRepository localRepository,
                                  DeployerLog log) {
-    this.deploymentConfiguration = deploymentConfiguration;
+    this.clusterDeployment = clusterDeployment;
     this.mavenProject = mavenProject;
     this.artifactResolver = artifactResolver;
     this.archiverManager = archiverManager;
@@ -51,31 +53,25 @@ public class MuleStandaloneInstaller {
   }
 
   public File installMule(File buildDirectory) throws DeploymentException {
-    if (deploymentConfiguration.getMuleHome() == null) {
-      deploymentConfiguration.setMuleHome(doInstallMule(buildDirectory));
+    if (clusterDeployment.getMuleHome() == null) {
+      clusterDeployment.setMuleHome(doInstallMule(buildDirectory));
     }
-    mavenProject.getProperties().setProperty("mule.home", deploymentConfiguration.getMuleHome().getAbsolutePath());
-    log.info("Using MULE_HOME: " + deploymentConfiguration.getMuleHome());
-    return deploymentConfiguration.getMuleHome();
+    mavenProject.getProperties().setProperty("mule.home", clusterDeployment.getMuleHome().getAbsolutePath());
+    log.info("Using MULE_HOME: " + clusterDeployment.getMuleHome());
+    return clusterDeployment.getMuleHome();
   }
 
   public File doInstallMule(File buildDirectory) throws DeploymentException {
-    if (deploymentConfiguration.getMuleDistribution() == null) {
-      if (deploymentConfiguration.isCommunity()) {
-        deploymentConfiguration.setMuleDistribution(new ArtifactCoordinates("org.mule.distributions", "mule-standalone",
-                                                                            deploymentConfiguration.getMuleVersion(), "tar.gz",
-                                                                            StringUtils.EMPTY));
-        log.debug("muleDistribution not set, using default community artifact: "
-            + deploymentConfiguration.getMuleDistribution());
-      } else {
-        deploymentConfiguration
-            .setMuleDistribution(new ArtifactCoordinates("com.mulesoft.mule.distributions", "mule-ee-distribution-standalone",
-                                                         deploymentConfiguration.getMuleVersion(), "tar.gz", StringUtils.EMPTY));
-        log.debug("muleDistribution not set, using default artifact: " + deploymentConfiguration.getMuleDistribution());
-      }
+    if (clusterDeployment.getMuleDistribution() == null) {
+      clusterDeployment.setMuleDistribution(new ArtifactCoordinates("org.mule.distributions", "mule-standalone",
+                                                                    clusterDeployment.getMuleVersion().get(), "tar.gz",
+                                                                    StringUtils.EMPTY));
+      log.debug("muleDistribution not set, using default community artifact: "
+          + clusterDeployment.getMuleDistribution());
+
     }
-    unpackMule(deploymentConfiguration.getMuleDistribution(), buildDirectory);
-    String contentDirectory = resolveMuleContentDirectory(deploymentConfiguration.getMuleDistribution());
+    unpackMule(clusterDeployment.getMuleDistribution(), buildDirectory);
+    String contentDirectory = resolveMuleContentDirectory(clusterDeployment.getMuleDistribution());
     return new File(buildDirectory, contentDirectory);
   }
 

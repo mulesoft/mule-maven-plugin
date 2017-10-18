@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -52,7 +53,7 @@ public class MuleArtifactJsonValidatorTest {
     muleArtifactJsonFile = projectBaseFolder.newFile(MULE_ARTIFACT_JSON);
     missingFields = new ArrayList<>();
     deploymentConfigurationMock = mock(DeploymentConfiguration.class);
-    when(deploymentConfigurationMock.getMuleVersion()).thenReturn("4.0.0");
+    when(deploymentConfigurationMock.getMuleVersion()).thenReturn(Optional.of("4.0.0"));
   }
 
   @Test
@@ -277,7 +278,7 @@ public class MuleArtifactJsonValidatorTest {
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.0.0 }");
 
-    when(deploymentConfigurationMock.getMuleVersion()).thenReturn("3.8.0");
+    when(deploymentConfigurationMock.getMuleVersion()).thenReturn(Optional.of("3.8.0"));
     checkMinMuleVersionValue(muleArtifact, missingFields, deploymentConfigurationMock);
   }
 
@@ -287,7 +288,7 @@ public class MuleArtifactJsonValidatorTest {
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.1.0 }");
 
-    when(deploymentConfigurationMock.getMuleVersion()).thenReturn("4.0.0");
+    when(deploymentConfigurationMock.getMuleVersion()).thenReturn(Optional.of("4.0.0"));
     checkMinMuleVersionValue(muleArtifact, missingFields, deploymentConfigurationMock);
   }
 
@@ -297,7 +298,7 @@ public class MuleArtifactJsonValidatorTest {
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.0.1 }");
 
-    when(deploymentConfigurationMock.getMuleVersion()).thenReturn("4.0.0");
+    when(deploymentConfigurationMock.getMuleVersion()).thenReturn(Optional.of("4.0.0"));
     checkMinMuleVersionValue(muleArtifact, missingFields, deploymentConfigurationMock);
   }
 
@@ -306,7 +307,7 @@ public class MuleArtifactJsonValidatorTest {
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.0.1 }");
 
-    when(deploymentConfigurationMock.getMuleVersion()).thenReturn("4.1.0");
+    when(deploymentConfigurationMock.getMuleVersion()).thenReturn(Optional.of("4.1.0"));
     checkMinMuleVersionValue(muleArtifact, missingFields, deploymentConfigurationMock);
   }
 
@@ -315,7 +316,7 @@ public class MuleArtifactJsonValidatorTest {
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.10.10 }");
 
-    when(deploymentConfigurationMock.getMuleVersion()).thenReturn("5.0.0");
+    when(deploymentConfigurationMock.getMuleVersion()).thenReturn(Optional.of("5.0.0"));
     checkMinMuleVersionValue(muleArtifact, missingFields, deploymentConfigurationMock);
   }
 

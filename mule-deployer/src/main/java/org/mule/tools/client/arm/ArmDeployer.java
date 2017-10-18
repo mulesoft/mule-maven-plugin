@@ -20,19 +20,22 @@ import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.model.TargetType;
 
-import org.mule.tools.model.DeployerLog;
+import org.mule.tools.model.anypoint.ArmDeployment;
+import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
 
 import javax.ws.rs.NotFoundException;
 
 public class ArmDeployer extends AbstractDeployer {
 
+  private final ArmDeployment armDeployment;
   private TargetType targetType;
   private String target;
   private ArmClient armClient;
 
-  public ArmDeployer(DeploymentConfiguration deploymentConfiguration, DeployerLog log) throws DeploymentException {
-    super(deploymentConfiguration, log);
+  public ArmDeployer(ArmDeployment armDeployment, DeployerLog log) throws DeploymentException {
+    super(armDeployment, log);
+    this.armDeployment = armDeployment;
   }
 
   @Override
@@ -57,26 +60,26 @@ public class ArmDeployer extends AbstractDeployer {
   @Override
   public void undeploy(MavenProject mavenProject) throws DeploymentException {
     ArmClient armClient =
-        new ArmClient(deploymentConfiguration, log);
+        new ArmClient(armDeployment, log);
     armClient.init();
-    log.info("Undeploying application " + deploymentConfiguration.getApplicationName());
+    log.info("Undeploying application " + armDeployment.getApplicationName());
     try {
-      armClient.undeployApplication(deploymentConfiguration.getApplicationName(), deploymentConfiguration.getTargetType(),
-                                    deploymentConfiguration.getTarget());
+      armClient.undeployApplication(armDeployment.getApplicationName(), armDeployment.getTargetType(),
+                                    armDeployment.getTarget());
     } catch (NotFoundException e) {
-      if (deploymentConfiguration.isFailIfNotExists()) {
+      if (armDeployment.isFailIfNotExists()) {
         throw e;
       } else {
-        log.warn("Application not found: " + deploymentConfiguration.getApplicationName());
+        log.warn("Application not found: " + armDeployment.getApplicationName());
       }
     }
   }
 
   @Override
   protected void initialize() {
-    targetType = deploymentConfiguration.getTargetType();
-    target = deploymentConfiguration.getTarget();
-    armClient = new ArmClient(deploymentConfiguration, log);
+    targetType = armDeployment.getTargetType();
+    target = armDeployment.getTarget();
+    armClient = new ArmClient(armDeployment, log);
   }
 
   @Override

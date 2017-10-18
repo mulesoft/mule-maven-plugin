@@ -7,7 +7,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.model;
+package org.mule.tools.model.anypoint;
+/*
+ * Mule ESB Maven Tools
+ * <p>
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * <p>
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -23,6 +32,7 @@ import org.apache.maven.settings.Server;
 import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
+import org.mule.tools.utils.DeployerLog;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -34,29 +44,29 @@ import java.util.ArrayList;
 public class DeploymentConfigurator {
 
   private final DeployerLog log;
-  private DeploymentConfiguration configuration;
+  private AnypointDeployment anypointConfiguration;
 
-  public DeploymentConfigurator(DeploymentConfiguration configuration, DeployerLog log) {
-    this.configuration = configuration;
+  public DeploymentConfigurator(AnypointDeployment anypointConfiguration, DeployerLog log) {
+    this.anypointConfiguration = anypointConfiguration;
     this.log = log;
   }
 
   public void initializeApplication(ArtifactFactory factory, MavenProject project, ArtifactResolver resolver,
                                     ArtifactRepository localRepository)
       throws MojoFailureException {
-    if (configuration.getApplication() == null) {
+    if (anypointConfiguration.getApplication() == null) {
       Artifact artifact = resolveMavenProjectArtifact(factory, project, resolver, localRepository);
-      configuration.setApplication(artifact.getFile());
-      log.info("No application configured. Using project artifact: " + configuration.getApplication());
+      anypointConfiguration.setApplication(artifact.getFile());
+      log.info("No application configured. Using project artifact: " + anypointConfiguration.getApplication());
 
-      if (configuration.getApplicationName() == null) {
-        configuration.setApplicationName(artifact.getArtifactId());
+      if (anypointConfiguration.getApplicationName() == null) {
+        anypointConfiguration.setApplicationName(artifact.getArtifactId());
       }
     } else {
       // If an application is defined but no application name is provided, use the name of the file instead of
       // the artifact ID (expected behavior in standalone deploymentConfiguration for example).
-      if (StringUtils.isBlank(configuration.getApplicationName())) {
-        configuration.setApplicationName(configuration.getApplication().getName());
+      if (StringUtils.isBlank(anypointConfiguration.getApplicationName())) {
+        anypointConfiguration.setApplicationName(anypointConfiguration.getApplication().getName());
       }
     }
   }
@@ -80,20 +90,20 @@ public class DeploymentConfigurator {
 
 
   public void initializeEnvironment(Settings settings, SettingsDecrypter decrypter) throws MojoExecutionException {
-    if (configuration.getServer() != null) {
-      Server serverObject = settings.getServer(configuration.getServer());
+    if (anypointConfiguration.getServer() != null) {
+      Server serverObject = settings.getServer(anypointConfiguration.getServer());
       if (serverObject == null) {
-        log.error("Server [" + configuration.getServer() + "] not found in settings file.");
-        throw new MojoExecutionException("Server [" + configuration.getServer() + "] not found in settings file.");
+        log.error("Server [" + anypointConfiguration.getServer() + "] not found in settings file.");
+        throw new MojoExecutionException("Server [" + anypointConfiguration.getServer() + "] not found in settings file.");
       }
       // Decrypting Maven server, in case of plain text passwords returns the same
       serverObject = decrypter.decrypt(new DefaultSettingsDecryptionRequest(serverObject)).getServer();
-      if (StringUtils.isNotEmpty(configuration.getUsername())
-          || StringUtils.isNotEmpty(configuration.getPassword())) {
+      if (StringUtils.isNotEmpty(anypointConfiguration.getUsername())
+          || StringUtils.isNotEmpty(anypointConfiguration.getPassword())) {
         log.warn("Both server and credentials are configured. Using plugin configuration credentials.");
       } else {
-        configuration.setUsername(serverObject.getUsername());
-        configuration.setPassword(serverObject.getPassword());
+        anypointConfiguration.setUsername(serverObject.getUsername());
+        anypointConfiguration.setPassword(serverObject.getPassword());
       }
     }
 

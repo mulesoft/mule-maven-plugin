@@ -20,7 +20,8 @@ import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 
-import org.mule.tools.model.DeployerLog;
+import org.mule.tools.model.anypoint.CloudHubDeployment;
+import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
 
 import java.util.List;
@@ -29,10 +30,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 public class CloudhubDeployer extends AbstractDeployer {
 
+  private final CloudHubDeployment cloudhubDeployment;
   private CloudhubClient cloudhubClient;
 
-  public CloudhubDeployer(DeploymentConfiguration deploymentConfiguration, DeployerLog log) throws DeploymentException {
-    super(deploymentConfiguration, log);
+  public CloudhubDeployer(CloudHubDeployment cloudHubDeployment, DeployerLog log) throws DeploymentException {
+    super(cloudHubDeployment, log);
+    this.cloudhubDeployment = cloudHubDeployment;
   }
 
   @Override
@@ -50,25 +53,25 @@ public class CloudhubDeployer extends AbstractDeployer {
 
       if (domainAvailable) {
         info("Creating application " + getApplicationName());
-        cloudhubClient.createApplication(getApplicationName(), deploymentConfiguration.getRegion(),
-                                         deploymentConfiguration.getMuleVersion(), deploymentConfiguration.getWorkers(),
-                                         deploymentConfiguration.getWorkerType(), deploymentConfiguration.getProperties());
+        cloudhubClient.createApplication(getApplicationName(), cloudhubDeployment.getRegion(),
+                                         cloudhubDeployment.getMuleVersion().get(), cloudhubDeployment.getWorkers(),
+                                         cloudhubDeployment.getWorkerType(), cloudhubDeployment.getProperties());
       } else {
         Application app = findApplicationFromCurrentUser(getApplicationName());
 
         if (app != null) {
           info("Application " + getApplicationName() + " already exists, redeploying");
 
-          String updateRegion = (deploymentConfiguration.getRegion() == null) ? app.region : deploymentConfiguration.getRegion();
+          String updateRegion = (cloudhubDeployment.getRegion() == null) ? app.region : cloudhubDeployment.getRegion();
           String updateMuleVersion =
-              (deploymentConfiguration.getMuleVersion() == null) ? app.muleVersion : deploymentConfiguration.getMuleVersion();
+              (cloudhubDeployment.getMuleVersion() == null) ? app.muleVersion : cloudhubDeployment.getMuleVersion().get();
           Integer updateWorkers =
-              (deploymentConfiguration.getWorkers() == null) ? app.workers : deploymentConfiguration.getWorkers();
+              (cloudhubDeployment.getWorkers() == null) ? app.workers : cloudhubDeployment.getWorkers();
           String updateWorkerType =
-              (deploymentConfiguration.getWorkerType() == null) ? app.workerType : deploymentConfiguration.getWorkerType();
+              (cloudhubDeployment.getWorkerType() == null) ? app.workerType : cloudhubDeployment.getWorkerType();
 
           cloudhubClient.updateApplication(getApplicationName(), updateRegion, updateMuleVersion, updateWorkers, updateWorkerType,
-                                           deploymentConfiguration.getProperties());
+                                           cloudhubDeployment.getProperties());
         } else {
           error("Domain " + getApplicationName() + " is not available. Aborting.");
           throw new DeploymentException("Domain " + getApplicationName() + " is not available. Aborting.");
@@ -89,15 +92,15 @@ public class CloudhubDeployer extends AbstractDeployer {
   @Override
   public void undeploy(MavenProject mavenProject) throws DeploymentException {
     CloudhubClient cloudhubClient =
-        new CloudhubClient(deploymentConfiguration, log);
+        new CloudhubClient(cloudhubDeployment, log);
     cloudhubClient.init();
-    log.info("Stopping application " + deploymentConfiguration.getApplicationName());
-    cloudhubClient.stopApplication(deploymentConfiguration.getApplicationName());
+    log.info("Stopping application " + cloudhubDeployment.getApplicationName());
+    cloudhubClient.stopApplication(cloudhubDeployment.getApplicationName());
   }
 
   @Override
   protected void initialize() {
-    this.cloudhubClient = new CloudhubClient(deploymentConfiguration, log);
+    this.cloudhubClient = new CloudhubClient((CloudHubDeployment) deploymentConfiguration, log);
   }
 
   @Override

@@ -19,15 +19,18 @@ import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 
-import org.mule.tools.model.DeployerLog;
+import org.mule.tools.model.agent.AgentDeployment;
+import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
 
 public class AgentDeployer extends AbstractDeployer {
 
+  private final AgentDeployment agentDeployment;
   private AgentClient agentClient;
 
-  public AgentDeployer(DeploymentConfiguration deploymentConfiguration, DeployerLog log) throws DeploymentException {
-    super(deploymentConfiguration, log);
+  public AgentDeployer(AgentDeployment agentDeployment, DeployerLog log) throws DeploymentException {
+    super(agentDeployment, log);
+    this.agentDeployment = agentDeployment;
   }
 
   @Override
@@ -43,14 +46,14 @@ public class AgentDeployer extends AbstractDeployer {
 
   @Override
   public void undeploy(MavenProject mavenProject) throws DeploymentException {
-    AgentClient agentClient = new AgentClient(log, deploymentConfiguration.getUri());
-    log.info("Undeploying application " + deploymentConfiguration.getApplicationName());
-    agentClient.undeployApplication(deploymentConfiguration.getApplicationName());
+    AgentClient agentClient = new AgentClient(log, agentDeployment.getUri());
+    log.info("Undeploying application " + agentDeployment.getApplicationName());
+    agentClient.undeployApplication(agentDeployment.getApplicationName());
   }
 
   @Override
   protected void initialize() {
-    this.agentClient = new AgentClient(log, deploymentConfiguration.getUri());
+    this.agentClient = new AgentClient(log, agentDeployment.getUri());
   }
 
   @Override

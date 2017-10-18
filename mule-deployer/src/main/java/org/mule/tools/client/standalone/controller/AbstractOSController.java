@@ -9,7 +9,6 @@
  */
 package org.mule.tools.client.standalone.controller;
 
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +22,8 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.slf4j.Logger;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 public abstract class AbstractOSController {
 

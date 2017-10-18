@@ -18,7 +18,6 @@ import static org.apache.commons.io.FileUtils.copyDirectoryToDirectory;
 import static org.apache.commons.io.FileUtils.copyFileToDirectory;
 import static org.apache.commons.io.FileUtils.forceDelete;
 import static org.apache.commons.io.FileUtils.listFiles;
-import static org.mule.runtime.core.api.util.FileUtils.newFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -223,8 +222,8 @@ public class Controller {
   }
 
   public File getLog() {
-    File logEE = newFile(osSpecificController.getMuleHome() + "/logs/mule_ee.log");
-    File logCE = newFile(osSpecificController.getMuleHome() + "/logs/mule.log");
+    File logEE = new File(osSpecificController.getMuleHome() + "/logs/mule_ee.log");
+    File logCE = new File(osSpecificController.getMuleHome() + "/logs/mule.log");
     if (logCE.exists() && logCE.isFile()) {
       return logCE;
     }
@@ -236,7 +235,7 @@ public class Controller {
   }
 
   public File getLog(String appName) {
-    File log = newFile(String.format("%s/logs/mule-app-%s.log", osSpecificController.getMuleHome(), appName));
+    File log = new File(String.format("%s/logs/mule-app-%s.log", osSpecificController.getMuleHome(), appName));
     if (log.exists() && log.isFile()) {
       return log;
     }

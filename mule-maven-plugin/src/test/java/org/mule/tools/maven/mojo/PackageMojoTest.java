@@ -12,6 +12,7 @@ package org.mule.tools.maven.mojo;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -116,6 +117,19 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     File destinationFile = mojo.getDestinationFile(targetFolder.getRoot().getPath());
     assertThat("Destination file is not the expected", destinationFile.getAbsolutePath(),
                equalTo(expectedDestinationFile.getAbsolutePath()));
+  }
+
+  @Test
+  public void setOnlyMuleSourcesWhenMuleApplicationTemplate() throws MojoExecutionException, IOException {
+    mojo = new PackageMojo();
+    mojo.classifier = Classifier.MULE_APPLICATION_TEMPLATE.toString();
+    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
+    mojo.project = projectMock;
+
+    mojo.getPackageBuilder();
+
+    assertThat("Packaging options should be set to only mule sources", mojo.options.isOnlyMuleSources(),
+               is(true));
   }
 
   @Test

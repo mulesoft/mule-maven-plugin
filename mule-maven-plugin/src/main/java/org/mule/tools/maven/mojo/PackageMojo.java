@@ -11,6 +11,7 @@
 package org.mule.tools.maven.mojo;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static org.mule.tools.api.packager.packaging.PackagingType.MULE_APPLICATION;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BUNDLE;
 
 import java.io.File;
@@ -32,6 +33,7 @@ import org.codehaus.plexus.archiver.ArchiverException;
 
 import org.mule.tools.api.packager.builder.PackageBuilder;
 import org.mule.tools.api.packager.builder.PackageBuilderFactory;
+import org.mule.tools.api.packager.packaging.Classifier;
 import org.mule.tools.api.packager.packaging.PackagingOptions;
 import org.mule.tools.api.packager.packaging.PackagingType;
 
@@ -54,6 +56,7 @@ public class PackageMojo extends AbstractMuleMojo {
 
   @Parameter(defaultValue = "${attachMuleSources}")
   protected boolean attachMuleSources = false;
+  protected PackagingOptions options;
 
   public void execute() throws MojoExecutionException, MojoFailureException {
     long start = System.currentTimeMillis();
@@ -97,7 +100,10 @@ public class PackageMojo extends AbstractMuleMojo {
   }
 
   protected PackageBuilder getPackageBuilder() {
-    PackagingOptions options = new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testJar);
+    boolean isMuleApplicationTemplate = Classifier.MULE_APPLICATION_TEMPLATE.equals(classifier);
+    options =
+        new PackagingOptions(isMuleApplicationTemplate || onlyMuleSources,
+                             lightweightPackage, attachMuleSources, testJar);
     return PackageBuilderFactory.create(getPackagingType(), options);
   }
 

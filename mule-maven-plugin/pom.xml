@@ -57,7 +57,7 @@
         <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
         <maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
         <maven.invoker.plugin.version>2.0.0</maven.invoker.plugin.version>
-        <maven.plugin.version>3.4</maven.plugin.version>
+        <maven.plugin.version>3.5</maven.plugin.version>
         <maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
     
         <!--Integration tests properties-->

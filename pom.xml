@@ -55,6 +55,8 @@
         <maven.dependency.tree.version>1.2</maven.dependency.tree.version>
         <jersey.media.json.jackson.version>2.26</jersey.media.json.jackson.version>
         <jersey.media.moxy>2.15</jersey.media.moxy>
+        <slf4j.api.version>1.8.0-alpha2</slf4j.api.version>
+        <json.version>20170516</json.version>
 
         <!-- Plugin Versions -->
         <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
@@ -200,6 +202,16 @@
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-moxy</artifactId>
                 <version>${jersey.media.moxy}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+                <version>${json.version}</version>
             </dependency>
 
 

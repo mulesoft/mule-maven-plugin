@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mule.tools.model.DeploymentConfiguration;
+import org.mule.tools.model.anypoint.CloudHubDeployment;
 
 @Ignore
 public class CloudhubClientTestCase {
@@ -43,17 +44,17 @@ public class CloudhubClientTestCase {
   private static final File APP = new File("/tmp/echo-test4.zip");
   private CloudhubClient cloudhubClient;
   private Map<String, String> properties = new HashMap();
-  private DeploymentConfiguration deploymentConfiguration;
+  private CloudHubDeployment cloudHubDeployment;
 
   @Before
   public void setup() {
-    deploymentConfiguration = new DeploymentConfiguration();
-    deploymentConfiguration.setUri(URI);
-    deploymentConfiguration.setUsername(USERNAME);
-    deploymentConfiguration.setPassword(PASSWORD);
-    deploymentConfiguration.setEnvironment(ENVIRONMENT);
-    deploymentConfiguration.setBusinessGroup("");
-    cloudhubClient = new CloudhubClient(deploymentConfiguration, null);
+    cloudHubDeployment = new CloudHubDeployment();
+    cloudHubDeployment.setUri(URI);
+    cloudHubDeployment.setUsername(USERNAME);
+    cloudHubDeployment.setPassword(PASSWORD);
+    cloudHubDeployment.setEnvironment(ENVIRONMENT);
+    cloudHubDeployment.setBusinessGroup("");
+    cloudhubClient = new CloudhubClient(cloudHubDeployment, null);
     cloudhubClient.init();
   }
 

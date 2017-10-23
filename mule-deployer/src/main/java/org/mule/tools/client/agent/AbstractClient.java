@@ -21,7 +21,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
-import org.mule.tools.model.DeployerLog;
+import org.mule.tools.utils.DeployerLog;
 
 public abstract class AbstractClient {
 

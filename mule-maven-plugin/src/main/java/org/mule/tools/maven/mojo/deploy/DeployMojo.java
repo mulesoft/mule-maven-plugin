@@ -16,10 +16,11 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.mule.tools.client.AbstractDeployer;
-import org.mule.tools.client.DeployerFactory;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
+import org.mule.tools.model.standalone.MuleRuntimeDeployment;
+import org.mule.tools.utils.DeployerFactory;
 import org.mule.tools.utils.GroovyUtils;
 
 /**
@@ -42,14 +43,10 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
   @Override
   public void execute() throws MojoFailureException, MojoExecutionException {
     super.execute();
-    if (null != deploymentConfiguration.getScript()) {
-      try {
-        GroovyUtils.executeScript(mavenProject, deploymentConfiguration);
-      } catch (ScriptException e) {
-        throw new MojoExecutionException("There was a problem trying to deploy the application: "
-            + deploymentConfiguration.getApplicationName(), e);
-      }
+    if (deploymentConfiguration instanceof MuleRuntimeDeployment) {
+      runScript((MuleRuntimeDeployment) deploymentConfiguration);
     }
+
     try {
       AbstractDeployer deployer =
           new DeployerFactory().createDeployer(deploymentConfiguration, new MavenDeployerLog(getLog()));
@@ -58,6 +55,17 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
     } catch (DeploymentException | ScriptException e) {
       getLog().error("Failed to deploy " + deploymentConfiguration.getApplicationName() + ": " + e.getMessage(), e);
       throw new MojoFailureException("Failed to deploy [" + deploymentConfiguration.getApplication() + "]");
+    }
+  }
+
+  private void runScript(MuleRuntimeDeployment deploymentConfiguration) throws MojoExecutionException {
+    if (null != deploymentConfiguration.getScript()) {
+      try {
+        GroovyUtils.executeScript(mavenProject, deploymentConfiguration.getScript());
+      } catch (ScriptException e) {
+        throw new MojoExecutionException("There was a problem trying to deploy the application: "
+            + deploymentConfiguration.getApplicationName(), e);
+      }
     }
   }
 }

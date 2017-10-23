@@ -18,7 +18,7 @@ import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.mule.tools.client.standalone.exception.DeploymentException;
-import org.mule.tools.model.DeployerLog;
+import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.model.DeploymentConfiguration;
 
 

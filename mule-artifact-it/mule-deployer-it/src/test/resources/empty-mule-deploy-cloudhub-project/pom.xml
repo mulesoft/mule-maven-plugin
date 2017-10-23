@@ -16,9 +16,8 @@
                 <version>${muleMavenPluginVersion}</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <deploymentConfiguration>
+                    <cloudHubDeployment>
                         <uri>https://anypoint.mulesoft.com</uri>
-                        <deploymentType>cloudhub</deploymentType>
                         <muleVersion>${mule.version}</muleVersion>
                         <username>${username}</username>
                         <password>${password}</password>
@@ -27,7 +26,7 @@
                         <properties>
                             <key>value</key>
                         </properties>
-                    </deploymentConfiguration>
+                    </cloudHubDeployment>
                 </configuration>
             </plugin>
         </plugins>

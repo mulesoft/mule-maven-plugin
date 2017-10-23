@@ -7,19 +7,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.model;
 
-public interface DeployerLog {
+package org.mule.tools.model.standalone;
 
-  void info(String s);
+import org.mule.tools.model.Deployment;
 
-  void error(String s);
+import java.io.File;
 
-  void warn(String s);
+public interface MuleRuntimeDeployment extends Deployment {
 
-  void debug(String s);
+  public File getScript();
 
-  void error(String s, Throwable e);
-
-  boolean isDebugEnabled();
+  public void setScript(File script);
 }

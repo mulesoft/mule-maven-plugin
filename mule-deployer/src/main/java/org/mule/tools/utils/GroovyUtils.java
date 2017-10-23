@@ -16,13 +16,14 @@ import org.apache.maven.project.MavenProject;
 import org.mule.tools.model.DeploymentConfiguration;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 
 public class GroovyUtils {
 
-  public static void executeScript(MavenProject project, DeploymentConfiguration configuration) throws ScriptException {
+  public static void executeScript(MavenProject project, File script) throws ScriptException {
     GroovyShell shell = new GroovyShell();
     shell.setProperty("basedir", project.getBasedir());
 
@@ -31,9 +32,9 @@ public class GroovyUtils {
     }
 
     try {
-      shell.evaluate(readFile(configuration.getScript().getAbsolutePath()));
+      shell.evaluate(readFile(script.getAbsolutePath()));
     } catch (IOException e) {
-      throw new ScriptException("error executing script: " + configuration.getScript().getAbsolutePath() + "\n"
+      throw new ScriptException("error executing script: " + script.getAbsolutePath() + "\n"
           + e.getMessage());
     }
   }

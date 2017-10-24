@@ -17,13 +17,12 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import integrationTests.ProjectFactory;
-import integrationTests.mojo.verifier.CloudHubDeploymentVerifier;
+import integrationTests.mojo.environment.verifier.CloudHubDeploymentVerifier;
 
 public class CloudHubDeploymentTest implements SettingsConfigurator {
 

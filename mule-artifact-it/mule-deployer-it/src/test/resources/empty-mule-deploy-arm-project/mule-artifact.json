@@ -1,0 +1,19 @@
+{
+  "name": "new-package",
+  "minMuleVersion": "4.0.0-SNAPSHOT",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedPackages": [],
+      "exportedResources": []
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  },
+  "requiredProduct": "MULE",
+  "configs": [
+    "mule-config.xml"
+  ]
+}

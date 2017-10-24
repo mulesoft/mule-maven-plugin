@@ -10,7 +10,7 @@
 package integrationTests.mojo;
 
 import integrationTests.ProjectFactory;
-import integrationTests.mojo.environmentSetup.StandaloneEnvironment;
+import integrationTests.mojo.environment.setup.StandaloneEnvironment;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;

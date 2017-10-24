@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package integrationTests.mojo.environmentSetup;
+package integrationTests.mojo.environment.setup;
 
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.plugin.logging.SystemStreamLog;
@@ -57,7 +57,6 @@ public class StandaloneEnvironment {
     log = LoggerFactory.getLogger(this.getClass());
     this.muleVersion = muleVersion;
   }
-
 
   public void start() {
     Path currentRelativePath = Paths.get("");

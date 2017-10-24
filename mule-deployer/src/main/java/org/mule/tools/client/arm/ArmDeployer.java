@@ -28,14 +28,13 @@ import javax.ws.rs.NotFoundException;
 
 public class ArmDeployer extends AbstractDeployer {
 
-  private final ArmDeployment armDeployment;
+  private ArmDeployment armDeployment;
   private TargetType targetType;
   private String target;
   private ArmClient armClient;
 
   public ArmDeployer(ArmDeployment armDeployment, DeployerLog log) throws DeploymentException {
     super(armDeployment, log);
-    this.armDeployment = armDeployment;
   }
 
   @Override
@@ -77,6 +76,7 @@ public class ArmDeployer extends AbstractDeployer {
 
   @Override
   protected void initialize() {
+    armDeployment = (ArmDeployment) deploymentConfiguration;
     targetType = armDeployment.getTargetType();
     target = armDeployment.getTarget();
     armClient = new ArmClient(armDeployment, log);

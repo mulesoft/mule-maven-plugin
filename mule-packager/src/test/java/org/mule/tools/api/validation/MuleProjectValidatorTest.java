@@ -238,7 +238,21 @@ public class MuleProjectValidatorTest {
 
     ArtifactCoordinates muleDomain =
         new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID_PREFIX + "a", VERSION, TYPE, DOMAIN_CLASSIFIER);
+    muleDomain.setScope("provided");
+    domains.add(muleDomain);
 
+    validator.validateDomain(domains);
+  }
+
+  @Test
+  public void validateDomainInvalidScopeTest() throws ValidationException {
+    expectedException.expect(ValidationException.class);
+    expectedException.expectMessage("A mule-domain dependency should have the <provided> scope");
+
+    Set<ArtifactCoordinates> domains = new HashSet<>();
+
+    ArtifactCoordinates muleDomain =
+        new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID_PREFIX + "a", VERSION, TYPE, DOMAIN_CLASSIFIER);
     domains.add(muleDomain);
 
     validator.validateDomain(domains);

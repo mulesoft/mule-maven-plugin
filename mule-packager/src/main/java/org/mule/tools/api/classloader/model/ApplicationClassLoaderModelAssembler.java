@@ -27,6 +27,7 @@ import org.apache.maven.model.Model;
 import org.mule.maven.client.api.PomFileSupplierFactory;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.maven.client.api.model.BundleScope;
 import org.mule.maven.client.internal.AetherMavenClient;
 
 public class ApplicationClassLoaderModelAssembler {
@@ -112,8 +113,13 @@ public class ApplicationClassLoaderModelAssembler {
    */
   private List<BundleDependency> resolveApplicationDependencies(File targetFolder, BundleDescriptor projectBundleDescriptor) {
     List<BundleDependency> resolvedApplicationDependencies =
-        muleMavenPluginClient.resolveBundleDescriptorDependenciesWithWorkspaceReader(targetFolder, false, false,
-                                                                                     projectBundleDescriptor);
+        muleMavenPluginClient.resolveBundleDescriptorDependenciesWithWorkspaceReader(targetFolder, false, true,
+                                                                                     projectBundleDescriptor)
+            .stream()
+            .filter(d -> !(d.getScope() == BundleScope.PROVIDED) || (d.getDescriptor().getClassifier().isPresent()
+                && d.getDescriptor().getClassifier().get().equals("mule-domain")))
+            .collect(Collectors.toList());
+
     return resolvedApplicationDependencies;
   }
 

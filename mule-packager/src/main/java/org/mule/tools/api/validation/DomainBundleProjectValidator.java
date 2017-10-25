@@ -114,7 +114,7 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
   }
 
   protected List<BundleDependency> resolveApplicationDependencies(ArtifactCoordinates applicationCoordinates) {
-    return muleMavenPluginClient.resolveBundleDescriptorDependencies(false, false,
+    return muleMavenPluginClient.resolveBundleDescriptorDependencies(false, true,
                                                                      ArtifactUtils
                                                                          .toBundleDescriptor(applicationCoordinates));
   }

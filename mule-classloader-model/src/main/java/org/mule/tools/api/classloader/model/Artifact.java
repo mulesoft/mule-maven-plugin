@@ -40,7 +40,9 @@ public class Artifact implements Comparable {
   }
 
   public void setUri(URI uri) {
-    checkNotNull(uri, "Uri cannot be null");
+    if (!StringUtils.equals(MULE_DOMAIN, artifactCoordinates.getClassifier())) {
+      checkNotNull(uri, "Uri cannot be null");
+    }
     this.uri = uri;
   }
 

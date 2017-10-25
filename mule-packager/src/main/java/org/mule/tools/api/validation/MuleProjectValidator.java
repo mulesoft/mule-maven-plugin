@@ -94,6 +94,11 @@ public class MuleProjectValidator extends AbstractProjectValidator {
               + domains.stream().collect(Collectors.toList());
       throw new ValidationException(message);
     }
+    for (ArtifactCoordinates domain : domains) {
+      if (!StringUtils.equals("provided", domain.getScope())) {
+        throw new ValidationException("A mule-domain dependency should have the <provided> scope");
+      }
+    }
   }
 
   /**

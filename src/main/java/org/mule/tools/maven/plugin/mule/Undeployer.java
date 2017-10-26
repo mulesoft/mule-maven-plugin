@@ -24,6 +24,9 @@ import org.apache.maven.plugin.logging.Log;
  */
 public class Undeployer {
 
+  private final static int MAX_DELETE_RETRIES = 5;
+  private final static int DELETE_RETRY_SLEEP_MS = 1000;
+
   private List<File> muleHomes;
   private String applicationName;
   private Log log;
@@ -52,17 +55,35 @@ public class Undeployer {
 
     for (File file : appsDir.listFiles()) {
       if (FilenameUtils.getBaseName(file.getName()).equals(applicationName)) {
-        try {
-          log.debug("Deleting " + file);
-          FileUtils.forceDelete(file);
-          return;
-        } catch (IOException e) {
-          log.error("Could not delete " + file.getAbsolutePath());
-          throw new MojoExecutionException("Could not delete directory [" + file.getAbsolutePath() + "]", e);
+        int retryCount = 0;
+        while (true) {
+          try {
+            log.debug("Deleting " + file);
+            FileUtils.forceDelete(file);
+            return;
+          } catch (IOException e) {
+            retryCount++;
+            if (retryCount < MAX_DELETE_RETRIES) {
+              log.warn("Could not delete " + file.getAbsolutePath() + ". Retrying: " + retryCount + " of " +
+                  MAX_DELETE_RETRIES + " attempts.");
+              waitForNextRound();
+            } else {
+              log.error("Could not delete " + file.getAbsolutePath() + ". Giving up after " +
+                  MAX_DELETE_RETRIES + " attempts.");
+
+              throw new MojoExecutionException("Could not delete directory [" + file.getAbsolutePath() + "]", e);
+            }
+          }
         }
       }
     }
-
     throw new MojoExecutionException("Application " + applicationName + " not found.");
+  }
+
+  private void waitForNextRound() {
+    try {
+      Thread.sleep(DELETE_RETRY_SLEEP_MS);
+    } catch (InterruptedException ignored) {
+    }
   }
 }

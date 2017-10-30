@@ -23,9 +23,7 @@ import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.eclipse.aether.deployment.DeploymentException;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.model.standalone.ClusterDeployment;
-import org.mule.tools.model.standalone.StandaloneDeployment;
 import org.mule.tools.utils.DeployerLog;
-import org.mule.tools.model.DeploymentConfiguration;
 
 import java.io.File;
 

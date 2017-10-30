@@ -21,16 +21,14 @@ import org.mule.tools.client.standalone.exception.DeploymentException;
 
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.utils.DeployerLog;
-import org.mule.tools.model.DeploymentConfiguration;
 
 public class AgentDeployer extends AbstractDeployer {
 
-  private final AgentDeployment agentDeployment;
+  private AgentDeployment agentDeployment;
   private AgentClient agentClient;
 
   public AgentDeployer(AgentDeployment agentDeployment, DeployerLog log) throws DeploymentException {
     super(agentDeployment, log);
-    this.agentDeployment = agentDeployment;
   }
 
   @Override
@@ -53,6 +51,7 @@ public class AgentDeployer extends AbstractDeployer {
 
   @Override
   protected void initialize() {
+    agentDeployment = (AgentDeployment) deploymentConfiguration;
     this.agentClient = new AgentClient(log, agentDeployment.getUri());
   }
 

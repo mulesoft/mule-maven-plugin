@@ -26,8 +26,7 @@ import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.util.Project;
-import org.mule.tools.model.DeploymentConfiguration;
+import org.mule.tools.model.Deployment;
 
 /**
  * Ensures the project is valid
@@ -37,10 +36,10 @@ public class MuleProjectValidator extends AbstractProjectValidator {
 
   private static final int MULE_PROJECT_MAXIMUM_NUMBER_OF_DOMAINS = 1;
   private final List<SharedLibraryDependency> sharedLibraries;
-  private final DeploymentConfiguration deploymentConfiguration;
+  private final Deployment deploymentConfiguration;
 
   public MuleProjectValidator(ProjectInformation projectInformation, List<SharedLibraryDependency> sharedLibraries,
-                              DeploymentConfiguration deploymentConfiguration) {
+                              Deployment deploymentConfiguration) {
     super(projectInformation);
     this.sharedLibraries = sharedLibraries;
     this.deploymentConfiguration = deploymentConfiguration;
@@ -54,7 +53,7 @@ public class MuleProjectValidator extends AbstractProjectValidator {
     validateReferencedDomainsIfPresent(projectInformation.getProject().getDependencies());
   }
 
-  protected void validateDescriptorFile(Path projectBaseDir, DeploymentConfiguration deploymentConfiguration)
+  protected void validateDescriptorFile(Path projectBaseDir, Deployment deploymentConfiguration)
       throws ValidationException {
     MuleArtifactJsonValidator.validate(projectBaseDir, deploymentConfiguration);
   }

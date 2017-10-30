@@ -18,7 +18,7 @@ import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.deployment.meta.Product;
 import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
 import org.mule.tools.api.exception.ValidationException;
-import org.mule.tools.model.DeploymentConfiguration;
+import org.mule.tools.model.Deployment;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class MuleArtifactJsonValidator {
    * @throws ValidationException if the project descriptor file is missing and/or is invalid
    * @param projectBaseDir
    */
-  public static void validate(Path projectBaseDir, DeploymentConfiguration deploymentConfiguration) throws ValidationException {
+  public static void validate(Path projectBaseDir, Deployment deploymentConfiguration) throws ValidationException {
     isMuleArtifactJsonPresent(projectBaseDir);
     isMuleArtifactJsonValid(projectBaseDir, deploymentConfiguration);
   }
@@ -65,7 +65,7 @@ public class MuleArtifactJsonValidator {
    * @param projectBaseDir
    * @param deploymentConfiguration
    */
-  public static void isMuleArtifactJsonValid(Path projectBaseDir, DeploymentConfiguration deploymentConfiguration)
+  public static void isMuleArtifactJsonValid(Path projectBaseDir, Deployment deploymentConfiguration)
       throws ValidationException {
     File muleArtifactJsonFile = projectBaseDir.resolve(MULE_ARTIFACT_JSON).toFile();
     MuleApplicationModel muleArtifact;
@@ -88,7 +88,7 @@ public class MuleArtifactJsonValidator {
    * @param muleArtifact
    */
   protected static void validateMuleArtifactMandatoryFields(MuleApplicationModel muleArtifact,
-                                                            DeploymentConfiguration deploymentConfiguration)
+                                                            Deployment deploymentConfiguration)
       throws ValidationException {
     List<String> missingFields = new ArrayList<>();
 
@@ -143,7 +143,7 @@ public class MuleArtifactJsonValidator {
    * @param missingFields list of required fields that are missing
    */
   protected static void checkMinMuleVersionValue(MuleApplicationModel muleArtifact, List<String> missingFields,
-                                                 DeploymentConfiguration deploymentConfiguration)
+                                                 Deployment deploymentConfiguration)
       throws ValidationException {
     String minMuleVersionValue = muleArtifact.getMinMuleVersion();
     if (StringUtils.isBlank(minMuleVersionValue)) {

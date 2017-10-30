@@ -13,7 +13,7 @@
             <plugin>
                 <groupId>org.mule.tools.maven</groupId>
                 <artifactId>mule-maven-plugin</artifactId>
-                <version>${muleMavenPluginVersion}</version>
+                <version>3.0.0-SNAPSHOT</version>
                 <extensions>true</extensions>
                 <configuration>
                     <agentDeployment>

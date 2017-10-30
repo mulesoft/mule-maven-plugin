@@ -15,8 +15,7 @@ import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.util.Project;
-import org.mule.tools.model.DeploymentConfiguration;
+import org.mule.tools.model.Deployment;
 
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class ProjectValidatorFactory {
   public static AbstractProjectValidator create(ProjectInformation info,
                                                 AetherMavenClient aetherMavenClient,
                                                 List<SharedLibraryDependency> sharedLibraries,
-                                                DeploymentConfiguration deploymentConfiguration) {
+                                                Deployment deploymentConfiguration) {
     if (PackagingType.fromString(info.getPackaging()).equals(MULE_DOMAIN_BUNDLE)) {
       return new DomainBundleProjectValidator(info,
                                               aetherMavenClient);

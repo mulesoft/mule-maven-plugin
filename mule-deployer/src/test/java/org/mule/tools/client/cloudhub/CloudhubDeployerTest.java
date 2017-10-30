@@ -18,7 +18,6 @@ import org.junit.rules.ExpectedException;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
-import org.mule.tools.model.DeploymentConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;

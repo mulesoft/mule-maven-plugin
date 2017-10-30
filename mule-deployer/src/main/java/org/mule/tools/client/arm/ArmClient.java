@@ -34,7 +34,6 @@ import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.utils.DeployerLog;
-import org.mule.tools.model.DeploymentConfiguration;
 
 public class ArmClient extends AbstractMuleClient {
 
@@ -46,7 +45,7 @@ public class ArmClient extends AbstractMuleClient {
 
   public ArmClient(ArmDeployment armDeployment, DeployerLog log) {
     super(armDeployment, log);
-    armInsecure = armDeployment.isArmInsecure();
+    armInsecure = armDeployment.isArmInsecure().get();
     if (armInsecure) {
       log.warn("Using insecure mode for connecting to ARM, please consider configuring your truststore with ARM certificates. This option is insecure and not intended for production use.");
     }

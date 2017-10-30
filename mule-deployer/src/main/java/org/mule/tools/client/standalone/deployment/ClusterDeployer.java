@@ -34,7 +34,6 @@ import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.mule.tools.client.standalone.installer.MuleStandaloneInstaller;
 import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.utils.DeployerLog;
-import org.mule.tools.model.DeploymentConfiguration;
 import org.mule.tools.utils.GroovyUtils;
 
 public class ClusterDeployer extends AbstractDeployer {

@@ -11,44 +11,103 @@
 package org.mule.tools.model.anypoint;
 
 import org.apache.maven.plugins.annotations.Parameter;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.model.DeploymentConfiguration;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class CloudHubDeployment extends DeploymentConfiguration implements AnypointDeployment {
+public class CloudHubDeployment implements AnypointDeployment {
 
-  @Parameter(required = false, property = "anypoint.username")
+  @Parameter
   protected String username;
 
-  @Parameter(required = false, property = "anypoint.password")
+  @Parameter
   protected String password;
 
-  @Parameter(required = false, property = "anypoint.environment")
+  @Parameter
   protected String environment;
 
-  @Parameter(defaultValue = "", property = "anypoint.businessGroup")
-  protected String businessGroup = "";
+  @Parameter
+  protected String businessGroup;
 
-  @Parameter(readonly = true, property = "anypoint.uri", defaultValue = "https://anypoint.mulesoft.com")
+  @Parameter
   protected String uri;
 
-  @Parameter(property = "cloudhub.workers")
-  protected Integer workers = 1;
+  @Parameter
+  protected Integer workers;
 
-  @Parameter(defaultValue = "Medium", property = "cloudhub.workerType")
+  @Parameter
   protected String workerType;
 
-  @Parameter(property = "cloudhub.region", defaultValue = "us-east-1")
+  @Parameter
   protected String region;
 
   // TODO validate what for?
-  @Parameter(required = false, property = "maven.server")
+  @Parameter
   protected String server;
 
-  @Parameter(required = false)
-  protected Map<String, String> properties;
+  @Parameter
+  protected Map<String, String> properties = new HashMap<>();
+
+  // TODO change name to artifact
+  @Parameter
+  protected File application; // VALIDATIONS REQURIED
+
+  @Parameter
+  protected String applicationName;
+
+  // TODO validate what for?
+  @Parameter
+  protected String skip;
+
+  @Parameter
+  protected String muleVersion;
+
+  /**
+   * Application file to be deployed.
+   *
+   * @since 1.0
+   */
+  public File getApplication() {
+    return application;
+  }
+
+  public void setApplication(File application) {
+    this.application = application;
+  }
+
+  /**
+   * Name of the application to deploy/undeploy. If not specified, the artifact id will be used as the name. This parameter allows
+   * to override this behavior to specify a custom name.
+   *
+   * @since 2.0
+   */
+  public String getApplicationName() {
+    return applicationName;
+  }
+
+  public void setApplicationName(String applicationName) {
+    this.applicationName = applicationName;
+  }
+
+  public String getSkip() {
+    return skip;
+  }
+
+  public void setSkip(String skip) {
+    this.skip = skip;
+  }
+
+  @Override
+  public Optional<String> getMuleVersion() {
+    return Optional.ofNullable(this.muleVersion);
+  }
+
+  @Override
+  public void setMuleVersion(String muleVersion) {
+    this.muleVersion = muleVersion;
+  }
 
   /**
    * Anypoint Platform username.
@@ -133,8 +192,8 @@ public class CloudHubDeployment extends DeploymentConfiguration implements Anypo
    *
    * @since 2.0
    */
-  public Integer getWorkers() {
-    return workers;
+  public Optional<Integer> getWorkers() {
+    return Optional.ofNullable(workers);
   }
 
   public void setWorkers(Integer workers) {

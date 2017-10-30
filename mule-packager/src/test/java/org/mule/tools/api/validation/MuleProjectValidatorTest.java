@@ -21,8 +21,7 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
-import org.mule.tools.api.util.Project;
-import org.mule.tools.model.DeploymentConfiguration;
+import org.mule.tools.model.Deployment;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,8 +29,6 @@ import java.nio.file.Path;
 import java.util.*;
 
 import static java.util.Collections.emptySet;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mule.tools.api.packager.structure.FolderNames.*;
 import static org.mule.tools.api.validation.MuleProjectValidator.isProjectStructureValid;
@@ -59,7 +56,7 @@ public class MuleProjectValidatorTest {
   public TemporaryFolder projectBuildFolder = new TemporaryFolder();
 
   private MuleProjectValidator validator;
-  private DeploymentConfiguration deploymentConfigurationMock;
+  private Deployment deploymentConfigurationMock;
 
   @Before
   public void before() throws IOException, MojoExecutionException {
@@ -73,7 +70,7 @@ public class MuleProjectValidatorTest {
         .setTestProject(false)
         .withDependencyProject(Collections::emptyList)
         .build();
-    deploymentConfigurationMock = mock(DeploymentConfiguration.class);
+    deploymentConfigurationMock = mock(Deployment.class);
     validator = new MuleProjectValidator(projectInformation, new ArrayList<>(), deploymentConfigurationMock);
   }
 
@@ -157,7 +154,7 @@ public class MuleProjectValidatorTest {
 
   @Test(expected = ValidationException.class)
   public void isDescriptorFilePresentMuleApplicationInvalid() throws IOException, ValidationException {
-    validator.validateDescriptorFile(projectBaseFolder.getRoot().toPath(), mock(DeploymentConfiguration.class));
+    validator.validateDescriptorFile(projectBaseFolder.getRoot().toPath(), mock(Deployment.class));
   }
 
   @Test

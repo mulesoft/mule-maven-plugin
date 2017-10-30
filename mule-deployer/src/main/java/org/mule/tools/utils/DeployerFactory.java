@@ -16,7 +16,7 @@ import org.mule.tools.client.arm.ArmDeployer;
 import org.mule.tools.client.cloudhub.CloudhubDeployer;
 import org.mule.tools.client.standalone.deployment.StandaloneDeployer;
 import org.mule.tools.client.standalone.exception.DeploymentException;
-import org.mule.tools.model.DeploymentConfiguration;
+import org.mule.tools.model.Deployment;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
@@ -25,7 +25,7 @@ import org.mule.tools.model.standalone.StandaloneDeployment;
 
 public class DeployerFactory {
 
-  public AbstractDeployer createDeployer(DeploymentConfiguration deploymentConfiguration, DeployerLog log)
+  public AbstractDeployer createDeployer(Deployment deploymentConfiguration, DeployerLog log)
       throws DeploymentException {
     if (deploymentConfiguration instanceof StandaloneDeployment) {
       return new StandaloneDeployer((StandaloneDeployment) deploymentConfiguration, log);

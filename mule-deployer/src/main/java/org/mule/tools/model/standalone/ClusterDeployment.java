@@ -12,39 +12,95 @@ package org.mule.tools.model.standalone;
 
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.model.DeploymentConfiguration;
+import org.mule.tools.model.Deployment;
 
 import java.io.File;
 import java.util.Optional;
 
-public class ClusterDeployment extends DeploymentConfiguration implements MuleRuntimeDeployment {
+public class ClusterDeployment implements MuleRuntimeDeployment {
 
-  @Parameter(property = "mule.timeout", required = false)
-  protected int timeout;
+  @Parameter
+  protected Integer timeout;
 
   // TODO validate what for?
-  @Parameter(property = "script", required = false)
+  @Parameter
   protected File script;
 
   @Parameter(readonly = true)
   protected ArtifactCoordinates muleDistribution;
 
-  @Parameter(property = "mule.deploymentConfiguration.timeout", defaultValue = "60000", required = true)
+  @Parameter
   protected Long deploymentTimeout;
 
-  @Parameter(property = "mule.arguments", required = false)
+  @Parameter
   protected String[] arguments;
 
-  @Parameter(property = "mule.version")
-  protected String muleVersion;
-
-  @Parameter(defaultValue = "2", required = true)
+  @Parameter
   protected Integer size;
 
-  @Parameter(property = "mule.home")
+  @Parameter
   protected File muleHome;
 
-  public int getTimeout() {
+  // TODO change name to artifact
+  @Parameter
+  protected File application; // VALIDATIONS REQURIED
+
+  @Parameter
+  protected String applicationName;
+
+  // TODO validate what for?
+  @Parameter
+  protected String skip;
+
+  @Parameter
+  protected String muleVersion;
+
+  /**
+   * Application file to be deployed.
+   *
+   * @since 1.0
+   */
+  public File getApplication() {
+    return application;
+  }
+
+  public void setApplication(File application) {
+    this.application = application;
+  }
+
+  /**
+   * Name of the application to deploy/undeploy. If not specified, the artifact id will be used as the name. This parameter allows
+   * to override this behavior to specify a custom name.
+   *
+   * @since 2.0
+   */
+  public String getApplicationName() {
+    return applicationName;
+  }
+
+  public void setApplicationName(String applicationName) {
+    this.applicationName = applicationName;
+  }
+
+  public String getSkip() {
+    return skip;
+  }
+
+  public void setSkip(String skip) {
+    this.skip = skip;
+  }
+
+  @Override
+  public Optional<String> getMuleVersion() {
+    return Optional.ofNullable(this.muleVersion);
+  }
+
+  @Override
+  public void setMuleVersion(String muleVersion) {
+    this.muleVersion = muleVersion;
+  }
+
+  public Integer getTimeout() {
     return timeout;
   }
 

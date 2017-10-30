@@ -18,18 +18,18 @@ import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.model.Deployment;
 import org.mule.tools.utils.DeployerLog;
-import org.mule.tools.model.DeploymentConfiguration;
 
 
 public abstract class AbstractDeployer {
 
-  protected final DeploymentConfiguration deploymentConfiguration;
+  protected final Deployment deploymentConfiguration;
   protected final DeployerLog log;
 
 
 
-  public AbstractDeployer(DeploymentConfiguration deploymentConfiguration, DeployerLog log) throws DeploymentException {
+  public AbstractDeployer(Deployment deploymentConfiguration, DeployerLog log) throws DeploymentException {
     this.deploymentConfiguration = deploymentConfiguration;
     this.log = log;
     initialize();

@@ -16,7 +16,23 @@ import java.io.File;
 
 public interface MuleRuntimeDeployment extends Deployment {
 
-  public File getScript();
+  File getScript();
 
-  public void setScript(File script);
+  void setScript(File script);
+
+  Integer getTimeout();
+
+  void setTimeout(int timeout);
+
+  Long getDeploymentTimeout();
+
+  void setDeploymentTimeout(Long deploymentTimeout);
+
+  String[] getArguments();
+
+  void setArguments(String[] arguments);
+
+  File getMuleHome();
+
+  void setMuleHome(File muleHome);
 }

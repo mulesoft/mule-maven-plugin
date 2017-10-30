@@ -36,7 +36,6 @@ import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.mule.tools.model.standalone.StandaloneDeployment;
 import org.mule.tools.utils.DeployerLog;
-import org.mule.tools.model.DeploymentConfiguration;
 import org.mule.tools.utils.GroovyUtils;
 
 import static com.google.common.base.Preconditions.checkNotNull;

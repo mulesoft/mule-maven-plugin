@@ -10,9 +10,15 @@
 
 package org.mule.tools.api.util;
 
+import static java.lang.Boolean.FALSE;
+
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
 import java.util.List;
@@ -22,11 +28,21 @@ public class CopyFileVisitor implements FileVisitor<Path> {
   private final File fromFolder;
   private final File targetFolder;
 
+  private Boolean ignoreHiddenFiles;
+  private Boolean ignoreHiddenFolders;
+
   private List<Path> exclusions = Collections.emptyList();
 
   public CopyFileVisitor(File fromFolder, File targetFolder) {
+    this(fromFolder, targetFolder, FALSE, FALSE);
+  }
+
+  public CopyFileVisitor(File fromFolder, File targetFolder, Boolean ignoreHiddenFiles, Boolean ignoreHiddenFolders) {
     this.fromFolder = fromFolder;
     this.targetFolder = targetFolder;
+
+    this.ignoreHiddenFiles = ignoreHiddenFiles;
+    this.ignoreHiddenFolders = ignoreHiddenFolders;
   }
 
   public void setExclusions(List<Path> exclusions) {
@@ -35,7 +51,7 @@ public class CopyFileVisitor implements FileVisitor<Path> {
 
   @Override
   public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-    if (exclusions.contains(dir)) {
+    if (exclusions.contains(dir) || (ignoreHiddenFolders && dir.toFile().isHidden())) {
       return FileVisitResult.SKIP_SUBTREE;
     }
 
@@ -48,6 +64,10 @@ public class CopyFileVisitor implements FileVisitor<Path> {
 
   @Override
   public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+    if (ignoreHiddenFiles && file.toFile().isHidden()) {
+      return FileVisitResult.SKIP_SUBTREE;
+    }
+
     Files
         .copy(file, targetFolder.toPath().resolve(fromFolder.toPath().relativize(file)), StandardCopyOption.REPLACE_EXISTING);
     return FileVisitResult.CONTINUE;

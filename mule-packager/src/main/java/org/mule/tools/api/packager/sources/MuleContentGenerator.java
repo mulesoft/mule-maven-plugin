@@ -10,6 +10,7 @@
 
 package org.mule.tools.api.packager.sources;
 
+import static java.lang.Boolean.FALSE;
 import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.deserialize;
 import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.serializeToFile;
 import static org.mule.tools.api.packager.sources.DefaultValuesMuleArtifactJsonGenerator.generate;
@@ -97,7 +98,7 @@ public class MuleContentGenerator extends ContentGenerator {
     List<Path> exclusions = new ArrayList<>();
     exclusions.add(projectInformation.getProjectBaseFolder().resolve(TARGET.value()));
 
-    copyContent(originPath, destinationPath, Optional.of(exclusions));
+    copyContent(originPath, destinationPath, Optional.of(exclusions), true, true, true, true);
   }
 
   /**
@@ -128,6 +129,12 @@ public class MuleContentGenerator extends ContentGenerator {
   private void copyContent(Path originPath, Path destinationPath, Optional<List<Path>> exclusions, Boolean validateOrigin,
                            Boolean validateDestination)
       throws IOException {
+    copyContent(originPath, destinationPath, exclusions, validateOrigin, validateDestination, FALSE, FALSE);
+  }
+
+  private void copyContent(Path originPath, Path destinationPath, Optional<List<Path>> exclusions, Boolean validateOrigin,
+                           Boolean validateDestination, Boolean ignoreHiddenFiles, Boolean ignoreHiddenFolders)
+      throws IOException {
     if (validateOrigin) {
       checkPathExist(originPath);
     }
@@ -135,7 +142,9 @@ public class MuleContentGenerator extends ContentGenerator {
       checkPathExist(destinationPath);
     }
 
-    CopyFileVisitor visitor = new CopyFileVisitor(originPath.toFile(), destinationPath.toFile());
+
+    CopyFileVisitor visitor =
+        new CopyFileVisitor(originPath.toFile(), destinationPath.toFile(), ignoreHiddenFiles, ignoreHiddenFolders);
     exclusions.ifPresent(e -> visitor.setExclusions(e));
 
     Files.walkFileTree(originPath, visitor);

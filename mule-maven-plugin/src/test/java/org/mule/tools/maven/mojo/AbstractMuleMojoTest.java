@@ -30,12 +30,9 @@ import org.mule.tools.api.packager.builder.MulePackageBuilder;
 
 public class AbstractMuleMojoTest {
 
-  protected static final String GROUP_ID = "group-id";
   protected static final String ARTIFACT_ID = "artifact-id";
   protected static final String PACKAGE_NAME = "packageName";
   protected static final String MULE_APPLICATION = "mule-application";
-  protected static final String MULE_DOMAIN = "mule-domain";
-  protected static final String MULE_APPLICATION_EXAMPLE = "mule-application-example";
   protected final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
   protected Build buildMock;

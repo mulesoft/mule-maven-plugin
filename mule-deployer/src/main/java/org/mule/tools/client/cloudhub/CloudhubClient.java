@@ -24,7 +24,6 @@ import org.mule.tools.client.AbstractMuleClient;
 import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
-import org.mule.tools.model.DeploymentConfiguration;
 
 public class CloudhubClient extends AbstractMuleClient {
 

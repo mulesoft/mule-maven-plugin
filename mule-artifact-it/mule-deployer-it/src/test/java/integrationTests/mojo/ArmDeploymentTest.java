@@ -18,6 +18,7 @@ import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeoutException;
 
 import static integrationTests.mojo.environment.setup.ArmEnvironment.PRODUCTION_ENVIROMENT;
 
+@Ignore
 public class ArmDeploymentTest implements SettingsConfigurator {
 
   private static Logger log;

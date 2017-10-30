@@ -11,9 +11,7 @@ package org.mule.tools.utils;
 
 import groovy.lang.GroovyShell;
 import groovy.util.ScriptException;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.mule.tools.model.DeploymentConfiguration;
 
 import java.io.BufferedReader;
 import java.io.File;

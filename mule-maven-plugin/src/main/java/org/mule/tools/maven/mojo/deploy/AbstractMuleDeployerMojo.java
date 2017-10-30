@@ -21,8 +21,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
-import org.mule.tools.client.standalone.deployment.StandaloneDeployer;
+import org.mule.tools.maven.mojo.deploy.configuration.DeploymentDefaultValuesSetter;
 import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
+import org.mule.tools.model.Deployment;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.model.anypoint.AnypointDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
@@ -30,15 +31,13 @@ import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
 import org.mule.tools.utils.DeployerLog;
-import org.mule.tools.model.DeploymentConfiguration;
 import org.mule.tools.model.anypoint.DeploymentConfigurator;
 
 import static com.google.common.base.Preconditions.checkState;
 
 public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
 
-  @Parameter
-  protected DeploymentConfiguration deploymentConfiguration;
+  protected Deployment deploymentConfiguration;
 
   @Parameter
   protected CloudHubDeployment cloudHubDeployment;
@@ -74,6 +73,11 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
   protected ArtifactRepository localRepository;
   private DeploymentConfigurator deploymentConfigurator;
 
+  @Parameter(readonly = true, property = "applicationName", defaultValue = "${project.artifactId}")
+  protected String applicationName;
+
+  @Parameter(readonly = true, property = "artifact", defaultValue = "${project.artifact.file}")
+  protected String artifact;
   protected DeployerLog log;
 
   /**
@@ -105,13 +109,14 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
     checkState(deploymentConfiguration != null, "Deployment configuration is missing");
   }
 
-  protected void checkDeployment(DeploymentConfiguration deploymentImplementation,
-                                 DeploymentConfiguration deploymentConfiguration)
+  protected void checkDeployment(Deployment deploymentImplementation,
+                                 Deployment deploymentConfiguration)
       throws MojoExecutionException {
     if (deploymentImplementation != null) {
       if (deploymentConfiguration != null) {
         throw new MojoExecutionException("One and only one deployment type can be set up per build. Aborting");
       }
+      new DeploymentDefaultValuesSetter().setDefaultValues(deploymentImplementation, mavenProject);
       this.deploymentConfiguration = deploymentImplementation;
     }
   }

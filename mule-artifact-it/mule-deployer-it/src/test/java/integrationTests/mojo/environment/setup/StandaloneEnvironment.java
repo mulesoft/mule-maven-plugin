@@ -72,7 +72,7 @@ public class StandaloneEnvironment {
   public void runAgent() throws IOException, InterruptedException {
     unpackAgent();
     startMule();
-    checkAgentIsAcceptingDeployments();
+    //checkAgentIsAcceptingDeployments();
   }
 
   public void checkStandaloneStatus(String status) throws InterruptedException, IOException {
@@ -104,6 +104,7 @@ public class StandaloneEnvironment {
     int tries = 0;
     boolean acceptingDeployments;
     TemporaryFolder folder = new TemporaryFolder();
+    folder.create();
     File dummyFile = folder.newFile("dummy.jar");
     AgentClient agentClient = new AgentClient(new MavenDeployerLog(new SystemStreamLog()), "http://localhost:9999/");
     do {

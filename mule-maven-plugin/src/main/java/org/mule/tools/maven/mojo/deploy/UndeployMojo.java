@@ -37,7 +37,7 @@ public class UndeployMojo extends AbstractMuleDeployerMojo {
       deployer.undeploy(mavenProject);
     } catch (DeploymentException e) {
       getLog().error("Failed to undeploy " + deploymentConfiguration.getApplicationName() + ": " + e.getMessage(), e);
-      throw new MojoFailureException("Failed to undeploy [" + deploymentConfiguration.getApplication() + "]");
+      throw new MojoFailureException("Failed to undeploy [" + deploymentConfiguration.getArtifact() + "]");
     }
   }
 }

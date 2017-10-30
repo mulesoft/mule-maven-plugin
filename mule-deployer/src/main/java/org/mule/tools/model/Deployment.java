@@ -15,19 +15,19 @@ import java.util.Optional;
 
 public interface Deployment {
 
-  public File getApplication();
+  File getArtifact();
 
-  public void setApplication(File application);
+  void setArtifact(File application);
 
-  public String getApplicationName();
+  String getApplicationName();
 
-  public void setApplicationName(String applicationName);
+  void setApplicationName(String applicationName);
 
-  public String getSkip();
+  String getSkip();
 
-  public void setSkip(String skip);
+  void setSkip(String skip);
 
-  public Optional<String> getMuleVersion();
+  Optional<String> getMuleVersion();
 
-  public void setMuleVersion(String muleVersion);
+  void setMuleVersion(String muleVersion);
 }

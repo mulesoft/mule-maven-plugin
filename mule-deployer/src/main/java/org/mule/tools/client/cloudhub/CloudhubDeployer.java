@@ -22,7 +22,6 @@ import org.mule.tools.client.standalone.exception.DeploymentException;
 
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
-import org.mule.tools.model.DeploymentConfiguration;
 
 import java.util.List;
 
@@ -54,7 +53,7 @@ public class CloudhubDeployer extends AbstractDeployer {
       if (domainAvailable) {
         info("Creating application " + getApplicationName());
         cloudhubClient.createApplication(getApplicationName(), cloudhubDeployment.getRegion(),
-                                         cloudhubDeployment.getMuleVersion().get(), cloudhubDeployment.getWorkers(),
+                                         cloudhubDeployment.getMuleVersion().get(), cloudhubDeployment.getWorkers().get(),
                                          cloudhubDeployment.getWorkerType(), cloudhubDeployment.getProperties());
       } else {
         Application app = findApplicationFromCurrentUser(getApplicationName());
@@ -66,7 +65,7 @@ public class CloudhubDeployer extends AbstractDeployer {
           String updateMuleVersion =
               (cloudhubDeployment.getMuleVersion() == null) ? app.muleVersion : cloudhubDeployment.getMuleVersion().get();
           Integer updateWorkers =
-              (cloudhubDeployment.getWorkers() == null) ? app.workers : cloudhubDeployment.getWorkers();
+              (cloudhubDeployment.getWorkers() == null) ? app.workers : cloudhubDeployment.getWorkers().get();
           String updateWorkerType =
               (cloudhubDeployment.getWorkerType() == null) ? app.workerType : cloudhubDeployment.getWorkerType();
 

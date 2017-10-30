@@ -20,7 +20,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.mule.tools.api.validation.*;
 import org.mule.tools.api.exception.ValidationException;
-import org.mule.tools.model.DeploymentConfiguration;
+import org.mule.tools.model.Deployment;
 
 
 /**
@@ -32,7 +32,7 @@ import org.mule.tools.model.DeploymentConfiguration;
 public class ValidateMojo extends AbstractMuleMojo {
 
   @Parameter
-  protected DeploymentConfiguration deploymentConfiguration;
+  protected Deployment deploymentConfiguration;
 
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (!skipValidation) {

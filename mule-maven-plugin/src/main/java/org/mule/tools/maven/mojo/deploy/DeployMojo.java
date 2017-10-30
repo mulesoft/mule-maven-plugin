@@ -54,7 +54,7 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
       deployer.deploy();
     } catch (DeploymentException | ScriptException e) {
       getLog().error("Failed to deploy " + deploymentConfiguration.getApplicationName() + ": " + e.getMessage(), e);
-      throw new MojoFailureException("Failed to deploy [" + deploymentConfiguration.getApplication() + "]");
+      throw new MojoFailureException("Failed to deploy [" + deploymentConfiguration.getArtifact() + "]");
     }
   }
 

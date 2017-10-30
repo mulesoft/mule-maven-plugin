@@ -11,6 +11,8 @@ package integrationTests.mojo;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import integrationTests.ProjectFactory;
 import integrationTests.mojo.environment.setup.StandaloneEnvironment;
@@ -49,7 +51,6 @@ public class AgentDeploymentTest implements SettingsConfigurator {
     log = LoggerFactory.getLogger(this.getClass());
     log.info("Initializing context...");
     initializeContext();
-    verifier.executeGoal(INSTALL);
     standaloneEnvironment = new StandaloneEnvironment("4.0.0-SNAPSHOT");
     standaloneEnvironment.start();
     standaloneEnvironment.runAgent();
@@ -63,18 +64,24 @@ public class AgentDeploymentTest implements SettingsConfigurator {
   @Test
   public void testAgentDeploy() throws IOException, VerificationException, InterruptedException {
     log.info("Executing mule:deploy goal...");
-    verifier.executeGoal(MULE_DEPLOY);
+    verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=y");
+    verifier.setSystemProperty("applicationName", "agent");
+    verifier.setSystemProperty("mule.application", projectBaseDirectory.getAbsolutePath() + File.separator + "target"
+        + File.separator + "agent-1.0.0-mule-application.jar");
+    List<String> goals = new ArrayList<>();
+    goals.add("package");
+    goals.add(MULE_DEPLOY);
+    verifier.executeGoals(goals);
     standaloneEnvironment.verifyDeployment(true, AGENT_TEST_ANCHOR_FILENAME);
     verifier.verifyErrorFreeLog();
   }
 
   @Test
   public void testAgentDeployUndeploy() throws IOException, VerificationException, InterruptedException {
-    log.info("Executing mule:deploy goal...");
-    verifier.executeGoal(MULE_DEPLOY);
-
     log.info("Executing mule:undeploy goal...");
-    verifier.executeGoal(MULE_UNDEPLOY);
+    List<String> goals = new ArrayList<>();
+    goals.add("mule:undeploy");
+    verifier.executeGoals(goals);
     standaloneEnvironment.verifyDeployment(false, AGENT_TEST_ANCHOR_FILENAME);
     verifier.verifyErrorFreeLog();
   }

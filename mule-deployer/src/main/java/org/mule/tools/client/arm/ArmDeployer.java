@@ -22,7 +22,6 @@ import org.mule.tools.client.model.TargetType;
 
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.utils.DeployerLog;
-import org.mule.tools.model.DeploymentConfiguration;
 
 import javax.ws.rs.NotFoundException;
 
@@ -66,7 +65,7 @@ public class ArmDeployer extends AbstractDeployer {
       armClient.undeployApplication(armDeployment.getApplicationName(), armDeployment.getTargetType(),
                                     armDeployment.getTarget());
     } catch (NotFoundException e) {
-      if (armDeployment.isFailIfNotExists()) {
+      if (armDeployment.isFailIfNotExists().get()) {
         throw e;
       } else {
         log.warn("Application not found: " + armDeployment.getApplicationName());

@@ -25,7 +25,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mule.tools.model.DeploymentConfiguration;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 
 @Ignore

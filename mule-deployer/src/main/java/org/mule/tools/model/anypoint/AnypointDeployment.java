@@ -14,21 +14,27 @@ import org.mule.tools.model.Deployment;
 
 public interface AnypointDeployment extends Deployment {
 
-  public String getUsername();
+  String getUsername();
 
-  public void setUsername(String username);
+  void setUsername(String username);
 
-  public String getPassword();
+  String getPassword();
 
-  public void setPassword(String password);
+  void setPassword(String password);
 
-  public String getServer();
+  String getServer();
 
-  public void setServer(String server);
+  void setServer(String server);
 
   String getEnvironment();
 
+  void setEnvironment(String environment);
+
   String getBusinessGroup();
 
+  void setBusinessGroup(String property);
+
   String getUri();
+
+  void setUri(String uri);
 }

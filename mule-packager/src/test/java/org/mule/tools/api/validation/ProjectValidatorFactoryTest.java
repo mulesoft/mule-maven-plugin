@@ -15,8 +15,7 @@ import org.junit.Test;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.util.Project;
-import org.mule.tools.model.DeploymentConfiguration;
+import org.mule.tools.model.Deployment;
 
 import java.util.ArrayList;
 
@@ -30,14 +29,14 @@ public class ProjectValidatorFactoryTest {
   private ProjectInformation infoMock;
   private AetherMavenClient aetherMavenClientMock;
   private ArrayList sharedLibrariesMock;
-  private DeploymentConfiguration deploymentConfigurationMock;
+  private Deployment deploymentConfigurationMock;
 
   @Before
   public void setUp() {
     infoMock = mock(ProjectInformation.class);
     aetherMavenClientMock = mock(AetherMavenClient.class);
     sharedLibrariesMock = new ArrayList<>();
-    deploymentConfigurationMock = mock(DeploymentConfiguration.class);
+    deploymentConfigurationMock = mock(Deployment.class);
   }
 
   @Test

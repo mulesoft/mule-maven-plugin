@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.mule.tools.client.arm.model.Applications;
 import org.mule.tools.client.arm.model.Environment;
 import org.mule.tools.client.arm.model.Target;
-import org.mule.tools.model.DeploymentConfiguration;
 import org.mule.tools.model.anypoint.ArmDeployment;
 
 import java.util.concurrent.Callable;

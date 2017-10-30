@@ -55,7 +55,7 @@ public class StandaloneDeployer extends AbstractDeployer {
 
   public String toString() {
     return String.format("StandaloneDeployer with [Controller=%s, log=%s, application=%s, timeout=%d, pollingDelay=%d ]",
-                         mule, log, standaloneDeployment.getApplication(), standaloneDeployment.getDeploymentTimeout(),
+                         mule, log, standaloneDeployment.getArtifact(), standaloneDeployment.getDeploymentTimeout(),
                          DEFAULT_POLLING_DELAY);
   }
 
@@ -67,11 +67,11 @@ public class StandaloneDeployer extends AbstractDeployer {
   }
 
   private void waitForDeployments() throws DeploymentException {
-    if (!standaloneDeployment.getApplication().exists()) {
-      throw new DeploymentException("Application does not exists: " + standaloneDeployment.getApplication());
+    if (!standaloneDeployment.getArtifact().exists()) {
+      throw new DeploymentException("Application does not exists: " + standaloneDeployment.getArtifact());
     }
-    log.debug("Waiting for application [" + standaloneDeployment.getApplication() + "] to be deployed.");
-    String app = FilenameUtils.getBaseName(standaloneDeployment.getApplication().getName());
+    log.debug("Waiting for application [" + standaloneDeployment.getArtifact() + "] to be deployed.");
+    String app = FilenameUtils.getBaseName(standaloneDeployment.getArtifact().getName());
     try {
       prober.check(AppDeploymentProbe.isDeployed(mule, app));
     } catch (AssertionError e) {
@@ -82,11 +82,11 @@ public class StandaloneDeployer extends AbstractDeployer {
   }
 
   private void deployApplications() throws DeploymentException {
-    log.info("Deploying application [" + standaloneDeployment.getApplication() + "]");
+    log.info("Deploying application [" + standaloneDeployment.getArtifact() + "]");
     try {
-      mule.deploy(standaloneDeployment.getApplication().getAbsolutePath());
+      mule.deploy(standaloneDeployment.getArtifact().getAbsolutePath());
     } catch (MuleControllerException e) {
-      throw new DeploymentException("Couldn't deploy application: " + standaloneDeployment.getApplication()
+      throw new DeploymentException("Couldn't deploy application: " + standaloneDeployment.getArtifact()
           + ". Check Mule Runtime logs");
     }
   }
@@ -145,10 +145,10 @@ public class StandaloneDeployer extends AbstractDeployer {
       deployApplications();
       waitForDeployments();
     } catch (MuleControllerException e) {
-      throw new DeploymentException("Error deploying application: [" + standaloneDeployment.getApplication() + "]: "
+      throw new DeploymentException("Error deploying application: [" + standaloneDeployment.getArtifact() + "]: "
           + e.getMessage());
     } catch (RuntimeException e) {
-      throw new DeploymentException("Unexpected error deploying application: [" + standaloneDeployment.getApplication()
+      throw new DeploymentException("Unexpected error deploying application: [" + standaloneDeployment.getArtifact()
           + "]", e);
     }
   }
@@ -190,16 +190,16 @@ public class StandaloneDeployer extends AbstractDeployer {
 
 
   private void renameApplicationToApplicationName() throws DeploymentException {
-    if (!FilenameUtils.getBaseName(standaloneDeployment.getApplication().getName())
+    if (!FilenameUtils.getBaseName(standaloneDeployment.getArtifact().getName())
         .equals(standaloneDeployment.getApplicationName())) {
       try {
         File destApplication =
-            new File(standaloneDeployment.getApplication().getParentFile(),
+            new File(standaloneDeployment.getArtifact().getParentFile(),
                      standaloneDeployment.getApplicationName() + ".jar");
-        FileUtils.copyFile(standaloneDeployment.getApplication(), destApplication);
-        standaloneDeployment.setApplication(destApplication);
+        FileUtils.copyFile(standaloneDeployment.getArtifact(), destApplication);
+        standaloneDeployment.setArtifact(destApplication);
       } catch (IOException e) {
-        throw new DeploymentException("Fail to rename [" + standaloneDeployment.getApplication() + "] to ["
+        throw new DeploymentException("Fail to rename [" + standaloneDeployment.getArtifact() + "] to ["
             + standaloneDeployment.getApplicationName()
             + "]");
       }

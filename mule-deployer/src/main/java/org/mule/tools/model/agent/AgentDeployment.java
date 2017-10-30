@@ -21,9 +21,8 @@ public class AgentDeployment implements Deployment {
   @Parameter
   protected String uri;
 
-  // TODO change name to artifact
   @Parameter
-  protected File application; // VALIDATIONS REQURIED
+  protected File artifact; // VALIDATIONS REQURIED
 
   @Parameter
   protected String applicationName;
@@ -40,12 +39,12 @@ public class AgentDeployment implements Deployment {
    *
    * @since 1.0
    */
-  public File getApplication() {
-    return application;
+  public File getArtifact() {
+    return artifact;
   }
 
-  public void setApplication(File application) {
-    this.application = application;
+  public void setArtifact(File artifact) {
+    this.artifact = artifact;
   }
 
   /**

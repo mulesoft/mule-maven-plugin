@@ -68,15 +68,15 @@ public class DeploymentDefaultValuesSetter {
       deployment.setMuleVersion(muleVersion);
     }
 
-    String applicationPath = getProperty("mule.application");
+    String applicationPath = getProperty("mule.artifact");
     if (isNotBlank(applicationPath)) {
-      deployment.setApplication(new File(applicationPath));
+      deployment.setArtifact(new File(applicationPath));
     }
-    if (deployment.getApplication() == null) {
+    if (deployment.getArtifact() == null) {
       if (project.getAttachedArtifacts().isEmpty()) {
-        throw new MojoExecutionException("Package to be deployed could not be found. Please set its location setting -Dmule.application=path/to/jar or in the deployment configuration pom element");
+        throw new MojoExecutionException("Artifact to be deployed could not be found. Please set its location setting -Dmule.artifact=path/to/jar or in the deployment configuration pom element");
       }
-      deployment.setApplication(project.getAttachedArtifacts().get(0).getFile());
+      deployment.setArtifact(project.getAttachedArtifacts().get(0).getFile());
     }
   }
 

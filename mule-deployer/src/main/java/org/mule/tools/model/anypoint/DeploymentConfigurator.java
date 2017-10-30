@@ -54,10 +54,10 @@ public class DeploymentConfigurator {
   public void initializeApplication(ArtifactFactory factory, MavenProject project, ArtifactResolver resolver,
                                     ArtifactRepository localRepository)
       throws MojoFailureException {
-    if (anypointConfiguration.getApplication() == null) {
+    if (anypointConfiguration.getArtifact() == null) {
       Artifact artifact = resolveMavenProjectArtifact(factory, project, resolver, localRepository);
-      anypointConfiguration.setApplication(artifact.getFile());
-      log.info("No application configured. Using project artifact: " + anypointConfiguration.getApplication());
+      anypointConfiguration.setArtifact(artifact.getFile());
+      log.info("No application configured. Using project artifact: " + anypointConfiguration.getArtifact());
 
       if (anypointConfiguration.getApplicationName() == null) {
         anypointConfiguration.setApplicationName(artifact.getArtifactId());
@@ -66,7 +66,7 @@ public class DeploymentConfigurator {
       // If an application is defined but no application name is provided, use the name of the file instead of
       // the artifact ID (expected behavior in standalone deploymentConfiguration for example).
       if (StringUtils.isBlank(anypointConfiguration.getApplicationName())) {
-        anypointConfiguration.setApplicationName(anypointConfiguration.getApplication().getName());
+        anypointConfiguration.setApplicationName(anypointConfiguration.getArtifact().getName());
       }
     }
   }

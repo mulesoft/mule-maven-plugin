@@ -69,7 +69,7 @@ public class DeploymentDefaultValuesSetterTest {
     cloudHubDeployment = new CloudHubDeployment();
     projectMock = mock(MavenProject.class);
     deploymentDefaultValuesSetterSpy = spy(DeploymentDefaultValuesSetter.class);
-    System.setProperty("mule.application", PACKAGE_FILE_NAME);
+    System.setProperty("mule.artifact", PACKAGE_FILE_NAME);
   }
 
   @Test
@@ -124,17 +124,17 @@ public class DeploymentDefaultValuesSetterTest {
 
   @Test
   public void setBasicDeploymentValuesApplicationFileNotSetTest() throws MojoExecutionException {
-    System.clearProperty("mule.application");
+    System.clearProperty("mule.artifact");
     expectedException.expect(MojoExecutionException.class);
     expectedException
-        .expectMessage("Package to be deployed could not be found. Please set its location setting -Dmule.application=path/to/jar or in the deployment configuration pom element");
+        .expectMessage("Artifact to be deployed could not be found. Please set its location setting -Dmule.artifact=path/to/jar or in the deployment configuration pom element");
     deploymentDefaultValuesSetterSpy.setBasicDeploymentValues(deployment, projectMock);
   }
 
   @Test
   public void setBasicDeploymentValuesApplicationFileSetSystemPropertiesTest() throws MojoExecutionException {
     deploymentDefaultValuesSetterSpy.setBasicDeploymentValues(deployment, projectMock);
-    assertThat("The application package jar could not be resolved by system property", deployment.getApplication().getPath(),
+    assertThat("The application package jar could not be resolved by system property", deployment.getArtifact().getPath(),
                equalTo(PACKAGE_FILE_NAME));
   }
 
@@ -147,7 +147,7 @@ public class DeploymentDefaultValuesSetterTest {
     artifacts.add(artifactMock);
     when(projectMock.getAttachedArtifacts()).thenReturn(artifacts);
     deploymentDefaultValuesSetterSpy.setBasicDeploymentValues(deployment, projectMock);
-    assertThat("The application package jar could not be resolved by maven project", deployment.getApplication().getName(),
+    assertThat("The application package jar could not be resolved by maven project", deployment.getArtifact().getName(),
                equalTo(PACKAGE_FILE_NAME));
   }
 
@@ -211,7 +211,7 @@ public class DeploymentDefaultValuesSetterTest {
   public void setMuleRuntimeDeploymentValuesMuleHomeSetSystemPropertiesTest() throws MojoExecutionException {
     muleRuntimeDeployment.setMuleHome(null);
     System.setProperty("mule.home", MULE_HOME);
-    muleRuntimeDeployment.setApplication(new File(APPLICATION_NAME));
+    muleRuntimeDeployment.setArtifact(new File(APPLICATION_NAME));
     deploymentDefaultValuesSetterSpy.setMuleRuntimeDeploymentValues(muleRuntimeDeployment, projectMock);
     assertThat("The mule home was not resolved by system property",
                muleRuntimeDeployment.getMuleHome().getName(), equalTo(MULE_HOME));

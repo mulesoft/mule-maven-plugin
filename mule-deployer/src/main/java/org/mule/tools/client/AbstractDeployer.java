@@ -72,7 +72,7 @@ public abstract class AbstractDeployer {
   }
 
   public File getApplicationFile() {
-    return deploymentConfiguration.getApplication();
+    return deploymentConfiguration.getArtifact();
   }
 
   protected abstract void initialize() throws DeploymentException;

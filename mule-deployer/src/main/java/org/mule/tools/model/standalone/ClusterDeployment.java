@@ -41,9 +41,8 @@ public class ClusterDeployment implements MuleRuntimeDeployment {
   @Parameter
   protected File muleHome;
 
-  // TODO change name to artifact
   @Parameter
-  protected File application; // VALIDATIONS REQURIED
+  protected File artifact; // VALIDATIONS REQURIED
 
   @Parameter
   protected String applicationName;
@@ -60,12 +59,12 @@ public class ClusterDeployment implements MuleRuntimeDeployment {
    *
    * @since 1.0
    */
-  public File getApplication() {
-    return application;
+  public File getArtifact() {
+    return artifact;
   }
 
-  public void setApplication(File application) {
-    this.application = application;
+  public void setArtifact(File artifact) {
+    this.artifact = artifact;
   }
 
   /**

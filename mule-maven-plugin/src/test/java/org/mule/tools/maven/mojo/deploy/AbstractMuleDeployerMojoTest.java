@@ -70,4 +70,20 @@ public class AbstractMuleDeployerMojoTest {
 
     mojoSpy.validateIsDeployable();
   }
+
+  @Test
+  public void validateIsDeployableMuleApplicationTemplateTest() throws MojoExecutionException {
+    expectedException.expect(MojoExecutionException.class);
+    expectedException.expectMessage("Cannot deploy a mule-application-template project");
+
+    when(artifactMock.getClassifier()).thenReturn("mule-application-template");
+    attachedArtifacts.add(artifactMock);
+
+    when(mavenProjectMock.getAttachedArtifacts()).thenReturn(attachedArtifacts);
+
+    mojoSpy.mavenProject = mavenProjectMock;
+
+    mojoSpy.validateIsDeployable();
+  }
+
 }

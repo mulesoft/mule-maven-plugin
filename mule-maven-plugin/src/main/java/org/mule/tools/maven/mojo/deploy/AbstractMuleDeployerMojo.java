@@ -34,6 +34,7 @@ import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.model.anypoint.DeploymentConfigurator;
 
 import static com.google.common.base.Preconditions.checkState;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
 
 public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
 
@@ -86,6 +87,7 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
     validateUniqueDeployment();
+    validateIsDeployable();
     log = new MavenDeployerLog(getLog());
     if (deploymentConfiguration == null) {
       throw new MojoFailureException("No deployment configuration was defined. Aborting.");
@@ -97,6 +99,15 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
       deploymentConfigurator.initializeApplication(artifactFactory, mavenProject, artifactResolver, localRepository);
       deploymentConfigurator.initializeEnvironment(settings, decrypter);
       getLog().debug("Executing mojo, skip=" + deploymentConfiguration.getSkip());
+    }
+  }
+
+  protected void validateIsDeployable() throws MojoExecutionException {
+    if (!mavenProject.getAttachedArtifacts().isEmpty()) {
+      String classifier = mavenProject.getAttachedArtifacts().get(0).getClassifier();
+      if (StringUtils.equals(MULE_DOMAIN.toString(), classifier)) {
+        throw new MojoExecutionException("Cannot deploy a mule-domain project");
+      }
     }
   }
 

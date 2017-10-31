@@ -33,7 +33,11 @@ import org.mule.tools.model.standalone.StandaloneDeployment;
 import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.model.anypoint.DeploymentConfigurator;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static com.google.common.base.Preconditions.checkState;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_TEMPLATE;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
 
 public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
@@ -105,8 +109,9 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
   protected void validateIsDeployable() throws MojoExecutionException {
     if (!mavenProject.getAttachedArtifacts().isEmpty()) {
       String classifier = mavenProject.getAttachedArtifacts().get(0).getClassifier();
-      if (StringUtils.equals(MULE_DOMAIN.toString(), classifier)) {
-        throw new MojoExecutionException("Cannot deploy a mule-domain project");
+      Set<String> forbiddenClassifiers = getForbiddenClassifiers();
+      if (classifier != null && forbiddenClassifiers.contains(classifier)) {
+        throw new MojoExecutionException("Cannot deploy a " + classifier + " project");
       }
     }
   }
@@ -130,5 +135,12 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
       new DeploymentDefaultValuesSetter().setDefaultValues(deploymentImplementation, mavenProject);
       this.deploymentConfiguration = deploymentImplementation;
     }
+  }
+
+  public Set<String> getForbiddenClassifiers() {
+    Set<String> forbiddenClassifiers = new HashSet<>();
+    forbiddenClassifiers.add(MULE_DOMAIN.toString());
+    forbiddenClassifiers.add(MULE_APPLICATION_TEMPLATE.toString());
+    return forbiddenClassifiers;
   }
 }

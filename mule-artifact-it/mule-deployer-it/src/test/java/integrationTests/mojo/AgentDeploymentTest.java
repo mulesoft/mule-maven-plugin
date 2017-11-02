@@ -61,20 +61,11 @@ public class AgentDeploymentTest implements SettingsConfigurator {
   @Test
   public void testAgentDeploy() throws IOException, VerificationException, InterruptedException {
     log.info("Executing mule:deploy goal...");
-    verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=y");
     verifier.setSystemProperty("applicationName", "agent");
+    verifier.addCliOption("-DmuleDeploy");
+    Thread.sleep(30000);
     verifier.executeGoal(DEPLOY);
     standaloneEnvironment.verifyDeployment(true, AGENT_TEST_ANCHOR_FILENAME);
-    verifier.verifyErrorFreeLog();
-  }
-
-  @Test
-  public void testAgentDeployUndeploy() throws IOException, VerificationException, InterruptedException {
-    log.info("Executing mule:undeploy goal...");
-    List<String> goals = new ArrayList<>();
-    goals.add("mule:undeploy");
-    verifier.executeGoals(goals);
-    standaloneEnvironment.verifyDeployment(false, AGENT_TEST_ANCHOR_FILENAME);
     verifier.verifyErrorFreeLog();
   }
 }

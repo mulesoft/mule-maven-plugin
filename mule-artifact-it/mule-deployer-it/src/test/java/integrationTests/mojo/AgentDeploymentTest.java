@@ -25,7 +25,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Ignore
 public class AgentDeploymentTest implements SettingsConfigurator {
 
   private static final String AGENT_TEST_ANCHOR_FILENAME = "agent-anchor.txt";
@@ -33,9 +32,7 @@ public class AgentDeploymentTest implements SettingsConfigurator {
   private static Verifier verifier;
   private static File projectBaseDirectory;
   private static ProjectFactory builder;
-  private static final String INSTALL = "install";
-  private static final String MULE_DEPLOY = "mule:deploy";
-  private static final String MULE_UNDEPLOY = "mule:undeploy";
+  private static final String DEPLOY = "deploy";
   private StandaloneEnvironment standaloneEnvironment;
 
   public void initializeContext() throws IOException, VerificationException {
@@ -66,12 +63,7 @@ public class AgentDeploymentTest implements SettingsConfigurator {
     log.info("Executing mule:deploy goal...");
     verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=y");
     verifier.setSystemProperty("applicationName", "agent");
-    verifier.setSystemProperty("mule.application", projectBaseDirectory.getAbsolutePath() + File.separator + "target"
-        + File.separator + "agent-1.0.0-mule-application.jar");
-    List<String> goals = new ArrayList<>();
-    goals.add("package");
-    goals.add(MULE_DEPLOY);
-    verifier.executeGoals(goals);
+    verifier.executeGoal(DEPLOY);
     standaloneEnvironment.verifyDeployment(true, AGENT_TEST_ANCHOR_FILENAME);
     verifier.verifyErrorFreeLog();
   }

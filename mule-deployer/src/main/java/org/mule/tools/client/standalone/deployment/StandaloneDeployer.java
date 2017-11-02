@@ -43,14 +43,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class StandaloneDeployer extends AbstractDeployer {
 
   private static final long DEFAULT_POLLING_DELAY = 1000;
-  private final StandaloneDeployment standaloneDeployment;
+  private StandaloneDeployment standaloneDeployment;
 
   private MuleProcessController mule;
   private Prober prober;
 
   public StandaloneDeployer(StandaloneDeployment standaloneDeployment, DeployerLog log) throws DeploymentException {
     super(standaloneDeployment, log);
-    this.standaloneDeployment = standaloneDeployment;
   }
 
   public String toString() {
@@ -165,6 +164,7 @@ public class StandaloneDeployer extends AbstractDeployer {
 
   @Override
   protected void initialize() throws DeploymentException {
+    this.standaloneDeployment = (StandaloneDeployment) deploymentConfiguration;
     this.mule =
         new MuleProcessController(standaloneDeployment.getMuleHome().getAbsolutePath(), standaloneDeployment.getTimeout());
 

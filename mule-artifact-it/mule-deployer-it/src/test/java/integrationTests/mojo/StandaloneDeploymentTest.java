@@ -15,7 +15,6 @@ import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +23,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-@Ignore
 public class StandaloneDeploymentTest implements SettingsConfigurator {
 
   private static final String STANDALONE_TEST_ANCHOR_FILENAME = "standalone-anchor.txt";
   private static final String MULE_DEPLOY = "mule:deploy";
   private static final String MULE_VERSION = "4.0.0-SNAPSHOT";
   private static final String STANDALONE_DIRECTORY_NAME = "mule-enterprise-standalone-" + MULE_VERSION;
+  private static final String DEPLOY = "deploy";
   private static Logger log;
   private static Verifier verifier;
   private static File projectBaseDirectory;
@@ -71,8 +70,8 @@ public class StandaloneDeploymentTest implements SettingsConfigurator {
   @Test(timeout = 60000)
   public void testStandaloneDeploy() throws IOException, VerificationException, InterruptedException {
     log.info("Executing mule:deploy goal...");
-    verifier.executeGoal(INSTALL);
-    verifier.executeGoal(MULE_DEPLOY);
+    verifier.addCliOption("-DmuleDeploy");
+    verifier.executeGoal(DEPLOY);
     verifyDeployment();
   }
 

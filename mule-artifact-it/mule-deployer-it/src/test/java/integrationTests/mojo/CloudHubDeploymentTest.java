@@ -25,16 +25,13 @@ import org.slf4j.LoggerFactory;
 import integrationTests.ProjectFactory;
 import integrationTests.mojo.environment.verifier.CloudHubDeploymentVerifier;
 
-@Ignore
 public class CloudHubDeploymentTest implements SettingsConfigurator {
 
-  private static final String MULE_UNDEPLOY = "mule:undeploy";
   private static Logger log;
   private static Verifier verifier;
   private static File projectBaseDirectory;
   private static ProjectFactory builder;
-  private static final String INSTALL = "install";
-  private static final String MULE_DEPLOY = "mule:deploy";
+  private static final String DEPLOY = "deploy";
   private static final CloudHubDeploymentVerifier cloudHubDeploymentVerifier = new CloudHubDeploymentVerifier();
   private static final int APPLICATION_NAME_LENGTH = 10;
   private static final String APPLICATION_NAME = RandomStringUtils.randomAlphabetic(APPLICATION_NAME_LENGTH).toLowerCase();
@@ -52,7 +49,6 @@ public class CloudHubDeploymentTest implements SettingsConfigurator {
     log = LoggerFactory.getLogger(this.getClass());
     log.info("Initializing context...");
     initializeContext();
-    verifier.executeGoal(INSTALL);
     verifier.setEnvironmentVariable("username", System.getProperty("username"));
     verifier.setEnvironmentVariable("password", System.getProperty("password"));
     verifier.setEnvironmentVariable("environment", "Production");
@@ -64,22 +60,11 @@ public class CloudHubDeploymentTest implements SettingsConfigurator {
   @Test
   public void testCloudHubDeploy() throws VerificationException, InterruptedException, TimeoutException {
     log.info("Executing mule:deploy goal...");
-    verifier.executeGoal(MULE_DEPLOY);
+    verifier.addCliOption("-DmuleDeploy");
+    verifier.executeGoal(DEPLOY);
+    Thread.sleep(30000);
     cloudHubDeploymentVerifier.verifyIsDeployed(APPLICATION_NAME);
     log.info("Application " + APPLICATION_NAME + " successfully deployed to CloudHub.");
-    verifier.verifyErrorFreeLog();
-  }
-
-  @Test
-  public void testCloudHubUndeploy() throws VerificationException, InterruptedException, TimeoutException {
-    log.info("Executing mule:deploy goal...");
-    verifier.executeGoal(MULE_DEPLOY);
-    cloudHubDeploymentVerifier.validateStatus(APPLICATION_NAME, cloudHubDeploymentVerifier.DEPLOYED_STATUS);
-    log.info("Application successfully deployed to CloudHub.");
-    log.info("Executing mule:undeploy goal...");
-    verifier.executeGoal(MULE_UNDEPLOY);
-    cloudHubDeploymentVerifier.verifyIsUndeployed(APPLICATION_NAME);
-    log.info("Application " + APPLICATION_NAME + " successfully undeployed from CloudHub.");
     verifier.verifyErrorFreeLog();
   }
 }

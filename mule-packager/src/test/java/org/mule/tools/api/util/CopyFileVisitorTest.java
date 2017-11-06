@@ -21,7 +21,10 @@ import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
+import java.util.List;
 
+import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -179,6 +182,21 @@ public class CopyFileVisitorTest {
 
     FileVisitResult fileVisitResult = visitor.visitFile(hiddenFile.toPath(), basicFileAttributesMock);
     assertThat(fileVisitResult, is(SKIP_SUBTREE));
+  }
+
+  @Test
+  public void visitFileNotHiddenInWindowsButInMuleExcludes() throws IOException {
+    List<String> muleExclusions = Arrays.asList(".classpath", ".project");
+    CopyFileVisitor visitor = new CopyFileVisitor(fromFolder, targetFolder, true, true);
+    for (String exclusion : muleExclusions) {
+      hiddenFile = new File(fromFolder, exclusion);
+      // Ensure file is not hidden in win based systems
+      if (System.getProperty("os.name").toLowerCase().equals("win")) {
+        Files.setAttribute(hiddenFile.toPath(), "dos:hidden", false);
+      }
+      FileVisitResult fileVisitResult = visitor.visitFile(hiddenFile.toPath(), basicFileAttributesMock);
+      assertThat(fileVisitResult, is(SKIP_SUBTREE));
+    }
   }
 
 }

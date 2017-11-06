@@ -10,6 +10,8 @@
 
 package org.mule.tools.api.util;
 
+import com.google.common.collect.Sets;
+
 import static java.lang.Boolean.FALSE;
 
 import java.io.File;
@@ -20,8 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class CopyFileVisitor implements FileVisitor<Path> {
 
@@ -32,6 +33,7 @@ public class CopyFileVisitor implements FileVisitor<Path> {
   private Boolean ignoreHiddenFolders;
 
   private List<Path> exclusions = Collections.emptyList();
+  private Set<String> muleExclude;
 
   public CopyFileVisitor(File fromFolder, File targetFolder) {
     this(fromFolder, targetFolder, FALSE, FALSE);
@@ -43,6 +45,8 @@ public class CopyFileVisitor implements FileVisitor<Path> {
 
     this.ignoreHiddenFiles = ignoreHiddenFiles;
     this.ignoreHiddenFolders = ignoreHiddenFolders;
+
+    this.muleExclude = Sets.newHashSet(".classpath", ".project");
   }
 
   public void setExclusions(List<Path> exclusions) {
@@ -64,9 +68,10 @@ public class CopyFileVisitor implements FileVisitor<Path> {
 
   @Override
   public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-    if (ignoreHiddenFiles && file.toFile().isHidden()) {
+    if (muleExclude.contains(file.toFile().getName()) || (ignoreHiddenFiles && file.toFile().isHidden())) {
       return FileVisitResult.SKIP_SUBTREE;
     }
+
 
     Files
         .copy(file, targetFolder.toPath().resolve(fromFolder.toPath().relativize(file)), StandardCopyOption.REPLACE_EXISTING);

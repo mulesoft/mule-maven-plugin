@@ -7,7 +7,7 @@
     <artifactId>mule-application-b</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>mule-application</packaging>
-    <name>Test MyMojo</name>
+    <name>mule-application-b</name>
     <build>
         <plugins>
             <plugin>

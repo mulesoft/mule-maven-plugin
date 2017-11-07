@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.apache.maven.plugin.my.unit</groupId>
-    <artifactId>mule-application-a</artifactId>
+    <artifactId>mule-application-d</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>mule-application</packaging>
-    <name>mule-application-a</name>
+    <name>mule-application-d</name>
     <build>
         <plugins>
             <plugin>

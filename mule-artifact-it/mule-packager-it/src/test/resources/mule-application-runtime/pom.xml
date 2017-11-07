@@ -4,10 +4,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.apache.maven.plugin.my.unit</groupId>
-    <artifactId>mule-application-a</artifactId>
+    <artifactId>mule-application-runtime</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>mule-application</packaging>
-    <name>mule-application-a</name>
+    <name>mule-application-runtime</name>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven.plugin.my.unit</groupId>
+            <artifactId>mule-application-direct-dependency</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>runtime</scope>
+            <classifier>mule-application</classifier>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>

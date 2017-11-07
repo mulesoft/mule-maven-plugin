@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.maven.it.VerificationException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ProcessSourcesMojoTest extends MojoTest {
@@ -37,6 +38,25 @@ public class ProcessSourcesMojoTest extends MojoTest {
       "/expected-files/expected-mule-plugin-a-classloader-model.json";
   private static final String EXPECTED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-mule-plugin-b-classloader-model.json";
+
+  private static final String GROUP_ID = "org.apache.maven.plugin.my.unit";
+  private static final String COMPILED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
+      "/mule-application-compile/target/META-INF/mule-artifact/classloader-model.json";
+
+  private static final String PROVIDED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
+      "/mule-application-provided/target/META-INF/mule-artifact/classloader-model.json";
+  private static final String RUNTIME_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
+      "/mule-application-runtime/target/META-INF/mule-artifact/classloader-model.json";
+  private static final String TEST_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
+      "/mule-application-test/target/META-INF/mule-artifact/classloader-model.json";
+  private static final String EXPECTED_COMPILED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
+      "/expected-files/expected-compile-scope-classloader-model.json";
+  private static final String EXPECTED_PROVIDED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
+      "/expected-files/expected-provided-scope-classloader-model.json";
+  private static final String EXPECTED_RUNTIME_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
+      "/expected-files/expected-runtime-scope-classloader-model.json";
+  private static final String EXPECTED_TEST_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
+      "/expected-files/expected-test-scope-classloader-model.json";
 
   public ProcessSourcesMojoTest() {
     this.goal = PROCESS_SOURCES;
@@ -126,5 +146,81 @@ public class ProcessSourcesMojoTest extends MojoTest {
                hasSameTreeStructure(expectedStructure, excludes));
 
     verifier.verifyErrorFreeLog();
+  }
+
+  @Test
+  public void testProcessSourcesCorrectCompileScopeTransitivity() throws IOException, VerificationException {
+    installRequiredMuleApplications();
+    processSourcesOnProject("mule-application-compile");
+    List<String> generatedClassloaderModelFileContent = getFileContent(COMPILED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
+    List<String> expectedClassloaderModelFileContent =
+        getFileContent(EXPECTED_COMPILED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
+    assertThat("The classloader-model.json file of mule-application-compile project is different from the expected",
+               generatedClassloaderModelFileContent,
+               equalTo(expectedClassloaderModelFileContent));
+  }
+
+  @Test
+  public void testProcessSourcesCorrectProvidedScopeTransitivity() throws IOException, VerificationException {
+    installRequiredMuleApplications();
+    processSourcesOnProject("mule-application-provided");
+    List<String> generatedClassloaderModelFileContent = getFileContent(PROVIDED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
+    List<String> expectedClassloaderModelFileContent =
+        getFileContent(EXPECTED_PROVIDED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
+    assertThat("The classloader-model.json file of mule-application-provided project is different from the expected",
+               generatedClassloaderModelFileContent,
+               equalTo(expectedClassloaderModelFileContent));
+  }
+
+
+  @Ignore // Reenable test - MMP-292
+  @Test
+  public void testProcessSourcesCorrectRuntimeScopeTransitivity() throws IOException, VerificationException {
+    installRequiredMuleApplications();
+    processSourcesOnProject("mule-application-runtime");
+    List<String> generatedClassloaderModelFileContent = getFileContent(RUNTIME_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
+    List<String> expectedClassloaderModelFileContent =
+        getFileContent(EXPECTED_RUNTIME_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
+    assertThat("The classloader-model.json file of mule-application-runtime project is different from the expected",
+               generatedClassloaderModelFileContent,
+               equalTo(expectedClassloaderModelFileContent));
+  }
+
+  @Test
+  public void testProcessSourcesCorrectTestScopeTransitivity() throws IOException, VerificationException {
+    installRequiredMuleApplications();
+    processSourcesOnProject("mule-application-test");
+    List<String> generatedClassloaderModelFileContent = getFileContent(TEST_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
+    List<String> expectedClassloaderModelFileContent =
+        getFileContent(EXPECTED_TEST_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
+    assertThat("The classloader-model.json file of mule-application-test project is different from the expected",
+               generatedClassloaderModelFileContent,
+               equalTo(expectedClassloaderModelFileContent));
+  }
+
+  private void installRequiredMuleApplications() throws IOException, VerificationException {
+    installThirdPartyArtifact(GROUP_ID, "mule-application-a", DEPENDENCY_VERSION, DEPENDENCY_TYPE,
+                              "mule-application-a");
+    installThirdPartyArtifact(GROUP_ID, "mule-application-b", DEPENDENCY_VERSION, DEPENDENCY_TYPE,
+                              "mule-application-b");
+    installThirdPartyArtifact(GROUP_ID, "mule-application-c", DEPENDENCY_VERSION, DEPENDENCY_TYPE,
+                              "mule-application-c");
+    installThirdPartyArtifact(GROUP_ID, "mule-application-d", DEPENDENCY_VERSION, DEPENDENCY_TYPE,
+                              "mule-application-d");
+
+    installThirdPartyArtifact(GROUP_ID, "mule-application-direct-dependency", DEPENDENCY_VERSION, DEPENDENCY_TYPE,
+                              "mule-application-direct-dependency");
+  }
+
+  private void processSourcesOnProject(String applicationName) throws IOException, VerificationException {
+    projectBaseDirectory = builder.createProjectBaseDir(applicationName, this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.executeGoal(PROCESS_SOURCES);
+  }
+
+  private List<String> getFileContent(String path) throws IOException {
+    File generatedClassloaderModelFile = getFile(path);
+    return Files.readAllLines(generatedClassloaderModelFile.toPath());
   }
 }

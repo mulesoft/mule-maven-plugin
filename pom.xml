@@ -90,6 +90,8 @@
 
         <licensePath>LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
+
+        <jacocoAgentArgLine>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.maven.plugin.version}/org.jacoco.agent-${jacoco.maven.plugin.version}-runtime.jar=destfile='${session.executionRootDirectory}/target/jacoco.exec'</jacocoAgentArgLine>
     </properties>
 
 
@@ -383,6 +385,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven.surefire.plugin.version}</version>
                     <configuration>
+                        <argLine>${jacocoAgentArgLine}</argLine>
                         <systemPropertyVariables>
                             <mule.maven.plugin.version>${project.version}</mule.maven.plugin.version>
                             <mule.home.test>${project.build.directory}</mule.home.test>

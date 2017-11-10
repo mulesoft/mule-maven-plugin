@@ -41,11 +41,14 @@ public abstract class AbstractProjectValidator {
    * @return true if the project is valid
    * @throws ValidationException if the project is invalid
    */
-  public Boolean isProjectValid() throws ValidationException {
+  public Boolean isProjectValid(boolean strictCheck) throws ValidationException {
     checkState(projectInformation.getPackaging() != null, "Packaging type should not be null");
     isProjectVersionValid(projectInformation.getVersion());
     isPackagingTypeValid(projectInformation.getPackaging());
     additionalValidation();
+    if (strictCheck) {
+      performStrictCheck();
+    }
     return true;
   }
 
@@ -71,6 +74,8 @@ public abstract class AbstractProjectValidator {
   }
 
   protected abstract void additionalValidation() throws ValidationException;
+
+  protected abstract void performStrictCheck() throws ValidationException;
 
   /**
    * It validates that the provided packaging types is a valid one

@@ -65,6 +65,11 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
     validateApplications(domains.iterator().next(), applications);
   }
 
+  @Override
+  protected void performStrictCheck() throws ValidationException {
+
+  }
+
   /**
    * Validates that all applications refers to a unique domain.
    *

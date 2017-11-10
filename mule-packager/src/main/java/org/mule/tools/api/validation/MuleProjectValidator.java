@@ -26,6 +26,8 @@ import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.validation.exchange.ExchangeClient;
+import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
 import org.mule.tools.model.Deployment;
 
 /**
@@ -51,6 +53,19 @@ public class MuleProjectValidator extends AbstractProjectValidator {
     validateDescriptorFile(projectInformation.getProjectBaseFolder(), deploymentConfiguration);
     validateSharedLibraries(sharedLibraries, projectInformation.getProject().getDependencies());
     validateReferencedDomainsIfPresent(projectInformation.getProject().getDependencies());
+  }
+
+  @Override
+  protected void performStrictCheck() throws ValidationException {
+    if (projectInformation.getExchangeRepositoryMetadata().isPresent() && projectInformation.isDeployment()) {
+      ExchangeClient client = new ExchangeClient(projectInformation.getExchangeRepositoryMetadata().get());
+      String requiredGroupId = client.getGeneratedGroupId();
+      if (!StringUtils.equals(projectInformation.getGroupId(), requiredGroupId)) {
+        throw new ValidationException("Deployment to Exchange is about to fail. Required groupId: [" + requiredGroupId
+            + "], but found: [" + projectInformation.getGroupId() + "]");
+      }
+    }
+
   }
 
   protected void validateDescriptorFile(Path projectBaseDir, Deployment deploymentConfiguration)

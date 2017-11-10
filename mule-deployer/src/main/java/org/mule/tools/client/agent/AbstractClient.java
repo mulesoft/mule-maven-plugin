@@ -26,7 +26,9 @@ import org.mule.tools.utils.DeployerLog;
 public abstract class AbstractClient {
 
   protected static final String LOGIN = "/accounts/login";
-  protected final DeployerLog log;
+  protected DeployerLog log;
+
+  public AbstractClient() {}
 
   public AbstractClient(DeployerLog log) {
     this.log = log;

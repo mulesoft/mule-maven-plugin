@@ -165,8 +165,8 @@ public class MuleProjectValidatorTest {
     muleFolder.mkdirs();
     projectBaseFolder.newFile("mule-artifact.json");
     doNothing().when(validatorSpy).validateDescriptorFile(any(), any());
-    doCallRealMethod().when(validatorSpy).isProjectValid();
-    validatorSpy.isProjectValid();
+    doCallRealMethod().when(validatorSpy).isProjectValid(false);
+    validatorSpy.isProjectValid(false);
 
     verify(validatorSpy, times(1)).validateDescriptorFile(projectBaseFolder.getRoot().toPath(), deploymentConfigurationMock);
   }

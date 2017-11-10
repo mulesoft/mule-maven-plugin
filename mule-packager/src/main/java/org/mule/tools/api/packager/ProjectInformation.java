@@ -1,4 +1,3 @@
-package org.mule.tools.api.packager;
 /*
  * Mule ESB Maven Tools
  * <p>
@@ -9,13 +8,14 @@ package org.mule.tools.api.packager;
  * LICENSE.txt file.
  */
 
+package org.mule.tools.api.packager;
 
 import org.apache.commons.lang3.StringUtils;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.util.Project;
 
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Optional;
+import org.mule.tools.api.validation.exchange.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -32,10 +32,13 @@ public class ProjectInformation {
   private Path buildDirectory;
   private boolean isTestProject;
   private Project project;
+  private boolean isDeployment;
+  private ExchangeRepositoryMetadata metadata;
 
 
   private ProjectInformation(String groupId, String artifactId, String version, String packaging, Path projectBaseFolder,
-                             Path buildDirectory, boolean isTestProject, Project project) {
+                             Path buildDirectory, boolean isTestProject, Project project, boolean isDeployment,
+                             ExchangeRepositoryMetadata metadata) {
     this.groupId = groupId;
     this.artifactId = artifactId;
     this.version = version;
@@ -44,6 +47,8 @@ public class ProjectInformation {
     this.buildDirectory = buildDirectory;
     this.isTestProject = isTestProject;
     this.project = project;
+    this.isDeployment = isDeployment;
+    this.metadata = metadata;
   }
 
   public String getGroupId() {
@@ -78,6 +83,14 @@ public class ProjectInformation {
     return project;
   }
 
+  public Optional<ExchangeRepositoryMetadata> getExchangeRepositoryMetadata() {
+    return Optional.ofNullable(metadata);
+  }
+
+  public boolean isDeployment() {
+    return isDeployment;
+  }
+
   public static class Builder {
 
     private String groupId;
@@ -88,6 +101,8 @@ public class ProjectInformation {
     private Path buildDirectory;
     private Boolean isTestProject;
     private Project project;
+    private boolean isDeployment;
+    private ExchangeRepositoryMetadata metadata;
 
     public Builder withGroupId(String groupId) {
       this.groupId = groupId;
@@ -129,6 +144,16 @@ public class ProjectInformation {
       return this;
     }
 
+    public Builder isDeployment(boolean isDeployment) {
+      this.isDeployment = isDeployment;
+      return this;
+    }
+
+    public Builder withExchangeRepositoryMetadata(ExchangeRepositoryMetadata metadata) {
+      this.metadata = metadata;
+      return this;
+    }
+
     public ProjectInformation build() {
       checkArgument(StringUtils.isNotBlank(groupId), "Group id should not be null nor blank");
       checkArgument(StringUtils.isNotBlank(artifactId), "Artifact id should not be null nor blank");
@@ -140,7 +165,7 @@ public class ProjectInformation {
       checkArgument(project != null, "Project should not be null");
 
       return new ProjectInformation(groupId, artifactId, version, packaging, projectBaseFolder, buildDirectory, isTestProject,
-                                    project);
+                                    project, isDeployment, metadata);
     }
 
   }

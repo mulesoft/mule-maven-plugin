@@ -40,7 +40,7 @@ public class ValidateMojo extends AbstractMuleMojo {
       getLog().debug("Validating Mule application...");
       try {
         AbstractProjectValidator.isPackagingTypeValid(project.getPackaging());
-        getProjectValidator().isProjectValid();
+        getProjectValidator().isProjectValid(strictCheck);
       } catch (ValidationException e) {
         throw new MojoExecutionException("Validation exception", e);
       }

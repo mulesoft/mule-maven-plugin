@@ -9,7 +9,7 @@
 
     <artifactId>mule-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <name>Mule Maven Plugin</name>
+    <name>Mule Packager Mojo</name>
 
     <description>
         Maven plugin to deploy Mule applications to different kinds of servers: Standalone (both Community and Enterprise), Clustered, Anypoint Runtime Manager and CloudHub.

@@ -31,10 +31,18 @@ public interface SettingsConfigurator {
     }
   }
 
+  default void setMavenOpts(Verifier verifier) {
+    String mavenOpts = System.getProperty("argLine");
+    if (mavenOpts != null) {
+      verifier.setEnvironmentVariable("MAVEN_OPTS", mavenOpts);
+    }
+  }
+
   default Verifier buildVerifier(File projectBaseDirectory) throws VerificationException {
     Verifier verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
     setSettings(verifier);
     setMuleMavenPluginVersion(verifier);
+    setMavenOpts(verifier);
     return verifier;
   }
 }

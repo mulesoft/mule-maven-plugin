@@ -5,7 +5,7 @@
     <artifactId>mule-artifact-tools</artifactId>
     <version>3.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Mule Artifact Tools</name>
+    <name>Mule Maven Plugin</name>
     <url>https://github.com/mulesoft/mule-maven-plugin</url>
 
     <modules>
@@ -89,6 +89,9 @@
 
         <licensePath>LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
+
+        <skipTests>false</skipTests>
+        <jacocoAgentArgLine>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.maven.plugin.version}/org.jacoco.agent-${jacoco.maven.plugin.version}-runtime.jar=destfile='${session.executionRootDirectory}/target/jacoco.exec'</jacocoAgentArgLine>
     </properties>
 
 
@@ -311,6 +314,7 @@
                                 <outputDirectory>${project.build.directory}</outputDirectory>
                             </artifactItem>
                         </artifactItems>
+                        <skip>${skipTests}</skip>
                     </configuration>
                     <executions>
                         <execution>
@@ -382,9 +386,11 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven.surefire.plugin.version}</version>
                     <configuration>
+                        <argLine>${jacocoAgentArgLine}</argLine>
                         <systemPropertyVariables>
                             <mule.maven.plugin.version>${project.version}</mule.maven.plugin.version>
                             <mule.home.test>${project.build.directory}</mule.home.test>
+                            <argLine>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.maven.plugin.version}/org.jacoco.agent-${jacoco.maven.plugin.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco-it.exec</argLine>
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>

@@ -32,10 +32,10 @@ public interface SettingsConfigurator {
   }
 
   default void setMavenOpts(Verifier verifier) {
-     String mavenOpts = System.getProperty("argLine");
-     if (mavenOpts != null) {
-          verifier.setEnvironmentVariable("MAVEN_OPTS", mavenOpts);
-     }
+    String mavenOpts = System.getProperty("argLine");
+    if (mavenOpts != null) {
+      verifier.setEnvironmentVariable("MAVEN_OPTS", mavenOpts);
+    }
   }
 
   default Verifier buildVerifier(File projectBaseDirectory) throws VerificationException {

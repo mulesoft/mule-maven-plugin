@@ -370,7 +370,7 @@
                         <lineEnding>LF</lineEnding>
                         <aggregator>false</aggregator>
                         <executionRoot>true</executionRoot>
-                        <skipFormatting>${skipTests}</skipFormatting>
+                        <skipFormatting>${skipVerifications}</skipFormatting>
                     </configuration>
                     <executions>
                         <execution>

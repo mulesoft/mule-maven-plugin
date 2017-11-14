@@ -9,6 +9,7 @@
 
     <artifactId>mule-artifact-it</artifactId>
     <packaging>pom</packaging>
+    <name>Mule Maven Plugin Integration Tests</name>
 
 
     <properties>

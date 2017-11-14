@@ -21,13 +21,14 @@ package org.mule.tools.model.standalone;
 
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.client.standalone.exception.DeploymentException;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class StandaloneDeployment implements MuleRuntimeDeployment {
+public class StandaloneDeployment extends MuleRuntimeDeployment {
 
   @Parameter(readonly = true)
   protected ArtifactCoordinates muleDistribution;
@@ -54,64 +55,6 @@ public class StandaloneDeployment implements MuleRuntimeDeployment {
   // TODO validate what for?
   @Parameter
   protected List<ArtifactCoordinates> artifactItems = new ArrayList<>();
-
-  @Parameter
-  protected File artifact; // VALIDATIONS REQURIED
-
-  @Parameter
-  protected String applicationName;
-
-  // TODO validate what for?
-  @Parameter
-  protected String skip;
-
-  @Parameter
-  protected String muleVersion;
-
-  /**
-   * Application file to be deployed.
-   *
-   * @since 1.0
-   */
-  public File getArtifact() {
-    return artifact;
-  }
-
-  public void setArtifact(File application) {
-    this.artifact = application;
-  }
-
-  /**
-   * Name of the application to deploy/undeploy. If not specified, the artifact id will be used as the name. This parameter allows
-   * to override this behavior to specify a custom name.
-   *
-   * @since 2.0
-   */
-  public String getApplicationName() {
-    return applicationName;
-  }
-
-  public void setApplicationName(String applicationName) {
-    this.applicationName = applicationName;
-  }
-
-  public String getSkip() {
-    return skip;
-  }
-
-  public void setSkip(String skip) {
-    this.skip = skip;
-  }
-
-  @Override
-  public Optional<String> getMuleVersion() {
-    return Optional.ofNullable(this.muleVersion);
-  }
-
-  @Override
-  public void setMuleVersion(String muleVersion) {
-    this.muleVersion = muleVersion;
-  }
 
   /**
    * Maven coordinates for the Mule Runtime distribution to download. You need to specify:
@@ -209,4 +152,9 @@ public class StandaloneDeployment implements MuleRuntimeDeployment {
   public void setArtifactItems(List<ArtifactCoordinates> artifactItems) {
     this.artifactItems = artifactItems;
   }
+
+  public void setEnvironmentSpecificValues() throws DeploymentException {
+    super.setEnvironmentSpecificValues();
+  }
+
 }

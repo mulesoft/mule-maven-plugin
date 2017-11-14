@@ -12,12 +12,12 @@ package org.mule.tools.model.standalone;
 
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.model.Deployment;
+import org.mule.tools.client.standalone.exception.DeploymentException;
 
 import java.io.File;
 import java.util.Optional;
 
-public class ClusterDeployment implements MuleRuntimeDeployment {
+public class ClusterDeployment extends MuleRuntimeDeployment {
 
   @Parameter
   protected Integer timeout;
@@ -191,6 +191,14 @@ public class ClusterDeployment implements MuleRuntimeDeployment {
    */
   public void setMuleHome(File muleHome) {
     this.muleHome = muleHome;
+  }
+
+  public void setEnvironmentSpecificValues() throws DeploymentException {
+    super.setEnvironmentSpecificValues();
+
+    if (getSize() == null) {
+      setSize(2);
+    }
   }
 
 }

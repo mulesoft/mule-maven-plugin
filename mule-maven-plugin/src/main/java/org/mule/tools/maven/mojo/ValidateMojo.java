@@ -15,12 +15,12 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.mule.tools.api.validation.*;
 import org.mule.tools.api.exception.ValidationException;
-import org.mule.tools.model.Deployment;
+
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
 
 
 /**
@@ -31,16 +31,13 @@ import org.mule.tools.model.Deployment;
     requiresDependencyResolution = ResolutionScope.TEST)
 public class ValidateMojo extends AbstractMuleMojo {
 
-  @Parameter
-  protected Deployment deploymentConfiguration;
-
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (!skipValidation) {
       long start = System.currentTimeMillis();
       getLog().debug("Validating Mule application...");
       try {
         AbstractProjectValidator.isPackagingTypeValid(project.getPackaging());
-        getProjectValidator().isProjectValid(strictCheck);
+        getProjectValidator().isProjectValid(VALIDATE.id());
       } catch (ValidationException e) {
         throw new MojoExecutionException("Validation exception", e);
       }
@@ -48,12 +45,5 @@ public class ValidateMojo extends AbstractMuleMojo {
     } else {
       getLog().debug("Skipping Validation for Mule application");
     }
-  }
-
-
-
-  public AbstractProjectValidator getProjectValidator() {
-    return ProjectValidatorFactory
-        .create(getProjectInformation(), getAetherMavenClient(), sharedLibraries, deploymentConfiguration);
   }
 }

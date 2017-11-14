@@ -10,31 +10,149 @@
 
 package org.mule.tools.model.anypoint;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 
-public interface AnypointDeployment extends Deployment {
+import static java.lang.System.getProperty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-  String getUsername();
+public abstract class AnypointDeployment extends Deployment {
 
-  void setUsername(String username);
+  @Parameter
+  protected String username;
 
-  String getPassword();
+  @Parameter
+  protected String password;
 
-  void setPassword(String password);
+  @Parameter
+  protected String environment;
 
-  String getServer();
+  @Parameter
+  protected String businessGroup;
 
-  void setServer(String server);
+  @Parameter
+  protected String uri;
 
-  String getEnvironment();
+  @Parameter
+  protected String server;
 
-  void setEnvironment(String environment);
+  /**
+   * Anypoint Platform username.
+   *
+   * @since 2.0
+   */
+  public String getUsername() {
+    return username;
+  }
 
-  String getBusinessGroup();
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-  void setBusinessGroup(String property);
+  /**
+   * Anypoint Platform password.
+   *
+   * @since 2.0
+   */
+  public String getPassword() {
+    return password;
+  }
 
-  String getUri();
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-  void setUri(String uri);
+  /**
+   * Anypoint environment name.
+   *
+   * @since 2.0
+   */
+  public String getEnvironment() {
+    return environment;
+  }
+
+  public void setEnvironment(String environment) {
+    this.environment = environment;
+  }
+
+  /**
+   * Business group for deploymentConfiguration, if it is a nested one its format should be first.second.
+   *
+   * @since 2.1
+   */
+  public String getBusinessGroup() {
+    return businessGroup;
+  }
+
+  public void setBusinessGroup(String businessGroup) {
+    this.businessGroup = businessGroup;
+  }
+
+  /**
+   * Anypoint Platform URI, can be configured to use with On Premise platform..
+   *
+   * @since 2.0
+   */
+  public String getUri() {
+    return uri;
+  }
+
+  public void setUri(String uri) {
+    this.uri = uri;
+  }
+
+  /**
+   * Maven server with Anypoint Platform credentials. This is only needed if you want to use your credentials stored in your Maven
+   * settings.xml file. This is NOT your Mule server name.
+   *
+   * @since 2.2
+   */
+  public String getServer() {
+    return server;
+  }
+
+  public void setServer(String server) {
+    this.server = server;
+  }
+
+  public void setEnvironmentSpecificValues() throws DeploymentException {
+    String anypointUri = getProperty("anypoint.uri");
+    if (isNotBlank(anypointUri)) {
+      setUri(anypointUri);
+    }
+    if (isBlank(getUri())) {
+      setUri("https://anypoint.mulesoft.com");
+    }
+
+    String businessGroup = getProperty("anypoint.businessGroup");
+    if (isNotBlank(businessGroup)) {
+      setBusinessGroup(businessGroup);
+    }
+    if (isBlank(getBusinessGroup())) {
+      setBusinessGroup(StringUtils.EMPTY);
+    }
+
+    String anypointEnvironment = getProperty("anypoint.environment");
+    if (isNotBlank(anypointEnvironment)) {
+      setEnvironment(anypointEnvironment);
+    }
+
+    String password = getProperty("anypoint.password");
+    if (isNotBlank(password)) {
+      setPassword(password);
+    }
+
+    String mavenServer = getProperty("maven.server");
+    if (isNotBlank(mavenServer)) {
+      setServer(mavenServer);
+    }
+
+    String username = getProperty("anypoint.username");
+    if (isNotBlank(username)) {
+      setUsername(username);
+    }
+  }
 }

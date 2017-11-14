@@ -26,11 +26,11 @@ public class ProjectValidatorFactory {
   public static AbstractProjectValidator create(ProjectInformation info,
                                                 AetherMavenClient aetherMavenClient,
                                                 List<SharedLibraryDependency> sharedLibraries,
-                                                Deployment deploymentConfiguration) {
+                                                Deployment deploymentConfiguration, boolean strictCheck) {
     if (PackagingType.fromString(info.getPackaging()).equals(MULE_DOMAIN_BUNDLE)) {
       return new DomainBundleProjectValidator(info,
                                               aetherMavenClient);
     }
-    return new MuleProjectValidator(info, sharedLibraries, deploymentConfiguration);
+    return new MuleProjectValidator(info, sharedLibraries, deploymentConfiguration, strictCheck);
   }
 }

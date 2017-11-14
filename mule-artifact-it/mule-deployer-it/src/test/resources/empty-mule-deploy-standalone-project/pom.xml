@@ -19,8 +19,8 @@
                     <standaloneDeployment>
                         <muleVersion>${mule.version}</muleVersion>
                         <muleHome>${mule.home.test}</muleHome>
-                        <deploymentTimeout>30000</deploymentTimeout>
-                        <timeout>30000</timeout>
+                        <deploymentTimeout>120000</deploymentTimeout>
+                        <timeout>120000</timeout>
                     </standaloneDeployment>
                 </configuration>
             </plugin>

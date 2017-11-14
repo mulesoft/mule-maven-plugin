@@ -11,53 +11,29 @@ package org.mule.tools.maven.mojo.deploy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
-import org.mule.tools.maven.mojo.deploy.configuration.DeploymentDefaultValuesSetter;
+import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.maven.mojo.AbstractGenericMojo;
 import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
-import org.mule.tools.model.Deployment;
-import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.model.anypoint.AnypointDeployment;
-import org.mule.tools.model.anypoint.ArmDeployment;
-import org.mule.tools.model.anypoint.CloudHubDeployment;
-import org.mule.tools.model.standalone.ClusterDeployment;
-import org.mule.tools.model.standalone.StandaloneDeployment;
 import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.model.anypoint.DeploymentConfigurator;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Objects;
+import java.util.stream.Stream;
 
-import static com.google.common.base.Preconditions.checkState;
-import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_TEMPLATE;
-import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.DEPLOY;
 
-public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
-
-  protected Deployment deploymentConfiguration;
-
-  @Parameter
-  protected CloudHubDeployment cloudHubDeployment;
-
-  @Parameter
-  protected ArmDeployment armDeployment;
-
-  @Parameter
-  protected StandaloneDeployment standaloneDeployment;
-
-  @Parameter
-  protected AgentDeployment agentDeployment;
-
-  @Parameter
-  protected ClusterDeployment clusterDeployment;
+public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
 
   @Component
   protected Settings settings;
@@ -74,8 +50,6 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
   @Component
   protected ArtifactResolver artifactResolver;
 
-  @Parameter(defaultValue = "${localRepository}", readonly = true)
-  protected ArtifactRepository localRepository;
   private DeploymentConfigurator deploymentConfigurator;
 
   @Parameter(readonly = true, property = "applicationName", defaultValue = "${project.artifactId}")
@@ -83,6 +57,7 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
 
   @Parameter(readonly = true, property = "artifact", defaultValue = "${project.artifact.file}")
   protected String artifact;
+
   protected DeployerLog log;
 
   /**
@@ -90,8 +65,12 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
    */
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
-    validateUniqueDeployment();
-    validateIsDeployable();
+    try {
+      getProjectValidator().isProjectValid(DEPLOY.id());
+      setDeployment();
+    } catch (DeploymentException | ValidationException e) {
+      throw new MojoExecutionException("Deployment configuration is not valid, ", e);
+    }
     log = new MavenDeployerLog(getLog());
     if (deploymentConfiguration == null) {
       throw new MojoFailureException("No deployment configuration was defined. Aborting.");
@@ -106,41 +85,11 @@ public abstract class AbstractMuleDeployerMojo extends AbstractMojo {
     }
   }
 
-  protected void validateIsDeployable() throws MojoExecutionException {
-    if (!mavenProject.getAttachedArtifacts().isEmpty()) {
-      String classifier = mavenProject.getAttachedArtifacts().get(0).getClassifier();
-      Set<String> forbiddenClassifiers = getForbiddenClassifiers();
-      if (classifier != null && forbiddenClassifiers.contains(classifier)) {
-        throw new MojoExecutionException("Cannot deploy a " + classifier + " project");
-      }
-    }
-  }
-
-  private void validateUniqueDeployment() throws MojoExecutionException {
-    checkDeployment(cloudHubDeployment, deploymentConfiguration);
-    checkDeployment(armDeployment, deploymentConfiguration);
-    checkDeployment(standaloneDeployment, deploymentConfiguration);
-    checkDeployment(agentDeployment, deploymentConfiguration);
-    checkDeployment(clusterDeployment, deploymentConfiguration);
-    checkState(deploymentConfiguration != null, "Deployment configuration is missing");
-  }
-
-  protected void checkDeployment(Deployment deploymentImplementation,
-                                 Deployment deploymentConfiguration)
-      throws MojoExecutionException {
-    if (deploymentImplementation != null) {
-      if (deploymentConfiguration != null) {
-        throw new MojoExecutionException("One and only one deployment type can be set up per build. Aborting");
-      }
-      new DeploymentDefaultValuesSetter().setDefaultValues(deploymentImplementation, mavenProject);
-      this.deploymentConfiguration = deploymentImplementation;
-    }
-  }
-
-  public Set<String> getForbiddenClassifiers() {
-    Set<String> forbiddenClassifiers = new HashSet<>();
-    forbiddenClassifiers.add(MULE_DOMAIN.toString());
-    forbiddenClassifiers.add(MULE_APPLICATION_TEMPLATE.toString());
-    return forbiddenClassifiers;
+  protected void setDeployment() throws DeploymentException {
+    deploymentConfiguration = Stream.of(agentDeployment, standaloneDeployment, armDeployment, cloudHubDeployment,
+                                        clusterDeployment)
+        .filter(Objects::nonNull).findFirst()
+        .orElseThrow(() -> new DeploymentException("Please define one deployment configuration"));
+    deploymentConfiguration.setDefaultValues(mavenProject);
   }
 }

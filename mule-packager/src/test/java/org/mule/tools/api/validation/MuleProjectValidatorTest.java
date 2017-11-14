@@ -58,9 +58,12 @@ public class MuleProjectValidatorTest {
   private MuleProjectValidator validator;
   private Deployment deploymentConfigurationMock;
 
+  private ProjectInformation.Builder builder;
+
   @Before
   public void before() throws IOException, MojoExecutionException {
-    ProjectInformation projectInformation = new ProjectInformation.Builder()
+
+    builder = new ProjectInformation.Builder()
         .withGroupId(GROUP_ID)
         .withArtifactId(ARTIFACT_ID)
         .withVersion(VERSION)
@@ -68,10 +71,10 @@ public class MuleProjectValidatorTest {
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
         .withBuildDirectory(projectBuildFolder.getRoot().toPath())
         .setTestProject(false)
-        .withDependencyProject(Collections::emptyList)
-        .build();
+        .withDependencyProject(Collections::emptyList);
+    ProjectInformation projectInformation = builder.build();
     deploymentConfigurationMock = mock(Deployment.class);
-    validator = new MuleProjectValidator(projectInformation, new ArrayList<>(), deploymentConfigurationMock);
+    validator = new MuleProjectValidator(projectInformation, new ArrayList<>(), deploymentConfigurationMock, false);
   }
 
   @Test(expected = ValidationException.class)
@@ -165,8 +168,8 @@ public class MuleProjectValidatorTest {
     muleFolder.mkdirs();
     projectBaseFolder.newFile("mule-artifact.json");
     doNothing().when(validatorSpy).validateDescriptorFile(any(), any());
-    doCallRealMethod().when(validatorSpy).isProjectValid(false);
-    validatorSpy.isProjectValid(false);
+    doCallRealMethod().when(validatorSpy).isProjectValid("validate");
+    validatorSpy.isProjectValid("validate");
 
     verify(validatorSpy, times(1)).validateDescriptorFile(projectBaseFolder.getRoot().toPath(), deploymentConfigurationMock);
   }
@@ -356,6 +359,37 @@ public class MuleProjectValidatorTest {
     expectedSet.add(muleDomain);
 
     verify(validatorSpy, times(1)).validateDomain(eq(expectedSet));
+  }
+
+  @Test
+  public void validateIsDeployableMuleDomainTest() throws ValidationException {
+    expectedException.expect(ValidationException.class);
+    expectedException.expectMessage("Cannot deploy a mule-domain project");
+
+    ProjectInformation projectInformation = builder.withClassifier("mule-domain").build();
+    validator = new MuleProjectValidator(projectInformation, new ArrayList<>(), deploymentConfigurationMock, false);
+
+    validator.validateIsDeployable();
+  }
+
+  @Test
+  public void validateIsDeployableMuleApplicationTest() throws ValidationException {
+
+    ProjectInformation projectInformation = builder.withClassifier("mule-application").build();
+    validator = new MuleProjectValidator(projectInformation, new ArrayList<>(), deploymentConfigurationMock, false);
+
+    validator.validateIsDeployable();
+  }
+
+  @Test
+  public void validateIsDeployableMuleApplicationTemplateTest() throws ValidationException {
+    expectedException.expect(ValidationException.class);
+    expectedException.expectMessage("Cannot deploy a mule-application-template project");
+
+    ProjectInformation projectInformation = builder.withClassifier("mule-application-template").build();
+    validator = new MuleProjectValidator(projectInformation, new ArrayList<>(), deploymentConfigurationMock, false);
+
+    validator.validateIsDeployable();
   }
 
   private SharedLibraryDependency buildSharedLibraryDependency(String groupId, String artifactId) {

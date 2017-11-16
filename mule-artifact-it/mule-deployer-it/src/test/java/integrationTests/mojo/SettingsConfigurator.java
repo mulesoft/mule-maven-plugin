@@ -17,6 +17,8 @@ import java.io.File;
 
 public interface SettingsConfigurator {
 
+  String DEFAULT_MULE_VERSION = "4.0.0";
+
   default void setSettings(Verifier verifier) {
     String mavenSettings = System.getenv("MAVEN_SETTINGS");
     if (mavenSettings != null) {

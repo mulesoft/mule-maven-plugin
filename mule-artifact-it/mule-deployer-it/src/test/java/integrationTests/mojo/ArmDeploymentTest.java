@@ -18,7 +18,6 @@ import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +61,7 @@ public class ArmDeploymentTest implements SettingsConfigurator {
     verifier.setEnvironmentVariable("target.type", "server");
     verifier.setEnvironmentVariable("environment", PRODUCTION_ENVIROMENT);
     verifier.setEnvironmentVariable("arm.application.name", APPLICATION_NAME);
-    ArmEnvironment armEnvironment = new ArmEnvironment("4.0.0-SNAPSHOT", INSTANCE_NAME);
+    ArmEnvironment armEnvironment = new ArmEnvironment(DEFAULT_MULE_VERSION, INSTANCE_NAME);
     armDeploymentVerifier.killMuleProcesses();
     armEnvironment.start();
   }

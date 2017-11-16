@@ -27,15 +27,16 @@ public class StandaloneDeploymentTest implements SettingsConfigurator {
 
   private static final String STANDALONE_TEST_ANCHOR_FILENAME = "standalone-anchor.txt";
   private static final String MULE_DEPLOY = "mule:deploy";
-  private static final String MULE_VERSION = "4.0.0-SNAPSHOT";
-  private static final String STANDALONE_DIRECTORY_NAME = "mule-enterprise-standalone-" + MULE_VERSION;
+
+  private static final String STANDALONE_DIRECTORY_NAME = "mule-enterprise-standalone-" + DEFAULT_MULE_VERSION;
   private static final String DEPLOY = "deploy";
   private static Logger log;
   private static Verifier verifier;
   private static File projectBaseDirectory;
   private static ProjectFactory builder;
   private static final String INSTALL = "install";
-  private static StandaloneEnvironment environment = new StandaloneEnvironment(MULE_VERSION);
+
+  private static StandaloneEnvironment environment = new StandaloneEnvironment(DEFAULT_MULE_VERSION);
 
   public void initializeContext() throws IOException, VerificationException {
     builder = new ProjectFactory();

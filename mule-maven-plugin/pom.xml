@@ -9,59 +9,12 @@
 
     <artifactId>mule-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <name>Mule Packager Mojo</name>
 
-    <description>
-        Maven plugin to deploy Mule applications to different kinds of servers: Standalone (both Community and Enterprise), Clustered, Anypoint Runtime Manager and CloudHub.
-        Main uses are running integration tests and deploying applications.
-        Some of the features are:
-        Download Mule Standalone from a Maven Repository and install it locally.
-        Deploy a Mule application to a server.
-        Undeploy a Mule application.
-        Assemble a Mule cluster and deploy applications.
-    </description>
-    <url>https://github.com/mulesoft/mule-maven-plugin</url>
+    <name>Mule Maven Plugin</name>
 
-    <licenses>
-        <license>
-            <name>CPAL v1.0</name>
-            <url>https://www.mulesoft.com/CPAL</url>
-        </license>
-    </licenses>
-    <mailingLists>
-        <mailingList>
-            <name>developers</name>
-            <post>munit@mulesoft.com</post>
-        </mailingList>
-    </mailingLists>
-    <issueManagement>
-        <system>jira</system>
-        <url>https://www.mulesoft.org/jira/browse/MMP</url>
-    </issueManagement>
-    <organization>
-        <name>MuleSoft Inc</name>
-        <url>https://www.mulesoft.com/</url>
-    </organization>
-    
     <properties>
         <licensePath>../LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-
-        <javaFormatter.plugin.version>1.8.0</javaFormatter.plugin.version>
-        <license.plugin.version>2.6</license.plugin.version>
-    
-        <formatter.maven.plugin.version>1.8.0</formatter.maven.plugin.version>
-        <skipVerifications>false</skipVerifications>
-        <formatterGoal>validate</formatterGoal>
-
-        <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
-        <maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
-        <maven.invoker.plugin.version>2.0.0</maven.invoker.plugin.version>
-        <maven.plugin.version>3.5</maven.plugin.version>
-        <maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
-    
-        <!--Integration tests properties-->
-        <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
     </properties>
 
     <dependencies>
@@ -75,6 +28,7 @@
             <artifactId>mule-deployer</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <!-- Maven Plugin Dependencies -->
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -94,15 +48,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
@@ -111,44 +56,36 @@
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-compat</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <id>reserve-ports</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>reserve-network-port</goal>
-                        </goals>
-                        <configuration>
-                            <portNames>
-                                <portName>port</portName>
-                            </portNames>
-                        </configuration>
-                    </execution>
-                </executions>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.plugin.version}</version>
-                <configuration>
-                    <source>${java.source}</source>
-                    <target>${java.target}</target>
-                </configuration>
+                <groupId>com.marvinformatics.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -167,227 +104,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>com.mycila</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>com.marvinformatics.formatter</groupId>
-                <artifactId>formatter-maven-plugin</artifactId>
-            </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>uber</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-                <property>
-                    <name>uber</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-shade-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <configuration>
-                            <minimizeJar>true</minimizeJar>
-                            <artifactSet>
-                              <includes>
-                                  <include>org.mule:*</include>
-                                  <include>org.mule.runtime:*</include>
-                              </includes>
-                            </artifactSet>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>shade</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>integration</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-invoker-plugin</artifactId>
-                        <version>${maven.invoker.plugin.version}</version>
-                        <configuration>
-                            <skipInvocation>${skipTests}</skipInvocation>
-                            <debug>${debug}</debug>
-                            <streamLogs>${debug}</streamLogs>
-                            <showErrors>${debug}</showErrors>
-                            <projectsDirectory>src/it/${suite}</projectsDirectory>
-                            <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-                            <postBuildHookScript>verify</postBuildHookScript>
-                            <preBuildHookScript>setup</preBuildHookScript>
-                            <addTestClassPath>true</addTestClassPath>
-                            <invokerPropertiesFile>invoker.properties</invokerPropertiesFile>
-                            <mavenOpts>${mavenOpts}</mavenOpts>
-                            <settingsFile>${maven.invoker.settings}</settingsFile>
-                            <scriptVariables>
-                                <muleVersion>${mule.version}</muleVersion>
-                                <username>${username}</username>
-                                <password>${password}</password>
-                            </scriptVariables>
-                            <properties>
-                                <mule.version>${mule.version}</mule.version>
-                                <maven.antrun.plugin.version>${maven.antrun.plugin.version}</maven.antrun.plugin.version>
-                                <username>${username}</username>
-                                <password>${password}</password>
-                                <environment>${environment}</environment>
-                                <target>${target}</target>
-                                <port>${port}</port>
-                                <skipProperty>skipPlugin</skipProperty>
-                                <skipPlugin>true</skipPlugin>
-                                <mule.timeout>120000</mule.timeout>
-                            </properties>
-                            <goals>
-                                <goal>clean</goal>
-                                <goal>verify</goal>
-                            </goals>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>integration-test</id>
-                                <phase>integration-test</phase>
-                                <goals>
-                                    <goal>install</goal>
-                                    <goal>run</goal>
-                                    <goal>report</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>release</id>
-            <properties>
-                <javadoc.opts>-Xdoclint:none</javadoc.opts>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${maven.javadoc.plugin.version}</version>
-                        <configuration>
-                            <additionalparam>${javadoc.opts}</additionalparam>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
-                        <executions>
-                            <execution>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin> 
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>ci</id>
-            <activation>
-                <property>
-                    <name>env</name>
-                    <value>ci</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>2.1.2</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>windows_profile</id>
-            <activation>
-                <os>
-                    <family>Windows</family>
-                </os>
-            </activation>
-            <properties>
-                <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
-            </properties>
-        </profile>
-        <profile>
-            <id>linux_profile</id>
-            <activation>
-                <os>
-                    <name>linux</name>
-                </os>
-            </activation>
-            <properties>
-                <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
-            </properties>
-        </profile>
-        <profile>
-            <id>osx_profile</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-            <properties>
-                <toolsjar>${java.home}/../Classes/classes.jar</toolsjar>
-            </properties>
-        </profile>
-        <profile>
-            <id>mac</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-        </profile>
-    </profiles>
-
 </project>

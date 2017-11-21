@@ -10,27 +10,22 @@
 
 package org.mule.tools.maven.mojo.deploy;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.model.standalone.ClusterDeployment;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.mockito.Mockito.*;
 
 public class AbstractMuleDeployerMojoTest {
 
   private AbstractMuleDeployerMojo mojoSpy;
   private MavenProject mavenProjectMock;
-  private Artifact artifactMock;
-  private List<Artifact> attachedArtifacts;
 
 
   @Rule
@@ -40,50 +35,37 @@ public class AbstractMuleDeployerMojoTest {
   public void setUp() {
     mojoSpy = spy(AbstractMuleDeployerMojo.class);
     mavenProjectMock = mock(MavenProject.class);
-    artifactMock = mock(Artifact.class);
-    attachedArtifacts = new ArrayList<>();
+  }
+
+  // In this test, we simulate the behavior of what is inject by plexus when one deployment
+  // configuration is defined, i.e., all but one deployment configuration are null.
+  // The resolved configuration should be the non-null.
+  @Test
+  public void setDeploymentOneDeploymentNotNullTest() throws DeploymentException {
+    mojoSpy.setAgentDeployment(null);
+    mojoSpy.setArmDeployment(null);
+    mojoSpy.setCloudHubDeployment(null);
+    mojoSpy.setStandaloneDeployment(null);
+    ClusterDeployment clusterDeploymentMock = mock(ClusterDeployment.class);
+    doNothing().when(clusterDeploymentMock).setDefaultValues(mavenProjectMock);
+    mojoSpy.setClusterDeployment(clusterDeploymentMock);
+
+    mojoSpy.setDeployment();
+
+    assertThat("The resolved deployment is not the expected", mojoSpy.getDeploymentConfiguration(),
+               equalTo(clusterDeploymentMock));
   }
 
   @Test
-  public void validateIsDeployableMuleDomainTest() throws MojoExecutionException {
-    expectedException.expect(MojoExecutionException.class);
-    expectedException.expectMessage("Cannot deploy a mule-domain project");
+  public void setDeploymentAllDeploymentNullTest() throws DeploymentException {
+    expectedException.expect(DeploymentException.class);
+    expectedException.expectMessage("Please define one deployment configuration");
+    mojoSpy.setAgentDeployment(null);
+    mojoSpy.setArmDeployment(null);
+    mojoSpy.setCloudHubDeployment(null);
+    mojoSpy.setStandaloneDeployment(null);
+    mojoSpy.setClusterDeployment(null);
 
-    when(artifactMock.getClassifier()).thenReturn("mule-domain");
-    attachedArtifacts.add(artifactMock);
-
-    when(mavenProjectMock.getAttachedArtifacts()).thenReturn(attachedArtifacts);
-
-    mojoSpy.mavenProject = mavenProjectMock;
-
-    mojoSpy.validateIsDeployable();
+    mojoSpy.setDeployment();
   }
-
-  @Test
-  public void validateIsDeployableMuleApplicationTest() throws MojoExecutionException {
-    when(artifactMock.getClassifier()).thenReturn("mule-application");
-    attachedArtifacts.add(artifactMock);
-
-    when(mavenProjectMock.getAttachedArtifacts()).thenReturn(attachedArtifacts);
-
-    mojoSpy.mavenProject = mavenProjectMock;
-
-    mojoSpy.validateIsDeployable();
-  }
-
-  @Test
-  public void validateIsDeployableMuleApplicationTemplateTest() throws MojoExecutionException {
-    expectedException.expect(MojoExecutionException.class);
-    expectedException.expectMessage("Cannot deploy a mule-application-template project");
-
-    when(artifactMock.getClassifier()).thenReturn("mule-application-template");
-    attachedArtifacts.add(artifactMock);
-
-    when(mavenProjectMock.getAttachedArtifacts()).thenReturn(attachedArtifacts);
-
-    mojoSpy.mavenProject = mavenProjectMock;
-
-    mojoSpy.validateIsDeployable();
-  }
-
 }

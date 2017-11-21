@@ -10,29 +10,68 @@
 
 package org.mule.tools.model.standalone;
 
+import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 
 import java.io.File;
 
-public interface MuleRuntimeDeployment extends Deployment {
+import static java.lang.System.getProperty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-  File getScript();
+public abstract class MuleRuntimeDeployment extends Deployment {
 
-  void setScript(File script);
+  public abstract File getScript();
 
-  Integer getTimeout();
+  public abstract void setScript(File script);
 
-  void setTimeout(int timeout);
+  public abstract Integer getTimeout();
 
-  Long getDeploymentTimeout();
+  public abstract void setTimeout(int timeout);
 
-  void setDeploymentTimeout(Long deploymentTimeout);
+  public abstract Long getDeploymentTimeout();
 
-  String[] getArguments();
+  public abstract void setDeploymentTimeout(Long deploymentTimeout);
 
-  void setArguments(String[] arguments);
+  public abstract String[] getArguments();
 
-  File getMuleHome();
+  public abstract void setArguments(String[] arguments);
 
-  void setMuleHome(File muleHome);
+  public abstract File getMuleHome();
+
+  public abstract void setMuleHome(File muleHome);
+
+  @Override
+  public void setEnvironmentSpecificValues() throws DeploymentException {
+    String scriptLocation = getProperty("mule.script");
+    if (isNotBlank(scriptLocation)) {
+      setScript(new File(scriptLocation));
+    }
+
+    String timeout = getProperty("mule.timeout");
+    if (isNotBlank(timeout)) {
+      setTimeout(Integer.valueOf(timeout));
+    }
+
+    String deploymentTimeout = getProperty("mule.deploymentConfiguration.timeout");
+    if (isNotBlank(deploymentTimeout)) {
+      setDeploymentTimeout(Long.valueOf(deploymentTimeout));
+    }
+    if (getDeploymentTimeout() == null) {
+      setDeploymentTimeout(60000L);
+    }
+
+    String arguments = getProperty("mule.arguments");
+    if (isNotBlank(arguments)) {
+      setArguments(arguments.split(","));
+    }
+
+    String muleHome = getProperty("mule.home");
+    if (isNotBlank(muleHome)) {
+      setMuleHome(new File(muleHome));
+    }
+    if (getMuleHome() == null) {
+      throw new DeploymentException("Invalid deployment configuration, missing mule home value. Please set it either through the plugin configuration or -Dmule.home when building the current project");
+    }
+  }
+
 }

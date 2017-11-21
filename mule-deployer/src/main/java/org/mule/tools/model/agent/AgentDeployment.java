@@ -11,70 +11,30 @@
 package org.mule.tools.model.agent;
 
 import org.apache.maven.plugins.annotations.Parameter;
+import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 
 import java.io.File;
 import java.util.Optional;
 
-public class AgentDeployment implements Deployment {
+import static java.lang.System.getProperty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
+public class AgentDeployment extends Deployment {
 
   @Parameter
   protected String uri;
 
-  @Parameter
-  protected File artifact; // VALIDATIONS REQURIED
-
-  @Parameter
-  protected String applicationName;
-
-  // TODO validate what for?
-  @Parameter
-  protected String skip;
-
-  @Parameter
-  protected String muleVersion;
-
-  /**
-   * Application file to be deployed.
-   *
-   * @since 1.0
-   */
-  public File getArtifact() {
-    return artifact;
-  }
-
-  public void setArtifact(File artifact) {
-    this.artifact = artifact;
-  }
-
-  /**
-   * Name of the application to deploy/undeploy. If not specified, the artifact id will be used as the name. This parameter allows
-   * to override this behavior to specify a custom name.
-   *
-   * @since 2.0
-   */
-  public String getApplicationName() {
-    return applicationName;
-  }
-
-  public void setApplicationName(String applicationName) {
-    this.applicationName = applicationName;
-  }
-
-  public String getSkip() {
-    return skip;
-  }
-
-  public void setSkip(String skip) {
-    this.skip = skip;
-  }
-
-  public Optional<String> getMuleVersion() {
-    return Optional.ofNullable(this.muleVersion);
-  }
-
-  public void setMuleVersion(String muleVersion) {
-    this.muleVersion = muleVersion;
+  @Override
+  public void setEnvironmentSpecificValues() throws DeploymentException {
+    String anypointUri = getProperty("anypoint.uri");
+    if (isNotBlank(anypointUri)) {
+      setUri(anypointUri);
+    }
+    if (isBlank(getUri())) {
+      setUri("https://anypoint.mulesoft.com");
+    }
   }
 
   /**

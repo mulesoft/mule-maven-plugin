@@ -14,8 +14,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.api.util.Project;
 
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import org.mule.tools.api.validation.exchange.*;
+import org.mule.tools.model.Deployment;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -27,6 +30,7 @@ public class ProjectInformation {
   private String groupId;
   private String artifactId;
   private String version;
+  private final String classifier;
   private String packaging;
   private Path projectBaseFolder;
   private Path buildDirectory;
@@ -34,14 +38,17 @@ public class ProjectInformation {
   private Project project;
   private boolean isDeployment;
   private ExchangeRepositoryMetadata metadata;
+  private List<Deployment> deployments;
 
 
-  private ProjectInformation(String groupId, String artifactId, String version, String packaging, Path projectBaseFolder,
+  private ProjectInformation(String groupId, String artifactId, String version, String classifier, String packaging,
+                             Path projectBaseFolder,
                              Path buildDirectory, boolean isTestProject, Project project, boolean isDeployment,
-                             ExchangeRepositoryMetadata metadata) {
+                             ExchangeRepositoryMetadata metadata, List<Deployment> deployments) {
     this.groupId = groupId;
     this.artifactId = artifactId;
     this.version = version;
+    this.classifier = classifier;
     this.packaging = packaging;
     this.projectBaseFolder = projectBaseFolder;
     this.buildDirectory = buildDirectory;
@@ -49,6 +56,7 @@ public class ProjectInformation {
     this.project = project;
     this.isDeployment = isDeployment;
     this.metadata = metadata;
+    this.deployments = deployments;
   }
 
   public String getGroupId() {
@@ -61,6 +69,10 @@ public class ProjectInformation {
 
   public String getVersion() {
     return version;
+  }
+
+  public String getClassifier() {
+    return classifier;
   }
 
   public String getPackaging() {
@@ -91,6 +103,10 @@ public class ProjectInformation {
     return isDeployment;
   }
 
+  public List<Deployment> getDeployments() {
+    return deployments;
+  }
+
   public static class Builder {
 
     private String groupId;
@@ -103,6 +119,8 @@ public class ProjectInformation {
     private Project project;
     private boolean isDeployment;
     private ExchangeRepositoryMetadata metadata;
+    private String classifier;
+    private List<Deployment> deployments;
 
     public Builder withGroupId(String groupId) {
       this.groupId = groupId;
@@ -154,6 +172,16 @@ public class ProjectInformation {
       return this;
     }
 
+    public Builder withClassifier(String classifier) {
+      this.classifier = classifier;
+      return this;
+    }
+
+    public Builder withDeployments(List<Deployment> deployments) {
+      this.deployments = deployments;
+      return this;
+    }
+
     public ProjectInformation build() {
       checkArgument(StringUtils.isNotBlank(groupId), "Group id should not be null nor blank");
       checkArgument(StringUtils.isNotBlank(artifactId), "Artifact id should not be null nor blank");
@@ -164,9 +192,11 @@ public class ProjectInformation {
       checkArgument(isTestProject != null, "Project isTestProject property was not set");
       checkArgument(project != null, "Project should not be null");
 
-      return new ProjectInformation(groupId, artifactId, version, packaging, projectBaseFolder, buildDirectory, isTestProject,
-                                    project, isDeployment, metadata);
+      return new ProjectInformation(groupId, artifactId, version, classifier, packaging, projectBaseFolder, buildDirectory,
+                                    isTestProject,
+                                    project, isDeployment, metadata, deployments);
     }
+
 
   }
 

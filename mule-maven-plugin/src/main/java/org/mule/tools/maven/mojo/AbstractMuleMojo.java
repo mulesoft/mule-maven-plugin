@@ -11,50 +11,21 @@
 package org.mule.tools.maven.mojo;
 
 import java.io.File;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.RepositoryUtils;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.execution.MavenExecutionRequest;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.model.DeploymentRepository;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.repository.RepositorySystem;
-import org.apache.maven.settings.Server;
-import org.apache.maven.settings.Settings;
-import org.eclipse.aether.repository.RemoteRepository;
-import org.mule.maven.client.internal.AetherMavenClient;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.validation.MulePluginResolver;
-import org.mule.tools.api.validation.exchange.ExchangeCredentials;
-import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
-import org.mule.tools.maven.utils.ArtifactUtils;
-import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.resources.content.ResourcesContent;
 import org.mule.tools.api.packager.sources.ContentGenerator;
 import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
-import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
-import org.mule.tools.maven.utils.DependencyProject;
-import org.mule.tools.maven.utils.MavenPackagerLog;
 import org.mule.tools.maven.utils.MavenProjectBuilder;
 
 
 /**
  * Base Mojo
  */
-public abstract class AbstractMuleMojo extends AbstractMojo {
-
-  @Parameter(defaultValue = "${strictCheck}")
-  protected boolean strictCheck;
+public abstract class AbstractMuleMojo extends AbstractGenericMojo {
 
   @Component
   protected ProjectBuilder projectBuilder;
@@ -62,23 +33,8 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   @Component
   protected RepositorySystem repositorySystem;
 
-  @Parameter(readonly = true, required = true, defaultValue = "${session}")
-  protected MavenSession session;
-
-  @Parameter(readonly = true, required = true, defaultValue = "${localRepository}")
-  protected ArtifactRepository localRepository;
-
-  @Parameter(readonly = true, required = true, defaultValue = "${project.remoteArtifactRepositories}")
-  protected List<ArtifactRepository> remoteArtifactRepositories;
-
-  @Parameter(property = "project", required = true)
-  protected MavenProject project;
-
   @Parameter(property = "project.build.directory", required = true)
   protected File outputDirectory;
-
-  @Parameter(defaultValue = "${project.basedir}")
-  protected File projectBaseFolder;
 
   @Parameter(defaultValue = "${lightweightPackage}")
   protected boolean lightweightPackage = false;
@@ -86,72 +42,10 @@ public abstract class AbstractMuleMojo extends AbstractMojo {
   @Parameter(defaultValue = "${skipValidation}")
   protected boolean skipValidation = false;
 
-  @Parameter(property = "shared.libraries")
-  protected List<org.mule.tools.api.classloader.model.SharedLibraryDependency> sharedLibraries;
-
-  @Parameter(defaultValue = "${testJar}")
-  protected boolean testJar = false;
-
-  @Parameter
-  protected String classifier;
-
   protected ContentGenerator contentGenerator;
 
   protected static ResourcesContent resourcesContent;
 
-  protected AetherMavenClient aetherMavenClient;
-  protected ProjectInformation projectInformation;
-
-  protected AetherMavenClient getAetherMavenClient() {
-    if (aetherMavenClient == null) {
-      MavenExecutionRequest request = session.getRequest();
-      List<RemoteRepository> remoteRepositories = RepositoryUtils.toRepos(remoteArtifactRepositories);
-      aetherMavenClient = new MuleMavenPluginClientBuilder(new MavenPackagerLog(getLog()))
-          .withRemoteRepositories(remoteRepositories)
-          .withLocalRepository(request.getLocalRepositoryPath())
-          .withUserSettings(request.getUserSettingsFile())
-          .withGlobalSettings(request.getGlobalSettingsFile())
-          .build();
-    }
-    return aetherMavenClient;
-  }
-
-  protected List<ArtifactCoordinates> toArtifactCoordinates(List<Dependency> dependencies) {
-    return dependencies.stream().map(ArtifactUtils::toArtifactCoordinates).collect(Collectors.toList());
-  }
-
-  protected ProjectInformation getProjectInformation() {
-    ProjectInformation.Builder builder = new ProjectInformation.Builder();
-    if (projectInformation == null) {
-      builder.withGroupId(project.getGroupId())
-          .withArtifactId(project.getArtifactId())
-          .withVersion(project.getVersion())
-          .withPackaging(project.getPackaging())
-          .withProjectBaseFolder(Paths.get(projectBaseFolder.toURI()))
-          .withBuildDirectory(Paths.get(project.getBuild().getDirectory()))
-          .setTestProject(testJar)
-          .withDependencyProject(new DependencyProject(project))
-          .isDeployment(session.getGoals().stream().anyMatch(goal -> StringUtils.equals(goal, "deploy")));
-      if (strictCheck) {
-        DeploymentRepository repository = project.getDistributionManagement().getRepository();
-        Settings settings = session.getSettings();
-        Optional<ExchangeRepositoryMetadata> metadata = getExchangeRepositoryMetadata(repository, settings);
-        metadata.ifPresent(builder::withExchangeRepositoryMetadata);
-      }
-      projectInformation = builder.build();
-    }
-    return projectInformation;
-  }
-
-  private Optional<ExchangeRepositoryMetadata> getExchangeRepositoryMetadata(DeploymentRepository repository, Settings settings) {
-    ExchangeRepositoryMetadata metadata = null;
-    if (repository != null && ExchangeRepositoryMetadata.isExchangeRepo(repository.getUrl())) {
-      Server server = settings.getServer(repository.getId());
-      ExchangeCredentials credentials = new ExchangeCredentials(server.getUsername(), server.getPassword());
-      metadata = new ExchangeRepositoryMetadata(credentials, repository.getUrl());
-    }
-    return Optional.ofNullable(metadata);
-  }
 
   public ContentGenerator getContentGenerator() {
     if (contentGenerator == null) {

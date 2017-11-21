@@ -14,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.util.Project;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,10 +28,12 @@ import static com.google.common.base.Preconditions.checkState;
 public abstract class AbstractProjectValidator {
 
   protected final ProjectInformation projectInformation;
+  protected final boolean strictCheck;
 
 
-  public AbstractProjectValidator(ProjectInformation projectInformation) {
+  public AbstractProjectValidator(ProjectInformation projectInformation, boolean strictCheck) {
     this.projectInformation = projectInformation;
+    this.strictCheck = strictCheck;
   }
 
   /**
@@ -41,13 +42,17 @@ public abstract class AbstractProjectValidator {
    * @return true if the project is valid
    * @throws ValidationException if the project is invalid
    */
-  public Boolean isProjectValid(boolean strictCheck) throws ValidationException {
-    checkState(projectInformation.getPackaging() != null, "Packaging type should not be null");
-    isProjectVersionValid(projectInformation.getVersion());
-    isPackagingTypeValid(projectInformation.getPackaging());
-    additionalValidation();
-    if (strictCheck) {
-      performStrictCheck();
+  public Boolean isProjectValid(String goal) throws ValidationException {
+    if (StringUtils.equals("validate", goal)) {
+      checkState(projectInformation.getPackaging() != null, "Packaging type should not be null");
+      isProjectVersionValid(projectInformation.getVersion());
+      isPackagingTypeValid(projectInformation.getPackaging());
+      additionalValidation();
+      if (strictCheck) {
+        isProjectValid("deploy");
+      }
+    } else if (StringUtils.equals("deploy", goal)) {
+      isDeploymentValid();
     }
     return true;
   }
@@ -75,7 +80,7 @@ public abstract class AbstractProjectValidator {
 
   protected abstract void additionalValidation() throws ValidationException;
 
-  protected abstract void performStrictCheck() throws ValidationException;
+  protected abstract void isDeploymentValid() throws ValidationException;
 
   /**
    * It validates that the provided packaging types is a valid one
@@ -88,7 +93,7 @@ public abstract class AbstractProjectValidator {
     try {
       PackagingType.fromString(packagingType);
     } catch (IllegalArgumentException e) {
-      List<String> packagingTypeNames = Arrays.stream(PackagingType.values()).map(type -> type.toString())
+      List<String> packagingTypeNames = Arrays.stream(PackagingType.values()).map(PackagingType::toString)
           .collect(Collectors.toList());
       throw new ValidationException(packagingType == null ? e.getMessage() : "Unknown packaging type " + packagingType
           + ". Please specify a valid mule packaging type: " + String.join(", ", packagingTypeNames));

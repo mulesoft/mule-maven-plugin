@@ -11,6 +11,7 @@
 package org.mule.tools.api.validation;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.Artifact;
@@ -18,16 +19,13 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
-import org.mule.tools.api.util.Project;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
-import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BUNDLE;
 
 /**
  * Validates if the project has an existent packaging type, the compatibility of mule plugins that are dependencies of this
@@ -41,7 +39,7 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
 
   public DomainBundleProjectValidator(ProjectInformation projectInformation,
                                       AetherMavenClient aetherMavenClient) {
-    super(projectInformation);
+    super(projectInformation, false);
     this.muleMavenPluginClient = aetherMavenClient;
   }
 
@@ -66,7 +64,7 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
   }
 
   @Override
-  protected void performStrictCheck() throws ValidationException {
+  protected void isDeploymentValid() throws ValidationException {
 
   }
 

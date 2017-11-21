@@ -12,10 +12,13 @@ package org.mule.tools.model.anypoint;
 
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.client.model.TargetType;
-import org.mule.tools.model.Deployment;
+import org.mule.tools.client.standalone.exception.DeploymentException;
 
 import java.io.File;
 import java.util.Optional;
+
+import static java.lang.System.getProperty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 /*
  * Mule ESB Maven Tools
  * <p>
@@ -26,22 +29,7 @@ import java.util.Optional;
  * LICENSE.txt file.
  */
 
-public class ArmDeployment implements AnypointDeployment {
-
-  @Parameter
-  protected String username;
-
-  @Parameter
-  protected String password;
-
-  @Parameter
-  protected String environment;
-
-  @Parameter
-  protected String businessGroup;
-
-  @Parameter
-  protected String uri;
+public class ArmDeployment extends AnypointDeployment {
 
   @Parameter
   protected String target;
@@ -54,133 +42,6 @@ public class ArmDeployment implements AnypointDeployment {
 
   @Parameter
   protected Boolean failIfNotExists;
-
-  // TODO validate what for?
-  @Parameter
-  protected String server;
-
-  @Parameter
-  protected File artifact; // VALIDATIONS REQURIED
-
-  @Parameter
-  protected String applicationName;
-
-  // TODO validate what for?
-  @Parameter
-  protected String skip;
-
-  @Parameter
-  protected String muleVersion;
-
-  /**
-   * Application file to be deployed.
-   *
-   * @since 1.0
-   */
-  public File getArtifact() {
-    return artifact;
-  }
-
-  public void setArtifact(File artifact) {
-    this.artifact = artifact;
-  }
-
-  /**
-   * Name of the application to deploy/undeploy. If not specified, the artifact id will be used as the name. This parameter allows
-   * to override this behavior to specify a custom name.
-   *
-   * @since 2.0
-   */
-  public String getApplicationName() {
-    return applicationName;
-  }
-
-  public void setApplicationName(String applicationName) {
-    this.applicationName = applicationName;
-  }
-
-  public String getSkip() {
-    return skip;
-  }
-
-  public void setSkip(String skip) {
-    this.skip = skip;
-  }
-
-  @Override
-  public Optional<String> getMuleVersion() {
-    return Optional.ofNullable(this.muleVersion);
-  }
-
-  @Override
-  public void setMuleVersion(String muleVersion) {
-    this.muleVersion = muleVersion;
-  }
-
-  /**
-   * Anypoint Platform username.
-   *
-   * @since 2.0
-   */
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  /**
-   * Anypoint Platform password.
-   *
-   * @since 2.0
-   */
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  /**
-   * Anypoint environment name.
-   *
-   * @since 2.0
-   */
-  public String getEnvironment() {
-    return environment;
-  }
-
-  public void setEnvironment(String environment) {
-    this.environment = environment;
-  }
-
-  /**
-   * Business group for deploymentConfiguration, if it is a nested one its format should be first.second.
-   *
-   * @since 2.1
-   */
-  public String getBusinessGroup() {
-    return businessGroup;
-  }
-
-  public void setBusinessGroup(String businessGroup) {
-    this.businessGroup = businessGroup;
-  }
-
-  /**
-   * Anypoint Platform URI, can be configured to use with On Premise platform..
-   *
-   * @since 2.0
-   */
-  public String getUri() {
-    return uri;
-  }
-
-  public void setUri(String uri) {
-    this.uri = uri;
-  }
 
   /**
    * Anypoint Platform target name.
@@ -234,17 +95,29 @@ public class ArmDeployment implements AnypointDeployment {
     this.failIfNotExists = failIfNotExists;
   }
 
-  /**
-   * Maven server with Anypoint Platform credentials. This is only needed if you want to use your credentials stored in your Maven
-   * settings.xml file. This is NOT your Mule server name.
-   *
-   * @since 2.2
-   */
-  public String getServer() {
-    return server;
-  }
+  public void setEnvironmentSpecificValues() throws DeploymentException {
+    super.setEnvironmentSpecificValues();
 
-  public void setServer(String server) {
-    this.server = server;
+    String isArmInsecure = getProperty("arm.insecure");
+    if (isNotBlank(isArmInsecure)) {
+      setArmInsecure(Boolean.valueOf(isArmInsecure));
+    }
+    if (!isArmInsecure().isPresent()) {
+      setArmInsecure(false);
+    }
+
+    if (!isFailIfNotExists().isPresent()) {
+      setFailIfNotExists(Boolean.TRUE);
+    }
+
+    String anypointTarget = getProperty("anypoint.target");
+    if (isNotBlank(anypointTarget)) {
+      setTarget(anypointTarget);
+    }
+
+    String targetType = getProperty("anypoint.target.type");
+    if (isNotBlank(targetType)) {
+      setTargetType(TargetType.valueOf(targetType));
+    }
   }
 }

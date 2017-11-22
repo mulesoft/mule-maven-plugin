@@ -11,8 +11,6 @@ package integrationTests.mojo;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import integrationTests.ProjectFactory;
 import integrationTests.mojo.environment.setup.StandaloneEnvironment;
@@ -20,7 +18,6 @@ import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +45,7 @@ public class AgentDeploymentTest implements SettingsConfigurator {
     log = LoggerFactory.getLogger(this.getClass());
     log.info("Initializing context...");
     initializeContext();
-    standaloneEnvironment = new StandaloneEnvironment("4.0.0-SNAPSHOT");
+    standaloneEnvironment = new StandaloneEnvironment(DEFAULT_MULE_VERSION);
     standaloneEnvironment.start();
     standaloneEnvironment.runAgent();
   }

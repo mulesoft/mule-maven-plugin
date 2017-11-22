@@ -9,8 +9,7 @@
  */
 package org.mule.tools.client.arm.model;
 
-import org.mule.tools.client.arm.model.User;
-
+// TODO why do we have this class only to contain User
 public class UserInfo {
 
   public User user;

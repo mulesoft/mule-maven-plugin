@@ -9,67 +9,56 @@
  */
 package org.mule.tools.api.validation.exchange;
 
-import com.google.gson.Gson;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.mule.tools.client.agent.AbstractClient;
-import org.mule.tools.client.arm.model.AuthorizationResponse;
-import org.mule.tools.client.exception.ClientException;
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.mule.tools.client.authentication.AuthenticationServiceClient.AUTHORIZATION_HEADER;
 
-import javax.ws.rs.client.Entity;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 
-import static javax.ws.rs.core.Response.Status.Family.SUCCESSFUL;
-import static javax.ws.rs.core.Response.Status.Family.familyOf;
+import org.apache.commons.lang3.StringUtils;
+
+import org.mule.tools.api.validation.exchange.model.Group;
+import org.mule.tools.client.agent.AbstractClient;
+import org.mule.tools.client.authentication.AuthenticationServiceClient;
+import org.mule.tools.client.authentication.model.Credentials;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * This client knows how to login to Exchange and to get the required groupId for the application.
  */
+// TODO make this extend of a generic client
 public class ExchangeClient extends AbstractClient {
 
-  private static final String AUTHORIZATION_HEADER = "Authorization";
-  private final String GROUPS_PATH = "exchange/api/v1/organizations/%s/groups";
-  private final ExchangeRepositoryMetadata metadata;
+  private static final String GROUPS_PATH = "exchange/api/v1/organizations/%s/groups";
+
   private String bearerToken;
+  private AuthenticationServiceClient authenticationServiceClient;
+
+  private ExchangeRepositoryMetadata metadata;
 
   public ExchangeClient(ExchangeRepositoryMetadata metadata) {
+    checkArgument(metadata != null, "The metadata must not be null");
     this.metadata = metadata;
+    this.authenticationServiceClient = new AuthenticationServiceClient(metadata.getBaseUri());
   }
 
   public String getGeneratedGroupId() {
-    bearerToken = getBearerToken();
-    Response response = getBusinessGroup();
+    getBearerToken(metadata.getCredentials());
+
+    Response response = get(metadata.getBaseUri(), String.format(GROUPS_PATH, metadata.getOrganizationId()));
+
     validateStatusSuccess(response);
-    return readGroupId(response);
-  }
 
-  protected String readGroupId(Response response) {
-    JSONObject jsonResponse = new JSONArray(response.readEntity(String.class)).getJSONObject(0);
-    return jsonResponse.getString("groupId");
-  }
+    Type listType = new TypeToken<ArrayList<Group>>() {}.getType();
+    List<Group> groupList = new Gson().fromJson(response.readEntity(String.class), listType);
 
-  protected String getBearerToken() {
-    Entity<String> json = Entity.json(new Gson().toJson(metadata.getCredentials()));
-    Response response = loginToExchange(json);
-    AuthorizationResponse authorizationResponse = readAuthorizationResponse(response);
-    return authorizationResponse.access_token;
-  }
-
-  protected Response loginToExchange(Entity<String> json) {
-    Response response = post(metadata.getBaseUri(), LOGIN, json);
-    validateStatusSuccess(response);
-    return response;
-  }
-
-  protected AuthorizationResponse readAuthorizationResponse(Response response) {
-    return response.readEntity(AuthorizationResponse.class);
-  }
-
-  protected void validateStatusSuccess(Response response) {
-    if (familyOf(response.getStatus()) != SUCCESSFUL) {
-      throw new ClientException(response);
-    }
+    return groupList.get(0).getGroupId();
   }
 
   @Override
@@ -79,7 +68,11 @@ public class ExchangeClient extends AbstractClient {
     }
   }
 
-  public Response getBusinessGroup() {
-    return get(metadata.getBaseUri(), String.format(GROUPS_PATH, metadata.getOrganizationId()));
+  private String getBearerToken(Credentials credentials) {
+    if (StringUtils.isBlank(bearerToken)) {
+      bearerToken = authenticationServiceClient.getBearerToken(credentials);
+    }
+    return bearerToken;
   }
+
 }

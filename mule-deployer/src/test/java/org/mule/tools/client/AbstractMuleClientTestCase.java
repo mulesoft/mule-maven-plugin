@@ -17,12 +17,14 @@ import org.mule.tools.model.anypoint.CloudHubDeployment;
 
 public class AbstractMuleClientTestCase {
 
+  private static final String BASE_URI = "https://anypoint.mulesoft.com";
+
   private AbstractMuleClient client;
   private CloudHubDeployment cloudHubDeployment;
 
   private AbstractMuleClient createClient(String businessgroup) {
     cloudHubDeployment = new CloudHubDeployment();
-    cloudHubDeployment.setUri(null);
+    cloudHubDeployment.setUri(BASE_URI);
     cloudHubDeployment.setUsername(null);
     cloudHubDeployment.setPassword(null);
     cloudHubDeployment.setEnvironment(null);

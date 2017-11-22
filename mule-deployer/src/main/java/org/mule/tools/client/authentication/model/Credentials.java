@@ -7,14 +7,19 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.validation.exchange;
+package org.mule.tools.client.authentication.model;
 
-public class ExchangeCredentials {
+
+/**
+ * @author Mulesoft Inc.
+ * @since 2.0.0
+ */
+public class Credentials {
 
   private final String username;
   private final String password;
 
-  public ExchangeCredentials(String username, String password) {
+  public Credentials(String username, String password) {
     this.username = username;
     this.password = password;
   }

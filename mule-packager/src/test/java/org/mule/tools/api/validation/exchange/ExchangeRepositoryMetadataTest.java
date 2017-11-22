@@ -20,13 +20,15 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import org.mule.tools.client.authentication.model.Credentials;
+
 public class ExchangeRepositoryMetadataTest {
 
   private static final String NOT_EXCHANGE_RELATED_URI = "https://www.mulesoft.com/";
   private ExchangeRepositoryMetadata metadata;
   private static final String USERNAME = "mulesoft";
   private static final String PASSWORD = "1234";
-  private static final ExchangeCredentials CREDENTIALS = new ExchangeCredentials(USERNAME, PASSWORD);
+  private static final Credentials CREDENTIALS = new Credentials(USERNAME, PASSWORD);
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -42,7 +44,7 @@ public class ExchangeRepositoryMetadataTest {
     for (Map.Entry<String, String> entry : uriToBaseUri.entrySet()) {
       String actualBaseUri = metadata.getBaseUri(entry.getKey());
       String expectedBaseUri = entry.getValue();
-      assertThat("Base uri is not the expected", actualBaseUri, equalTo(expectedBaseUri));
+      assertThat("Base baseUri is not the expected", actualBaseUri, equalTo(expectedBaseUri));
     }
   }
 
@@ -91,7 +93,7 @@ public class ExchangeRepositoryMetadataTest {
     metadata = new ExchangeRepositoryMetadata(CREDENTIALS, uri);
     assertThat("Wrong username: metadata was not correctly created", metadata.getCredentials().getUsername(), equalTo(USERNAME));
     assertThat("Wrong password: metadata was not correctly created", metadata.getCredentials().getPassword(), equalTo(PASSWORD));
-    assertThat("Wrong base uri: metadata was not correctly created", metadata.getBaseUri(),
+    assertThat("Wrong base baseUri: metadata was not correctly created", metadata.getBaseUri(),
                equalTo("https://anypoint.mulesoft.com/"));
     assertThat("Wrong organization id: metadata was not correctly created", metadata.getOrganizationId(),
                equalTo(organizationId));

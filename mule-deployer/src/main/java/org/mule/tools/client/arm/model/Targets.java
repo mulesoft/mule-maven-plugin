@@ -9,8 +9,6 @@
  */
 package org.mule.tools.client.arm.model;
 
-import org.mule.tools.client.arm.model.Target;
-
 public class Targets {
 
   public Target[] data;

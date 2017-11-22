@@ -9,30 +9,30 @@
  */
 package org.mule.tools.api.validation.exchange;
 
-import org.apache.commons.lang3.StringUtils;
-import org.codehaus.groovy.util.StringUtil;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.mule.runtime.api.util.Preconditions.checkArgument;
 
+import org.mule.tools.client.authentication.model.Credentials;
+
 /**
- * This class contains credentials, modified base uri of the repository (without the "maven" prefix) and the organizationId. It
- * knows how to parse the repository url in distribution management in order to resolve the base uri and organizationId.
+ * This class contains credentials, modified base baseUri of the repository (without the "maven" prefix) and the organizationId. It
+ * knows how to parse the repository url in distribution management in order to resolve the base baseUri and organizationId.
  */
 public class ExchangeRepositoryMetadata {
 
-  private ExchangeCredentials credentials;
-  private String baseUri;
-  private String organizationId;
   private static final Pattern exchangeRepositoryUriPattern = Pattern.compile(
                                                                               "^https://.*anypoint\\.mulesoft\\.com/api/v1/organizations/(.*)/maven$");
   private static final Pattern anypointPrefixUriPattern = Pattern.compile("^https://maven\\.(.*anypoint\\.mulesoft\\.com/)");
 
+  private String baseUri;
+  private String organizationId;
+  private Credentials credentials;
+
   public ExchangeRepositoryMetadata() {}
 
-  public ExchangeRepositoryMetadata(ExchangeCredentials credentials, String uri) {
+  public ExchangeRepositoryMetadata(Credentials credentials, String uri) {
     this.credentials = credentials;
     parseUri(uri);
   }
@@ -42,7 +42,7 @@ public class ExchangeRepositoryMetadata {
     this.organizationId = getOrganizationId(uri);
   }
 
-  public ExchangeCredentials getCredentials() {
+  public Credentials getCredentials() {
     return credentials;
   }
 
@@ -52,6 +52,10 @@ public class ExchangeRepositoryMetadata {
 
   public String getOrganizationId() {
     return organizationId;
+  }
+
+  public static boolean isExchangeRepo(String uri) {
+    return exchangeRepositoryUriPattern.matcher(uri).matches();
   }
 
   protected String getBaseUri(String uri) {
@@ -80,7 +84,4 @@ public class ExchangeRepositoryMetadata {
     return organizationId;
   }
 
-  public static boolean isExchangeRepo(String uri) {
-    return exchangeRepositoryUriPattern.matcher(uri).matches();
-  }
 }

@@ -26,43 +26,35 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import static integrationTests.mojo.environment.setup.ArmEnvironment.PRODUCTION_ENVIROMENT;
+import static integrationTests.mojo.environment.setup.ArmEnvironment.PRODUCTION_ENVIRONMENT;
 
 public class ArmDeploymentTest implements SettingsConfigurator {
 
   private static final String DEPLOY = "deploy";
-  private static Logger log;
-  private static Verifier verifier;
-  private static File projectBaseDirectory;
-  private static ProjectFactory builder;
-  private static final String INSTALL = "install";
   private static final int APPLICATION_NAME_LENGTH = 10;
+
+  // TODO replace for classes in common-text
   private static final String INSTANCE_NAME = RandomStringUtils.randomAlphabetic(APPLICATION_NAME_LENGTH).toLowerCase();
   private static final String APPLICATION_NAME = RandomStringUtils.randomAlphabetic(APPLICATION_NAME_LENGTH).toLowerCase();
-  private ArmDeploymentVerifier armDeploymentVerifier;
 
-  public void initializeContext() throws IOException, VerificationException {
-    builder = new ProjectFactory();
-    projectBaseDirectory = builder.createProjectBaseDir("empty-mule-deploy-arm-project", this.getClass());
-    verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
-    verifier.setMavenDebug(true);
-  }
+  private static Logger log;
+  private static Verifier verifier;
+  private static ProjectFactory builder;
+  private static File projectBaseDirectory;
+
+  private ArmDeploymentVerifier armDeploymentVerifier;
 
   @Before
   public void before() throws VerificationException, InterruptedException, IOException, TimeoutException {
-    armDeploymentVerifier = new ArmDeploymentVerifier();
     log = LoggerFactory.getLogger(this.getClass());
     log.info("Initializing context...");
+
     initializeContext();
-    verifier.setEnvironmentVariable("username", System.getProperty("username"));
-    verifier.setEnvironmentVariable("password", System.getProperty("password"));
-    verifier.setEnvironmentVariable("target", INSTANCE_NAME);
-    verifier.setEnvironmentVariable("target.type", "server");
-    verifier.setEnvironmentVariable("environment", PRODUCTION_ENVIROMENT);
-    verifier.setEnvironmentVariable("arm.application.name", APPLICATION_NAME);
-    ArmEnvironment armEnvironment = new ArmEnvironment(DEFAULT_MULE_VERSION, INSTANCE_NAME);
+
+    armDeploymentVerifier = new ArmDeploymentVerifier();
     armDeploymentVerifier.killMuleProcesses();
+
+    ArmEnvironment armEnvironment = new ArmEnvironment(DEFAULT_MULE_VERSION, INSTANCE_NAME);
     armEnvironment.start();
   }
 
@@ -79,5 +71,21 @@ public class ArmDeploymentTest implements SettingsConfigurator {
   @After
   public void after() throws IOException {
     armDeploymentVerifier.killMuleProcesses();
+  }
+
+  private void initializeContext() throws IOException, VerificationException {
+    builder = new ProjectFactory();
+    projectBaseDirectory = builder.createProjectBaseDir("empty-mule-deploy-arm-project", this.getClass());
+
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.setMavenDebug(true);
+
+    verifier.setEnvironmentVariable("username", System.getProperty("username"));
+    verifier.setEnvironmentVariable("password", System.getProperty("password"));
+    verifier.setEnvironmentVariable("target", INSTANCE_NAME);
+    verifier.setEnvironmentVariable("target.type", "server");
+    verifier.setEnvironmentVariable("environment", PRODUCTION_ENVIRONMENT);
+    verifier.setEnvironmentVariable("arm.application.name", APPLICATION_NAME);
   }
 }

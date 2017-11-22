@@ -11,7 +11,10 @@ package org.mule.tools.client.agent;
 
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static javax.ws.rs.core.Response.Status.Family.SUCCESSFUL;
+import static javax.ws.rs.core.Response.Status.Family.familyOf;
 import static org.glassfish.jersey.client.HttpUrlConnectorProvider.SET_METHOD_WORKAROUND;
+import static org.mule.tools.client.authentication.AuthenticationServiceClient.LOGIN;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -21,11 +24,12 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
+
+import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.utils.DeployerLog;
 
 public abstract class AbstractClient {
 
-  protected static final String LOGIN = "/accounts/login";
   protected DeployerLog log;
 
   public AbstractClient() {}
@@ -45,8 +49,14 @@ public abstract class AbstractClient {
     return client.target(uri).path(path);
   }
 
-  protected boolean isLoginRequest(String path) {
+  private boolean isLoginRequest(String path) {
     return LOGIN.equals(path);
+  }
+
+  protected void validateStatusSuccess(Response response) {
+    if (familyOf(response.getStatus()) != SUCCESSFUL) {
+      throw new ClientException(response);
+    }
   }
 
   protected void configureSecurityContext(ClientBuilder builder) {

@@ -30,7 +30,7 @@ import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
 import org.mule.tools.api.validation.AbstractProjectValidator;
 import org.mule.tools.api.validation.ProjectValidatorFactory;
-import org.mule.tools.api.validation.exchange.ExchangeCredentials;
+import org.mule.tools.client.authentication.model.Credentials;
 import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
 import org.mule.tools.maven.utils.ArtifactUtils;
 import org.mule.tools.maven.utils.DependencyProject;
@@ -185,7 +185,7 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
     ExchangeRepositoryMetadata metadata = null;
     if (repository != null && ExchangeRepositoryMetadata.isExchangeRepo(repository.getUrl())) {
       Server server = settings.getServer(repository.getId());
-      ExchangeCredentials credentials = new ExchangeCredentials(server.getUsername(), server.getPassword());
+      Credentials credentials = new Credentials(server.getUsername(), server.getPassword());
       metadata = new ExchangeRepositoryMetadata(credentials, repository.getUrl());
     }
     return Optional.ofNullable(metadata);

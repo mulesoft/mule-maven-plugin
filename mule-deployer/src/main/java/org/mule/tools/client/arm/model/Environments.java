@@ -9,8 +9,7 @@
  */
 package org.mule.tools.client.arm.model;
 
-import org.mule.tools.client.arm.model.Environment;
-
+// TODO talk to CS about this API
 public class Environments {
 
   public Environment[] data;

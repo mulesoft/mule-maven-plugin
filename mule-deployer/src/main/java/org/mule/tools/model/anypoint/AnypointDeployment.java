@@ -119,7 +119,7 @@ public abstract class AnypointDeployment extends Deployment {
   }
 
   public void setEnvironmentSpecificValues() throws DeploymentException {
-    String anypointUri = getProperty("anypoint.uri");
+    String anypointUri = getProperty("anypoint.baseUri");
     if (isNotBlank(anypointUri)) {
       setUri(anypointUri);
     }

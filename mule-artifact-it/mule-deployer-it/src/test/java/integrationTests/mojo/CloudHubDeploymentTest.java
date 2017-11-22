@@ -27,34 +27,23 @@ import integrationTests.mojo.environment.verifier.CloudHubDeploymentVerifier;
 
 public class CloudHubDeploymentTest implements SettingsConfigurator {
 
-  private static Logger log;
-  private static Verifier verifier;
-  private static File projectBaseDirectory;
-  private static ProjectFactory builder;
   private static final String DEPLOY = "deploy";
-  private static final CloudHubDeploymentVerifier cloudHubDeploymentVerifier = new CloudHubDeploymentVerifier();
   private static final int APPLICATION_NAME_LENGTH = 10;
+  private static final CloudHubDeploymentVerifier cloudHubDeploymentVerifier = new CloudHubDeploymentVerifier();
+  // TODO replace for classes in common-text
   private static final String APPLICATION_NAME = RandomStringUtils.randomAlphabetic(APPLICATION_NAME_LENGTH).toLowerCase();
 
-  public void initializeContext() throws IOException, VerificationException {
-    builder = new ProjectFactory();
-    projectBaseDirectory = builder.createProjectBaseDir("empty-mule-deploy-cloudhub-project", this.getClass());
-    verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
-    verifier.setMavenDebug(true);
-  }
+  private static Logger log;
+  private static Verifier verifier;
+  private static ProjectFactory builder;
+  private static File projectBaseDirectory;
 
   @Before
   public void before() throws VerificationException, InterruptedException, IOException {
     log = LoggerFactory.getLogger(this.getClass());
     log.info("Initializing context...");
-    initializeContext();
-    verifier.setEnvironmentVariable("username", System.getProperty("username"));
-    verifier.setEnvironmentVariable("password", System.getProperty("password"));
-    verifier.setEnvironmentVariable("environment", "Production");
-    verifier.setEnvironmentVariable("mule.version", "4.0.0-FD"); // MMP-252
-    verifier.setEnvironmentVariable("cloudhub.application.name", APPLICATION_NAME);
 
+    initializeContext();
   }
 
   @Test
@@ -66,5 +55,19 @@ public class CloudHubDeploymentTest implements SettingsConfigurator {
     cloudHubDeploymentVerifier.verifyIsDeployed(APPLICATION_NAME);
     log.info("Application " + APPLICATION_NAME + " successfully deployed to CloudHub.");
     verifier.verifyErrorFreeLog();
+  }
+
+  private void initializeContext() throws IOException, VerificationException {
+    builder = new ProjectFactory();
+    projectBaseDirectory = builder.createProjectBaseDir("empty-mule-deploy-cloudhub-project", this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.setMavenDebug(true);
+
+    verifier.setEnvironmentVariable("username", System.getProperty("username"));
+    verifier.setEnvironmentVariable("password", System.getProperty("password"));
+    verifier.setEnvironmentVariable("environment", "Production");
+    verifier.setEnvironmentVariable("mule.version", "4.0.0-FD"); // MMP-252
+    verifier.setEnvironmentVariable("cloudhub.application.name", APPLICATION_NAME);
   }
 }

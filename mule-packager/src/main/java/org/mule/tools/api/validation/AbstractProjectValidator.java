@@ -58,24 +58,9 @@ public abstract class AbstractProjectValidator {
   }
 
   protected static void isProjectVersionValid(String version) throws ValidationException {
-    String prefixPattern = "^(0|([1-9]\\d*))\\.(0|([1-9]\\d*))\\.(0|([1-9]\\d*))$"; // X.Y.Z with X, Y, Z integers with no leading
-                                                                                    // zeroes
-    String suffixPattern = "^([a-zA-Z0-9]|\\.|-)*$"; // contains only alphanumeric characters, dots (.) or dashes (-)
-    int separatorIndex = getSeparatorIndex(version);
-    String prefix = separatorIndex == -1 ? version : version.substring(0, separatorIndex);
-    String suffix = separatorIndex == -1 ? StringUtils.EMPTY : version.substring(separatorIndex + 1);
-    if (!prefix.matches(prefixPattern) || !suffix.matches(suffixPattern) || separatorIndex == version.length() - 1) {
+    if (!VersionUtils.isVersionValid(version)) {
       throw new ValidationException("Version " + version + " does not comply with semantic versioning specification");
     }
-  }
-
-  protected static int getSeparatorIndex(String version) {
-    int plusPosition = version.indexOf('+');
-    int minusPosition = version.indexOf('-');
-    if (plusPosition == -1 || minusPosition == -1) {
-      return Math.max(plusPosition, minusPosition);
-    }
-    return Math.min(plusPosition, minusPosition);
   }
 
   protected abstract void additionalValidation() throws ValidationException;

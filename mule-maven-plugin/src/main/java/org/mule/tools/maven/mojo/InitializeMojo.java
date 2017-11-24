@@ -30,10 +30,8 @@ import org.mule.tools.api.packager.*;
 public class InitializeMojo extends AbstractMuleMojo {
 
   public void execute() throws MojoExecutionException, MojoFailureException {
-    long start = System.currentTimeMillis();
     getLog().debug("Initializing Mule Maven Plugin...");
     getProjectFoldersGenerator().generate(Paths.get(project.getBuild().getDirectory()));
-    getLog().debug(MessageFormat.format("Mule Maven Plugin Initialize done ({0}ms)", System.currentTimeMillis() - start));
   }
 
   public AbstractProjectFoldersGenerator getProjectFoldersGenerator() {

@@ -11,18 +11,17 @@ package org.mule.tools.api.validation;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mule.tools.api.validation.AbstractProjectValidator.isPackagingTypeValid;
 import static org.mule.tools.api.validation.AbstractProjectValidator.isProjectVersionValid;
 
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-import org.mule.tools.api.exception.ValidationException;
-
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import org.mule.tools.api.exception.ValidationException;
 
 public class AbstractProjectValidatorTest {
 
@@ -65,66 +64,16 @@ public class AbstractProjectValidatorTest {
 
   @Test
   public void isProjectVersionValidTest() throws ValidationException {
-    for (String validVersion : getValidVersions()) {
-      try {
-        isProjectVersionValid(validVersion);
-      } catch (ValidationException e) {
-        fail(validVersion + " should be a valid version");
-      }
-    }
+    String validVersion = "0.0.0";
+    isProjectVersionValid(validVersion);
+
   }
 
-  @Test
-  public void isProjectVersionValidFailTest() {
-    for (String invalidVersion : getInvalidVersions()) {
-      try {
-        isProjectVersionValid(invalidVersion);
-        fail(invalidVersion + " should be a invalid version");
-      } catch (ValidationException e) {
-      }
-    }
-  }
-
-  List<String> getValidVersions() {
-    List<String> validVersions = new ArrayList<>();
-    validVersions.add("0.0.0");
-    validVersions.add("0.1.0");
-    validVersions.add("0.1.1");
-    validVersions.add("1.4.0");
-    validVersions.add("0.44.0");
-    validVersions.add("111.1.0");
-    validVersions.add("432.0.43");
-    validVersions.add("0.0.114765");
-    validVersions.add("0.1.0-SNAPSHOT");
-    validVersions.add("0.1.0-rc-SNAPSHOT");
-    validVersions.add("0.1.0-rc.SNAPSHOT");
-    validVersions.add("0.1.0+sha.12343");
-    return validVersions;
+  @Test(expected = ValidationException.class)
+  public void isProjectVersionValidFailTest() throws ValidationException {
+    String invalidVersion = "0";
+    isProjectVersionValid(invalidVersion);
   }
 
 
-  List<String> getInvalidVersions() {
-    List<String> invalidVersions = new ArrayList<>();
-    invalidVersions.add("0");
-    invalidVersions.add("0.1");
-    invalidVersions.add("1.0");
-    invalidVersions.add("0..");
-    invalidVersions.add("..0");
-    invalidVersions.add(".4.");
-    invalidVersions.add("1.3.01");
-    invalidVersions.add("0.00.1");
-    invalidVersions.add("3.4.04");
-    invalidVersions.add("3.4.44.3");
-    invalidVersions.add("a3.4.4");
-    invalidVersions.add("a.4.7");
-    invalidVersions.add("a.b.c");
-    invalidVersions.add("1.0.0-");
-    invalidVersions.add("1.0.0-#");
-    invalidVersions.add("1.0.0-sdfsd#dsfds");
-    invalidVersions.add("1.0.0-sdfsd^dsfds");
-    invalidVersions.add("1.0.0-sdfsd&dsfds");
-    invalidVersions.add("1.0.0-sdfsd@dsfds");
-    invalidVersions.add("1.0.0-sdfsd!dsfds");
-    return invalidVersions;
-  }
 }

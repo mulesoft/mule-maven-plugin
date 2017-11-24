@@ -10,17 +10,17 @@
 
 package org.mule.tools.maven.mojo;
 
-import java.text.MessageFormat;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
-import org.mule.tools.api.validation.*;
 import org.mule.tools.api.exception.ValidationException;
-
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
+import org.mule.tools.api.validation.AbstractProjectValidator;
+import org.mule.tools.api.validation.VersionUtils;
 
 
 /**
@@ -31,19 +31,31 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALI
     requiresDependencyResolution = ResolutionScope.TEST)
 public class ValidateMojo extends AbstractMuleMojo {
 
+  private static final String MIN_MAVEN_VERSION = "3.3.3";
+
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (!skipValidation) {
-      long start = System.currentTimeMillis();
-      getLog().debug("Validating Mule application...");
       try {
+        validateMavenEnvironment();
+        getLog().debug("Validating Mule application...");
         AbstractProjectValidator.isPackagingTypeValid(project.getPackaging());
         getProjectValidator().isProjectValid(VALIDATE.id());
       } catch (ValidationException e) {
         throw new MojoExecutionException("Validation exception", e);
       }
-      getLog().debug(MessageFormat.format("Validation for Mule application done ({0}ms)", System.currentTimeMillis() - start));
     } else {
       getLog().debug("Skipping Validation for Mule application");
     }
   }
+
+  protected void validateMavenEnvironment() throws ValidationException {
+    getLog().debug("Validating Maven environment...");
+
+    String mavenVersion = (String) session.getRequest().getSystemProperties().get("maven.version");
+    if (!VersionUtils.isVersionGraterOrEquals(mavenVersion, MIN_MAVEN_VERSION)) {
+      throw new ValidationException("Your Maven installation version is: " + mavenVersion + " We require at least:"
+          + MIN_MAVEN_VERSION);
+    }
+  }
+
 }

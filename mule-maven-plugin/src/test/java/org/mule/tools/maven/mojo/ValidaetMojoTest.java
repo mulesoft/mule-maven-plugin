@@ -1,0 +1,119 @@
+/*
+ * Mule ESB Maven Tools
+ * <p>
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * <p>
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+
+package org.mule.tools.maven.mojo;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.Properties;
+
+import org.apache.maven.execution.MavenExecutionRequest;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.junit.Before;
+import org.junit.Test;
+
+import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.validation.AbstractProjectValidator;
+
+public class ValidaetMojoTest extends AbstractMuleMojoTest {
+
+  private ValidateMojo mojoMock;
+  private MavenExecutionRequest mavenExecutionRequestMock;
+
+  private AbstractProjectValidator validatorMock;
+
+  @Before
+  public void before() throws IOException {
+    validatorMock = mock(AbstractProjectValidator.class);
+
+    mojoMock = mock(ValidateMojo.class);
+    mojoMock.project = projectMock;
+    mojoMock.session = mavenSessionMock;
+    mojoMock.validator = validatorMock;
+
+    when(mojoMock.getLog()).thenReturn(logMock);
+
+    mavenExecutionRequestMock = mock(MavenExecutionRequest.class);
+  }
+
+  @Test
+  public void executeDoNotVerify()
+      throws MojoFailureException, MojoExecutionException, IOException, ValidationException {
+    mojoMock.skipValidation = true;
+
+    doCallRealMethod().when(mojoMock).execute();
+    mojoMock.execute();
+
+    verify(mojoMock, times(0)).getProjectValidator();
+    verify(mojoMock, times(0)).validateMavenEnvironment();
+  }
+
+  @Test(expected = MojoExecutionException.class)
+  public void executeFailValidation()
+      throws MojoFailureException, MojoExecutionException, IOException, ValidationException {
+    when(validatorMock.isProjectValid(any())).thenThrow(new ValidationException());
+    when(mojoMock.getProjectValidator()).thenReturn(validatorMock);
+
+
+    doCallRealMethod().when(mojoMock).execute();
+    mojoMock.execute();
+
+  }
+
+  @Test
+  public void execute()
+      throws MojoFailureException, MojoExecutionException, IOException, ValidationException {
+    when(validatorMock.isProjectValid(any())).thenReturn(true);
+    when(mojoMock.getProjectValidator()).thenReturn(validatorMock);
+
+
+    doCallRealMethod().when(mojoMock).execute();
+    mojoMock.execute();
+
+    verify(mojoMock, times(1)).getProjectValidator();
+    verify(mojoMock, times(1)).validateMavenEnvironment();
+    verify(validatorMock, times(1)).isProjectValid(any());
+  }
+
+
+  @Test
+  public void validateMavenEnvironmentValid()
+      throws MojoFailureException, MojoExecutionException, IOException, ValidationException {
+
+    Properties systemProperties = new Properties();
+    systemProperties.put("maven.version", "3.3.3");
+    when(mavenExecutionRequestMock.getSystemProperties()).thenReturn(systemProperties);
+    when(mavenSessionMock.getRequest()).thenReturn(mavenExecutionRequestMock);
+
+    doCallRealMethod().when(mojoMock).validateMavenEnvironment();
+    mojoMock.validateMavenEnvironment();
+  }
+
+  @Test(expected = ValidationException.class)
+  public void validateMavenEnvironmentInvalid()
+      throws MojoFailureException, MojoExecutionException, IOException, ValidationException {
+
+    Properties systemProperties = new Properties();
+    systemProperties.put("maven.version", "3.3.2");
+    when(mavenExecutionRequestMock.getSystemProperties()).thenReturn(systemProperties);
+    when(mavenSessionMock.getRequest()).thenReturn(mavenExecutionRequestMock);
+
+    doCallRealMethod().when(mojoMock).validateMavenEnvironment();
+    mojoMock.validateMavenEnvironment();
+  }
+
+}

@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
-import static org.mule.tools.api.validation.AbstractProjectValidator.getSeparatorIndex;
+import static org.mule.tools.api.validation.VersionUtils.getSeparatorIndex;
 import static org.mule.tools.api.validation.AbstractProjectValidator.isProjectVersionValid;
 
 public class MuleArtifactJsonValidator {

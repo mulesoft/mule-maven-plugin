@@ -19,7 +19,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Build;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,10 +37,13 @@ public class AbstractMuleMojoTest {
   protected static final String MULE_APPLICATION = "mule-application";
   protected final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
+  protected Log logMock;
   protected Build buildMock;
   protected File metaInfFolder;
   protected File destinationFile;
   protected MavenProject projectMock;
+  protected MavenSession mavenSessionMock;
+
   protected File muleSourceFolderMock;
   protected MulePackageBuilder packageBuilderMock;
 
@@ -56,8 +61,10 @@ public class AbstractMuleMojoTest {
     metaInfFolder = buildFolderFolder.newFolder(META_INF.value());
     System.setOut(new PrintStream(outContent));
 
+    logMock = mock(Log.class);
     buildMock = mock(Build.class);
     projectMock = mock(MavenProject.class);
+    mavenSessionMock = mock(MavenSession.class);
     packageBuilderMock = mock(MulePackageBuilder.class);
     muleSourceFolderMock = mock(File.class);
 

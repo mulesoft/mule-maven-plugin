@@ -9,9 +9,9 @@
  */
 package org.mule.tools.api.validation;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +26,6 @@ public class VersionUtils {
 
   private static final String PLUS_MAVEN_VERSION_SEPARATOR = "+";
   private static final String MINUS_MAVEN_VERSION_SEPARATOR = "-";
-
 
   // contains only alphanumeric characters, dots (.) or dashes (-)
   private static final String VERSION_SUFFIX_PATTERN = "^([a-zA-Z0-9]|\\.|-)*$";
@@ -52,29 +51,23 @@ public class VersionUtils {
     return true;
   }
 
-
   /**
    * Validates if {@code version1} is greater or equal than {@code version2}
    *
    * @param version1
    * @param version2
-   * @return false if version1 is lesser than version2 *
+   * @return false if version1 is lesser than version2
    */
   public static Boolean isVersionGraterOrEquals(String version1, String version2) throws ValidationException {
-    List<Integer> v1 = completeIncrementalInteger(asList(
-                                                         stripQualifier(version1).split("\\.")).stream()
-                                                             .map(i -> Integer.valueOf(i))
-                                                             .collect(toList()));
-    List<Integer> v2 = completeIncrementalInteger(asList(
-                                                         stripQualifier(version2).split("\\.")).stream()
-                                                             .map(i -> Integer.valueOf(i))
-                                                             .collect(toList()));
+    List<String> v1 = parseVersion(stripQualifier(completeIncremental(version1)));
+    List<String> v2 = parseVersion(stripQualifier(completeIncremental(version2)));;
 
     if (v1.size() > 3 || v2.size() > 3) {
       throw new ValidationException("Versions are invalid");
     }
 
-    return v1.get(0) >= v2.get(0) && v1.get(1) >= v2.get(1) && v1.get(2) >= v2.get(2);
+    return stripQualifier(completeIncremental(version1)).compareTo(stripQualifier(completeIncremental(version2))) >= 0 ? true
+        : false;
   }
 
   /**
@@ -84,7 +77,7 @@ public class VersionUtils {
    * @return The completed version x.x.x with no qualifier
    */
   public static String completeIncremental(String version) {
-    return String.join(".", completeIncremental(asList(stripQualifier(version).split("\\."))));
+    return String.join(".", completeIncremental(parseVersion(stripQualifier(version))));
   }
 
   /**
@@ -139,6 +132,10 @@ public class VersionUtils {
       return version.substring(0, separatorIdx);
     }
     return version;
+  }
+
+  private static List<String> parseVersion(String version) {
+    return Arrays.asList(version.split("\\."));
   }
 
 

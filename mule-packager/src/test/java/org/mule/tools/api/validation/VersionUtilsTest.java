@@ -55,6 +55,38 @@ public class VersionUtilsTest {
   }
 
   @Test
+  public void isVersionGraterOrEqualsTrue1() throws ValidationException {
+    String version1 = "3.5.0";
+    String version2 = "3.3.3";
+
+    assertThat(isVersionGraterOrEquals(version1, version2), is(true));
+  }
+
+  @Test
+  public void isVersionGraterOrEqualsTrue2() throws ValidationException {
+    String version1 = "3.0.0";
+    String version2 = "2.1.3";
+
+    assertThat(isVersionGraterOrEquals(version1, version2), is(true));
+  }
+
+  @Test
+  public void isVersionGraterOrEqualsFalse1() throws ValidationException {
+    String version1 = "3.0.5";
+    String version2 = "3.3.3";
+
+    assertThat(isVersionGraterOrEquals(version1, version2), is(false));
+  }
+
+  @Test
+  public void isVersionGraterOrEqualsFalse2() throws ValidationException {
+    String version1 = "3.0.0";
+    String version2 = "4.0.0";
+
+    assertThat(isVersionGraterOrEquals(version1, version2), is(false));
+  }
+
+  @Test
   public void isVersionGraterOrEqualsTrueVersion2Incomplete() throws ValidationException {
     String version1 = "3.3.9";
     String version2 = "3.3";

@@ -63,10 +63,9 @@
         <commons.cli.version>1.3.1</commons.cli.version>
         <commons.logging.version>1.2</commons.logging.version>
 
-<<<<<<< ff5ad66141a5db0f390e2534883823eefef69a1b
+
         <json.version>20170516</json.version>
-=======
->>>>>>> Mmp 219 (#142)
+
         <jersey.media.moxy>2.15</jersey.media.moxy>
         <slf4j.api.version>1.8.0-alpha2</slf4j.api.version>
         <maven.compat.version>3.3.9</maven.compat.version>

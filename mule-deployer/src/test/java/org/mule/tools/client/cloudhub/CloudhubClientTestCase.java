@@ -30,7 +30,7 @@ import org.mule.tools.model.anypoint.CloudHubDeployment;
 @Ignore
 public class CloudhubClientTestCase {
 
-  private static final String URI = "https://anypoint.mulesoft.com";
+  private static final String BASE_URI = "https://anypoint.mulesoft.com";
   private static final String USERNAME = System.getProperty("username");
   private static final String PASSWORD = System.getProperty("password");
   private static final String ENVIRONMENT = "Production";
@@ -48,7 +48,7 @@ public class CloudhubClientTestCase {
   @Before
   public void setup() {
     cloudHubDeployment = new CloudHubDeployment();
-    cloudHubDeployment.setUri(URI);
+    cloudHubDeployment.setUri(BASE_URI);
     cloudHubDeployment.setUsername(USERNAME);
     cloudHubDeployment.setPassword(PASSWORD);
     cloudHubDeployment.setEnvironment(ENVIRONMENT);

@@ -9,13 +9,7 @@
  */
 package org.mule.tools.client.arm.model;
 
-import org.mule.tools.client.arm.model.Server;
-
-class Servers {
-
-  public Servers() {
-
-  }
+public class Servers {
 
   public Server[] data;
 }

@@ -9,91 +9,92 @@
  */
 package org.mule.tools.client;
 
-import static javax.ws.rs.core.Response.Status.Family.SUCCESSFUL;
-import static javax.ws.rs.core.Response.Status.Family.familyOf;
-
-import org.mule.tools.client.agent.AbstractClient;
-import org.mule.tools.client.arm.model.AuthorizationResponse;
-import org.mule.tools.client.arm.model.Environment;
-import org.mule.tools.client.arm.model.Environments;
-import org.mule.tools.client.arm.model.UserInfo;
+import static org.mule.tools.client.authentication.AuthenticationServiceClient.AUTHORIZATION_HEADER;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.mule.tools.client.exception.ClientException;
+
+import org.mule.tools.client.agent.AbstractClient;
+import org.mule.tools.client.arm.model.Environment;
+import org.mule.tools.client.arm.model.Environments;
+import org.mule.tools.client.arm.model.Organization;
+import org.mule.tools.client.arm.model.UserInfo;
+import org.mule.tools.client.authentication.AuthenticationServiceClient;
+import org.mule.tools.client.authentication.model.Credentials;
 import org.mule.tools.model.anypoint.AnypointDeployment;
 import org.mule.tools.utils.DeployerLog;
+
+import com.google.gson.Gson;
 
 public abstract class AbstractMuleClient extends AbstractClient {
 
   private static final String ME = "/accounts/api/me";
   private static final String ENVIRONMENTS = "/accounts/api/organizations/%s/environments";
 
-  private static final String AUTHORIZATION_HEADER = "Authorization";
   private static final String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
   private static final String ORG_ID_HEADER = "X-ANYPNT-ORG-ID";
 
-  protected String uri;
-  private String username;
-  private String password;
-  private String environment;
-  private final String businessGroup;
+
+  protected String baseUri;
 
   private String bearerToken;
+  private Credentials credentials;
+  protected AuthenticationServiceClient authenticationServiceClient;
+
+  // TODO MMP-302
   private String envId;
+  private String environmentName;
+
   private String orgId;
+  private String businessGroupName;
+
+
 
   public AbstractMuleClient(AnypointDeployment anypointDeployment, DeployerLog log) {
     super(log);
-    this.uri = anypointDeployment.getUri();
-    this.username = anypointDeployment.getUsername();
-    this.password = anypointDeployment.getPassword();
-    this.environment = anypointDeployment.getEnvironment();
-    this.businessGroup = anypointDeployment.getBusinessGroup();
+    this.baseUri = anypointDeployment.getUri();
+
+    this.credentials = new Credentials(anypointDeployment.getUsername(), anypointDeployment.getPassword());
+
+    this.authenticationServiceClient = new AuthenticationServiceClient(baseUri);
+
+    this.environmentName = anypointDeployment.getEnvironment();
+    this.businessGroupName = anypointDeployment.getBusinessGroup();
   }
 
   public void init() {
-    bearerToken = getBearerToken(username, password);
+    bearerToken = getBearerToken(credentials);
+
     orgId = getOrgId();
-    envId = findEnvironmentByName(environment).id;
+    envId = findEnvironmentByName(environmentName).id;
   }
 
-  private String getBearerToken(String username, String password) {
-    Entity<String> json = Entity.json("{\"username\": \"" + username + "\", \"password\": \"" + password + "\"}");
-    Response response = post(uri, LOGIN, json);
-    validateStatusSuccess(response);
-    AuthorizationResponse authorizationResponse = response.readEntity(AuthorizationResponse.class);
-    return authorizationResponse.access_token;
-  }
-
-  protected void validateStatusSuccess(Response response) {
-    if (familyOf(response.getStatus()) != SUCCESSFUL) {
-      throw new ClientException(response);
-    }
+  public UserInfo getMe() {
+    UserInfo userInfo = get(baseUri, ME, UserInfo.class);
+    return userInfo;
   }
 
   public String getOrgId() {
-    return findBusinessGroup();
+    return getBusinessGroupIdByBusinessGroupPath();
   }
 
+  // TODO use AuthenticationServiceClient
   public Environment findEnvironmentByName(String name) {
-    Environments response = get(uri, String.format(ENVIRONMENTS, orgId), Environments.class);
+    Environments response = get(baseUri, String.format(ENVIRONMENTS, orgId), Environments.class);
 
     for (int i = 0; i < response.data.length; i++) {
       if (name.equals(response.data[i].name)) {
         return response.data[i];
       }
     }
-    throw new RuntimeException("Couldn't find environment named [" + name + "]");
+    throw new RuntimeException("Couldn't find environmentName named [" + name + "]");
   }
 
+  // TODO find a better way to do this
   @Override
   protected void configureRequest(Invocation.Builder builder) {
     if (bearerToken != null) {
@@ -106,65 +107,86 @@ public abstract class AbstractMuleClient extends AbstractClient {
     }
   }
 
-  private JSONObject getHierarchy() {
-    UserInfo response = get(uri, ME, UserInfo.class);
-    String rootOrgId = response.user.organization.id;
-    return new JSONObject(get(uri, "accounts/api/organizations/" + rootOrgId + "/hierarchy", String.class));
-  }
-
-  public String findBusinessGroup() {
-    String currentOrgId = null;
-    String[] groups = createBusinessGroupPath();
-    JSONObject json = getHierarchy(); // Using JSON parsing because Jersey unmarshalling fails to create all business groups
-    JSONArray subOrganizations = (JSONArray) json.get("subOrganizations");
-    if (groups.length == 0) {
-      return (String) json.get("id");
-    }
-    for (int group = 0; group < groups.length; group++) {
-      for (int organization = 0; organization < subOrganizations.length(); organization++) {
-        JSONObject jsonObject = (JSONObject) subOrganizations.get(organization);
-        if (jsonObject.get("name").equals(groups[group])) {
-          currentOrgId = (String) jsonObject.get("id");
-          subOrganizations = (JSONArray) jsonObject.get("subOrganizations");
-        }
-      }
-    }
-    if (currentOrgId == null) {
-      throw new ArrayIndexOutOfBoundsException("Cannot find business group.");
-    }
-    return currentOrgId;
-  }
-
   protected String[] createBusinessGroupPath() {
-    if (StringUtils.isEmpty(businessGroup)) {
+    if (StringUtils.isEmpty(businessGroupName)) {
       return new String[0];
     }
+
     ArrayList<String> groups = new ArrayList<>();
+
     String group = "";
     int i = 0;
-    for (; i < businessGroup.length() - 1; i++) {
-      if (businessGroup.charAt(i) == '\\') {
-        if (businessGroup.charAt(i + 1) == '\\') // Double backslash maps to business group with one backslash
-        {
+    for (; i < businessGroupName.length() - 1; i++) {
+      if (businessGroupName.charAt(i) == '\\') {
+        // Double backslash maps to business group with one backslash
+        if (businessGroupName.charAt(i + 1) == '\\') {
           group = group + "\\";
           i++; // For two backslashes we continue with the next character
-        } else // Single backslash starts a new business group
-        {
+        } else {
+          // Single backslash starts a new business group
           groups.add(group);
           group = "";
         }
-      } else // Non backslash characters are mapped to the group
-      {
-        group = group + businessGroup.charAt(i);
+      } else {
+        // Non backslash characters are mapped to the group
+        group = group + businessGroupName.charAt(i);
       }
     }
-    if (i < businessGroup.length()) // Do not end with backslash
-    {
-      group = group + businessGroup.charAt(businessGroup.length() - 1);
+    // Do not end with backslash
+    if (i < businessGroupName.length()) {
+      group = group + businessGroupName.charAt(businessGroupName.length() - 1);
     }
     groups.add(group);
     return groups.toArray(new String[0]);
   }
 
+  private String getBusinessGroupIdByBusinessGroupPath() {
+    String currentOrgId = null;
 
+    Organization organizationHierarchy = getOrganizationHierarchy();
+    if (organizationHierarchy.subOrganizations.isEmpty()) {
+      return organizationHierarchy.id;
+    }
+    List<Organization> subOrganizations = organizationHierarchy.subOrganizations;
+
+    String[] groups = createBusinessGroupPath();
+    if (groups.length == 0) {
+      currentOrgId = organizationHierarchy.id;
+    } else {
+      for (int group = 0; group < groups.length; group++) {
+        String groupName = groups[group];
+
+        for (Organization o : subOrganizations) {
+          if (o.name.equals(groupName)) {
+            currentOrgId = o.id;
+            subOrganizations = o.subOrganizations;
+            break;
+          }
+        }
+      }
+    }
+
+    if (currentOrgId == null) {
+      throw new ArrayIndexOutOfBoundsException("Cannot find business group.");
+    }
+
+    return currentOrgId;
+  }
+
+  private Organization getOrganizationHierarchy() {
+    String rootOrgId = getMe().user.organization.id;
+
+    String organizationHiearchy = get(baseUri, "accounts/api/organizations/" + rootOrgId + "/hierarchy", String.class);
+    Organization organization = new Gson().fromJson(organizationHiearchy, Organization.class);
+
+    return organization;
+  }
+
+  private String getBearerToken(Credentials credentials) {
+    if (StringUtils.isBlank(bearerToken)) {
+      bearerToken = authenticationServiceClient.getBearerToken(credentials);
+    }
+
+    return bearerToken;
+  }
 }

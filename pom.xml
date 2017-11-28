@@ -63,7 +63,9 @@
         <commons.cli.version>1.3.1</commons.cli.version>
         <commons.logging.version>1.2</commons.logging.version>
 
+
         <json.version>20170516</json.version>
+
         <jersey.media.moxy>2.15</jersey.media.moxy>
         <slf4j.api.version>1.8.0-alpha2</slf4j.api.version>
         <maven.compat.version>3.3.9</maven.compat.version>
@@ -230,12 +232,6 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.api.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.json</groupId>
-                <artifactId>json</artifactId>
-                <version>${json.version}</version>
-            </dependency>
-
 
             <!-- The Plexus annotations -->
             <dependency>

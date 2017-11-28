@@ -9,25 +9,27 @@
  */
 package org.mule.tools.client.arm;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
+import java.util.concurrent.Callable;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import org.mule.tools.client.arm.model.Applications;
 import org.mule.tools.client.arm.model.Environment;
 import org.mule.tools.client.arm.model.Target;
 import org.mule.tools.model.anypoint.ArmDeployment;
-
-import java.util.concurrent.Callable;
-
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 @Ignore
 public class ArmClientTestCase {
 
   private static final String USERNAME = System.getProperty("username");
   private static final String PASSWORD = System.getProperty("password");
+
   private static final String ENVIRONMENT = "Production";
   private ArmClient armClient;
   private ArmDeployment armDeployment;

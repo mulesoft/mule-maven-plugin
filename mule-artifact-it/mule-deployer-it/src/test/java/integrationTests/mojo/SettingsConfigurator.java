@@ -19,6 +19,10 @@ public interface SettingsConfigurator {
 
   String DEFAULT_MULE_VERSION = "4.0.0";
 
+  String MAVEN_OPTS = "MAVEN_OPTS";
+  String MAVEN_OPTS_PROPERTY_KEY = "argLine";
+  String DEFAULT_DEBUG_ARG_LINE = "-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=y";
+
   default void setSettings(Verifier verifier) {
     String mavenSettings = System.getenv("MAVEN_SETTINGS");
     if (mavenSettings != null) {
@@ -34,9 +38,9 @@ public interface SettingsConfigurator {
   }
 
   default void setMavenOpts(Verifier verifier) {
-    String mavenOpts = System.getProperty("argLine");
+    String mavenOpts = System.getProperty(MAVEN_OPTS_PROPERTY_KEY);
     if (mavenOpts != null) {
-      verifier.setEnvironmentVariable("MAVEN_OPTS", mavenOpts);
+      verifier.setEnvironmentVariable(MAVEN_OPTS, mavenOpts);
     }
   }
 

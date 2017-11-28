@@ -9,15 +9,14 @@
  */
 package org.mule.tools.client.arm;
 
-import org.mule.tools.client.AbstractMuleClient;
-import org.mule.tools.client.arm.model.*;
-import org.mule.tools.client.model.TargetType;
-
 import java.io.File;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -32,15 +31,30 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
+
+import org.mule.tools.client.AbstractMuleClient;
+import org.mule.tools.client.arm.model.Application;
+import org.mule.tools.client.arm.model.Applications;
+import org.mule.tools.client.arm.model.Data;
+import org.mule.tools.client.arm.model.RegistrationToken;
+import org.mule.tools.client.arm.model.Servers;
+import org.mule.tools.client.arm.model.Target;
+import org.mule.tools.client.arm.model.Targets;
+import org.mule.tools.client.model.TargetType;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.utils.DeployerLog;
 
 public class ArmClient extends AbstractMuleClient {
 
-  private static final String APPLICATIONS = "/hybrid/api/v1/applications";
-  private static final String SERVERS = "/hybrid/api/v1/servers";
-  private static final String SERVER_GROUPS = "/hybrid/api/v1/serverGroups";
-  private static final String CLUSTERS = "/hybrid/api/v1/clusters";
+  public static final String HYBRID_API_V1 = "/hybrid/api/v1";
+
+  private static final String CLUSTERS = HYBRID_API_V1 + "/clusters";
+  private static final String APPLICATIONS = HYBRID_API_V1 + "/applications";
+  private static final String SERVER_GROUPS = HYBRID_API_V1 + "/serverGroups";
+
+  private static final String SERVERS = HYBRID_API_V1 + "/servers";
+  private static final String REGISTRATION = HYBRID_API_V1 + "/servers/registrationToken";
+
   private boolean armInsecure;
 
   public ArmClient(ArmDeployment armDeployment, DeployerLog log) {
@@ -51,17 +65,22 @@ public class ArmClient extends AbstractMuleClient {
     }
   }
 
+  public String getRegistrationToken() {
+    RegistrationToken registrationToken = get(baseUri, REGISTRATION, RegistrationToken.class);
+    return registrationToken.data;
+  }
+
   public Boolean isStarted(int applicationId) {
     Application application = getApplicationStatus(applicationId);
     return "STARTED".equals(application.data.lastReportedStatus);
   }
 
   public Application getApplicationStatus(int applicationId) {
-    return get(uri, APPLICATIONS + "/" + applicationId, Application.class);
+    return get(baseUri, APPLICATIONS + "/" + applicationId, Application.class);
   }
 
   public String undeployApplication(int applicationId) {
-    Response response = delete(uri, APPLICATIONS + "/" + applicationId);
+    Response response = delete(baseUri, APPLICATIONS + "/" + applicationId);
     validateStatusSuccess(response);
     return response.readEntity(String.class);
   }
@@ -77,14 +96,14 @@ public class ArmClient extends AbstractMuleClient {
 
   public Application deployApplication(File app, String appName, TargetType targetType, String target) {
     MultiPart body = buildRequestBody(app, appName, targetType, target);
-    Response response = post(uri, APPLICATIONS, Entity.entity(body, body.getMediaType()));
+    Response response = post(baseUri, APPLICATIONS, Entity.entity(body, body.getMediaType()));
     validateStatusSuccess(response);
     return response.readEntity(Application.class);
   }
 
   public Application redeployApplication(int applicationId, File app, String appName, TargetType targetType, String target) {
     MultiPart body = buildRequestBody(app, appName, targetType, target);
-    Response response = patch(uri, APPLICATIONS + "/" + applicationId, Entity.entity(body, body.getMediaType()));
+    Response response = patch(baseUri, APPLICATIONS + "/" + applicationId, Entity.entity(body, body.getMediaType()));
     validateStatusSuccess(response);
     return response.readEntity(Application.class);
   }
@@ -116,7 +135,18 @@ public class ArmClient extends AbstractMuleClient {
   }
 
   public Applications getApplications() {
-    return get(uri, APPLICATIONS, Applications.class);
+    return get(baseUri, APPLICATIONS, Applications.class);
+  }
+
+  // TODO move servers and targets to another package due to the ugly ARM API
+  public List<Target> getServers() {
+    Targets targets = get(baseUri, SERVERS, Targets.class);
+    return Arrays.asList(targets.data);
+  }
+
+  public Servers getServer(Integer serverId) {
+    Servers target = get(baseUri, SERVERS + "/" + serverId, Servers.class);
+    return target;
   }
 
   public Target findServerByName(String name) {
@@ -132,11 +162,13 @@ public class ArmClient extends AbstractMuleClient {
   }
 
   private Target findTargetByName(String name, String path) {
-    Targets response = get(uri, path, Targets.class);
-    if (response.data == null) // Workaround because an empty array in the response is mapped as null
-    {
+    Targets response = get(baseUri, path, Targets.class);
+
+    // Workaround because an empty array in the response is mapped as null
+    if (response.data == null) {
       throw new RuntimeException("Couldn't find target named [" + name + "]");
     }
+
     for (int i = 0; i < response.data.length; i++) {
       if (name.equals(response.data[i].name)) {
         return response.data[i];

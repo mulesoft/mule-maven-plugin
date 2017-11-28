@@ -12,8 +12,6 @@ package integrationTests.mojo;
 import java.io.File;
 import java.io.IOException;
 
-import integrationTests.ProjectFactory;
-import integrationTests.mojo.environment.setup.StandaloneEnvironment;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
@@ -22,33 +20,35 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import integrationTests.ProjectFactory;
+import integrationTests.mojo.environment.setup.StandaloneEnvironment;
+
 public class AgentDeploymentTest implements SettingsConfigurator {
 
+  private static final String DEPLOY = "deploy";
   private static final String AGENT_TEST_ANCHOR_FILENAME = "agent-anchor.txt";
+
   private static Logger log;
   private static Verifier verifier;
   private static File projectBaseDirectory;
   private static ProjectFactory builder;
-  private static final String DEPLOY = "deploy";
+
   private StandaloneEnvironment standaloneEnvironment;
 
-  public void initializeContext() throws IOException, VerificationException {
-    builder = new ProjectFactory();
-    projectBaseDirectory = builder.createProjectBaseDir("empty-mule-deploy-agent-project", this.getClass());
-    verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
-    verifier.setMavenDebug(true);
-  }
 
   @Before
   public void before() throws VerificationException, InterruptedException, IOException {
     log = LoggerFactory.getLogger(this.getClass());
     log.info("Initializing context...");
+
+    killMuleInstances();
+
     initializeContext();
     standaloneEnvironment = new StandaloneEnvironment(DEFAULT_MULE_VERSION);
     standaloneEnvironment.start();
     standaloneEnvironment.runAgent();
   }
+
 
   @After
   public void after() {
@@ -65,4 +65,17 @@ public class AgentDeploymentTest implements SettingsConfigurator {
     standaloneEnvironment.verifyDeployment(true, AGENT_TEST_ANCHOR_FILENAME);
     verifier.verifyErrorFreeLog();
   }
+
+  private void initializeContext() throws IOException, VerificationException {
+    builder = new ProjectFactory();
+    projectBaseDirectory = builder.createProjectBaseDir("empty-mule-deploy-agent-project", this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.setMavenDebug(true);
+  }
+
+  private void killMuleInstances() throws IOException {
+    Runtime.getRuntime().exec("pkill -f \"mule\"");
+  }
+
 }

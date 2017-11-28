@@ -31,18 +31,25 @@ import static org.mockito.Mockito.spy;
 
 public class CloudhubDeployerTest {
 
+  private static final String BASE_URI = "https://anypoint.mulesoft.com";
+
+
   private static final String APP1_DOMAIN = "aaa";
   private static final String APP2_DOMAIN = "bbb";
   private static final String APP3_DOMAIN = "ccc";
-  CloudhubDeployer cloudhubDeployerSpy;
+
   private List<Application> applications;
+  private CloudhubDeployer cloudhubDeployerSpy;
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void setUp() throws DeploymentException {
-    cloudhubDeployerSpy = spy(new CloudhubDeployer(new CloudHubDeployment(), mock(DeployerLog.class)));
+    CloudHubDeployment deploymentConfiguration = new CloudHubDeployment();
+    deploymentConfiguration.setUri(BASE_URI);
+
+    cloudhubDeployerSpy = spy(new CloudhubDeployer(deploymentConfiguration, mock(DeployerLog.class)));
     applications = buildApplications();
     doReturn(applications).when(cloudhubDeployerSpy).getApplications();
   }

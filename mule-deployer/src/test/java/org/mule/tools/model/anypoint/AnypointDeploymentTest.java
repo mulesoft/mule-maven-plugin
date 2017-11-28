@@ -29,18 +29,18 @@ public class AnypointDeploymentTest {
   @Test
   public void setAnypointDeploymentValuesAnypointUriSetSystemPropertyTest() throws DeploymentException {
     String anypointUri = "www.lala.com";
-    System.setProperty("anypoint.uri", anypointUri);
+    System.setProperty("anypoint.baseUri", anypointUri);
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The anypoint uri was not resolved by system property",
+    assertThat("The anypoint baseUri was not resolved by system property",
                deploymentSpy.getUri(), equalTo(anypointUri));
-    System.clearProperty("anypoint.uri");
+    System.clearProperty("anypoint.baseUri");
   }
 
   @Test
   public void setAnypointDeploymentValuesAnypointUriNotSetTest() throws DeploymentException {
     String anypointUriDefaultValue = "https://anypoint.mulesoft.com";
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The anypoint uri was not resolved to the default value",
+    assertThat("The anypoint baseUri was not resolved to the default value",
                deploymentSpy.getUri(), equalTo(anypointUriDefaultValue));
   }
 
@@ -57,7 +57,7 @@ public class AnypointDeploymentTest {
   @Test
   public void setAnypointDeploymentValuesAnypointBusinessGroupNotSetTest() throws DeploymentException {
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The anypoint uri was not resolved to the default value",
+    assertThat("The anypoint baseUri was not resolved to the default value",
                deploymentSpy.getBusinessGroup().isEmpty(), equalTo(true));
   }
 

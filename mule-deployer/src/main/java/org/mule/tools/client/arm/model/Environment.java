@@ -9,6 +9,7 @@
  */
 package org.mule.tools.client.arm.model;
 
+//TODO fix this POJO
 public class Environment {
 
   public String id;

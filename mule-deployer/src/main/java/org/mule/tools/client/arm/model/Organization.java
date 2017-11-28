@@ -9,9 +9,11 @@
  */
 package org.mule.tools.client.arm.model;
 
+import java.util.List;
+
 public class Organization {
 
   public String id;
   public String name;
-  public Organization[] subOrganizations;
+  public List<Organization> subOrganizations;
 }

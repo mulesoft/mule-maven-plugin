@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package integrationTests;
+package integration;
 
 import java.io.File;
 import java.io.IOException;

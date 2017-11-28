@@ -7,10 +7,10 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package integrationTests.mojo;
+package integration.test.mojo;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static integrationTests.FileTreeMatcher.hasSameTreeStructure;
+import static integration.FileTreeMatcher.hasSameTreeStructure;
 
 import java.io.File;
 import java.io.IOException;

@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package integrationTests.mojo;
+package integration.test.mojo;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +19,7 @@ import org.apache.maven.shared.utils.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 
-import integrationTests.ProjectFactory;
+import integration.ProjectFactory;
 
 
 public class MojoTest implements SettingsConfigurator {

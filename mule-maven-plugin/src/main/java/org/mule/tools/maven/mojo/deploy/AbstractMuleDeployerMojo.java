@@ -65,6 +65,7 @@ public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
    */
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
+    initMojo();
     try {
       getProjectValidator().isProjectValid(DEPLOY.id());
       setDeployment();
@@ -83,6 +84,7 @@ public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
       deploymentConfigurator.initializeEnvironment(settings, decrypter);
       getLog().debug("Executing mojo, skip=" + deploymentConfiguration.getSkip());
     }
+    doExecute();
   }
 
   protected void setDeployment() throws DeploymentException {

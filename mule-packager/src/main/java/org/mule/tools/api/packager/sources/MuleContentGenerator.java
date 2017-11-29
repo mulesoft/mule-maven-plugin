@@ -182,7 +182,8 @@ public class MuleContentGenerator extends ContentGenerator {
   public MuleArtifactContentResolver getMuleArtifactContentResolver() {
     if (muleArtifactContentResolver == null) {
       ProjectStructure projectStructure =
-          new ProjectStructure(projectInformation.getProjectBaseFolder(), projectInformation.isTestProject());
+          new ProjectStructure(projectInformation.getProjectBaseFolder(), projectInformation.getBuildDirectory(),
+                               projectInformation.isTestProject());
       muleArtifactContentResolver = new MuleArtifactContentResolver(projectStructure);
     }
     return muleArtifactContentResolver;

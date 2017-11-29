@@ -9,6 +9,14 @@
  */
 package org.mule.tools.maven.mojo;
 
+import java.io.File;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -18,11 +26,14 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DeploymentRepository;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.eclipse.aether.repository.RemoteRepository;
+
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
@@ -30,8 +41,8 @@ import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
 import org.mule.tools.api.validation.AbstractProjectValidator;
 import org.mule.tools.api.validation.ProjectValidatorFactory;
-import org.mule.tools.client.authentication.model.Credentials;
 import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
+import org.mule.tools.client.authentication.model.Credentials;
 import org.mule.tools.maven.utils.ArtifactUtils;
 import org.mule.tools.maven.utils.DependencyProject;
 import org.mule.tools.maven.utils.MavenPackagerLog;
@@ -41,14 +52,6 @@ import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
-
-import java.io.File;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public abstract class AbstractGenericMojo extends AbstractMojo {
 
@@ -87,6 +90,9 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   @Parameter(defaultValue = "${project.basedir}")
   protected File projectBaseFolder;
 
+  @Parameter(defaultValue = "${projectBuildDirectory}")
+  protected String projectBuildDirectory;
+
   @Parameter(readonly = true, required = true, defaultValue = "${project.remoteArtifactRepositories}")
   protected List<ArtifactRepository> remoteArtifactRepositories;
 
@@ -101,6 +107,14 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   protected ProjectInformation projectInformation;
 
   public abstract String getPreviousRunPlaceholder();
+
+  public abstract void doExecute() throws MojoExecutionException, MojoFailureException;
+
+  public void initMojo() {
+    if (projectBuildDirectory != null) {
+      project.getBuild().setDirectory(projectBuildDirectory);
+    }
+  }
 
   public Deployment getDeploymentConfiguration() {
     return deploymentConfiguration;

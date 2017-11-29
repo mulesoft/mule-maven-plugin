@@ -14,9 +14,7 @@ import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -202,25 +200,17 @@ public class DefaultValuesMuleArtifactJsonGenerator {
                                                           MuleApplicationModel originalMuleArtifact,
                                                           MuleArtifactContentResolver muleArtifactContentResolver)
       throws IOException {
-    Field configsField;
-    List configs;
-    try {
-      configsField = originalMuleArtifact.getClass().getSuperclass().getDeclaredField("configs");
-      configsField.setAccessible(true);
-      Set configSet = (Set) configsField.get(originalMuleArtifact);
-      if (configSet != null) {
-        configs = new ArrayList(configSet);
-      } else {
-        configs = null;
-      }
-    } catch (NoSuchFieldException | IllegalAccessException e) {
-      configs = muleArtifactContentResolver.getConfigs();
+
+    Set<String> configs = new HashSet<>();
+    if (originalMuleArtifact.getConfigs() != null) {
+      configs.addAll(originalMuleArtifact.getConfigs());
+    } else {
+      configs.addAll(muleArtifactContentResolver.getConfigs());
     }
-    if (configs == null) {
-      configs = muleArtifactContentResolver.getConfigs();
-    }
+
     configs.addAll(muleArtifactContentResolver.getTestConfigs());
-    builder.setConfigs(new HashSet<>(configs));
+
+    builder.setConfigs(configs);
   }
 
   /**

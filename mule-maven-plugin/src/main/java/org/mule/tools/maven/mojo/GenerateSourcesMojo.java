@@ -26,17 +26,18 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class GenerateSourcesMojo extends AbstractMuleMojo {
 
-  public void execute() throws MojoExecutionException, MojoFailureException {
-    long start = System.currentTimeMillis();
-
+  @Override
+  public void doExecute() throws MojoExecutionException, MojoFailureException {
     getLog().debug("Generating mule source code...");
-
     try {
       getContentGenerator().createContent();
     } catch (IllegalArgumentException | IOException e) {
       throw new MojoFailureException("Fail to generate sources", e);
     }
+  }
 
-    getLog().debug(MessageFormat.format("generate sources done ({0}ms)", System.currentTimeMillis() - start));
+  @Override
+  public String getPreviousRunPlaceholder() {
+    return "MULE_MAVEN_PLUGIN_GENERATE_SOURCES_PREVIOUS_RUN_PLACEHOLDER";
   }
 }

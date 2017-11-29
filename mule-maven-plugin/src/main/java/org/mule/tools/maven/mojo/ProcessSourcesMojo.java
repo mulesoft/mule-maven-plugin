@@ -12,23 +12,21 @@ package org.mule.tools.maven.mojo;
 
 import static java.lang.String.format;
 
-import org.apache.maven.plugins.annotations.Parameter;
-import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.packager.sources.MuleContentGenerator;
-import org.mule.tools.api.repository.ArtifactInstaller;
-import org.mule.tools.api.repository.RepositoryGenerator;
-
-import java.text.MessageFormat;
 import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.mule.tools.api.validation.MulePluginResolver;
+
+import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
+import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.packager.sources.MuleContentGenerator;
+import org.mule.tools.api.repository.ArtifactInstaller;
+import org.mule.tools.api.repository.RepositoryGenerator;
 import org.mule.tools.api.validation.MulePluginsCompatibilityValidator;
 import org.mule.tools.maven.utils.MavenPackagerLog;
 
@@ -43,8 +41,7 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
   protected final MulePluginsCompatibilityValidator mulePluginsCompatibilityValidator = new MulePluginsCompatibilityValidator();
 
   @Override
-  public void execute() throws MojoExecutionException, MojoFailureException {
-    long start = System.currentTimeMillis();
+  public void doExecute() throws MojoExecutionException, MojoFailureException {
     getLog().debug("Processing sources...");
     if (!(lightweightPackage && skipPluginCompatibilityValidation)) {
       RepositoryGenerator repositoryGenerator =
@@ -66,13 +63,15 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
         throw new MojoFailureException(message, e);
       }
     }
-
-
-    getLog().debug(MessageFormat.format("Process sources done ({0}ms)", System.currentTimeMillis() - start));
   }
 
 
   protected ApplicationClassLoaderModelAssembler getClassLoaderModelAssembler() {
     return new ApplicationClassLoaderModelAssembler(getAetherMavenClient());
+  }
+
+  @Override
+  public String getPreviousRunPlaceholder() {
+    return "MULE_MAVEN_PLUGIN_PROCESS_SOURCES_PREVIOUS_RUN_PLACEHOLDER";
   }
 }

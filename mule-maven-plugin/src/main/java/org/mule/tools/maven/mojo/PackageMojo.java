@@ -58,8 +58,8 @@ public class PackageMojo extends AbstractMuleMojo {
   protected boolean attachMuleSources = false;
   protected PackagingOptions options;
 
-  public void execute() throws MojoExecutionException, MojoFailureException {
-    long start = System.currentTimeMillis();
+  @Override
+  public void doExecute() throws MojoExecutionException, MojoFailureException {
     getLog().debug("Packaging...");
 
     String targetFolder = project.getBuild().getDirectory();
@@ -69,9 +69,9 @@ public class PackageMojo extends AbstractMuleMojo {
     } catch (ArchiverException | IOException e) {
       throw new MojoExecutionException("Exception creating the Mule App", e);
     }
-    helper.attachArtifact(this.project, getType(), getPackagingType().resolveClassifier(classifier, lightweightPackage, testJar),
+    helper.attachArtifact(this.project, getType(),
+                          getPackagingType().resolveClassifier(classifier, lightweightPackage, testJar),
                           destinationFile);
-    getLog().debug(MessageFormat.format("Package done ({0}ms)", System.currentTimeMillis() - start));
   }
 
   /**
@@ -113,6 +113,11 @@ public class PackageMojo extends AbstractMuleMojo {
 
   private PackagingType getPackagingType() {
     return PackagingType.fromString(project.getPackaging());
+  }
+
+  @Override
+  public String getPreviousRunPlaceholder() {
+    return "MULE_MAVEN_PLUGIN_PACKAGE_PREVIOUS_RUN_PLACEHOLDER";
   }
 
 }

@@ -56,6 +56,7 @@ public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
     doCallRealMethod().when(mojoMock).execute();
+    doCallRealMethod().when(mojoMock).doExecute();
     mojoMock.execute();
 
     verify(mojoMock, times(1)).getContentGenerator();
@@ -70,6 +71,7 @@ public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
     doThrow(new IOException("")).when(contentGeneratorMock).createTestFolderContent();
 
     doCallRealMethod().when(mojoMock).execute();
+    doCallRealMethod().when(mojoMock).doExecute();
     mojoMock.execute();
   }
 
@@ -81,6 +83,7 @@ public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
     doThrow(new IllegalArgumentException("")).when(contentGeneratorMock).createTestFolderContent();
 
     doCallRealMethod().when(mojoMock).execute();
+    doCallRealMethod().when(mojoMock).doExecute();
     mojoMock.execute();
   }
 

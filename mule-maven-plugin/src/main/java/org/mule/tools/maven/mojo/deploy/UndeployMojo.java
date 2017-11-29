@@ -40,4 +40,9 @@ public class UndeployMojo extends AbstractMuleDeployerMojo {
       throw new MojoFailureException("Failed to undeploy [" + deploymentConfiguration.getArtifact() + "]");
     }
   }
+
+  @Override
+  public String getPreviousRunPlaceholder() {
+    return "MULE_MAVEN_PLUGIN_UNDEPLOY_PREVIOUS_RUN_PLACEHOLDER";
+  }
 }

@@ -70,8 +70,8 @@ public class ValidaetMojoTest extends AbstractMuleMojoTest {
 
 
     doCallRealMethod().when(mojoMock).execute();
+    doCallRealMethod().when(mojoMock).doExecute();
     mojoMock.execute();
-
   }
 
   @Test
@@ -82,6 +82,7 @@ public class ValidaetMojoTest extends AbstractMuleMojoTest {
 
 
     doCallRealMethod().when(mojoMock).execute();
+    doCallRealMethod().when(mojoMock).doExecute();
     mojoMock.execute();
 
     verify(mojoMock, times(1)).getProjectValidator();

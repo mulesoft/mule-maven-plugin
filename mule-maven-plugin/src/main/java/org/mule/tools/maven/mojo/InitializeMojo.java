@@ -29,12 +29,18 @@ import org.mule.tools.api.packager.*;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class InitializeMojo extends AbstractMuleMojo {
 
-  public void execute() throws MojoExecutionException, MojoFailureException {
+  @Override
+  public void doExecute() throws MojoExecutionException, MojoFailureException {
     getLog().debug("Initializing Mule Maven Plugin...");
     getProjectFoldersGenerator().generate(Paths.get(project.getBuild().getDirectory()));
   }
 
   public AbstractProjectFoldersGenerator getProjectFoldersGenerator() {
     return ProjectFoldersGeneratorFactory.create(getProjectInformation());
+  }
+
+  @Override
+  public String getPreviousRunPlaceholder() {
+    return "MULE_MAVEN_PLUGIN_INITIALIZE_PREVIOUS_RUN_PLACEHOLDER";
   }
 }

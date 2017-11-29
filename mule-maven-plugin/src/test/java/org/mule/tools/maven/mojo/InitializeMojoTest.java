@@ -48,6 +48,7 @@ public class InitializeMojoTest extends AbstractMuleMojoTest {
     doReturn(projectFoldersGeneratorMock).when(mojoMock).getProjectFoldersGenerator();
 
     doCallRealMethod().when(mojoMock).execute();
+    doCallRealMethod().when(mojoMock).doExecute();
     mojoMock.execute();
 
     verify(mojoMock, times(1)).getProjectFoldersGenerator();

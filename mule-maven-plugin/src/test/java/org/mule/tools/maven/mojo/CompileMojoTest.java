@@ -27,7 +27,6 @@ import static org.mockito.Mockito.*;
 
 public class CompileMojoTest extends AbstractMuleMojoTest {
 
-  private static final String VERSION = "1.0.0-SNAPSHOT";
   private Log logMock;
   private CompileMojo mojoMock;
 
@@ -45,6 +44,7 @@ public class CompileMojoTest extends AbstractMuleMojoTest {
     mojoMock.projectBaseFolder = projectBaseFolder.getRoot();
 
     when(mojoMock.getLog()).thenReturn(logMock);
+
   }
 
   @Test
@@ -53,6 +53,7 @@ public class CompileMojoTest extends AbstractMuleMojoTest {
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
     doCallRealMethod().when(mojoMock).execute();
+    doCallRealMethod().when(mojoMock).doExecute();
     mojoMock.execute();
 
     verify(mojoMock, times(1)).getContentGenerator();
@@ -67,6 +68,7 @@ public class CompileMojoTest extends AbstractMuleMojoTest {
     doThrow(new IOException("")).when(contentGeneratorMock).createMuleSrcFolderContent();
 
     doCallRealMethod().when(mojoMock).execute();
+    doCallRealMethod().when(mojoMock).doExecute();
     mojoMock.execute();
   }
 
@@ -78,6 +80,7 @@ public class CompileMojoTest extends AbstractMuleMojoTest {
     doThrow(new IllegalArgumentException("")).when(contentGeneratorMock).createMuleSrcFolderContent();
 
     doCallRealMethod().when(mojoMock).execute();
+    doCallRealMethod().when(mojoMock).doExecute();
     mojoMock.execute();
   }
 }

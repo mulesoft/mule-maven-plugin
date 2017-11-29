@@ -11,6 +11,9 @@
 package org.mule.tools.maven.mojo;
 
 import java.io.File;
+import java.nio.file.Paths;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.ProjectBuilder;
@@ -46,6 +49,15 @@ public abstract class AbstractMuleMojo extends AbstractGenericMojo {
 
   protected static ResourcesContent resourcesContent;
 
+  public abstract void doExecute() throws MojoExecutionException, MojoFailureException;
+
+  public void execute() throws MojoExecutionException, MojoFailureException {
+    if (!hasExecutedBefore()) {
+      doExecute();
+    } else {
+      getLog().debug("Skipping execution because it has already been run");
+    }
+  }
 
   public ContentGenerator getContentGenerator() {
     if (contentGenerator == null) {

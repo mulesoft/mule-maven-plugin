@@ -185,12 +185,10 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   }
 
   /**
-   * This method avoids running MUnit more than once. This could happen because other phases such as the coverage-report, can
-   * trigger the "test" phase since it needs its information.
+   * This method avoids running a MoJo more than once.
    *
-   * @return true if the MUnit run has already happened before
+   * @return true if the MoJo run has already happened before
    */
-
   protected boolean hasExecutedBefore() {
     Map<String, String> pluginContext = getPluginContext();
     if (pluginContext.containsKey(getPreviousRunPlaceholder())) {

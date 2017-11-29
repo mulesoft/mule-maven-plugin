@@ -68,4 +68,9 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
       }
     }
   }
+
+  @Override
+  public String getPreviousRunPlaceholder() {
+    return "MULE_MAVEN_PLUGIN_DEPLOY_PREVIOUS_RUN_PLACEHOLDER";
+  }
 }

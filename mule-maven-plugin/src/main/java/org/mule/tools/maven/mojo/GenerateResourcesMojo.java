@@ -15,6 +15,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+
 import org.mule.tools.api.packager.resources.generator.DomainBundleProjectResourcesContentGenerator;
 import org.mule.tools.api.packager.resources.generator.ResourcesContentGenerator;
 
@@ -26,19 +27,22 @@ import org.mule.tools.api.packager.resources.generator.ResourcesContentGenerator
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class GenerateResourcesMojo extends AbstractMuleMojo {
 
-  private ResourcesContentGenerator resourcesContentGenerator;
-
-  public void execute() throws MojoExecutionException, MojoFailureException {
+  @Override
+  public void doExecute() throws MojoExecutionException, MojoFailureException {
     try {
       resourcesContent = getResourcesContentGenerator().generate();
     } catch (IllegalArgumentException e) {
       throw new MojoFailureException("Fail to generate resources", e);
     }
-
   }
 
   public ResourcesContentGenerator getResourcesContentGenerator() {
     return new DomainBundleProjectResourcesContentGenerator(getAetherMavenClient(),
                                                             toArtifactCoordinates(project.getDependencies()));
+  }
+
+  @Override
+  public String getPreviousRunPlaceholder() {
+    return "MULE_MAVEN_PLUGIN_GENERATE_RESOURCES_PREVIOUS_RUN_PLACEHOLDER";
   }
 }

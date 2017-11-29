@@ -46,6 +46,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -98,6 +99,8 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   protected AbstractProjectValidator validator;
   protected AetherMavenClient aetherMavenClient;
   protected ProjectInformation projectInformation;
+
+  public abstract String getPreviousRunPlaceholder();
 
   public Deployment getDeploymentConfiguration() {
     return deploymentConfiguration;
@@ -181,6 +184,21 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
     return projectInformation;
   }
 
+  /**
+   * This method avoids running a MoJo more than once.
+   *
+   * @return true if the MoJo run has already happened before
+   */
+  protected boolean hasExecutedBefore() {
+    Map<String, String> pluginContext = getPluginContext();
+    if (pluginContext.containsKey(getPreviousRunPlaceholder())) {
+      return true;
+    }
+    getPluginContext().put(getPreviousRunPlaceholder(), getPreviousRunPlaceholder());
+    return false;
+  }
+
+
   private Optional<ExchangeRepositoryMetadata> getExchangeRepositoryMetadata(DeploymentRepository repository, Settings settings) {
     ExchangeRepositoryMetadata metadata = null;
     if (repository != null && ExchangeRepositoryMetadata.isExchangeRepo(repository.getUrl())) {
@@ -190,4 +208,5 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
     }
     return Optional.ofNullable(metadata);
   }
+
 }

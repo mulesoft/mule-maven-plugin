@@ -33,7 +33,8 @@ public class ValidateMojo extends AbstractMuleMojo {
 
   private static final String MIN_MAVEN_VERSION = "3.3.3";
 
-  public void execute() throws MojoExecutionException, MojoFailureException {
+  @Override
+  public void doExecute() throws MojoExecutionException, MojoFailureException {
     if (!skipValidation) {
       try {
         validateMavenEnvironment();
@@ -56,6 +57,11 @@ public class ValidateMojo extends AbstractMuleMojo {
       throw new ValidationException("Your Maven installation version is: " + mavenVersion + " We require at least:"
           + MIN_MAVEN_VERSION);
     }
+  }
+
+  @Override
+  public String getPreviousRunPlaceholder() {
+    return "MULE_MAVEN_PLUGIN_VALIDATE_PREVIOUS_RUN_PLACEHOLDER";
   }
 
 }

@@ -16,4 +16,13 @@ properly from your IDE.
 
 ```console
   mvn clean install
+ ```
+                                                             
+ In order to run mule-deploy-it you need to define the following env vars:
+ * username: username of your Anypoint account 
+ * passowrd: passowrd of your Anypoint account
+ * mule.version: version of the Mule Runtime you which to run your tests against. This is optional if not define it will assume *4.0.0*
+ 
+ ```console
+   mvn clean test -Dusername=fakseuser -Dpassword=fakepassword -Dmule.version=4.0.0
   ```

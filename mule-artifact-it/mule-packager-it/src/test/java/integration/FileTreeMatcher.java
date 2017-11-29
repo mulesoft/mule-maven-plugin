@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package integrationTests;
+package integration;
 
 import java.io.File;
 import java.util.*;

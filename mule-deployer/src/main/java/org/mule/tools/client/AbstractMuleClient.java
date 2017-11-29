@@ -38,6 +38,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
   private static final String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
   private static final String ORG_ID_HEADER = "X-ANYPNT-ORG-ID";
 
+  public static final String DEFAULT_BASE_URL = "https://anypoint.mulesoft.com";
 
   protected String baseUri;
 

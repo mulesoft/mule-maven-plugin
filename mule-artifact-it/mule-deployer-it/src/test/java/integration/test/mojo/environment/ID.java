@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package integrationTests.mojo.environment;
+package integration.test.mojo.environment;
 
 public class ID {
 

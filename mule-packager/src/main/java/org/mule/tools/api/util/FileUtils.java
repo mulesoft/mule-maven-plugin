@@ -43,4 +43,21 @@ public class FileUtils {
       }
     }
   }
+
+  public static void copyDirectoryRecursively(File origin, File destination) throws IOException {
+    if (!destination.exists()) {
+      destination.mkdir();
+    }
+    for (String child : origin.list()) {
+      copyDirectory(new File(origin, child), new File(destination, child));
+    }
+  }
+
+  public static void copyDirectory(File origin, File destination) throws IOException {
+    if (origin.isDirectory()) {
+      copyDirectoryRecursively(origin, destination);
+    } else {
+      Files.copy(origin.toPath(), destination.toPath());
+    }
+  }
 }

@@ -42,7 +42,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     verifier.setEnvironmentVariable("username", username);
     verifier.setEnvironmentVariable("password", password);
     verifier.setEnvironmentVariable("environment", "Production");
-    verifier.setEnvironmentVariable("mule.version", "4.0.0-FD"); // MMP-252
+    verifier.setEnvironmentVariable("mule.version", "4.0.0");
     verifier.setEnvironmentVariable("cloudhub.application.name", APPLICATION_NAME);
 
     // TODO find a way to fix this

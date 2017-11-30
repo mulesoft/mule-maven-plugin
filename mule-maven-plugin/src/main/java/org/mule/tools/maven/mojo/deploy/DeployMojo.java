@@ -41,8 +41,7 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
   protected ArchiverManager archiverManager;
 
   @Override
-  public void execute() throws MojoFailureException, MojoExecutionException {
-    super.execute();
+  public void doExecute() throws MojoFailureException, MojoExecutionException {
     if (deploymentConfiguration instanceof MuleRuntimeDeployment) {
       runScript((MuleRuntimeDeployment) deploymentConfiguration);
     }

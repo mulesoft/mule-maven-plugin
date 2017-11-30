@@ -29,8 +29,7 @@ import org.mule.tools.utils.DeployerFactory;
 public class UndeployMojo extends AbstractMuleDeployerMojo {
 
   @Override
-  public void execute() throws MojoFailureException, MojoExecutionException {
-    super.execute();
+  public void doExecute() throws MojoFailureException, MojoExecutionException {
     try {
       AbstractDeployer deployer =
           new DeployerFactory().createDeployer(deploymentConfiguration, new MavenDeployerLog(getLog()));

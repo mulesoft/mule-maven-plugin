@@ -49,10 +49,9 @@ public abstract class AbstractMuleMojo extends AbstractGenericMojo {
 
   protected static ResourcesContent resourcesContent;
 
-  public abstract void doExecute() throws MojoExecutionException, MojoFailureException;
-
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (!hasExecutedBefore()) {
+      initMojo();
       doExecute();
     } else {
       getLog().debug("Skipping execution because it has already been run");

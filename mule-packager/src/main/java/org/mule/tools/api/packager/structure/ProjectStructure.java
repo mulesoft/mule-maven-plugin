@@ -1,6 +1,3 @@
-package org.mule.tools.api.packager.structure;
-
-import java.nio.file.Path;
 /*
  * Mule ESB Maven Tools
  * <p>
@@ -10,20 +7,39 @@ import java.nio.file.Path;
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
-import java.util.Optional;
+package org.mule.tools.api.packager.structure;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.api.packager.structure.FolderNames.*;
+import static org.mule.tools.api.packager.structure.FolderNames.JAVA;
+import static org.mule.tools.api.packager.structure.FolderNames.MAIN;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.structure.FolderNames.MUNIT;
+import static org.mule.tools.api.packager.structure.FolderNames.RESOURCES;
+import static org.mule.tools.api.packager.structure.FolderNames.SRC;
+import static org.mule.tools.api.packager.structure.FolderNames.TARGET;
+import static org.mule.tools.api.packager.structure.FolderNames.TEST;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
 
 public class ProjectStructure {
 
   private final Path projectBaseFolder;
+  private final Path projectBuildDirectory;
   private final boolean includeTestSuites;
 
   public ProjectStructure(Path projectBaseFolder, boolean includeTestSuites) {
+    this(projectBaseFolder, Paths.get(TARGET.value()), includeTestSuites);
+  }
+
+  public ProjectStructure(Path projectBaseFolder, Path projectBuildFolder, boolean includeTestSuites) {
     checkArgument(projectBaseFolder != null, "Project base folder should not be null");
+    checkArgument(projectBuildFolder != null, "Project build folder should not be null");
     this.projectBaseFolder = projectBaseFolder;
+    this.projectBuildDirectory = projectBuildFolder;
     this.includeTestSuites = includeTestSuites;
   }
 
@@ -70,6 +86,6 @@ public class ProjectStructure {
   }
 
   public Path getMuleArtifactJsonPath() {
-    return projectBaseFolder.resolve(TARGET.value()).resolve(META_INF.value()).resolve(MULE_ARTIFACT.value());
+    return projectBuildDirectory.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value());
   }
 }

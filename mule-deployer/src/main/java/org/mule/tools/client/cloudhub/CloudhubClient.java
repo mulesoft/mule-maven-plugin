@@ -27,17 +27,20 @@ import org.mule.tools.utils.DeployerLog;
 
 public class CloudhubClient extends AbstractMuleClient {
 
-  public static final String APPLICATIONS_PATH = "/cloudhub/api/applications";
-  public static final String APPLICATION_UPDATE_PATH = "/cloudhub/api/v2/applications/%s";
-  public static final String APPLICATIONS_FILES_PATH = "/cloudhub/api/v2/applications/%s/files";
-  public static final String DOMAINS_PATH = "/cloudhub/api/applications/domains/";
-  public static final String CREATE_REQUEST_TEMPLATE = "{" +
+  public static final String STARTED_STATUS = "STARTED";
+  public static final String UNDEPLOYED_STATUS = "UNDEPLOYED";
+
+  private static final String APPLICATIONS_PATH = "/cloudhub/api/applications";
+  private static final String DOMAINS_PATH = "/cloudhub/api/applications/domains/";
+  private static final String APPLICATION_UPDATE_PATH = "/cloudhub/api/v2/applications/%s";
+  private static final String APPLICATIONS_FILES_PATH = "/cloudhub/api/v2/applications/%s/files";
+  private static final String CREATE_REQUEST_TEMPLATE = "{" +
       "  \"domain\": \"%s\"," +
       "  \"region\": \"%s\"," +
       "  \"muleVersion\": \"%s\"," +
       "  \"workers\": %d," +
       "  \"workerType\": \"%s\"";
-  public static final String UPDATE_REQUEST_TEMPLATE = "{" +
+  private static final String UPDATE_REQUEST_TEMPLATE = "{" +
       "  \"region\":\"%s\"," +
       "  \"muleVersion\": {\"version\": \"%s\"}," +
       "  \"workers\": {" +

@@ -149,6 +149,11 @@ public class ArmClient extends AbstractMuleClient {
     return target;
   }
 
+  public void deleteServer(Integer serverId) {
+    Response response = delete(baseUri, SERVERS + "/" + serverId);
+    validateStatusSuccess(response);
+  }
+
   public Target findServerByName(String name) {
     return findTargetByName(name, SERVERS);
   }

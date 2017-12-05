@@ -55,7 +55,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     verifier.setEnvironmentVariable("username", username);
     verifier.setEnvironmentVariable("password", password);
     verifier.setEnvironmentVariable("environment", PRODUCTION_ENVIRONMENT);
-    verifier.setEnvironmentVariable("mule.version", getMuleVersion()); // <-- not sure this is needed
+    verifier.setEnvironmentVariable("mule.version", getMuleVersion());
     verifier.setEnvironmentVariable("cloudhub.application.name", APPLICATION_NAME);
 
     cloudhubClient = getCloudHubClient();

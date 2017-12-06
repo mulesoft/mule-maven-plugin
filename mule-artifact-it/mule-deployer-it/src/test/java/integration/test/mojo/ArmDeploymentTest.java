@@ -11,6 +11,8 @@
 package integration.test.mojo;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
 
 import java.io.IOException;
@@ -26,20 +28,28 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.mule.tools.client.arm.ArmClient;
+import org.mule.tools.client.arm.model.Applications;
+import org.mule.tools.client.arm.model.Data;
 import org.mule.tools.client.arm.model.Servers;
 import org.mule.tools.client.arm.model.Target;
 import org.mule.tools.model.anypoint.ArmDeployment;
 
 import org.slf4j.LoggerFactory;
 
-import integration.test.mojo.environment.verifier.ArmDeploymentVerifier;
 import integration.test.util.StandaloneEnvironment;
 
 public class ArmDeploymentTest extends AbstractDeploymentTest {
 
   private static final int APPLICATION_NAME_LENGTH = 10;
+
+  private static final String APPLICATION_ARTIFACT_ID = "arm-deploy";
   private static final String APPLICATION = "empty-mule-deploy-arm-project";
-  private static final String INSTANCE_NAME = APPLICATION + randomAlphabetic(APPLICATION_NAME_LENGTH).toLowerCase();
+  private static final String ARM_INSTANCE_NAME = APPLICATION + randomAlphabetic(APPLICATION_NAME_LENGTH).toLowerCase();
+
+  private static final int ATTEMPTS = 30;
+  private static final long SLEEP_TIME = 30000;
+  private static final String STARTED_STATUS = "STARTED";
+  public static final String RUNNING_STATUS = "RUNNING";
 
   @Rule
   public TemporaryFolder environmentWorkingDir = new TemporaryFolder();
@@ -59,17 +69,16 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
     armClient = getArmClient();
     standaloneEnvironment = new StandaloneEnvironment(environmentWorkingDir.getRoot(), getMuleVersion());
 
-    standaloneEnvironment.register(armClient.getRegistrationToken(), INSTANCE_NAME);
+    standaloneEnvironment.register(armClient.getRegistrationToken(), ARM_INSTANCE_NAME);
     standaloneEnvironment.start(false);
-    assertServerIsRunningInArm(INSTANCE_NAME, 4 * 60000, armClient);
+    assertServerIsRunningInArm(ARM_INSTANCE_NAME, 4 * 60000, armClient);
 
     verifier = buildBaseVerifier();
     verifier.setEnvironmentVariable("username", username);
     verifier.setEnvironmentVariable("password", password);
-    verifier.setEnvironmentVariable("target", INSTANCE_NAME);
+    verifier.setEnvironmentVariable("target", ARM_INSTANCE_NAME);
     verifier.setEnvironmentVariable("target.type", "server");
     verifier.setEnvironmentVariable("environment", PRODUCTION_ENVIRONMENT);
-    verifier.setEnvironmentVariable("arm.application.name", APPLICATION);
   }
 
   @Test
@@ -78,8 +87,9 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
     verifier.addCliOption("-DmuleDeploy");
     verifier.executeGoal(DEPLOY_GOAL);
 
-    ArmDeploymentVerifier armDeploymentVerifier = new ArmDeploymentVerifier();
-    armDeploymentVerifier.verifyIsDeployed(INSTANCE_NAME);
+
+    boolean status = getApplicationStatus(APPLICATION_ARTIFACT_ID, ARM_INSTANCE_NAME, STARTED_STATUS);
+    assertThat("Application was not deployed", status, is(true));
     verifier.verifyErrorFreeLog();
   }
 
@@ -88,6 +98,9 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
     standaloneEnvironment.stop();
     verifier.resetStreams();
     environmentWorkingDir.delete();
+
+    Data application = getApplication(APPLICATION_ARTIFACT_ID, ARM_INSTANCE_NAME);
+    armClient.deleteServer(Integer.valueOf(application.target.id));
   }
 
   private ArmClient getArmClient() {
@@ -104,7 +117,6 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
     return armClient;
   }
 
-  // TODO this should probably go to the arm deployment verifier
   private void assertServerIsRunningInArm(String instanceName, int timeoutInSeconds, ArmClient armClient)
       throws TimeoutException, InterruptedException {
 
@@ -118,10 +130,43 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
       count++;
 
       Servers server = armClient.getServer(serverId);
-      if (StringUtils.equals(server.data[0].status, "RUNNING")) {
+      if (StringUtils.equals(server.data[0].status, RUNNING_STATUS)) {
         return;
       }
     }
     throw new TimeoutException("Waiting for Standalone to accept deployments has timeout.");
+  }
+
+  public boolean getApplicationStatus(String applicationName, String armInstanceName, String status)
+      throws InterruptedException, TimeoutException {
+    boolean keepValidating = true;
+
+    int i = ATTEMPTS;
+    while (i > 0 && keepValidating) {
+      Data application = getApplication(applicationName, armInstanceName);
+      keepValidating = !application.desiredStatus.equals(status);
+
+      if (keepValidating) {
+        Thread.sleep(SLEEP_TIME);
+      }
+      i--;
+    }
+
+    if (i == 0 && keepValidating) {
+      throw new TimeoutException("Validating status " + status + " for application " + applicationName
+          + " has exceed the maximum number of attempts.");
+    }
+    return !keepValidating;
+  }
+
+  public Data getApplication(String applicationName, String armInstanceName) {
+    Applications applications = armClient.getApplications();
+    for (Data d : applications.data) {
+      if (d.artifact.name.equals(applicationName) && d.target.name.equals(armInstanceName)) {
+        return d;
+      }
+    }
+
+    return null;
   }
 }

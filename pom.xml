@@ -64,8 +64,6 @@
         <commons.logging.version>1.2</commons.logging.version>
 
 
-        <json.version>20170516</json.version>
-
         <jersey.media.moxy>2.15</jersey.media.moxy>
         <slf4j.api.version>1.8.0-alpha2</slf4j.api.version>
         <maven.compat.version>3.3.9</maven.compat.version>
@@ -312,9 +310,9 @@
                     </configuration>
                 </plugin>
                 <!--<plugin>-->
-                    <!--<groupId>org.apache.maven.plugins</groupId>-->
-                    <!--<artifactId>maven-javadoc-plugin</artifactId>-->
-                    <!--<version>${maven.javadoc.plugin.version}</version>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-javadoc-plugin</artifactId>-->
+                <!--<version>${maven.javadoc.plugin.version}</version>-->
                 <!--</plugin>-->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

@@ -50,6 +50,14 @@ public abstract class AbstractDeploymentTest {
     return System.getProperty("mule.version", DEFAULT_MULE_VERSION);
   }
 
+  protected Verifier buildBaseVerifier(Boolean remoteDebug) throws IOException, VerificationException {
+    if (remoteDebug) {
+      System.setProperty(MAVEN_OPTS_PROPERTY_KEY, DEFAULT_DEBUG_ARG_LINE);
+    }
+
+    return buildBaseVerifier();
+  }
+
   protected Verifier buildBaseVerifier() throws IOException, VerificationException {
     projectFactory = new ProjectFactory();
     File projectBaseDirectory = projectFactory.createProjectBaseDir(getApplication(), this.getClass());
@@ -59,6 +67,8 @@ public abstract class AbstractDeploymentTest {
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
 
     verifier.setMavenDebug(true);
+
+    verifier.setDebug(true);
 
     return verifier;
   }

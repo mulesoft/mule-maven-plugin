@@ -9,28 +9,33 @@
  */
 package org.mule.tools.client.cloudhub;
 
-import groovy.util.ScriptException;
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.mule.tools.client.cloudhub.CloudhubClient.STARTED_STATUS;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
+
 import org.mule.tools.client.AbstractDeployer;
+import org.mule.tools.client.cloudhub.OpeartionRetrier.RetriableOperation;
 import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.client.standalone.exception.DeploymentException;
-
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
 
-import java.util.List;
-
-import static com.google.common.base.Preconditions.checkArgument;
+import groovy.util.ScriptException;
 
 public class CloudhubDeployer extends AbstractDeployer {
 
-  private final CloudHubDeployment cloudhubDeployment;
+  private static final String VALIDATE_APPLICATION_STARTED = "cloudhub.deployer.validate.application.started";
+  private static final String VALIDATE_APPLICATION_STARTED_SLEEP = "cloudhub.deployer.validate.application.started.sleep";
+  private static final String VALIDATE_APPLICATION_STARTED_ATTEMPTS = "cloudhub.deployer.validate.application.started.attempts";
+
   private CloudhubClient cloudhubClient;
+  private final CloudHubDeployment cloudhubDeployment;
 
   public CloudhubDeployer(CloudHubDeployment cloudHubDeployment, DeployerLog log) throws DeploymentException {
     super(cloudHubDeployment, log);
@@ -39,7 +44,7 @@ public class CloudhubDeployer extends AbstractDeployer {
 
   @Override
   public void deploy() throws DeploymentException {
-    cloudhubClient.init();
+    getCloudhubClient().init();
 
     info("Deploying application " + getApplicationName() + " to Cloudhub");
 
@@ -52,9 +57,9 @@ public class CloudhubDeployer extends AbstractDeployer {
 
       if (domainAvailable) {
         info("Creating application " + getApplicationName());
-        cloudhubClient.createApplication(getApplicationName(), cloudhubDeployment.getRegion(),
-                                         cloudhubDeployment.getMuleVersion().get(), cloudhubDeployment.getWorkers().get(),
-                                         cloudhubDeployment.getWorkerType(), cloudhubDeployment.getProperties());
+        getCloudhubClient().createApplication(getApplicationName(), cloudhubDeployment.getRegion(),
+                                              cloudhubDeployment.getMuleVersion().get(), cloudhubDeployment.getWorkers().get(),
+                                              cloudhubDeployment.getWorkerType(), cloudhubDeployment.getProperties());
       } else {
         Application app = findApplicationFromCurrentUser(getApplicationName());
 
@@ -69,8 +74,9 @@ public class CloudhubDeployer extends AbstractDeployer {
           String updateWorkerType =
               (cloudhubDeployment.getWorkerType() == null) ? app.workerType : cloudhubDeployment.getWorkerType();
 
-          cloudhubClient.updateApplication(getApplicationName(), updateRegion, updateMuleVersion, updateWorkers, updateWorkerType,
-                                           cloudhubDeployment.getProperties());
+          getCloudhubClient().updateApplication(getApplicationName(), updateRegion, updateMuleVersion, updateWorkers,
+                                                updateWorkerType,
+                                                cloudhubDeployment.getProperties());
         } else {
           error("Domain " + getApplicationName() + " is not available. Aborting.");
           throw new DeploymentException("Domain " + getApplicationName() + " is not available. Aborting.");
@@ -78,10 +84,16 @@ public class CloudhubDeployer extends AbstractDeployer {
       }
 
       info("Uploading application contents " + getApplicationName());
-      cloudhubClient.uploadFile(getApplicationName(), getApplicationFile());
+      getCloudhubClient().uploadFile(getApplicationName(), getApplicationFile());
 
       info("Starting application " + getApplicationName());
-      cloudhubClient.startApplication(getApplicationName());
+      getCloudhubClient().startApplication(getApplicationName());
+
+      if (validateApplicationHasStarted()) {
+        info("Validation application " + getApplicationName() + " has started");
+        validateApplicationIsInStatus(getApplicationName(), STARTED_STATUS);
+      }
+
     } catch (ClientException e) {
       error("Failed: " + e.getMessage());
       throw new DeploymentException("Failed to deploy application " + getApplicationName(), e);
@@ -90,16 +102,22 @@ public class CloudhubDeployer extends AbstractDeployer {
 
   @Override
   public void undeploy(MavenProject mavenProject) throws DeploymentException {
-    CloudhubClient cloudhubClient =
-        new CloudhubClient(cloudhubDeployment, log);
-    cloudhubClient.init();
+    getCloudhubClient().init();
+
     log.info("Stopping application " + cloudhubDeployment.getApplicationName());
-    cloudhubClient.stopApplication(cloudhubDeployment.getApplicationName());
+    getCloudhubClient().stopApplication(cloudhubDeployment.getApplicationName());
   }
 
   @Override
   protected void initialize() {
-    this.cloudhubClient = new CloudhubClient((CloudHubDeployment) deploymentConfiguration, log);
+    cloudhubClient = new CloudhubClient((CloudHubDeployment) deploymentConfiguration, log);
+  }
+
+  protected CloudhubClient getCloudhubClient() {
+    if (cloudhubClient == null) {
+      throw new IllegalStateException("You must initialize the " + this.getClass().getName());
+    }
+    return cloudhubClient;
   }
 
   @Override
@@ -111,7 +129,7 @@ public class CloudhubDeployer extends AbstractDeployer {
 
   protected Application findApplicationFromCurrentUser(String appName) {
     checkArgument(StringUtils.isNotBlank(appName), "Application name should not be blank nor null");
-    for (Application app : getApplications()) {
+    for (Application app : getCloudhubClient().getApplications()) {
       if (appName.equalsIgnoreCase(app.domain)) {
         return app;
       }
@@ -119,7 +137,31 @@ public class CloudhubDeployer extends AbstractDeployer {
     return null;
   }
 
-  public List<Application> getApplications() {
-    return cloudhubClient.getApplications();
+  private Boolean validateApplicationHasStarted() {
+    return Boolean.valueOf(System.getProperty(VALIDATE_APPLICATION_STARTED, "false"));
+  }
+
+
+  private void validateApplicationIsInStatus(String applicationName, String status) throws DeploymentException {
+    log.debug("Checking application " + applicationName + " for status " + status + "...");
+
+    RetriableOperation operation = () -> {
+      Application application = cloudhubClient.getApplication(applicationName);
+      if (application != null && status.equals(application.status)) {
+        return false;
+      }
+      return true;
+    };
+
+    try {
+      OpeartionRetrier opeartionRetrier = new OpeartionRetrier();
+      opeartionRetrier.setAttempts(Integer.valueOf(System.getProperty(VALIDATE_APPLICATION_STARTED_ATTEMPTS, "20")));
+      opeartionRetrier.setSleepTime(Long.valueOf(System.getProperty(VALIDATE_APPLICATION_STARTED_SLEEP, "60000")));
+
+      opeartionRetrier.retry(operation);
+    } catch (Exception e) {
+      throw new DeploymentException("Failed to deploy application " + applicationName
+          + ". Fail to verify the application has started", e);
+    }
   }
 }

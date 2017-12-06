@@ -12,6 +12,7 @@ package org.mule.tools.client.cloudhub;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
@@ -170,7 +171,6 @@ public class CloudhubClient extends AbstractMuleClient {
     }
 
   }
-
 
   public void deleteApplication(String appName) {
     Response response = delete(baseUri, APPLICATIONS_PATH + "/" + appName);

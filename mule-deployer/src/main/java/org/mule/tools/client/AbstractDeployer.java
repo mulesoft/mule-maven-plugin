@@ -21,13 +21,13 @@ import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.utils.DeployerLog;
 
-
+/**
+ * @since 3.0.0
+ */
 public abstract class AbstractDeployer {
 
-  protected final Deployment deploymentConfiguration;
   protected final DeployerLog log;
-
-
+  protected final Deployment deploymentConfiguration;
 
   public AbstractDeployer(Deployment deploymentConfiguration, DeployerLog log) throws DeploymentException {
     this.deploymentConfiguration = deploymentConfiguration;

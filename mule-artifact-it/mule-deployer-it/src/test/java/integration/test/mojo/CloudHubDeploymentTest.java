@@ -14,7 +14,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
 import static org.mule.tools.client.cloudhub.CloudhubClient.STARTED_STATUS;
-import static org.mule.tools.client.cloudhub.CloudhubClient.UNDEPLOYED_STATUS;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -27,21 +26,21 @@ import org.junit.Test;
 
 import org.mule.tools.client.cloudhub.Application;
 import org.mule.tools.client.cloudhub.CloudhubClient;
+import org.mule.tools.client.cloudhub.OpeartionRetrier;
+import org.mule.tools.client.cloudhub.OpeartionRetrier.RetriableOperation;
+import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 
 public class CloudHubDeploymentTest extends AbstractDeploymentTest {
+
+  private static final long RETRY_SLEEP_TIME = 30000;
 
   private static final int APPLICATION_NAME_LENGTH = 10;
   private static final String APPLICATION = "empty-mule-deploy-cloudhub-project";
   private static final String APPLICATION_NAME = randomAlphabetic(APPLICATION_NAME_LENGTH).toLowerCase();
 
-  private static final int ATTEMPTS = 10;
-  private static final long SLEEP_TIME = 30000;
-
-
   private Verifier verifier;
   private CloudhubClient cloudhubClient;
-
 
   public String getApplication() {
     return APPLICATION;
@@ -58,20 +57,19 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     verifier.setEnvironmentVariable("mule.version", getMuleVersion());
     verifier.setEnvironmentVariable("cloudhub.application.name", APPLICATION_NAME);
 
+    verifier.setSystemProperty("cloudhub.deployer.validate.application.started", "true");
+
     cloudhubClient = getCloudHubClient();
   }
 
   @Test
-  public void testCloudHubDeploy() throws VerificationException, InterruptedException, TimeoutException {
+  public void testCloudHubDeploy() throws VerificationException, InterruptedException, TimeoutException, DeploymentException {
     log.info("Executing mule:deploy goal...");
     verifier.addCliOption("-DmuleDeploy");
     verifier.executeGoal(DEPLOY_GOAL);
 
-    // TODO check why we have this sleep here
-    Thread.sleep(30000);
-
-    boolean status = getApplicationStatus(APPLICATION_NAME, STARTED_STATUS);
-    assertThat("Application was not deployed", status, is(true));
+    String status = validateApplicationIsInStatus(APPLICATION_NAME, STARTED_STATUS);
+    assertThat("Application was not deployed", status, is(STARTED_STATUS));
 
     verifier.verifyErrorFreeLog();
   }
@@ -95,35 +93,45 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     return cloudhubClient;
   }
 
-  public boolean getApplicationStatus(String applicationName, String status)
-      throws InterruptedException, TimeoutException {
-    log.info("Checking application " + applicationName + " for status " + status + "...");
+  private String validateApplicationIsInStatus(String applicationName, String status)
+      throws DeploymentException, TimeoutException, InterruptedException {
+    log.debug("Checking application " + applicationName + " for status " + status + "...");
 
-    int repeat = ATTEMPTS;
-    boolean keepValidating = false;
-    while (repeat > 0 && !keepValidating) {
-      Application application = cloudhubClient.getApplication(applicationName);
+    ApplicationStatusRetriableOperation operation = new ApplicationStatusRetriableOperation(status, applicationName);
 
-      keepValidating = !isExpectedStatus(status, application);
-      if (keepValidating) {
-        Thread.sleep(SLEEP_TIME);
-      }
-      repeat--;
-    }
-    if (repeat == 0 && !keepValidating) {
-      throw new TimeoutException("Validating status " + status + " for application " + applicationName
-          + " has exceed the maximum number of attempts.");
-    }
-    return keepValidating;
+    OpeartionRetrier opeartionRetrier = new OpeartionRetrier();
+    opeartionRetrier.setSleepTime(RETRY_SLEEP_TIME);
+
+    opeartionRetrier.retry(operation);
+
+    return operation.getApplicationStatus();
+
   }
 
-  private boolean isExpectedStatus(String status, Application application) {
-    if (STARTED_STATUS.equals(status) && application != null) {
-      return status.equals(application.status);
+  class ApplicationStatusRetriableOperation implements RetriableOperation {
+
+    private String applicationStatus;
+
+    private String expectedStatus;
+    private String applicationName;
+
+    public ApplicationStatusRetriableOperation(String expectedStatus, String applicationName) {
+      this.expectedStatus = expectedStatus;
+      this.applicationName = applicationName;
     }
-    if (UNDEPLOYED_STATUS.equals(status)) {
-      return application == null || UNDEPLOYED_STATUS.equals(application.status);
+
+    public String getApplicationStatus() {
+      return applicationStatus;
     }
-    return false;
+
+    @Override
+    public Boolean run() {
+      Application application = cloudhubClient.getApplication(applicationName);
+      applicationStatus = application.status;
+      if (application != null && expectedStatus.equals(application.status)) {
+        return false;
+      }
+      return true;
+    }
   }
 }

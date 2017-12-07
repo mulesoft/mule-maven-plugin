@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author Mulesoft Inc.
  * @since 2.0.0
  */
-public class OpeartionRetrier {
+public class OperationRetrier {
 
   private static final Integer DEFAULT_ATTEMPTS = 10;
   private static final Long DEFAULT_SLEEP_TIME = Long.valueOf(30000);

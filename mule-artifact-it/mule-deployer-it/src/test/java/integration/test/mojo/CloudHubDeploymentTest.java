@@ -26,8 +26,8 @@ import org.junit.Test;
 
 import org.mule.tools.client.cloudhub.Application;
 import org.mule.tools.client.cloudhub.CloudhubClient;
-import org.mule.tools.client.cloudhub.OpeartionRetrier;
-import org.mule.tools.client.cloudhub.OpeartionRetrier.RetriableOperation;
+import org.mule.tools.client.cloudhub.OperationRetrier;
+import org.mule.tools.client.cloudhub.OperationRetrier.RetriableOperation;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 
@@ -99,10 +99,10 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
     ApplicationStatusRetriableOperation operation = new ApplicationStatusRetriableOperation(status, applicationName);
 
-    OpeartionRetrier opeartionRetrier = new OpeartionRetrier();
-    opeartionRetrier.setSleepTime(RETRY_SLEEP_TIME);
+    OperationRetrier operationRetrier = new OperationRetrier();
+    operationRetrier.setSleepTime(RETRY_SLEEP_TIME);
 
-    opeartionRetrier.retry(operation);
+    operationRetrier.retry(operation);
 
     return operation.getApplicationStatus();
 

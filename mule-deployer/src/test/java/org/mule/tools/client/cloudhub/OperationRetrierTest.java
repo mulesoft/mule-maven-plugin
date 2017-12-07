@@ -16,7 +16,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
-import org.mule.tools.client.cloudhub.OpeartionRetrier.RetriableOperation;
+import org.mule.tools.client.cloudhub.OperationRetrier.RetriableOperation;
 
 /**
  * @author Mulesoft Inc.
@@ -26,35 +26,35 @@ public class OperationRetrierTest {
 
   @Test(expected = TimeoutException.class)
   public void retryFail() throws TimeoutException, InterruptedException {
-    OpeartionRetrier opeartionRetrier = new OpeartionRetrier();
-    opeartionRetrier.setAttempts(1);
-    opeartionRetrier.setSleepTime(Long.valueOf(1000));
+    OperationRetrier operationRetrier = new OperationRetrier();
+    operationRetrier.setAttempts(1);
+    operationRetrier.setSleepTime(Long.valueOf(1000));
 
-    opeartionRetrier.retry(() -> true);
+    operationRetrier.retry(() -> true);
   }
 
   @Test
   public void retrySucceed() throws TimeoutException, InterruptedException {
-    OpeartionRetrier opeartionRetrier = new OpeartionRetrier();
-    opeartionRetrier.setAttempts(1);
-    opeartionRetrier.setSleepTime(Long.valueOf(1000));
+    OperationRetrier operationRetrier = new OperationRetrier();
+    operationRetrier.setAttempts(1);
+    operationRetrier.setSleepTime(Long.valueOf(1000));
 
-    opeartionRetrier.retry(() -> false);
+    operationRetrier.retry(() -> false);
   }
 
   @Test
   public void retryTwoTimesAndFail() {
     Integer maxAttempts = 2;
 
-    OpeartionRetrier opeartionRetrier = new OpeartionRetrier();
-    opeartionRetrier.setAttempts(maxAttempts);
-    opeartionRetrier.setSleepTime(Long.valueOf(1));
+    OperationRetrier operationRetrier = new OperationRetrier();
+    operationRetrier.setAttempts(maxAttempts);
+    operationRetrier.setSleepTime(Long.valueOf(1));
 
 
     CounterRetriableOperation retriableOperation = new CounterRetriableOperation(maxAttempts);
 
     try {
-      opeartionRetrier.retry(retriableOperation);
+      operationRetrier.retry(retriableOperation);
     } catch (Exception e) {
       assertThat(retriableOperation.getCount(), is(maxAttempts));
     }
@@ -64,16 +64,16 @@ public class OperationRetrierTest {
   public void retryTwoTimesAndSucced() throws TimeoutException, InterruptedException {
     Integer maxAttempts = 3;
 
-    OpeartionRetrier opeartionRetrier = new OpeartionRetrier();
-    opeartionRetrier.setAttempts(maxAttempts);
-    opeartionRetrier.setSleepTime(Long.valueOf(1));
+    OperationRetrier operationRetrier = new OperationRetrier();
+    operationRetrier.setAttempts(maxAttempts);
+    operationRetrier.setSleepTime(Long.valueOf(1));
 
 
     CounterRetriableOperation retriableOperation = new CounterRetriableOperation(maxAttempts);
     retriableOperation.setSuccedAt(2);
 
 
-    opeartionRetrier.retry(retriableOperation);
+    operationRetrier.retry(retriableOperation);
     assertThat(retriableOperation.getCount(), is(2));
   }
 

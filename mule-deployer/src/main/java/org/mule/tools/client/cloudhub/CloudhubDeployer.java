@@ -20,7 +20,7 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 
 import org.mule.tools.client.AbstractDeployer;
-import org.mule.tools.client.cloudhub.OpeartionRetrier.RetriableOperation;
+import org.mule.tools.client.cloudhub.OperationRetrier.RetriableOperation;
 import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
@@ -154,11 +154,11 @@ public class CloudhubDeployer extends AbstractDeployer {
     };
 
     try {
-      OpeartionRetrier opeartionRetrier = new OpeartionRetrier();
-      opeartionRetrier.setAttempts(Integer.valueOf(System.getProperty(VALIDATE_APPLICATION_STARTED_ATTEMPTS, "20")));
-      opeartionRetrier.setSleepTime(Long.valueOf(System.getProperty(VALIDATE_APPLICATION_STARTED_SLEEP, "60000")));
+      OperationRetrier operationRetrier = new OperationRetrier();
+      operationRetrier.setAttempts(Integer.valueOf(System.getProperty(VALIDATE_APPLICATION_STARTED_ATTEMPTS, "20")));
+      operationRetrier.setSleepTime(Long.valueOf(System.getProperty(VALIDATE_APPLICATION_STARTED_SLEEP, "60000")));
 
-      opeartionRetrier.retry(operation);
+      operationRetrier.retry(operation);
     } catch (Exception e) {
       throw new DeploymentException("Failed to deploy application " + applicationName
           + ". Fail to verify the application has started", e);

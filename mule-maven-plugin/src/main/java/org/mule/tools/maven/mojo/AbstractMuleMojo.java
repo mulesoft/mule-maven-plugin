@@ -11,7 +11,6 @@
 package org.mule.tools.maven.mojo;
 
 import java.io.File;
-import java.nio.file.Paths;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
@@ -60,7 +59,7 @@ public abstract class AbstractMuleMojo extends AbstractGenericMojo {
 
   public ContentGenerator getContentGenerator() {
     if (contentGenerator == null) {
-      contentGenerator = ContentGeneratorFactory.create(getProjectInformation());
+      contentGenerator = ContentGeneratorFactory.create(getAndSetProjectInformation());
     }
     return contentGenerator;
   }

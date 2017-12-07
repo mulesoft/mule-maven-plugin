@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.mule.tools.api.exception.ValidationException;
-import org.mule.tools.api.validation.AbstractProjectValidator;
+import org.mule.tools.api.validation.project.AbstractProjectValidator;
 
 public class ValidaetMojoTest extends AbstractMuleMojoTest {
 

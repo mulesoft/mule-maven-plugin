@@ -53,12 +53,15 @@ public class MulePluginResolver {
     return effectiveMulePluginDependencies;
   }
 
+  // TODO we should handle dependencies of mule-domains
   protected List<ArtifactCoordinates> resolveMulePluginsOfScope(Project project, String scope) {
     return project.getDependencies().stream()
         .filter(dependencyWith(scope))
         .collect(Collectors.toList());
   }
 
+  // TODO rename to mulePluginDependenciesOfScope (dependes if we handle domains)
+  // TODO this should be private
   protected Predicate<ArtifactCoordinates> dependencyWith(String scope) {
     if (scope != null) {
       return dependency -> TYPE.equals(dependency.getType()) && scope.equals(dependency.getScope())

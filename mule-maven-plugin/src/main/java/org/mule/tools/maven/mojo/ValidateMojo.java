@@ -19,7 +19,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.mule.tools.api.exception.ValidationException;
-import org.mule.tools.api.validation.AbstractProjectValidator;
+import org.mule.tools.api.validation.project.AbstractProjectValidator;
 import org.mule.tools.api.validation.VersionUtils;
 
 

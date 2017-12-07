@@ -39,14 +39,13 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
-import org.mule.tools.api.validation.AbstractProjectValidator;
-import org.mule.tools.api.validation.ProjectValidatorFactory;
+import org.mule.tools.api.validation.project.AbstractProjectValidator;
+import org.mule.tools.api.validation.project.ProjectValidatorFactory;
 import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
 import org.mule.tools.client.authentication.model.Credentials;
 import org.mule.tools.maven.utils.ArtifactUtils;
 import org.mule.tools.maven.utils.DependencyProject;
 import org.mule.tools.maven.utils.MavenPackagerLog;
-import org.mule.tools.model.Deployment;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
@@ -54,8 +53,6 @@ import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
 
 public abstract class AbstractGenericMojo extends AbstractMojo {
-
-  protected Deployment deploymentConfiguration;
 
   @Parameter
   protected CloudHubDeployment cloudHubDeployment;
@@ -103,8 +100,10 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   protected String classifier;
 
   protected AbstractProjectValidator validator;
+
   protected AetherMavenClient aetherMavenClient;
-  protected ProjectInformation projectInformation;
+
+  private ProjectInformation projectInformation;
 
   public abstract String getPreviousRunPlaceholder();
 
@@ -114,10 +113,7 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
     if (projectBuildDirectory != null) {
       project.getBuild().setDirectory(projectBuildDirectory);
     }
-  }
-
-  public Deployment getDeploymentConfiguration() {
-    return deploymentConfiguration;
+    getAndSetProjectInformation();
   }
 
   public void setCloudHubDeployment(CloudHubDeployment cloudHubDeployment) {
@@ -140,10 +136,22 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
     this.clusterDeployment = clusterDeployment;
   }
 
+  public void setSession(MavenSession session) {
+    this.session = session;
+  }
+
+  public void setProject(MavenProject project) {
+    this.project = project;
+  }
+
+  public void setProjectBaseFolder(File projectBaseFolder) {
+    this.projectBaseFolder = projectBaseFolder;
+  }
+
   public AbstractProjectValidator getProjectValidator() {
     if (validator == null) {
-      validator = ProjectValidatorFactory
-          .create(getProjectInformation(), getAetherMavenClient(), sharedLibraries, deploymentConfiguration, strictCheck);
+      validator =
+          ProjectValidatorFactory.create(getAndSetProjectInformation(), getAetherMavenClient(), sharedLibraries, strictCheck);
     }
     return validator;
   }
@@ -166,7 +174,7 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
     return dependencies.stream().map(ArtifactUtils::toArtifactCoordinates).collect(Collectors.toList());
   }
 
-  protected ProjectInformation getProjectInformation() {
+  protected ProjectInformation getAndSetProjectInformation() {
     ProjectInformation.Builder builder = new ProjectInformation.Builder();
     if (projectInformation == null) {
       boolean isDeployment = session.getGoals().stream().anyMatch(goal -> StringUtils.equals(goal, "deploy"));

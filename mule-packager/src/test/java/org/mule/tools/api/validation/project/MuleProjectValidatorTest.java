@@ -8,45 +8,65 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.validation;
+package org.mule.tools.api.validation.project;
+
+import static java.util.Collections.emptySet;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_POLICY;
+import static org.mule.tools.api.packager.structure.FolderNames.MAIN;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE;
+import static org.mule.tools.api.packager.structure.FolderNames.POLICY;
+import static org.mule.tools.api.packager.structure.FolderNames.SRC;
+import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
+import static org.mule.tools.api.validation.project.AbstractProjectValidator.VALIDATE_GOAL;
+import static org.mule.tools.api.validation.project.MuleProjectValidator.isProjectStructureValid;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
+import org.mule.tools.api.validation.project.MuleProjectValidator;
 import org.mule.tools.model.Deployment;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.*;
-
-import static java.util.Collections.emptySet;
-import static org.mockito.Mockito.*;
-import static org.mule.tools.api.packager.structure.FolderNames.*;
-import static org.mule.tools.api.validation.MuleProjectValidator.isProjectStructureValid;
 
 public class MuleProjectValidatorTest {
 
-  private static final String ARTIFACT_ID_PREFIX = "artifact-id-";
-  private static final String VERSION = "1.0.0";
-  private static final String TYPE = "jar";
-  private static final String DOMAIN_CLASSIFIER = "mule-domain";
   private static final String VALIDATE_SHARED_LIBRARIES_MESSAGE =
       "The mule application does not contain the following shared libraries: ";
-  public static final String MULE_POLICY = "mule-policy";
 
-  protected static final String GROUP_ID = "group-id";
-  protected static final String ARTIFACT_ID = "artifact-id";
-  protected static final String MULE_APPLICATION = "mule-application";
-  protected static final String MULE_DOMAIN = "mule-domain";
+
+  private static final String TYPE = "jar";
+  private static final String VERSION = "1.0.0";
+  private static final String GROUP_ID = "group-id";
+  private static final String ARTIFACT_ID = "artifact-id";
+  private static final String ARTIFACT_ID_PREFIX = "artifact-id-";
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -56,9 +76,8 @@ public class MuleProjectValidatorTest {
   public TemporaryFolder projectBuildFolder = new TemporaryFolder();
 
   private MuleProjectValidator validator;
-  private Deployment deploymentConfigurationMock;
-
   private ProjectInformation.Builder builder;
+  private Deployment deploymentConfigurationMock;
 
   @Before
   public void before() throws IOException, MojoExecutionException {
@@ -67,14 +86,16 @@ public class MuleProjectValidatorTest {
         .withGroupId(GROUP_ID)
         .withArtifactId(ARTIFACT_ID)
         .withVersion(VERSION)
-        .withPackaging(MULE_APPLICATION)
+        .withPackaging(MULE_APPLICATION.toString())
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
         .withBuildDirectory(projectBuildFolder.getRoot().toPath())
         .setTestProject(false)
+        .withDeployments(Arrays.asList(deploymentConfigurationMock))
         .withDependencyProject(Collections::emptyList);
-    ProjectInformation projectInformation = builder.build();
+
+    validator = new MuleProjectValidator(builder.build(), new ArrayList<>(), false);
+
     deploymentConfigurationMock = mock(Deployment.class);
-    validator = new MuleProjectValidator(projectInformation, new ArrayList<>(), deploymentConfigurationMock, false);
   }
 
   @Test(expected = ValidationException.class)
@@ -82,7 +103,7 @@ public class MuleProjectValidatorTest {
     Path mainSrcFolder = projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value());
     mainSrcFolder.toFile().mkdirs();
 
-    isProjectStructureValid(MULE_APPLICATION, projectBaseFolder.getRoot().toPath());
+    isProjectStructureValid(MULE_APPLICATION.toString(), projectBaseFolder.getRoot().toPath());
   }
 
   @Test(expected = ValidationException.class)
@@ -91,7 +112,7 @@ public class MuleProjectValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(POLICY.value());
     muleMainSrcFolder.toFile().mkdirs();
 
-    isProjectStructureValid(MULE_APPLICATION, projectBaseFolder.getRoot().toPath());
+    isProjectStructureValid(MULE_APPLICATION.toString(), projectBaseFolder.getRoot().toPath());
   }
 
   @Test
@@ -100,7 +121,7 @@ public class MuleProjectValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value());
     muleMainSrcFolder.toFile().mkdirs();
 
-    isProjectStructureValid(MULE_APPLICATION, projectBaseFolder.getRoot().toPath());
+    isProjectStructureValid(MULE_APPLICATION.toString(), projectBaseFolder.getRoot().toPath());
   }
 
   @Test(expected = ValidationException.class)
@@ -108,7 +129,7 @@ public class MuleProjectValidatorTest {
     Path mainSrcFolder = projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value());
     mainSrcFolder.toFile().mkdirs();
 
-    isProjectStructureValid(MULE_POLICY, projectBaseFolder.getRoot().toPath());
+    isProjectStructureValid(MULE_POLICY.toString(), projectBaseFolder.getRoot().toPath());
   }
 
   @Test(expected = ValidationException.class)
@@ -117,7 +138,7 @@ public class MuleProjectValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve("invalid-src-folder");
     muleMainSrcFolder.toFile().mkdirs();
 
-    isProjectStructureValid(MULE_POLICY, projectBaseFolder.getRoot().toPath());
+    isProjectStructureValid(MULE_POLICY.toString(), projectBaseFolder.getRoot().toPath());
   }
 
   @Test
@@ -126,7 +147,7 @@ public class MuleProjectValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value());
     muleMainSrcFolder.toFile().mkdirs();
 
-    isProjectStructureValid(MULE_POLICY, projectBaseFolder.getRoot().toPath());
+    isProjectStructureValid(MULE_POLICY.toString(), projectBaseFolder.getRoot().toPath());
   }
 
   @Test(expected = ValidationException.class)
@@ -134,7 +155,7 @@ public class MuleProjectValidatorTest {
     Path mainSrcFolder = projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value());
     mainSrcFolder.toFile().mkdirs();
 
-    isProjectStructureValid(MULE_DOMAIN, projectBaseFolder.getRoot().toPath());
+    isProjectStructureValid(MULE_DOMAIN.toString(), projectBaseFolder.getRoot().toPath());
   }
 
   @Test(expected = ValidationException.class)
@@ -143,7 +164,7 @@ public class MuleProjectValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(POLICY.value());
     muleMainSrcFolder.toFile().mkdirs();
 
-    isProjectStructureValid(MULE_DOMAIN, projectBaseFolder.getRoot().toPath());
+    isProjectStructureValid(MULE_DOMAIN.toString(), projectBaseFolder.getRoot().toPath());
   }
 
   @Test
@@ -152,30 +173,33 @@ public class MuleProjectValidatorTest {
         projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value());
     muleMainSrcFolder.toFile().mkdirs();
 
-    isProjectStructureValid(MULE_DOMAIN, projectBaseFolder.getRoot().toPath());
+    isProjectStructureValid(MULE_DOMAIN.toString(), projectBaseFolder.getRoot().toPath());
   }
 
   @Test(expected = ValidationException.class)
   public void isDescriptorFilePresentMuleApplicationInvalid() throws IOException, ValidationException {
-    validator.validateDescriptorFile(projectBaseFolder.getRoot().toPath(), mock(Deployment.class));
+    validator.validateDescriptorFile(projectBaseFolder.getRoot().toPath(), Optional.empty());
   }
 
+  @Ignore
   @Test
   public void isProjectValid() throws ValidationException, IOException {
-    MuleProjectValidator validatorSpy = spy(validator);
-    File muleFolder =
-        projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value()).toFile();
-    muleFolder.mkdirs();
-    projectBaseFolder.newFile("mule-artifact.json");
-    doNothing().when(validatorSpy).validateDescriptorFile(any(), any());
-    doCallRealMethod().when(validatorSpy).isProjectValid("validate");
-    validatorSpy.isProjectValid("validate");
 
-    verify(validatorSpy, times(1)).validateDescriptorFile(projectBaseFolder.getRoot().toPath(), deploymentConfigurationMock);
+    projectBaseFolder.newFile(MULE_ARTIFACT_JSON);
+    projectBaseFolder.getRoot().toPath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value()).toFile().mkdirs();
+
+    MuleProjectValidator validatorSpy = spy(validator);
+
+    doNothing().when(validatorSpy).validateDescriptorFile(any(), any());
+    doCallRealMethod().when(validatorSpy).isProjectValid(VALIDATE_GOAL);
+
+    validatorSpy.isProjectValid(VALIDATE_GOAL);
+
+    verify(validatorSpy, times(1)).validateDescriptorFile(projectBaseFolder.getRoot().toPath(), Optional.empty());
   }
 
   @Test
-  public void validateNoSharedLibrariesInDependenciesTest() throws MojoExecutionException, ValidationException {
+  public void validateNoSharedLibrariesInDependencies() throws MojoExecutionException, ValidationException {
     expectedException.expect(ValidationException.class);
 
     List<SharedLibraryDependency> sharedLibraries = new ArrayList<>();
@@ -184,15 +208,14 @@ public class MuleProjectValidatorTest {
     expectedException.expectMessage(VALIDATE_SHARED_LIBRARIES_MESSAGE + "[artifact-id:group-id]");
 
     validator.validateSharedLibraries(sharedLibraries, new ArrayList<>());
-
   }
 
   @Test
-  public void validateSharedLibrariesInDependenciesTest() throws MojoExecutionException, ValidationException {
+  public void validateSharedLibrariesInDependencies() throws MojoExecutionException, ValidationException {
 
     SharedLibraryDependency sharedLibraryDependencyB = new SharedLibraryDependency();
-    sharedLibraryDependencyB.setArtifactId(ARTIFACT_ID + "-b");
     sharedLibraryDependencyB.setGroupId(GROUP_ID + "-b");
+    sharedLibraryDependencyB.setArtifactId(ARTIFACT_ID + "-b");
 
     List<SharedLibraryDependency> sharedLibraries = new ArrayList<>();
     sharedLibraries.add(buildSharedLibraryDependency(GROUP_ID + "-a", ARTIFACT_ID + "-a"));
@@ -206,21 +229,21 @@ public class MuleProjectValidatorTest {
   }
 
   @Test
-  public void validateDomainNullTest() throws ValidationException {
+  public void validateDomainNull() throws ValidationException {
     expectedException.expect(IllegalArgumentException.class);
     expectedException.expectMessage("Set of domains should not be null");
     validator.validateDomain(null);
   }
 
   @Test
-  public void validateDomainNotAllDomainsTest() throws ValidationException {
+  public void validateDomainNotAllDomains() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException.expectMessage("Not all dependencies are mule domains");
 
     Set<ArtifactCoordinates> domains = new HashSet<>();
 
     ArtifactCoordinates muleDomainA =
-        new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID_PREFIX + "a", VERSION, TYPE, "non-" + DOMAIN_CLASSIFIER);
+        new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID_PREFIX + "a", VERSION, TYPE, "non-" + MULE_DOMAIN.toString());
 
     domains.add(muleDomainA);
 
@@ -228,16 +251,16 @@ public class MuleProjectValidatorTest {
   }
 
   @Test
-  public void validateDomainEmptySetTest() throws ValidationException {
+  public void validateDomainEmptySet() throws ValidationException {
     validator.validateDomain(Collections.emptySet());
   }
 
   @Test
-  public void validateDomainOneValidDomainTest() throws ValidationException {
+  public void validateDomainOneValidDomain() throws ValidationException {
     Set<ArtifactCoordinates> domains = new HashSet<>();
 
     ArtifactCoordinates muleDomain =
-        new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID_PREFIX + "a", VERSION, TYPE, DOMAIN_CLASSIFIER);
+        new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID_PREFIX + "a", VERSION, TYPE, MULE_DOMAIN.toString());
     muleDomain.setScope("provided");
     domains.add(muleDomain);
 
@@ -252,20 +275,20 @@ public class MuleProjectValidatorTest {
     Set<ArtifactCoordinates> domains = new HashSet<>();
 
     ArtifactCoordinates muleDomain =
-        new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID_PREFIX + "a", VERSION, TYPE, DOMAIN_CLASSIFIER);
+        new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID_PREFIX + "a", VERSION, TYPE, MULE_DOMAIN.toString());
     domains.add(muleDomain);
 
     validator.validateDomain(domains);
   }
 
   @Test
-  public void validateDomainMoreThanOneDomainTest() throws ValidationException {
+  public void validateDomainMoreThanOneDomain() throws ValidationException {
     Set<ArtifactCoordinates> domains = new HashSet<>();
 
     ArtifactCoordinates muleDomainA =
-        new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID_PREFIX + "a", VERSION, TYPE, DOMAIN_CLASSIFIER);
+        new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID_PREFIX + "a", VERSION, TYPE, MULE_DOMAIN.toString());
     ArtifactCoordinates muleDomainB =
-        new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID_PREFIX + "b", VERSION, TYPE, DOMAIN_CLASSIFIER);
+        new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID_PREFIX + "b", VERSION, TYPE, MULE_DOMAIN.toString());
 
     domains.add(muleDomainA);
     domains.add(muleDomainB);
@@ -282,14 +305,14 @@ public class MuleProjectValidatorTest {
   }
 
   @Test
-  public void validateReferencedDomainsIfPresentNullTest() throws ValidationException {
+  public void validateReferencedDomainsIfPresentNull() throws ValidationException {
     expectedException.expect(IllegalArgumentException.class);
     expectedException.expectMessage("List of dependencies should not be null");
     validator.validateReferencedDomainsIfPresent(null);
   }
 
   @Test
-  public void validateReferencedDomainsIfPresentTest() throws ValidationException {
+  public void validateReferencedDomainsIfPresent() throws ValidationException {
     MuleProjectValidator validatorSpy = spy(validator);
     doNothing().when(validatorSpy).validateDomain(any());
 
@@ -303,7 +326,7 @@ public class MuleProjectValidatorTest {
   }
 
   @Test
-  public void validateReferencedDomainsIfPresentOtherClassifiersTest() throws ValidationException {
+  public void validateReferencedDomainsIfPresentOtherClassifiers() throws ValidationException {
     MuleProjectValidator validatorSpy = spy(validator);
     doNothing().when(validatorSpy).validateDomain(any());
 
@@ -318,13 +341,13 @@ public class MuleProjectValidatorTest {
   }
 
   @Test
-  public void validateReferencedDomainsIfPresentOnlyDomainPresentTest() throws ValidationException {
+  public void validateReferencedDomainsIfPresentOnlyDomainPresent() throws ValidationException {
     MuleProjectValidator validatorSpy = spy(validator);
     doNothing().when(validatorSpy).validateDomain(any());
 
     List<ArtifactCoordinates> dependencies = new ArrayList<>();
     ArtifactCoordinates mulePlugin = buildDependency(GROUP_ID, ARTIFACT_ID);
-    mulePlugin.setClassifier("mule-domain");
+    mulePlugin.setClassifier(MULE_DOMAIN.toString());
     dependencies.add(mulePlugin);
 
     validatorSpy.validateReferencedDomainsIfPresent(dependencies);
@@ -334,20 +357,20 @@ public class MuleProjectValidatorTest {
   }
 
   @Test
-  public void validateReferencedDomainsIfPresentDomainAlsoPresentTest() throws ValidationException {
+  public void validateReferencedDomainsIfPresentDomainAlsoPresent() throws ValidationException {
     MuleProjectValidator validatorSpy = spy(validator);
     doNothing().when(validatorSpy).validateDomain(any());
 
     List<ArtifactCoordinates> dependencies = new ArrayList<>();
 
     ArtifactCoordinates muleDomain = buildDependency(GROUP_ID, ARTIFACT_ID_PREFIX + MULE_DOMAIN);
-    muleDomain.setClassifier(MULE_DOMAIN);
+    muleDomain.setClassifier(MULE_DOMAIN.toString());
 
     ArtifactCoordinates ordinaryDependency = buildDependency(GROUP_ID, ARTIFACT_ID_PREFIX + "ordinary-dependency");
     ordinaryDependency.setClassifier(StringUtils.EMPTY);
 
     ArtifactCoordinates muleAppDependency = buildDependency(GROUP_ID, ARTIFACT_ID_PREFIX + MULE_APPLICATION);
-    muleAppDependency.setClassifier(MULE_APPLICATION);
+    muleAppDependency.setClassifier(MULE_APPLICATION.toString());
 
     dependencies.add(muleDomain);
     dependencies.add(ordinaryDependency);
@@ -361,37 +384,6 @@ public class MuleProjectValidatorTest {
     verify(validatorSpy, times(1)).validateDomain(eq(expectedSet));
   }
 
-  @Test
-  public void validateIsDeployableMuleDomainTest() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("Cannot deploy a mule-domain project");
-
-    ProjectInformation projectInformation = builder.withClassifier("mule-domain").build();
-    validator = new MuleProjectValidator(projectInformation, new ArrayList<>(), deploymentConfigurationMock, false);
-
-    validator.validateIsDeployable();
-  }
-
-  @Test
-  public void validateIsDeployableMuleApplicationTest() throws ValidationException {
-
-    ProjectInformation projectInformation = builder.withClassifier("mule-application").build();
-    validator = new MuleProjectValidator(projectInformation, new ArrayList<>(), deploymentConfigurationMock, false);
-
-    validator.validateIsDeployable();
-  }
-
-  @Test
-  public void validateIsDeployableMuleApplicationTemplateTest() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("Cannot deploy a mule-application-template project");
-
-    ProjectInformation projectInformation = builder.withClassifier("mule-application-template").build();
-    validator = new MuleProjectValidator(projectInformation, new ArrayList<>(), deploymentConfigurationMock, false);
-
-    validator.validateIsDeployable();
-  }
-
   private SharedLibraryDependency buildSharedLibraryDependency(String groupId, String artifactId) {
     SharedLibraryDependency sharedLibraryDependency = new SharedLibraryDependency();
     sharedLibraryDependency.setArtifactId(artifactId);
@@ -402,4 +394,7 @@ public class MuleProjectValidatorTest {
   private ArtifactCoordinates buildDependency(String groupId, String artifactId) {
     return new ArtifactCoordinates(groupId, artifactId, "1.0.0");
   }
+
+  // TODO validate exchange deployment
+
 }

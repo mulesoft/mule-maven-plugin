@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.validation;
+package org.mule.tools.api.validation.project;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -24,6 +24,7 @@ import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.util.Project;
+import org.mule.tools.api.validation.MulePluginResolver;
 
 import java.io.IOException;
 import java.net.URI;
@@ -36,9 +37,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BUNDLE;
-import static org.mule.tools.api.validation.AbstractProjectValidatorTest.MULE_APPLICATION;
-import static org.mule.tools.api.validation.AbstractProjectValidatorTest.MULE_DOMAIN;
-import static org.mule.tools.api.validation.AbstractProjectValidatorTest.MULE_POLICY;
+import static org.mule.tools.api.validation.project.AbstractProjectValidatorTest.MULE_APPLICATION;
+import static org.mule.tools.api.validation.project.AbstractProjectValidatorTest.MULE_DOMAIN;
+import static org.mule.tools.api.validation.project.AbstractProjectValidatorTest.MULE_POLICY;
 
 public class DomainBundleProjectValidatorTest {
 

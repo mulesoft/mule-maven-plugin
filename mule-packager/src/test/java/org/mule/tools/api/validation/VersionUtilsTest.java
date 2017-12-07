@@ -12,7 +12,6 @@ package org.mule.tools.api.validation;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.fail;
-import static org.mule.tools.api.validation.AbstractProjectValidator.isProjectVersionValid;
 import static org.mule.tools.api.validation.VersionUtils.completeIncremental;
 import static org.mule.tools.api.validation.VersionUtils.isVersionGraterOrEquals;
 import static org.mule.tools.api.validation.VersionUtils.isVersionValid;

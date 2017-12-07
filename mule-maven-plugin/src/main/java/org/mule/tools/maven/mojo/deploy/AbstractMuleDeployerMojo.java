@@ -21,16 +21,22 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.validation.deployment.ProjectDeploymentValidator;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.maven.mojo.AbstractGenericMojo;
 import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
+import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.AnypointDeployment;
 import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.model.anypoint.DeploymentConfigurator;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.google.common.base.Preconditions.checkState;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.DEPLOY;
 
 public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
@@ -50,8 +56,6 @@ public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
   @Component
   protected ArtifactResolver artifactResolver;
 
-  private DeploymentConfigurator deploymentConfigurator;
-
   @Parameter(readonly = true, property = "applicationName", defaultValue = "${project.artifactId}")
   protected String applicationName;
 
@@ -60,38 +64,59 @@ public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
 
   protected DeployerLog log;
 
+  protected Deployment deploymentConfiguration;
+
   /**
    * @see org.apache.maven.plugin.Mojo#execute()
    */
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
     initMojo();
+    log = new MavenDeployerLog(getLog());
     try {
-      getProjectValidator().isProjectValid(DEPLOY.id());
-      setDeployment();
+      validateUniqueDeploymentConfiguration();
+      new ProjectDeploymentValidator(getAndSetProjectInformation()).isDeployable();
+      deploymentConfiguration = getDeploymentConfiguration();
     } catch (DeploymentException | ValidationException e) {
       throw new MojoExecutionException("Deployment configuration is not valid, ", e);
     }
-    log = new MavenDeployerLog(getLog());
-    if (deploymentConfiguration == null) {
-      throw new MojoFailureException("No deployment configuration was defined. Aborting.");
-    } else if (StringUtils.isNotEmpty(deploymentConfiguration.getSkip()) && "true".equals(deploymentConfiguration.getSkip())) {
+
+    if (StringUtils.isNotEmpty(deploymentConfiguration.getSkip()) && "true".equals(deploymentConfiguration.getSkip())) {
       getLog().info("Skipping execution: skip=" + deploymentConfiguration.getSkip());
-    } else if (deploymentConfiguration instanceof AnypointDeployment) {
-      deploymentConfigurator =
+      return;
+    }
+
+    if (deploymentConfiguration instanceof AnypointDeployment) {
+      DeploymentConfigurator deploymentConfigurator =
           new DeploymentConfigurator((AnypointDeployment) deploymentConfiguration, new MavenDeployerLog(getLog()));
+
       deploymentConfigurator.initializeApplication(artifactFactory, mavenProject, artifactResolver, localRepository);
       deploymentConfigurator.initializeEnvironment(settings, decrypter);
-      getLog().debug("Executing mojo, skip=" + deploymentConfiguration.getSkip());
     }
+
+    getLog().debug("Executing mojo, skip=" + deploymentConfiguration.getSkip());
     doExecute();
   }
 
-  protected void setDeployment() throws DeploymentException {
-    deploymentConfiguration = Stream.of(agentDeployment, standaloneDeployment, armDeployment, cloudHubDeployment,
-                                        clusterDeployment)
-        .filter(Objects::nonNull).findFirst()
-        .orElseThrow(() -> new DeploymentException("Please define one deployment configuration"));
+  protected Deployment getDeploymentConfiguration() throws DeploymentException {
+    List<Deployment> deployments = getAndSetProjectInformation().getDeployments().stream().filter(Objects::nonNull)
+        .collect(Collectors.toList());
+
+    Deployment deploymentConfiguration = deployments.get(0);
     deploymentConfiguration.setDefaultValues(mavenProject);
+    return deploymentConfiguration;
   }
+
+  private void validateUniqueDeploymentConfiguration() throws ValidationException {
+    List<Deployment> deployments = getAndSetProjectInformation().getDeployments().stream()
+        .filter(Objects::nonNull).collect(Collectors.toList());
+
+    if (deployments.isEmpty()) {
+      throw new ValidationException("No deployment configuration was defined. Aborting.");
+    }
+    if (deployments.size() > 1) {
+      throw new ValidationException("One and only one deployment type can be set up per build. Aborting");
+    }
+  }
+
 }

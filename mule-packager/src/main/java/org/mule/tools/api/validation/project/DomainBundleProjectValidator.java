@@ -8,10 +8,10 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.validation;
+package org.mule.tools.api.validation.project;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.plugin.MojoExecutionException;
+
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.Artifact;

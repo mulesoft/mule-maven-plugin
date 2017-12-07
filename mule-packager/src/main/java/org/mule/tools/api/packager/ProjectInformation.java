@@ -10,17 +10,16 @@
 
 package org.mule.tools.api.packager;
 
-import org.apache.commons.lang3.StringUtils;
-import org.mule.tools.api.util.Project;
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import org.mule.tools.api.validation.exchange.*;
-import org.mule.tools.model.Deployment;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import org.mule.tools.api.util.Project;
+import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
+import org.mule.tools.model.Deployment;
 
 /**
  * Represents the basic information of a project.
@@ -29,16 +28,16 @@ public class ProjectInformation {
 
   private String groupId;
   private String artifactId;
+  private String packaging;
   private String version;
   private final String classifier;
-  private String packaging;
   private Path projectBaseFolder;
   private Path buildDirectory;
   private boolean isTestProject;
   private Project project;
   private boolean isDeployment;
-  private ExchangeRepositoryMetadata metadata;
   private List<Deployment> deployments;
+  private ExchangeRepositoryMetadata metadata;
 
 
   private ProjectInformation(String groupId, String artifactId, String version, String classifier, String packaging,
@@ -183,18 +182,17 @@ public class ProjectInformation {
     }
 
     public ProjectInformation build() {
-      checkArgument(StringUtils.isNotBlank(groupId), "Group id should not be null nor blank");
-      checkArgument(StringUtils.isNotBlank(artifactId), "Artifact id should not be null nor blank");
-      checkArgument(StringUtils.isNotBlank(version), "Version should not be null nor blank");
-      checkArgument(StringUtils.isNotBlank(packaging), "Version should not be null nor blank");
+      checkArgument(isNotBlank(groupId), "Group id should not be null nor blank");
+      checkArgument(isNotBlank(artifactId), "Artifact id should not be null nor blank");
+      checkArgument(isNotBlank(version), "Version should not be null nor blank");
+      checkArgument(isNotBlank(packaging), "Version should not be null nor blank");
       checkArgument(projectBaseFolder != null, "Project base folder should not be null");
       checkArgument(buildDirectory != null, "Project build directory should not be null");
       checkArgument(isTestProject != null, "Project isTestProject property was not set");
       checkArgument(project != null, "Project should not be null");
 
       return new ProjectInformation(groupId, artifactId, version, classifier, packaging, projectBaseFolder, buildDirectory,
-                                    isTestProject,
-                                    project, isDeployment, metadata, deployments);
+                                    isTestProject, project, isDeployment, metadata, deployments);
     }
 
 

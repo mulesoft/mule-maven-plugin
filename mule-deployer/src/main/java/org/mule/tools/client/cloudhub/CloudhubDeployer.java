@@ -56,7 +56,7 @@ public class CloudhubDeployer extends AbstractDeployer {
       boolean domainAvailable = cloudhubClient.isNameAvailable(getApplicationName());
 
       if (domainAvailable) {
-        info("Creating application " + getApplicationName());
+        info("Creating application: " + getApplicationName());
         getCloudhubClient().createApplication(getApplicationName(), cloudhubDeployment.getRegion(),
                                               cloudhubDeployment.getMuleVersion().get(), cloudhubDeployment.getWorkers().get(),
                                               cloudhubDeployment.getWorkerType(), cloudhubDeployment.getProperties());
@@ -64,7 +64,7 @@ public class CloudhubDeployer extends AbstractDeployer {
         Application app = findApplicationFromCurrentUser(getApplicationName());
 
         if (app != null) {
-          info("Application " + getApplicationName() + " already exists, redeploying");
+          info("Application: " + getApplicationName() + " already exists, redeploying");
 
           String updateRegion = (cloudhubDeployment.getRegion() == null) ? app.region : cloudhubDeployment.getRegion();
           String updateMuleVersion =
@@ -75,10 +75,9 @@ public class CloudhubDeployer extends AbstractDeployer {
               (cloudhubDeployment.getWorkerType() == null) ? app.workerType : cloudhubDeployment.getWorkerType();
 
           getCloudhubClient().updateApplication(getApplicationName(), updateRegion, updateMuleVersion, updateWorkers,
-                                                updateWorkerType,
-                                                cloudhubDeployment.getProperties());
+                                                updateWorkerType, cloudhubDeployment.getProperties());
         } else {
-          error("Domain " + getApplicationName() + " is not available. Aborting.");
+          error("Application name: " + getApplicationName() + " is not available. Aborting.");
           throw new DeploymentException("Domain " + getApplicationName() + " is not available. Aborting.");
         }
       }
@@ -86,11 +85,11 @@ public class CloudhubDeployer extends AbstractDeployer {
       info("Uploading application contents " + getApplicationName());
       getCloudhubClient().uploadFile(getApplicationName(), getApplicationFile());
 
-      info("Starting application " + getApplicationName());
+      info("Starting application: " + getApplicationName());
       getCloudhubClient().startApplication(getApplicationName());
 
       if (validateApplicationHasStarted()) {
-        info("Validation application " + getApplicationName() + " has started");
+        info("Checking application: " + getApplicationName() + " has started");
         validateApplicationIsInStatus(getApplicationName(), STARTED_STATUS);
       }
 

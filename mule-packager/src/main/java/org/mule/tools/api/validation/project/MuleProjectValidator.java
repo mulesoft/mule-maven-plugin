@@ -8,30 +8,29 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.validation;
+package org.mule.tools.api.validation.project;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_TEMPLATE;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
-import org.mule.tools.api.packager.packaging.Classifier;
 import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.validation.MuleArtifactJsonValidator;
+import org.mule.tools.api.validation.deployment.ProjectDeploymentValidator;
 import org.mule.tools.api.validation.exchange.ExchangeClient;
 import org.mule.tools.model.Deployment;
 
@@ -40,35 +39,54 @@ import org.mule.tools.model.Deployment;
  */
 public class MuleProjectValidator extends AbstractProjectValidator {
 
-
   private static final int MULE_PROJECT_MAXIMUM_NUMBER_OF_DOMAINS = 1;
+
   private final List<SharedLibraryDependency> sharedLibraries;
-  private Deployment deploymentConfiguration;
+
+  private final Optional<String> deployMuleVersion;
+  private final ProjectDeploymentValidator deploymentValidator;
 
   public MuleProjectValidator(ProjectInformation projectInformation, List<SharedLibraryDependency> sharedLibraries,
-                              Deployment deploymentConfiguration, boolean strictCheck) {
+                              boolean strictCheck) {
     super(projectInformation, strictCheck);
     this.sharedLibraries = sharedLibraries;
-    this.deploymentConfiguration = deploymentConfiguration;
+
+    // TODO we should know how to validate each deployment regardles of how many are they
+    Optional<Deployment> deploymentConfiguration;
+    if (projectInformation.getDeployments() == null || projectInformation.getDeployments().isEmpty()) {
+      deploymentConfiguration = Optional.empty();
+    } else {
+      deploymentConfiguration = Optional
+          .ofNullable(projectInformation.getDeployments().stream().filter(Objects::nonNull).findFirst().orElse(null));
+    }
+    this.deploymentValidator = new ProjectDeploymentValidator(projectInformation);
+
+    this.deployMuleVersion =
+        deploymentConfiguration.isPresent() ? deploymentConfiguration.get().getMuleVersion() : Optional.empty();
   }
 
   @Override
   protected void additionalValidation() throws ValidationException {
     isProjectStructureValid(projectInformation.getPackaging(), projectInformation.getProjectBaseFolder());
-    validateDescriptorFile(projectInformation.getProjectBaseFolder(), deploymentConfiguration);
+    validateDescriptorFile(projectInformation.getProjectBaseFolder(), deployMuleVersion);
     validateSharedLibraries(sharedLibraries, projectInformation.getProject().getDependencies());
     validateReferencedDomainsIfPresent(projectInformation.getProject().getDependencies());
   }
 
   @Override
   protected void isDeploymentValid() throws ValidationException {
-    isDeployable();
-
+    if (projectInformation.isDeployment()) {
+      if (projectInformation.getExchangeRepositoryMetadata().isPresent()) {
+        validateIsDeployableInExchange();
+      } else {
+        deploymentValidator.isDeployable();
+      }
+    }
   }
 
-  protected void validateDescriptorFile(Path projectBaseDir, Deployment deploymentConfiguration)
+  protected void validateDescriptorFile(Path projectBaseDir, Optional<String> deployMuleVersion)
       throws ValidationException {
-    MuleArtifactJsonValidator.validate(projectBaseDir, deploymentConfiguration);
+    MuleArtifactJsonValidator.validate(projectBaseDir, deployMuleVersion);
   }
 
   /**
@@ -153,17 +171,6 @@ public class MuleProjectValidator extends AbstractProjectValidator {
     return PackagingType.fromString(packagingType).getSourceFolderLocation(projectBaseDir).toFile();
   }
 
-  public void isDeployable() throws ValidationException {
-    if (projectInformation.isDeployment()) {
-      if (projectInformation.getExchangeRepositoryMetadata().isPresent()) {
-        validateIsDeployableInExchange();
-      } else {
-        validateIsDeployable();
-        validateUniqueDeployment();
-      }
-    }
-  }
-
   private void validateIsDeployableInExchange() throws ValidationException {
     ExchangeClient client = new ExchangeClient(projectInformation.getExchangeRepositoryMetadata().get());
     String requiredGroupId = client.getGeneratedGroupId();
@@ -171,40 +178,5 @@ public class MuleProjectValidator extends AbstractProjectValidator {
       throw new ValidationException("Deployment to Exchange is about to fail. Required groupId: [" + requiredGroupId
           + "], but found: [" + projectInformation.getGroupId() + "]");
     }
-  }
-
-  protected void validateIsDeployable() throws ValidationException {
-    String classifier = projectInformation.getClassifier();
-    if (isNotBlank(classifier)) {
-      Set<String> forbiddenClassifiers = getForbiddenClassifiers();
-      if (forbiddenClassifiers.contains(classifier)) {
-        throw new ValidationException("Cannot deploy a " + classifier + " project");
-      }
-    }
-  }
-
-  private void validateUniqueDeployment() throws ValidationException {
-    for (Deployment deployment : projectInformation.getDeployments()) {
-      checkDeployment(deployment, deploymentConfiguration);
-    }
-    checkState(deploymentConfiguration != null, "Deployment configuration is missing");
-  }
-
-  protected void checkDeployment(Deployment deploymentImplementation,
-                                 Deployment deploymentConfiguration)
-      throws ValidationException {
-    if (deploymentImplementation != null) {
-      if (deploymentConfiguration != null) {
-        throw new ValidationException("One and only one deployment type can be set up per build. Aborting");
-      }
-      this.deploymentConfiguration = deploymentImplementation;
-    }
-  }
-
-  public Set<String> getForbiddenClassifiers() {
-    Set<String> forbiddenClassifiers = new HashSet<>();
-    forbiddenClassifiers.add(Classifier.MULE_DOMAIN.toString());
-    forbiddenClassifiers.add(MULE_APPLICATION_TEMPLATE.toString());
-    return forbiddenClassifiers;
   }
 }

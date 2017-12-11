@@ -7,15 +7,11 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.validation;
+package org.mule.tools.api.validation.project;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mule.tools.api.validation.AbstractProjectValidator.isPackagingTypeValid;
-import static org.mule.tools.api.validation.AbstractProjectValidator.isProjectVersionValid;
-
-import java.util.ArrayList;
-import java.util.List;
+import static org.mule.tools.api.validation.project.AbstractProjectValidator.isPackagingTypeValid;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -61,19 +57,5 @@ public class AbstractProjectValidatorTest {
     expectedException.expectMessage("Packaging type name should not be null");
     isPackagingTypeValid(null);
   }
-
-  @Test
-  public void isProjectVersionValidTest() throws ValidationException {
-    String validVersion = "0.0.0";
-    isProjectVersionValid(validVersion);
-
-  }
-
-  @Test(expected = ValidationException.class)
-  public void isProjectVersionValidFailTest() throws ValidationException {
-    String invalidVersion = "0";
-    isProjectVersionValid(invalidVersion);
-  }
-
 
 }

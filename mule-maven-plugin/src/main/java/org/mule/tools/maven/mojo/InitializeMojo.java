@@ -11,7 +11,6 @@
 package org.mule.tools.maven.mojo;
 
 import java.nio.file.Paths;
-import java.text.MessageFormat;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -36,7 +35,7 @@ public class InitializeMojo extends AbstractMuleMojo {
   }
 
   public AbstractProjectFoldersGenerator getProjectFoldersGenerator() {
-    return ProjectFoldersGeneratorFactory.create(getProjectInformation());
+    return ProjectFoldersGeneratorFactory.create(getAndSetProjectInformation());
   }
 
   @Override

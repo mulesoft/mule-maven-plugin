@@ -10,15 +10,8 @@
 
 package org.mule.tools.api.validation;
 
-import com.google.gson.JsonSyntaxException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
-import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
-import org.mule.runtime.api.deployment.meta.Product;
-import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
-import org.mule.tools.api.exception.ValidationException;
-import org.mule.tools.model.Deployment;
+import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
+import static org.mule.tools.api.validation.VersionUtils.getSeparatorIndex;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,11 +19,19 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
-import static org.mule.tools.api.validation.VersionUtils.getSeparatorIndex;
-import static org.mule.tools.api.validation.AbstractProjectValidator.isProjectVersionValid;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
+import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
+import org.mule.runtime.api.deployment.meta.Product;
+import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
+import org.mule.tools.api.exception.ValidationException;
+
+import com.google.gson.JsonSyntaxException;
 
 public class MuleArtifactJsonValidator {
 
@@ -40,9 +41,9 @@ public class MuleArtifactJsonValidator {
    * @throws ValidationException if the project descriptor file is missing and/or is invalid
    * @param projectBaseDir
    */
-  public static void validate(Path projectBaseDir, Deployment deploymentConfiguration) throws ValidationException {
+  public static void validate(Path projectBaseDir, Optional<String> deployMuleVersion) throws ValidationException {
     isMuleArtifactJsonPresent(projectBaseDir);
-    isMuleArtifactJsonValid(projectBaseDir, deploymentConfiguration);
+    isMuleArtifactJsonValid(projectBaseDir, deployMuleVersion);
   }
 
   /**
@@ -63,9 +64,9 @@ public class MuleArtifactJsonValidator {
    *
    * @throws ValidationException if the project descriptor file is invalid
    * @param projectBaseDir
-   * @param deploymentConfiguration
+   * @param deployMuleVersion
    */
-  public static void isMuleArtifactJsonValid(Path projectBaseDir, Deployment deploymentConfiguration)
+  public static void isMuleArtifactJsonValid(Path projectBaseDir, Optional<String> deployMuleVersion)
       throws ValidationException {
     File muleArtifactJsonFile = projectBaseDir.resolve(MULE_ARTIFACT_JSON).toFile();
     MuleApplicationModel muleArtifact;
@@ -78,7 +79,7 @@ public class MuleArtifactJsonValidator {
     } catch (IOException | JsonSyntaxException e) {
       throw new ValidationException(e);
     }
-    validateMuleArtifactMandatoryFields(muleArtifact, deploymentConfiguration);
+    validateMuleArtifactMandatoryFields(muleArtifact, deployMuleVersion);
   }
 
   /**
@@ -87,13 +88,12 @@ public class MuleArtifactJsonValidator {
    * @throws ValidationException if the project descriptor file does not have set all mandatory fields
    * @param muleArtifact
    */
-  protected static void validateMuleArtifactMandatoryFields(MuleApplicationModel muleArtifact,
-                                                            Deployment deploymentConfiguration)
+  protected static void validateMuleArtifactMandatoryFields(MuleApplicationModel muleArtifact, Optional<String> deployMuleVersion)
       throws ValidationException {
     List<String> missingFields = new ArrayList<>();
 
     checkName(muleArtifact, missingFields);
-    checkMinMuleVersionValue(muleArtifact, missingFields, deploymentConfiguration);
+    checkMinMuleVersionValue(muleArtifact, missingFields, deployMuleVersion);
     checkClassLoaderModelDescriptor(muleArtifact, missingFields);
     checkRequiredProduct(muleArtifact, missingFields);
 
@@ -143,14 +143,16 @@ public class MuleArtifactJsonValidator {
    * @param missingFields list of required fields that are missing
    */
   protected static void checkMinMuleVersionValue(MuleApplicationModel muleArtifact, List<String> missingFields,
-                                                 Deployment deploymentConfiguration)
+                                                 Optional<String> deployMuleVersion)
       throws ValidationException {
     String minMuleVersionValue = muleArtifact.getMinMuleVersion();
     if (StringUtils.isBlank(minMuleVersionValue)) {
       missingFields.add("minMuleVersion");
-    } else if (deploymentConfiguration != null && deploymentConfiguration.getMuleVersion().isPresent()
-        && StringUtils.isNotBlank(deploymentConfiguration.getMuleVersion().get())) {
-      areVersionCompatible(deploymentConfiguration.getMuleVersion().get(), minMuleVersionValue);
+    } else {
+      isProjectVersionValid(minMuleVersionValue);
+      if (deployMuleVersion != null && deployMuleVersion.isPresent() && StringUtils.isNotBlank(deployMuleVersion.get())) {
+        areVersionCompatible(deployMuleVersion.get(), minMuleVersionValue);
+      }
     }
   }
 
@@ -160,8 +162,8 @@ public class MuleArtifactJsonValidator {
    * @param muleVersion mule version that is going to be checked against the specified range.
    * @param minMuleVersion the infimum of the set of compatible mule versions.
    */
+  // TODO this should be a public static called from the ProjectDeploymentValidator
   private static void areVersionCompatible(String muleVersion, String minMuleVersion) throws ValidationException {
-    isProjectVersionValid(minMuleVersion);
     isProjectVersionValid(muleVersion);
     String minMuleVersionBaseValue = getBaseVersion(minMuleVersion);
     String muleVersionBaseValue = getBaseVersion(muleVersion);
@@ -170,6 +172,13 @@ public class MuleArtifactJsonValidator {
           + muleVersion + ", minMuleVersion: " + minMuleVersion);
     }
   }
+
+  private static void isProjectVersionValid(String version) throws ValidationException {
+    if (!VersionUtils.isVersionValid(version)) {
+      throw new ValidationException("Version " + version + " does not comply with semantic versioning specification");
+    }
+  }
+
 
   /**
    * Returns true if version1 >= version2.

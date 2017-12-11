@@ -8,12 +8,13 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.validation;
+package org.mule.tools.api.validation.project;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.validation.VersionUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,14 +28,22 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public abstract class AbstractProjectValidator {
 
-  protected final ProjectInformation projectInformation;
-  protected final boolean strictCheck;
+  public static final String DEPLOY_GOAL = "deploy";
+  public static final String VALIDATE_GOAL = "validate";
 
+  protected final boolean strictCheck;
+  protected final ProjectInformation projectInformation;
 
   public AbstractProjectValidator(ProjectInformation projectInformation, boolean strictCheck) {
     this.projectInformation = projectInformation;
     this.strictCheck = strictCheck;
+    checkState(projectInformation.getPackaging() != null, "Packaging type should not be null");
   }
+
+  protected abstract void additionalValidation() throws ValidationException;
+
+  // TODO THIS SHOULD NOT BE PART OF THIS CLASS
+  protected abstract void isDeploymentValid() throws ValidationException;
 
   /**
    * Ensure a project contained in the projectBaseDir is valid based on its packaging type.
@@ -43,29 +52,27 @@ public abstract class AbstractProjectValidator {
    * @throws ValidationException if the project is invalid
    */
   public Boolean isProjectValid(String goal) throws ValidationException {
-    if (StringUtils.equals("validate", goal)) {
-      checkState(projectInformation.getPackaging() != null, "Packaging type should not be null");
+    if (StringUtils.equals(VALIDATE_GOAL, goal)) {
       isProjectVersionValid(projectInformation.getVersion());
       isPackagingTypeValid(projectInformation.getPackaging());
       additionalValidation();
       if (strictCheck) {
-        isProjectValid("deploy");
+        isDeploymentValid();
       }
-    } else if (StringUtils.equals("deploy", goal)) {
+    }
+
+    if (StringUtils.equals(DEPLOY_GOAL, goal)) {
       isDeploymentValid();
     }
+
     return true;
   }
 
-  protected static void isProjectVersionValid(String version) throws ValidationException {
+  private static void isProjectVersionValid(String version) throws ValidationException {
     if (!VersionUtils.isVersionValid(version)) {
       throw new ValidationException("Version " + version + " does not comply with semantic versioning specification");
     }
   }
-
-  protected abstract void additionalValidation() throws ValidationException;
-
-  protected abstract void isDeploymentValid() throws ValidationException;
 
   /**
    * It validates that the provided packaging types is a valid one
@@ -80,8 +87,9 @@ public abstract class AbstractProjectValidator {
     } catch (IllegalArgumentException e) {
       List<String> packagingTypeNames = Arrays.stream(PackagingType.values()).map(PackagingType::toString)
           .collect(Collectors.toList());
-      throw new ValidationException(packagingType == null ? e.getMessage() : "Unknown packaging type " + packagingType
-          + ". Please specify a valid mule packaging type: " + String.join(", ", packagingTypeNames));
+      throw new ValidationException(packagingType == null ? e.getMessage()
+          : "Unknown packaging type " + packagingType
+              + ". Please specify a valid mule packaging type: " + String.join(", ", packagingTypeNames));
     }
     return true;
   }

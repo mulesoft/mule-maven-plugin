@@ -39,10 +39,6 @@ public class StandaloneDeployment extends MuleRuntimeDeployment {
   @Parameter
   protected Integer timeout;
 
-  // TODO validate what for?
-  @Parameter
-  protected File script;
-
   @Parameter
   protected Long deploymentTimeout;
 
@@ -52,9 +48,13 @@ public class StandaloneDeployment extends MuleRuntimeDeployment {
   @Parameter
   protected String[] arguments;
 
-  // TODO validate what for?
   @Parameter
-  protected List<ArtifactCoordinates> artifactItems = new ArrayList<>();
+  @Deprecated
+  private File script;
+
+  @Parameter
+  @Deprecated
+  private List<ArtifactCoordinates> artifactItems = new ArrayList<>();
 
   /**
    * Maven coordinates for the Mule Runtime distribution to download. You need to specify:
@@ -93,14 +93,6 @@ public class StandaloneDeployment extends MuleRuntimeDeployment {
 
   public void setTimeout(int timeout) {
     this.timeout = timeout;
-  }
-
-  public File getScript() {
-    return script;
-  }
-
-  public void setScript(File script) {
-    this.script = script;
   }
 
   /**
@@ -145,16 +137,26 @@ public class StandaloneDeployment extends MuleRuntimeDeployment {
     this.arguments = arguments;
   }
 
+  public void setEnvironmentSpecificValues() throws DeploymentException {
+    super.setEnvironmentSpecificValues();
+  }
+
+  public File getScript() {
+    return script;
+  }
+
+  public void setScript(File script) {
+    this.script = script;
+  }
+
+  @Deprecated
   public List<ArtifactCoordinates> getArtifactItems() {
     return artifactItems;
   }
 
+  @Deprecated
   public void setArtifactItems(List<ArtifactCoordinates> artifactItems) {
     this.artifactItems = artifactItems;
-  }
-
-  public void setEnvironmentSpecificValues() throws DeploymentException {
-    super.setEnvironmentSpecificValues();
   }
 
 }

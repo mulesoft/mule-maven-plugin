@@ -55,7 +55,6 @@
         <guava.version>18.0</guava.version>
         <maven.version>3.5.0</maven.version>
         <log4j.version>1.2.17</log4j.version>
-        <jersey.version>2.25</jersey.version>
         <groovy.version>2.4.12</groovy.version>
         <commons.io.version>2.5</commons.io.version>
         <commons.exec.version>1.2</commons.exec.version>
@@ -64,11 +63,13 @@
         <commons.logging.version>1.2</commons.logging.version>
 
 
-        <jersey.media.moxy>2.15</jersey.media.moxy>
         <slf4j.api.version>1.8.0-alpha2</slf4j.api.version>
         <maven.compat.version>3.3.9</maven.compat.version>
         <maven.verifier.version>1.6</maven.verifier.version>
         <maven.dependency.tree.version>1.2</maven.dependency.tree.version>
+
+        <jersey.version>2.25</jersey.version>
+        <jersey.media.moxy>2.15</jersey.media.moxy>
         <jersey.media.json.jackson.version>2.26</jersey.media.json.jackson.version>
 
         <junit.version>4.12</junit.version>
@@ -150,23 +151,69 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <groupId>org.mule</groupId>
+                <artifactId>mule-maven-client-impl</artifactId>
+                <version>${mule.maven.client.impl.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-archiver</artifactId>
                 <version>${codehaus.plexus.archiver}</version>
             </dependency>
 
+
+            <!-- Mule -->
             <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>${log4j.version}</version>
-                <scope>test</scope>
+                <groupId>org.mule.runtime</groupId>
+                <artifactId>mule-api</artifactId>
+                <version>${mule.api.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${mockito.core.version}</version>
-                <scope>test</scope>
+                <groupId>org.mule.runtime</groupId>
+                <artifactId>mule-core</artifactId>
+                <version>${mule.core.version}</version>
             </dependency>
+
+            <!-- Apache -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons.lang.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-exec</artifactId>
+                <version>${commons.exec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${commons.logging.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-cli</groupId>
+                <artifactId>commons-cli</artifactId>
+                <version>${commons.cli.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+
+            <!-- Jersey -->
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
@@ -176,44 +223,6 @@
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-multipart</artifactId>
                 <version>${jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-all</artifactId>
-                <version>${hamcrest.all.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>${commons.logging.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons.lang.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>${commons.io.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-cli</groupId>
-                <artifactId>commons-cli</artifactId>
-                <version>${commons.cli.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-verifier-plugin</artifactId>
-                <version>${maven.verifier.plugin.version}</version>
-                <type>maven-plugin</type>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
@@ -252,21 +261,18 @@
                 <artifactId>maven-dependency-tree</artifactId>
                 <version>${maven.dependency.tree.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.mule</groupId>
-                <artifactId>mule-maven-client-impl</artifactId>
-                <version>${mule.maven.client.impl.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${gson.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>org.apache.maven.shared</groupId>
                 <artifactId>maven-verifier</artifactId>
                 <version>${maven.verifier.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-verifier-plugin</artifactId>
+                <version>${maven.verifier.plugin.version}</version>
+                <type>maven-plugin</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -276,24 +282,22 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.codehaus.groovy</groupId>
-                <artifactId>groovy</artifactId>
-                <version>${groovy.version}</version>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-all</artifactId>
+                <version>${hamcrest.all.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.mule.runtime</groupId>
-                <artifactId>mule-core</artifactId>
-                <version>${mule.core.version}</version>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.core.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-exec</artifactId>
-                <version>${commons.exec.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mule.runtime</groupId>
-                <artifactId>mule-api</artifactId>
-                <version>${mule.api.version}</version>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -309,11 +313,6 @@
                         <includeEmptyDirs>true</includeEmptyDirs>
                     </configuration>
                 </plugin>
-                <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-javadoc-plugin</artifactId>-->
-                <!--<version>${maven.javadoc.plugin.version}</version>-->
-                <!--</plugin>-->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>

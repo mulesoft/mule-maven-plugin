@@ -9,21 +9,16 @@
  */
 package org.mule.tools.client.arm;
 
-import groovy.util.ScriptException;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
+import javax.ws.rs.NotFoundException;
+
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.archiver.manager.ArchiverManager;
+
 import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.exception.ClientException;
-import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.model.TargetType;
-
+import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.utils.DeployerLog;
-
-import javax.ws.rs.NotFoundException;
 
 public class ArmDeployer extends AbstractDeployer {
 
@@ -81,11 +76,5 @@ public class ArmDeployer extends AbstractDeployer {
     armClient = new ArmClient(armDeployment, log);
   }
 
-  @Override
-  public void resolveDependencies(MavenProject mavenProject, ArtifactResolver artifactResolver, ArchiverManager archiverManager,
-                                  ArtifactFactory artifactFactory, ArtifactRepository localRepository)
-      throws DeploymentException, ScriptException {
-
-  }
 
 }

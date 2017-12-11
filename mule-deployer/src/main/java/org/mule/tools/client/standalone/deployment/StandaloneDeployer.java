@@ -11,12 +11,13 @@ package org.mule.tools.client.standalone.deployment;
 
 
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import groovy.util.ScriptException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.artifact.Artifact;
@@ -25,20 +26,17 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.AbstractArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.archiver.manager.ArchiverManager;
+
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.client.AbstractDeployer;
+import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.mule.tools.client.standalone.controller.probing.AppDeploymentProbe;
 import org.mule.tools.client.standalone.controller.probing.PollingProber;
 import org.mule.tools.client.standalone.controller.probing.Prober;
-import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.mule.tools.model.standalone.StandaloneDeployment;
 import org.mule.tools.utils.DeployerLog;
-import org.mule.tools.utils.GroovyUtils;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class StandaloneDeployer extends AbstractDeployer {
 
@@ -106,16 +104,6 @@ public class StandaloneDeployer extends AbstractDeployer {
     }
   }
 
-  public StandaloneDeployer addLibraries(List<File> libs) {
-    checkNotNull(libs, "Libraries cannot be null");
-    for (File file : libs) {
-      mule.addLibrary(file);
-      log.debug(String.format("Adding library %s...", file));
-    }
-    return this;
-  }
-
-
   public StandaloneDeployer addDomain(File domain) throws DeploymentException {
     checkNotNull(domain, "Domain cannot be null");
     try {
@@ -174,20 +162,6 @@ public class StandaloneDeployer extends AbstractDeployer {
     addDomainFromstandaloneDeployment(standaloneDeployment);
 
   }
-
-  @Override
-  public void resolveDependencies(MavenProject mavenProject, ArtifactResolver artifactResolver,
-                                  ArchiverManager archiverManager, ArtifactFactory artifactFactory,
-                                  ArtifactRepository localRepository)
-      throws DeploymentException, ScriptException {
-    List<File> libs = getDependencies(standaloneDeployment, artifactFactory, artifactResolver, mavenProject, localRepository);
-    addLibraries(libs);
-    if (null != standaloneDeployment.getScript()) {
-      GroovyUtils.executeScript(mavenProject, standaloneDeployment.getScript());
-    }
-  }
-
-
 
   private void renameApplicationToApplicationName() throws DeploymentException {
     if (!FilenameUtils.getBaseName(standaloneDeployment.getArtifact().getName())

@@ -11,12 +11,8 @@ package org.mule.tools.client;
 
 import java.io.File;
 
-import groovy.util.ScriptException;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.archiver.manager.ArchiverManager;
+
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.utils.DeployerLog;
@@ -76,10 +72,5 @@ public abstract class AbstractDeployer {
   }
 
   protected abstract void initialize() throws DeploymentException;
-
-  public abstract void resolveDependencies(MavenProject mavenProject, ArtifactResolver artifactResolver,
-                                           ArchiverManager archiverManager, ArtifactFactory artifactFactory,
-                                           ArtifactRepository localRepository)
-      throws DeploymentException, ScriptException;
 
 }

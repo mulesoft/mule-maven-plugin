@@ -40,6 +40,8 @@ public class CloudhubDeployerTest {
 
   private List<Application> applications;
   private CloudhubDeployer cloudhubDeployerSpy;
+  private CloudhubClient cloudhubClientMock;
+
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -49,9 +51,13 @@ public class CloudhubDeployerTest {
     CloudHubDeployment deploymentConfiguration = new CloudHubDeployment();
     deploymentConfiguration.setUri(BASE_URI);
 
-    cloudhubDeployerSpy = spy(new CloudhubDeployer(deploymentConfiguration, mock(DeployerLog.class)));
     applications = buildApplications();
-    doReturn(applications).when(cloudhubDeployerSpy).getApplications();
+
+    cloudhubClientMock = mock(CloudhubClient.class);
+    cloudhubDeployerSpy = spy(new CloudhubDeployer(deploymentConfiguration, mock(DeployerLog.class)));
+
+    doReturn(cloudhubClientMock).when(cloudhubDeployerSpy).getCloudhubClient();
+    doReturn(applications).when(cloudhubClientMock).getApplications();
   }
 
   private List<Application> buildApplications() {

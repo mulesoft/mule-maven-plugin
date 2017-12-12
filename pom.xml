@@ -110,6 +110,7 @@
         <formatterConfigPath>formatter.xml</formatterConfigPath>
 
         <skipTests>false</skipTests>
+        <skipIntegrationTests>false</skipIntegrationTests>
         <jacocoAgentArgLine>
             -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.maven.plugin.version}/org.jacoco.agent-${jacoco.maven.plugin.version}-runtime.jar=destfile='${session.executionRootDirectory}/target/jacoco.exec'
         </jacocoAgentArgLine>

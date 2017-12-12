@@ -18,8 +18,11 @@ import org.mule.tools.model.Deployment;
 import static java.lang.System.getProperty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
 
 public abstract class AnypointDeployment extends Deployment {
+
+  public static final String ANYPOINT_BASE_URI = "anypoint.baseUri";
 
   @Parameter
   protected String username;
@@ -119,12 +122,14 @@ public abstract class AnypointDeployment extends Deployment {
   }
 
   public void setEnvironmentSpecificValues() throws DeploymentException {
-    String anypointUri = getProperty("anypoint.baseUri");
+    // TODO why we use a prop if this are a parameter ?
+
+    String anypointUri = getProperty(ANYPOINT_BASE_URI);
     if (isNotBlank(anypointUri)) {
       setUri(anypointUri);
     }
     if (isBlank(getUri())) {
-      setUri("https://anypoint.mulesoft.com");
+      setUri(DEFAULT_BASE_URL);
     }
 
     String businessGroup = getProperty("anypoint.businessGroup");

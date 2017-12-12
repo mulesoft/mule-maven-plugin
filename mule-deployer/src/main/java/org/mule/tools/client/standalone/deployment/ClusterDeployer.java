@@ -13,17 +13,12 @@ package org.mule.tools.client.standalone.deployment;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
-import groovy.util.ScriptException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.archiver.manager.ArchiverManager;
+
 import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.standalone.configuration.ClusterConfigurator;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
@@ -31,19 +26,19 @@ import org.mule.tools.client.standalone.controller.probing.AppDeploymentProbe;
 import org.mule.tools.client.standalone.controller.probing.PollingProber;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
-import org.mule.tools.client.standalone.installer.MuleStandaloneInstaller;
 import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.utils.DeployerLog;
-import org.mule.tools.utils.GroovyUtils;
 
 public class ClusterDeployer extends AbstractDeployer {
 
-  public static final double MAX_CLUSTER_SIZE = 8;
-  public static final long DEFAULT_POLLING_DELAY = 1000;
-  private final ClusterDeployment clusterDeployment;
-  private List<MuleProcessController> mules;
+  private static final double MAX_CLUSTER_SIZE = 8;
+  private static final long DEFAULT_POLLING_DELAY = 1000;
+
   private File[] paths;
+  private List<MuleProcessController> mules;
   private ClusterConfigurator configurator = new ClusterConfigurator();
+
+  private final ClusterDeployment clusterDeployment;
 
   public ClusterDeployer(ClusterDeployment clusterDeployment, DeployerLog log) throws DeploymentException {
     super(clusterDeployment, log);
@@ -148,32 +143,6 @@ public class ClusterDeployer extends AbstractDeployer {
   protected void initialize() throws DeploymentException {
     validateSize();
     renameApplicationToApplicationName();
-  }
-
-  @Override
-  public void resolveDependencies(MavenProject mavenProject, ArtifactResolver artifactResolver, ArchiverManager archiverManager,
-                                  ArtifactFactory artifactFactory, ArtifactRepository localRepository)
-      throws DeploymentException, ScriptException {
-    paths = new File[clusterDeployment.getSize()];
-    List<MuleProcessController> controllers = new LinkedList();
-    for (int i = 0; i < clusterDeployment.getSize(); i++) {
-      File buildDirectory = new File(mavenProject.getBuild().getDirectory(), "mule" + i);
-      buildDirectory.mkdir();
-      File home = null;
-      try {
-        new MuleStandaloneInstaller(clusterDeployment, mavenProject, artifactResolver,
-                                    archiverManager, artifactFactory, localRepository, log).doInstallMule(buildDirectory);
-      } catch (org.eclipse.aether.deployment.DeploymentException e) {
-        throw new DeploymentException("Could not install mule standalone. Aborting.", e);
-      }
-      controllers.add(new MuleProcessController(home.getAbsolutePath(), clusterDeployment.getTimeout()));
-      paths[i] = home;
-    }
-
-
-    if (null != clusterDeployment.getScript()) {
-      GroovyUtils.executeScript(mavenProject, clusterDeployment.getScript());
-    }
   }
 
   private void validateSize() throws DeploymentException {

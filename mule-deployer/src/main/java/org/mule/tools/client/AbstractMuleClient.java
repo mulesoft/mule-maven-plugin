@@ -121,8 +121,9 @@ public abstract class AbstractMuleClient extends AbstractClient {
       if (businessGroupName.charAt(i) == '\\') {
         // Double backslash maps to business group with one backslash
         if (businessGroupName.charAt(i + 1) == '\\') {
+          // For two backslashes we continue with the next character
           group = group + "\\";
-          i++; // For two backslashes we continue with the next character
+          i++;
         } else {
           // Single backslash starts a new business group
           groups.add(group);

@@ -69,6 +69,15 @@ public class StandaloneDeployment extends MuleRuntimeDeployment {
     return muleDistribution;
   }
 
+  /**
+   * Maven coordinates for the Mule Runtime distribution to download. You need to specify:
+   * <li>groupId</li>
+   * <li>artifactId</li>
+   * <li>version</li> This parameter and <code>muleVersion</code> are mutual exclusive
+   *
+   * @since 1.0
+   * @deprecated Use the official maven artifact descriptor, if you need to use Community distribution @see community property
+   */
   public void setMuleDistribution(ArtifactCoordinates muleDistribution) {
     this.muleDistribution = muleDistribution;
   }

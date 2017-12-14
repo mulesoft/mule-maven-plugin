@@ -35,7 +35,7 @@ Add https://repository.mulesoft.org/nexus/content/repositories/releases[this] re
 You can download the JAR file manually from https://repository.mulesoft.org/nexus/content/repositories/releases/org/mule/tools/maven/mule-maven-plugin/2.0[here] or get if from Maven Central Repository.
 
 == Usage
-The mule-maven-plugin can be use not only to package artifact but also to deploy them.
+The mule-maven-plugin can be used not only to package artifact but also to deploy them.
 
 To package an artifact just run:
 
@@ -80,12 +80,12 @@ In the most simple scenario the plugin will deploy the artifact to a Mule Standa
 
 === Notes
 
-* You need to have a Mule Standalone Runtime Server installed locally and pointt to it with the *muleHome* property.
+* You need to have a Mule Standalone Runtime Server installed locally and point to it with the *muleHome* property.
 
 
 == Deploy to Anypoint Runtime Manager
 
-You can deploy your application to a running ARM server, serverGroup or cluster.
+You can deploy your application to a running ARM server, server group or cluster.
 
 [source,xml]
 ----
@@ -107,7 +107,7 @@ You can deploy your application to a running ARM server, serverGroup or cluster.
 ----
 === ARM On Prem TLS errors
 
-When trying to connect to a an On Prem installation the plugin will validate certificates for that server. If you haven't installed the server certificates in your trust store you will see an SSL error. To avoid that problem you can run the plugin in an insecure mode, this way, the security validations would be skipped. You can use the **armInsecure** tag or the **arm.insecure** system property. See the configuration example below:
+When trying to connect to an On Prem installation the plugin will validate certificates for that server. If you haven't installed the server certificates in your trust store you will see an SSL error. To avoid that problem you can run the plugin in an insecure mode, this way, the security validations will be skipped. You can use the **armInsecure** tag or the **arm.insecure** system property. See the configuration example below:
 
 [source,xml]
 ----
@@ -130,7 +130,7 @@ When trying to connect to a an On Prem installation the plugin will validate cer
 ----
 
 [WARNING]
-Enabling insecure connection is a very risky practice, you shouldn't use this except when you know what you are doing and your On Prem installation is isolated in a local network.
+Enabling an insecure connection is a very risky practice, you shouldn't use this except when you know what you are doing and your On Prem installation is isolated in a local network.
 
 
 == Deploy to Anypoint CloudHub

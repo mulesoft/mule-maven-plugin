@@ -1,6 +1,6 @@
 = Mule Artifact Tools
 
-The project contains all the modules required to create Mule artifacts and to deploy them to the different environment of the Anypoint Platform.
+The project contains all the modules required to create Mule artifacts and to deploy them to the different environments of the Anypoint Platform.
 
 == Modules
 * mule-classloader-model
@@ -11,7 +11,7 @@ The project contains all the modules required to create Mule artifacts and to de
 
 
 === mule-classloader-model
-Contains the abstract model which describe the descriptor files used when generating a repository for heavy weight packages
+Contains the abstract model which describes the descriptor files used when generating a repository for heavy weight packages
 
 === mule-packager
 Contains the Java API that allows you to create the different Mule artifacts:
@@ -21,7 +21,7 @@ Contains the Java API that allows you to create the different Mule artifacts:
 * mule-domain
 * mule-domain-bundle
 
-It also contains a set of validator to ensure that the artifact can be generated properly
+It also contains a set of validators to ensure that the artifact can be generated properly
 
 === mule-deployer
 Contains the Java API that allows you to deploy the Mule artifacts to the different environments
@@ -32,7 +32,7 @@ Through it you can package different Mule artifacts and deploy them to both Nexu
 
 
 === mule-artifact-it
-Contains the integration test for the modules:
+Contains the integration tests for the modules:
 
 * mule-packager
 * mule-deployer

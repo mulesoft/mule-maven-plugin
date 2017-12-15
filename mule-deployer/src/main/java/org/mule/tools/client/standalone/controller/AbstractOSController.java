@@ -10,16 +10,13 @@
 package org.mule.tools.client.standalone.controller;
 
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteException;
-import org.apache.commons.exec.ExecuteWatchdog;
-import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.*;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.slf4j.Logger;
 
@@ -41,7 +38,7 @@ public abstract class AbstractOSController {
   public AbstractOSController(String muleHome, int timeout) {
     this.muleHome = muleHome;
     this.muleBin = getMuleBin();
-    this.timeout = timeout != 0 ? timeout : DEFAULT_TIMEOUT;
+    this.timeout = timeout > 0 ? timeout : DEFAULT_TIMEOUT;
   }
 
   public String getMuleHome() {
@@ -89,7 +86,7 @@ public abstract class AbstractOSController {
     return doExecution(executor, commandLine, newEnv);
   }
 
-  protected int doExecution(DefaultExecutor executor, CommandLine commandLine, Map<Object, Object> env) {
+  protected int doExecution(Executor executor, CommandLine commandLine, Map<Object, Object> env) {
     try {
       final StringJoiner paramsJoiner = new StringJoiner(" ");
       for (String cmdArg : commandLine.toStrings()) {
@@ -101,14 +98,15 @@ public abstract class AbstractOSController {
     } catch (ExecuteException e) {
       return e.getExitValue();
     } catch (Exception e) {
-      throw new MuleControllerException("Error executing [" + commandLine.getExecutable() + " " + commandLine.getArguments()
+      throw new MuleControllerException("Error executing [" + commandLine.getExecutable() + " "
+          + Arrays.toString(commandLine.getArguments())
           + "]", e);
     }
   }
 
   protected Map<Object, Object> copyEnvironmentVariables() {
     Map<String, String> env = System.getenv();
-    Map<Object, Object> newEnv = new HashMap<Object, Object>();
+    Map<Object, Object> newEnv = new HashMap<>();
     for (Map.Entry<String, String> it : env.entrySet()) {
       newEnv.put(it.getKey(), it.getValue());
     }

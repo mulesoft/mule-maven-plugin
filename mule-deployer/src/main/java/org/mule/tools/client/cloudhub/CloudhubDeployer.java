@@ -102,7 +102,7 @@ public class CloudhubDeployer extends AbstractDeployer {
   }
 
   @Override
-  protected void initialize() {
+  public void initialize() {
     cloudhubClient = new CloudhubClient((CloudHubDeployment) deploymentConfiguration, log);
   }
 

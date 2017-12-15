@@ -151,7 +151,7 @@ public class StandaloneDeployer extends AbstractDeployer {
   }
 
   @Override
-  protected void initialize() throws DeploymentException {
+  public void initialize() throws DeploymentException {
     this.standaloneDeployment = (StandaloneDeployment) deploymentConfiguration;
     this.mule =
         new MuleProcessController(standaloneDeployment.getMuleHome().getAbsolutePath(), standaloneDeployment.getTimeout());

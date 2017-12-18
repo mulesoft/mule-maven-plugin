@@ -140,7 +140,7 @@ public class ClusterDeployer extends AbstractDeployer {
   }
 
   @Override
-  protected void initialize() throws DeploymentException {
+  public void initialize() throws DeploymentException {
     validateSize();
     renameApplicationToApplicationName();
   }

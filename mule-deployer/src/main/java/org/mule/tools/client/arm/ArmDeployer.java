@@ -69,7 +69,7 @@ public class ArmDeployer extends AbstractDeployer {
   }
 
   @Override
-  protected void initialize() {
+  public void initialize() {
     armDeployment = (ArmDeployment) deploymentConfiguration;
     targetType = armDeployment.getTargetType();
     target = armDeployment.getTarget();

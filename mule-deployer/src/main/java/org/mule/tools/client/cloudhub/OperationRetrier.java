@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 public class OperationRetrier {
 
   private static final Integer DEFAULT_ATTEMPTS = 10;
-  private static final Long DEFAULT_SLEEP_TIME = Long.valueOf(30000);
+  private static final Long DEFAULT_SLEEP_TIME = 30000L;
 
   private Long sleepTime;
   private Integer attempts;
@@ -40,7 +40,6 @@ public class OperationRetrier {
     this.attempts = attempts;
   }
 
-
   public interface RetriableOperation {
 
     /**
@@ -59,7 +58,6 @@ public class OperationRetrier {
       return StringUtils.EMPTY;
     }
   }
-
 
   public void retry(RetriableOperation operation) throws InterruptedException, TimeoutException {
     int i = 0;

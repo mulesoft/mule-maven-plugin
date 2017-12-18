@@ -28,7 +28,6 @@ public abstract class AbstractDeployer {
   public AbstractDeployer(Deployment deploymentConfiguration, DeployerLog log) throws DeploymentException {
     this.deploymentConfiguration = deploymentConfiguration;
     this.log = log;
-    initialize();
   }
 
   /**
@@ -71,6 +70,6 @@ public abstract class AbstractDeployer {
     return deploymentConfiguration.getArtifact();
   }
 
-  protected abstract void initialize() throws DeploymentException;
+  public abstract void initialize() throws DeploymentException;
 
 }

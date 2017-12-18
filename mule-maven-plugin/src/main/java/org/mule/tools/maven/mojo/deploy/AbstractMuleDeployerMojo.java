@@ -27,6 +27,7 @@ import org.mule.tools.maven.mojo.AbstractGenericMojo;
 import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.AnypointDeployment;
+import org.mule.tools.model.anypoint.MavenResolverMetadata;
 import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.model.anypoint.DeploymentConfigurator;
 
@@ -87,11 +88,7 @@ public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
     }
 
     if (deploymentConfiguration instanceof AnypointDeployment) {
-      DeploymentConfigurator deploymentConfigurator =
-          new DeploymentConfigurator((AnypointDeployment) deploymentConfiguration, new MavenDeployerLog(getLog()));
-
-      deploymentConfigurator.initializeApplication(artifactFactory, mavenProject, artifactResolver, localRepository);
-      deploymentConfigurator.initializeEnvironment(settings, decrypter);
+      initializeAnypointDeploymentEnvironment();
     }
 
     getLog().debug("Executing mojo, skip=" + deploymentConfiguration.getSkip());
@@ -119,4 +116,18 @@ public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
     }
   }
 
+  public MavenResolverMetadata getMetadata() {
+    return new MavenResolverMetadata()
+        .setFactory(artifactFactory)
+        .setLocalRepository(localRepository)
+        .setProject(project)
+        .setResolver(artifactResolver);
+  }
+
+  public void initializeAnypointDeploymentEnvironment() throws MojoFailureException, MojoExecutionException {
+    DeploymentConfigurator deploymentConfigurator =
+        new DeploymentConfigurator((AnypointDeployment) deploymentConfiguration, new MavenDeployerLog(getLog()));
+    deploymentConfigurator.initializeApplication(getMetadata());
+    deploymentConfigurator.initializeEnvironment(settings, decrypter);
+  }
 }

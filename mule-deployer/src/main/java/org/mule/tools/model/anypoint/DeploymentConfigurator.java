@@ -25,6 +25,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.model.Model;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
@@ -51,17 +52,10 @@ public class DeploymentConfigurator {
     this.log = log;
   }
 
-  public void initializeApplication(ArtifactFactory factory, MavenProject project, ArtifactResolver resolver,
-                                    ArtifactRepository localRepository)
+  public void initializeApplication(MavenResolverMetadata metadata)
       throws MojoFailureException {
     if (anypointConfiguration.getArtifact() == null) {
-      Artifact artifact = resolveMavenProjectArtifact(factory, project, resolver, localRepository);
-      anypointConfiguration.setArtifact(artifact.getFile());
-      log.info("No application configured. Using project artifact: " + anypointConfiguration.getArtifact());
-
-      if (anypointConfiguration.getApplicationName() == null) {
-        anypointConfiguration.setApplicationName(artifact.getArtifactId());
-      }
+      resolveArtifactAndApplicationName(metadata);
     } else {
       // If an application is defined but no application name is provided, use the name of the file instead of
       // the artifact ID (expected behavior in standalone deploymentConfiguration for example).
@@ -71,16 +65,26 @@ public class DeploymentConfigurator {
     }
   }
 
-  protected Artifact resolveMavenProjectArtifact(ArtifactFactory factory, MavenProject project, ArtifactResolver resolver,
-                                                 ArtifactRepository localRepository)
+  private void resolveArtifactAndApplicationName(MavenResolverMetadata metadata) throws MojoFailureException {
+    Artifact artifact = resolveMavenProjectArtifact(metadata);
+    anypointConfiguration.setArtifact(artifact.getFile());
+    log.info("No application configured. Using project artifact: " + anypointConfiguration.getArtifact());
+
+    if (anypointConfiguration.getApplicationName() == null) {
+      anypointConfiguration.setApplicationName(artifact.getArtifactId());
+    }
+  }
+
+  protected Artifact resolveMavenProjectArtifact(MavenResolverMetadata metadata)
       throws MojoFailureException {
-    Artifact artifact = factory.createArtifactWithClassifier(project.getGroupId(),
-                                                             project.getArtifactId(),
-                                                             project.getVersion(),
-                                                             "jar",
-                                                             project.getPackaging());
+    MavenProject project = metadata.getProject();
+    Artifact artifact = metadata.getFactory().createArtifactWithClassifier(project.getGroupId(),
+                                                                           project.getArtifactId(),
+                                                                           project.getVersion(),
+                                                                           "jar",
+                                                                           project.getPackaging());
     try {
-      resolver.resolve(artifact, new ArrayList<>(), localRepository);
+      metadata.getResolver().resolve(artifact, new ArrayList<>(), metadata.getLocalRepository());
     } catch (ArtifactResolutionException | ArtifactNotFoundException e) {
       throw new MojoFailureException("Couldn't resolve artifact [" + artifact + "]");
     }
@@ -88,25 +92,12 @@ public class DeploymentConfigurator {
     return artifact;
   }
 
-
   public void initializeEnvironment(Settings settings, SettingsDecrypter decrypter) throws MojoExecutionException {
-    if (anypointConfiguration.getServer() != null) {
-      Server serverObject = settings.getServer(anypointConfiguration.getServer());
-      if (serverObject == null) {
-        log.error("Server [" + anypointConfiguration.getServer() + "] not found in settings file.");
-        throw new MojoExecutionException("Server [" + anypointConfiguration.getServer() + "] not found in settings file.");
-      }
-      // Decrypting Maven server, in case of plain text passwords returns the same
-      serverObject = decrypter.decrypt(new DefaultSettingsDecryptionRequest(serverObject)).getServer();
-      if (StringUtils.isNotEmpty(anypointConfiguration.getUsername())
-          || StringUtils.isNotEmpty(anypointConfiguration.getPassword())) {
-        log.warn("Both server and credentials are configured. Using plugin configuration credentials.");
-      } else {
-        anypointConfiguration.setUsername(serverObject.getUsername());
-        anypointConfiguration.setPassword(serverObject.getPassword());
-      }
-    }
+    setCredentials(settings, decrypter);
+    setSupportToIbmJdk();
+  }
 
+  private void setSupportToIbmJdk() {
     String ibmJdkSupport = System.getProperty("ibm.jdk.support");
     if ("true".equals(ibmJdkSupport)) {
       log.debug("Attempting to provide support for IBM JDK...");
@@ -123,6 +114,25 @@ public class DeploymentConfigurator {
 
       } catch (NoSuchFieldException | IllegalAccessException e) {
         log.error("Fail to provide support for IBM JDK", e);
+      }
+    }
+  }
+
+  private void setCredentials(Settings settings, SettingsDecrypter decrypter) throws MojoExecutionException {
+    if (anypointConfiguration.getServer() != null) {
+      Server serverObject = settings.getServer(anypointConfiguration.getServer());
+      if (serverObject == null) {
+        log.error("Server [" + anypointConfiguration.getServer() + "] not found in settings file.");
+        throw new MojoExecutionException("Server [" + anypointConfiguration.getServer() + "] not found in settings file.");
+      }
+      // Decrypting Maven server, in case of plain text passwords returns the same
+      serverObject = decrypter.decrypt(new DefaultSettingsDecryptionRequest(serverObject)).getServer();
+      if (StringUtils.isNotEmpty(anypointConfiguration.getUsername())
+          || StringUtils.isNotEmpty(anypointConfiguration.getPassword())) {
+        log.warn("Both server and credentials are configured. Using plugin configuration credentials.");
+      } else {
+        anypointConfiguration.setUsername(serverObject.getUsername());
+        anypointConfiguration.setPassword(serverObject.getPassword());
       }
     }
   }

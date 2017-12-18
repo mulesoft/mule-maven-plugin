@@ -15,7 +15,7 @@ public class MuleControllerException extends RuntimeException {
   private static final long serialVersionUID = -235062000492669536L;
 
   /**
-   * Constructs a new runtime exception with null as its detail message. The cause is not initialized, and may subsequently be
+   * Constructs a new runtime exception with a null String as its detail message. The cause is not initialized, and may subsequently be
    * initialized by a call to {@link Throwable#initCause(Throwable)}.
    */
   public MuleControllerException() {

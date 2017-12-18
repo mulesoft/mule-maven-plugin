@@ -45,7 +45,7 @@ public class AgentDeployer extends AbstractDeployer {
   }
 
   @Override
-  protected void initialize() {
+  public void initialize() {
     agentDeployment = (AgentDeployment) deploymentConfiguration;
     this.agentClient = new AgentClient(log, agentDeployment.getUri());
   }

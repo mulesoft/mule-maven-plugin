@@ -27,23 +27,28 @@ public class DeployerFactory {
 
   public AbstractDeployer createDeployer(Deployment deploymentConfiguration, DeployerLog log)
       throws DeploymentException {
+    AbstractDeployer deployer = null;
     if (deploymentConfiguration instanceof StandaloneDeployment) {
-      return new StandaloneDeployer((StandaloneDeployment) deploymentConfiguration, log);
+      deployer = new StandaloneDeployer((StandaloneDeployment) deploymentConfiguration, log);
     }
-    if (deploymentConfiguration instanceof ClusterDeployment) {
+    if (deploymentConfiguration instanceof ArmDeployment) {
+      deployer = new ArmDeployer((ArmDeployment) deploymentConfiguration, log);
+    }
+    if (deploymentConfiguration instanceof CloudHubDeployment) {
+      deployer = new CloudhubDeployer((CloudHubDeployment) deploymentConfiguration, log);
+    }
+    if (deploymentConfiguration instanceof AgentDeployment) {
+      deployer = new AgentDeployer((AgentDeployment) deploymentConfiguration, log);
+    }
+    if (deployer == null) {
       throw new DeploymentException("Unsupported deploymentConfiguration type: "
           + deploymentConfiguration);
     }
-    if (deploymentConfiguration instanceof ArmDeployment) {
-      return new ArmDeployer((ArmDeployment) deploymentConfiguration, log);
-    }
-    if (deploymentConfiguration instanceof CloudHubDeployment) {
-      return new CloudhubDeployer((CloudHubDeployment) deploymentConfiguration, log);
-    }
-    if (deploymentConfiguration instanceof AgentDeployment) {
-      return new AgentDeployer((AgentDeployment) deploymentConfiguration, log);
-    }
-    throw new DeploymentException("Unsupported deploymentConfiguration type: "
-        + deploymentConfiguration);
+    initializeDeployer(deployer);
+    return deployer;
+  }
+
+  protected void initializeDeployer(AbstractDeployer deployer) throws DeploymentException {
+    deployer.initialize();
   }
 }

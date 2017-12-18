@@ -28,7 +28,7 @@ public class OperationRetrierTest {
   public void retryFail() throws TimeoutException, InterruptedException {
     OperationRetrier operationRetrier = new OperationRetrier();
     operationRetrier.setAttempts(1);
-    operationRetrier.setSleepTime(Long.valueOf(1000));
+    operationRetrier.setSleepTime(1000L);
 
     operationRetrier.retry(() -> true);
   }
@@ -37,7 +37,7 @@ public class OperationRetrierTest {
   public void retrySucceed() throws TimeoutException, InterruptedException {
     OperationRetrier operationRetrier = new OperationRetrier();
     operationRetrier.setAttempts(1);
-    operationRetrier.setSleepTime(Long.valueOf(1000));
+    operationRetrier.setSleepTime(1000L);
 
     operationRetrier.retry(() -> false);
   }
@@ -48,7 +48,7 @@ public class OperationRetrierTest {
 
     OperationRetrier operationRetrier = new OperationRetrier();
     operationRetrier.setAttempts(maxAttempts);
-    operationRetrier.setSleepTime(Long.valueOf(1));
+    operationRetrier.setSleepTime(1L);
 
 
     CounterRetriableOperation retriableOperation = new CounterRetriableOperation(maxAttempts);
@@ -66,7 +66,7 @@ public class OperationRetrierTest {
 
     OperationRetrier operationRetrier = new OperationRetrier();
     operationRetrier.setAttempts(maxAttempts);
-    operationRetrier.setSleepTime(Long.valueOf(1));
+    operationRetrier.setSleepTime(1L);
 
 
     CounterRetriableOperation retriableOperation = new CounterRetriableOperation(maxAttempts);
@@ -102,7 +102,7 @@ public class OperationRetrierTest {
       if (succedAt == -1) {
         return count <= maxAttempts;
       } else {
-        if (count == succedAt) {
+        if (count.equals(succedAt)) {
           return false;
         }
         return true;

@@ -66,7 +66,7 @@ public class ClientExceptionTest {
 
   private void setUpException() {
     expected.expect(ClientException.class);
-    expected.expectMessage("500 Internal Server Error: /var/log/httpd/error_log");
+    expected.expectMessage(CUSTOM_CLIENT_EXCEPTION.getMessage());
   }
 
 }

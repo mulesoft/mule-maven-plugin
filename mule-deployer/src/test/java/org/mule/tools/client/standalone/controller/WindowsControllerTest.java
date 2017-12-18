@@ -58,7 +58,7 @@ public class WindowsControllerTest {
 
   @Test
   public void getMuleBinTest() {
-    assertThat("Mule bin path is not the expected", controller.getMuleBin(), equalTo("C:\\user\\mule/bin/mule.bat"));
+    assertThat("Mule bin path is not the expected", controller.getMuleBin(), equalTo(MULE_HOME + "/bin/mule.bat"));
   }
 
   @Test

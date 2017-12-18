@@ -51,7 +51,7 @@ public class UnixControllerTest {
 
   @Test
   public void getMuleBinTest() {
-    assertThat("Mule bin path is not the expected", controller.getMuleBin(), equalTo("/home/mule/bin/mule"));
+    assertThat("Mule bin path is not the expected", controller.getMuleBin(), equalTo(MULE_HOME + "/bin/mule"));
   }
 
   @Test

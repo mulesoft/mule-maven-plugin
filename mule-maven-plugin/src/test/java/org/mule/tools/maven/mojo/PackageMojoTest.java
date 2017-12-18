@@ -138,6 +138,22 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
     mojo.getDestinationFile(null);
   }
 
+  @Test
+  public void buildPackagingOptionsMuleApplicationTemplateTest() {
+    mojo.onlyMuleSources = false;
+    mojo.classifier = Classifier.MULE_APPLICATION_TEMPLATE.toString();
+    assertThat("Packaging options should have onlyMuleSources property set to true",
+               mojo.buildPackagingOptions().isOnlyMuleSources(), equalTo(true));
+  }
+
+  @Test
+  public void buildPackagingOptionsMuleApplicationExampleTest() {
+    mojo.attachMuleSources = false;
+    mojo.classifier = Classifier.MULE_APPLICATION_EXAMPLE.toString();
+    assertThat("Packaging options should have attachMuleSources property set to true",
+               mojo.buildPackagingOptions().isAttachMuleSources(), equalTo(true));
+  }
+
   private class PackageMojoImpl extends PackageMojo {
 
     @Override

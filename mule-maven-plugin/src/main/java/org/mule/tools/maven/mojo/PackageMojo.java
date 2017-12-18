@@ -100,11 +100,15 @@ public class PackageMojo extends AbstractMuleMojo {
   }
 
   protected PackageBuilder getPackageBuilder() {
-    boolean isMuleApplicationTemplate = Classifier.MULE_APPLICATION_TEMPLATE.equals(classifier);
-    options =
-        new PackagingOptions(isMuleApplicationTemplate || onlyMuleSources,
-                             lightweightPackage, attachMuleSources, testJar);
+    options = buildPackagingOptions();
     return PackageBuilderFactory.create(getPackagingType(), options);
+  }
+
+  protected PackagingOptions buildPackagingOptions() {
+    boolean isMuleApplicationTemplate = Classifier.MULE_APPLICATION_TEMPLATE.equals(classifier);
+    boolean isMuleApplicationExample = Classifier.MULE_APPLICATION_EXAMPLE.equals(classifier);
+    return new PackagingOptions(isMuleApplicationTemplate || onlyMuleSources,
+                                lightweightPackage, isMuleApplicationExample || attachMuleSources, testJar);
   }
 
   private String getType() {

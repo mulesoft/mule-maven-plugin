@@ -185,7 +185,7 @@ public class ProjectInformation {
       checkArgument(isNotBlank(groupId), "Group id should not be null nor blank");
       checkArgument(isNotBlank(artifactId), "Artifact id should not be null nor blank");
       checkArgument(isNotBlank(version), "Version should not be null nor blank");
-      checkArgument(isNotBlank(packaging), "Version should not be null nor blank");
+      checkArgument(isNotBlank(packaging), "Packaging should not be null nor blank");
       checkArgument(projectBaseFolder != null, "Project base folder should not be null");
       checkArgument(buildDirectory != null, "Project build directory should not be null");
       checkArgument(isTestProject != null, "Project isTestProject property was not set");

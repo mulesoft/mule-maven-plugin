@@ -7,13 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.validation.exchange.model;/*
-                                                     * Copyright (c) 2015 MuleSoft, Inc. This software is protected under international
-                                                     * copyright law. All use of this software is subject to MuleSoft's Master Subscription
-                                                     * Agreement (or other master license agreement) separately entered into in writing between
-                                                     * you and MuleSoft. If such an agreement is not in place, you may not use the software.
-                                                     */
-
+package org.mule.tools.api.validation.exchange.model;
 
 /**
  * Represents an Exchange Group

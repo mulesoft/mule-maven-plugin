@@ -88,6 +88,10 @@ public class StandaloneEnvironment {
     return controller.isDeployed(applicationName);
   }
 
+  public Boolean isDomainDeployed(String domainName) {
+    return controller.isDomainDeployed(domainName);
+  }
+
   private void killMuleProcesses() throws IOException {
     List<String> commands = new ArrayList<>();
 

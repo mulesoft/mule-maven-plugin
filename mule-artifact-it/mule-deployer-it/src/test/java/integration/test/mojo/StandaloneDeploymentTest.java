@@ -15,6 +15,7 @@ import static org.hamcrest.core.Is.is;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
@@ -22,13 +23,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.junit.rules.TestName;
 import org.slf4j.LoggerFactory;
 
 import integration.test.util.StandaloneEnvironment;
 
 public class StandaloneDeploymentTest extends AbstractDeploymentTest {
 
-  private static final String APPLICATION = "empty-mule-deploy-standalone-project";
+  private static final String APPLICATION = "empty-mule-deploy-standalone-application-project";
+  private static final String DOMAIN = "empty-mule-deploy-standalone-domain-project";
 
   public static final String VERIFIER_MULE_VERSION = "mule.version";
   public static final String VERIFIER_MULE_TIMEOUT = "mule.timeout";
@@ -37,10 +40,17 @@ public class StandaloneDeploymentTest extends AbstractDeploymentTest {
   @Rule
   public TemporaryFolder environmentWorkingDir = new TemporaryFolder();
 
+  @Rule
+  public final TestName testName = new TestName();
+
   private Verifier verifier;
 
   public String getApplication() {
-    return APPLICATION;
+    if ("standaloneApplicationDeployTest".equals(testName.getMethodName())) {
+      return APPLICATION;
+    } else {
+      return DOMAIN;
+    }
   }
 
   @Before
@@ -66,12 +76,22 @@ public class StandaloneDeploymentTest extends AbstractDeploymentTest {
   }
 
   @Test(timeout = 60000)
-  public void testStandaloneDeploy() throws IOException, VerificationException, InterruptedException {
+  public void standaloneApplicationDeployTest() throws IOException, VerificationException, InterruptedException {
+    deploy();
+    assertThat("Failed to deploy: " + APPLICATION, standaloneEnvironment.isDeployed(APPLICATION), is(true));
+  }
+
+  @Test(timeout = 60000)
+  public void standaloneDomainDeployTest() throws IOException, VerificationException, InterruptedException {
+    deploy();
+    assertThat("Failed to deploy: " + DOMAIN, standaloneEnvironment.isDomainDeployed(DOMAIN), is(true));
+  }
+
+  private void deploy() throws VerificationException {
     log.info("Executing mule:deploy goal...");
     verifier.addCliOption("-DmuleDeploy");
     verifier.executeGoal(DEPLOY_GOAL);
 
     assertThat("Standalone should be running ", standaloneEnvironment.isRunning(), is(true));
-    assertThat("Failed to deploy: " + APPLICATION, standaloneEnvironment.isDeployed(APPLICATION), is(true));
   }
 }

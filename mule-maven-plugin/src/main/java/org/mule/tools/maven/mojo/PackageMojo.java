@@ -94,9 +94,7 @@ public class PackageMojo extends AbstractMuleMojo {
   }
 
   protected String getFileName() {
-    return project.getBuild().getFinalName() + "-" + getPackagingType().resolveClassifier(classifier, lightweightPackage, testJar)
-        + "."
-        + getType();
+    return project.getBuild().getFinalName() + "-" + getClassifier() + "." + getType();
   }
 
   protected PackageBuilder getPackageBuilder() {
@@ -113,10 +111,6 @@ public class PackageMojo extends AbstractMuleMojo {
 
   private String getType() {
     return getPackagingType().equals(MULE_DOMAIN_BUNDLE) ? ZIP_EXTENSION : JAR_EXTENSION;
-  }
-
-  private PackagingType getPackagingType() {
-    return PackagingType.fromString(project.getPackaging());
   }
 
   @Override

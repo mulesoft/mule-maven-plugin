@@ -11,33 +11,29 @@ package org.mule.tools.client.standalone.controller.probing;
 
 import org.mule.tools.client.standalone.controller.MuleProcessController;
 
-/**
- * Checks if a Mule application is successfully deployed.
- *
- */
-public class AppDeploymentProbe extends DeploymentProbe implements Probe {
+public class DomainDeploymentProbe extends DeploymentProbe implements Probe {
 
-  public AppDeploymentProbe() {}
+  public DomainDeploymentProbe() {}
 
-  protected AppDeploymentProbe(MuleProcessController mule, String domainName, Boolean check) {
+  private DomainDeploymentProbe(MuleProcessController mule, String domainName, Boolean check) {
     super(mule, domainName, check);
   }
 
   @Override
   public Probe isDeployed(MuleProcessController mule, String artifactName) {
-    return new AppDeploymentProbe(mule, artifactName, true);
+    return new DomainDeploymentProbe(mule, artifactName, true);
   }
 
   @Override
   public Probe notDeployed(MuleProcessController mule, String artifactName) {
-    return new AppDeploymentProbe(mule, artifactName, false);
+    return new DomainDeploymentProbe(mule, artifactName, false);
   }
 
   public boolean isSatisfied() {
-    return check == mule.isDeployed(artifactName);
+    return check == mule.isDomainDeployed(artifactName);
   }
 
   public String describeFailure() {
-    return "Application [" + artifactName + "] is " + (check ? "not" : "") + " deployed.";
+    return "Domain [" + artifactName + "] is " + (check ? "not" : "") + " deployed.";
   }
 }

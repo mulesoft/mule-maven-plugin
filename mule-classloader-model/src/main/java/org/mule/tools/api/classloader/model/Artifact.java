@@ -22,7 +22,7 @@ import static org.apache.commons.io.FilenameUtils.*;
 
 public class Artifact implements Comparable {
 
-  private static final String MULE_DOMAIN = "mule-domain";
+  public static final String MULE_DOMAIN = "mule-domain";
   private ArtifactCoordinates artifactCoordinates;
   private URI uri;
 

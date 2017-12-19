@@ -38,9 +38,6 @@ public abstract class AbstractMuleMojo extends AbstractGenericMojo {
   @Parameter(property = "project.build.directory", required = true)
   protected File outputDirectory;
 
-  @Parameter(defaultValue = "${lightweightPackage}")
-  protected boolean lightweightPackage = false;
-
   @Parameter(defaultValue = "${skipValidation}")
   protected boolean skipValidation = false;
 

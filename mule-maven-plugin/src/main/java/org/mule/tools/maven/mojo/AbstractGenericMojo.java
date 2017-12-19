@@ -38,6 +38,7 @@ import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.packager.ProjectInformation;
+import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
 import org.mule.tools.api.validation.project.AbstractProjectValidator;
 import org.mule.tools.api.validation.project.ProjectValidatorFactory;
@@ -99,6 +100,9 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   @Parameter
   protected String classifier;
 
+  @Parameter(defaultValue = "${lightweightPackage}")
+  protected boolean lightweightPackage = false;
+
   protected AbstractProjectValidator validator;
 
   protected AetherMavenClient aetherMavenClient;
@@ -113,7 +117,6 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
     if (projectBuildDirectory != null) {
       project.getBuild().setDirectory(projectBuildDirectory);
     }
-    getAndSetProjectInformation();
   }
 
   public void setCloudHubDeployment(CloudHubDeployment cloudHubDeployment) {
@@ -182,7 +185,7 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
           .withArtifactId(project.getArtifactId())
           .withVersion(project.getVersion())
           .withPackaging(project.getPackaging())
-          .withClassifier(classifier)
+          .withClassifier(getClassifier())
           .withProjectBaseFolder(Paths.get(projectBaseFolder.toURI()))
           .withBuildDirectory(Paths.get(project.getBuild().getDirectory()))
           .setTestProject(testJar)
@@ -231,4 +234,11 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
     return Optional.ofNullable(metadata);
   }
 
+  protected PackagingType getPackagingType() {
+    return PackagingType.fromString(project.getPackaging());
+  }
+
+  public String getClassifier() {
+    return getPackagingType().resolveClassifier(classifier, lightweightPackage, testJar);
+  }
 }

@@ -12,6 +12,8 @@ package org.mule.tools.client.standalone.deployment;
 
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.mule.tools.api.classloader.model.Artifact.MULE_DOMAIN;
+import static org.mule.tools.client.standalone.controller.probing.ProbeFactory.createProbe;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +22,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -30,7 +33,7 @@ import org.apache.maven.project.MavenProject;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
-import org.mule.tools.client.standalone.controller.probing.AppDeploymentProbe;
+import org.mule.tools.client.standalone.controller.probing.DeploymentProbe;
 import org.mule.tools.client.standalone.controller.probing.PollingProber;
 import org.mule.tools.client.standalone.controller.probing.Prober;
 import org.mule.tools.client.standalone.exception.DeploymentException;
@@ -46,7 +49,7 @@ public class StandaloneDeployer extends AbstractDeployer {
   private MuleProcessController mule;
   private Prober prober;
 
-  public StandaloneDeployer(StandaloneDeployment standaloneDeployment, DeployerLog log) throws DeploymentException {
+  public StandaloneDeployer(StandaloneDeployment standaloneDeployment, DeployerLog log) {
     super(standaloneDeployment, log);
   }
 
@@ -65,12 +68,13 @@ public class StandaloneDeployer extends AbstractDeployer {
 
   private void waitForDeployments() throws DeploymentException {
     if (!standaloneDeployment.getArtifact().exists()) {
-      throw new DeploymentException("Application does not exists: " + standaloneDeployment.getArtifact());
+      throw new DeploymentException("Application does not exist: " + standaloneDeployment.getArtifact());
     }
-    log.debug("Waiting for application [" + standaloneDeployment.getArtifact() + "] to be deployed.");
+    log.debug("Waiting for artifact [" + standaloneDeployment.getArtifact() + "] to be deployed.");
     String app = FilenameUtils.getBaseName(standaloneDeployment.getArtifact().getName());
     try {
-      prober.check(AppDeploymentProbe.isDeployed(mule, app));
+      DeploymentProbe probe = createProbe(standaloneDeployment.getPackaging());
+      prober.check(probe.isDeployed(mule, app));
     } catch (AssertionError e) {
       log.error("Couldn't deploy application [" + app + "] after [" + standaloneDeployment.getDeploymentTimeout()
           + "] miliseconds. Check Mule Runtime log");
@@ -78,12 +82,17 @@ public class StandaloneDeployer extends AbstractDeployer {
     }
   }
 
-  private void deployApplications() throws DeploymentException {
-    log.info("Deploying application [" + standaloneDeployment.getArtifact() + "]");
+  protected void deployArtifact() throws DeploymentException {
+    File artifact = getApplicationFile();
+    String packaging = deploymentConfiguration.getPackaging();
     try {
-      mule.deploy(standaloneDeployment.getArtifact().getAbsolutePath());
+      if (StringUtils.equals(packaging, MULE_DOMAIN)) {
+        deployDomain(artifact);
+      } else {
+        deployApplication(artifact);
+      }
     } catch (MuleControllerException e) {
-      throw new DeploymentException("Couldn't deploy application: " + standaloneDeployment.getArtifact()
+      throw new DeploymentException("Couldn't deploy artifact " + artifact.getAbsolutePath()
           + ". Check Mule Runtime logs");
     }
   }
@@ -104,7 +113,7 @@ public class StandaloneDeployer extends AbstractDeployer {
     }
   }
 
-  public StandaloneDeployer addDomain(File domain) throws DeploymentException {
+  public StandaloneDeployer deployDomain(File domain) throws DeploymentException {
     checkNotNull(domain, "Domain cannot be null");
     try {
       log.debug(String.format("Deploying domain : %s", domain));
@@ -116,10 +125,22 @@ public class StandaloneDeployer extends AbstractDeployer {
     }
   }
 
+  public StandaloneDeployer deployApplication(File application) throws DeploymentException {
+    checkNotNull(application, "Application cannot be null");
+    try {
+      log.debug(String.format("Deploying application : %s", application));
+      mule.deploy(application.getAbsolutePath());
+      return this;
+    } catch (MuleControllerException e) {
+      log.error("Couldn't deploy application: " + application);
+      throw new DeploymentException("Couldn't deploy application: " + application);
+    }
+  }
+
   public void addDomainFromstandaloneDeployment(StandaloneDeployment configuration) throws DeploymentException {
     if (configuration.getDomain() != null && configuration.getDomain().exists()) {
       log.debug("Adding domain with configuration: " + configuration.getDomain());
-      addDomain(configuration.getDomain());
+      deployDomain(configuration.getDomain());
     } else {
       log.debug("Domain configuration not found: " + configuration.getDomain());
     }
@@ -129,7 +150,7 @@ public class StandaloneDeployer extends AbstractDeployer {
   public void deploy() throws DeploymentException {
     try {
       verifyMuleIsStarted();
-      deployApplications();
+      deployArtifact();
       waitForDeployments();
     } catch (MuleControllerException e) {
       throw new DeploymentException("Error deploying application: [" + standaloneDeployment.getArtifact() + "]: "

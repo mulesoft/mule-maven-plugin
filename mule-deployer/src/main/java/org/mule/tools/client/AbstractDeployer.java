@@ -25,7 +25,7 @@ public abstract class AbstractDeployer {
   protected final DeployerLog log;
   protected final Deployment deploymentConfiguration;
 
-  public AbstractDeployer(Deployment deploymentConfiguration, DeployerLog log) throws DeploymentException {
+  public AbstractDeployer(Deployment deploymentConfiguration, DeployerLog log) {
     this.deploymentConfiguration = deploymentConfiguration;
     this.log = log;
   }

@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.mule.tools.muleesb.it</groupId>
-    <artifactId>empty-mule-deploy-standalone-project</artifactId>
+    <artifactId>empty-mule-deploy-standalone-domain-project</artifactId>
     <version>1.0.0</version>
-    <packaging>mule-application</packaging>
+    <packaging>mule-domain</packaging>
 
     <build>
         <plugins>

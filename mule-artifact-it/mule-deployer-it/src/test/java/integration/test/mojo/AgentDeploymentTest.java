@@ -32,6 +32,7 @@ public class AgentDeploymentTest extends AbstractDeploymentTest {
   @Rule
   public TemporaryFolder environmentWorkingDir = new TemporaryFolder();
 
+  private static StandaloneEnvironment standaloneEnvironment;
   private Verifier verifier;
 
   public String getApplication() {

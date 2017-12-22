@@ -73,8 +73,10 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMuleApplication() throws ValidationException {
     projectInformationBuilder
         .withPackaging(MULE_APPLICATION.toString())
+        .withClassifier(MULE_APPLICATION.toString())
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
+
 
     validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
     validator.isDeployable();
@@ -108,6 +110,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMulePolicy() throws ValidationException {
     projectInformationBuilder
         .withPackaging(MULE_POLICY.toString())
+        .withClassifier(MULE_POLICY.toString())
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -115,10 +118,11 @@ public class ProjectDeploymentValidatorTest {
     validator.isDeployable();
   }
 
-  @Test(expected = ValidationException.class)
+  @Test
   public void isDeployableMuleDomain() throws ValidationException {
     projectInformationBuilder
         .withPackaging(MULE_DOMAIN.toString())
+        .withClassifier(MULE_DOMAIN.toString())
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -130,6 +134,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMuleDomainBundle() throws ValidationException {
     projectInformationBuilder
         .withPackaging(MULE_DOMAIN_BUNDLE.toString())
+        .withClassifier(MULE_DOMAIN_BUNDLE.toString())
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -138,10 +143,11 @@ public class ProjectDeploymentValidatorTest {
   }
 
 
-  @Test
+  @Test(expected = ValidationException.class)
   public void isDeployableMuleApplicationFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-packaging")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -153,10 +159,11 @@ public class ProjectDeploymentValidatorTest {
   }
 
 
-  @Test
+  @Test(expected = ValidationException.class)
   public void isDeployableMuleApplicationLightPackageFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-classifier")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -170,7 +177,8 @@ public class ProjectDeploymentValidatorTest {
   @Test
   public void isDeployableMuleApplicationLightPackageTestJarFromArtifact() throws ValidationException {
     projectInformationBuilder
-        .withPackaging("fake-packaging")
+        .withPackaging(MULE_APPLICATION.toString())
+        .withClassifier(MULE_APPLICATION + "-" + LIGHT_PACKAGE)
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -184,7 +192,8 @@ public class ProjectDeploymentValidatorTest {
   @Test
   public void isDeployableMuleApplicationTestJarFromArtifact() throws ValidationException {
     projectInformationBuilder
-        .withPackaging("fake-packaging")
+        .withPackaging(MULE_APPLICATION.toString())
+        .withClassifier(MULE_APPLICATION + "-" + TEST_JAR)
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -199,7 +208,8 @@ public class ProjectDeploymentValidatorTest {
   @Test
   public void isDeployableMuleApplicationExampleFromArtifact() throws ValidationException {
     projectInformationBuilder
-        .withPackaging("fake-packaging")
+        .withPackaging(MULE_APPLICATION_EXAMPLE.toString())
+        .withClassifier(MULE_APPLICATION_EXAMPLE.toString())
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -213,7 +223,8 @@ public class ProjectDeploymentValidatorTest {
   @Test
   public void isDeployableMuleApplicationExampleLightPackageFromArtifact() throws ValidationException {
     projectInformationBuilder
-        .withPackaging("fake-packaging")
+        .withPackaging(MULE_APPLICATION_EXAMPLE.toString())
+        .withClassifier(MULE_APPLICATION_EXAMPLE + "-" + LIGHT_PACKAGE)
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -227,7 +238,8 @@ public class ProjectDeploymentValidatorTest {
   @Test
   public void isDeployableMuleApplicationExampleLightPackageTestJarFromArtifact() throws ValidationException {
     projectInformationBuilder
-        .withPackaging("fake-packaging")
+        .withPackaging(MULE_APPLICATION_EXAMPLE.toString())
+        .withClassifier(MULE_APPLICATION_EXAMPLE + "-" + LIGHT_PACKAGE + "-" + TEST_JAR)
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -241,7 +253,8 @@ public class ProjectDeploymentValidatorTest {
   @Test
   public void isDeployableMuleApplicationExampleTestJarFromArtifact() throws ValidationException {
     projectInformationBuilder
-        .withPackaging("fake-packaging")
+        .withPackaging(MULE_APPLICATION_EXAMPLE.toString())
+        .withClassifier(MULE_APPLICATION_EXAMPLE + "-" + TEST_JAR)
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -256,11 +269,12 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMuleApplicationTemplateFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-classifier")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
     String artifactName = "my-project-" + MULE_APPLICATION_TEMPLATE + ".jar";
-    when(deploymentConfigurationMock.getArtifact()).thenReturn(new File(artifactName));
+    when(deploymentConfigurationMock.getPackaging()).thenReturn(MULE_APPLICATION_TEMPLATE.toString());
 
     validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
     validator.isDeployable();
@@ -270,6 +284,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMuleApplicationTemplateLightPackageFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-classifier")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -284,6 +299,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMuleApplicationTemplateLightPackageTestJarFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-classifier")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -298,6 +314,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMuleApplicationTemplateTestJarFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-classifier")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -312,7 +329,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMuleDomainFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
-        .isDeployment(true)
+        .withClassifier("fake-classifier").isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
     String artifactName = "my-project-" + MULE_DOMAIN + ".jar";
@@ -326,6 +343,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMuleDomainTemplateLightPackageFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-classifier")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -340,6 +358,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMuleDomainLightPackageTestJarFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-classifier")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -354,6 +373,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMuleDomainTestJarFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-classifier")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -368,6 +388,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMuleDomainBundleFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-classifier")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -382,6 +403,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMuleDomainBundleTemplateLightPackageFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-classifier")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -396,6 +418,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMuleDomainBundleLightPackageTestJarFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-classifier")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -410,6 +433,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMuleDomainBundleTestJarFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-classifier")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -424,6 +448,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMulePolicyFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-classifier")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -438,6 +463,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMulePolicyLightPackageFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-classifier")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -452,6 +478,7 @@ public class ProjectDeploymentValidatorTest {
   public void isDeployableMulePolicyLightPackageTestJarFromArtifact() throws ValidationException {
     projectInformationBuilder
         .withPackaging("fake-packaging")
+        .withClassifier("fake-classifier")
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
@@ -465,12 +492,10 @@ public class ProjectDeploymentValidatorTest {
   @Test(expected = ValidationException.class)
   public void isDeployableMulePolicyTestJarFromArtifact() throws ValidationException {
     projectInformationBuilder
-        .withPackaging("fake-packaging")
+        .withPackaging(MULE_POLICY.toString())
+        .withClassifier(MULE_POLICY.toString())
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
-
-    String artifactName = "my-project-" + MULE_POLICY + "-" + TEST_JAR + ".jar";
-    when(deploymentConfigurationMock.getArtifact()).thenReturn(new File(artifactName));
 
     validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
     validator.isDeployable();

@@ -4,9 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.mule.tools.muleesb.it</groupId>
-    <artifactId>empty-mule-deploy-standalone-project</artifactId>
+    <artifactId>empty-mule-deploy-standalone-domain-project</artifactId>
     <version>1.0.0</version>
-    <packaging>mule-application</packaging>
+    <packaging>mule-domain</packaging>
+
+    <properties>
+        <mule.http.connector.version>1.0.0</mule.http.connector.version>
+    </properties>
 
     <build>
         <plugins>
@@ -26,4 +30,12 @@
             </plugin>
         </plugins>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-http-connector</artifactId>
+            <version>${mule.http.connector.version}</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+    </dependencies>
 </project>

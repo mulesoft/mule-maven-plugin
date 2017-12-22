@@ -15,11 +15,13 @@ import java.io.IOException;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
-import org.apache.maven.shared.utils.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 
 import integration.ProjectFactory;
+import org.mule.tools.api.util.FileUtils;
+
+import static org.apache.commons.io.FileUtils.deleteDirectory;
 
 
 public class MojoTest implements SettingsConfigurator {
@@ -52,7 +54,7 @@ public class MojoTest implements SettingsConfigurator {
   protected void clearResources() throws IOException {
     targetFolder = new File(projectBaseDirectory.getAbsolutePath(), TARGET_FOLDER_NAME);
     if (targetFolder.exists()) {
-      FileUtils.deleteDirectory(targetFolder);
+      deleteDirectory(targetFolder);
     }
   }
 
@@ -65,7 +67,7 @@ public class MojoTest implements SettingsConfigurator {
     File testMockArtifactsDirectory =
         new File(System.getProperty(TARGET_FOLDER_SYSTEM_PROPERTY_PLACEHOLDER) + File.separator + "test-classes/repository");
     try {
-      FileUtils.copyDirectory(testMockArtifactsDirectory, localRepository);
+      FileUtils.copyDirectoryRecursively(testMockArtifactsDirectory, localRepository);
     } catch (IOException e) {
       e.printStackTrace();
     }

@@ -35,6 +35,8 @@ public abstract class Deployment {
   @Parameter
   protected String muleVersion;
 
+  private String packaging;
+
   /**
    * Application file to be deployed.
    *
@@ -77,6 +79,18 @@ public abstract class Deployment {
     this.muleVersion = muleVersion;
   }
 
+  /**
+   * Packaging type of artifact to be deployed.
+   *
+   */
+  public String getPackaging() {
+    return packaging;
+  }
+
+  public void setPackaging(String packaging) {
+    this.packaging = packaging;
+  }
+
   public void setDefaultValues(MavenProject project) throws DeploymentException {
     setBasicDeploymentValues(project);
     setEnvironmentSpecificValues();
@@ -116,6 +130,11 @@ public abstract class Deployment {
         throw new DeploymentException("Artifact to be deployed could not be found. Please set its location setting -Dmule.artifact=path/to/jar or in the deployment configuration pom element");
       }
       setArtifact(project.getAttachedArtifacts().get(0).getFile());
+    }
+
+    String packaging = project.getPackaging();
+    if (isNotBlank(packaging)) {
+      setPackaging(packaging);
     }
   }
 }

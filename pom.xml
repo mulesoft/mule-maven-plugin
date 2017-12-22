@@ -49,7 +49,7 @@
         <mule.api.version>1.0.0</mule.api.version>
         <mule.core.version>4.0.0</mule.core.version>
         <mule.maven.client.impl.version>1.0.0</mule.maven.client.impl.version>
-        <mule.distribution.standalone.version>4.0.0</mule.distribution.standalone.version>
+        <mule.distribution.standalone.version>4.1.0-SNAPSHOT</mule.distribution.standalone.version>
 
 
         <http.client.version>4.5.3</http.client.version>

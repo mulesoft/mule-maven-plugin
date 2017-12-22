@@ -22,12 +22,14 @@ import org.apache.maven.project.MavenProject;
 import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.standalone.configuration.ClusterConfigurator;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
-import org.mule.tools.client.standalone.controller.probing.AppDeploymentProbe;
+import org.mule.tools.client.standalone.controller.probing.deployment.DeploymentProbe;
 import org.mule.tools.client.standalone.controller.probing.PollingProber;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.utils.DeployerLog;
+
+import static org.mule.tools.client.standalone.controller.probing.deployment.DeploymentProbeFactory.createProbe;
 
 public class ClusterDeployer extends AbstractDeployer {
 
@@ -56,11 +58,12 @@ public class ClusterDeployer extends AbstractDeployer {
       if (!clusterDeployment.getArtifact().exists()) {
         throw new DeploymentException("Application does not exists: " + clusterDeployment.getArtifact());
       }
+      DeploymentProbe probe = createProbe(deploymentConfiguration.getPackaging());
       log.debug("Checking for application [" + clusterDeployment.getArtifact() + "] to be deployed.");
       String app = getApplicationName(clusterDeployment.getArtifact());
       try {
         new PollingProber(clusterDeployment.getDeploymentTimeout(), DEFAULT_POLLING_DELAY)
-            .check(AppDeploymentProbe.isDeployed(m, app));
+            .check(probe.isDeployed(m, app));
       } catch (AssertionError e) {
         log.error("Couldn't deploy application [" + clusterDeployment.getArtifact() + "] after ["
             + clusterDeployment.getDeploymentTimeout()

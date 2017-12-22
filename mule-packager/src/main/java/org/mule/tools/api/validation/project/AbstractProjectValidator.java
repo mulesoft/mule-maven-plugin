@@ -10,17 +10,20 @@
 
 package org.mule.tools.api.validation.project;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
+import org.mule.tools.api.packager.packaging.Classifier;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.validation.VersionUtils;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Sets.newHashSet;
 
 /**
  * Validates if the project has an existent packaging type, the compatibility of mule plugins that are dependencies of this
@@ -92,5 +95,40 @@ public abstract class AbstractProjectValidator {
               + ". Please specify a valid mule packaging type: " + String.join(", ", packagingTypeNames));
     }
     return true;
+  }
+
+  /**
+   * It validates that the provided packaging types is a valid one
+   *
+   * @param classifier defines the classifier of the project to validate
+   * @return true if the project's packaging type is valid
+   * @throws ValidationException if the packaging type is unknown
+   */
+  public static Boolean isClassifierValid(String classifier) throws ValidationException {
+    Set<String> allPossibleClassifiers = generateAllValidClassifiers();
+    if (classifier == null || !allPossibleClassifiers.contains(classifier)) {
+      List<String> classifierNames = allPossibleClassifiers.stream().collect(Collectors.toList());
+      throw new ValidationException("Unknown classifier type " + classifier
+          + ". Please specify a valid mule classifier type: " + String.join(", ", classifierNames));
+    }
+    return true;
+  }
+
+  private static Set<String> generateAllValidClassifiers() {
+    Set<String> classifierPrefixes = Arrays.stream(Classifier.values())
+        .filter(c -> !c.equals(Classifier.LIGHT_PACKAGE))
+        .filter(c -> !c.equals(Classifier.TEST_JAR))
+        .map(Classifier::toString).collect(Collectors.toSet());
+
+    Set<String> allPossibleClassifiers = new HashSet<>(classifierPrefixes);
+
+    for (String prefix : classifierPrefixes) {
+      allPossibleClassifiers.add(prefix + "-" + Classifier.LIGHT_PACKAGE.toString());
+    }
+
+    for (String prefix : new ArrayList<>(allPossibleClassifiers)) {
+      allPossibleClassifiers.add(prefix + "-" + Classifier.TEST_JAR.toString());
+    }
+    return allPossibleClassifiers;
   }
 }

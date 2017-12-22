@@ -27,7 +27,7 @@ import integration.test.util.StandaloneEnvironment;
 public abstract class AbstractDeploymentTest {
 
   private static final String MAVEN_OPTS = "MAVEN_OPTS";
-  private static final String DEFAULT_MULE_VERSION = "4.0.0";
+  private static final String DEFAULT_MULE_VERSION = "4.1.0-SNAPSHOT";
   private static final String MAVEN_OPTS_PROPERTY_KEY = "argLine";
 
   protected static final String DEPLOY_GOAL = "deploy";
@@ -38,7 +38,6 @@ public abstract class AbstractDeploymentTest {
   protected static final String DEFAULT_DEBUG_ARG_LINE = "-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=y";
 
   protected ProjectFactory projectFactory;
-  protected StandaloneEnvironment standaloneEnvironment;
   protected Logger log = LoggerFactory.getLogger(this.getClass());
 
   protected String username = System.getProperty(USERNAME_ENVIRONMENT_VARIABLE);

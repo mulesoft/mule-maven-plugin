@@ -12,8 +12,7 @@ package org.mule.tools.client.standalone.deployment;
 
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.mule.tools.api.classloader.model.Artifact.MULE_DOMAIN;
-import static org.mule.tools.client.standalone.controller.probing.ProbeFactory.createProbe;
+import static org.mule.tools.client.standalone.controller.probing.deployment.DeploymentProbeFactory.createProbe;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +32,7 @@ import org.apache.maven.project.MavenProject;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
-import org.mule.tools.client.standalone.controller.probing.DeploymentProbe;
+import org.mule.tools.client.standalone.controller.probing.deployment.DeploymentProbe;
 import org.mule.tools.client.standalone.controller.probing.PollingProber;
 import org.mule.tools.client.standalone.controller.probing.Prober;
 import org.mule.tools.client.standalone.exception.DeploymentException;
@@ -44,6 +43,7 @@ import org.mule.tools.utils.DeployerLog;
 public class StandaloneDeployer extends AbstractDeployer {
 
   private static final long DEFAULT_POLLING_DELAY = 1000;
+  private static final String MULE_DOMAIN = "mule-domain";
   private StandaloneDeployment standaloneDeployment;
 
   private MuleProcessController mule;

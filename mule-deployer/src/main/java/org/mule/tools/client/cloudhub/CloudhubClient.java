@@ -10,14 +10,17 @@
 package org.mule.tools.client.cloudhub;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
@@ -35,6 +38,7 @@ public class CloudhubClient extends AbstractMuleClient {
   private static final String DOMAINS_PATH = "/cloudhub/api/applications/domains/";
   private static final String APPLICATION_UPDATE_PATH = "/cloudhub/api/v2/applications/%s";
   private static final String APPLICATIONS_FILES_PATH = "/cloudhub/api/v2/applications/%s/files";
+  private static final String SUPPORTED_VERSIONS_PATH = "cloudhub/api/mule-versions";
   private static final String CREATE_REQUEST_TEMPLATE = "{" +
       "  \"domain\": \"%s\"," +
       "  \"region\": \"%s\"," +
@@ -192,6 +196,22 @@ public class CloudhubClient extends AbstractMuleClient {
       throw new ClientException(response);
     }
 
+  }
+
+  public Set<String> getSupportedMuleVersions() {
+    Set<String> supportedMuleVersions = new HashSet<>();
+
+    String jsonResponse = get(baseUri, SUPPORTED_VERSIONS_PATH).readEntity(String.class);
+
+    JsonObject response = new JsonParser().parse(jsonResponse).getAsJsonObject();
+    JsonArray dataElements = response.get("data").getAsJsonArray();
+    for (JsonElement dataElement : dataElements) {
+      JsonObject data = dataElement.getAsJsonObject();
+      String muleVersion = data.get("version").getAsString();
+      supportedMuleVersions.add(muleVersion);
+    }
+
+    return supportedMuleVersions;
   }
 
   private static class DomainAvailability {

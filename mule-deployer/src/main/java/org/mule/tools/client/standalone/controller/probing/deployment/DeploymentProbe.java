@@ -7,9 +7,10 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.client.standalone.controller.probing;
+package org.mule.tools.client.standalone.controller.probing.deployment;
 
 import org.mule.tools.client.standalone.controller.MuleProcessController;
+import org.mule.tools.client.standalone.controller.probing.Probe;
 
 public abstract class DeploymentProbe {
 
@@ -19,9 +20,20 @@ public abstract class DeploymentProbe {
 
   public DeploymentProbe() {}
 
+  /**
+   * Check if the current status of artifact is deployed.
+   * @param mule A controller for the runtime instance.
+   * @param artifactName The artifact which status is being checked.
+   */
   public abstract Probe isDeployed(MuleProcessController mule, String artifactName);
 
+  /**
+   * Check if the current status of artifact is not deployed.
+   * @param mule A controller for the runtime instance.
+   * @param artifactName The artifact which status is being checked.
+   */
   public abstract Probe notDeployed(MuleProcessController mule, String artifactName);
+
 
   protected DeploymentProbe(MuleProcessController mule, String artifactName, Boolean check) {
     this.mule = mule;

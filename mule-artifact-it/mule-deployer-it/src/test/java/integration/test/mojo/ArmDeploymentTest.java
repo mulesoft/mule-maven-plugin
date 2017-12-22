@@ -50,6 +50,7 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
   private static final long SLEEP_TIME = 30000;
   private static final String STARTED_STATUS = "STARTED";
   public static final String RUNNING_STATUS = "RUNNING";
+  private static StandaloneEnvironment standaloneEnvironment;
 
   @Rule
   public TemporaryFolder environmentWorkingDir = new TemporaryFolder();

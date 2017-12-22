@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.mule.group</groupId>
+    <artifactId>mule-plugin-a</artifactId>
+    <version>0.8.0</version>
+    <packaging>jar</packaging>
+    <name>Dependency</name>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <extensions>false</extensions>
+                <inherited>true</inherited>
+                <configuration>
+                    <classifier>mule-plugin</classifier>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

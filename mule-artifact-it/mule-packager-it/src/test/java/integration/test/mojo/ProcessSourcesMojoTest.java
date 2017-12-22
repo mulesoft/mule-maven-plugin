@@ -18,8 +18,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
+import integration.ProjectFactory;
 import org.apache.maven.it.VerificationException;
+import org.eclipse.persistence.exceptions.i18n.ValidationExceptionResource;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -67,10 +70,9 @@ public class ProcessSourcesMojoTest extends MojoTest {
     clearResources();
   }
 
+
   @Test
   public void testProcessSources() throws IOException, VerificationException {
-    installThirdPartyArtifact(DEPENDENCY_ORG_ID, DEPENDENCY_NAME, DEPENDENCY_VERSION, DEPENDENCY_TYPE, DEPENDENCY_PROJECT_NAME);
-
     verifier.executeGoal(PROCESS_SOURCES);
 
     File expectedStructure = getExpectedStructure();
@@ -86,18 +88,6 @@ public class ProcessSourcesMojoTest extends MojoTest {
   // and so it needs to be installed in the local repository in order to be resolved.
   @Test
   public void testProcessSourcesClassloaderModelGeneratedFile() throws IOException, VerificationException {
-    installThirdPartyArtifact(DEPENDENCY_ORG_ID, DEPENDENCY_ARTIFACT_ID, DEPENDENCY_VERSION, DEPENDENCY_TYPE,
-                              DEPENDENCY_PROJECT_NAME);
-    installThirdPartyArtifact(DEPENDENCY_A_GROUP_ID, DEPENDENCY_A_ARTIFACT_ID, DEPENDENCY_A_VERSION, DEPENDENCY_A_TYPE,
-                              DEPENDENCY_A_PROJECT_NAME);
-    installThirdPartyArtifact(DEPENDENCY_B_GROUP_ID, DEPENDENCY_B_ARTIFACT_ID, DEPENDENCY_B_VERSION, DEPENDENCY_B_TYPE,
-                              DEPENDENCY_B_PROJECT_NAME);
-    installThirdPartyArtifact(DEPENDENCY_D_GROUP_ID, DEPENDENCY_D_ARTIFACT_ID, DEPENDENCY_D_VERSION, DEPENDENCY_D_TYPE,
-                              DEPENDENCY_D_PROJECT_NAME);
-    installThirdPartyArtifact(DEPENDENCY_C_GROUP_ID, DEPENDENCY_C_ARTIFACT_ID, DEPENDENCY_C_VERSION, DEPENDENCY_C_TYPE,
-                              DEPENDENCY_C_PROJECT_NAME);
-    installThirdPartyArtifact("org.mule.group", "mule-plugin-b", "1.0.0", DEPENDENCY_TYPE, "mule-plugin-b");
-    installThirdPartyArtifact("org.mule.group", "mule-plugin-a", "1.0.0", DEPENDENCY_TYPE, "mule-plugin-a");
     projectBaseDirectory = builder.createProjectBaseDir("empty-classloader-model-project", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
@@ -150,7 +140,6 @@ public class ProcessSourcesMojoTest extends MojoTest {
 
   @Test
   public void testProcessSourcesCorrectCompileScopeTransitivity() throws IOException, VerificationException {
-    installRequiredMuleApplications();
     processSourcesOnProject("mule-application-compile");
     List<String> generatedClassloaderModelFileContent = getFileContent(COMPILED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
     List<String> expectedClassloaderModelFileContent =
@@ -162,7 +151,6 @@ public class ProcessSourcesMojoTest extends MojoTest {
 
   @Test
   public void testProcessSourcesCorrectProvidedScopeTransitivity() throws IOException, VerificationException {
-    installRequiredMuleApplications();
     processSourcesOnProject("mule-application-provided");
     List<String> generatedClassloaderModelFileContent = getFileContent(PROVIDED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
     List<String> expectedClassloaderModelFileContent =
@@ -176,7 +164,6 @@ public class ProcessSourcesMojoTest extends MojoTest {
   @Ignore // Reenable test - MMP-292
   @Test
   public void testProcessSourcesCorrectRuntimeScopeTransitivity() throws IOException, VerificationException {
-    installRequiredMuleApplications();
     processSourcesOnProject("mule-application-runtime");
     List<String> generatedClassloaderModelFileContent = getFileContent(RUNTIME_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
     List<String> expectedClassloaderModelFileContent =
@@ -188,7 +175,6 @@ public class ProcessSourcesMojoTest extends MojoTest {
 
   @Test
   public void testProcessSourcesCorrectTestScopeTransitivity() throws IOException, VerificationException {
-    installRequiredMuleApplications();
     processSourcesOnProject("mule-application-test");
     List<String> generatedClassloaderModelFileContent = getFileContent(TEST_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
     List<String> expectedClassloaderModelFileContent =
@@ -196,20 +182,6 @@ public class ProcessSourcesMojoTest extends MojoTest {
     assertThat("The classloader-model.json file of mule-application-test project is different from the expected",
                generatedClassloaderModelFileContent,
                equalTo(expectedClassloaderModelFileContent));
-  }
-
-  private void installRequiredMuleApplications() throws IOException, VerificationException {
-    installThirdPartyArtifact(GROUP_ID, "mule-application-a", DEPENDENCY_VERSION, DEPENDENCY_TYPE,
-                              "mule-application-a");
-    installThirdPartyArtifact(GROUP_ID, "mule-application-b", DEPENDENCY_VERSION, DEPENDENCY_TYPE,
-                              "mule-application-b");
-    installThirdPartyArtifact(GROUP_ID, "mule-application-c", DEPENDENCY_VERSION, DEPENDENCY_TYPE,
-                              "mule-application-c");
-    installThirdPartyArtifact(GROUP_ID, "mule-application-d", DEPENDENCY_VERSION, DEPENDENCY_TYPE,
-                              "mule-application-d");
-
-    installThirdPartyArtifact(GROUP_ID, "mule-application-direct-dependency", DEPENDENCY_VERSION, DEPENDENCY_TYPE,
-                              "mule-application-direct-dependency");
   }
 
   private void processSourcesOnProject(String applicationName) throws IOException, VerificationException {

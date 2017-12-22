@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>group.id.c</groupId>
+  <artifactId>artifact-id-c</artifactId>
+  <versioning>
+    <versions>
+      <version>1.0.0-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20171220204431</lastUpdated>
+  </versioning>
+</metadata>

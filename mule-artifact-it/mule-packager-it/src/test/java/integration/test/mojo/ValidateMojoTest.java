@@ -20,14 +20,6 @@ public class ValidateMojoTest extends MojoTest {
   private static final String MISSING_PACKAGE_TYPE_PROJECT = "missing-package-type-project";
   private static final String INVALID_PACKAGE_PROJECT = "invalid-package-project";
   private static final String VALIDATE_SHARED_LIBRARIES_PROJECT = "validate-shared-libraries-project";
-  // Domain bundle constants
-  private static final String MULE_APP_DEPENDENCY_A_ARTIFACT_ID = "mule-app-a";
-  private static final String MULE_APP_DEPENDENCY_B_ARTIFACT_ID = "mule-app-b";
-  private static final String MULE_DOMAIN_X_ARTIFACT_ID = "mule-domain-x";
-  private static final String MULE_DOMAIN_Y_ARTIFACT_ID = "mule-domain-y";
-  private static final String GROUP_ID = "org.mule.app";
-  private static final String MULE_APP_DEPENDENCY_VERSION = "1.0.0";
-  private static final String MULE_DOMAIN_VERSION = "1.0.0";
   private static final String VALIDATE_DOMAIN_BUNDLE_PROJECT = "validate-domain-bundle-project";
 
 
@@ -89,11 +81,6 @@ public class ValidateMojoTest extends MojoTest {
 
   @Test
   public void testValidateSharedLibrariesProject() throws Exception {
-    installThirdPartyArtifact(DEPENDENCY_A_GROUP_ID, DEPENDENCY_A_ARTIFACT_ID, DEPENDENCY_A_VERSION, DEPENDENCY_A_TYPE,
-                              DEPENDENCY_A_PROJECT_NAME);
-    installThirdPartyArtifact(DEPENDENCY_B_GROUP_ID, DEPENDENCY_B_ARTIFACT_ID, DEPENDENCY_B_VERSION, DEPENDENCY_B_TYPE,
-                              DEPENDENCY_B_PROJECT_NAME);
-
     projectBaseDirectory = builder.createProjectBaseDir(VALIDATE_SHARED_LIBRARIES_PROJECT, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     try {
@@ -117,15 +104,6 @@ public class ValidateMojoTest extends MojoTest {
 
   @Test
   public void testValidateBundleDomainWithApplicationReferringToDifferentDomainsProject() throws Exception {
-    installThirdPartyArtifact(GROUP_ID, MULE_DOMAIN_X_ARTIFACT_ID, MULE_DOMAIN_VERSION, DEPENDENCY_TYPE,
-                              MULE_DOMAIN_X_ARTIFACT_ID);
-    installThirdPartyArtifact(GROUP_ID, MULE_DOMAIN_Y_ARTIFACT_ID, MULE_DOMAIN_VERSION, DEPENDENCY_TYPE,
-                              MULE_DOMAIN_Y_ARTIFACT_ID);
-    installThirdPartyArtifact(GROUP_ID, MULE_APP_DEPENDENCY_A_ARTIFACT_ID, MULE_APP_DEPENDENCY_VERSION, DEPENDENCY_TYPE,
-                              MULE_APP_DEPENDENCY_A_ARTIFACT_ID);
-    installThirdPartyArtifact(GROUP_ID, MULE_APP_DEPENDENCY_B_ARTIFACT_ID, MULE_APP_DEPENDENCY_VERSION, DEPENDENCY_TYPE,
-                              MULE_APP_DEPENDENCY_B_ARTIFACT_ID);
-
     projectBaseDirectory = builder.createProjectBaseDir(VALIDATE_DOMAIN_BUNDLE_PROJECT, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 

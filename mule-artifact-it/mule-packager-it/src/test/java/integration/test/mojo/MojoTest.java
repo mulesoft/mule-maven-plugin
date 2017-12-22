@@ -31,32 +31,7 @@ public class MojoTest implements SettingsConfigurator {
   protected static final String PROJECT_BASE_DIR_PROPERTY = "project.basedir";
   protected static final String PROJECT_BUILD_DIRECTORY_PROPERTY = "project.build.directory";
   protected static final String INSTALL = "install";
-  protected static final String DEPENDENCY_PROJECT_NAME = "dependency-repository-mirror-test";
-  protected static final String DEPENDENCY_ORG_ID = "org.apache.maven.plugin.my.dependency";
-  protected static final String DEPENDENCY_NAME = "dependency-repository-mirror-project";
-  protected static final String DEPENDENCY_VERSION = "1.0.0-SNAPSHOT";
-  protected static final String DEPENDENCY_TYPE = "jar";
-  protected static final String DEPENDENCY_A_GROUP_ID = "group.id.a";
-  protected static final String DEPENDENCY_A_ARTIFACT_ID = "artifact-id-a";
-  protected static final String DEPENDENCY_A_VERSION = "1.0.0-SNAPSHOT";
-  protected static final String DEPENDENCY_A_TYPE = "jar";
-  protected static final String DEPENDENCY_B_GROUP_ID = "group.id.b";
-  protected static final String DEPENDENCY_B_ARTIFACT_ID = "artifact-id-b";
-  protected static final String DEPENDENCY_B_VERSION = "1.0.0";
-  protected static final String DEPENDENCY_B_TYPE = "jar";
-  protected static final String DEPENDENCY_A_PROJECT_NAME = "dependency-a";
-  protected static final String DEPENDENCY_B_PROJECT_NAME = "dependency-b";
-  protected static final String DEPENDENCY_C_GROUP_ID = "group.id.c";
-  protected static final String DEPENDENCY_C_ARTIFACT_ID = "artifact-id-c";
-  protected static final String DEPENDENCY_C_VERSION = "1.0.0-SNAPSHOT";
-  protected static final String DEPENDENCY_C_TYPE = "jar";
-  protected static final String DEPENDENCY_D_GROUP_ID = "group.id.d";
-  protected static final String DEPENDENCY_D_ARTIFACT_ID = "artifact-id-d";
-  protected static final String DEPENDENCY_D_VERSION = "1.0.0";
-  protected static final String DEPENDENCY_D_TYPE = "jar";
-  protected static final String DEPENDENCY_C_PROJECT_NAME = "dependency-c";
-  protected static final String DEPENDENCY_D_PROJECT_NAME = "dependency-d";
-  protected static final String DEPENDENCY_ARTIFACT_ID = "dependency";
+  protected static final String TARGET_FOLDER_SYSTEM_PROPERTY_PLACEHOLDER = "mule.home.test";
   protected ProjectFactory builder;
   protected File projectBaseDirectory;
   protected Verifier verifier;
@@ -71,6 +46,7 @@ public class MojoTest implements SettingsConfigurator {
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
+    copyNecessaryDependencies(new File(verifier.getLocalRepository()));
   }
 
   protected void clearResources() throws IOException {
@@ -85,6 +61,15 @@ public class MojoTest implements SettingsConfigurator {
     verifier.resetStreams();
   }
 
+  private void copyNecessaryDependencies(File localRepository) {
+    File testMockArtifactsDirectory =
+        new File(System.getProperty(TARGET_FOLDER_SYSTEM_PROPERTY_PLACEHOLDER) + File.separator + "test-classes/repository");
+    try {
+      FileUtils.copyDirectory(testMockArtifactsDirectory, localRepository);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 
   private String getExpectedStructureRelativePath() {
     return "/expected-" + this.goal + "-structure";
@@ -101,19 +86,6 @@ public class MojoTest implements SettingsConfigurator {
   protected File getFile(String filePath) throws IOException {
     return ResourceExtractor.simpleExtractResources(getClass(), filePath);
   }
-
-  protected void installThirdPartyArtifact(String groupId, String artifactId, String version, String type,
-                                           String dependencyProjectName)
-      throws IOException, VerificationException {
-    File dependencyProjectRootFolder = builder.createProjectBaseDir(dependencyProjectName, this.getClass());
-    Verifier auxVerifier = buildVerifier(dependencyProjectRootFolder);
-    auxVerifier.deleteArtifact(groupId, artifactId, version, type);
-    auxVerifier.assertArtifactNotPresent(groupId, artifactId, version, type);
-    auxVerifier.executeGoal(INSTALL);
-    auxVerifier.verifyErrorFreeLog();
-  }
-
-
 
   protected void enableVerifierDebugMode() {
     verifier.setEnvironmentVariable("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=y");

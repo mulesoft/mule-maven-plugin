@@ -40,7 +40,6 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
 
   @Test
   public void testPackageApp() throws IOException, VerificationException {
-    installThirdPartyArtifact(DEPENDENCY_ORG_ID, DEPENDENCY_NAME, DEPENDENCY_VERSION, DEPENDENCY_TYPE, DEPENDENCY_PROJECT_NAME);
     verifier.executeGoal(PACKAGE);
 
     File expectedStructure = getExpectedStructure();
@@ -53,10 +52,6 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
 
   @Test
   public void testPackageAppWithSharedLibraries() throws IOException, VerificationException {
-    installThirdPartyArtifact(DEPENDENCY_A_GROUP_ID, DEPENDENCY_A_ARTIFACT_ID, DEPENDENCY_A_VERSION, DEPENDENCY_A_TYPE,
-                              DEPENDENCY_A_PROJECT_NAME);
-    installThirdPartyArtifact(DEPENDENCY_B_GROUP_ID, DEPENDENCY_B_ARTIFACT_ID, DEPENDENCY_B_VERSION, DEPENDENCY_B_TYPE,
-                              DEPENDENCY_B_PROJECT_NAME);
     String artifactId = "validate-shared-libraries-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
@@ -133,7 +128,6 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
 
   @Test
   public void testPackageAppWithDefinedFinalName() throws IOException, VerificationException {
-    installThirdPartyArtifact(DEPENDENCY_ORG_ID, DEPENDENCY_NAME, DEPENDENCY_VERSION, DEPENDENCY_TYPE, DEPENDENCY_PROJECT_NAME);
     String artifactId = "check-finalName-package-project";
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);

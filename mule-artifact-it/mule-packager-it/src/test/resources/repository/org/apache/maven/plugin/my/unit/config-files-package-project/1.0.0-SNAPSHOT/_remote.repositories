@@ -1,0 +1,4 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Thu Dec 21 14:06:40 CET 2017
+config-files-package-project-1.0.0-SNAPSHOT-mule-application.jar>=
+config-files-package-project-1.0.0-SNAPSHOT.pom>=

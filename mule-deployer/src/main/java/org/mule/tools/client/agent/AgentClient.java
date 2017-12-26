@@ -22,6 +22,7 @@ import org.mule.tools.utils.DeployerLog;
 public class AgentClient extends AbstractClient {
 
   public static final String APPLICATIONS_PATH = "/mule/applications/";
+  public static final String DOMAINS_PATH = "/mule/domains/";
   public static final int ACCEPTED = 202;
 
   private final String uri;
@@ -32,11 +33,19 @@ public class AgentClient extends AbstractClient {
   }
 
   public void deployApplication(String applicationName, File file) {
+    deployArtifact(applicationName, file, APPLICATIONS_PATH);
+  }
+
+  public void deployDomain(String domainName, File file) {
+    deployArtifact(domainName, file, DOMAINS_PATH);
+  }
+
+  public void deployArtifact(String artifactName, File file, String resourcePath) {
     Response response =
-        put(uri, APPLICATIONS_PATH + applicationName, Entity.entity(file, MediaType.APPLICATION_OCTET_STREAM_TYPE));
+        put(uri, resourcePath + artifactName, Entity.entity(file, MediaType.APPLICATION_OCTET_STREAM_TYPE));
 
     if (response.getStatus() != ACCEPTED) {
-      throw new ClientException(response, uri + APPLICATIONS_PATH + applicationName);
+      throw new ClientException(response, uri + resourcePath + artifactName);
     }
   }
 

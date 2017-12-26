@@ -11,6 +11,7 @@ package integration.test.mojo;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.StandardCopyOption;
 
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
@@ -21,6 +22,7 @@ import org.junit.Before;
 import integration.ProjectFactory;
 import org.mule.tools.api.util.FileUtils;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 
 
@@ -67,7 +69,7 @@ public class MojoTest implements SettingsConfigurator {
     File testMockArtifactsDirectory =
         new File(System.getProperty(TARGET_FOLDER_SYSTEM_PROPERTY_PLACEHOLDER) + File.separator + "test-classes/repository");
     try {
-      FileUtils.copyDirectoryRecursively(testMockArtifactsDirectory, localRepository);
+      FileUtils.copyDirectoryRecursively(testMockArtifactsDirectory, localRepository, REPLACE_EXISTING);
     } catch (IOException e) {
       e.printStackTrace();
     }

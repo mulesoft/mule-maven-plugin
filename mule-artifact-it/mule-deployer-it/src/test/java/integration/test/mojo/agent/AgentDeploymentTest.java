@@ -7,36 +7,36 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package integration.test.mojo;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+package integration.test.mojo.agent;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+import integration.test.mojo.AbstractDeploymentTest;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import integration.test.util.StandaloneEnvironment;
 
 public class AgentDeploymentTest extends AbstractDeploymentTest {
 
-  private static final String APPLICATION = "empty-mule-deploy-agent-project";
-
   @Rule
   public TemporaryFolder environmentWorkingDir = new TemporaryFolder();
 
-  private static StandaloneEnvironment standaloneEnvironment;
-  private Verifier verifier;
+  protected static StandaloneEnvironment standaloneEnvironment;
+  protected Verifier verifier;
+  private String application;
+
+  public AgentDeploymentTest(String application) {
+    this.application = application;
+  }
 
   public String getApplication() {
-    return APPLICATION;
+    return application;
   }
 
   @Before
@@ -55,22 +55,4 @@ public class AgentDeploymentTest extends AbstractDeploymentTest {
     verifier.resetStreams();
     environmentWorkingDir.delete();
   }
-
-  @Test
-  public void testAgentDeploy() throws IOException, VerificationException, InterruptedException {
-    log.info("Executing mule:deploy goal...");
-
-    // TODO check why we have this sleep here
-    Thread.sleep(30000);
-
-    verifier.setSystemProperty("applicationName", APPLICATION);
-    verifier.addCliOption("-DmuleDeploy");
-    verifier.executeGoal(DEPLOY_GOAL);
-
-    assertThat("Standalone should be running ", standaloneEnvironment.isRunning(), is(true));
-    assertThat("Failed to deploy: " + APPLICATION, standaloneEnvironment.isDeployed(APPLICATION), is(true));
-
-    verifier.verifyErrorFreeLog();
-  }
-
 }

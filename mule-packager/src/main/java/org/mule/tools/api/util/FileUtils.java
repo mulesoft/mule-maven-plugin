@@ -12,10 +12,10 @@ package org.mule.tools.api.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileStore;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.nio.file.attribute.DosFileAttributeView;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class FileUtils {
 
@@ -44,20 +44,20 @@ public class FileUtils {
     }
   }
 
-  public static void copyDirectoryRecursively(File origin, File destination) throws IOException {
+  public static void copyDirectoryRecursively(File origin, File destination, CopyOption... copyOption) throws IOException {
     if (!destination.exists()) {
       destination.mkdir();
     }
     for (String child : origin.list()) {
-      copyDirectory(new File(origin, child), new File(destination, child));
+      copyDirectory(new File(origin, child), new File(destination, child), copyOption);
     }
   }
 
-  public static void copyDirectory(File origin, File destination) throws IOException {
+  private static void copyDirectory(File origin, File destination, CopyOption... copyOption) throws IOException {
     if (origin.isDirectory()) {
-      copyDirectoryRecursively(origin, destination);
+      copyDirectoryRecursively(origin, destination, copyOption);
     } else {
-      Files.copy(origin.toPath(), destination.toPath());
+      Files.copy(origin.toPath(), destination.toPath(), copyOption);
     }
   }
 }

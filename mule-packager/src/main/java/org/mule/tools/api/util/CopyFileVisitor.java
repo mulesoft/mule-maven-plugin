@@ -10,19 +10,16 @@
 
 package org.mule.tools.api.util;
 
-import com.google.common.collect.Sets;
+import org.mule.tools.api.util.exclude.MuleExclusionMatcher;
 
 import static java.lang.Boolean.FALSE;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 public class CopyFileVisitor implements FileVisitor<Path> {
 
@@ -33,20 +30,28 @@ public class CopyFileVisitor implements FileVisitor<Path> {
   private Boolean ignoreHiddenFolders;
 
   private List<Path> exclusions = Collections.emptyList();
-  private Set<String> muleExclude;
 
-  public CopyFileVisitor(File fromFolder, File targetFolder) {
-    this(fromFolder, targetFolder, FALSE, FALSE);
+  private PathMatcher exclusionMatcher;
+
+  public CopyFileVisitor(File fromFolder, File targetFolder) throws IOException {
+    this(fromFolder, targetFolder, FALSE, FALSE, new MuleExclusionMatcher());
   }
 
-  public CopyFileVisitor(File fromFolder, File targetFolder, Boolean ignoreHiddenFiles, Boolean ignoreHiddenFolders) {
+  public CopyFileVisitor(File fromFolder, File targetFolder, Boolean ignoreHiddenFiles, Boolean ignoreHiddenFolders)
+      throws IOException {
+    this(fromFolder, targetFolder, ignoreHiddenFiles, ignoreHiddenFolders, new MuleExclusionMatcher());
+  }
+
+  public CopyFileVisitor(File fromFolder, File targetFolder, Boolean ignoreHiddenFiles, Boolean ignoreHiddenFolders,
+                         PathMatcher exclusionMatcher)
+      throws IOException {
     this.fromFolder = fromFolder;
     this.targetFolder = targetFolder;
 
     this.ignoreHiddenFiles = ignoreHiddenFiles;
     this.ignoreHiddenFolders = ignoreHiddenFolders;
 
-    this.muleExclude = Sets.newHashSet(".classpath", ".project");
+    this.exclusionMatcher = exclusionMatcher;
   }
 
   public void setExclusions(List<Path> exclusions) {
@@ -55,7 +60,7 @@ public class CopyFileVisitor implements FileVisitor<Path> {
 
   @Override
   public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-    if (exclusions.contains(dir) || (ignoreHiddenFolders && dir.toFile().isHidden())) {
+    if (exclusionMatcher.matches(dir) || exclusions.contains(dir) || (ignoreHiddenFolders && dir.toFile().isHidden())) {
       return FileVisitResult.SKIP_SUBTREE;
     }
 
@@ -68,13 +73,11 @@ public class CopyFileVisitor implements FileVisitor<Path> {
 
   @Override
   public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-    if (muleExclude.contains(file.toFile().getName()) || (ignoreHiddenFiles && file.toFile().isHidden())) {
+    if (exclusionMatcher.matches(file) || (ignoreHiddenFiles && file.toFile().isHidden())) {
       return FileVisitResult.SKIP_SUBTREE;
     }
 
-
-    Files
-        .copy(file, targetFolder.toPath().resolve(fromFolder.toPath().relativize(file)), StandardCopyOption.REPLACE_EXISTING);
+    Files.copy(file, targetFolder.toPath().resolve(fromFolder.toPath().relativize(file)), StandardCopyOption.REPLACE_EXISTING);
     return FileVisitResult.CONTINUE;
   }
 

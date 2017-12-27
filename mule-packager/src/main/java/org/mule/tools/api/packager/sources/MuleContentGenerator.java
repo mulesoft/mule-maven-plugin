@@ -35,6 +35,7 @@ import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 import org.mule.tools.api.util.CopyFileVisitor;
+import org.mule.tools.api.util.exclude.MuleExclusionMatcher;
 
 /**
  * Generates the required content for each of the mandatory folders of a mule application package
@@ -144,7 +145,8 @@ public class MuleContentGenerator extends ContentGenerator {
 
 
     CopyFileVisitor visitor =
-        new CopyFileVisitor(originPath.toFile(), destinationPath.toFile(), ignoreHiddenFiles, ignoreHiddenFolders);
+        new CopyFileVisitor(originPath.toFile(), destinationPath.toFile(), ignoreHiddenFiles, ignoreHiddenFolders,
+                            new MuleExclusionMatcher(projectInformation.getProjectBaseFolder()));
     exclusions.ifPresent(e -> visitor.setExclusions(e));
 
     Files.walkFileTree(originPath, visitor);

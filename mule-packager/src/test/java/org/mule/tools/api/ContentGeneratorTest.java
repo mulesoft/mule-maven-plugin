@@ -126,8 +126,7 @@ public class ContentGeneratorTest {
   public void createTestFolderContentNonExistingSourceFolder() throws IOException {
     String destinationFolderName = packagingType.getTestFolderName();
 
-    Path destinationFolderPath = projectTargetFolder.toPath().resolve(
-                                                                      PackagerTestUtils.TEST_MULE)
+    Path destinationFolderPath = projectTargetFolder.toPath().resolve(PackagerTestUtils.TEST_MULE)
         .resolve(destinationFolderName);
     PackagerTestUtils.createEmptyFolder(destinationFolderPath);
 

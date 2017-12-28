@@ -10,30 +10,16 @@
 package org.mule.tools.api.validation.deployment;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Sets.newHashSet;
-import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION;
-import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_EXAMPLE;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_TEMPLATE;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN_BUNDLE;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_POLICY;
-import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
 import static org.mule.tools.api.validation.project.AbstractProjectValidator.isClassifierValid;
-import static org.mule.tools.api.validation.project.AbstractProjectValidator.isPackagingTypeValid;
 
-import java.io.File;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
 
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
-import org.mule.tools.api.packager.packaging.Classifier;
-import org.mule.tools.model.Deployment;
 
 /**
  * @author Mulesoft Inc.

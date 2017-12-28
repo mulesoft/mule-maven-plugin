@@ -15,10 +15,10 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.List;
+
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.io.Files.readLines;
-import static org.mule.tools.api.util.exclude.GlobMatcher.CLASSPATH_FILE_GLOB_MATCHER;
-import static org.mule.tools.api.util.exclude.GlobMatcher.PROJECT_FILE_GLOB_MATCHER;
 
 /**
  * Matcher for mule exclusions.
@@ -29,9 +29,11 @@ import static org.mule.tools.api.util.exclude.GlobMatcher.PROJECT_FILE_GLOB_MATC
 public class MuleExclusionMatcher implements PathMatcher {
 
   protected static final String MULE_EXCLUDE_FILENAME = "_muleExclude";
+  public static final GlobMatcher CLASSPATH_FILE_MATCHER = new GlobMatcher(".classpath");
+  public static final GlobMatcher PROJECT_FILE_MATCHER = new GlobMatcher(".project");
 
   private List<GlobMatcher> muleExcludeMatchers =
-      newArrayList(CLASSPATH_FILE_GLOB_MATCHER, PROJECT_FILE_GLOB_MATCHER);
+      newArrayList(CLASSPATH_FILE_MATCHER, PROJECT_FILE_MATCHER);
 
   public MuleExclusionMatcher() {}
 
@@ -41,6 +43,7 @@ public class MuleExclusionMatcher implements PathMatcher {
    * @param projectBaseFolder Project base folder path
    */
   public MuleExclusionMatcher(Path projectBaseFolder) throws IOException {
+    checkArgument(projectBaseFolder != null, "Project base folder should not be null");
     parse(new File(projectBaseFolder.toFile(), MULE_EXCLUDE_FILENAME));
   }
 

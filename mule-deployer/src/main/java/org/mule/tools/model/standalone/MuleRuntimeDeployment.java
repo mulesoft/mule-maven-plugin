@@ -24,8 +24,10 @@ public abstract class MuleRuntimeDeployment extends Deployment {
 
   public abstract void setScript(File script);
 
+  @Deprecated
   public abstract Integer getTimeout();
 
+  @Deprecated
   public abstract void setTimeout(int timeout);
 
   public abstract Long getDeploymentTimeout();

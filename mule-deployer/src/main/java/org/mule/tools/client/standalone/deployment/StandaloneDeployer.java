@@ -174,8 +174,9 @@ public class StandaloneDeployer extends AbstractDeployer {
   @Override
   public void initialize() throws DeploymentException {
     this.standaloneDeployment = (StandaloneDeployment) deploymentConfiguration;
+
     this.mule =
-        new MuleProcessController(standaloneDeployment.getMuleHome().getAbsolutePath(), standaloneDeployment.getTimeout());
+        new MuleProcessController(standaloneDeployment.getMuleHome().getAbsolutePath());
 
     renameApplicationToApplicationName();
 

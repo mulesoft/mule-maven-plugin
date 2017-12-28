@@ -15,17 +15,15 @@ import java.io.File;
 
 public class MuleProcessController {
 
-  private static final int DEFAULT_TIMEOUT = 60000;
+  private static final String DEFAULT_TIMEOUT = "60000";
+  private static final int controllerTimeout =
+      Integer.parseInt(System.getProperty("mule.process.controller.timeout", DEFAULT_TIMEOUT));
 
   private final Controller controller;
 
   public MuleProcessController(String muleHome) {
-    this(muleHome, DEFAULT_TIMEOUT);
-  }
-
-  public MuleProcessController(String muleHome, int timeout) {
     AbstractOSController osSpecificController =
-        IS_OS_WINDOWS ? new WindowsController(muleHome, timeout) : new UnixController(muleHome, timeout);
+        IS_OS_WINDOWS ? new WindowsController(muleHome, controllerTimeout) : new UnixController(muleHome, controllerTimeout);
     controller = buildController(muleHome, osSpecificController);
   }
 

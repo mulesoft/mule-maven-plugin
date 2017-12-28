@@ -36,9 +36,16 @@ public class StandaloneDeployment extends MuleRuntimeDeployment {
   @Parameter
   protected File muleHome;
 
+  @Deprecated
   @Parameter
   protected Integer timeout;
 
+  /**
+   * The allowed elapsed time between the start of the deployment process and the confirmation that the artifact has been
+   * deployed. In the case of the deployment to standalone, it is defined as the elapsed time between the instant when the
+   * deployable is copied to the runtime and the creation of the respective anchor file.
+   * 
+   */
   @Parameter
   protected Long deploymentTimeout;
 
@@ -96,10 +103,12 @@ public class StandaloneDeployment extends MuleRuntimeDeployment {
     this.muleHome = muleHome;
   }
 
+  @Deprecated
   public Integer getTimeout() {
     return timeout;
   }
 
+  @Deprecated
   public void setTimeout(int timeout) {
     this.timeout = timeout;
   }

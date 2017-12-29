@@ -9,6 +9,7 @@
  */
 package org.mule.tools.client.agent;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.project.MavenProject;
 
 import org.mule.tools.client.AbstractDeployer;
@@ -19,6 +20,7 @@ import org.mule.tools.utils.DeployerLog;
 
 public class AgentDeployer extends AbstractDeployer {
 
+  private static final String MULE_DOMAIN = "mule-domain";
   private AgentClient agentClient;
   private AgentDeployment agentDeployment;
 
@@ -28,12 +30,17 @@ public class AgentDeployer extends AbstractDeployer {
 
   @Override
   public void deploy() throws DeploymentException {
+    String packaging = deploymentConfiguration.getPackaging();
     try {
-      info("Deploying application " + getApplicationName() + " to Mule Agent");
-      agentClient.deployApplication(getApplicationName(), getApplicationFile());
+      info("Deploying " + packaging + " " + getApplicationName() + " to Mule Agent");
+      if (StringUtils.equals(packaging, MULE_DOMAIN)) {
+        agentClient.deployDomain(getApplicationName(), getApplicationFile());
+      } else {
+        agentClient.deployApplication(getApplicationName(), getApplicationFile());
+      }
     } catch (ClientException e) {
       error("Failure: " + e.getMessage());
-      throw new DeploymentException("Failed to deploy application " + getApplicationName(), e);
+      throw new DeploymentException("Failed to deploy " + packaging + " " + getApplicationName(), e);
     }
   }
 

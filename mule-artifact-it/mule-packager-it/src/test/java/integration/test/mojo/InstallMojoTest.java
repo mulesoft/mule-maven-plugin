@@ -17,7 +17,6 @@ import java.io.IOException;
 import org.apache.maven.it.VerificationException;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 
 public class InstallMojoTest extends MojoTest {

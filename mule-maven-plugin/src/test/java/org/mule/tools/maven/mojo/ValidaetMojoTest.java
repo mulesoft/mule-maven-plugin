@@ -18,9 +18,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.maven.execution.MavenExecutionRequest;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Before;
@@ -90,7 +94,6 @@ public class ValidaetMojoTest extends AbstractMuleMojoTest {
     verify(validatorMock, times(1)).isProjectValid(any());
   }
 
-
   @Test
   public void validateMavenEnvironmentValid()
       throws MojoFailureException, MojoExecutionException, IOException, ValidationException {
@@ -115,6 +118,47 @@ public class ValidaetMojoTest extends AbstractMuleMojoTest {
 
     doCallRealMethod().when(mojoMock).validateMavenEnvironment();
     mojoMock.validateMavenEnvironment();
+  }
+
+  @Test
+  public void validateNotAllowedDependenciesValid()
+      throws MojoFailureException, MojoExecutionException, IOException, ValidationException {
+    Dependency dependencyMock = mock(Dependency.class);
+
+    when(dependencyMock.getGroupId()).thenReturn("fake.group.id");
+    when(dependencyMock.getArtifactId()).thenReturn("fake-artifact-id");
+    when(dependencyMock.getVersion()).thenReturn("0.0.0");
+    when(dependencyMock.getScope()).thenReturn("provided");
+    when(dependencyMock.getType()).thenReturn("mule-server-plugin");
+    when(dependencyMock.getClassifier()).thenReturn("mule-server-plugin");
+
+    when(projectMock.getDependencies()).thenReturn(Arrays.asList(dependencyMock));
+    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION.toString());
+
+    doCallRealMethod().when(mojoMock).buildArtifactCoordinates(any());
+    doCallRealMethod().when(mojoMock).validateNotAllowedDependencies();
+    mojoMock.validateNotAllowedDependencies();
+  }
+
+  @Test(expected = ValidationException.class)
+  public void validateNotAllowedDependenciesInvalid()
+      throws MojoFailureException, MojoExecutionException, IOException, ValidationException {
+
+    Dependency dependencyMock = mock(Dependency.class);
+
+    when(dependencyMock.getGroupId()).thenReturn("fake.group.id");
+    when(dependencyMock.getArtifactId()).thenReturn("fake-artifact-id");
+    when(dependencyMock.getVersion()).thenReturn("0.0.0");
+    when(dependencyMock.getScope()).thenReturn("compile");
+    when(dependencyMock.getType()).thenReturn("mule-server-plugin");
+    when(dependencyMock.getClassifier()).thenReturn("mule-server-plugin");
+
+    when(projectMock.getDependencies()).thenReturn(Arrays.asList(dependencyMock));
+    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION.toString());
+
+    doCallRealMethod().when(mojoMock).buildArtifactCoordinates(any());
+    doCallRealMethod().when(mojoMock).validateNotAllowedDependencies();
+    mojoMock.validateNotAllowedDependencies();
   }
 
 }

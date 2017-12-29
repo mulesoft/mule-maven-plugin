@@ -10,17 +10,25 @@
 
 package org.mule.tools.maven.mojo;
 
+import static org.mule.tools.api.validation.AllowedDependencyValidator.areDependenciesAllowed;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
 
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.validation.AllowedDependencyValidator;
 import org.mule.tools.api.validation.project.AbstractProjectValidator;
 import org.mule.tools.api.validation.VersionUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -38,8 +46,13 @@ public class ValidateMojo extends AbstractMuleMojo {
     if (!skipValidation) {
       try {
         validateMavenEnvironment();
+
         getLog().debug("Validating Mule application...");
+
         AbstractProjectValidator.isPackagingTypeValid(project.getPackaging());
+
+        validateNotAllowedDependencies();
+
         getProjectValidator().isProjectValid(VALIDATE.id());
       } catch (ValidationException e) {
         throw new MojoExecutionException("Validation exception", e);
@@ -59,9 +72,28 @@ public class ValidateMojo extends AbstractMuleMojo {
     }
   }
 
+  protected void validateNotAllowedDependencies() throws ValidationException {
+    if (!project.getPackaging().equals(PackagingType.MULE_DOMAIN_BUNDLE.toString())) {
+      List<ArtifactCoordinates> dependencies =
+          project.getDependencies().stream().map(d -> buildArtifactCoordinates(d)).collect(Collectors.toList());
+
+      areDependenciesAllowed(dependencies);
+    }
+  }
+
   @Override
   public String getPreviousRunPlaceholder() {
     return "MULE_MAVEN_PLUGIN_VALIDATE_PREVIOUS_RUN_PLACEHOLDER";
+  }
+
+  protected ArtifactCoordinates buildArtifactCoordinates(Dependency dependency) {
+    ArtifactCoordinates artifactCoordinates =
+        new ArtifactCoordinates(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion());
+    artifactCoordinates.setType(dependency.getType());
+    artifactCoordinates.setScope(dependency.getScope());
+    artifactCoordinates.setClassifier(dependency.getClassifier());
+
+    return artifactCoordinates;
   }
 
 }

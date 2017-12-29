@@ -188,6 +188,7 @@ public class ProcessSourcesMojoTest extends MojoTest {
     projectBaseDirectory = builder.createProjectBaseDir(applicationName, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-DskipValidation=true");
     verifier.executeGoal(PROCESS_SOURCES);
   }
 

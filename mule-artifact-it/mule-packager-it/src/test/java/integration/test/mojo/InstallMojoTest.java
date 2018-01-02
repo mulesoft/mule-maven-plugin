@@ -129,6 +129,7 @@ public class InstallMojoTest extends MojoTest {
 
   @Test
   public void testInstallMultiModuleApplication() throws IOException, VerificationException {
+
     String artifactId = "multi-module-application";
     String appSubModule = "empty-app";
     String policySubModule = "empty-policy";

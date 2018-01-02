@@ -28,6 +28,8 @@ import static org.apache.commons.io.FileUtils.deleteDirectory;
 
 public class MojoTest implements SettingsConfigurator {
 
+  protected static final String[] excludes = new String[] {".placeholder", "log.txt"};
+
   protected static final String TARGET_FOLDER_NAME = "target";
   protected static final String EMPTY_PROJECT_NAME = "empty-project";
   protected static final String EMPTY_DOMAIN_NAME = "empty-domain-project";
@@ -41,7 +43,7 @@ public class MojoTest implements SettingsConfigurator {
   protected Verifier verifier;
   protected File targetFolder;
   protected String goal;
-  protected static final String[] excludes = new String[] {".placeholder", "log.txt"};
+
 
   @Before
   public void initializeContext() throws IOException, VerificationException {

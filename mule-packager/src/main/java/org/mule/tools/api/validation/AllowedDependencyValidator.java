@@ -9,17 +9,19 @@
  */
 package org.mule.tools.api.validation;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.removeEnd;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN_BUNDLE;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_POLICY;
 
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.exception.ValidationException;
-
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
+
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.exception.ValidationException;
 
 /**
  * @author Mulesoft Inc.
@@ -36,26 +38,59 @@ public class AllowedDependencyValidator {
                                                                     MULE_SERVICE,
                                                                     MULE_SERVER_PLUGIN);
 
+  /**
+   * Validates if a list of {@link ArtifactCoordinates} is allowed based on its classifier and scope
+   * 
+   * @param artifactCoordinates the list of {@link ArtifactCoordinates} to validate
+   * @return true if all the {@link ArtifactCoordinates} are allowed
+   * @throws ValidationException if there is at least one dependency not allowed
+   */
   public static Boolean areDependenciesAllowed(List<ArtifactCoordinates> artifactCoordinates) throws ValidationException {
-    for (ArtifactCoordinates a : artifactCoordinates) {
-      isDependencyAllowed(a);
+    List<ArtifactCoordinates> notAllowedDependencies = collectNotAllowedDependencies(artifactCoordinates);
+
+    if (!notAllowedDependencies.isEmpty()) {
+      StringBuilder notAllowedMessage = new StringBuilder();
+      notAllowedDependencies.forEach(d -> notAllowedMessage.append(d.toString()).append(","));
+
+      throw new ValidationException("The following dependencies are not allowed unless their scope is [provided]: "
+          + removeEnd(notAllowedMessage.toString(), ","));
+
     }
 
     return true;
   }
 
-  public static void isDependencyAllowed(ArtifactCoordinates a) throws ValidationException {
-    if (StringUtils.isNotBlank(a.getClassifier())) {
+  /**
+   * Validates if artifactCoordinates {@link ArtifactCoordinates} is allowed based on its classifier and scope
+   * 
+   * @param artifactCoordinates the {@link ArtifactCoordinates} to validate
+   * @return true if {@link ArtifactCoordinates} is allowed
+   */
+  public static Boolean isDependencyAllowed(ArtifactCoordinates artifactCoordinates) {
+    if (isNotBlank(artifactCoordinates.getClassifier())) {
       for (String classifier : CLASSIFIER_LIST) {
-        if (a.getClassifier().startsWith(classifier) && !a.getScope().equals("provided")) {
-          throw new ValidationException("The dependency " + a.toString() + " is not allowed unless its scope is provided");
+        if (artifactCoordinates.getClassifier().startsWith(classifier) && !artifactCoordinates.getScope().equals("provided")) {
+          return false;
         }
       }
 
-      if (a.getClassifier().equals(MULE_DOMAIN_BUNDLE)) {
-        throw new ValidationException("The dependency " + a.toString() + " is not allowed");
+      if (artifactCoordinates.getClassifier().equals(MULE_DOMAIN_BUNDLE)) {
+        return false;
       }
     }
+    return true;
   }
+
+  private static List<ArtifactCoordinates> collectNotAllowedDependencies(List<ArtifactCoordinates> artifactCoordinates) {
+    List<ArtifactCoordinates> notAllowedDependencies = new ArrayList<>();
+    for (ArtifactCoordinates a : artifactCoordinates) {
+      if (!isDependencyAllowed(a)) {
+        notAllowedDependencies.add(a);
+      }
+    }
+    return notAllowedDependencies;
+  }
+
+
 
 }

@@ -23,6 +23,7 @@
                         <username>${username}</username>
                         <password>${password}</password>
                         <environment>${environment}</environment>
+                        <muleVersion>${mule.version}</muleVersion>
                     </armDeployment>
                 </configuration>
             </plugin>

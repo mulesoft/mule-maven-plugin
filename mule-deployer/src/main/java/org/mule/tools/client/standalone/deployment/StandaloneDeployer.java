@@ -9,9 +9,8 @@
  */
 package org.mule.tools.client.standalone.deployment;
 
-
-
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.mule.tools.client.standalone.controller.probing.deployment.DeploymentProbeFactory.createProbe;
 
 import java.io.File;
@@ -19,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.io.LineProcessor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -184,6 +184,7 @@ public class StandaloneDeployer extends AbstractDeployer {
     addDomainFromstandaloneDeployment(standaloneDeployment);
 
   }
+
 
   private void renameApplicationToApplicationName() throws DeploymentException {
     if (!FilenameUtils.getBaseName(standaloneDeployment.getArtifact().getName())

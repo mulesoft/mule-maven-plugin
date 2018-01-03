@@ -71,5 +71,4 @@ public abstract class AbstractDeployer {
   }
 
   public abstract void initialize() throws DeploymentException;
-
 }

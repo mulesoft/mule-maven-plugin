@@ -23,6 +23,7 @@
                         <password>${password}</password>
                         <applicationName>${cloudhub.application.name}</applicationName>
                         <environment>${environment}</environment>
+                        <muleVersion>${mule.version}</muleVersion>
                         <properties>
                             <key>value</key>
                         </properties>

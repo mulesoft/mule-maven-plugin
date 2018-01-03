@@ -9,11 +9,6 @@
  */
 package integration.test.mojo.agent;
 
-import org.apache.maven.it.VerificationException;
-import org.junit.Test;
-
-import java.io.IOException;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -25,20 +20,8 @@ public class DomainAgentDeploymentTest extends AgentDeploymentTest {
     super(DOMAIN);
   }
 
-  @Test
-  public void testAgentDeploy() throws IOException, VerificationException, InterruptedException {
-    log.info("Executing mule:deploy goal...");
-
-    // TODO check why we have this sleep here
-    Thread.sleep(30000);
-
-    verifier.setSystemProperty("applicationName", DOMAIN);
-    verifier.addCliOption("-DmuleDeploy");
-    verifier.executeGoal(DEPLOY_GOAL);
-
-    assertThat("Standalone should be running ", standaloneEnvironment.isRunning(), is(true));
+  @Override
+  public void assertDeployment() {
     assertThat("Failed to deploy: " + DOMAIN, standaloneEnvironment.isDomainDeployed(DOMAIN), is(true));
-
-    verifier.verifyErrorFreeLog();
   }
 }

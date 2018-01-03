@@ -79,6 +79,7 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
     verifier.setEnvironmentVariable("password", password);
     verifier.setEnvironmentVariable("target", ARM_INSTANCE_NAME);
     verifier.setEnvironmentVariable("target.type", "server");
+    verifier.setEnvironmentVariable("mule.version", getMuleVersion());
     verifier.setEnvironmentVariable("environment", PRODUCTION_ENVIRONMENT);
   }
 

@@ -24,6 +24,7 @@ public class AgentClient extends AbstractClient {
   public static final String APPLICATIONS_PATH = "/mule/applications/";
   public static final String DOMAINS_PATH = "/mule/domains/";
   public static final int ACCEPTED = 202;
+  private static final String AGENT_INFO_PATH = "/mule/agent";
 
   private final String uri;
 
@@ -55,6 +56,24 @@ public class AgentClient extends AbstractClient {
     if (response.getStatus() != ACCEPTED) {
       throw new ClientException(response, uri + APPLICATIONS_PATH + appName);
     }
+  }
+
+  public String getMuleRuntimeVersion() {
+    Response response = get(uri, AGENT_INFO_PATH);
+    AgentInfo agentInfo = response.readEntity(AgentInfo.class);
+    return agentInfo.muleVersion;
+  }
+
+  public String getAgentVersion() {
+    Response response = get(uri, AGENT_INFO_PATH);
+    AgentInfo agentInfo = response.readEntity(AgentInfo.class);
+    return agentInfo.agentVersion;
+  }
+
+  public boolean hasMuleStarted() {
+    Response response = get(uri, AGENT_INFO_PATH);
+    AgentInfo agentInfo = response.readEntity(AgentInfo.class);
+    return agentInfo.muleStarted;
   }
 
 }

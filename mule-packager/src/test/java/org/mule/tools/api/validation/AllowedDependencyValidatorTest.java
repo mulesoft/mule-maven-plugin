@@ -51,7 +51,7 @@ public class AllowedDependencyValidatorTest {
         {"mule-server-plugin", PROVIDED, TRUE},
 
         {MULE_DOMAIN_BUNDLE.toString(), COMPILE, FALSE},
-        {MULE_DOMAIN_BUNDLE.toString(), PROVIDED, TRUE},
+        {MULE_DOMAIN_BUNDLE.toString(), PROVIDED, FALSE},
 
         {MULE_DOMAIN.toString(), COMPILE, FALSE},
         {MULE_DOMAIN.toString(), PROVIDED, TRUE},

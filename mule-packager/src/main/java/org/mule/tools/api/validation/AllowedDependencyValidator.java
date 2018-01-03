@@ -68,14 +68,14 @@ public class AllowedDependencyValidator {
    */
   public static Boolean isDependencyAllowed(ArtifactCoordinates artifactCoordinates) {
     if (isNotBlank(artifactCoordinates.getClassifier())) {
+      if (artifactCoordinates.getClassifier().equals(MULE_DOMAIN_BUNDLE.toString())) {
+        return false;
+      }
+
       for (String classifier : CLASSIFIER_LIST) {
         if (artifactCoordinates.getClassifier().startsWith(classifier) && !artifactCoordinates.getScope().equals("provided")) {
           return false;
         }
-      }
-
-      if (artifactCoordinates.getClassifier().equals(MULE_DOMAIN_BUNDLE)) {
-        return false;
       }
     }
     return true;

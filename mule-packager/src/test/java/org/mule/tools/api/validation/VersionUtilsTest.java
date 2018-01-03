@@ -9,19 +9,20 @@
  */
 package org.mule.tools.api.validation;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.fail;
-import static org.mule.tools.api.validation.VersionUtils.completeIncremental;
-import static org.mule.tools.api.validation.VersionUtils.isVersionGraterOrEquals;
-import static org.mule.tools.api.validation.VersionUtils.isVersionValid;
+import static org.mule.tools.api.validation.VersionUtils.*;
 
 import org.junit.Test;
 
 import org.mule.tools.api.exception.ValidationException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Mulesoft Inc.
@@ -34,7 +35,7 @@ public class VersionUtilsTest {
     String version1 = "3.3.9.9";
     String version2 = "3.3.2";
 
-    isVersionGraterOrEquals(version1, version2);
+    isVersionGreaterOrEquals(version1, version2);
   }
 
   @Test(expected = ValidationException.class)
@@ -42,7 +43,7 @@ public class VersionUtilsTest {
     String version1 = "3.3.9";
     String version2 = "3.3.2.50";
 
-    isVersionGraterOrEquals(version1, version2);
+    isVersionGreaterOrEquals(version1, version2);
   }
 
   @Test
@@ -50,7 +51,7 @@ public class VersionUtilsTest {
     String version1 = "3.3.9";
     String version2 = "3.3.2";
 
-    assertThat(isVersionGraterOrEquals(version1, version2), is(true));
+    assertThat(isVersionGreaterOrEquals(version1, version2), is(true));
   }
 
   @Test
@@ -58,7 +59,7 @@ public class VersionUtilsTest {
     String version1 = "3.5.0";
     String version2 = "3.3.3";
 
-    assertThat(isVersionGraterOrEquals(version1, version2), is(true));
+    assertThat(isVersionGreaterOrEquals(version1, version2), is(true));
   }
 
   @Test
@@ -66,7 +67,7 @@ public class VersionUtilsTest {
     String version1 = "3.0.0";
     String version2 = "2.1.3";
 
-    assertThat(isVersionGraterOrEquals(version1, version2), is(true));
+    assertThat(isVersionGreaterOrEquals(version1, version2), is(true));
   }
 
   @Test
@@ -74,7 +75,7 @@ public class VersionUtilsTest {
     String version1 = "3.0.5";
     String version2 = "3.3.3";
 
-    assertThat(isVersionGraterOrEquals(version1, version2), is(false));
+    assertThat(isVersionGreaterOrEquals(version1, version2), is(false));
   }
 
   @Test
@@ -82,7 +83,7 @@ public class VersionUtilsTest {
     String version1 = "3.0.0";
     String version2 = "4.0.0";
 
-    assertThat(isVersionGraterOrEquals(version1, version2), is(false));
+    assertThat(isVersionGreaterOrEquals(version1, version2), is(false));
   }
 
   @Test
@@ -90,7 +91,7 @@ public class VersionUtilsTest {
     String version1 = "3.3.9";
     String version2 = "3.3";
 
-    assertThat(isVersionGraterOrEquals(version1, version2), is(true));
+    assertThat(isVersionGreaterOrEquals(version1, version2), is(true));
   }
 
   @Test
@@ -98,7 +99,7 @@ public class VersionUtilsTest {
     String version1 = "3.3.2";
     String version2 = "3.3.9";
 
-    assertThat(isVersionGraterOrEquals(version1, version2), is(false));
+    assertThat(isVersionGreaterOrEquals(version1, version2), is(false));
   }
 
   @Test
@@ -106,7 +107,7 @@ public class VersionUtilsTest {
     String version1 = "3.3";
     String version2 = "3.3.9";
 
-    assertThat(isVersionGraterOrEquals(version1, version2), is(false));
+    assertThat(isVersionGreaterOrEquals(version1, version2), is(false));
   }
 
   @Test
@@ -114,7 +115,7 @@ public class VersionUtilsTest {
     String version1 = "3.3.9-SNAPSHOT";
     String version2 = "3.3.2";
 
-    assertThat(isVersionGraterOrEquals(version1, version2), is(true));
+    assertThat(isVersionGreaterOrEquals(version1, version2), is(true));
   }
 
   @Test
@@ -122,7 +123,7 @@ public class VersionUtilsTest {
     String version1 = "3.3.2";
     String version2 = "3.3.9-SNAPSHOT";
 
-    assertThat(isVersionGraterOrEquals(version1, version2), is(false));
+    assertThat(isVersionGreaterOrEquals(version1, version2), is(false));
   }
 
   @Test
@@ -172,7 +173,6 @@ public class VersionUtilsTest {
 
   private List<String> getValidVersions() {
     List<String> validVersions = new ArrayList<>();
-    validVersions.add("0.0.0");
     validVersions.add("0.1.0");
     validVersions.add("0.1.1");
     validVersions.add("1.4.0");
@@ -190,6 +190,7 @@ public class VersionUtilsTest {
 
   private List<String> getInvalidVersions() {
     List<String> invalidVersions = new ArrayList<>();
+    invalidVersions.add("0.0.0");
     invalidVersions.add("0");
     invalidVersions.add("0.1");
     invalidVersions.add("1.0");
@@ -213,5 +214,75 @@ public class VersionUtilsTest {
     return invalidVersions;
   }
 
+  @Test
+  public void getBaseVersionTest() {
+    Map<String, String> testInput = getBaseVersionTestInput();
+    for (String version : testInput.keySet()) {
+      String expectedBaseVersion = testInput.get(version);
+      assertThat("Base version is not the expected", getBaseVersion(version), equalTo(expectedBaseVersion));
+    }
+  }
+
+  private Map<String, String> getBaseVersionTestInput() {
+    Map<String, String> versions = new HashMap<>();
+    versions.put("0.1.0", "0.1.0");
+    versions.put("0.1.1", "0.1.1");
+    versions.put("1.4.0", "1.4.0");
+    versions.put("0.44.0", "0.44.0");
+    versions.put("111.1.0", "111.1.0");
+    versions.put("432.0.43", "432.0.43");
+    versions.put("0.0.114765", "0.0.114765");
+    versions.put("0.1.0-SNAPSHOT", "0.1.0");
+    versions.put("0.1.0-rc-SNAPSHOT", "0.1.0");
+    versions.put("0.1.0-rc.SNAPSHOT", "0.1.0");
+    versions.put("0.1.0+sha.12343", "0.1.0");
+    return versions;
+  }
+
+  @Test
+  public void getMajorTest() {
+    Map<String, String> testInput = getMajorTestInput();
+    for (String version : testInput.keySet()) {
+      String expectedMajor = testInput.get(version);
+      assertThat("Major is not the expected", getMajor(version), equalTo(expectedMajor));
+    }
+  }
+
+  private Map<String, String> getMajorTestInput() {
+    Map<String, String> versions = new HashMap<>();
+    versions.put("0.1.0", "0");
+    versions.put("0.1.1", "0");
+    versions.put("1.4.0", "1");
+    versions.put("0.44.0", "0");
+    versions.put("111.1.0", "111");
+    versions.put("432.0.43", "432");
+    versions.put("0.0.114765", "0");
+    versions.put("0.1.0-SNAPSHOT", "0");
+    versions.put("0.1.0-rc-SNAPSHOT", "0");
+    versions.put("0.1.0-rc.SNAPSHOT", "0");
+    versions.put("0.1.0+sha.12343", "0");
+    return versions;
+  }
+
+  @Test
+  public void completeIncrementalTest() throws ValidationException {
+    Map<String, String> testInput = completeIncrementalTestInput();
+    for (String version : testInput.keySet()) {
+      String expectedVersion = testInput.get(version);
+      assertThat("Completed version is not the expected", completeIncremental(version), equalTo(expectedVersion));
+    }
+  }
+
+  private Map<String, String> completeIncrementalTestInput() {
+    Map<String, String> versions = new HashMap<>();
+    versions.put("1", "1.0.0");
+    versions.put("0.1", "0.1.0");
+    versions.put("0.1.1", "0.1.1");
+    versions.put("0.1-SNAPSHOT", "0.1.0");
+    versions.put("0.1-rc-SNAPSHOT", "0.1.0");
+    versions.put("0.1-rc.SNAPSHOT", "0.1.0");
+    versions.put("1.1+sha.12343", "1.1.0");
+    return versions;
+  }
 
 }

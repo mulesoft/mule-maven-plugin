@@ -11,17 +11,15 @@
 package org.mule.tools.api.validation;
 
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
-import static org.mule.tools.api.validation.VersionUtils.getSeparatorIndex;
+import static org.mule.tools.api.validation.VersionUtils.getBaseVersion;
+import static org.mule.tools.api.validation.VersionUtils.isVersionGreaterOrEquals;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -167,7 +165,7 @@ public class MuleArtifactJsonValidator {
     isProjectVersionValid(muleVersion);
     String minMuleVersionBaseValue = getBaseVersion(minMuleVersion);
     String muleVersionBaseValue = getBaseVersion(muleVersion);
-    if (!isVersionBiggerOrEqual(muleVersionBaseValue, minMuleVersionBaseValue)) {
+    if (!isVersionGreaterOrEquals(muleVersionBaseValue, minMuleVersionBaseValue)) {
       throw new ValidationException("Mule version that is set in the deployment configuration is not compatible with the minMuleVersion in mule-artifact.json. deploymentConfiguration.muleVersion: "
           + muleVersion + ", minMuleVersion: " + minMuleVersion);
     }
@@ -177,33 +175,6 @@ public class MuleArtifactJsonValidator {
     if (!VersionUtils.isVersionValid(version)) {
       throw new ValidationException("Version " + version + " does not comply with semantic versioning specification");
     }
-  }
-
-
-  /**
-   * Returns true if version1 >= version2.
-   *
-   * @param version1 String in the format X.Y.Z, where all values comply with the semantic versioning specification.
-   * @param version2 String in the format X.Y.Z, where all values comply with the semantic versioning specification.
-   */
-  private static boolean isVersionBiggerOrEqual(String version1, String version2) {
-    List<Integer> version1Split = Arrays.stream(version1.split("\\.")).map(Integer::parseInt).collect(Collectors.toList());
-    List<Integer> version2Split = Arrays.stream(version2.split("\\.")).map(Integer::parseInt).collect(Collectors.toList());
-
-    int major1 = version1Split.get(0);
-    int minor1 = version1Split.get(1);
-    int patch1 = version1Split.get(2);
-
-    int major2 = version2Split.get(0);
-    int minor2 = version2Split.get(1);
-    int patch2 = version2Split.get(2);
-
-    return major1 > major2 || (major1 == major2 && ((minor1 > minor2) || (minor1 == minor2 && patch1 >= patch2)));
-  }
-
-  private static String getBaseVersion(String version) {
-    int separator = getSeparatorIndex(version);
-    return separator == -1 ? version : version.substring(0, separator);
   }
 
   /**

@@ -40,7 +40,7 @@ public class MulePluginsCompatibilityValidator {
   protected boolean areMulePluginVersionCompatible(List<ArtifactCoordinates> dependencies) {
     Set<String> majors = dependencies.stream()
         .map(ArtifactCoordinates::getVersion)
-        .map(v -> v.substring(0, v.indexOf(".")))
+        .map(VersionUtils::getMajor)
         .collect(Collectors.toSet());
     return majors.size() <= 1;
   }

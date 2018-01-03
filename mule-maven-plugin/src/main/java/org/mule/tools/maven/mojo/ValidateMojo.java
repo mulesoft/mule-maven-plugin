@@ -23,7 +23,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.validation.AllowedDependencyValidator;
 import org.mule.tools.api.validation.project.AbstractProjectValidator;
 import org.mule.tools.api.validation.VersionUtils;
 
@@ -66,7 +65,7 @@ public class ValidateMojo extends AbstractMuleMojo {
     getLog().debug("Validating Maven environment...");
 
     String mavenVersion = (String) session.getRequest().getSystemProperties().get("maven.version");
-    if (!VersionUtils.isVersionGraterOrEquals(mavenVersion, MIN_MAVEN_VERSION)) {
+    if (!VersionUtils.isVersionGreaterOrEquals(mavenVersion, MIN_MAVEN_VERSION)) {
       throw new ValidationException("Your Maven installation version is: " + mavenVersion + " We require at least:"
           + MIN_MAVEN_VERSION);
     }

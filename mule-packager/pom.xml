@@ -83,6 +83,15 @@
             <artifactId>gson</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.vdurmont</groupId>
+            <artifactId>semver4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>de.skuzzle</groupId>
+            <artifactId>semantic-version</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>

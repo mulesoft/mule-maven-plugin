@@ -189,7 +189,6 @@ public class ProjectInformation {
       checkArgument(projectBaseFolder != null, "Project base folder should not be null");
       checkArgument(buildDirectory != null, "Project build directory should not be null");
       checkArgument(isTestProject != null, "Project isTestProject property was not set");
-      checkArgument(project != null, "Project should not be null");
 
       return new ProjectInformation(groupId, artifactId, version, classifier, packaging, projectBaseFolder, buildDirectory,
                                     isTestProject, project, isDeployment, metadata, deployments);

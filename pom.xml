@@ -115,7 +115,7 @@
         <skipTests>false</skipTests>
         <jacoco.report.location>${session.executionRootDirectory}/target/jacoco.exec</jacoco.report.location>
         <jacoco.agent.argLine>
-            -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.maven.plugin.version}/org.jacoco.agent-${jacoco.maven.plugin.version}-runtime.jar=destfile='${session.executionRootDirectory}/target/jacoco.exec'
+            -javaagent:'${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.maven.plugin.version}/org.jacoco.agent-${jacoco.maven.plugin.version}-runtime.jar'=destfile='${session.executionRootDirectory}/target/jacoco.exec'
         </jacoco.agent.argLine>
         <coverageLineLimit>0.99</coverageLineLimit>
         <coverageBranchLimit>0.99</coverageBranchLimit>

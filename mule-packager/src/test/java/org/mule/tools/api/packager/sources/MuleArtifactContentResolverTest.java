@@ -10,6 +10,7 @@
 
 package org.mule.tools.api.packager.sources;
 
+import static java.lang.String.join;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,21 +34,21 @@ public class MuleArtifactContentResolverTest {
 
   private static final String JAR_1 = "jar1.jar";
   private static final String JAR_2 = "jar2.jar";
-  private static final String JAR_3_LOCATION = "lala/lele";
+  private static final String JAR_3_LOCATION = getRelativePath("lala", "lele");
   private static final String JAR_3 = "jar3.jar";
   private static final String CONFIG_1 = "config1.xml";
   private static final String CONFIG_2 = "config2.xml";
-  private static final String CONFIG_3_LOCATION = "lolo/lulu";
+  private static final String CONFIG_3_LOCATION = getRelativePath("lolo", "lulu");
   private static final String CONFIG_3 = "config3.xml";
 
   private static final String COMMON_FILE = "aFile.txt";
 
-  private static final String JAVA_FOLDER_LOCATION = "src/main/java";
-  private static final String MULE_FOLDER_LOCATION = "src/main/mule";
-  private static final String MUNIT_FOLDER_LOCATION = "src/test/munit";
-  private static final String RESOURCES_FOLDER_LOCATION = "src/main/resources";
+  private static final String JAVA_FOLDER_LOCATION = getRelativePath("src", "main", "java");
+  private static final String MULE_FOLDER_LOCATION = getRelativePath("src", "main", "mule");
+  private static final String MUNIT_FOLDER_LOCATION = getRelativePath("src", "test", "munit");
+  private static final String RESOURCES_FOLDER_LOCATION = getRelativePath("src", "main", "resources");
   public static final String HIDDEN_FILE = ".hiddenFile";
-  private static final String TEST_RESOURCES_FOLDER_LOCATION = "src/test/resources";
+  private static final String TEST_RESOURCES_FOLDER_LOCATION = getRelativePath("src", "test", "resources");
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
@@ -196,5 +198,12 @@ public class MuleArtifactContentResolverTest {
     assertThat("Configs contain an unexpected elements", actualConfigs.contains(COMMON_FILE), is(false));
 
     assertThat("Configs contains more elements than expected", actualConfigs.size(), equalTo(3));
+  }
+
+  private static String getRelativePath(String... segments) {
+    if (segments != null && segments.length != 0) {
+      return join(File.separator, segments);
+    }
+    return StringUtils.EMPTY;
   }
 }

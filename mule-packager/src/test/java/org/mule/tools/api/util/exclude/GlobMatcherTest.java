@@ -51,7 +51,7 @@ public class GlobMatcherTest {
         {"/user/*/*", "/user/lala/src/blabla", Boolean.FALSE},
         {"/user/**", "/user/", Boolean.FALSE},
         {"/user/**", "/user", Boolean.FALSE},
-        {"C:\\\\*", "C:\\foo\\lala", Boolean.TRUE},
+        {"C:\\\\**", "C:\\foo\\lala", Boolean.TRUE},
     });
   }
 
@@ -63,6 +63,7 @@ public class GlobMatcherTest {
 
   @Test
   public void matchTest() {
-    assertThat("The matcher should have returned " + !expectedResult, matcher.matches(path), is(expectedResult));
+    assertThat("The matcher should have returned " + !expectedResult + " to path " + path.toString(), matcher.matches(path),
+               is(expectedResult));
   }
 }

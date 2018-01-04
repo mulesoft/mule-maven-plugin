@@ -70,19 +70,18 @@ public class CopyFileVisitorTest {
     normalFile.createNewFile();
 
     hiddenFile = new File(fromFolder, HIDDEN_FILE);
+    hiddenFile.createNewFile();
     // Ensure hidden fin in win based systems
-    if (System.getProperty("os.name").toLowerCase().equals("win")) {
+    if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
       Files.setAttribute(hiddenFile.toPath(), "dos:hidden", true);
     }
-    hiddenFile.createNewFile();
-
 
     hiddenFolder = new File(fromFolder, HIDDEN_FOLDER);
-    // Ensure hidden fin in win based systems
-    if (System.getProperty("os.name").toLowerCase().equals("win")) {
-      Files.setAttribute(hiddenFile.toPath(), "dos:hidden", true);
-    }
     hiddenFolder.mkdir();
+    // Ensure hidden fin in win based systems
+    if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+      Files.setAttribute(hiddenFolder.toPath(), "dos:hidden", true);
+    }
   }
 
   @Test
@@ -146,7 +145,6 @@ public class CopyFileVisitorTest {
   @Test
   public void preVisitDirectoryIgnoreHiddenHiddenFolder() throws IOException {
     CopyFileVisitor visitor = new CopyFileVisitor(fromFolder, targetFolder, true, true);
-
     FileVisitResult fileVisitResult = visitor.preVisitDirectory(hiddenFolder.toPath(), basicFileAttributesMock);
     assertThat(fileVisitResult, is(SKIP_SUBTREE));
   }

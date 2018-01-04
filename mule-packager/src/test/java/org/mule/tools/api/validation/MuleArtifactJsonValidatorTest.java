@@ -90,8 +90,9 @@ public class MuleArtifactJsonValidatorTest {
   @Test
   public void isMuleArtifactJsonValidArbitraryIOExceptionTest() throws IOException, ValidationException {
     expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("cannot be read");
-    muleArtifactJsonFile.setReadable(false);
+    expectedException.expectMessage("java.io.IOException");
+    muleArtifactJsonFile.delete();
+    muleArtifactJsonFile = projectBaseFolder.newFolder(MULE_ARTIFACT_JSON);
     isMuleArtifactJsonValid(projectBaseFolder.getRoot().toPath(), Optional.empty());
   }
 

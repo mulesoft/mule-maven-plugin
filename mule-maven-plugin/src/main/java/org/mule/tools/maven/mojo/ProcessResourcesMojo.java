@@ -29,11 +29,11 @@ public class ProcessResourcesMojo extends AbstractMuleMojo {
 
   @Override
   public void doExecute() throws MojoExecutionException, MojoFailureException {
-    try {
-      getResourcesContentProcessor().process(resourcesContent);
-    } catch (IllegalArgumentException | IOException e) {
-      throw new MojoFailureException("Fail to process resources", e);
-    }
+    // try {
+    // getResourcesContentProcessor().process(resourcesContent);
+    // } catch (IllegalArgumentException | IOException e) {
+    // throw new MojoFailureException("Fail to process resources", e);
+    // }
   }
 
   public ResourcesContentProcessor getResourcesContentProcessor() {

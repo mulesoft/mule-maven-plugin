@@ -21,26 +21,26 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(Parameterized.class)
-public class DeploymentEnvironmentVersionTest {
+public class EnvironmentSupportedVersionsTest {
 
-  private final DeploymentEnvironmentVersion supportedVersion;
+  private final EnvironmentSupportedVersions supportedVersion;
   private final String version;
   private final Boolean isSupported;
 
   @Parameterized.Parameters
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][] {
-        {"4.0.0", new DeploymentEnvironmentVersion(newArrayList("4.0.0")), Boolean.TRUE},
-        {"4.0.0", new DeploymentEnvironmentVersion(newArrayList("4.0.1")), Boolean.FALSE},
-        {"4.0.0", new DeploymentEnvironmentVersion(newArrayList("4.0.0", "4.0.1")), Boolean.TRUE},
-        {"4.0.1", new DeploymentEnvironmentVersion(newArrayList("4.0.0", "4.0.1")), Boolean.TRUE},
-        {"3.0.0", new DeploymentEnvironmentVersion(newArrayList("4.0.0", "4.0.1")), Boolean.FALSE},
-        {"3.0.0-SNAPSHOT", new DeploymentEnvironmentVersion(newArrayList("3.0.0-SNAPSHOT", "4.0.0", "4.0.1")), Boolean.TRUE},
-        {"3.0.0-SNAPSHOT", new DeploymentEnvironmentVersion(newArrayList("3.0.0")), Boolean.FALSE},
+        {"4.0.0", new EnvironmentSupportedVersions(newArrayList("4.0.0")), Boolean.TRUE},
+        {"4.0.0", new EnvironmentSupportedVersions(newArrayList("4.0.1")), Boolean.FALSE},
+        {"4.0.0", new EnvironmentSupportedVersions(newArrayList("4.0.0", "4.0.1")), Boolean.TRUE},
+        {"4.0.1", new EnvironmentSupportedVersions(newArrayList("4.0.0", "4.0.1")), Boolean.TRUE},
+        {"3.0.0", new EnvironmentSupportedVersions(newArrayList("4.0.0", "4.0.1")), Boolean.FALSE},
+        {"3.0.0-SNAPSHOT", new EnvironmentSupportedVersions(newArrayList("3.0.0-SNAPSHOT", "4.0.0", "4.0.1")), Boolean.TRUE},
+        {"3.0.0-SNAPSHOT", new EnvironmentSupportedVersions(newArrayList("3.0.0")), Boolean.FALSE},
     });
   }
 
-  public DeploymentEnvironmentVersionTest(String version, DeploymentEnvironmentVersion supportedVersion, Boolean isSupported) {
+  public EnvironmentSupportedVersionsTest(String version, EnvironmentSupportedVersions supportedVersion, Boolean isSupported) {
     this.version = version;
     this.supportedVersion = supportedVersion;
     this.isSupported = isSupported;

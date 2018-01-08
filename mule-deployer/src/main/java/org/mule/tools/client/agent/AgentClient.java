@@ -58,22 +58,8 @@ public class AgentClient extends AbstractClient {
     }
   }
 
-  public String getMuleRuntimeVersion() {
-    Response response = get(uri, AGENT_INFO_PATH);
-    AgentInfo agentInfo = response.readEntity(AgentInfo.class);
-    return agentInfo.muleVersion;
-  }
-
-  public String getAgentVersion() {
-    Response response = get(uri, AGENT_INFO_PATH);
-    AgentInfo agentInfo = response.readEntity(AgentInfo.class);
-    return agentInfo.agentVersion;
-  }
-
-  public boolean hasMuleStarted() {
-    Response response = get(uri, AGENT_INFO_PATH);
-    AgentInfo agentInfo = response.readEntity(AgentInfo.class);
-    return agentInfo.muleStarted;
+  public AgentInfo getAgentInfo() {
+    return get(uri, AGENT_INFO_PATH).readEntity(AgentInfo.class);
   }
 
 }

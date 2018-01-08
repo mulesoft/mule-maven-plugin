@@ -15,7 +15,7 @@ import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.validation.AbstractDeploymentValidator;
-import org.mule.tools.validation.DeploymentEnvironmentVersion;
+import org.mule.tools.validation.EnvironmentSupportedVersions;
 
 /**
  * Validates if the mule runtime version is valid in an ARM deployment scenario.
@@ -27,10 +27,10 @@ public class ArmDeploymentValidator extends AbstractDeploymentValidator {
   }
 
   @Override
-  public DeploymentEnvironmentVersion getDeploymentEnvironmentVersion() throws DeploymentException {
+  public EnvironmentSupportedVersions getEnvironmentSupportedVersions() throws DeploymentException {
     ArmClient client = getArmClient();
     String muleRuntimeVersion = findRuntimeVersion(client);
-    return new DeploymentEnvironmentVersion(muleRuntimeVersion);
+    return new EnvironmentSupportedVersions(muleRuntimeVersion);
   }
 
   /**
@@ -50,7 +50,7 @@ public class ArmDeploymentValidator extends AbstractDeploymentValidator {
    *
    * @return The generated ARM client.
    */
-  public ArmClient getArmClient() {
+  private ArmClient getArmClient() {
     ArmClient client = new ArmClient((ArmDeployment) deployment, null);
     client.init();
     return client;

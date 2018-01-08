@@ -13,7 +13,7 @@ import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
 import org.mule.tools.validation.AbstractDeploymentValidator;
-import org.mule.tools.validation.DeploymentEnvironmentVersion;
+import org.mule.tools.validation.EnvironmentSupportedVersions;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,14 +31,14 @@ public class StandaloneDeploymentValidator extends AbstractDeploymentValidator {
   }
 
   @Override
-  public DeploymentEnvironmentVersion getDeploymentEnvironmentVersion() throws DeploymentException {
+  public EnvironmentSupportedVersions getEnvironmentSupportedVersions() throws DeploymentException {
     File muleHome = ((StandaloneDeployment) deployment).getMuleHome();
 
     checkArgument(muleHome != null, "Mule home cannot not be null");
     checkArgument(muleHome.exists(), "Mule home directory does not exist");
 
     String muleRuntimeVersion = findRuntimeVersion(muleHome);
-    return new DeploymentEnvironmentVersion(muleRuntimeVersion);
+    return new EnvironmentSupportedVersions(muleRuntimeVersion);
   }
 
   /**

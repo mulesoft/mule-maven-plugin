@@ -14,7 +14,7 @@ import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.validation.AbstractDeploymentValidator;
-import org.mule.tools.validation.DeploymentEnvironmentVersion;
+import org.mule.tools.validation.EnvironmentSupportedVersions;
 
 /**
  * Validates if the mule runtime version is valid in an Agent deployment scenario.
@@ -26,10 +26,10 @@ public class AgentDeploymentValidator extends AbstractDeploymentValidator {
   }
 
   @Override
-  public DeploymentEnvironmentVersion getDeploymentEnvironmentVersion() throws DeploymentException {
+  public EnvironmentSupportedVersions getEnvironmentSupportedVersions() throws DeploymentException {
     AgentClient client = getAgentClient();
-    String muleRuntimeVersion = client.getMuleRuntimeVersion();
-    return new DeploymentEnvironmentVersion(muleRuntimeVersion);
+    String muleRuntimeVersion = client.getAgentInfo().getMuleVersion();
+    return new EnvironmentSupportedVersions(muleRuntimeVersion);
   }
 
   /**
@@ -37,7 +37,7 @@ public class AgentDeploymentValidator extends AbstractDeploymentValidator {
    *
    * @return The generated Agent client.
    */
-  public AgentClient getAgentClient() {
+  private AgentClient getAgentClient() {
     String agentUri = ((AgentDeployment) deployment).getUri();
     return new AgentClient(null, agentUri);
   }

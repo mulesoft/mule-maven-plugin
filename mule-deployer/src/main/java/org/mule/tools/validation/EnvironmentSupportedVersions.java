@@ -9,28 +9,27 @@
  */
 package org.mule.tools.validation;
 
-import com.vdurmont.semver4j.Semver;
-
 import java.util.Collection;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.mule.tools.utils.VersionUtils.isSameVersion;
 
 /**
  * Represents the supported mule runtime versions in a deployment environment.
  */
-public class DeploymentEnvironmentVersion {
+public class EnvironmentSupportedVersions {
 
   /**
    * The list of mule runtime supported versions.
    */
   private final List<String> environmentSupportedVersions;
 
-  public DeploymentEnvironmentVersion(Collection<String> environmentSupportedVersions) {
+  public EnvironmentSupportedVersions(Collection<String> environmentSupportedVersions) {
     this.environmentSupportedVersions = newArrayList(environmentSupportedVersions);
   }
 
-  public DeploymentEnvironmentVersion(String environmentVersion) {
+  public EnvironmentSupportedVersions(String environmentVersion) {
     this.environmentSupportedVersions = newArrayList(environmentVersion);
   }
 
@@ -44,17 +43,24 @@ public class DeploymentEnvironmentVersion {
     return environmentSupportedVersions.stream().anyMatch(v -> isSameVersion(v, muleVersion));
   }
 
-  /**
-   * Checks if two versions are the same. The versions are supposed to follow the semantic versioning specification.
-   * 
-   * @param version1
-   * @param version2
-   * @return true if version1 is equal to version2; false otherwise.
-   */
-  private boolean isSameVersion(String version1, String version2) {
-    Semver semver1 = new Semver(version1);
-    Semver semver2 = new Semver(version2);
-    return semver1.equals(semver2);
+
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) {
+      return true;
+    }
+    if (other == null || getClass() != other.getClass()) {
+      return false;
+    }
+
+    EnvironmentSupportedVersions that = (EnvironmentSupportedVersions) other;
+
+    return environmentSupportedVersions.equals(that.environmentSupportedVersions);
+  }
+
+  @Override
+  public int hashCode() {
+    return environmentSupportedVersions.hashCode();
   }
 }
 

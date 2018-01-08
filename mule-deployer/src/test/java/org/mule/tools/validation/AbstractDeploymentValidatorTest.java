@@ -64,7 +64,7 @@ public class AbstractDeploymentValidatorTest {
     }
 
     @Override
-    public DeploymentEnvironmentVersion getDeploymentEnvironmentVersion() throws DeploymentException {
+    public EnvironmentSupportedVersions getEnvironmentSupportedVersions() throws DeploymentException {
       throw new DeploymentException(CANNOT_RESOLVE_ENVIRONMENT_VERSION_MESSAGE);
     }
   }

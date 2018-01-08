@@ -42,7 +42,7 @@ public abstract class AbstractDeploymentValidator {
    */
   public void validateMuleVersionAgainstEnvironment() throws DeploymentException {
     String deploymentMuleVersion = deployment.getMuleVersion().orElseThrow(deploymentExceptionSupplier);
-    DeploymentEnvironmentVersion environmentVersion = getDeploymentEnvironmentVersion();
+    EnvironmentSupportedVersions environmentVersion = getEnvironmentSupportedVersions();
     environmentVersion.supports(deploymentMuleVersion);
   }
 
@@ -52,6 +52,6 @@ public abstract class AbstractDeploymentValidator {
    * @return The mule runtime supported versions.
    * @throws DeploymentException if the mule runtime version cannot be resolved.
    */
-  public abstract DeploymentEnvironmentVersion getDeploymentEnvironmentVersion() throws DeploymentException;
+  public abstract EnvironmentSupportedVersions getEnvironmentSupportedVersions() throws DeploymentException;
 
 }

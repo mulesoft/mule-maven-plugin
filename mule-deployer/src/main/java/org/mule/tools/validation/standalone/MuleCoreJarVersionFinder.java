@@ -27,7 +27,7 @@ public class MuleCoreJarVersionFinder implements FileVisitor<Path> {
   /**
    * Regex to match the mule core jar filename.
    */
-  private final Pattern muleCoreJarFileNameRegex = Pattern.compile("mule-core-(\\d+\\.\\d+\\.\\d+).*\\.jar");
+  private final Pattern muleCoreJarFileNameRegex = Pattern.compile("mule-core-(\\d+\\.\\d+\\.\\d+.*)\\.jar");
 
   /**
    * The resolved mule core version.

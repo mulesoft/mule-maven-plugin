@@ -18,11 +18,15 @@ import org.apache.maven.it.Verifier;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import integration.test.util.StandaloneEnvironment;
 
-public class AgentDeploymentTest extends AbstractDeploymentTest {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
+public abstract class AgentDeploymentTest extends AbstractDeploymentTest {
 
   @Rule
   public TemporaryFolder environmentWorkingDir = new TemporaryFolder();
@@ -54,5 +58,30 @@ public class AgentDeploymentTest extends AbstractDeploymentTest {
     standaloneEnvironment.stop();
     verifier.resetStreams();
     environmentWorkingDir.delete();
+  }
+
+  protected void deploy() throws VerificationException, InterruptedException {
+    log.info("Executing mule:deploy goal...");
+
+    // TODO check why we have this sleep here
+    Thread.sleep(30000);
+    verifier.setEnvironmentVariable("mule.version", getMuleVersion());
+    verifier.setSystemProperty("applicationName", getApplication());
+    verifier.addCliOption("-DmuleDeploy");
+    verifier.executeGoal(DEPLOY_GOAL);
+  }
+
+  protected void assertAndVerify() throws VerificationException {
+    assertThat("Standalone should be running ", standaloneEnvironment.isRunning(), is(true));
+    assertDeployment();
+    verifier.verifyErrorFreeLog();
+  }
+
+  public abstract void assertDeployment();
+
+  @Test
+  public void testAgentDeploy() throws IOException, VerificationException, InterruptedException {
+    deploy();
+    assertAndVerify();
   }
 }

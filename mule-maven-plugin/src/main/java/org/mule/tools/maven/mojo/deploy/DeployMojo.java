@@ -15,11 +15,10 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 
-import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.mule.tools.client.standalone.exception.DeploymentException;
-import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
 import org.mule.tools.utils.DeployerFactory;
+import static org.mule.tools.validation.DeploymentValidatorFactory.createDeploymentValidator;
 
 /**
  * Maven plugin to deploy Mule applications to different kind of servers: Standalone (both Community and Enterprise), Clustered,
@@ -27,7 +26,6 @@ import org.mule.tools.utils.DeployerFactory;
  * are: Download Mule Standalone from a Maven Repository and install it locally. Deploy a Mule application to a server. Undeploy a
  * Mule appliction. Assemble a Mule cluster and deploy applications.
  *
- * @author <a href="mailto:asequeira@gmail.com">Ale Sequeira</a>
  * @see UndeployMojo
  * @see MuleProcessController
  * @since 1.0
@@ -41,10 +39,8 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
   @Override
   public void doExecute() throws MojoFailureException, MojoExecutionException {
     try {
-      AbstractDeployer deployer = new DeployerFactory()
-          .createDeployer(deploymentConfiguration, new MavenDeployerLog(getLog()));
-
-      deployer.deploy();
+      createDeploymentValidator(deploymentConfiguration).validateMuleVersionAgainstEnvironment();
+      new DeployerFactory().createDeployer(deploymentConfiguration, log).deploy();
     } catch (DeploymentException e) {
       getLog().error("Failed to deploy " + deploymentConfiguration.getApplicationName() + ": " + e.getMessage(), e);
       throw new MojoFailureException("Failed to deploy [" + deploymentConfiguration.getArtifact() + "]");

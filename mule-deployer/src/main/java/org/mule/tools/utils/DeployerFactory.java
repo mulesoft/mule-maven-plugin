@@ -20,11 +20,21 @@ import org.mule.tools.model.Deployment;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
-import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
 
+/**
+ * A factory for {@link AbstractDeployer}.
+ */
 public class DeployerFactory {
 
+  /**
+   * Creates a deployer based on the deployment configuration using the supplied log.
+   * 
+   * @param deploymentConfiguration
+   * @param log
+   * @return An instance of an {@link AbstractDeployer}.
+   * @throws DeploymentException if the deployment configuration is not supported or the deployer cannot be initialized.
+   */
   public AbstractDeployer createDeployer(Deployment deploymentConfiguration, DeployerLog log)
       throws DeploymentException {
     AbstractDeployer deployer = null;
@@ -48,6 +58,12 @@ public class DeployerFactory {
     return deployer;
   }
 
+  /**
+   * Initializes the deployer.
+   * 
+   * @param deployer
+   * @throws DeploymentException if the deployer cannot be initialized.
+   */
   protected void initializeDeployer(AbstractDeployer deployer) throws DeploymentException {
     deployer.initialize();
   }

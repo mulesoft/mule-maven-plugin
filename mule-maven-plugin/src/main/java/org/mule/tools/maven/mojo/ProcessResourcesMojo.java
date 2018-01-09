@@ -10,7 +10,6 @@
 
 package org.mule.tools.maven.mojo;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -28,13 +27,7 @@ import org.mule.tools.api.packager.resources.processor.ResourcesContentProcessor
 public class ProcessResourcesMojo extends AbstractMuleMojo {
 
   @Override
-  public void doExecute() throws MojoExecutionException, MojoFailureException {
-    // try {
-    // getResourcesContentProcessor().process(resourcesContent);
-    // } catch (IllegalArgumentException | IOException e) {
-    // throw new MojoFailureException("Fail to process resources", e);
-    // }
-  }
+  public void doExecute() throws MojoExecutionException, MojoFailureException {}
 
   public ResourcesContentProcessor getResourcesContentProcessor() {
     return new DomainBundleProjectResourcesContentProcessor(Paths.get(project.getBuild().getDirectory()));

@@ -10,7 +10,9 @@
 
 package org.mule.tools.maven.mojo;
 
+import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -18,6 +20,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
+import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.packager.resources.processor.DomainBundleProjectResourcesContentProcessor;
 import org.mule.tools.api.packager.resources.processor.ResourcesContentProcessor;
 
@@ -27,10 +30,24 @@ import org.mule.tools.api.packager.resources.processor.ResourcesContentProcessor
 public class ProcessResourcesMojo extends AbstractMuleMojo {
 
   @Override
-  public void doExecute() throws MojoExecutionException, MojoFailureException {}
+  public void doExecute() throws MojoExecutionException, MojoFailureException {
+    try {
+      Optional<ResourcesContentProcessor> resourcesContentProcessor = getResourcesContentProcessor();
+      if (resourcesContentProcessor.isPresent()) {
+        resourcesContentProcessor.get().process(resourcesContent);
+      }
+    } catch (IllegalArgumentException | IOException e) {
+      throw new MojoFailureException("Fail to process resources", e);
+    }
+  }
 
-  public ResourcesContentProcessor getResourcesContentProcessor() {
-    return new DomainBundleProjectResourcesContentProcessor(Paths.get(project.getBuild().getDirectory()));
+  protected Optional<ResourcesContentProcessor> getResourcesContentProcessor() {
+    PackagingType packaging = PackagingType.fromString(getAndSetProjectInformation().getPackaging());
+    if (packaging == PackagingType.MULE_DOMAIN_BUNDLE) {
+      return Optional.of(new DomainBundleProjectResourcesContentProcessor(Paths.get(project.getBuild().getDirectory())));
+    } else {
+      return Optional.empty();
+    }
   }
 
   @Override
@@ -38,3 +55,4 @@ public class ProcessResourcesMojo extends AbstractMuleMojo {
     return "MULE_MAVEN_PLUGIN_PROCESS_RESOURCES_PREVIOUS_RUN_PLACEHOLDER";
   }
 }
+

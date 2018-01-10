@@ -40,13 +40,14 @@ import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
+import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
 import org.mule.tools.api.validation.project.AbstractProjectValidator;
 import org.mule.tools.api.validation.project.ProjectValidatorFactory;
-import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
 import org.mule.tools.client.authentication.model.Credentials;
 import org.mule.tools.maven.utils.ArtifactUtils;
 import org.mule.tools.maven.utils.DependencyProject;
 import org.mule.tools.maven.utils.MavenPackagerLog;
+import org.mule.tools.maven.utils.ProjectDirectoryUpdater;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
@@ -115,7 +116,7 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
 
   public void initMojo() {
     if (projectBuildDirectory != null) {
-      project.getBuild().setDirectory(projectBuildDirectory);
+      new ProjectDirectoryUpdater(project).updateBuildDirectory(projectBuildDirectory);
     }
   }
 

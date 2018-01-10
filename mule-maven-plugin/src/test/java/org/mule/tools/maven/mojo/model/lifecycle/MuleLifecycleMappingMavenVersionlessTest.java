@@ -10,11 +10,9 @@
 
 package org.mule.tools.maven.mojo.model.lifecycle;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.COMPILE;
@@ -32,15 +30,17 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.maven.lifecycle.DefaultLifecycles;
 import org.apache.maven.lifecycle.mapping.Lifecycle;
 import org.junit.Test;
 
-import com.google.common.collect.Sets;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.project.MuleLifecycleMapping;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenVersionless;
+
+import com.google.common.collect.Sets;
 
 public class MuleLifecycleMappingMavenVersionlessTest {
 
@@ -63,7 +63,6 @@ public class MuleLifecycleMappingMavenVersionlessTest {
 
     expectedLifecyclePhases.forEach(expectedPhase -> assertThat("Missing lifecycle phase: " + expectedPhase.id(),
                                                                 lifecyclePhases.containsKey(expectedPhase.id()), is(true)));
-
 
   }
 

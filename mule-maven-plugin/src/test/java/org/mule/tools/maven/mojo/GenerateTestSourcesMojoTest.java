@@ -31,7 +31,6 @@ import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
 public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
 
-  private Log logMock;
   private GenerateTestSourcesMojo mojoMock;
 
   @Before

@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import com.google.common.collect.Lists;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.logging.Log;
@@ -32,7 +33,10 @@ import org.mule.tools.api.packager.builder.MulePackageBuilder;
 
 public class AbstractMuleMojoTest {
 
+  protected static final String GROUP_ID = "fake.group.id";
   protected static final String ARTIFACT_ID = "artifact-id";
+  protected static final String VERSION = "1.0.0";
+
   protected static final String PACKAGE_NAME = "packageName";
   protected static final String MULE_APPLICATION = "mule-application";
   protected final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
@@ -71,6 +75,29 @@ public class AbstractMuleMojoTest {
     when(projectMock.getBuild()).thenReturn(buildMock);
     when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
 
+    when(mavenSessionMock.getGoals()).thenReturn(Lists.newArrayList());
+
     when(buildMock.getDirectory()).thenReturn(buildFolderFolder.getRoot().getAbsolutePath());
   }
+
+  /**
+   * The goal of this method is to pupulate a {@link AbstractGenericMojo} and create the proper behavior so it does not fail when
+   * calling {@link AbstractGenericMojo#getAndSetProjectInformation()}
+   * 
+   * @param mojo the mojo to populate
+   * @param groupId the group id of the project
+   * @param artifactId the artifact id of the project
+   * @param version the verion of the project
+   */
+  protected void prepareMojoForProjectInformation(AbstractGenericMojo mojo, String groupId, String artifactId, String version) {
+    when(projectMock.getGroupId()).thenReturn(groupId);
+    when(projectMock.getArtifactId()).thenReturn(artifactId);
+    when(projectMock.getVersion()).thenReturn(version);
+
+    mojo.project = projectMock;
+    mojo.session = mavenSessionMock;
+    mojo.projectBaseFolder = projectBaseFolder.getRoot();
+  }
+
+
 }

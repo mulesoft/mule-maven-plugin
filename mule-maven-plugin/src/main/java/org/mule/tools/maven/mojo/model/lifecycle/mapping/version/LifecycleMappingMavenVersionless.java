@@ -10,19 +10,11 @@
 
 package org.mule.tools.maven.mojo.model.lifecycle.mapping.version;
 
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.COMPILE;
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.DEPLOY;
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.GENERATE_SOURCES;
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.GENERATE_TEST_SOURCES;
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.INITIALIZE;
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.INSTALL;
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PACKAGE;
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_RESOURCES;
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_SOURCES;
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_TEST_RESOURCES;
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST;
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST_COMPILE;
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.maven.lifecycle.mapping.Lifecycle;
+
 /*
  * Mule ESB Maven Tools
  * <p>
@@ -32,11 +24,6 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALI
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.maven.lifecycle.mapping.Lifecycle;
 
 public abstract class LifecycleMappingMavenVersionless {
 

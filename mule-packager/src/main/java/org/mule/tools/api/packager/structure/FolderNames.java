@@ -52,7 +52,9 @@ public enum FolderNames {
 
   JAVA("java"),
 
-  RESOURCES("resources");
+  RESOURCES("resources"),
+
+  SITE("site");
 
   private String value;
 

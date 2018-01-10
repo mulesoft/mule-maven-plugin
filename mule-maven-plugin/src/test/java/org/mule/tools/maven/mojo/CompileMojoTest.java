@@ -27,7 +27,6 @@ import static org.mockito.Mockito.*;
 
 public class CompileMojoTest extends AbstractMuleMojoTest {
 
-  private Log logMock;
   private CompileMojo mojoMock;
 
   @Before

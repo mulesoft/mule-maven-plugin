@@ -24,7 +24,7 @@ import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.util.Project;
-import org.mule.tools.api.validation.MulePluginResolver;
+import org.mule.tools.api.validation.resolver.MulePluginResolver;
 
 import java.io.IOException;
 import java.net.URI;
@@ -32,7 +32,6 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;

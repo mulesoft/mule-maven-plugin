@@ -17,10 +17,11 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.repository.RepositorySystem;
-import org.mule.tools.api.validation.MulePluginResolver;
 import org.mule.tools.api.packager.resources.content.ResourcesContent;
 import org.mule.tools.api.packager.sources.ContentGenerator;
 import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
+import org.mule.tools.api.util.Project;
+import org.mule.tools.api.validation.resolver.MulePluginResolver;
 import org.mule.tools.maven.utils.MavenProjectBuilder;
 
 
@@ -61,9 +62,9 @@ public abstract class AbstractMuleMojo extends AbstractGenericMojo {
     return contentGenerator;
   }
 
-  protected MulePluginResolver getResolver() {
+  protected MulePluginResolver getResolver(Project project) {
     MavenProjectBuilder builder = new MavenProjectBuilder(getLog(), session, projectBuilder, repositorySystem, localRepository,
                                                           remoteArtifactRepositories);
-    return new MulePluginResolver(builder);
+    return new MulePluginResolver(builder, project);
   }
 }

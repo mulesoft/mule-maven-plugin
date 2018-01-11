@@ -30,7 +30,7 @@ public class MulePluginResolverVisitorTest {
   private MulePluginResolverVisitor visitor;
   private ProjectDependencyNode nodeSpy;
   private List<DependencyNodeVisitor> visitorSpies;
-  private int NUMBER_VISITORS = 10;
+  private static final int NUMBER_VISITORS = 10;
   private Set<ArtifactCoordinates> collectDependencies;
 
   @Before

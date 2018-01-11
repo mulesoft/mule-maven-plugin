@@ -65,6 +65,7 @@ public abstract class AgentDeploymentTest extends AbstractDeploymentTest {
 
     // TODO check why we have this sleep here
     Thread.sleep(30000);
+
     verifier.setEnvironmentVariable("mule.version", getMuleVersion());
     verifier.setSystemProperty("applicationName", getApplication());
     verifier.addCliOption("-DmuleDeploy");

@@ -29,7 +29,7 @@ import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
 
-public class CloudhubClient extends AbstractMuleClient {
+public class CloudHubClient extends AbstractMuleClient {
 
   public static final String STARTED_STATUS = "STARTED";
   public static final String UNDEPLOYED_STATUS = "UNDEPLOYED";
@@ -61,13 +61,12 @@ public class CloudhubClient extends AbstractMuleClient {
   private static final int NOT_MODIFIED = 304;
   private static final int NOT_FOUND = 404;
 
-  public CloudhubClient(CloudHubDeployment cloudhubDeployment, DeployerLog log) {
+  public CloudHubClient(CloudHubDeployment cloudhubDeployment, DeployerLog log) {
     super(cloudhubDeployment, log);
   }
 
-  public Application createApplication(String appName, String region, String muleVersion, Integer workers, String workerType,
-                                       Map<String, String> properties) {
-    Entity<String> json = createApplicationRequest(appName, region, muleVersion, workers, workerType, properties);
+  public Application createApplication(ApplicationMetadata metadata) {
+    Entity<String> json = createApplicationRequest(metadata);
     Response response = post(baseUri, APPLICATIONS_PATH, json);
     if (response.getStatus() == CREATED) {
       return response.readEntity(Application.class);
@@ -76,18 +75,20 @@ public class CloudhubClient extends AbstractMuleClient {
     }
   }
 
-  private Entity<String> createApplicationRequest(String appName, String region, String muleVersion, Integer workers,
-                                                  String workerType, Map<String, String> properties) {
-    String json = String.format(CREATE_REQUEST_TEMPLATE, appName, region, muleVersion, workers, workerType);
-    json = addProperties(properties, json);
+  private Entity<String> createApplicationRequest(ApplicationMetadata metadata) {
+    String json = String.format(CREATE_REQUEST_TEMPLATE, metadata.getName(), metadata.getRegion(),
+                                metadata.getMuleVersion().get(), metadata.getWorkers(),
+                                metadata.getWorkerType());
+    json = addProperties(metadata.getProperties(), json);
     json = json + "}";
     return Entity.json(json);
   }
 
-  private Entity<String> updateApplicationRequest(String region, String muleVersion, Integer workers, String workerType,
-                                                  Map<String, String> properties) {
-    String json = String.format(UPDATE_REQUEST_TEMPLATE, region, muleVersion, workers, workerType);
-    json = addProperties(properties, json);
+  private Entity<String> updateApplicationRequest(ApplicationMetadata metadata) {
+    String json =
+        String.format(UPDATE_REQUEST_TEMPLATE, metadata.getRegion(), metadata.getMuleVersion().get(), metadata.getWorkers(),
+                      metadata.getWorkerType());
+    json = addProperties(metadata.getProperties(), json);
     json = json + "}";
     return Entity.json(json);
   }
@@ -109,10 +110,9 @@ public class CloudhubClient extends AbstractMuleClient {
     return json;
   }
 
-  public void updateApplication(String appName, String region, String muleVersion, Integer workers, String workerType,
-                                Map<String, String> properties) {
-    Entity<String> json = updateApplicationRequest(region, muleVersion, workers, workerType, properties);
-    Response response = put(baseUri, String.format(APPLICATION_UPDATE_PATH, appName), json);
+  public void updateApplication(ApplicationMetadata metadata) {
+    Entity<String> json = updateApplicationRequest(metadata);
+    Response response = put(baseUri, String.format(APPLICATION_UPDATE_PATH, metadata.getName()), json);
     if (response.getStatus() != OK && response.getStatus() != MOVED_PERMANENTLY) {
       throw new ClientException(response);
     }

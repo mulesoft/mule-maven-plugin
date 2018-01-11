@@ -10,31 +10,29 @@
 package org.mule.tools.client.standalone.deployment;
 
 
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.project.MavenProject;
-
-import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.standalone.configuration.ClusterConfigurator;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
-import org.mule.tools.client.standalone.controller.probing.deployment.DeploymentProbe;
 import org.mule.tools.client.standalone.controller.probing.PollingProber;
+import org.mule.tools.client.standalone.controller.probing.deployment.DeploymentProbe;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.utils.DeployerLog;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import static org.mule.tools.client.standalone.controller.probing.deployment.DeploymentProbeFactory.createProbe;
 
-public class ClusterDeployer extends AbstractDeployer {
+public class ClusterDeployer {/* extends Deployer { */
 
   private static final double MAX_CLUSTER_SIZE = 8;
   private static final long DEFAULT_POLLING_DELAY = 1000;
+  private final DeployerLog log;
 
   private File[] paths;
   private List<MuleProcessController> mules;
@@ -43,7 +41,7 @@ public class ClusterDeployer extends AbstractDeployer {
   private final ClusterDeployment clusterDeployment;
 
   public ClusterDeployer(ClusterDeployment clusterDeployment, DeployerLog log) throws DeploymentException {
-    super(clusterDeployment, log);
+    this.log = log;
     this.clusterDeployment = clusterDeployment;
   }
 
@@ -58,7 +56,7 @@ public class ClusterDeployer extends AbstractDeployer {
       if (!clusterDeployment.getArtifact().exists()) {
         throw new DeploymentException("Application does not exists: " + clusterDeployment.getArtifact());
       }
-      DeploymentProbe probe = createProbe(deploymentConfiguration.getPackaging());
+      DeploymentProbe probe = createProbe(clusterDeployment.getPackaging());
       log.debug("Checking for application [" + clusterDeployment.getArtifact() + "] to be deployed.");
       String app = getApplicationName(clusterDeployment.getArtifact());
       try {
@@ -113,7 +111,6 @@ public class ClusterDeployer extends AbstractDeployer {
     }
   }
 
-  @Override
   public void deploy() throws DeploymentException {
     try {
       configurator.configureCluster(paths, mules);
@@ -128,7 +125,6 @@ public class ClusterDeployer extends AbstractDeployer {
     }
   }
 
-  @Override
   public void undeploy(MavenProject mavenProject) throws DeploymentException {
     File[] muleHomes = new File[clusterDeployment.getSize()];
     for (int i = 0; i < clusterDeployment.getSize(); i++) {
@@ -142,7 +138,6 @@ public class ClusterDeployer extends AbstractDeployer {
     new StandaloneUndeployer(log, clusterDeployment.getApplicationName(), muleHomes).execute();
   }
 
-  @Override
   public void initialize() throws DeploymentException {
     validateSize();
     renameApplicationToApplicationName();

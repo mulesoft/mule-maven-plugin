@@ -29,15 +29,6 @@ public class ClusterDeployment extends MuleRuntimeDeployment {
   @Parameter(readonly = true)
   protected ArtifactCoordinates muleDistribution;
 
-  /**
-   * The allowed elapsed time between the start of the deployment process and the confirmation that the artifact has been
-   * deployed. In the case of the deployment to cluster, it is defined as the elapsed time between the instant when the deployable
-   * is copied to the runtime and the creation of the respective anchor file that is managed by each of the controllers.
-   *
-   */
-  @Parameter
-  protected Long deploymentTimeout;
-
   @Parameter
   protected String[] arguments;
 
@@ -136,19 +127,6 @@ public class ClusterDeployment extends MuleRuntimeDeployment {
 
   public void setMuleDistribution(ArtifactCoordinates muleDistribution) {
     this.muleDistribution = muleDistribution;
-  }
-
-  /**
-   * DeploymentConfiguration timeout in milliseconds.
-   *
-   * @since 1.0
-   */
-  public Long getDeploymentTimeout() {
-    return deploymentTimeout;
-  }
-
-  public void setDeploymentTimeout(Long deploymentTimeout) {
-    this.deploymentTimeout = deploymentTimeout;
   }
 
   /**

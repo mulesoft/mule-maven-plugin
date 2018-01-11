@@ -38,7 +38,6 @@ public class AgentDeploymentValidator extends AbstractDeploymentValidator {
    * @return The generated Agent client.
    */
   private AgentClient getAgentClient() {
-    String agentUri = ((AgentDeployment) deployment).getUri();
-    return new AgentClient(null, agentUri);
+    return new AgentClient(null, deployment);
   }
 }

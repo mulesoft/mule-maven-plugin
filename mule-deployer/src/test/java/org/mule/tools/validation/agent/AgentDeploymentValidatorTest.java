@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mule.tools.client.agent.AgentClient;
 import org.mule.tools.client.agent.AgentInfo;
+import org.mule.tools.model.Deployment;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.validation.AbstractDeploymentValidator;
@@ -41,8 +42,9 @@ public class AgentDeploymentValidatorTest {
 
     AgentInfo agentInfo = new AgentInfo();
     agentInfo.setMuleVersion(MULE_VERSION);
-
-    AgentClient clientSpy = spy(new AgentClient(LOG_MOCK, CLIENT_URI));
+    AgentDeployment deploymentMock = mock(AgentDeployment.class);
+    when(deploymentMock.getUri()).thenReturn(CLIENT_URI);
+    AgentClient clientSpy = spy(new AgentClient(LOG_MOCK, deploymentMock));
     doReturn(agentInfo).when(clientSpy).getAgentInfo();
 
     doReturn(clientSpy).when(validatorSpy, "getAgentClient");

@@ -9,7 +9,7 @@
  */
 package org.mule.tools.validation.cloudhub;
 
-import org.mule.tools.client.cloudhub.CloudhubClient;
+import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
@@ -29,7 +29,7 @@ public class CloudHubDeploymentValidator extends AbstractDeploymentValidator {
 
   @Override
   public EnvironmentSupportedVersions getEnvironmentSupportedVersions() throws DeploymentException {
-    CloudhubClient client = getCloudHubClient();
+    CloudHubClient client = getCloudHubClient();
     Set<String> supportedMuleVersions = client.getSupportedMuleVersions();
     return new EnvironmentSupportedVersions(supportedMuleVersions);
   }
@@ -39,8 +39,8 @@ public class CloudHubDeploymentValidator extends AbstractDeploymentValidator {
    * 
    * @return The generated CloudHub client.
    */
-  private CloudhubClient getCloudHubClient() {
-    CloudhubClient client = new CloudhubClient((CloudHubDeployment) deployment, null);
+  private CloudHubClient getCloudHubClient() {
+    CloudHubClient client = new CloudHubClient((CloudHubDeployment) deployment, null);
     client.init();
     return client;
   }

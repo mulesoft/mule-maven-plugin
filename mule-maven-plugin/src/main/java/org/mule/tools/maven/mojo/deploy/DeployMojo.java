@@ -17,7 +17,9 @@ import org.codehaus.plexus.archiver.manager.ArchiverManager;
 
 import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.mule.tools.client.standalone.exception.DeploymentException;
-import org.mule.tools.utils.DeployerFactory;
+import org.mule.tools.deployment.DefaultDeployer;
+import org.mule.tools.deployment.Deployer;
+
 import static org.mule.tools.validation.DeploymentValidatorFactory.createDeploymentValidator;
 
 /**
@@ -40,7 +42,8 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
   public void doExecute() throws MojoFailureException, MojoExecutionException {
     try {
       createDeploymentValidator(deploymentConfiguration).validateMuleVersionAgainstEnvironment();
-      new DeployerFactory().createDeployer(deploymentConfiguration, log).deploy();
+      Deployer deployer = new DefaultDeployer(deploymentConfiguration, log);
+      deployer.deploy();
     } catch (DeploymentException e) {
       getLog().error("Failed to deploy " + deploymentConfiguration.getApplicationName() + ": " + e.getMessage(), e);
       throw new MojoFailureException("Failed to deploy [" + deploymentConfiguration.getArtifact() + "]");

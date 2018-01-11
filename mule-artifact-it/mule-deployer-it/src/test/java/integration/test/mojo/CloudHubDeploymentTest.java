@@ -9,18 +9,15 @@
  */
 package integration.test.mojo;
 
-import static com.google.common.collect.Sets.newHashSet;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assume.assumeTrue;
 import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
-import static org.mule.tools.client.cloudhub.CloudhubClient.STARTED_STATUS;
+import static org.mule.tools.client.cloudhub.CloudHubClient.STARTED_STATUS;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.maven.it.VerificationException;
@@ -32,12 +29,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mule.tools.client.cloudhub.Application;
-import org.mule.tools.client.cloudhub.CloudhubClient;
-import org.mule.tools.client.cloudhub.OperationRetrier;
-import org.mule.tools.client.cloudhub.OperationRetrier.RetriableOperation;
-import org.mule.tools.client.standalone.controller.probing.deployment.ApplicationDeploymentProbe;
-import org.mule.tools.client.standalone.controller.probing.deployment.DeploymentProbe;
-import org.mule.tools.client.standalone.controller.probing.deployment.DomainDeploymentProbe;
+import org.mule.tools.client.cloudhub.CloudHubClient;
+import org.mule.tools.client.OperationRetrier;
+import org.mule.tools.client.OperationRetrier.RetriableOperation;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 
@@ -52,7 +46,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
   private static final String SNAPSHOT_SUFFIX = "-SNAPSHOT";
 
   private Verifier verifier;
-  private CloudhubClient cloudhubClient;
+  private CloudHubClient cloudHubClient;
 
   @Parameterized.Parameters
   public static Iterable<? extends Object> data() {
@@ -82,13 +76,13 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
     verifier.setSystemProperty("cloudhub.deployer.validate.application.started", "true");
 
-    cloudhubClient = getCloudHubClient();
+    cloudHubClient = getCloudHubClient();
   }
 
   @Test
   public void testCloudHubDeploy() throws VerificationException, InterruptedException, TimeoutException, DeploymentException {
     String version = muleVersion.replace(SNAPSHOT_SUFFIX, "");
-    assumeTrue("Version not supported by CloudHub", cloudhubClient.getSupportedMuleVersions().contains(version));
+    assumeTrue("Version not supported by CloudHub", cloudHubClient.getSupportedMuleVersions().contains(version));
 
     log.info("Executing mule:deploy goal...");
     verifier.addCliOption("-DmuleDeploy");
@@ -102,10 +96,10 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
   @After
   public void tearDown() {
-    cloudhubClient.deleteApplication(APPLICATION_NAME);
+    cloudHubClient.deleteApplication(APPLICATION_NAME);
   }
 
-  private CloudhubClient getCloudHubClient() {
+  private CloudHubClient getCloudHubClient() {
     CloudHubDeployment cloudHubDeployment = new CloudHubDeployment();
     cloudHubDeployment.setUsername(username);
     cloudHubDeployment.setPassword(password);
@@ -114,10 +108,10 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     cloudHubDeployment.setEnvironment(PRODUCTION_ENVIRONMENT);
     cloudHubDeployment.setBusinessGroup("");
 
-    CloudhubClient cloudhubClient = new CloudhubClient(cloudHubDeployment, null);
-    cloudhubClient.init();
+    CloudHubClient cloudHubClient = new CloudHubClient(cloudHubDeployment, null);
+    cloudHubClient.init();
 
-    return cloudhubClient;
+    return cloudHubClient;
   }
 
   private String validateApplicationIsInStatus(String applicationName, String status)
@@ -153,7 +147,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
     @Override
     public Boolean run() {
-      Application application = cloudhubClient.getApplication(applicationName);
+      Application application = cloudHubClient.getApplication(applicationName);
       applicationStatus = application.status;
       if (application != null && expectedStatus.equals(application.status)) {
         return false;

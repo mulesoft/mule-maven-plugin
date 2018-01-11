@@ -14,6 +14,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 import org.mule.tools.client.exception.ClientException;
 
@@ -28,7 +29,7 @@ import org.junit.Test;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 
 @Ignore
-public class CloudhubClientTestCase {
+public class CloudHubClientTestCase {
 
   private static final String BASE_URI = "https://anypoint.mulesoft.com";
   private static final String USERNAME = System.getProperty("username");
@@ -41,9 +42,10 @@ public class CloudhubClientTestCase {
 
   private static final String APP_NAME = "test-app-12345";
   private static final File APP = new File("/tmp/echo-test4.zip");
-  private CloudhubClient cloudhubClient;
+  private CloudHubClient cloudHubClient;
   private Map<String, String> properties = new HashMap();
   private CloudHubDeployment cloudHubDeployment;
+  private ApplicationMetadata metadataMock = mock(ApplicationMetadata.class);
 
   @Before
   public void setup() {
@@ -53,15 +55,15 @@ public class CloudhubClientTestCase {
     cloudHubDeployment.setPassword(PASSWORD);
     cloudHubDeployment.setEnvironment(ENVIRONMENT);
     cloudHubDeployment.setBusinessGroup("");
-    cloudhubClient = new CloudhubClient(cloudHubDeployment, null);
-    cloudhubClient.init();
+    cloudHubClient = new CloudHubClient(cloudHubDeployment, null);
+    cloudHubClient.init();
   }
 
   @After
   public void removeTestApplication() {
-    Application application = cloudhubClient.getApplication(APP_NAME);
+    Application application = cloudHubClient.getApplication(APP_NAME);
     if (application != null) {
-      cloudhubClient.deleteApplication(application.domain);
+      cloudHubClient.deleteApplication(application.domain);
     }
   }
 
@@ -69,7 +71,7 @@ public class CloudhubClientTestCase {
   public void createApplicationValidParameters() {
     verifyAppDoesntExist(APP_NAME);
 
-    Application application = cloudhubClient.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE, properties);
+    Application application = cloudHubClient.createApplication(metadataMock);
     assertThat(application.domain, equalTo(APP_NAME));
 
     verifyAppExists(APP_NAME);
@@ -78,11 +80,11 @@ public class CloudhubClientTestCase {
   @Test
   public void createApplicationThatAlreadyExists() throws Exception {
     verifyAppDoesntExist(APP_NAME);
-    cloudhubClient.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE, properties);
+    cloudHubClient.createApplication(metadataMock);
     verifyAppExists(APP_NAME);
 
     try {
-      cloudhubClient.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE, properties);
+      cloudHubClient.createApplication(metadataMock);
       fail();
     } catch (ClientException e) {
       assertThat(e.getStatusCode(), equalTo(409));
@@ -94,36 +96,36 @@ public class CloudhubClientTestCase {
   @Test
   public void uploadFile() {
     verifyAppDoesntExist(APP_NAME);
-    cloudhubClient.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE, properties);
+    cloudHubClient.createApplication(metadataMock);
     verifyAppExists(APP_NAME);
-    cloudhubClient.uploadFile(APP_NAME, APP);
+    cloudHubClient.uploadFile(APP_NAME, APP);
   }
 
   @Ignore
   @Test
   public void startApplication() {
     verifyAppDoesntExist(APP_NAME);
-    cloudhubClient.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE, properties);
+    cloudHubClient.createApplication(metadataMock);
     verifyAppExists(APP_NAME);
-    cloudhubClient.uploadFile(APP_NAME, APP);
-    cloudhubClient.startApplication(APP_NAME);
+    cloudHubClient.uploadFile(APP_NAME, APP);
+    cloudHubClient.startApplication(APP_NAME);
   }
 
   @Ignore
   @Test
   public void deleteApplication() {
-    cloudhubClient.createApplication(APP_NAME, REGION, MULE_VERSION, WORKERS, WORKER_TYPE, properties);
+    cloudHubClient.createApplication(metadataMock);
     verifyAppExists(APP_NAME);
-    cloudhubClient.deleteApplication(APP_NAME);
+    cloudHubClient.deleteApplication(APP_NAME);
     verifyAppDoesntExist(APP_NAME);
   }
 
   private void verifyAppDoesntExist(String appName) {
-    assertThat(cloudhubClient.getApplication(appName), nullValue());
+    assertThat(cloudHubClient.getApplication(appName), nullValue());
   }
 
   private void verifyAppExists(String appName) {
-    assertThat(cloudhubClient.getApplication(appName), notNullValue());
+    assertThat(cloudHubClient.getApplication(appName), notNullValue());
   }
 
 }

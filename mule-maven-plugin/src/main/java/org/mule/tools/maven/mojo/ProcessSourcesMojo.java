@@ -50,11 +50,10 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
       try {
         ClassLoaderModel classLoaderModel = repositoryGenerator.generate();
 
-        mulePluginsCompatibilityValidator.validate(getResolver().resolveMulePlugins(
-                                                                                    () -> classLoaderModel.getDependencies()
-                                                                                        .stream()
-                                                                                        .map(Artifact::getArtifactCoordinates)
-                                                                                        .collect(Collectors.toList())));
+        mulePluginsCompatibilityValidator.validate(getResolver(() -> classLoaderModel.getDependencies()
+            .stream()
+            .map(Artifact::getArtifactCoordinates)
+            .collect(Collectors.toList())).resolve());
         if (!lightweightPackage) {
           ((MuleContentGenerator) getContentGenerator()).createApplicationClassLoaderModelJsonFile(classLoaderModel);
         }

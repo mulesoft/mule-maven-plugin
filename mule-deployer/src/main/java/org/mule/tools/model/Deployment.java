@@ -35,6 +35,15 @@ public abstract class Deployment {
   @Parameter
   protected String muleVersion;
 
+  /**
+   * The allowed elapsed time between the start of the deployment process and the confirmation that the artifact has been
+   * deployed. In the case of the deployment to standalone, it is defined as the elapsed time between the instant when the
+   * deployable is copied to the runtime and the creation of the respective anchor file.
+   *
+   */
+  @Parameter
+  protected Long deploymentTimeout;
+
   private String packaging;
 
   /**
@@ -91,6 +100,19 @@ public abstract class Deployment {
     this.packaging = packaging;
   }
 
+  /**
+   * DeploymentConfiguration timeout in milliseconds.
+   *
+   * @since 1.0
+   */
+  public Long getDeploymentTimeout() {
+    return deploymentTimeout;
+  }
+
+  public void setDeploymentTimeout(Long deploymentTimeout) {
+    this.deploymentTimeout = deploymentTimeout;
+  }
+
   public void setDefaultValues(MavenProject project) throws DeploymentException {
     setBasicDeploymentValues(project);
     setEnvironmentSpecificValues();
@@ -135,6 +157,14 @@ public abstract class Deployment {
     String packaging = project.getPackaging();
     if (isNotBlank(packaging)) {
       setPackaging(packaging);
+    }
+
+    String deploymentTimeout = getProperty("mule.deploymentConfiguration.timeout");
+    if (isNotBlank(deploymentTimeout)) {
+      setDeploymentTimeout(Long.valueOf(deploymentTimeout));
+    }
+    if (getDeploymentTimeout() == null) {
+      setDeploymentTimeout(60000L);
     }
   }
 }

@@ -14,7 +14,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,6 +40,8 @@ import org.mule.tools.client.arm.model.Servers;
 import org.mule.tools.client.arm.model.Target;
 import org.mule.tools.client.arm.model.Targets;
 import org.mule.tools.client.model.TargetType;
+import org.mule.tools.model.Deployment;
+import org.mule.tools.model.anypoint.AnypointDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.utils.DeployerLog;
 
@@ -57,9 +58,9 @@ public class ArmClient extends AbstractMuleClient {
 
   private boolean armInsecure;
 
-  public ArmClient(ArmDeployment armDeployment, DeployerLog log) {
-    super(armDeployment, log);
-    armInsecure = armDeployment.isArmInsecure().get();
+  public ArmClient(Deployment armDeployment, DeployerLog log) {
+    super((AnypointDeployment) armDeployment, log);
+    armInsecure = ((ArmDeployment) armDeployment).isArmInsecure().get();
     if (armInsecure) {
       log.warn("Using insecure mode for connecting to ARM, please consider configuring your truststore with ARM certificates. This option is insecure and not intended for production use.");
     }
@@ -85,27 +86,30 @@ public class ArmClient extends AbstractMuleClient {
     return response.readEntity(String.class);
   }
 
-  public String undeployApplication(String appName, TargetType targetType, String target) {
-    Integer applicationId = findApplication(appName, targetType, target);
+  public String undeployApplication(ApplicationMetadata applicationMetadata) {
+    Integer applicationId = findApplicationId(applicationMetadata);
     if (applicationId == null) {
-      String appNotFoundMessage = "Application %s does not exist on %s %s.";
-      throw new NotFoundException(String.format(appNotFoundMessage, appName, targetType.toString(), target));
+      throw new NotFoundException("The " + applicationMetadata.toString() + "does not exist.");
     }
     return undeployApplication(applicationId);
   }
 
-  public Application deployApplication(File app, String appName, TargetType targetType, String target) {
-    MultiPart body = buildRequestBody(app, appName, targetType, target);
+  public Application deployApplication(ApplicationMetadata applicationMetadata) {
+    MultiPart body = buildRequestBody(applicationMetadata);
     Response response = post(baseUri, APPLICATIONS, Entity.entity(body, body.getMediaType()));
     validateStatusSuccess(response);
     return response.readEntity(Application.class);
   }
 
-  public Application redeployApplication(int applicationId, File app, String appName, TargetType targetType, String target) {
-    MultiPart body = buildRequestBody(app, appName, targetType, target);
+  public Application redeployApplication(int applicationId, ApplicationMetadata applicationMetadata) {
+    MultiPart body = buildRequestBody(applicationMetadata);
     Response response = patch(baseUri, APPLICATIONS + "/" + applicationId, Entity.entity(body, body.getMediaType()));
     validateStatusSuccess(response);
     return response.readEntity(Application.class);
+  }
+
+  private MultiPart buildRequestBody(ApplicationMetadata metadata) {
+    return buildRequestBody(metadata.getFile(), metadata.getName(), metadata.getTargetType(), metadata.getTarget());
   }
 
   private MultiPart buildRequestBody(File app, String appName, TargetType targetType, String target) {
@@ -182,15 +186,15 @@ public class ArmClient extends AbstractMuleClient {
     throw new RuntimeException("Couldn't find target named [" + name + "]");
   }
 
-  public Integer findApplication(String name, TargetType targetType, String target) {
+  public Integer findApplicationId(ApplicationMetadata applicationMetadata) {
     Applications apps = getApplications();
     Data[] appArray = getApplications().data;
     if (appArray == null) {
       return null;
     }
-    String targetId = getId(targetType, target);
+    String targetId = getId(applicationMetadata.getTargetType(), applicationMetadata.getTarget());
     for (int i = 0; i < appArray.length; i++) {
-      if (name.equals(appArray[i].artifact.name) && targetId.equals(appArray[i].target.id)) {
+      if (applicationMetadata.getName().equals(appArray[i].artifact.name) && targetId.equals(appArray[i].target.id)) {
         return appArray[i].id;
       }
     }

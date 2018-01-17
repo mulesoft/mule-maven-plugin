@@ -16,7 +16,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
-import org.mule.tools.client.cloudhub.OperationRetrier.RetriableOperation;
+import org.mule.tools.client.OperationRetrier;
+import org.mule.tools.client.OperationRetrier.RetriableOperation;
 
 /**
  * @author Mulesoft Inc.

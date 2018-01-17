@@ -11,7 +11,7 @@ package org.mule.tools.validation.cloudhub;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mule.tools.client.cloudhub.CloudhubClient;
+import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.validation.AbstractDeploymentValidator;
@@ -50,7 +50,7 @@ public class CloudHubDeploymentValidatorTest {
 
     validatorSpy = spy(new CloudHubDeploymentValidator(cloudHubDeployment));
 
-    CloudhubClient clientSpy = spy(new CloudhubClient(cloudHubDeployment, LOG_MOCK));
+    CloudHubClient clientSpy = spy(new CloudHubClient(cloudHubDeployment, LOG_MOCK));
     doReturn(clientSpy).when(validatorSpy, "getCloudHubClient");
 
     doReturn(supportedVersions).when(clientSpy).getSupportedMuleVersions();

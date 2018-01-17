@@ -30,10 +30,6 @@ public abstract class MuleRuntimeDeployment extends Deployment {
   @Deprecated
   public abstract void setTimeout(int timeout);
 
-  public abstract Long getDeploymentTimeout();
-
-  public abstract void setDeploymentTimeout(Long deploymentTimeout);
-
   public abstract String[] getArguments();
 
   public abstract void setArguments(String[] arguments);
@@ -52,14 +48,6 @@ public abstract class MuleRuntimeDeployment extends Deployment {
     String timeout = getProperty("mule.timeout");
     if (isNotBlank(timeout)) {
       setTimeout(Integer.valueOf(timeout));
-    }
-
-    String deploymentTimeout = getProperty("mule.deploymentConfiguration.timeout");
-    if (isNotBlank(deploymentTimeout)) {
-      setDeploymentTimeout(Long.valueOf(deploymentTimeout));
-    }
-    if (getDeploymentTimeout() == null) {
-      setDeploymentTimeout(60000L);
     }
 
     String arguments = getProperty("mule.arguments");

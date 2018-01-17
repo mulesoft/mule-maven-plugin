@@ -7,10 +7,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.client.cloudhub;
+package org.mule.tools.client;
 
 import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.StringUtils;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * @author Mulesoft Inc.
@@ -29,6 +31,8 @@ public class OperationRetrier {
   }
 
   public void setSleepTime(Long sleepTime) {
+    checkArgument(sleepTime != null, "Sleep cannot be null");
+    checkArgument(sleepTime > 0, "Sleep time should be positive");
     this.sleepTime = sleepTime;
   }
 
@@ -37,7 +41,13 @@ public class OperationRetrier {
   }
 
   public void setAttempts(Integer attempts) {
+    checkArgument(attempts != null, "Attempts cannot be null");
+    checkArgument(attempts > 0, "Attempts should be positive");
     this.attempts = attempts;
+  }
+
+  public void setTimeout(Long timeout) {
+    setSleepTime(timeout == null ? getSleepTime() : (timeout / getAttempts()));
   }
 
   public interface RetriableOperation {
@@ -50,7 +60,7 @@ public class OperationRetrier {
     Boolean run();
 
     /**
-     * The message to be used in case of retry exahusted
+     * The message to be used in case of retry exhausted
      * 
      * @return a message
      */

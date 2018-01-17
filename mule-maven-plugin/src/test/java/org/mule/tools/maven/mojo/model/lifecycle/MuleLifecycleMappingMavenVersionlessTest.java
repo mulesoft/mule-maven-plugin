@@ -15,6 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.CLEAN;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.COMPILE;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.DEPLOY;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.GENERATE_SOURCES;
@@ -25,6 +26,7 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PACK
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_RESOURCES;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_SOURCES;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_TEST_RESOURCES;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.SITE;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST_COMPILE;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
@@ -50,8 +52,8 @@ public class MuleLifecycleMappingMavenVersionlessTest {
   public void getLifecyclePhases() {
 
     Set<MavenLifecyclePhase> expectedLifecyclePhases =
-        Sets.newHashSet(VALIDATE, INITIALIZE, GENERATE_SOURCES, PROCESS_SOURCES, PROCESS_RESOURCES, COMPILE,
-                        GENERATE_TEST_SOURCES, PROCESS_TEST_RESOURCES, TEST_COMPILE, TEST, PACKAGE, INSTALL, DEPLOY);
+        Sets.newHashSet(CLEAN, VALIDATE, INITIALIZE, GENERATE_SOURCES, PROCESS_SOURCES, PROCESS_RESOURCES, COMPILE,
+                        GENERATE_TEST_SOURCES, PROCESS_TEST_RESOURCES, TEST_COMPILE, TEST, PACKAGE, INSTALL, DEPLOY, SITE);
 
     LifecycleMappingMavenVersionless lifecycleMappingMavenVersionlessMock = mock(LifecycleMappingMavenVersionless.class);
     when(lifecycleMappingMavenVersionlessMock.buildGoals(any())).thenReturn("");

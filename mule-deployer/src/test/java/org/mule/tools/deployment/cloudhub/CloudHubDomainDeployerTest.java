@@ -13,9 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class CloudHubDomainDeployerTest {
 
@@ -32,19 +30,19 @@ public class CloudHubDomainDeployerTest {
   public void deployTest() throws DeploymentException {
     domainDeployer.deploy();
 
-    verify(artifactDeployerMock, times(1)).deployDomain();
-    verify(artifactDeployerMock, times(0)).undeployDomain();
-    verify(artifactDeployerMock, times(0)).deployApplication();
-    verify(artifactDeployerMock, times(0)).undeployApplication();
+    verify(artifactDeployerMock).deployDomain();
+    verify(artifactDeployerMock, never()).undeployDomain();
+    verify(artifactDeployerMock, never()).deployApplication();
+    verify(artifactDeployerMock, never()).undeployApplication();
   }
 
   @Test
   public void undeployTest() throws DeploymentException {
     domainDeployer.undeploy();
 
-    verify(artifactDeployerMock, times(1)).undeployDomain();
-    verify(artifactDeployerMock, times(0)).deployDomain();
-    verify(artifactDeployerMock, times(0)).deployApplication();
-    verify(artifactDeployerMock, times(0)).undeployApplication();
+    verify(artifactDeployerMock).undeployDomain();
+    verify(artifactDeployerMock, never()).deployDomain();
+    verify(artifactDeployerMock, never()).deployApplication();
+    verify(artifactDeployerMock, never()).undeployApplication();
   }
 }

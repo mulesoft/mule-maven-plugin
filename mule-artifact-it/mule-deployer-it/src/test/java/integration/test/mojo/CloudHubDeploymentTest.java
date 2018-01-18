@@ -44,6 +44,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
   private static final String APPLICATION = "empty-mule-deploy-cloudhub-project";
   private static final String APPLICATION_NAME = randomAlphabetic(APPLICATION_NAME_LENGTH).toLowerCase();
   private static final String SNAPSHOT_SUFFIX = "-SNAPSHOT";
+  private static final String DEPLOYMENT_TIMEOUT = "1000000";
 
   private Verifier verifier;
   private CloudHubClient cloudHubClient;
@@ -73,9 +74,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     verifier.setEnvironmentVariable("environment", PRODUCTION_ENVIRONMENT);
     verifier.setEnvironmentVariable("mule.version", muleVersion);
     verifier.setEnvironmentVariable("cloudhub.application.name", APPLICATION_NAME);
-
-    verifier.setSystemProperty("cloudhub.deployer.validate.application.started", "true");
-
+    verifier.setEnvironmentVariable("cloudhub.deployment.timeout", DEPLOYMENT_TIMEOUT);
     cloudHubClient = getCloudHubClient();
   }
 

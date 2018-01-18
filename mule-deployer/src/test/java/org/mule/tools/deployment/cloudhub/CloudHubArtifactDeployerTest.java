@@ -12,6 +12,7 @@ package org.mule.tools.deployment.cloudhub;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mule.tools.client.cloudhub.Application;
 import org.mule.tools.client.cloudhub.ApplicationMetadata;
@@ -30,7 +31,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.*;
-import static org.mule.tools.deployment.cloudhub.CloudHubArtifactDeployer.*;
 
 public class CloudHubArtifactDeployerTest {
 
@@ -46,6 +46,9 @@ public class CloudHubArtifactDeployerTest {
 
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
+
   private ApplicationMetadata metadataMock;
 
   @Before
@@ -76,16 +79,35 @@ public class CloudHubArtifactDeployerTest {
   }
 
   @Test
+  public void deployApplicationVerificationStartedFailTest() throws DeploymentException {
+    expectedException.expect(DeploymentException.class);
+    expectedException.expectMessage("Application " + FAKE_APPLICATION_NAME + " deployment has timeouted");
+    doNothing().when(cloudHubArtifactDeployerSpy).persistApplication();
+    doNothing().when(cloudHubArtifactDeployerSpy).uploadContents();
+    doNothing().when(cloudHubArtifactDeployerSpy).startApplication();
+    doThrow(new RuntimeException()).when(cloudHubArtifactDeployerSpy).isExpectedStatus(FAKE_APPLICATION_NAME, "STARTED");
+
+    cloudHubArtifactDeployerSpy.deployApplication();
+
+    verify(cloudHubArtifactDeployerSpy).persistApplication();
+    verify(cloudHubArtifactDeployerSpy).uploadContents();
+    verify(cloudHubArtifactDeployerSpy).startApplication();
+    verify(cloudHubArtifactDeployerSpy).undeployApplication();
+  }
+
+  @Test
   public void deployApplicationTest() throws DeploymentException {
     doNothing().when(cloudHubArtifactDeployerSpy).persistApplication();
     doNothing().when(cloudHubArtifactDeployerSpy).uploadContents();
     doNothing().when(cloudHubArtifactDeployerSpy).startApplication();
+    doNothing().when(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
 
     cloudHubArtifactDeployerSpy.deployApplication();
 
-    verify(cloudHubArtifactDeployerSpy, times(1)).persistApplication();
-    verify(cloudHubArtifactDeployerSpy, times(1)).uploadContents();
-    verify(cloudHubArtifactDeployerSpy, times(1)).startApplication();
+    verify(cloudHubArtifactDeployerSpy).persistApplication();
+    verify(cloudHubArtifactDeployerSpy).uploadContents();
+    verify(cloudHubArtifactDeployerSpy).startApplication();
+    verify(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
   }
 
   @Test
@@ -103,8 +125,8 @@ public class CloudHubArtifactDeployerTest {
 
     cloudHubArtifactDeployerSpy.persistApplication();
 
-    verify(cloudHubArtifactDeployerSpy, times(1)).createApplication(metadataMock);
-    verify(cloudHubArtifactDeployerSpy, times(0)).updateApplication(metadataMock);
+    verify(cloudHubArtifactDeployerSpy).createApplication(metadataMock);
+    verify(cloudHubArtifactDeployerSpy, never()).updateApplication(metadataMock);
   }
 
   @Test
@@ -115,15 +137,15 @@ public class CloudHubArtifactDeployerTest {
 
     cloudHubArtifactDeployerSpy.persistApplication();
 
-    verify(cloudHubArtifactDeployerSpy, times(1)).updateApplication(metadataMock);
-    verify(cloudHubArtifactDeployerSpy, times(0)).createApplication(metadataMock);
+    verify(cloudHubArtifactDeployerSpy).updateApplication(metadataMock);
+    verify(cloudHubArtifactDeployerSpy, never()).createApplication(metadataMock);
   }
 
   @Test
   public void uploadContentsTest() throws IOException {
     cloudHubArtifactDeployer.uploadContents();
 
-    verify(clientMock, times(1)).uploadFile(FAKE_APPLICATION_NAME, fileMock);
+    verify(clientMock).uploadFile(FAKE_APPLICATION_NAME, fileMock);
   }
 
   @Test
@@ -132,7 +154,7 @@ public class CloudHubArtifactDeployerTest {
 
     cloudHubArtifactDeployer.createApplication(metadataMock);
 
-    verify(clientMock, times(1)).createApplication(metadataMock);
+    verify(clientMock).createApplication(metadataMock);
   }
 
   @Test
@@ -142,8 +164,8 @@ public class CloudHubArtifactDeployerTest {
 
     cloudHubArtifactDeployerSpy.updateApplication(metadataMock);
 
-    verify(metadataMock, times(1)).updateValues(applicationMock);
-    verify(clientMock, times(1)).updateApplication(metadataMock);
+    verify(metadataMock).updateValues(applicationMock);
+    verify(clientMock).updateApplication(metadataMock);
   }
 
   @Test(expected = DeploymentException.class)
@@ -152,15 +174,15 @@ public class CloudHubArtifactDeployerTest {
 
     cloudHubArtifactDeployerSpy.updateApplication(metadataMock);
 
-    verify(metadataMock, times(0)).updateValues(any());
-    verify(clientMock, times(1)).updateApplication(metadataMock);
+    verify(metadataMock, never()).updateValues(any());
+    verify(clientMock).updateApplication(metadataMock);
   }
 
   @Test
   public void startApplicationTest() {
     cloudHubArtifactDeployer.startApplication();
 
-    verify(clientMock, times(1)).startApplication(FAKE_APPLICATION_NAME);
+    verify(clientMock).startApplication(FAKE_APPLICATION_NAME);
   }
 
   @Test
@@ -169,7 +191,7 @@ public class CloudHubArtifactDeployerTest {
 
     cloudHubArtifactDeployerSpy.checkApplicationHasStarted();
 
-    verify(cloudHubArtifactDeployerSpy, times(1)).validateApplicationIsInStatus(FAKE_APPLICATION_NAME, "STARTED");
+    verify(cloudHubArtifactDeployerSpy).validateApplicationIsInStatus(FAKE_APPLICATION_NAME, "STARTED");
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -241,68 +263,16 @@ public class CloudHubArtifactDeployerTest {
   }
 
   @Test
-  public void shouldValidateApplicationHasStartedTrueTest() {
-    System.setProperty(VALIDATE_APPLICATION_STARTED_SYSTEM_PROPERTY, "true");
-
-    assertThat("Method should have returned true", cloudHubArtifactDeployer.shouldValidateApplicationHasStarted(), equalTo(true));
-
-    System.clearProperty(VALIDATE_APPLICATION_STARTED_SYSTEM_PROPERTY);
-  }
-
-  @Test
-  public void shouldValidateApplicationHasStartedFalseTest() {
-    System.setProperty(VALIDATE_APPLICATION_STARTED_SYSTEM_PROPERTY, "false");
-
-    assertThat("Method should have returned false", cloudHubArtifactDeployer.shouldValidateApplicationHasStarted(),
-               equalTo(false));
-
-    System.clearProperty(VALIDATE_APPLICATION_STARTED_SYSTEM_PROPERTY);
-  }
-
-  @Test
-  public void getAttemptsSetTest() {
-    System.setProperty(VALIDATE_APPLICATION_STARTED_ATTEMPTS_SYSTEM_PROPERTY, "100");
-
-    assertThat("Method should have returned false", cloudHubArtifactDeployer.getAttempts(),
-               equalTo(100));
-
-    System.clearProperty(VALIDATE_APPLICATION_STARTED_ATTEMPTS_SYSTEM_PROPERTY);
-  }
-
-  @Test
-  public void getAttemptsNotSetTest() {
-    assertThat("Method should have returned false", cloudHubArtifactDeployer.getAttempts(),
-               equalTo(ATTEMPTS_DEFAULT_VALUE));
-  }
-
-
-  @Test
-  public void getSleepTimeSetTest() {
-    System.setProperty(VALIDATE_APPLICATION_STARTED_SLEEP_SYSTEM_PROPERTY, "100");
-
-    assertThat("Method did not return the expected value", cloudHubArtifactDeployer.getSleepTime(),
-               equalTo(100L));
-
-    System.clearProperty(VALIDATE_APPLICATION_STARTED_SLEEP_SYSTEM_PROPERTY);
-  }
-
-  @Test
-  public void getSleepTimeNotSetTest() {
-    assertThat("Method did not return the expected value", cloudHubArtifactDeployer.getSleepTime(),
-               equalTo(DEFAULT_SLEEP_TIME));
-  }
-
-  @Test
   public void getClientTest() {
-    verify(clientMock, times(0)).init();
+    verify(clientMock, never()).init();
 
     cloudHubArtifactDeployer.getClient();
 
-    verify(clientMock, times(1)).init();
+    verify(clientMock).init();
 
     cloudHubArtifactDeployer.getClient();
 
-    verify(clientMock, times(1)).init();
+    verify(clientMock).init();
   }
 
   public List<Application> getApplications() {

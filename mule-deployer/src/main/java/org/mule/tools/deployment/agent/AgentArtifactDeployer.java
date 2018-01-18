@@ -26,6 +26,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class AgentArtifactDeployer implements ArtifactDeployer {
 
+  private static final Long DEFAULT_AGENT_TIMEOUT = 60000L;
   private final AgentDeployment deployment;
   /**
    * An operation retrier that verifies the deployment success during a time span.
@@ -47,7 +48,7 @@ public class AgentArtifactDeployer implements ArtifactDeployer {
     this.deployment = (AgentDeployment) deployment;
     this.client = client;
     this.retrier = retrier;
-    this.retrier.setTimeout(deployment.getDeploymentTimeout());
+    this.retrier.setTimeout(deployment.getDeploymentTimeout().orElse(DEFAULT_AGENT_TIMEOUT));
 
   }
 

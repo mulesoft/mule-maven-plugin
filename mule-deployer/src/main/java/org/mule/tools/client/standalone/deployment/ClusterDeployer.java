@@ -32,6 +32,8 @@ public class ClusterDeployer {/* extends Deployer { */
 
   private static final double MAX_CLUSTER_SIZE = 8;
   private static final long DEFAULT_POLLING_DELAY = 1000;
+  private static final Long DEFAULT_CLUSTER_DEPLOYMENT_TIMEOUT = 60000L;
+
   private final DeployerLog log;
 
   private File[] paths;
@@ -47,7 +49,8 @@ public class ClusterDeployer {/* extends Deployer { */
 
   public String toString() {
     return String.format("StandaloneDeployer with [Controllers=%s, log=%s, application=%s, timeout=%d, pollingDelay=%d ]",
-                         mules, log, clusterDeployment.getArtifact(), clusterDeployment.getDeploymentTimeout(),
+                         mules, log, clusterDeployment.getArtifact(),
+                         clusterDeployment.getDeploymentTimeout().orElse(DEFAULT_CLUSTER_DEPLOYMENT_TIMEOUT),
                          DEFAULT_POLLING_DELAY);
   }
 
@@ -60,8 +63,9 @@ public class ClusterDeployer {/* extends Deployer { */
       log.debug("Checking for application [" + clusterDeployment.getArtifact() + "] to be deployed.");
       String app = getApplicationName(clusterDeployment.getArtifact());
       try {
-        new PollingProber(clusterDeployment.getDeploymentTimeout(), DEFAULT_POLLING_DELAY)
-            .check(probe.isDeployed(m, app));
+        new PollingProber(clusterDeployment.getDeploymentTimeout().orElse(DEFAULT_CLUSTER_DEPLOYMENT_TIMEOUT),
+                          DEFAULT_POLLING_DELAY)
+                              .check(probe.isDeployed(m, app));
       } catch (AssertionError e) {
         log.error("Couldn't deploy application [" + clusterDeployment.getArtifact() + "] after ["
             + clusterDeployment.getDeploymentTimeout()

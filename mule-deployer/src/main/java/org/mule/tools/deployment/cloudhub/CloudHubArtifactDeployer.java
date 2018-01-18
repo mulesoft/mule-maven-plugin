@@ -31,13 +31,7 @@ import static org.mule.tools.client.cloudhub.CloudHubClient.STARTED_STATUS;
  */
 public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
-  protected static final String VALIDATE_APPLICATION_STARTED_SYSTEM_PROPERTY = "cloudhub.deployer.validate.application.started";
-  protected static final String VALIDATE_APPLICATION_STARTED_SLEEP_SYSTEM_PROPERTY =
-      "cloudhub.deployer.validate.application.started.sleep";
-  protected static final String VALIDATE_APPLICATION_STARTED_ATTEMPTS_SYSTEM_PROPERTY =
-      "cloudhub.deployer.validate.application.started.attempts";
-  protected static final int ATTEMPTS_DEFAULT_VALUE = 20;
-  protected static final long DEFAULT_SLEEP_TIME = 60000L;
+  private static final Long DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT = 1200000L;
   private final CloudHubDeployment deployment;
   private final DeployerLog log;
   private CloudHubClient client;
@@ -74,6 +68,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     persistApplication();
     uploadContents();
     startApplication();
+    checkApplicationHasStarted();
   }
 
   /**
@@ -189,20 +184,27 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
   /**
    * Retries the validation. The operation is performed a defined number of attempts, and these attempts happen separated by a
-   * specified length of time.
+   * specified length of time. The total amount of time attempts x sleep time is the deployment timeout.
+   *
+   * If it timeouts, the deployment is stopped in CloudHub.
    * 
    * @param validationOperation The validation to be retried
    * @throws DeploymentException If the validation timeouts
    */
   private void retryValidation(OperationRetrier.RetriableOperation validationOperation) throws DeploymentException {
+    Long timeout = deployment.getDeploymentTimeout().orElse(DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT);
     try {
       OperationRetrier operationRetrier = new OperationRetrier();
-      operationRetrier.setAttempts(getAttempts());
-      operationRetrier.setSleepTime(getSleepTime());
+      operationRetrier.setTimeout(timeout);
       operationRetrier.retry(validationOperation);
     } catch (Exception e) {
-      throw new DeploymentException("Failed to deploy application " + getApplicationName()
-          + ". Fail to verify the application has started", e);
+      undeployApplication();
+      String message = "Application " + getApplicationName() + " deployment has timeouted.";
+      if (!deployment.getDeploymentTimeout().isPresent()) {
+        message += "The default deployment timeout is " + DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT + " ms. It is possible to " +
+            "set this property deploymentTimeout in the deployment configuration";
+      }
+      throw new DeploymentException(message, e);
     }
   }
 
@@ -213,36 +215,6 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
    */
   protected String getApplicationName() {
     return deployment.getApplicationName();
-  }
-
-  /**
-   * States if the application start status validation should be performed.
-   *
-   * @return The value set to the system property {@code VALIDATE_APPLICATION_STARTED_SYSTEM_PROPERTY}. In case the system
-   *         property was not set, it returns {@code false}.
-   */
-  protected Boolean shouldValidateApplicationHasStarted() {
-    return getBoolean(VALIDATE_APPLICATION_STARTED_SYSTEM_PROPERTY);
-  }
-
-  /**
-   * Retrieves the number of attempts to be performed when validating if the application has started.
-   * 
-   * @return The value set to the system property {@code VALIDATE_APPLICATION_STARTED_ATTEMPTS_SYSTEM_PROPERTY}. In case the
-   *         system property was not set, it returns 20.
-   */
-  public Integer getAttempts() {
-    return getInteger(VALIDATE_APPLICATION_STARTED_ATTEMPTS_SYSTEM_PROPERTY, ATTEMPTS_DEFAULT_VALUE);
-  }
-
-  /**
-   * Retrieves the sleep time (in milliseconds) between attempts when validating if the application has started.
-   *
-   * @return The value set to the system property {@code VALIDATE_APPLICATION_STARTED_SLEEP_SYSTEM_PROPERTY}. In case the system
-   *         property was not set, it returns 60000L.
-   */
-  public Long getSleepTime() {
-    return getLong(VALIDATE_APPLICATION_STARTED_SLEEP_SYSTEM_PROPERTY, DEFAULT_SLEEP_TIME);
   }
 
   public CloudHubClient getClient() {

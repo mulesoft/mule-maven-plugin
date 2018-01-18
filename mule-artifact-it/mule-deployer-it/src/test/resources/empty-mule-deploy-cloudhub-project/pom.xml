@@ -24,6 +24,7 @@
                         <applicationName>${cloudhub.application.name}</applicationName>
                         <environment>${environment}</environment>
                         <muleVersion>${mule.version}</muleVersion>
+                        <deploymentTimeout>${cloudhub.deployment.timeout}</deploymentTimeout>
                         <properties>
                             <key>value</key>
                         </properties>

@@ -105,8 +105,8 @@ public abstract class Deployment {
    *
    * @since 1.0
    */
-  public Long getDeploymentTimeout() {
-    return deploymentTimeout;
+  public Optional<Long> getDeploymentTimeout() {
+    return Optional.ofNullable(deploymentTimeout);
   }
 
   public void setDeploymentTimeout(Long deploymentTimeout) {
@@ -162,9 +162,6 @@ public abstract class Deployment {
     String deploymentTimeout = getProperty("mule.deploymentConfiguration.timeout");
     if (isNotBlank(deploymentTimeout)) {
       setDeploymentTimeout(Long.valueOf(deploymentTimeout));
-    }
-    if (getDeploymentTimeout() == null) {
-      setDeploymentTimeout(60000L);
     }
   }
 }

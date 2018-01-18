@@ -73,6 +73,8 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
                equalTo(MIN_MULE_VERSION));
     assertThat("Class loader model descriptor loader id defined in builder is not the expected",
                actualBuilder.getClassLoaderModelDescriptorLoader().getId(), equalTo(ID));
+    assertThat("Secure properties defined in builder are not the expected",
+               actualBuilder.build().getSecureProperties(), equalTo(muleArtifact.getSecureProperties()));
     assertThat("Bundle descriptor loader id defined in builder is not the expected",
                actualBuilder.getBundleDescriptorLoader().getId(), equalTo(MULE));
   }

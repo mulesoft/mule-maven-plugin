@@ -253,6 +253,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
     builder.withClassLoaderModelDescriptorLoader(muleArtifact.getClassLoaderModelLoaderDescriptor());
     builder.setMinMuleVersion(muleArtifact.getMinMuleVersion());
     builder.setRequiredProduct(muleArtifact.getRequiredProduct());
+    builder.setSecureProperties(muleArtifact.getSecureProperties());
     setBuilderWithDefaultBundleDescriptorLoaderValue(builder, muleArtifact);
     return builder;
   }

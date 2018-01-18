@@ -10,6 +10,7 @@
 
 package org.mule.tools.maven.mojo.model.lifecycle.mapping.project;
 
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.CLEAN;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.COMPILE;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.DEPLOY;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.GENERATE_SOURCES;
@@ -20,6 +21,7 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PACK
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_RESOURCES;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_SOURCES;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_TEST_RESOURCES;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.SITE;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST_COMPILE;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
@@ -40,10 +42,12 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
 
   private static final String ORG_APACHE_MAVEN_PLUGINS = "org.apache.maven.plugins";
   private static final String MAVEN_RESOURCES_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-resources-plugin:3.0.2";
+  private static final String MAVEN_CLEAN_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-clean-plugin:3.6.1";
   private static final String MAVEN_COMPILER_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-compiler-plugin:3.6.1";
   private static final String MAVEN_SUREFIRE_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-surefire-plugin:2.19.1";
   private static final String MAVEN_INSTALL_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-install-plugin:2.5.2";
   private static final String MAVEN_DEPLOY_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-deploy-plugin:2.8.2";
+  private static final String MAVEN_SITE_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-site-plugin:3.6.1";
 
   @Override
   public List<String> getOptionalMojos(String lifecycle) {
@@ -65,6 +69,7 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
   @Override
   public Map getLifecyclePhases(LifecycleMappingMavenVersionless mapping) {
     Map phases = new HashMap<>();
+    phases.put(CLEAN.id(), buildGoals(mapping, MAVEN_CLEAN_PLUGIN + ":clean", MULE_MAVEN_PLUGIN + ":clean"));
 
     phases.put(VALIDATE.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":validate"));
     phases.put(INITIALIZE.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":initialize"));
@@ -81,6 +86,8 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
     phases.put(TEST.id(), buildGoals(mapping, MAVEN_SUREFIRE_PLUGIN + ":test"));
     phases.put(PACKAGE.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":package"));
     phases.put(INSTALL.id(), buildGoals(mapping, MAVEN_INSTALL_PLUGIN + ":install"));
+
+    phases.put(SITE.id(), buildGoals(mapping, MAVEN_SITE_PLUGIN + ":site", MULE_MAVEN_PLUGIN + ":site"));
 
     String isMuleDeploy = System.getProperty("muleDeploy");
     if (isMuleDeploy != null && isMuleDeploy.equals("true")) {

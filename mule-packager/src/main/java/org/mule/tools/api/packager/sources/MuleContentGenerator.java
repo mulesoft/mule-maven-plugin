@@ -18,7 +18,6 @@ import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
-import static org.mule.tools.api.packager.structure.FolderNames.TARGET;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 
@@ -97,7 +96,7 @@ public class MuleContentGenerator extends ContentGenerator {
         .resolve(projectInformation.getArtifactId());
 
     List<Path> exclusions = new ArrayList<>();
-    exclusions.add(projectInformation.getProjectBaseFolder().resolve(TARGET.value()));
+    exclusions.add(projectInformation.getBuildDirectory());
 
     copyContent(originPath, destinationPath, Optional.of(exclusions), true, true, true, true);
   }

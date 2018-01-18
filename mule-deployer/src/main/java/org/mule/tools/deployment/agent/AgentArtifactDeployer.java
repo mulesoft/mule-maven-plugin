@@ -9,17 +9,13 @@
  */
 package org.mule.tools.deployment.agent;
 
-import org.apache.commons.lang3.StringUtils;
-import org.mule.tools.client.OperationRetrier;
 import org.mule.tools.client.agent.AgentClient;
-import org.mule.tools.client.agent.model.Application;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.deployment.artifact.ArtifactDeployer;
 import org.mule.tools.utils.DeployerLog;
-
-import java.util.concurrent.TimeoutException;
+import org.mule.tools.verification.agent.AgentDeploymentVerification;
 
 /**
  * Deploys mule artifacts to the Agent using the {@link AgentClient}.
@@ -27,29 +23,24 @@ import java.util.concurrent.TimeoutException;
 public class AgentArtifactDeployer implements ArtifactDeployer {
 
   private static final Long DEFAULT_AGENT_TIMEOUT = 60000L;
+
   private final AgentDeployment deployment;
-  /**
-   * An operation retrier that verifies the deployment success during a time span.
-   */
-  private OperationRetrier retrier;
 
   /**
    * The agent client. It should know how to call the agent API.
    */
   private final AgentClient client;
 
-  private static final String STARTED_STATUS = "STARTED";
-
   public AgentArtifactDeployer(Deployment deployment, DeployerLog log) {
-    this(deployment, new AgentClient(log, deployment), new OperationRetrier());
+    this(deployment, new AgentClient(log, deployment));
   }
 
-  protected AgentArtifactDeployer(Deployment deployment, AgentClient client, OperationRetrier retrier) {
+  protected AgentArtifactDeployer(Deployment deployment, AgentClient client) {
     this.deployment = (AgentDeployment) deployment;
+    if (!this.deployment.getDeploymentTimeout().isPresent()) {
+      this.deployment.setDeploymentTimeout(DEFAULT_AGENT_TIMEOUT);
+    }
     this.client = client;
-    this.retrier = retrier;
-    this.retrier.setTimeout(deployment.getDeploymentTimeout().orElse(DEFAULT_AGENT_TIMEOUT));
-
   }
 
   /**
@@ -80,11 +71,8 @@ public class AgentArtifactDeployer implements ArtifactDeployer {
   @Override
   public void deployApplication() throws DeploymentException {
     client.deployApplication(deployment.getApplicationName(), deployment.getArtifact());
-    try {
-      retrier.retry(() -> !isApplicationDeployed());
-    } catch (InterruptedException | TimeoutException e) {
-      throw new DeploymentException("Application deployment has timeouted", e);
-    }
+    AgentDeploymentVerification verification = getDeploymentVerification();
+    verification.assertDeployment(deployment);
   }
 
   /**
@@ -97,8 +85,8 @@ public class AgentArtifactDeployer implements ArtifactDeployer {
     client.undeployApplication(deployment.getApplicationName());
   }
 
-  public boolean isApplicationDeployed() {
-    Application application = client.getApplication(deployment.getApplicationName());
-    return application != null && StringUtils.equals(application.state, STARTED_STATUS);
+
+  public AgentDeploymentVerification getDeploymentVerification() {
+    return new AgentDeploymentVerification(client);
   }
 }

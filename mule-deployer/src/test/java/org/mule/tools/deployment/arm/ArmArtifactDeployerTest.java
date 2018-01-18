@@ -47,7 +47,7 @@ public class ArmArtifactDeployerTest {
   private ArmArtifactDeployer armArtifactDeployerSpy;
 
   @Before
-  public void setUp() {
+  public void setUp() throws DeploymentException {
     deploymentMock = mock(ArmDeployment.class);
     when(deploymentMock.getApplicationName()).thenReturn(FAKE_APPLICATION_NAME);
 
@@ -59,10 +59,10 @@ public class ArmArtifactDeployerTest {
     armArtifactDeployer = new ArmArtifactDeployer(deploymentMock, clientMock, logMock);
 
     armArtifactDeployerSpy = spy(armArtifactDeployer);
+    doNothing().when(armArtifactDeployerSpy).checkApplicationHasStarted();
 
     metadataMock = mock(ApplicationMetadata.class);
     doReturn(metadataMock).when(armArtifactDeployerSpy).getApplicationMetadata();
-
     doReturn(FAKE_APPLICATION_ID).when(armArtifactDeployerSpy).getApplicationId();
   }
 
@@ -82,27 +82,28 @@ public class ArmArtifactDeployerTest {
   public void deployApplicationTest() throws DeploymentException {
     armArtifactDeployerSpy.deployApplication();
 
-    verify(clientMock, times(1)).deployApplication(metadataMock);
-    verify(clientMock, times(0)).undeployApplication(metadataMock);
-    verify(clientMock, times(0)).redeployApplication(FAKE_APPLICATION_ID, metadataMock);
+    verify(clientMock).deployApplication(metadataMock);
+    verify(armArtifactDeployerSpy).checkApplicationHasStarted();
+    verify(clientMock, never()).undeployApplication(metadataMock);
+    verify(clientMock, never()).redeployApplication(FAKE_APPLICATION_ID, metadataMock);
   }
 
   @Test
   public void undeployApplicationTest() throws DeploymentException {
     armArtifactDeployerSpy.undeployApplication();
 
-    verify(clientMock, times(1)).undeployApplication(metadataMock);
-    verify(clientMock, times(0)).deployApplication(metadataMock);
-    verify(clientMock, times(0)).redeployApplication(FAKE_APPLICATION_ID, metadataMock);
+    verify(clientMock).undeployApplication(metadataMock);
+    verify(clientMock, never()).deployApplication(metadataMock);
+    verify(clientMock, never()).redeployApplication(FAKE_APPLICATION_ID, metadataMock);
   }
 
   @Test
   public void redeployApplicationTest() {
     armArtifactDeployerSpy.redeployApplication();
 
-    verify(clientMock, times(1)).redeployApplication(FAKE_APPLICATION_ID, metadataMock);
-    verify(clientMock, times(0)).deployApplication(metadataMock);
-    verify(clientMock, times(0)).undeployApplication(metadataMock);
+    verify(clientMock).redeployApplication(FAKE_APPLICATION_ID, metadataMock);
+    verify(clientMock, never()).deployApplication(metadataMock);
+    verify(clientMock, never()).undeployApplication(metadataMock);
   }
 
   @Test
@@ -117,15 +118,15 @@ public class ArmArtifactDeployerTest {
 
   @Test
   public void getClientTest() {
-    verify(clientMock, times(0)).init();
+    verify(clientMock, never()).init();
 
     armArtifactDeployer.getClient();
 
-    verify(clientMock, times(1)).init();
+    verify(clientMock).init();
 
     armArtifactDeployer.getClient();
 
-    verify(clientMock, times(1)).init();
+    verify(clientMock).init();
   }
 
 

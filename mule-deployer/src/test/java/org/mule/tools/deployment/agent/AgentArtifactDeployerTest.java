@@ -13,10 +13,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mule.tools.client.OperationRetrier;
 import org.mule.tools.client.agent.AgentClient;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.agent.AgentDeployment;
+import org.mule.tools.verification.agent.AgentDeploymentVerification;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,17 +32,21 @@ public class AgentArtifactDeployerTest {
   private static final String DOMAIN_NAME = "domain-name";
   private static final String APPLICATION_NAME = "app-name";
   private File applicationFile;
+  private AgentArtifactDeployer deployerSpy;
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
-  private OperationRetrier retrierMock;
+  private AgentDeploymentVerification deploymentVerificationMock;
 
   @Before
-  public void setUp() throws IOException {
+  public void setUp() throws IOException, DeploymentException {
     applicationFile = temporaryFolder.newFile();
     clientMock = mock(AgentClient.class);
     deploymentMock = mock(AgentDeployment.class);
-    retrierMock = mock(OperationRetrier.class);
-    deployer = new AgentArtifactDeployer(deploymentMock, clientMock, retrierMock);
+    deployer = new AgentArtifactDeployer(deploymentMock, clientMock);
+    deployerSpy = spy(deployer);
+    deploymentVerificationMock = mock(AgentDeploymentVerification.class);
+    doReturn(deploymentVerificationMock).when(deployerSpy).getDeploymentVerification();
+    doNothing().when(deploymentVerificationMock).assertDeployment(deploymentMock);
   }
 
   @Test
@@ -52,7 +56,7 @@ public class AgentArtifactDeployerTest {
 
     deployer.deployDomain();
 
-    verify(clientMock, times(1)).deployDomain(DOMAIN_NAME, applicationFile);
+    verify(clientMock).deployDomain(DOMAIN_NAME, applicationFile);
   }
 
   @Test
@@ -61,7 +65,7 @@ public class AgentArtifactDeployerTest {
 
     deployer.undeployDomain();
 
-    verify(clientMock, times(1)).undeployDomain(DOMAIN_NAME);
+    verify(clientMock).undeployDomain(DOMAIN_NAME);
   }
 
   @Test
@@ -69,9 +73,10 @@ public class AgentArtifactDeployerTest {
     when(deploymentMock.getApplicationName()).thenReturn(APPLICATION_NAME);
     when(deploymentMock.getArtifact()).thenReturn(applicationFile);
 
-    deployer.deployApplication();
+    deployerSpy.deployApplication();
 
-    verify(clientMock, times(1)).deployApplication(APPLICATION_NAME, applicationFile);
+    verify(clientMock).deployApplication(APPLICATION_NAME, applicationFile);
+    verify(deploymentVerificationMock).assertDeployment(deploymentMock);
   }
 
   @Test
@@ -80,6 +85,6 @@ public class AgentArtifactDeployerTest {
 
     deployer.undeployApplication();
 
-    verify(clientMock, times(1)).undeployApplication(APPLICATION_NAME);
+    verify(clientMock).undeployApplication(APPLICATION_NAME);
   }
 }

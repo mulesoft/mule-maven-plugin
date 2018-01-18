@@ -36,6 +36,7 @@ import static org.mule.tools.client.standalone.controller.probing.deployment.Dep
  */
 public class StandaloneArtifactDeployer implements ArtifactDeployer {
 
+  private static final Long DEFAULT_STANDALONE_DEPLOYMENT_TIMEOUT = 60000L;
   private final StandaloneDeployment deployment;
   private final DeployerLog log;
 
@@ -70,7 +71,8 @@ public class StandaloneArtifactDeployer implements ArtifactDeployer {
    * @return A {@link PollingProber} instance
    */
   private static Prober getProber(Deployment deployment) {
-    return new PollingProber(((StandaloneDeployment) deployment).getDeploymentTimeout(), DEFAULT_POLLING_DELAY);
+    return new PollingProber(((StandaloneDeployment) deployment).getDeploymentTimeout()
+        .orElse(DEFAULT_STANDALONE_DEPLOYMENT_TIMEOUT), DEFAULT_POLLING_DELAY);
   }
 
   /**

@@ -9,6 +9,7 @@
  */
 package org.mule.tools.deployment.cloudhub;
 
+import org.mule.tools.client.OperationRetrier;
 import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
@@ -43,9 +44,6 @@ public class CloudHubApplicationDeployer implements Deployer {
   public void deploy() throws DeploymentException {
     try {
       applicationDeployer.deployApplication();
-      if (applicationDeployer.shouldValidateApplicationHasStarted()) {
-        applicationDeployer.checkApplicationHasStarted();
-      }
     } catch (ClientException e) {
       throw new DeploymentException("Failed to deploy application " + applicationDeployer.getApplicationName(), e);
     }

@@ -10,9 +10,12 @@
 package org.mule.tools.client.agent;
 
 
+import static com.google.common.net.HttpHeaders.USER_AGENT;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.Response.Status.Family.SUCCESSFUL;
 import static javax.ws.rs.core.Response.Status.Family.familyOf;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.glassfish.jersey.client.HttpUrlConnectorProvider.SET_METHOD_WORKAROUND;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.LOGIN;
 
@@ -23,12 +26,16 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
+import com.sun.net.httpserver.Headers;
+import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.utils.DeployerLog;
 
 public abstract class AbstractClient {
+
+  private static final String USER_AGENT_MULE_DEPLOYER = "mule-deployer%s";
 
   protected DeployerLog log;
 
@@ -99,9 +106,17 @@ public abstract class AbstractClient {
 
   private Invocation.Builder builder(String uri, String path) {
     WebTarget target = getTarget(uri, path);
-    Invocation.Builder builder = target.request(APPLICATION_JSON_TYPE);
+    Invocation.Builder builder = target.request(APPLICATION_JSON_TYPE).header(USER_AGENT, getUserAgentMuleDeployer());
     configureRequest(builder);
     return builder;
+  }
+
+  protected String getUserAgentMuleDeployer() {
+    Package classPackage = AbstractClient.class.getPackage();
+    String implementationVersion = classPackage != null ? classPackage.getImplementationVersion() : EMPTY;
+
+    String version = isNotBlank(implementationVersion) ? "-[" + implementationVersion + "]" : EMPTY;
+    return String.format(USER_AGENT_MULE_DEPLOYER, version);
   }
 
   /**

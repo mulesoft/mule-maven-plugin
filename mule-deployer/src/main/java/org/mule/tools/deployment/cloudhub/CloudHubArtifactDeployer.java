@@ -10,7 +10,6 @@
 package org.mule.tools.deployment.cloudhub;
 
 import org.apache.commons.lang3.StringUtils;
-import org.mule.tools.client.OperationRetrier;
 import org.mule.tools.client.cloudhub.Application;
 import org.mule.tools.client.cloudhub.ApplicationMetadata;
 import org.mule.tools.client.cloudhub.CloudHubClient;
@@ -19,19 +18,18 @@ import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.deployment.artifact.ArtifactDeployer;
 import org.mule.tools.utils.DeployerLog;
+import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.lang.Boolean.getBoolean;
 import static java.lang.Integer.getInteger;
 import static java.lang.Long.getLong;
-import static org.mule.tools.client.cloudhub.CloudHubClient.STARTED_STATUS;
 
 /**
  * Deploys mule artifacts to CloudHub using the {@link CloudHubClient}.
  */
 public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
-  private static final Long DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT = 1200000L;
+  private static final Long DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT = 600000L;
   private final CloudHubDeployment deployment;
   private final DeployerLog log;
   private CloudHubClient client;
@@ -44,6 +42,9 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
   public CloudHubArtifactDeployer(Deployment deployment, CloudHubClient cloudHubClient, DeployerLog log) {
     this.deployment = (CloudHubDeployment) deployment;
+    if (!this.deployment.getDeploymentTimeout().isPresent()) {
+      this.deployment.setDeploymentTimeout(DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT);
+    }
     this.client = cloudHubClient;
     this.log = log;
   }
@@ -149,8 +150,9 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
    * @throws DeploymentException In case it timeouts while checking for the status
    */
   protected void checkApplicationHasStarted() throws DeploymentException {
-    log.info("Checking application: " + deployment.getApplicationName() + " has started");
-    validateApplicationIsInStatus(deployment.getApplicationName(), STARTED_STATUS);
+    log.info("Checking if application: " + deployment.getApplicationName() + " has started");
+    CloudHubDeploymentVerification verification = getDeploymentVerification();
+    verification.assertDeployment(deployment);
   }
 
   /**
@@ -167,45 +169,6 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       }
     }
     return null;
-  }
-
-  /**
-   * Validates the application status against a specified status.
-   * 
-   * @param applicationName
-   * @param status
-   * @throws DeploymentException
-   */
-  protected void validateApplicationIsInStatus(String applicationName, String status) throws DeploymentException {
-    log.info("Checking application " + applicationName + " for status " + status + "...");
-    OperationRetrier.RetriableOperation statusIsNotTheExpected = () -> !isExpectedStatus(applicationName, status);
-    retryValidation(statusIsNotTheExpected);
-  }
-
-  /**
-   * Retries the validation. The operation is performed a defined number of attempts, and these attempts happen separated by a
-   * specified length of time. The total amount of time attempts x sleep time is the deployment timeout.
-   *
-   * If it timeouts, the deployment is stopped in CloudHub.
-   * 
-   * @param validationOperation The validation to be retried
-   * @throws DeploymentException If the validation timeouts
-   */
-  private void retryValidation(OperationRetrier.RetriableOperation validationOperation) throws DeploymentException {
-    Long timeout = deployment.getDeploymentTimeout().orElse(DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT);
-    try {
-      OperationRetrier operationRetrier = new OperationRetrier();
-      operationRetrier.setTimeout(timeout);
-      operationRetrier.retry(validationOperation);
-    } catch (Exception e) {
-      undeployApplication();
-      String message = "Application " + getApplicationName() + " deployment has timeouted.";
-      if (!deployment.getDeploymentTimeout().isPresent()) {
-        message += "The default deployment timeout is " + DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT + " ms. It is possible to " +
-            "set this property deploymentTimeout in the deployment configuration";
-      }
-      throw new DeploymentException(message, e);
-    }
   }
 
   /**
@@ -249,15 +212,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     return application;
   }
 
-  /**
-   * Method to check if the status of the application is the expected.
-   * 
-   * @param applicationName The name of the application to be checked
-   * @param status The expected status
-   * @return true if the application can be found and its status is equals to {@param status}
-   */
-  protected boolean isExpectedStatus(String applicationName, CharSequence status) {
-    Application application = getClient().getApplication(applicationName);
-    return application != null && StringUtils.equals(status, application.status);
+  public CloudHubDeploymentVerification getDeploymentVerification() {
+    return new CloudHubDeploymentVerification(getClient());
   }
 }

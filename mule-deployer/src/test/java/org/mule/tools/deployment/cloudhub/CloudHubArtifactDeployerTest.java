@@ -20,6 +20,7 @@ import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
+import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,11 +82,12 @@ public class CloudHubArtifactDeployerTest {
   @Test
   public void deployApplicationVerificationStartedFailTest() throws DeploymentException {
     expectedException.expect(DeploymentException.class);
-    expectedException.expectMessage("Application " + FAKE_APPLICATION_NAME + " deployment has timeouted");
     doNothing().when(cloudHubArtifactDeployerSpy).persistApplication();
     doNothing().when(cloudHubArtifactDeployerSpy).uploadContents();
     doNothing().when(cloudHubArtifactDeployerSpy).startApplication();
-    doThrow(new RuntimeException()).when(cloudHubArtifactDeployerSpy).isExpectedStatus(FAKE_APPLICATION_NAME, "STARTED");
+    CloudHubDeploymentVerification verificationMock = mock(CloudHubDeploymentVerification.class);
+    doThrow(DeploymentException.class).when(verificationMock).assertDeployment(deploymentMock);
+    doReturn(verificationMock).when(cloudHubArtifactDeployerSpy).getDeploymentVerification();
 
     cloudHubArtifactDeployerSpy.deployApplication();
 
@@ -187,11 +189,12 @@ public class CloudHubArtifactDeployerTest {
 
   @Test
   public void checkApplicationHasStartedTest() throws DeploymentException {
-    doNothing().when(cloudHubArtifactDeployerSpy).validateApplicationIsInStatus(anyString(), anyString());
+    CloudHubDeploymentVerification verificationMock = mock(CloudHubDeploymentVerification.class);
+    doReturn(verificationMock).when(cloudHubArtifactDeployerSpy).getDeploymentVerification();
 
     cloudHubArtifactDeployerSpy.checkApplicationHasStarted();
 
-    verify(cloudHubArtifactDeployerSpy).validateApplicationIsInStatus(FAKE_APPLICATION_NAME, "STARTED");
+    verify(verificationMock).assertDeployment(deploymentMock);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -221,34 +224,6 @@ public class CloudHubArtifactDeployerTest {
 
     assertThat("The method should have returned null",
                cloudHubArtifactDeployer.findApplicationFromCurrentUser(FAKE_APPLICATION_NAME), equalTo(null));
-  }
-
-  @Test
-  public void isExpectedStatusApplicationDoesNotExistTest() {
-    doReturn(null).when(clientMock).getApplication(FAKE_APPLICATION_NAME);
-
-    assertThat("Method should have returned false",
-               cloudHubArtifactDeployer.isExpectedStatus(FAKE_APPLICATION_NAME, EXPECTED_STATUS), is(false));
-  }
-
-  @Test
-  public void isExpectedStatusApplicationOtherStatusTest() {
-    Application fakeApplication = new Application();
-    fakeApplication.status = "different " + EXPECTED_STATUS;
-    doReturn(fakeApplication).when(clientMock).getApplication(FAKE_APPLICATION_NAME);
-
-    assertThat("Method should have returned false",
-               cloudHubArtifactDeployer.isExpectedStatus(FAKE_APPLICATION_NAME, EXPECTED_STATUS), is(false));
-  }
-
-  @Test
-  public void isExpectedStatusApplicationTest() {
-    Application fakeApplication = new Application();
-    fakeApplication.status = EXPECTED_STATUS;
-    doReturn(fakeApplication).when(clientMock).getApplication(FAKE_APPLICATION_NAME);
-
-    assertThat("Method should have returned true",
-               cloudHubArtifactDeployer.isExpectedStatus(FAKE_APPLICATION_NAME, EXPECTED_STATUS), is(true));
   }
 
   @Test

@@ -52,7 +52,7 @@ public enum MavenLifecyclePhase {
 
   POST_INTEGRATION_TEST("post-integration-test"),
 
-  VERIFY("verify"), INSTALL("install"),
+  VERIFY("assertDeployment"), INSTALL("install"),
 
   DEPLOY("deploy"),
 

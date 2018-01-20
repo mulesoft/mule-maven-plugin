@@ -22,12 +22,14 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.model.Statement;
 import org.mule.tools.client.cloudhub.Application;
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.OperationRetrier;
@@ -48,6 +50,36 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
   private Verifier verifier;
   private CloudHubClient cloudHubClient;
+
+  @Rule
+  public final TestRule cloudHubWatcher = new TestWatcher() {
+
+    @Override
+    public Statement apply(Statement base, Description description) {
+      return super.apply(base, description);
+    }
+
+    @Override
+    protected void succeeded(Description description) {
+      cloudHubClient.deleteApplication(APPLICATION_NAME);
+    }
+
+    @Override
+    protected void failed(Throwable e, Description description) {}
+
+    @Override
+    protected void skipped(AssumptionViolatedException e, Description description) {}
+
+    @Override
+    protected void starting(Description description) {
+      super.starting(description);
+    }
+
+    @Override
+    protected void finished(Description description) {
+      super.finished(description);
+    }
+  };
 
   @Parameterized.Parameters
   public static Iterable<? extends Object> data() {
@@ -85,6 +117,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
     log.info("Executing mule:deploy goal...");
     verifier.addCliOption("-DmuleDeploy");
+
     verifier.executeGoal(DEPLOY_GOAL);
 
     String status = validateApplicationIsInStatus(APPLICATION_NAME, STARTED_STATUS);
@@ -93,10 +126,6 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     verifier.verifyErrorFreeLog();
   }
 
-  @After
-  public void tearDown() {
-    cloudHubClient.deleteApplication(APPLICATION_NAME);
-  }
 
   private CloudHubClient getCloudHubClient() {
     CloudHubDeployment cloudHubDeployment = new CloudHubDeployment();

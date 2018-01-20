@@ -33,7 +33,7 @@ import org.junit.Test;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.validation.project.AbstractProjectValidator;
 
-public class ValidaetMojoTest extends AbstractMuleMojoTest {
+public class ValidateMojoTest extends AbstractMuleMojoTest {
 
   private ValidateMojo mojoMock;
   private MavenExecutionRequest mavenExecutionRequestMock;
@@ -154,7 +154,7 @@ public class ValidaetMojoTest extends AbstractMuleMojoTest {
     when(dependencyMock.getClassifier()).thenReturn("mule-server-plugin");
 
     when(projectMock.getDependencies()).thenReturn(Arrays.asList(dependencyMock));
-    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION.toString());
+    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
 
     doCallRealMethod().when(mojoMock).buildArtifactCoordinates(any());
     doCallRealMethod().when(mojoMock).validateNotAllowedDependencies();

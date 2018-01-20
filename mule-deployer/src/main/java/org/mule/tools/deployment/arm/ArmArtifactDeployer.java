@@ -16,12 +16,18 @@ import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.deployment.artifact.ArtifactDeployer;
 import org.mule.tools.utils.DeployerLog;
+import org.mule.tools.verification.DeploymentVerification;
+import org.mule.tools.verification.arm.ArmDeploymentVerification;
+
+import static org.mule.tools.client.cloudhub.CloudHubClient.STARTED_STATUS;
 
 
 /**
  * Deploys mule artifacts to ARM, using the {@link ArmClient}.
  */
 public class ArmArtifactDeployer implements ArtifactDeployer {
+
+  private static final Long DEFAULT_ARM_DEPLOYMENT_TIMEOUT = 1200000L;
 
   private final ArmDeployment deployment;
   private final DeployerLog log;
@@ -35,6 +41,9 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
 
   protected ArmArtifactDeployer(Deployment deployment, ArmClient client, DeployerLog log) {
     this.deployment = (ArmDeployment) deployment;
+    if (!this.deployment.getDeploymentTimeout().isPresent()) {
+      this.deployment.setDeploymentTimeout(DEFAULT_ARM_DEPLOYMENT_TIMEOUT);
+    }
     this.client = client;
     this.log = log;
   }
@@ -76,7 +85,20 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
   @Override
   public void deployApplication() throws DeploymentException {
     getClient().deployApplication(getApplicationMetadata());
+    checkApplicationHasStarted();
   }
+
+  /**
+   * Checks if an application in ARM has the {@code STARTED_STATUS} status.
+   *
+   * @throws DeploymentException In case it timeouts while checking for the status
+   */
+  protected void checkApplicationHasStarted() throws DeploymentException {
+    log.info("Checking application: " + deployment.getApplicationName() + " has started");
+    DeploymentVerification verification = getDeploymentVerification();
+    verification.assertDeployment(deployment);
+  }
+
 
   /**
    * Undeploys the application specified in the {@link Deployment} to ARM through the {@link ArmClient}.
@@ -125,5 +147,9 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
       isClientInitialized = true;
     }
     return client;
+  }
+
+  public DeploymentVerification getDeploymentVerification() {
+    return new ArmDeploymentVerification(getClient(), getApplicationId());
   }
 }

@@ -72,11 +72,11 @@ public class ArmClient extends AbstractMuleClient {
   }
 
   public Boolean isStarted(int applicationId) {
-    Application application = getApplicationStatus(applicationId);
+    Application application = getApplication(applicationId);
     return "STARTED".equals(application.data.lastReportedStatus);
   }
 
-  public Application getApplicationStatus(int applicationId) {
+  public Application getApplication(int applicationId) {
     return get(baseUri, APPLICATIONS + "/" + applicationId, Application.class);
   }
 

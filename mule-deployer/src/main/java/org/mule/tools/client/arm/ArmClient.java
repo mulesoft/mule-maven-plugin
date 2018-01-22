@@ -9,6 +9,8 @@
  */
 package org.mule.tools.client.arm;
 
+import org.apache.maven.settings.Proxy;
+import org.glassfish.jersey.client.ClientProperties;
 import org.mule.tools.client.AbstractMuleClient;
 import org.mule.tools.client.arm.model.*;
 import org.mule.tools.client.model.TargetType;
@@ -41,14 +43,16 @@ public class ArmClient extends AbstractMuleClient {
   private static final String SERVERS = "/hybrid/api/v1/servers";
   private static final String SERVER_GROUPS = "/hybrid/api/v1/serverGroups";
   private static final String CLUSTERS = "/hybrid/api/v1/clusters";
+  private final Proxy proxy;
   private boolean armInsecure;
 
-  public ArmClient(ArmDeployment armDeployment, DeployerLog log) {
+  public ArmClient(ArmDeployment armDeployment, Proxy activeProxy, DeployerLog log) {
     super(armDeployment, log);
     armInsecure = armDeployment.isArmInsecure().get();
     if (armInsecure) {
       log.warn("Using insecure mode for connecting to ARM, please consider configuring your truststore with ARM certificates. This option is insecure and not intended for production use.");
     }
+    this.proxy = activeProxy;
   }
 
   public Boolean isStarted(int applicationId) {
@@ -170,6 +174,10 @@ public class ArmClient extends AbstractMuleClient {
         throw new RuntimeException(e);
       }
 
+    }
+    if (proxy != null) {
+      log.debug("Setting proxy: " + proxy.getHost() + ":" + proxy.getPort());
+      builder.property(ClientProperties.PROXY_URI, proxy.getHost() + ":" + proxy.getPort());
     }
   }
 

@@ -41,7 +41,7 @@ public class ArmClientTestCase {
     armDeployment.setEnvironment(ENVIRONMENT);
     armDeployment.setBusinessGroup("");
     armDeployment.setArmInsecure(false);
-    armClient = new ArmClient(armDeployment, null);
+    armClient = new ArmClient(armDeployment, null, null);
     armClient.init();
   }
 

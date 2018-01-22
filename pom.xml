@@ -51,7 +51,7 @@
         <java.source>1.7</java.source>
         <java.target>1.7</java.target>
 
-        <javaFormatter.plugin.version>1.8.0</javaFormatter.plugin.version>
+        <javaFormatter.plugin.version>1.7.0</javaFormatter.plugin.version>
         <license.plugin.version>2.6</license.plugin.version>
         <junit.version>4.11</junit.version>
         <mockito.version>1.8.5</mockito.version>

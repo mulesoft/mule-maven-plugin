@@ -48,8 +48,8 @@
         <environment>Production</environment>
         <target>server-name</target>
 
-        <java.source>1.8</java.source>
-        <java.target>1.8</java.target>
+        <java.source>1.7</java.source>
+        <java.target>1.7</java.target>
 
         <javaFormatter.plugin.version>1.8.0</javaFormatter.plugin.version>
         <license.plugin.version>2.6</license.plugin.version>

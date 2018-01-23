@@ -98,6 +98,8 @@
         <powermock.version>1.7.0</powermock.version>
         <semver4j.version>2.2.0</semver4j.version>
 
+        <!-- Mule Deployer IT -->
+        <maven.verifier.version>1.6</maven.verifier.version>
     </properties>
 
     <dependencyManagement>
@@ -267,6 +269,15 @@
                 <groupId>com.vdurmont</groupId>
                 <artifactId>semver4j</artifactId>
                 <version>${semver4j.version}</version>
+            </dependency>
+
+            <!-- Mule Deployer IT -->
+
+            <dependency>
+                <groupId>org.apache.maven.shared</groupId>
+                <artifactId>maven-verifier</artifactId>
+                <version>${maven.verifier.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -1,0 +1,20 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+	http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<groupId>org.mule.tools.maven</groupId>
+		<artifactId>mule-artifact-tools</artifactId>
+		<version>2.3.0-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	
+	<artifactId>mule-packager</artifactId>
+
+	<name>Mule Packager</name>
+
+	<properties>
+		<licensePath>../LICENSE_HEADER.txt</licensePath>
+		<formatterConfigPath>../formatter.xml</formatterConfigPath>
+	</properties>
+</project>

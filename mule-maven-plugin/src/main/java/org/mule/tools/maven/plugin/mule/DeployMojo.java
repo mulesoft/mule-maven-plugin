@@ -30,20 +30,17 @@ import org.mule.tools.maven.plugin.mule.cloudhub.CloudhubDeployer;
 import org.mule.util.FilenameUtils;
 
 /**
- * Maven plugin to deploy Mule applications to different kind of servers: Standalone (both Community and Enterprise), Clustered, Anypoint Runtime Manager and CloudHub.
- * Main uses are running integration tests and deploying applications.
- * Some of the features are:
- * Download Mule Standalone from a Maven Repository and install it locally.
- * Deploy a Mule application to a server.
- * Undeploy a Mule appliction.
- * Assemble a Mule cluster and deploy applications.
+ * Maven plugin to deploy Mule applications to different kind of servers: Standalone (both Community and Enterprise), Clustered,
+ * Anypoint Runtime Manager and CloudHub. Main uses are running integration tests and deploying applications. Some of the features
+ * are: Download Mule Standalone from a Maven Repository and install it locally. Deploy a Mule application to a server. Undeploy a
+ * Mule appliction. Assemble a Mule cluster and deploy applications.
  *
  * @author <a href="mailto:asequeira@gmail.com">Ale Sequeira</a>
  * @see UndeployMojo
  * @see org.mule.test.infrastructure.process.MuleProcessController
  * @since 1.0
  */
-@Mojo(name = "deploy", requiresProject = true)
+// @Mojo(name = "deploy", requiresProject = true)
 public class DeployMojo extends AbstractMuleMojo {
 
   private static final long DEFAULT_POLLING_DELAY = 1000;
@@ -62,12 +59,10 @@ public class DeployMojo extends AbstractMuleMojo {
   protected boolean community;
 
   /**
-   * Maven coordinates for the Mule Runtime distribution to download.
-   * You need to specify:
+   * Maven coordinates for the Mule Runtime distribution to download. You need to specify:
    * <li>groupId</li>
    * <li>artifactId</li>
-   * <li>version</li>
-   * This parameter and <code>muleVersion</code> are mutual exclusive
+   * <li>version</li> This parameter and <code>muleVersion</code> are mutual exclusive
    *
    * @since 1.0
    * @deprecated Use the official maven artifact descriptor, if you need to use Community distribution @see community property
@@ -84,12 +79,12 @@ public class DeployMojo extends AbstractMuleMojo {
   protected Long deploymentTimeout;
 
   /**
-   * List of Mule Runtime Standalone command line arguments.
-   * Adding a property to this list is the same that adding it to the command line when starting Mule using bin/mule.
-   * If you want to add a Mule property don't forget to prepend <code>-M-D</code>.
+   * List of Mule Runtime Standalone command line arguments. Adding a property to this list is the same that adding it to the
+   * command line when starting Mule using bin/mule. If you want to add a Mule property don't forget to prepend <code>-M-D</code>.
    * If you want to add a System property for the Wrapper don't forget to prepend <code>-D</code>.
    * <p>
-   * Example: <code>&lt;arguments&gt;&lt;argument&gt;-M-Djdbc.url=jdbc:oracle:thin:@myhost:1521:orcl&lt;/argument&gt;&lt;/arguments&gt;</code>
+   * Example:
+   * <code>&lt;arguments&gt;&lt;argument&gt;-M-Djdbc.url=jdbc:oracle:thin:@myhost:1521:orcl&lt;/argument&gt;&lt;/arguments&gt;</code>
    *
    * @since 1.0
    */
@@ -130,6 +125,7 @@ public class DeployMojo extends AbstractMuleMojo {
 
   /**
    * CloudHub properties.
+   * 
    * @since 2.0
    *
    */

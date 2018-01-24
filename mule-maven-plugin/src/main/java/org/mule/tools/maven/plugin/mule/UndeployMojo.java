@@ -20,13 +20,14 @@ import org.apache.maven.plugins.annotations.Mojo;
 import javax.ws.rs.NotFoundException;
 
 /**
- * Undeploys all the applications on a Mule Runtime Standalone server, regardless of whether it was started using start or deploy goals.
+ * Undeploys all the applications on a Mule Runtime Standalone server, regardless of whether it was started using start or deploy
+ * goals.
  *
  * @author <a href="mailto:asequeira@gmail.com">Ale Sequeira</a>
  * @see DeployMojo
  * @since 1.0
  */
-@Mojo(name = "undeploy", requiresProject = true)
+// @Mojo(name = "undeploy", requiresProject = true)
 public class UndeployMojo extends AbstractMuleMojo {
 
   /**

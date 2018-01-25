@@ -103,7 +103,7 @@ public class StandaloneArtifactDeployer implements ArtifactDeployer {
   }
 
   /**
-   * Renames the file to be deployed have the same name that the application appended by ".jar".
+   * Renames the file to be deployed have the same name that the application appended by ".zip".
    * 
    * @throws DeploymentException If it fails to rename the application due to an {@link IOException}
    */
@@ -111,7 +111,7 @@ public class StandaloneArtifactDeployer implements ArtifactDeployer {
     if (!FilenameUtils.getBaseName(deployment.getArtifact().getName()).equals(deployment.getApplicationName())) {
       try {
         File destApplication =
-            new File(deployment.getArtifact().getParentFile(), deployment.getApplicationName() + ".jar");
+            new File(deployment.getArtifact().getParentFile(), deployment.getApplicationName() + ".zip");
         FileUtils.copyFile(deployment.getArtifact(), destApplication);
         deployment.setArtifact(destApplication);
       } catch (IOException e) {

@@ -29,7 +29,7 @@ import org.mule.tools.utils.DeployerLog;
 public abstract class AbstractDeployerFactory {
 
   public static final String MULE_DOMAIN_CLASSIFIER = "mule-domain";
-  public static final String MULE_APPLICATION_CLASSIFIER = "mule-application";
+  public static final String MULE_CLASSIFIER = "mule";
   public static final AgentDeployerFactory AGENT_DEPLOYER_FACTORY = new AgentDeployerFactory();
   public static final ArmDeployerFactory ARM_DEPLOYER_FACTORY = new ArmDeployerFactory();
   public static final CloudHubDeployerFactory CLOUDHUB_DEPLOYER_FACTORY = new CloudHubDeployerFactory();
@@ -84,7 +84,7 @@ public abstract class AbstractDeployerFactory {
       switch (deployment.getPackaging()) {
         case MULE_DOMAIN_CLASSIFIER:
           return new ArmDomainDeployer(deployment, log);
-        case MULE_APPLICATION_CLASSIFIER:
+        case MULE_CLASSIFIER:
           return new ArmApplicationDeployer(deployment, log);
         default:
           throw new RuntimeException("Deployment not supported: " + deployment.getClass().getSimpleName());
@@ -102,7 +102,7 @@ public abstract class AbstractDeployerFactory {
       switch (deployment.getPackaging()) {
         case MULE_DOMAIN_CLASSIFIER:
           return new AgentDomainDeployer(deployment, log);
-        case MULE_APPLICATION_CLASSIFIER:
+        case MULE_CLASSIFIER:
           return new AgentApplicationDeployer(deployment, log);
         default:
           throw new RuntimeException("Deployment not supported: " + deployment.getClass().getSimpleName());
@@ -120,7 +120,7 @@ public abstract class AbstractDeployerFactory {
       switch (deployment.getPackaging()) {
         case MULE_DOMAIN_CLASSIFIER:
           return new StandaloneDomainDeployer(deployment, log);
-        case MULE_APPLICATION_CLASSIFIER:
+        case MULE_CLASSIFIER:
           return new StandaloneApplicationDeployer(deployment, log);
         default:
           throw new RuntimeException("Deployment not supported: " + deployment.getClass().getSimpleName());
@@ -138,7 +138,7 @@ public abstract class AbstractDeployerFactory {
       switch (deployment.getPackaging()) {
         case MULE_DOMAIN_CLASSIFIER:
           return new CloudHubDomainDeployer(deployment, log);
-        case MULE_APPLICATION_CLASSIFIER:
+        case MULE_CLASSIFIER:
           return new CloudHubApplicationDeployer(deployment, log);
         default:
           throw new RuntimeException("Deployment not supported: " + deployment.getClass().getSimpleName());

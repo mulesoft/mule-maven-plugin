@@ -75,14 +75,14 @@ public class AbstractDeployerFactoryTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
       return Arrays.asList(new Object[][] {
-          {getAgentDeployment(), AGENT_DEPLOYER_FACTORY, MULE_APPLICATION_CLASSIFIER, AgentApplicationDeployer.class},
+          {getAgentDeployment(), AGENT_DEPLOYER_FACTORY, MULE_CLASSIFIER, AgentApplicationDeployer.class},
           {getAgentDeployment(), AGENT_DEPLOYER_FACTORY, MULE_DOMAIN_CLASSIFIER, AgentDomainDeployer.class},
-          {getArmDeployment(), ARM_DEPLOYER_FACTORY, MULE_APPLICATION_CLASSIFIER, ArmApplicationDeployer.class},
+          {getArmDeployment(), ARM_DEPLOYER_FACTORY, MULE_CLASSIFIER, ArmApplicationDeployer.class},
           {getArmDeployment(), ARM_DEPLOYER_FACTORY, MULE_DOMAIN_CLASSIFIER, ArmDomainDeployer.class},
-          {getCloudHubDeployment(), CLOUDHUB_DEPLOYER_FACTORY, MULE_APPLICATION_CLASSIFIER,
+          {getCloudHubDeployment(), CLOUDHUB_DEPLOYER_FACTORY, MULE_CLASSIFIER,
               CloudHubApplicationDeployer.class},
           {getCloudHubDeployment(), CLOUDHUB_DEPLOYER_FACTORY, MULE_DOMAIN_CLASSIFIER, CloudHubDomainDeployer.class},
-          {getStandaloneDeployment(), STANDALONE_DEPLOYER_FACTORY, MULE_APPLICATION_CLASSIFIER,
+          {getStandaloneDeployment(), STANDALONE_DEPLOYER_FACTORY, MULE_CLASSIFIER,
               StandaloneApplicationDeployer.class},
           {getStandaloneDeployment(), STANDALONE_DEPLOYER_FACTORY, MULE_DOMAIN_CLASSIFIER, StandaloneDomainDeployer.class}
 

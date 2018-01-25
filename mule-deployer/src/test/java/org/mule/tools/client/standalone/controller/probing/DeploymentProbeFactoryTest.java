@@ -27,14 +27,14 @@ import static org.hamcrest.core.Is.is;
 @RunWith(Parameterized.class)
 public class DeploymentProbeFactoryTest {
 
-  public static final String MULE_APPLICATION = "mule-application";
+  public static final String MULE = "mule";
   public static final String MULE_DOMAIN = "mule-domain";
-  Set<String> supportedPackaging = newHashSet(MULE_APPLICATION, MULE_DOMAIN);
+  Set<String> supportedPackaging = newHashSet(MULE, MULE_DOMAIN);
 
   @Parameterized.Parameters
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][] {
-        {MULE_APPLICATION, ApplicationDeploymentProbe.class}, {MULE_DOMAIN, DomainDeploymentProbe.class},
+        {MULE, ApplicationDeploymentProbe.class}, {MULE_DOMAIN, DomainDeploymentProbe.class},
         {"unsupported-packaging", DeploymentProbe.class}
     });
   }

@@ -23,6 +23,8 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.DEPL
 
 public class DomainBundleLifecycleMapping implements LifecycleMapping, ProjectLifecycleMapping {
 
+  private static final String MULE_DEPLOY = "muleDeploy";
+
   @Override
   public List<String> getOptionalMojos(String lifecycle) {
     return null;
@@ -50,7 +52,8 @@ public class DomainBundleLifecycleMapping implements LifecycleMapping, ProjectLi
     phases.put(GENERATE_SOURCES.id(), mapping.buildGoals("org.mule.tools.maven:mule-maven-plugin:generate-sources"));
     phases.put(PACKAGE.id(), mapping.buildGoals("org.mule.tools.maven:mule-maven-plugin:package"));
     phases.put(INSTALL.id(), mapping.buildGoals("org.apache.maven.plugins:maven-install-plugin:2.5.2:install"));
-    String isMuleDeploy = System.getProperty("muleDeploy");
+
+    String isMuleDeploy = System.getProperty(MULE_DEPLOY);
     if (isMuleDeploy != null && isMuleDeploy.equals("true")) {
       phases.put(DEPLOY.id(), mapping.buildGoals("org.mule.tools.maven:mule-maven-plugin:deploy"));
     } else {

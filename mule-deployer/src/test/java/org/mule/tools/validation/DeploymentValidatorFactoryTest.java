@@ -12,7 +12,7 @@ package org.mule.tools.validation;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;

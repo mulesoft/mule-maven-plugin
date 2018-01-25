@@ -10,10 +10,10 @@
 package org.mule.tools.deployment.cloudhub;
 
 import org.apache.commons.lang3.StringUtils;
-import org.mule.tools.client.cloudhub.Application;
-import org.mule.tools.client.cloudhub.ApplicationMetadata;
+import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.CloudHubClient;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.cloudhub.model.MuleVersion;
+import org.mule.tools.client.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.deployment.artifact.ArtifactDeployer;
@@ -33,7 +33,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   private final CloudHubDeployment deployment;
   private final DeployerLog log;
   private CloudHubClient client;
-  private ApplicationMetadata application;
+  private ApplicationMetadata application; // TODO applicationMetadata
   private boolean isClientInitialized = false;
 
   public CloudHubArtifactDeployer(Deployment deployment, DeployerLog log) {
@@ -67,7 +67,8 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   @Override
   public void deployApplication() throws DeploymentException {
     persistApplication();
-    uploadContents();
+    // uploadContents();
+
     startApplication();
     checkApplicationHasStarted();
   }
@@ -84,26 +85,18 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   }
 
   /**
-   * Creates the application in CloudHub if the domain is available. Otherwise, it tries to update the existent application.
+   * Creates the application in CloudHub if the domain name is available. Otherwise, it tries to update the existent application.
    *
    * @throws DeploymentException If the application is not available and cannot be updated
-   */
+   */ // TODO change name
   protected void persistApplication() throws DeploymentException {
     ApplicationMetadata applicationMetadata = getMetadata();
-    boolean domainAvailable = getClient().isNameAvailable(deployment.getApplicationName());
+    boolean domainAvailable = getClient().isDomainAvailable(deployment.getApplicationName()); // TODO domain name
     if (domainAvailable) {
       createApplication(applicationMetadata);
     } else {
       updateApplication(applicationMetadata);
     }
-  }
-
-  /**
-   * Uploads the jar contents to CloudHub.
-   */
-  protected void uploadContents() {
-    log.info("Uploading application contents " + deployment.getApplicationName());
-    getClient().uploadFile(deployment.getApplicationName(), deployment.getArtifact());
   }
 
   /**
@@ -113,7 +106,19 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
    */
   protected void createApplication(ApplicationMetadata applicationMetadata) {
     log.info("Creating application: " + deployment.getApplicationName());
-    getClient().createApplication(applicationMetadata);
+
+    // TODO this conversion should be in another place
+    MuleVersion muleVersion = new MuleVersion();
+    muleVersion.setVersion(applicationMetadata.getMuleVersion().get());
+
+    Application application = new Application();
+    application.setDomain(applicationMetadata.getName());
+    application.setMuleVersion(muleVersion);
+    application.setProperties(applicationMetadata.getProperties());
+    application.setRegion(applicationMetadata.getRegion());
+
+
+    getClient().createApplication(application, deployment.getArtifact());
   }
 
   /**
@@ -128,7 +133,20 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     if (currentApplication != null) {
       log.info("Application: " + deployment.getApplicationName() + " already exists, redeploying");
       applicationMetadata.updateValues(currentApplication);
-      getClient().updateApplication(applicationMetadata);
+
+      // TODO we should update stuff based on original stuff
+      MuleVersion muleVersion = new MuleVersion();
+      muleVersion.setVersion(applicationMetadata.getMuleVersion().get());
+
+      Application application = new Application();
+      application.setDomain(applicationMetadata.getName());
+      application.setMuleVersion(muleVersion);
+      application.setProperties(applicationMetadata.getProperties());
+      application.setRegion(applicationMetadata.getRegion());
+
+
+
+      getClient().updateApplication(application, deployment.getArtifact());
     } else {
       log.error("Application name: " + deployment.getApplicationName() + " is not available. Aborting.");
       throw new DeploymentException("Domain " + deployment.getApplicationName() + " is not available. Aborting.");
@@ -163,9 +181,9 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
    */
   protected Application findApplicationFromCurrentUser(String appName) {
     checkArgument(StringUtils.isNotBlank(appName), "Application name should not be blank nor null");
-    for (Application app : getClient().getApplications()) {
-      if (appName.equalsIgnoreCase(app.domain)) {
-        return app;
+    for (Application application : getClient().getApplications()) { // TODO why don't we just hit /applicaiton/id
+      if (appName.equalsIgnoreCase(application.getDomain())) {
+        return application;
       }
     }
     return null;

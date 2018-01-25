@@ -12,7 +12,7 @@ package org.mule.tools.deployment.cloudhub;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.tools.client.OperationRetrier;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 
 import static org.mockito.Mockito.*;

@@ -16,6 +16,8 @@ import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.Matchers.instanceOf;
 
+import org.mule.tools.client.exception.DeploymentException;
+
 public class DeploymentExceptionTest {
 
   private static final String EXCEPTION_MESSAGE = "Could not deploy";

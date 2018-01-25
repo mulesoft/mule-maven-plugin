@@ -12,9 +12,8 @@ package org.mule.tools.model.anypoint;
 
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.client.model.TargetType;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.exception.DeploymentException;
 
-import java.io.File;
 import java.util.Optional;
 
 import static java.lang.System.getProperty;

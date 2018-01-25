@@ -7,8 +7,9 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.client.cloudhub;
+package org.mule.tools.deployment.cloudhub;
 
+import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 
 import java.util.Map;
@@ -90,9 +91,10 @@ public class ApplicationMetadata {
   }
 
   public void updateValues(Application currentApplication) {
-    region = region == null ? currentApplication.region : region;
-    muleVersion = !muleVersion.isPresent() ? Optional.ofNullable(currentApplication.muleVersion) : muleVersion;
-    workers = workers == null ? currentApplication.workers : workers;
-    workerType = workerType == null ? currentApplication.workerType : workerType;
+    // TODO check other values to update
+    region = region == null ? currentApplication.getRegion() : region;
+    muleVersion = !muleVersion.isPresent() ? Optional.ofNullable(currentApplication.getMuleVersion().getVersion()) : muleVersion;
+    workers = workers == null ? currentApplication.getWorkers().getAmount() : workers;
+    workerType = workerType == null ? currentApplication.getWorkers().getType().getName() : workerType;
   }
 }

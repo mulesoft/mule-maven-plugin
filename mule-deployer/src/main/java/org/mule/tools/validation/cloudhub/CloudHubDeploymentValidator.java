@@ -10,7 +10,7 @@
 package org.mule.tools.validation.cloudhub;
 
 import org.mule.tools.client.cloudhub.CloudHubClient;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.validation.AbstractDeploymentValidator;

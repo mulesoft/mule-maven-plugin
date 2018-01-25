@@ -7,17 +7,21 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.deployment.artifact;
-
-import org.mule.tools.client.exception.DeploymentException;
+package org.mule.tools.client.cloudhub.model;
 
 /**
- * Deploys mule applications to mule platforms.
+ * @author Mulesoft Inc.
+ * @since 3.2.0
  */
-public interface ApplicationDeployer {
+public class DomainAvailability {
 
-  void deployApplication() throws DeploymentException;
+  private boolean available;
 
-  void undeployApplication() throws DeploymentException;
+  public boolean isAvailable() {
+    return available;
+  }
 
+  public void setAvailable(boolean available) {
+    this.available = available;
+  }
 }

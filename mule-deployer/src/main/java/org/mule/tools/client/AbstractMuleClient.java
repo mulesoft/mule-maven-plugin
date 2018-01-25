@@ -32,13 +32,13 @@ import com.google.gson.Gson;
 
 public abstract class AbstractMuleClient extends AbstractClient {
 
-  private static final String ME = "/accounts/api/me";
-  private static final String ENVIRONMENTS = "/accounts/api/organizations/%s/environments";
+  public static final String DEFAULT_BASE_URL = "https://anypoint.mulesoft.com";
 
   private static final String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
   private static final String ORG_ID_HEADER = "X-ANYPNT-ORG-ID";
 
-  public static final String DEFAULT_BASE_URL = "https://anypoint.mulesoft.com";
+  private static final String ME = "/accounts/api/me";
+  private static final String ENVIRONMENTS = "/accounts/api/organizations/%s/environments";
 
   protected String baseUri;
 
@@ -52,8 +52,6 @@ public abstract class AbstractMuleClient extends AbstractClient {
 
   private String orgId;
   private String businessGroupName;
-
-
 
   public AbstractMuleClient(AnypointDeployment anypointDeployment, DeployerLog log) {
     super(log);

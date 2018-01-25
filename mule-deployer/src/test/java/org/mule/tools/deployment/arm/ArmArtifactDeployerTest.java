@@ -17,7 +17,7 @@ import org.junit.rules.TemporaryFolder;
 import org.mule.tools.client.arm.ApplicationMetadata;
 import org.mule.tools.client.arm.ArmClient;
 import org.mule.tools.client.model.TargetType;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.exception.DeploymentException;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.utils.DeployerLog;
 

@@ -17,7 +17,7 @@ import org.mule.tools.client.standalone.controller.probing.deployment.Applicatio
 import org.mule.tools.client.standalone.controller.probing.deployment.DeploymentProbe;
 import org.mule.tools.client.standalone.controller.probing.deployment.DomainDeploymentProbe;
 import org.mule.tools.client.standalone.controller.probing.deployment.DeploymentProbeFactory;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.exception.DeploymentException;
 
 import java.util.Arrays;
 import java.util.Collection;

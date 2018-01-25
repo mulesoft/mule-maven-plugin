@@ -9,7 +9,7 @@
  */
 package org.mule.tools.deployment;
 
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.utils.DeployerLog;
 

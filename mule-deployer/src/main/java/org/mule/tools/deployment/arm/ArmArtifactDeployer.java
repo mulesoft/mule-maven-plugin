@@ -11,15 +11,13 @@ package org.mule.tools.deployment.arm;
 
 import org.mule.tools.client.arm.ApplicationMetadata;
 import org.mule.tools.client.arm.ArmClient;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.deployment.artifact.ArtifactDeployer;
 import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.arm.ArmDeploymentVerification;
-
-import static org.mule.tools.client.cloudhub.CloudHubClient.STARTED_STATUS;
 
 
 /**

@@ -10,7 +10,7 @@
 package org.mule.tools.client.standalone.controller.probing.deployment;
 
 import org.apache.commons.lang3.StringUtils;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.exception.DeploymentException;
 
 
 public class DeploymentProbeFactory {

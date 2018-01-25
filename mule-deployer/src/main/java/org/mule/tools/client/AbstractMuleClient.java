@@ -18,7 +18,7 @@ import javax.ws.rs.client.Invocation;
 
 import org.apache.commons.lang3.StringUtils;
 
-import org.mule.tools.client.agent.AbstractClient;
+import org.mule.tools.client.core.AbstractClient;
 import org.mule.tools.client.arm.model.Environment;
 import org.mule.tools.client.arm.model.Environments;
 import org.mule.tools.client.arm.model.Organization;

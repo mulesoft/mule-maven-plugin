@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.client.agent;
+package org.mule.tools.client.core;
 
 
 import static com.google.common.net.HttpHeaders.USER_AGENT;
@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import org.mule.tools.client.exception.ClientException;
+import org.mule.tools.client.core.logging.ClientLoggingFilter;
 import org.mule.tools.utils.DeployerLog;
 
 public abstract class AbstractClient {

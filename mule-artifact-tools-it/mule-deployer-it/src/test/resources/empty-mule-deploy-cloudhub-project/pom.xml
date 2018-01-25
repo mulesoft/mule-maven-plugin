@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.mulesoft.muleesb.it</groupId>
+    <artifactId>cloudhub</artifactId>
+    <version>1.1.0</version>
+    <packaging>mule-application</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.mule.tools.maven</groupId>
+                <artifactId>mule-maven-plugin</artifactId>
+                <version>${muleMavenPluginVersion}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <cloudHubDeployment>
+                        <uri>https://anypoint.mulesoft.com</uri>
+                        <muleVersion>${mule.version}</muleVersion>
+                        <username>${username}</username>
+                        <password>${password}</password>
+                        <applicationName>${cloudhub.application.name}</applicationName>
+                        <environment>${environment}</environment>
+                        <muleVersion>${mule.version}</muleVersion>
+                        <deploymentTimeout>${cloudhub.deployment.timeout}</deploymentTimeout>
+                        <properties>
+                            <key>value</key>
+                        </properties>
+                    </cloudHubDeployment>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,20 +1,34 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
 	http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<parent>
-		<groupId>org.mule.tools.maven</groupId>
-		<artifactId>mule-artifact-tools</artifactId>
-		<version>2.3.0-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	
-	<artifactId>mule-artifact-tools-it</artifactId>
+    <parent>
+        <groupId>org.mule.tools.maven</groupId>
+        <artifactId>mule-artifact-tools</artifactId>
+        <version>2.3.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-	<name>Mule Artifact Tools IT</name>
+    <artifactId>mule-artifact-tools-it</artifactId>
+    <packaging>pom</packaging>
 
-	<properties>
-		<licensePath>../LICENSE_HEADER.txt</licensePath>
-		<formatterConfigPath>../formatter.xml</formatterConfigPath>
-	</properties>
+    <modules>
+        <module>mule-deployer-it</module>
+    </modules>
+
+    <name>Mule Artifact Tools Integration Tests</name>
+
+    <properties>
+        <skipTests>true</skipTests>
+        <licensePath>../LICENSE_HEADER.txt</licensePath>
+        <formatterConfigPath>../formatter.xml</formatterConfigPath>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mule.tools.maven</groupId>
+            <artifactId>mule-deployer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

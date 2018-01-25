@@ -15,29 +15,30 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.io.File;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
-import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
+
 import org.mule.tools.client.AbstractMuleClient;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.model.DomainAvailability;
-import org.mule.tools.client.cloudhub.model.MuleVersion;
 import org.mule.tools.client.cloudhub.model.PaginatedResponse;
 import org.mule.tools.client.cloudhub.model.SupportedVersion;
 import org.mule.tools.client.exception.ClientException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class CloudHubClient extends AbstractMuleClient {
 
@@ -182,18 +183,17 @@ public class CloudHubClient extends AbstractMuleClient {
     }
   }
 
-  // TODO we could just return the object from the client
-  public Set<String> getSupportedMuleVersions() {
-    String jsonResponse = get(baseUri, SUPPORTED_VERSIONS_PATH).readEntity(String.class);
-    Type type = new TypeToken<PaginatedResponse<SupportedVersion>>() {}.getType();
-    PaginatedResponse<SupportedVersion> paginatedResponse = new Gson().fromJson(jsonResponse, type);
+  public List<SupportedVersion> getSupportedMuleVersions() {
+    Response response = get(baseUri, SUPPORTED_VERSIONS_PATH);
 
-    Set<String> supportedMuleVersions = new HashSet<>();
-    for (SupportedVersion sv : paginatedResponse.getData()) {
-      supportedMuleVersions.add(sv.getVersion());
+    if (response.getStatus() == OK) {
+      String jsonResponse = response.readEntity(String.class);
+      Type type = new TypeToken<PaginatedResponse<SupportedVersion>>() {}.getType();
+      PaginatedResponse<SupportedVersion> paginatedResponse = new Gson().fromJson(jsonResponse, type);
+
+      return paginatedResponse.getData();
     }
-
-    return supportedMuleVersions;
+    throw new ClientException(response);
   }
 
 }

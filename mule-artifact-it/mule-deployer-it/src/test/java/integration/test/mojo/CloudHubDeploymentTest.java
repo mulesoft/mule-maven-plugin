@@ -18,6 +18,7 @@ import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
@@ -117,7 +118,9 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
   @Test
   public void testCloudHubDeploy() throws VerificationException, InterruptedException, TimeoutException, DeploymentException {
     String version = muleVersion.replace(SNAPSHOT_SUFFIX, "");
-    assumeTrue("Version not supported by CloudHub", cloudHubClient.getSupportedMuleVersions().contains(version));
+
+    assumeTrue("Version not supported by CloudHub", cloudHubClient.getSupportedMuleVersions().stream().map(sv -> sv.getVersion())
+        .collect(Collectors.toSet()).contains(version));
 
     log.info("Executing mule:deploy goal...");
     verifier.addCliOption("-DmuleDeploy");

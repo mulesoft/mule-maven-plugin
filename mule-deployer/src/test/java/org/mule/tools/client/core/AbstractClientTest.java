@@ -12,8 +12,6 @@ package org.mule.tools.client.core;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-import org.mule.tools.client.core.AbstractClient;
-
 import org.junit.Test;
 
 /**
@@ -29,7 +27,7 @@ public class AbstractClientTest {
   @Test
   public void getUserAgentMuleDeployer() {
     AbstractClient client = new TesteableClient();
-    String userAgent = client.getUserAgentMuleDeployer();
+    String userAgent = client.getUserAgent();
     assertThat(userAgent, is("mule-deployer"));
   }
 

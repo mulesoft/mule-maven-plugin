@@ -82,7 +82,7 @@ public class ArmClient extends AbstractMuleClient {
 
   public String undeployApplication(int applicationId) {
     Response response = delete(baseUri, APPLICATIONS + "/" + applicationId);
-    validateStatusSuccess(response);
+    checkResponseStatus(response);
     return response.readEntity(String.class);
   }
 
@@ -97,14 +97,14 @@ public class ArmClient extends AbstractMuleClient {
   public Application deployApplication(ApplicationMetadata applicationMetadata) {
     MultiPart body = buildRequestBody(applicationMetadata);
     Response response = post(baseUri, APPLICATIONS, Entity.entity(body, body.getMediaType()));
-    validateStatusSuccess(response);
+    checkResponseStatus(response);
     return response.readEntity(Application.class);
   }
 
   public Application redeployApplication(int applicationId, ApplicationMetadata applicationMetadata) {
     MultiPart body = buildRequestBody(applicationMetadata);
     Response response = patch(baseUri, APPLICATIONS + "/" + applicationId, Entity.entity(body, body.getMediaType()));
-    validateStatusSuccess(response);
+    checkResponseStatus(response);
     return response.readEntity(Application.class);
   }
 
@@ -155,7 +155,7 @@ public class ArmClient extends AbstractMuleClient {
 
   public void deleteServer(Integer serverId) {
     Response response = delete(baseUri, SERVERS + "/" + serverId);
-    validateStatusSuccess(response);
+    checkResponseStatus(response);
   }
 
   public Target findServerByName(String name) {

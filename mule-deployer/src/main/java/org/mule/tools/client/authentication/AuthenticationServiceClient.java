@@ -109,7 +109,7 @@ public class AuthenticationServiceClient extends AbstractClient {
 
     Response response = post(baseUri, LOGIN, credentialsEntity);
 
-    validateStatusSuccess(response);
+    checkResponseStatus(response);
 
     return response.readEntity(AuthorizationResponse.class);
   }

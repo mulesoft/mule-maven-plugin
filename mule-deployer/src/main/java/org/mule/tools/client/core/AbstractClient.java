@@ -19,18 +19,25 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.glassfish.jersey.client.HttpUrlConnectorProvider.SET_METHOD_WORKAROUND;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.LOGIN;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import org.mule.tools.client.core.exception.ClientException;
 import org.mule.tools.client.core.logging.ClientLoggingFilter;
 import org.mule.tools.utils.DeployerLog;
+
+import com.google.gson.Gson;
 
 public abstract class AbstractClient {
 
@@ -42,31 +49,6 @@ public abstract class AbstractClient {
 
   public AbstractClient(DeployerLog log) {
     this.log = log;
-  }
-
-  protected WebTarget getTarget(String uri, String path) {
-    ClientBuilder builder = ClientBuilder.newBuilder();
-    configureSecurityContext(builder);
-    Client client = builder.build().register(MultiPartFeature.class);
-    if (log != null && log.isDebugEnabled() && !isLoginRequest(path)) {
-      client.register(new ClientLoggingFilter(log));
-    }
-
-    return client.target(uri).path(path);
-  }
-
-  private boolean isLoginRequest(String path) {
-    return LOGIN.equals(path);
-  }
-
-  protected void validateStatusSuccess(Response response) {
-    if (familyOf(response.getStatus()) != SUCCESSFUL) {
-      throw new ClientException(response);
-    }
-  }
-
-  protected void configureSecurityContext(ClientBuilder builder) {
-    // Implemented in concrete classes
   }
 
   protected Response post(String uri, String path, Entity entity) {
@@ -105,12 +87,27 @@ public abstract class AbstractClient {
 
   private Invocation.Builder builder(String uri, String path) {
     WebTarget target = getTarget(uri, path);
-    Invocation.Builder builder = target.request(APPLICATION_JSON_TYPE).header(USER_AGENT, getUserAgentMuleDeployer());
+    Invocation.Builder builder = target.request(APPLICATION_JSON_TYPE).header(USER_AGENT, getUserAgent());
     configureRequest(builder);
     return builder;
   }
 
-  protected String getUserAgentMuleDeployer() {
+  protected WebTarget getTarget(String uri, String path) {
+    ClientBuilder builder = ClientBuilder.newBuilder();
+    configureSecurityContext(builder);
+    Client client = builder.build().register(MultiPartFeature.class);
+    if (log != null && log.isDebugEnabled() && !isLoginRequest(path)) {
+      client.register(new ClientLoggingFilter(log));
+    }
+
+    return client.target(uri).path(path);
+  }
+
+  private boolean isLoginRequest(String path) {
+    return LOGIN.equals(path);
+  }
+
+  protected String getUserAgent() {
     Package classPackage = AbstractClient.class.getPackage();
     String implementationVersion = classPackage != null ? classPackage.getImplementationVersion() : EMPTY;
 
@@ -125,6 +122,35 @@ public abstract class AbstractClient {
    */
   protected void configureRequest(Invocation.Builder builder) {
 
+  }
+
+  protected void configureSecurityContext(ClientBuilder builder) {
+    // Implemented in concrete classes
+  }
+
+  protected void checkResponseStatus(Response response) {
+    if (familyOf(response.getStatus()) != SUCCESSFUL) {
+      throw new ClientException(response);
+    }
+  }
+
+  protected void checkResponseStatus(Response response, Status... successStatus) {
+    // TODO yes it can be done with a lambda but after cp to 2.x
+    List<Integer> success = new ArrayList<>();
+    for (Status s : successStatus) {
+      success.add(s.getStatusCode());
+    }
+
+    Integer statusCode = response.getStatus();
+    if (!success.contains(statusCode)) {
+      throw new ClientException(response);
+    }
+  }
+
+  // TODO find a way to dec
+  protected <T> T readJsonEntity(Response response, Type type) {
+    String jsonResponse = response.readEntity(String.class);
+    return new Gson().fromJson(jsonResponse, type);
   }
 
 }

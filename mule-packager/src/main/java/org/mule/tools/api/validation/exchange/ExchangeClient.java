@@ -53,7 +53,7 @@ public class ExchangeClient extends AbstractClient {
 
     Response response = get(metadata.getBaseUri(), String.format(GROUPS_PATH, metadata.getOrganizationId()));
 
-    validateStatusSuccess(response);
+    checkResponseStatus(response);
 
     Type listType = new TypeToken<ArrayList<Group>>() {}.getType();
     List<Group> groupList = new Gson().fromJson(response.readEntity(String.class), listType);

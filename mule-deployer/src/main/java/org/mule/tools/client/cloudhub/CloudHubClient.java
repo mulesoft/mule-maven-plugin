@@ -11,6 +11,10 @@ package org.mule.tools.client.cloudhub;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NOT_MODIFIED;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
+import static javax.ws.rs.core.Response.Status.OK;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.io.File;
@@ -31,7 +35,6 @@ import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.model.DomainAvailability;
 import org.mule.tools.client.cloudhub.model.PaginatedResponse;
 import org.mule.tools.client.cloudhub.model.SupportedVersion;
-import org.mule.tools.client.core.exception.ClientException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
 
@@ -53,14 +56,6 @@ public class CloudHubClient extends AbstractMuleClient {
   private static final String APPLICATIONS_PATH = BASE_API_PATH + "/applications";
   private static final String A_APPLICATION_PATH = APPLICATIONS_PATH + "/%s";
 
-
-  private static final int OK = 200;
-  private static final int CREATED = 201;
-  private static final int NO_CONTENT = 204;
-  private static final int MOVED_PERMANENTLY = 301;
-  private static final int NOT_MODIFIED = 304;
-  private static final int NOT_FOUND = 404;
-
   public CloudHubClient(CloudHubDeployment cloudhubDeployment, DeployerLog log) {
     super(cloudhubDeployment, log);
   }
@@ -68,11 +63,9 @@ public class CloudHubClient extends AbstractMuleClient {
   public List<Application> getApplications() {
     Response response = get(baseUri, APPLICATIONS_PATH);
 
-    if (response.getStatus() == OK) {
-      return response.readEntity(new GenericType<List<Application>>() {});
-    } else {
-      throw new ClientException(response);
-    }
+    checkResponseStatus(response, OK);
+
+    return response.readEntity(new GenericType<List<Application>>() {});
   }
 
   public Application getApplications(String domain) {
@@ -80,16 +73,13 @@ public class CloudHubClient extends AbstractMuleClient {
 
     Response response = get(baseUri, format(A_APPLICATION_PATH, domain));
 
-    if (response.getStatus() == OK) {
+    checkResponseStatus(response, OK, NOT_FOUND);
+
+    if (response.getStatus() == OK.getStatusCode()) {
       return response.readEntity(Application.class);
     }
 
-    if (response.getStatus() == NOT_FOUND) {
-      // TODO this should throw an exception
-      return null;
-    } else {
-      throw new ClientException(response);
-    }
+    return null;
   }
 
   public Application createApplications(Application application, File file) {
@@ -98,14 +88,11 @@ public class CloudHubClient extends AbstractMuleClient {
 
     Entity<MultiPart> entity = getMultiPartEntity(application, file);
 
-    // TODO avoid logging file content
     Response response = post(baseUri, APPLICATIONS_PATH, entity);
 
-    if (response.getStatus() == OK) {
-      return response.readEntity(Application.class);
-    } else {
-      throw new ClientException(response);
-    }
+    checkResponseStatus(response, OK);
+
+    return response.readEntity(Application.class);
   }
 
   public Application updateApplications(Application application, File file) {
@@ -115,14 +102,11 @@ public class CloudHubClient extends AbstractMuleClient {
 
     Entity<MultiPart> entity = getMultiPartEntity(application, file);
 
-    // TODO avoid logging file content
     Response response = put(baseUri, format(A_APPLICATION_PATH, application.getDomain()), entity);
 
-    if (response.getStatus() == OK) {
-      return response.readEntity(Application.class);
-    } else {
-      throw new ClientException(response);
-    }
+    checkResponseStatus(response, OK);
+
+    return response.readEntity(Application.class);
   }
 
   public void deleteApplications(String domain) {
@@ -130,55 +114,51 @@ public class CloudHubClient extends AbstractMuleClient {
 
     Response response = delete(baseUri, format(A_APPLICATION_PATH, domain));
 
-    if (response.getStatus() != OK && response.getStatus() != NO_CONTENT) {
-      throw new ClientException(response);
-    }
+    checkResponseStatus(response, OK, NO_CONTENT);
   }
 
   public void startApplications(String domain) {
+    checkArgument(isNotBlank(domain), "The domain must not be null nor empty.");
+
     Application application = new Application();
     application.setStatus("START");
 
     Response response = post(baseUri, format(APPLICATION_STATUS, domain), new Gson().toJson(application));
 
-    if (response.getStatus() != OK && response.getStatus() != NOT_MODIFIED) {
-      throw new ClientException(response);
-    }
+    checkResponseStatus(response, OK, NOT_MODIFIED);
   }
 
   public void stopApplications(String domain) {
+    checkArgument(isNotBlank(domain), "The domain must not be null nor empty.");
+
     Application application = new Application();
     application.setStatus("STOP");
 
     Response response = post(baseUri, format(APPLICATION_STATUS, domain), new Gson().toJson(application));
 
-    if (response.getStatus() != OK && response.getStatus() != NOT_MODIFIED) {
-      throw new ClientException(response);
-    }
+    checkResponseStatus(response, OK, NOT_MODIFIED);
   }
 
   public boolean isDomainAvailable(String domain) {
+    checkArgument(isNotBlank(domain), "The domain must not be null nor empty.");
+
     Response response = get(baseUri, format(APPLICATIONS_DOMAINS_PATH, domain));
 
-    if (response.getStatus() == OK) {
-      DomainAvailability availability = response.readEntity(DomainAvailability.class);
-      return availability.isAvailable();
-    } else {
-      throw new ClientException(response);
-    }
+    checkResponseStatus(response, OK);
+
+    DomainAvailability availability = response.readEntity(DomainAvailability.class);
+    return availability.isAvailable();
   }
 
   public List<SupportedVersion> getSupportedMuleVersions() {
     Response response = get(baseUri, SUPPORTED_VERSIONS_PATH);
 
-    if (response.getStatus() == OK) {
-      String jsonResponse = response.readEntity(String.class);
-      Type type = new TypeToken<PaginatedResponse<SupportedVersion>>() {}.getType();
-      PaginatedResponse<SupportedVersion> paginatedResponse = new Gson().fromJson(jsonResponse, type);
+    checkResponseStatus(response, OK);
 
-      return paginatedResponse.getData();
-    }
-    throw new ClientException(response);
+    Type type = new TypeToken<PaginatedResponse<SupportedVersion>>() {}.getType();
+    PaginatedResponse<SupportedVersion> paginatedResponse = readJsonEntity(response, type);
+
+    return paginatedResponse.getData();
   }
 
   private Entity<MultiPart> getMultiPartEntity(Application application, File file) {

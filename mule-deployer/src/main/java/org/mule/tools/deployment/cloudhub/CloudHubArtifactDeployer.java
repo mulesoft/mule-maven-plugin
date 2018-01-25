@@ -127,7 +127,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
    *         happens
    */
   protected void updateApplication(ApplicationMetadata applicationMetadata) throws DeploymentException {
-    Application currentApplication = findApplicationFromCurrentUser(deployment.getApplicationName());
+    Application currentApplication = getClient().getApplications(deployment.getApplicationName());
     if (currentApplication != null) {
       log.info("Application: " + deployment.getApplicationName() + " already exists, redeploying");
       applicationMetadata.updateValues(currentApplication);
@@ -169,22 +169,6 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     log.info("Checking if application: " + deployment.getApplicationName() + " has started");
     CloudHubDeploymentVerification verification = getDeploymentVerification();
     verification.assertDeployment(deployment);
-  }
-
-  /**
-   * Tries to find the application id.
-   *
-   * @param appName The application name. It cannot be null nor blank
-   * @return The id if the application is available for the user defined in the client session; {@code null} otherwise
-   */
-  protected Application findApplicationFromCurrentUser(String appName) {
-    checkArgument(StringUtils.isNotBlank(appName), "Application name should not be blank nor null");
-    for (Application application : getClient().getApplications()) { // TODO why don't we just hit /applicaiton/id
-      if (appName.equalsIgnoreCase(application.getDomain())) {
-        return application;
-      }
-    }
-    return null;
   }
 
   /**

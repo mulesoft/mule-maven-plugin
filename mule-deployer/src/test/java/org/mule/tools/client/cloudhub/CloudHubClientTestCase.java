@@ -64,9 +64,9 @@ public class CloudHubClientTestCase {
 
   @After
   public void removeTestApplication() {
-    Application application = cloudHubClient.getApplication(APP_NAME);
+    Application application = cloudHubClient.getApplications(APP_NAME);
     if (application != null) {
-      cloudHubClient.deleteApplication(application.getDomain());
+      cloudHubClient.deleteApplications(application.getDomain());
     }
   }
 
@@ -104,7 +104,7 @@ public class CloudHubClientTestCase {
     // cloudHubClient.createApplication(metadataMock);
     verifyAppExists(APP_NAME);
 
-    cloudHubClient.startApplication(APP_NAME);
+    cloudHubClient.startApplications(APP_NAME);
   }
 
   @Ignore // TODO fix this
@@ -112,16 +112,16 @@ public class CloudHubClientTestCase {
   public void deleteApplication() {
     // cloudHubClient.createApplication(metadataMock);
     verifyAppExists(APP_NAME);
-    cloudHubClient.deleteApplication(APP_NAME);
+    cloudHubClient.deleteApplications(APP_NAME);
     verifyAppDoesntExist(APP_NAME);
   }
 
   private void verifyAppDoesntExist(String appName) {
-    assertThat(cloudHubClient.getApplication(appName), nullValue());
+    assertThat(cloudHubClient.getApplications(appName), nullValue());
   }
 
   private void verifyAppExists(String appName) {
-    assertThat(cloudHubClient.getApplication(appName), notNullValue());
+    assertThat(cloudHubClient.getApplications(appName), notNullValue());
   }
 
 }

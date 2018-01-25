@@ -113,7 +113,7 @@ public class CloudHubArtifactDeployerTest {
   public void undeployApplicationTest() throws DeploymentException {
     cloudHubArtifactDeployerSpy.undeployApplication();
 
-    verify(clientMock, times(1)).stopApplication(FAKE_APPLICATION_NAME);
+    verify(clientMock, times(1)).stopApplications(FAKE_APPLICATION_NAME);
   }
 
   @Test
@@ -177,7 +177,7 @@ public class CloudHubArtifactDeployerTest {
   public void startApplicationTest() {
     cloudHubArtifactDeployer.startApplication();
 
-    verify(clientMock).startApplication(FAKE_APPLICATION_NAME);
+    verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
   }
 
   @Test

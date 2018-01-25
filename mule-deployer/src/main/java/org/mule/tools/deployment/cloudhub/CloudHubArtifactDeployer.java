@@ -67,8 +67,6 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   @Override
   public void deployApplication() throws DeploymentException {
     persistApplication();
-    // uploadContents();
-
     startApplication();
     checkApplicationHasStarted();
   }
@@ -81,7 +79,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   @Override
   public void undeployApplication() throws DeploymentException {
     log.info("Stopping application " + deployment.getApplicationName());
-    getClient().stopApplication(deployment.getApplicationName());
+    getClient().stopApplications(deployment.getApplicationName());
   }
 
   /**
@@ -118,7 +116,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     application.setRegion(applicationMetadata.getRegion());
 
 
-    getClient().createApplication(application, deployment.getArtifact());
+    getClient().createApplications(application, deployment.getArtifact());
   }
 
   /**
@@ -146,7 +144,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
 
 
-      getClient().updateApplication(application, deployment.getArtifact());
+      getClient().updateApplications(application, deployment.getArtifact());
     } else {
       log.error("Application name: " + deployment.getApplicationName() + " is not available. Aborting.");
       throw new DeploymentException("Domain " + deployment.getApplicationName() + " is not available. Aborting.");
@@ -159,7 +157,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
    */
   protected void startApplication() {
     log.info("Starting application: " + deployment.getApplicationName());
-    getClient().startApplication(deployment.getApplicationName());
+    getClient().startApplications(deployment.getApplicationName());
   }
 
   /**

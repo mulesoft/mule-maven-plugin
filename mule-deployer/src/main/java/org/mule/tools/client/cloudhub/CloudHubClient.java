@@ -75,7 +75,7 @@ public class CloudHubClient extends AbstractMuleClient {
     }
   }
 
-  public Application getApplication(String domain) {
+  public Application getApplications(String domain) {
     checkArgument(isNotBlank(domain), "The domain must not be null nor empty.");
 
     Response response = get(baseUri, format(A_APPLICATION_PATH, domain));
@@ -92,7 +92,7 @@ public class CloudHubClient extends AbstractMuleClient {
     }
   }
 
-  public Application createApplication(Application application, File file) {
+  public Application createApplications(Application application, File file) {
     checkArgument(file != null, "The file must not be null.");
     checkArgument(application != null, "The application must not be null.");
 
@@ -108,7 +108,7 @@ public class CloudHubClient extends AbstractMuleClient {
     }
   }
 
-  public Application updateApplication(Application application, File file) {
+  public Application updateApplications(Application application, File file) {
     checkArgument(file != null, "The file must not be null.");
     checkArgument(application != null, "The application must not be null.");
     checkArgument(isNotBlank(application.getDomain()), "The application domain must not be null nor empty.");
@@ -125,7 +125,7 @@ public class CloudHubClient extends AbstractMuleClient {
     }
   }
 
-  public void deleteApplication(String domain) {
+  public void deleteApplications(String domain) {
     checkArgument(isNotBlank(domain), "The domain must not be null nor empty.");
 
     Response response = delete(baseUri, format(A_APPLICATION_PATH, domain));
@@ -135,7 +135,7 @@ public class CloudHubClient extends AbstractMuleClient {
     }
   }
 
-  public void startApplication(String domain) {
+  public void startApplications(String domain) {
     Application application = new Application();
     application.setStatus("START");
 
@@ -146,7 +146,7 @@ public class CloudHubClient extends AbstractMuleClient {
     }
   }
 
-  public void stopApplication(String domain) {
+  public void stopApplications(String domain) {
     Application application = new Application();
     application.setStatus("STOP");
 
@@ -157,8 +157,8 @@ public class CloudHubClient extends AbstractMuleClient {
     }
   }
 
-  public boolean isDomainAvailable(String appName) {
-    Response response = get(baseUri, format(APPLICATIONS_DOMAINS_PATH, appName));
+  public boolean isDomainAvailable(String domain) {
+    Response response = get(baseUri, format(APPLICATIONS_DOMAINS_PATH, domain));
 
     if (response.getStatus() == OK) {
       DomainAvailability availability = response.readEntity(DomainAvailability.class);

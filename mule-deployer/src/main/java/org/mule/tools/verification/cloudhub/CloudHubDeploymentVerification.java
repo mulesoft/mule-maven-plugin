@@ -43,14 +43,14 @@ public class CloudHubDeploymentVerification implements DeploymentVerification {
     @Override
     public Predicate<Deployment> isDeployed() {
       return (deployment) -> {
-        Application application = client.getApplication(deployment.getApplicationName());
+        Application application = client.getApplications(deployment.getApplicationName());
         return application != null && StringUtils.equals(STARTED_STATUS, application.getStatus());
       };
     }
 
     @Override
     public Consumer<Deployment> onTimeout() {
-      return deployment -> client.stopApplication(deployment.getApplicationName());
+      return deployment -> client.stopApplications(deployment.getApplicationName());
     }
   }
 }

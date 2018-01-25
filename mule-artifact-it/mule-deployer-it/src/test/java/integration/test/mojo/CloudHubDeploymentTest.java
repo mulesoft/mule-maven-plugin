@@ -66,7 +66,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
     @Override
     protected void succeeded(Description description) {
-      cloudHubClient.deleteApplication(APPLICATION_NAME);
+      cloudHubClient.deleteApplications(APPLICATION_NAME);
     }
 
     @Override
@@ -182,7 +182,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
     @Override
     public Boolean run() {
-      Application application = cloudHubClient.getApplication(applicationName);
+      Application application = cloudHubClient.getApplications(applicationName);
       applicationStatus = application.getStatus();
       if (application != null && expectedStatus.equals(application.getStatus())) {
         return false;

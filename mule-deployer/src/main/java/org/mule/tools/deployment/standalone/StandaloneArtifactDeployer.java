@@ -16,7 +16,7 @@ import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.mule.tools.client.standalone.controller.probing.PollingProber;
 import org.mule.tools.client.standalone.controller.probing.Prober;
 import org.mule.tools.client.standalone.controller.probing.deployment.DeploymentProbe;
-import org.mule.tools.client.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.deployment.artifact.ArtifactDeployer;

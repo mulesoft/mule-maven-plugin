@@ -18,7 +18,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
-import org.mule.tools.client.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.utils.DeployerLog;
 
 /**

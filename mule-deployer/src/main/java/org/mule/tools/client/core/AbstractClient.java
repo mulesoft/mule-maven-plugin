@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
-import org.mule.tools.client.exception.ClientException;
+import org.mule.tools.client.core.exception.ClientException;
 import org.mule.tools.client.core.logging.ClientLoggingFilter;
 import org.mule.tools.utils.DeployerLog;
 

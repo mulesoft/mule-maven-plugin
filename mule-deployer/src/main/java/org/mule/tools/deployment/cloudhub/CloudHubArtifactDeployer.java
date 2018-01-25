@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.MuleVersion;
-import org.mule.tools.client.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.deployment.artifact.ArtifactDeployer;

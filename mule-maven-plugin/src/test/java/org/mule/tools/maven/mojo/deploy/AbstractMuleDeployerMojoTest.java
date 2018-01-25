@@ -18,7 +18,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mule.tools.client.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.standalone.ClusterDeployment;
 
 import static org.hamcrest.MatcherAssert.assertThat;

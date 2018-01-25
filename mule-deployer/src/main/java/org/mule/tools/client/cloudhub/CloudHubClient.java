@@ -31,7 +31,7 @@ import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.model.DomainAvailability;
 import org.mule.tools.client.cloudhub.model.PaginatedResponse;
 import org.mule.tools.client.cloudhub.model.SupportedVersion;
-import org.mule.tools.client.exception.ClientException;
+import org.mule.tools.client.core.exception.ClientException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
 

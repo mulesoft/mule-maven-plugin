@@ -17,7 +17,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 import org.mule.tools.client.cloudhub.model.Application;
-import org.mule.tools.client.exception.ClientException;
+import org.mule.tools.client.core.exception.ClientException;
 
 import java.io.File;
 import java.util.HashMap;

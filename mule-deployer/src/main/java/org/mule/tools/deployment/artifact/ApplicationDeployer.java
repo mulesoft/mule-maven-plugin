@@ -9,7 +9,7 @@
  */
 package org.mule.tools.deployment.artifact;
 
-import org.mule.tools.client.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 
 /**
  * Deploys mule applications to mule platforms.

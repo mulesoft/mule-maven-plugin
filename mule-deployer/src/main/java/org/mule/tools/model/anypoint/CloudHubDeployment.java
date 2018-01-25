@@ -11,7 +11,7 @@
 package org.mule.tools.model.anypoint;
 
 import org.apache.maven.plugins.annotations.Parameter;
-import org.mule.tools.client.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 
 import java.util.HashMap;
 import java.util.Map;

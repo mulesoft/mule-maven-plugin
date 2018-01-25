@@ -16,7 +16,7 @@ import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.Matchers.instanceOf;
 
-import org.mule.tools.client.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 
 public class DeploymentExceptionTest {
 

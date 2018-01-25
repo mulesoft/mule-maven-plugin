@@ -17,7 +17,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.CloudHubClient;
-import org.mule.tools.client.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;

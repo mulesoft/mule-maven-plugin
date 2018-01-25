@@ -12,7 +12,7 @@ package org.mule.tools.model.anypoint;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.mule.tools.client.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 
 import static java.lang.System.getProperty;

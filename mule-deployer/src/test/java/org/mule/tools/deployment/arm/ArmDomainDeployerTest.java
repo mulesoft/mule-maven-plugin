@@ -11,7 +11,7 @@ package org.mule.tools.deployment.arm;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mule.tools.client.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.deployment.artifact.DomainDeployer;
 
 import static org.mockito.Mockito.mock;

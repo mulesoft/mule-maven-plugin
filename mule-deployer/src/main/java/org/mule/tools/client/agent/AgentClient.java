@@ -11,7 +11,7 @@ package org.mule.tools.client.agent;
 
 import org.mule.tools.client.agent.model.Application;
 import org.mule.tools.client.core.AbstractClient;
-import org.mule.tools.client.exception.ClientException;
+import org.mule.tools.client.core.exception.ClientException;
 
 import java.io.File;
 

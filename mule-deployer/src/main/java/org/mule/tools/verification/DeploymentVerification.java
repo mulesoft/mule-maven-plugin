@@ -9,7 +9,7 @@
  */
 package org.mule.tools.verification;
 
-import org.mule.tools.client.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 
 public interface DeploymentVerification {

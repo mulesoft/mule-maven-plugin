@@ -14,7 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mule.tools.client.agent.AgentClient;
-import org.mule.tools.client.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.verification.agent.AgentDeploymentVerification;
 

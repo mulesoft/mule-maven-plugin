@@ -11,7 +11,7 @@ package org.mule.tools.validation.arm;
 
 import org.mule.tools.client.arm.ArmClient;
 import org.mule.tools.client.arm.model.Target;
-import org.mule.tools.client.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.validation.AbstractDeploymentValidator;

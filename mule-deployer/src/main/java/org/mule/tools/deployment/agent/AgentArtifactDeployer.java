@@ -10,7 +10,7 @@
 package org.mule.tools.deployment.agent;
 
 import org.mule.tools.client.agent.AgentClient;
-import org.mule.tools.client.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.deployment.artifact.ArtifactDeployer;

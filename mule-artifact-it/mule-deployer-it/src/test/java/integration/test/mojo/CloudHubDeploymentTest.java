@@ -37,7 +37,7 @@ import org.mule.tools.client.OperationRetrier;
 import org.mule.tools.client.OperationRetrier.RetriableOperation;
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.Application;
-import org.mule.tools.client.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 
 @RunWith(Parameterized.class)

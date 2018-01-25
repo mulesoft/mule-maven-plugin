@@ -34,8 +34,8 @@ public class UndeployMojo extends AbstractMuleDeployerMojo {
     }
   }
 
-  @Override
-  public String getPreviousRunPlaceholder() {
-    return "MULE_MAVEN_PLUGIN_UNDEPLOY_PREVIOUS_RUN_PLACEHOLDER";
-  }
+  // @Override
+  // public String getPreviousRunPlaceholder() {
+  // return "MULE_MAVEN_PLUGIN_UNDEPLOY_PREVIOUS_RUN_PLACEHOLDER";
+  // }
 }

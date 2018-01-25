@@ -16,7 +16,6 @@ import static org.apache.commons.lang3.StringUtils.join;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
@@ -124,28 +123,4 @@ public class ClientLoggingFilter implements ClientRequestFilter, ClientResponseF
     return parseBoolean(System.getProperty(CLIENT_LOGGING_LOG_MULTIPART, "false"));
   }
 
-  private class RequestLoggingStream extends FilterOutputStream {
-
-    private StringBuilder request;
-    private ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
-
-    RequestLoggingStream(StringBuilder request, OutputStream inner) {
-      super(inner);
-      this.request = request;
-    }
-
-    @Override
-    public void write(final int i) throws IOException {
-      requestBody.write(i);
-      out.write(i);
-    }
-
-
-    public String getRequestLog() {
-      request.append(new String(requestBody.toByteArray()));
-      request.append(format("%n"));
-      return request.toString();
-    }
-
-  }
 }

@@ -15,9 +15,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.io.File;
 import java.lang.reflect.Type;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
@@ -98,13 +96,7 @@ public class CloudHubClient extends AbstractMuleClient {
     checkArgument(file != null, "The file must not be null.");
     checkArgument(application != null, "The application must not be null.");
 
-    // TODO refactor this message for app request
-    FileDataBodyPart filePart = new FileDataBodyPart("file", file);
-    String applicationJson = new Gson().toJson(application);
-    FormDataBodyPart appInfoJsonPart = new FormDataBodyPart("appInfoJson", applicationJson);
-
-    MultiPart multipart = new FormDataMultiPart().bodyPart(filePart).bodyPart(appInfoJsonPart);
-    Entity<MultiPart> entity = Entity.entity(multipart, multipart.getMediaType());
+    Entity<MultiPart> entity = getMultiPartEntity(application, file);
 
     // TODO avoid logging file content
     Response response = post(baseUri, APPLICATIONS_PATH, entity);
@@ -116,19 +108,12 @@ public class CloudHubClient extends AbstractMuleClient {
     }
   }
 
-  // TODO this should receive an applicaiton object
   public Application updateApplication(Application application, File file) {
     checkArgument(file != null, "The file must not be null.");
     checkArgument(application != null, "The application must not be null.");
     checkArgument(isNotBlank(application.getDomain()), "The application domain must not be null nor empty.");
 
-    // TODO refactor this message for app request
-    FileDataBodyPart filePart = new FileDataBodyPart("file", file);
-    String applicationJson = new Gson().toJson(application);
-    FormDataBodyPart appInfoJsonPart = new FormDataBodyPart("appInfoJson", applicationJson);
-
-    MultiPart multipart = new FormDataMultiPart().bodyPart(filePart).bodyPart(appInfoJsonPart);
-    Entity<MultiPart> entity = Entity.entity(multipart, multipart.getMediaType());
+    Entity<MultiPart> entity = getMultiPartEntity(application, file);
 
     // TODO avoid logging file content
     Response response = put(baseUri, format(A_APPLICATION_PATH, application.getDomain()), entity);
@@ -196,4 +181,12 @@ public class CloudHubClient extends AbstractMuleClient {
     throw new ClientException(response);
   }
 
+  private Entity<MultiPart> getMultiPartEntity(Application application, File file) {
+    FileDataBodyPart filePart = new FileDataBodyPart("file", file);
+
+    FormDataBodyPart appInfoJsonPart = new FormDataBodyPart("appInfoJson", new Gson().toJson(application));
+
+    MultiPart multipart = new FormDataMultiPart().bodyPart(filePart).bodyPart(appInfoJsonPart);
+    return Entity.entity(multipart, multipart.getMediaType());
+  }
 }

@@ -55,7 +55,6 @@ public class StandaloneDeploymentTest extends AbstractDeploymentTest {
     verifier = buildBaseVerifier();
     verifier.setEnvironmentVariable(VERIFIER_MULE_VERSION, getMuleVersion());
     verifier.setEnvironmentVariable(VERIFIER_MULE_TIMEOUT, System.getProperty("mule.timeout"));
-    // TODO find out why we need this
     verifier.setEnvironmentVariable(VERIFIER_MULE_HOME_TEST, standaloneEnvironment.getMuleHome());
   }
 
@@ -68,9 +67,7 @@ public class StandaloneDeploymentTest extends AbstractDeploymentTest {
 
   protected void deploy() throws VerificationException {
     log.info("Executing mule:deploy goal...");
-    verifier.addCliOption("-DmuleDeploy");
     verifier.executeGoal(DEPLOY_GOAL);
-
     assertThat("Standalone should be running ", standaloneEnvironment.isRunning(), is(true));
   }
 }

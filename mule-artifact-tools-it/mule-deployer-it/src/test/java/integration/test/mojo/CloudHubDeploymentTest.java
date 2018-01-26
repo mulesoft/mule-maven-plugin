@@ -35,6 +35,7 @@ import org.mule.tools.client.OperationRetrier.RetriableOperation;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 
+@Ignore
 @RunWith(Parameterized.class)
 public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 

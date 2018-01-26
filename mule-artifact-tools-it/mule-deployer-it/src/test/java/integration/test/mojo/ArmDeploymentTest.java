@@ -17,10 +17,7 @@ import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import org.mule.tools.client.arm.ArmClient;
@@ -34,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import integration.test.util.StandaloneEnvironment;
 
+@Ignore
 public class ArmDeploymentTest extends AbstractDeploymentTest {
 
   private static final int APPLICATION_NAME_LENGTH = 10;

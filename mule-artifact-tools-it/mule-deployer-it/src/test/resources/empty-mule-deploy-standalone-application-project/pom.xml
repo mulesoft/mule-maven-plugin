@@ -6,7 +6,7 @@
     <groupId>org.mule.tools.muleesb.it</groupId>
     <artifactId>empty-mule-deploy-standalone-application-project</artifactId>
     <version>1.0.0</version>
-    <packaging>mule-application</packaging>
+    <packaging>mule</packaging>
 
     <build>
         <plugins>
@@ -19,6 +19,7 @@
                     <standaloneDeployment>
                         <muleVersion>${mule.version}</muleVersion>
                         <muleHome>${mule.home.test}</muleHome>
+                        <artifact>${project.basedir}/empty-mule-deploy-standalone-application-project.zip</artifact>
                         <deploymentTimeout>120000</deploymentTimeout>
                         <timeout>120000</timeout>
                     </standaloneDeployment>

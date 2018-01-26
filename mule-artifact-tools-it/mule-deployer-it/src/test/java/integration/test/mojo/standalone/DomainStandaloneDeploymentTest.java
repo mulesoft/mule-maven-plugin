@@ -7,6 +7,7 @@
 package integration.test.mojo.standalone;
 
 import org.apache.maven.it.VerificationException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+@Ignore
 public class DomainStandaloneDeploymentTest extends StandaloneDeploymentTest {
 
   private static final String DOMAIN = "empty-mule-deploy-standalone-domain-project";

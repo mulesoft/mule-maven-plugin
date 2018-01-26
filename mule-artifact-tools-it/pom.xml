@@ -19,7 +19,6 @@
     <name>Mule Artifact Tools Integration Tests</name>
 
     <properties>
-        <skipTests>true</skipTests>
         <licensePath>../LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>

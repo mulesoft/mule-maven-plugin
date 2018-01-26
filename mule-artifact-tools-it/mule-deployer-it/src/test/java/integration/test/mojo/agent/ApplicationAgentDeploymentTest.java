@@ -6,9 +6,12 @@
  */
 package integration.test.mojo.agent;
 
+import org.junit.Ignore;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+@Ignore
 public class ApplicationAgentDeploymentTest extends AgentDeploymentTest {
 
   private static final String APPLICATION = "empty-mule-deploy-application-agent-project";

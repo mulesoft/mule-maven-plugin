@@ -41,6 +41,9 @@ import org.mule.tools.utils.DeployerLog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+/**
+ * Client to hit the CloudHub API
+ */
 public class CloudHubClient extends AbstractMuleClient {
 
   private static final String API_VERSION = "v2";
@@ -60,6 +63,11 @@ public class CloudHubClient extends AbstractMuleClient {
     super(cloudhubDeployment, log);
   }
 
+  /**
+   * Look up all the applications
+   * 
+   * @return a list with all the {@link Application}
+   */
   public List<Application> getApplications() {
     Response response = get(baseUri, APPLICATIONS_PATH);
 
@@ -68,6 +76,12 @@ public class CloudHubClient extends AbstractMuleClient {
     return response.readEntity(new GenericType<List<Application>>() {});
   }
 
+  /**
+   * Look up a {@link Application} based on its domain name
+   * 
+   * @param domain the domain name of the application
+   * @return null if none found, otherwise the {@link Application}
+   */
   public Application getApplications(String domain) {
     checkArgument(isNotBlank(domain), "The domain must not be null nor empty.");
 
@@ -82,6 +96,13 @@ public class CloudHubClient extends AbstractMuleClient {
     return null;
   }
 
+  /**
+   * Creates an {@link Application}
+   * 
+   * @param application the {@link Application} entity
+   * @param file the file of the {@link Application}
+   * @return the {@link Application} just created
+   */
   public Application createApplications(Application application, File file) {
     checkArgument(file != null, "The file must not be null.");
     checkArgument(application != null, "The application must not be null.");
@@ -95,6 +116,13 @@ public class CloudHubClient extends AbstractMuleClient {
     return response.readEntity(Application.class);
   }
 
+  /**
+   * Update an already existing {@link Application}
+   *
+   * @param application the {@link Application} entity
+   * @param file the file of the {@link Application}
+   * @return the {@link Application} just updated
+   */
   public Application updateApplications(Application application, File file) {
     checkArgument(file != null, "The file must not be null.");
     checkArgument(application != null, "The application must not be null.");
@@ -109,6 +137,11 @@ public class CloudHubClient extends AbstractMuleClient {
     return response.readEntity(Application.class);
   }
 
+  /**
+   * Deletes an {@link Application} based on its domain name
+   * 
+   * @param domain the domain name of the application
+   */
   public void deleteApplications(String domain) {
     checkArgument(isNotBlank(domain), "The domain must not be null nor empty.");
 
@@ -117,6 +150,11 @@ public class CloudHubClient extends AbstractMuleClient {
     checkResponseStatus(response, OK, NO_CONTENT);
   }
 
+  /**
+   * Starts an {@link Application} based on its domain name
+   * 
+   * @param domain the domain name of the application
+   */
   public void startApplications(String domain) {
     checkArgument(isNotBlank(domain), "The domain must not be null nor empty.");
 
@@ -128,6 +166,11 @@ public class CloudHubClient extends AbstractMuleClient {
     checkResponseStatus(response, OK, NOT_MODIFIED);
   }
 
+  /**
+   * Stops an {@link Application} based on its domain name
+   * 
+   * @param domain the domain name of the application
+   */
   public void stopApplications(String domain) {
     checkArgument(isNotBlank(domain), "The domain must not be null nor empty.");
 
@@ -139,6 +182,12 @@ public class CloudHubClient extends AbstractMuleClient {
     checkResponseStatus(response, OK, NOT_MODIFIED);
   }
 
+  /**
+   * It checks the availability of a given doamain name
+   * 
+   * @param domain the domain name
+   * @return false if the domain is not available, true otherwise
+   */
   public boolean isDomainAvailable(String domain) {
     checkArgument(isNotBlank(domain), "The domain must not be null nor empty.");
 
@@ -150,6 +199,11 @@ public class CloudHubClient extends AbstractMuleClient {
     return availability.isAvailable();
   }
 
+  /**
+   * Retrieve a list of {@link SupportedVersion}
+   * 
+   * @return a list of the {@link SupportedVersion}
+   */
   public List<SupportedVersion> getSupportedMuleVersions() {
     Response response = get(baseUri, SUPPORTED_VERSIONS_PATH);
 

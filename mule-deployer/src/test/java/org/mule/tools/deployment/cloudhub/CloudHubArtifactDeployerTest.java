@@ -26,6 +26,7 @@ import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.stream.IntStream.range;
@@ -44,9 +45,10 @@ public class CloudHubArtifactDeployerTest {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
-  private File fileMock;
+  private File applicationFile;
   private DeployerLog logMock;
   private CloudHubClient clientMock;
+  private Application applicationMock;
   private CloudHubDeployment deploymentMock;
   private CloudHubArtifactDeployer cloudHubArtifactDeployerSpy;
 
@@ -54,19 +56,23 @@ public class CloudHubArtifactDeployerTest {
 
   @Before
   public void setUp() throws IOException {
-    fileMock = temporaryFolder.newFile();
-    deploymentMock = mock(CloudHubDeployment.class);
-    when(deploymentMock.getApplicationName()).thenReturn(FAKE_APPLICATION_NAME);
-    when(deploymentMock.getArtifact()).thenReturn(fileMock);
-
-    clientMock = mock(CloudHubClient.class);
+    applicationFile = temporaryFolder.newFile();
 
     logMock = mock(DeployerLog.class);
+    clientMock = mock(CloudHubClient.class);
+    applicationMock = mock(Application.class);
+    deploymentMock = mock(CloudHubDeployment.class);
+
+    when(deploymentMock.getApplicationName()).thenReturn(FAKE_APPLICATION_NAME);
+    when(deploymentMock.getMuleVersion()).thenReturn(Optional.of("4.0.0"));
+    when(deploymentMock.getArtifact()).thenReturn(applicationFile);
+
+
+    when(clientMock.getApplications(FAKE_APPLICATION_NAME)).thenReturn(applicationMock);
+
     cloudHubArtifactDeployer = new CloudHubArtifactDeployer(deploymentMock, clientMock, logMock);
     cloudHubArtifactDeployerSpy = spy(cloudHubArtifactDeployer);
 
-    deploymentMock = mock(CloudHubDeployment.class);
-    // doReturn(deploymentMock).when(cloudHubArtifactDeployerSpy).getMetadata();
   }
 
   @Test(expected = DeploymentException.class)
@@ -79,167 +85,70 @@ public class CloudHubArtifactDeployerTest {
     cloudHubArtifactDeployer.undeployDomain();
   }
 
-  @Ignore // todo FIX THIS
   @Test
-  public void deployApplicationVerificationStartedFailTest() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
-    doNothing().when(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
-    doNothing().when(cloudHubArtifactDeployerSpy).startApplication();
-    CloudHubDeploymentVerification verificationMock = mock(CloudHubDeploymentVerification.class);
-    doThrow(DeploymentException.class).when(verificationMock).assertDeployment(deploymentMock);
+  public void deployApplicationNew() throws DeploymentException {
+    when(clientMock.isDomainAvailable(any())).thenReturn(true);
 
-    // cloudHubArtifactDeployer.setDeploymentVerification(verificationMock);
-    // cloudHubArtifactDeployerSpy.deployApplication();
-
-    cloudHubArtifactDeployer.setDeploymentVerification(verificationMock);
-    cloudHubArtifactDeployer.checkApplicationHasStarted();
-
-    verify(verificationMock).assertDeployment(any(Deployment.class));
-
-
-    // verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
-    // verify(cloudHubArtifactDeployerSpy).startApplication();
-    // verify(cloudHubArtifactDeployerSpy).undeployApplication();
-  }
-
-  @Test
-  public void deployApplicationTest() throws DeploymentException {
-    doNothing().when(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
-    doNothing().when(cloudHubArtifactDeployerSpy).startApplication();
     doNothing().when(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
 
     cloudHubArtifactDeployerSpy.deployApplication();
 
+
+    verify(clientMock).isDomainAvailable(any());
     verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
-    // verify(cloudHubArtifactDeployerSpy).uploadContents();
+    verify(cloudHubArtifactDeployerSpy).createApplication();
     verify(cloudHubArtifactDeployerSpy).startApplication();
+    verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
     verify(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
   }
 
   @Test
-  public void undeployApplicationTest() throws DeploymentException {
-    cloudHubArtifactDeployerSpy.undeployApplication();
+  public void deployApplicationUpdate() throws DeploymentException {
+    when(clientMock.isDomainAvailable(any())).thenReturn(false);
 
-    verify(clientMock, times(1)).stopApplications(FAKE_APPLICATION_NAME);
-  }
+    doNothing().when(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
 
-  @Ignore // TODO fix this
-  @Test
-  public void persistApplicationAvailableNameTest() throws DeploymentException {
-    doNothing().when(cloudHubArtifactDeployerSpy).createApplication();
+    cloudHubArtifactDeployerSpy.deployApplication();
 
-    doReturn(true).when(clientMock).isDomainAvailable(FAKE_APPLICATION_NAME);
-
-    cloudHubArtifactDeployerSpy.createOrUpdateApplication();
-
-    verify(cloudHubArtifactDeployerSpy).createApplication();
-    verify(cloudHubArtifactDeployerSpy, never()).updateApplication();
-  }
-
-  @Ignore // TODO fix this
-  @Test
-  public void persistApplicationUnavailableNameTest() throws DeploymentException {
-    doNothing().when(cloudHubArtifactDeployerSpy).updateApplication();
-
-    doReturn(false).when(clientMock).isDomainAvailable(FAKE_APPLICATION_NAME);
-
-    cloudHubArtifactDeployerSpy.createOrUpdateApplication();
-
+    verify(clientMock).isDomainAvailable(any());
+    verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
     verify(cloudHubArtifactDeployerSpy).updateApplication();
-    verify(cloudHubArtifactDeployerSpy, never()).createApplication();
-  }
-
-  @Ignore // TODO fix this
-  @Test
-  public void createApplicationTest() {
-    // when(clientMock.createApplication(deploymentMock)).thenReturn(mock(Application.class));
-
-    // cloudHubArtifactDeployer.createApplication(deploymentMock);
-
-    // verify(clientMock).createApplication(deploymentMock);
-  }
-
-  @Ignore // TODO fix this
-  @Test
-  public void updateExistentApplicationTest() throws DeploymentException {
-    Application applicationMock = mock(Application.class);
-    // doReturn(applicationMock).when(cloudHubArtifactDeployerSpy).findApplicationFromCurrentUser(FAKE_APPLICATION_NAME);
-
-    cloudHubArtifactDeployerSpy.updateApplication();
-
-    // verify(deploymentMock).updateValues(applicationMock);
-    // verify(clientMock).updateApplication(deploymentMock);
-  }
-
-  @Ignore // TODO fix this
-  @Test(expected = DeploymentException.class)
-  public void updateApplicationDoesntExistTest() throws DeploymentException {
-    // doReturn(null).when(cloudHubArtifactDeployerSpy).findApplicationFromCurrentUser(FAKE_APPLICATION_NAME);
-
-    cloudHubArtifactDeployerSpy.updateApplication();
-
-    // verify(deploymentMock, never()).updateValues(any());
-    // verify(clientMock).updateApplication(deploymentMock);
-  }
-
-  @Test
-  public void startApplicationTest() {
-    cloudHubArtifactDeployer.startApplication();
-
+    verify(cloudHubArtifactDeployerSpy).startApplication();
     verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
+    verify(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
   }
 
   @Test
-  public void checkApplicationHasStartedTest() throws DeploymentException {
+  public void deployApplicationVerificationStartedFail() throws DeploymentException {
+    expectedException.expect(DeploymentException.class);
+
+    when(clientMock.isDomainAvailable(any())).thenReturn(true);
+
     CloudHubDeploymentVerification verificationMock = mock(CloudHubDeploymentVerification.class);
+    doThrow(DeploymentException.class).when(verificationMock).assertDeployment(deploymentMock);
     cloudHubArtifactDeployer.setDeploymentVerification(verificationMock);
 
-    cloudHubArtifactDeployer.setDeploymentVerification(verificationMock);
-    cloudHubArtifactDeployer.checkApplicationHasStarted();
+    cloudHubArtifactDeployer.deployApplication();
 
-    verify(verificationMock).assertDeployment(any(Deployment.class));
+    verify(clientMock).isDomainAvailable(any());
+    verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
+    verify(cloudHubArtifactDeployerSpy).createApplication();
+    verify(cloudHubArtifactDeployerSpy).startApplication();
+    verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
+    verify(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
+    verify(verificationMock).assertDeployment(eq(deploymentMock));
   }
 
   @Test
-  public void findApplicationFromCurrentUserTest() {
-    List<Application> applications = getApplications();
-
-    Application fakeApplication = new Application();
-    fakeApplication.setDomain(FAKE_APPLICATION_NAME);
-    applications.add(fakeApplication);
-
-    when(clientMock.getApplications()).thenReturn(applications);
-
-    // assertThat("Found application is not the expected",
-    // cloudHubArtifactDeployer.findApplicationFromCurrentUser(FAKE_APPLICATION_NAME), equalTo(fakeApplication));
-  }
-
-  @Test
-  public void findApplicationFromCurrentUserNotExistentTest() {
-    List<Application> applications = getApplications();
-
-    when(clientMock.getApplications()).thenReturn(applications);
-
-    // assertThat("The method should have returned null",
-    // cloudHubArtifactDeployer.findApplicationFromCurrentUser(FAKE_APPLICATION_NAME), equalTo(null));
-  }
-
-  @Test
-  public void retryValidationTest() {
-
+  public void undeployApplicationTest() throws DeploymentException {
+    cloudHubArtifactDeployer.undeployApplication();
+    verify(clientMock, times(1)).stopApplications(FAKE_APPLICATION_NAME);
   }
 
   @Test
   public void getApplicationNameTest() {
     assertThat("Application name is not the expected", cloudHubArtifactDeployer.getApplicationName(),
                equalTo(FAKE_APPLICATION_NAME));
-  }
-
-  public List<Application> getApplications() {
-    List<Application> applications =
-        range(0, 10).mapToObj(i -> toString()).map(this::createApplication).collect(Collectors.toList());
-
-    return applications;
   }
 
   private Application createApplication(String name) {

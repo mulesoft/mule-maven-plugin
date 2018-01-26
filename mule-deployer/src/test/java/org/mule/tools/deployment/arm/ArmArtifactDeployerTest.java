@@ -35,17 +35,19 @@ public class ArmArtifactDeployerTest {
 
   private static final Integer FAKE_APPLICATION_ID = 1;
   private static final String FAKE_APPLICATION_NAME = "fake-name";
-  private ArmArtifactDeployer armArtifactDeployer;
+
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
-  private ArmDeployment deploymentMock;
-  private ArmClient clientMock;
+
   private DeployerLog logMock;
+  private ArmClient clientMock;
+  private ArmDeployment deploymentMock;
   private ApplicationMetadata metadataMock;
   private ArmArtifactDeployer armArtifactDeployerSpy;
 
+  private ArmArtifactDeployer armArtifactDeployer;
   @Before
   public void setUp() throws DeploymentException {
     deploymentMock = mock(ArmDeployment.class);
@@ -115,20 +117,6 @@ public class ArmArtifactDeployerTest {
   public void getApplicationNameTest() {
     assertThat("Application name is not the expected", armArtifactDeployer.getApplicationName(), equalTo(FAKE_APPLICATION_NAME));
   }
-
-  @Test
-  public void getClientTest() {
-    verify(clientMock, never()).init();
-
-    armArtifactDeployer.getClient();
-
-    verify(clientMock).init();
-
-    armArtifactDeployer.getClient();
-
-    verify(clientMock).init();
-  }
-
 
   @Test
   public void getApplicationMetadataTest() throws IOException {

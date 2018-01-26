@@ -22,6 +22,8 @@ public class AbstractClientTest {
 
   public static class TesteableClient extends AbstractClient {
 
+    protected void init() {}
+
   }
 
   @Test

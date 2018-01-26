@@ -65,6 +65,10 @@ public class AuthenticationServiceClient extends AbstractClient {
     this.saveState = saveState;
   }
 
+  protected void init() {
+    // Do nothing
+  }
+
   // TODO find a way to just login and save state
   public String getBearerToken(Credentials credentials) {
     AuthorizationResponse authorizationResponse = login(credentials);

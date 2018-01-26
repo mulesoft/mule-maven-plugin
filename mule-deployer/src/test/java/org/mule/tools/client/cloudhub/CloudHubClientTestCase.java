@@ -28,7 +28,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.mule.tools.deployment.cloudhub.ApplicationMetadata;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 
 @Ignore
@@ -48,7 +47,6 @@ public class CloudHubClientTestCase {
   private CloudHubClient cloudHubClient;
   private Map<String, String> properties = new HashMap();
   private CloudHubDeployment cloudHubDeployment;
-  private ApplicationMetadata metadataMock = mock(ApplicationMetadata.class);
 
   @Before
   public void setup() {
@@ -59,7 +57,7 @@ public class CloudHubClientTestCase {
     cloudHubDeployment.setEnvironment(ENVIRONMENT);
     cloudHubDeployment.setBusinessGroup("");
     cloudHubClient = new CloudHubClient(cloudHubDeployment, null);
-    cloudHubClient.init();
+    // cloudHubClient.init();
   }
 
   @After

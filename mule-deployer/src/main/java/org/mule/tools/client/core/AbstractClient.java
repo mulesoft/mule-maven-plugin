@@ -45,6 +45,8 @@ public abstract class AbstractClient {
 
   protected DeployerLog log;
 
+  private boolean isClientInitialized = false;
+
   public AbstractClient() {}
 
   public AbstractClient(DeployerLog log) {
@@ -52,38 +54,56 @@ public abstract class AbstractClient {
   }
 
   protected Response post(String uri, String path, Entity entity) {
+    initialize();
     return builder(uri, path).post(entity);
   }
 
   protected Response post(String uri, String path, Object entity) {
+    initialize();
     return post(uri, path, Entity.entity(entity, APPLICATION_JSON_TYPE));
   }
 
   protected Response put(String uri, String path, Entity entity) {
+    initialize();
     return builder(uri, path).put(entity);
   }
 
   protected Response put(String uri, String path, Object entity) {
+    initialize();
     return put(uri, path, Entity.entity(entity, APPLICATION_JSON_TYPE));
   }
 
   protected Response delete(String uri, String path) {
+    initialize();
     return builder(uri, path).delete();
   }
 
   protected Response get(String uri, String path) {
+    initialize();
     return builder(uri, path).get();
   }
 
   protected <T> T get(String uri, String path, Class<T> clazz) {
+    initialize();
     return get(uri, path).readEntity(clazz);
   }
 
   protected Response patch(String uri, String path, Entity entity) {
+    initialize();
     Invocation.Builder builder = builder(uri, path);
     builder.property(SET_METHOD_WORKAROUND, true);
     return builder.method("PATCH", entity);
   }
+
+
+  private synchronized void initialize() {
+    if (!isClientInitialized) {
+      isClientInitialized = true;
+      init();
+    }
+  }
+
+  protected abstract void init();
 
   private Invocation.Builder builder(String uri, String path) {
     WebTarget target = getTarget(uri, path);
@@ -103,6 +123,7 @@ public abstract class AbstractClient {
     return client.target(uri).path(path);
   }
 
+  // TODO find a more generic way of doing this
   private boolean isLoginRequest(String path) {
     return LOGIN.equals(path);
   }

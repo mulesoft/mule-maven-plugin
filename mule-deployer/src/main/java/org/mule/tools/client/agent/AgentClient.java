@@ -40,6 +40,10 @@ public class AgentClient extends AbstractClient {
     this.uri = ((AgentDeployment) deployment).getUri();
   }
 
+  protected void init() {
+    // DO NOTHING
+  }
+
   /**
    * Deploys a mule application to the agent.
    * 

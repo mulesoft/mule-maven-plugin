@@ -51,8 +51,7 @@ public class ArmDeploymentValidator extends AbstractDeploymentValidator {
    * @return The generated ARM client.
    */
   private ArmClient getArmClient() {
-    ArmClient client = new ArmClient((ArmDeployment) deployment, null);
-    client.init();
+    ArmClient client = new ArmClient(deployment, null);
     return client;
   }
 }

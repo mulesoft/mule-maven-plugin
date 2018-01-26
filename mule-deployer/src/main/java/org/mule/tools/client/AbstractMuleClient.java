@@ -65,7 +65,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
     this.businessGroupName = anypointDeployment.getBusinessGroup();
   }
 
-  public void init() {
+  protected void init() {
     bearerToken = getBearerToken(credentials);
 
     orgId = getOrgId();

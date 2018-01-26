@@ -48,6 +48,8 @@ public class ExchangeClient extends AbstractClient {
     this.authenticationServiceClient = new AuthenticationServiceClient(metadata.getBaseUri());
   }
 
+  protected void init() {}
+
   public String getGeneratedGroupId() {
     getBearerToken(metadata.getCredentials());
 

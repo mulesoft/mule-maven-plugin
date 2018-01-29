@@ -11,6 +11,7 @@ package org.mule.tools.deployment.cloudhub;
 
 import static com.google.common.base.Preconditions.*;
 import static java.util.Optional.empty;
+import static org.apache.commons.lang3.StringUtils.*;
 
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.Application;
@@ -26,12 +27,14 @@ import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
 import java.util.Map;
 import java.util.Optional;
 import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Deploys mule artifacts to CloudHub using the {@link CloudHubClient}.
  */
 public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
+  private static final String DEFAULT_CH_REGION = "us-east-1";
   private static final Long DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT = 600000L;
 
   private final DeployerLog log;
@@ -177,7 +180,22 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       properties.putAll(deployment.getProperties());
       application.setProperties(properties);
 
-      application.setRegion(deployment.getRegion());
+      if (isBlank(deployment.getRegion())) {
+        application.setRegion(originalApplication.get().getRegion());
+      } else {
+        application.setRegion(deployment.getRegion());
+      }
+    } else {
+      application.setDomain(deployment.getApplicationName());
+
+      MuleVersion muleVersion = new MuleVersion();
+      muleVersion.setVersion(deployment.getMuleVersion().get());
+      application.setMuleVersion(muleVersion);
+
+      application.setProperties(deployment.getProperties());
+
+      String region = isBlank(deployment.getRegion()) ? DEFAULT_CH_REGION : deployment.getRegion();
+      application.setRegion(region);
     }
 
     return application;

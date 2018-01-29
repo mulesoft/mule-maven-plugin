@@ -144,7 +144,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     cloudHubDeployment.setBusinessGroup("");
 
     CloudHubClient cloudHubClient = new CloudHubClient(cloudHubDeployment, null);
-    // cloudHubClient.init();
+
 
     return cloudHubClient;
   }

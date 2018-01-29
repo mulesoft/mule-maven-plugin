@@ -107,8 +107,5 @@ public class CloudHubDeployment extends AnypointDeployment {
       setWorkerType("Medium");
     }
 
-    if (isBlank(getRegion())) {
-      setRegion(getProperty("cloudhub.region", "us-east-1"));
-    }
   }
 }

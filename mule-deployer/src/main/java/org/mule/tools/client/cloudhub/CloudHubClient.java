@@ -65,7 +65,7 @@ public class CloudHubClient extends AbstractMuleClient {
 
   /**
    * Look up all the applications
-   * 
+   *
    * @return a list with all the {@link Application}
    */
   public List<Application> getApplications() {
@@ -78,7 +78,7 @@ public class CloudHubClient extends AbstractMuleClient {
 
   /**
    * Look up a {@link Application} based on its domain name
-   * 
+   *
    * @param domain the domain name of the application
    * @return null if none found, otherwise the {@link Application}
    */
@@ -90,7 +90,7 @@ public class CloudHubClient extends AbstractMuleClient {
     checkResponseStatus(response, OK, NOT_FOUND);
 
     if (response.getStatus() == OK.getStatusCode()) {
-      return response.readEntity(Application.class);
+      return readJsonEntity(response, Application.class);
     }
 
     return null;
@@ -98,7 +98,7 @@ public class CloudHubClient extends AbstractMuleClient {
 
   /**
    * Creates an {@link Application}
-   * 
+   *
    * @param application the {@link Application} entity
    * @param file the file of the {@link Application}
    * @return the {@link Application} just created
@@ -139,7 +139,7 @@ public class CloudHubClient extends AbstractMuleClient {
 
   /**
    * Deletes an {@link Application} based on its domain name
-   * 
+   *
    * @param domain the domain name of the application
    */
   public void deleteApplications(String domain) {
@@ -152,7 +152,7 @@ public class CloudHubClient extends AbstractMuleClient {
 
   /**
    * Starts an {@link Application} based on its domain name
-   * 
+   *
    * @param domain the domain name of the application
    */
   public void startApplications(String domain) {
@@ -168,7 +168,7 @@ public class CloudHubClient extends AbstractMuleClient {
 
   /**
    * Stops an {@link Application} based on its domain name
-   * 
+   *
    * @param domain the domain name of the application
    */
   public void stopApplications(String domain) {
@@ -184,7 +184,7 @@ public class CloudHubClient extends AbstractMuleClient {
 
   /**
    * It checks the availability of a given doamain name
-   * 
+   *
    * @param domain the domain name
    * @return false if the domain is not available, true otherwise
    */
@@ -201,7 +201,7 @@ public class CloudHubClient extends AbstractMuleClient {
 
   /**
    * Retrieve a list of {@link SupportedVersion}
-   * 
+   *
    * @return a list of the {@link SupportedVersion}
    */
   public List<SupportedVersion> getSupportedMuleVersions() {

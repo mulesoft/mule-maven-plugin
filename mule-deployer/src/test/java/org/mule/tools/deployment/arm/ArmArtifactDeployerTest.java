@@ -48,6 +48,7 @@ public class ArmArtifactDeployerTest {
   private ArmArtifactDeployer armArtifactDeployerSpy;
 
   private ArmArtifactDeployer armArtifactDeployer;
+
   @Before
   public void setUp() throws DeploymentException {
     deploymentMock = mock(ArmDeployment.class);

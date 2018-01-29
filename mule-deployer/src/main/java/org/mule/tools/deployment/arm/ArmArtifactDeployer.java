@@ -39,7 +39,7 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
   }
 
   protected ArmArtifactDeployer(Deployment deployment, ArmClient client, DeployerLog log) {
-    checkArgument(client != null , "The client must not be null.");
+    checkArgument(client != null, "The client must not be null.");
 
     this.log = log;
     this.client = client;

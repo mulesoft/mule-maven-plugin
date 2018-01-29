@@ -23,6 +23,7 @@ import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
 
+import java.util.Map;
 import java.util.Optional;
 import com.google.common.base.Preconditions;
 
@@ -44,7 +45,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   }
 
   public CloudHubArtifactDeployer(Deployment deployment, CloudHubClient cloudHubClient, DeployerLog log) {
-    checkArgument(cloudHubClient != null , "The Cloudhub client must not be null.");
+    checkArgument(cloudHubClient != null, "The Cloudhub client must not be null.");
 
     this.log = log;
     this.client = cloudHubClient;
@@ -57,7 +58,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   }
 
   public void setDeploymentVerification(DeploymentVerification deploymentVerification) {
-    checkArgument(deploymentVerification != null , "The verificator must not be null.");
+    checkArgument(deploymentVerification != null, "The verificator must not be null.");
     this.deploymentVerification = deploymentVerification;
   }
 
@@ -165,16 +166,19 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
   private Application getApplication(Optional<Application> originalApplication) {
     Application application = new Application();
-    if (!originalApplication.isPresent()) {
+    if (originalApplication.isPresent()) {
+      application.setDomain(deployment.getApplicationName());
+
       MuleVersion muleVersion = new MuleVersion();
       muleVersion.setVersion(deployment.getMuleVersion().get());
-
-      application.setDomain(deployment.getApplicationName());
       application.setMuleVersion(muleVersion);
-      application.setProperties(deployment.getProperties());
+
+      Map<String, String> properties = originalApplication.get().getProperties();
+      properties.putAll(deployment.getProperties());
+      application.setProperties(properties);
+
       application.setRegion(deployment.getRegion());
     }
-    // UPDATE FROM ORIGINAL
 
     return application;
   }

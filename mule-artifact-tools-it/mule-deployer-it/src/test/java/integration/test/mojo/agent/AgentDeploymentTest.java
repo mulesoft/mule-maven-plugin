@@ -10,15 +10,13 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import integration.test.mojo.AbstractDeploymentTest;
+import integration.test.util.environment.AgentEnvironment;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import integration.test.util.StandaloneEnvironment;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -26,9 +24,8 @@ import static org.hamcrest.core.Is.is;
 public abstract class AgentDeploymentTest extends AbstractDeploymentTest {
 
   @Rule
-  public TemporaryFolder environmentWorkingDir = new TemporaryFolder();
+  public AgentEnvironment agentEnvironment = new AgentEnvironment(getMuleVersion());
 
-  protected static StandaloneEnvironment standaloneEnvironment;
   protected Verifier verifier;
   private String application;
 
@@ -43,18 +40,12 @@ public abstract class AgentDeploymentTest extends AbstractDeploymentTest {
   @Before
   public void before() throws VerificationException, InterruptedException, IOException, TimeoutException {
     log.info("Initializing context...");
-
-    standaloneEnvironment = new StandaloneEnvironment(environmentWorkingDir.getRoot(), getMuleVersion());
-    standaloneEnvironment.start(true);
-
     verifier = buildBaseVerifier();
   }
 
   @After
   public void after() throws IOException, InterruptedException {
-    standaloneEnvironment.stop();
     verifier.resetStreams();
-    environmentWorkingDir.delete();
   }
 
   protected void deploy() throws VerificationException, InterruptedException {
@@ -70,7 +61,7 @@ public abstract class AgentDeploymentTest extends AbstractDeploymentTest {
   }
 
   protected void assertAndVerify() throws VerificationException {
-    assertThat("Standalone should be running ", standaloneEnvironment.isRunning(), is(true));
+    assertThat("Standalone should be running ", agentEnvironment.isRunning(), is(true));
     assertDeployment();
     verifier.verifyErrorFreeLog();
   }

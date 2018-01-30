@@ -6,28 +6,29 @@
  */
 package org.mule.tools.validation.cloudhub;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mule.tools.client.cloudhub.CloudHubClient;
-import org.mule.tools.client.cloudhub.model.SupportedVersion;
-import org.mule.tools.model.anypoint.CloudHubDeployment;
-import org.mule.tools.utils.DeployerLog;
-import org.mule.tools.validation.AbstractDeploymentValidator;
-import org.mule.tools.validation.EnvironmentSupportedVersions;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.spy;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.mule.tools.client.cloudhub.CloudHubClient;
+import org.mule.tools.client.cloudhub.model.SupportedVersion;
+import org.mule.tools.model.anypoint.CloudHubDeployment;
+import org.mule.tools.utils.DeployerLog;
+import org.mule.tools.validation.AbstractDeploymentValidator;
+import org.mule.tools.validation.EnvironmentSupportedVersions;
+
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(CloudHubDeploymentValidator.class)
@@ -55,8 +56,11 @@ public class CloudHubDeploymentValidatorTest {
     sv1.setVersion(MULE_VERSION2);
 
     supportedVersions = asList(sv1, sv2);
-    expectedEnvironmentSupportedVersions = new EnvironmentSupportedVersions(supportedVersions.stream().map(sv -> sv.getVersion())
-        .collect(Collectors.toSet()));
+    List<String> supportedMuleVersions = new ArrayList<>();
+    for (SupportedVersion sv : supportedVersions) {
+      supportedMuleVersions.add(sv.getVersion());
+    }
+    expectedEnvironmentSupportedVersions = new EnvironmentSupportedVersions(supportedMuleVersions);
   }
 
   @Test

@@ -14,6 +14,7 @@ import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.validation.AbstractDeploymentValidator;
 import org.mule.tools.validation.EnvironmentSupportedVersions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,9 +30,11 @@ public class CloudHubDeploymentValidator extends AbstractDeploymentValidator {
   @Override
   public EnvironmentSupportedVersions getEnvironmentSupportedVersions() throws DeploymentException {
     CloudHubClient client = getCloudHubClient();
-    List<SupportedVersion> supportedMuleVersions = client.getSupportedMuleVersions();
-    return new EnvironmentSupportedVersions(supportedMuleVersions.stream().map(sv -> sv.getVersion())
-        .collect(Collectors.toSet()));
+    List<String> supportedMuleVersions = new ArrayList<>();
+    for (SupportedVersion sv : client.getSupportedMuleVersions()) {
+      supportedMuleVersions.add(sv.getVersion());
+    }
+    return new EnvironmentSupportedVersions(supportedMuleVersions);
   }
 
   /**

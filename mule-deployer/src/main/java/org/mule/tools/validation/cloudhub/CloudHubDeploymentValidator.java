@@ -6,6 +6,9 @@
  */
 package org.mule.tools.validation.cloudhub;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.SupportedVersion;
 import org.mule.tools.client.core.exception.DeploymentException;
@@ -13,10 +16,6 @@ import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.validation.AbstractDeploymentValidator;
 import org.mule.tools.validation.EnvironmentSupportedVersions;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Validates if the mule runtime version is valid in a CloudHub deployment scenario.

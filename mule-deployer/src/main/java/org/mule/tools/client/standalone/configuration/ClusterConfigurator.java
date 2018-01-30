@@ -15,9 +15,8 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.apache.maven.plugin.MojoFailureException;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 
 public class ClusterConfigurator {
 

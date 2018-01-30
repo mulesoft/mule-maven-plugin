@@ -7,7 +7,7 @@
 package org.mule.tools.verification;
 
 import org.mule.tools.client.OperationRetrier;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 
 import java.util.concurrent.TimeoutException;

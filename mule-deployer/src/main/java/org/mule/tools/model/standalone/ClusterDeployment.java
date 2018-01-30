@@ -8,8 +8,7 @@ package org.mule.tools.model.standalone;
 
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.artifact.ArtifactCoordinates;
-import org.mule.tools.client.standalone.exception.DeploymentException;
-
+import org.mule.tools.client.core.exception.DeploymentException;
 import java.io.File;
 
 public class ClusterDeployment extends MuleRuntimeDeployment {

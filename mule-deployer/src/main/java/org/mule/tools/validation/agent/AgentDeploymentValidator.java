@@ -7,9 +7,8 @@
 package org.mule.tools.validation.agent;
 
 import org.mule.tools.client.agent.AgentClient;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
-import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.validation.AbstractDeploymentValidator;
 import org.mule.tools.validation.EnvironmentSupportedVersions;
 

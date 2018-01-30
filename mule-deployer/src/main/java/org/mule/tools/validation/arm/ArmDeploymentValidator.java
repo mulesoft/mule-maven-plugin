@@ -8,7 +8,7 @@ package org.mule.tools.validation.arm;
 
 import org.mule.tools.client.arm.ArmClient;
 import org.mule.tools.client.arm.model.Target;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.validation.AbstractDeploymentValidator;
@@ -48,8 +48,7 @@ public class ArmDeploymentValidator extends AbstractDeploymentValidator {
    * @return The generated ARM client.
    */
   private ArmClient getArmClient() {
-    ArmClient client = new ArmClient((ArmDeployment) deployment, null);
-    client.init();
+    ArmClient client = new ArmClient(deployment, null);
     return client;
   }
 }

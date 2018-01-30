@@ -109,7 +109,6 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
     armDeployment.setArmInsecure(false);
 
     ArmClient armClient = new ArmClient(armDeployment, null);
-    armClient.init();
     return armClient;
   }
 

@@ -8,7 +8,7 @@ package org.mule.tools.deployment.agent;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.deployment.artifact.ApplicationDeployer;
 
 import static org.mockito.Mockito.mock;

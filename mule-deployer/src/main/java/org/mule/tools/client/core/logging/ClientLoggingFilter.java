@@ -4,14 +4,18 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.client.agent;
+package org.mule.tools.client.core.logging;
 
+
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.join;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -25,54 +29,52 @@ import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.ext.WriterInterceptorContext;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
+
 import org.mule.tools.utils.DeployerLog;
 
 public class ClientLoggingFilter implements ClientRequestFilter, ClientResponseFilter, WriterInterceptor {
 
+  public static final String CLIENT_LOGGING_LOG_MULTIPART = "client.logging.log.multipart";
+
   private static final String REQUEST_LOGGING_STREAM = "requestLoggingStream";
 
-  private DeployerLog log;
+  private final DeployerLog log;
 
   public ClientLoggingFilter(DeployerLog log) {
     this.log = log;
   }
 
-  private void appendHeaders(StringBuilder b, MultivaluedMap<String, String> headers) {
-    for (Map.Entry<String, List<String>> headerEntry : headers.entrySet()) {
-      b.append(headerEntry.getKey()).append(": ").append(StringUtils.join(headerEntry.getValue(), ", ")).append("\n");
-    }
-    b.append("\n");
-  }
-
-
   @Override
   public void filter(ClientRequestContext context) throws IOException {
-
     StringBuilder request = new StringBuilder();
 
-    request.append("HTTP Request\n");
-    request.append(context.getMethod() + " " + context.getUri() + "\n");
+    request
+        .append("HTTP Request").append(format("%n"))
+        .append(context.getMethod()).append(" ").append(context.getUri())
+        .append(format("%n"));
 
     appendHeaders(request, context.getStringHeaders());
 
     if (context.hasEntity()) {
-      OutputStream stream = new RequestLoggingStream(request, context.getEntityStream());
-      context.setEntityStream(stream);
-      context.setProperty(REQUEST_LOGGING_STREAM, stream);
-    } else {
-      log.debug(request.toString());
+      if (shouldLogEntity(context.getEntityType())) {
+        OutputStream stream = new RequestLoggingStream(request, context.getEntityStream());
+        context.setEntityStream(stream);
+        context.setProperty(REQUEST_LOGGING_STREAM, stream);
+        return;
+      }
     }
+
+    log.debug(request.toString());
   }
 
   @Override
   public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
-
     StringBuilder response = new StringBuilder();
 
-    response.append("HTTP response\n");
-    response.append(Integer.toString(responseContext.getStatus())).append(" ")
-        .append(responseContext.getStatusInfo().getReasonPhrase()).append("\n");
+    response
+        .append("HTTP response").append(format("%n"))
+        .append(responseContext.getStatus()).append(" ").append(responseContext.getStatusInfo().getReasonPhrase())
+        .append(format("%n"));
 
     appendHeaders(response, responseContext.getHeaders());
 
@@ -80,8 +82,8 @@ public class ClientLoggingFilter implements ClientRequestFilter, ClientResponseF
       ByteArrayOutputStream stream = new ByteArrayOutputStream();
       IOUtils.copy(responseContext.getEntityStream(), stream);
       byte[] responseBytes = stream.toByteArray();
-      response.append(new String(responseBytes));
-      response.append("\n");
+
+      response.append(new String(responseBytes)).append(format("%n"));
       responseContext.setEntityStream(new ByteArrayInputStream(responseBytes));
     }
 
@@ -99,28 +101,23 @@ public class ClientLoggingFilter implements ClientRequestFilter, ClientResponseF
     }
   }
 
-  private class RequestLoggingStream extends FilterOutputStream {
-
-    private StringBuilder request;
-    private ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
-
-    RequestLoggingStream(StringBuilder request, OutputStream inner) {
-      super(inner);
-      this.request = request;
+  private void appendHeaders(StringBuilder builder, MultivaluedMap<String, String> headers) {
+    for (Map.Entry<String, List<String>> headerEntry : headers.entrySet()) {
+      builder.append(headerEntry.getKey()).append(": ").append(join(headerEntry.getValue(), ", ")).append(format("%n"));
     }
-
-    @Override
-    public void write(final int i) throws IOException {
-      requestBody.write(i);
-      out.write(i);
-    }
-
-
-    public String getRequestLog() {
-      request.append(new String(requestBody.toByteArray()));
-      request.append('\n');
-      return request.toString();
-    }
-
+    builder.append(format("%n"));
   }
+
+  private boolean shouldLogEntity(Type entityType) {
+    if (!entityType.getTypeName().contains("FormDataMultiPart")) {
+      return true;
+    }
+
+    return entityType.getTypeName().contains("FormDataMultiPart") && shouldLogMultiPart();
+  }
+
+  private Boolean shouldLogMultiPart() {
+    return Boolean.getBoolean(CLIENT_LOGGING_LOG_MULTIPART);
+  }
+
 }

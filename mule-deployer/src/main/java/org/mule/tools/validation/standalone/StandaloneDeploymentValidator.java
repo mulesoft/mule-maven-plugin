@@ -6,7 +6,7 @@
  */
 package org.mule.tools.validation.standalone;
 
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
 import org.mule.tools.validation.AbstractDeploymentValidator;

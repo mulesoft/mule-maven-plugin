@@ -6,9 +6,11 @@
  */
 package org.mule.tools.deployment.arm;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import org.mule.tools.client.arm.ApplicationMetadata;
 import org.mule.tools.client.arm.ArmClient;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.deployment.artifact.ArtifactDeployer;
@@ -23,23 +25,24 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
 
   private static final Long DEFAULT_ARM_DEPLOYMENT_TIMEOUT = 1200000L;
 
-  private final ArmDeployment deployment;
-  private final DeployerLog log;
   private ArmClient client;
+  private final DeployerLog log;
   private Integer applicationId;
-  private boolean isClientInitialized = false;
+  private final ArmDeployment deployment;
 
   public ArmArtifactDeployer(Deployment deployment, DeployerLog log) {
     this(deployment, new ArmClient(deployment, log), log);
   }
 
   protected ArmArtifactDeployer(Deployment deployment, ArmClient client, DeployerLog log) {
+    checkArgument(client != null, "The client must not be null.");
+
+    this.log = log;
+    this.client = client;
     this.deployment = (ArmDeployment) deployment;
     if (this.deployment.getDeploymentTimeout() == null) {
       this.deployment.setDeploymentTimeout(DEFAULT_ARM_DEPLOYMENT_TIMEOUT);
     }
-    this.client = client;
-    this.log = log;
   }
 
   /**
@@ -79,7 +82,7 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
    */
   @Override
   public void deployApplication() throws DeploymentException {
-    getClient().deployApplication(getApplicationMetadata());
+    client.deployApplication(getApplicationMetadata());
     checkApplicationHasStarted();
   }
 
@@ -102,7 +105,7 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
    */
   @Override
   public void undeployApplication() throws DeploymentException {
-    getClient().undeployApplication(getApplicationMetadata());
+    client.undeployApplication(getApplicationMetadata());
   }
 
   /**
@@ -112,7 +115,7 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
    */
   public void redeployApplication() {
     log.info("Found " + getApplicationMetadata().toString() + ". Redeploying application...");
-    getClient().redeployApplication(getApplicationId(), getApplicationMetadata());
+    client.redeployApplication(getApplicationId(), getApplicationMetadata());
   }
 
   /**
@@ -122,7 +125,7 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
    */
   public Integer getApplicationId() {
     if (applicationId == null) {
-      applicationId = getClient().findApplicationId(getApplicationMetadata());
+      applicationId = client.findApplicationId(getApplicationMetadata());
     }
     return applicationId;
   }
@@ -136,15 +139,7 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
     return deployment.getApplicationName();
   }
 
-  protected ArmClient getClient() {
-    if (!isClientInitialized) {
-      client.init();
-      isClientInitialized = true;
-    }
-    return client;
-  }
-
   public DeploymentVerification getDeploymentVerification() {
-    return new ArmDeploymentVerification(getClient(), getApplicationId());
+    return new ArmDeploymentVerification(client, getApplicationId());
   }
 }

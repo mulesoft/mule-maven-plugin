@@ -14,7 +14,7 @@ import org.junit.rules.TemporaryFolder;
 import org.mule.tools.client.arm.ApplicationMetadata;
 import org.mule.tools.client.arm.ArmClient;
 import org.mule.tools.client.model.TargetType;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.utils.DeployerLog;
 
@@ -31,16 +31,19 @@ public class ArmArtifactDeployerTest {
 
   private static final Integer FAKE_APPLICATION_ID = 1;
   private static final String FAKE_APPLICATION_NAME = "fake-name";
-  private ArmArtifactDeployer armArtifactDeployer;
+
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
-  private ArmDeployment deploymentMock;
-  private ArmClient clientMock;
+
   private DeployerLog logMock;
+  private ArmClient clientMock;
+  private ArmDeployment deploymentMock;
   private ApplicationMetadata metadataMock;
   private ArmArtifactDeployer armArtifactDeployerSpy;
+
+  private ArmArtifactDeployer armArtifactDeployer;
 
   @Before
   public void setUp() throws DeploymentException {
@@ -111,20 +114,6 @@ public class ArmArtifactDeployerTest {
   public void getApplicationNameTest() {
     assertThat("Application name is not the expected", armArtifactDeployer.getApplicationName(), equalTo(FAKE_APPLICATION_NAME));
   }
-
-  @Test
-  public void getClientTest() {
-    verify(clientMock, never()).init();
-
-    armArtifactDeployer.getClient();
-
-    verify(clientMock).init();
-
-    armArtifactDeployer.getClient();
-
-    verify(clientMock).init();
-  }
-
 
   @Test
   public void getApplicationMetadataTest() throws IOException {

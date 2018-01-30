@@ -8,7 +8,7 @@ package org.mule.tools.model;
 
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 
 import java.io.File;
 

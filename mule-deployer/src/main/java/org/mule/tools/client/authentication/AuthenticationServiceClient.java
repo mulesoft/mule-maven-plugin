@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.StringUtils;
 
-import org.mule.tools.client.agent.AbstractClient;
+import org.mule.tools.client.core.AbstractClient;
 import org.mule.tools.client.arm.model.AuthorizationResponse;
 import org.mule.tools.client.arm.model.Environment;
 import org.mule.tools.client.arm.model.Environments;
@@ -62,6 +62,10 @@ public class AuthenticationServiceClient extends AbstractClient {
     this.saveState = saveState;
   }
 
+  protected void init() {
+    // Do nothing
+  }
+
   // TODO find a way to just login and save state
   public String getBearerToken(Credentials credentials) {
     AuthorizationResponse authorizationResponse = login(credentials);
@@ -106,7 +110,7 @@ public class AuthenticationServiceClient extends AbstractClient {
 
     Response response = post(baseUri, LOGIN, credentialsEntity);
 
-    validateStatusSuccess(response);
+    checkResponseStatus(response);
 
     return response.readEntity(AuthorizationResponse.class);
   }

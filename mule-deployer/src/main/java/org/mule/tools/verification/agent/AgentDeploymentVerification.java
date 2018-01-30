@@ -9,7 +9,7 @@ package org.mule.tools.verification.agent;
 import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.client.agent.AgentClient;
 import org.mule.tools.client.agent.model.Application;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.verification.DefaultDeploymentVerification;
 import org.mule.tools.verification.DeploymentVerification;

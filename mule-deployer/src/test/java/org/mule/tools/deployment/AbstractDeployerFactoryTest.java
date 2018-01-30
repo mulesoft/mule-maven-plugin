@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.deployment.agent.AgentApplicationDeployer;
 import org.mule.tools.deployment.agent.AgentDomainDeployer;
 import org.mule.tools.deployment.arm.ArmApplicationDeployer;

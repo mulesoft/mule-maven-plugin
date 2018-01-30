@@ -20,8 +20,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.mule.tools.api.exception.ValidationException;
-//import org.mule.tools.api.validation.deployment.ProjectDeploymentValidator;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.maven.mojo.AbstractGenericMojo;
 import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
 import org.mule.tools.model.Deployment;
@@ -29,7 +28,6 @@ import org.mule.tools.model.anypoint.AnypointDeployment;
 import org.mule.tools.model.anypoint.DeploymentConfigurator;
 import org.mule.tools.model.anypoint.MavenResolverMetadata;
 import org.mule.tools.utils.DeployerLog;
-
 import static java.util.Arrays.asList;
 
 public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {

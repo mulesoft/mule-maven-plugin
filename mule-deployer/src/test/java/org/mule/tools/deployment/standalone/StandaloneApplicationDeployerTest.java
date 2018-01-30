@@ -8,8 +8,8 @@ package org.mule.tools.deployment.standalone;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.standalone.StandaloneDeployment;
+import org.mule.tools.client.core.exception.DeploymentException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;

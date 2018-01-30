@@ -6,7 +6,7 @@
  */
 package org.mule.tools.deployment.agent;
 
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.deployment.artifact.ApplicationDeployer;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.deployment.Deployer;

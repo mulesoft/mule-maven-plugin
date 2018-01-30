@@ -8,7 +8,7 @@ package org.mule.tools.model.anypoint;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;

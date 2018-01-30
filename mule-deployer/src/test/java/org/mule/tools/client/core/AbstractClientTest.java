@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.client.agent;
+package org.mule.tools.client.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -19,12 +19,14 @@ public class AbstractClientTest {
 
   public static class TesteableClient extends AbstractClient {
 
+    protected void init() {}
+
   }
 
   @Test
   public void getUserAgentMuleDeployer() {
     AbstractClient client = new TesteableClient();
-    String userAgent = client.getUserAgentMuleDeployer();
+    String userAgent = client.getUserAgent();
     assertThat(userAgent, is("mule-deployer"));
   }
 

@@ -9,7 +9,7 @@ package org.mule.tools.deployment;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.utils.DeployerLog;
 
 import static org.mockito.ArgumentMatchers.anyString;

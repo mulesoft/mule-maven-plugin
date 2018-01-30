@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.mule.tools.client.standalone.controller.probing.Prober;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.mule.tools.model.standalone.StandaloneDeployment;
 import org.mule.tools.utils.DeployerLog;

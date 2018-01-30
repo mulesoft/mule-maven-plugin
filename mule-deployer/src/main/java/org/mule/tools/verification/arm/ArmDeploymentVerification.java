@@ -7,7 +7,7 @@
 package org.mule.tools.verification.arm;
 
 import org.mule.tools.client.arm.ArmClient;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.verification.DefaultDeploymentVerification;
 import org.mule.tools.verification.DeploymentVerification;

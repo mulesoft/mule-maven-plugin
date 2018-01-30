@@ -47,16 +47,16 @@ import com.google.gson.reflect.TypeToken;
 public class CloudHubClient extends AbstractMuleClient {
 
   private static final String API_VERSION = "v2";
-  private static final String BASE_PATH = "/cloudhub/api";
+  private static final String BASE_API_PATH = "/cloudhub/api";
 
   // TODO using version less
-  private static final String SUPPORTED_VERSIONS_PATH = BASE_PATH + "/mule-versions";
-  private static final String APPLICATION_STATUS = BASE_PATH + "/applications/%s/status";
-  private static final String APPLICATIONS_DOMAINS_PATH = BASE_PATH + "/applications" + "/domains/%s";
+  private static final String SUPPORTED_VERSIONS_PATH = BASE_API_PATH + "/mule-versions";
+  private static final String APPLICATION_STATUS = BASE_API_PATH + "/applications/%s/status";
+  private static final String APPLICATIONS_DOMAINS_PATH = BASE_API_PATH + "/applications" + "/domains/%s";
 
-  private static final String BASE_API_PATH = BASE_PATH + "/" + API_VERSION;
+  private static final String BASE_API_VERSION_PATH = BASE_API_PATH + "/" + API_VERSION;
 
-  private static final String APPLICATIONS_PATH = BASE_API_PATH + "/applications";
+  private static final String APPLICATIONS_PATH = BASE_API_VERSION_PATH + "/applications";
   private static final String A_APPLICATION_PATH = APPLICATIONS_PATH + "/%s";
 
   public CloudHubClient(CloudHubDeployment cloudhubDeployment, DeployerLog log) {

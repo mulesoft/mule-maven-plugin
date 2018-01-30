@@ -120,7 +120,7 @@ public class ClientLoggingFilter implements ClientRequestFilter, ClientResponseF
   }
 
   private Boolean shouldLogMultiPart() {
-    return parseBoolean(System.getProperty(CLIENT_LOGGING_LOG_MULTIPART, "false"));
+    return Boolean.getBoolean(CLIENT_LOGGING_LOG_MULTIPART);
   }
 
 }

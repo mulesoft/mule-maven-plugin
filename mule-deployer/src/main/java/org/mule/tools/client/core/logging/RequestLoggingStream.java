@@ -17,6 +17,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
+ * The goal of this class it to get as a filter for ClientRequestContext. This class will receive data that's about to be send
+ * down the pipe and store it however it sees feet so later one someone can retrieve that data and if needed log it or use it with
+ * some other purposes.
+ * 
  * @author Mulesoft Inc.
  * @since 3.2.0
  */

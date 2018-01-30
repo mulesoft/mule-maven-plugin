@@ -155,10 +155,10 @@ public abstract class AbstractClient {
     }
   }
 
-  protected void checkResponseStatus(Response response, Status... successStatus) {
+  protected void checkResponseStatus(Response response, Status... expectedStatus) {
     // TODO yes it can be done with a lambda but after cp to 2.x
     List<Integer> success = new ArrayList<>();
-    for (Status s : successStatus) {
+    for (Status s : expectedStatus) {
       success.add(s.getStatusCode());
     }
 

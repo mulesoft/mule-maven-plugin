@@ -183,9 +183,11 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     @Override
     public Boolean run() {
       Application application = cloudHubClient.getApplications(applicationName);
-      applicationStatus = application.getStatus();
-      if (application != null && expectedStatus.equals(application.getStatus())) {
-        return false;
+      if (application != null) {
+        applicationStatus = application.getStatus();
+        if (application != null && expectedStatus.equals(application.getStatus())) {
+          return false;
+        }
       }
       return true;
     }

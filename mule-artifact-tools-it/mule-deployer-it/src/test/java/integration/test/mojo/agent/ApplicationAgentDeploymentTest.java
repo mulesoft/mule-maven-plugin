@@ -22,6 +22,6 @@ public class ApplicationAgentDeploymentTest extends AgentDeploymentTest {
 
   @Override
   public void assertDeployment() {
-    assertThat("Failed to deploy: " + APPLICATION, standaloneEnvironment.isDeployed(APPLICATION), is(true));
+    assertThat("Failed to deploy: " + APPLICATION, agentEnvironment.isDeployed(APPLICATION), is(true));
   }
 }

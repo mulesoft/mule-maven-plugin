@@ -22,6 +22,6 @@ public class DomainAgentDeploymentTest extends AgentDeploymentTest {
 
   @Override
   public void assertDeployment() {
-    assertThat("Failed to deploy: " + DOMAIN, standaloneEnvironment.isDomainDeployed(DOMAIN), is(true));
+    assertThat("Failed to deploy: " + DOMAIN, agentEnvironment.isDomainDeployed(DOMAIN), is(true));
   }
 }

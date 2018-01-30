@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import integration.test.util.ProjectFactory;
-import integration.test.util.StandaloneEnvironment;
 
 /**
  * @author Mulesoft Inc.

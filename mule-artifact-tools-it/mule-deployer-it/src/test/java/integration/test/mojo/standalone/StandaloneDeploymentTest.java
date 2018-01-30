@@ -18,22 +18,21 @@ import org.apache.maven.it.Verifier;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
 import org.slf4j.LoggerFactory;
 
-import integration.test.util.StandaloneEnvironment;
+import integration.test.util.environment.StandaloneEnvironment;
 
 public class StandaloneDeploymentTest extends AbstractDeploymentTest {
 
   public static final String VERIFIER_MULE_VERSION = "mule.version";
   public static final String VERIFIER_MULE_TIMEOUT = "mule.timeout";
   public static final String VERIFIER_MULE_HOME_TEST = "mule.home.test";
-  protected static StandaloneEnvironment standaloneEnvironment;
 
   @Rule
-  public TemporaryFolder environmentWorkingDir = new TemporaryFolder();
+  public StandaloneEnvironment standaloneEnvironment = new StandaloneEnvironment(getMuleVersion());
 
   private Verifier verifier;
+
   private String application;
 
   public StandaloneDeploymentTest(String application) {
@@ -49,20 +48,16 @@ public class StandaloneDeploymentTest extends AbstractDeploymentTest {
     log = LoggerFactory.getLogger(this.getClass());
     log.info("Initializing context...");
 
-    standaloneEnvironment = new StandaloneEnvironment(environmentWorkingDir.getRoot(), getMuleVersion());
-    standaloneEnvironment.start(false);
-
     verifier = buildBaseVerifier();
     verifier.setEnvironmentVariable(VERIFIER_MULE_VERSION, getMuleVersion());
     verifier.setEnvironmentVariable(VERIFIER_MULE_TIMEOUT, System.getProperty("mule.timeout"));
     verifier.setEnvironmentVariable(VERIFIER_MULE_HOME_TEST, standaloneEnvironment.getMuleHome());
   }
 
+
   @After
   public void after() throws IOException, InterruptedException {
-    standaloneEnvironment.stop();
     verifier.resetStreams();
-    environmentWorkingDir.delete();
   }
 
   protected void deploy() throws VerificationException {

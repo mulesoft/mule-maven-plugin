@@ -10,9 +10,9 @@
 package org.mule.tools.verification.cloudhub;
 
 import org.apache.commons.lang3.StringUtils;
-import org.mule.tools.client.cloudhub.Application;
+import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.CloudHubClient;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.verification.DefaultDeploymentVerification;
 import org.mule.tools.verification.DeploymentVerification;
@@ -43,14 +43,14 @@ public class CloudHubDeploymentVerification implements DeploymentVerification {
     @Override
     public Predicate<Deployment> isDeployed() {
       return (deployment) -> {
-        Application application = client.getApplication(deployment.getApplicationName());
-        return application != null && StringUtils.equals(STARTED_STATUS, application.status);
+        Application application = client.getApplications(deployment.getApplicationName());
+        return application != null && StringUtils.equals(STARTED_STATUS, application.getStatus());
       };
     }
 
     @Override
     public Consumer<Deployment> onTimeout() {
-      return deployment -> client.stopApplication(deployment.getApplicationName());
+      return deployment -> client.stopApplications(deployment.getApplicationName());
     }
   }
 }

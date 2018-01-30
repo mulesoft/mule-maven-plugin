@@ -9,44 +9,60 @@
  */
 package org.mule.tools.deployment.cloudhub;
 
-import org.apache.commons.lang3.StringUtils;
-import org.mule.tools.client.cloudhub.Application;
-import org.mule.tools.client.cloudhub.ApplicationMetadata;
+import static com.google.common.base.Preconditions.*;
+import static java.util.Optional.empty;
+import static org.apache.commons.lang3.StringUtils.*;
+
 import org.mule.tools.client.cloudhub.CloudHubClient;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.cloudhub.model.Application;
+import org.mule.tools.client.cloudhub.model.MuleVersion;
+import org.mule.tools.client.core.exception.DeploymentException;
+import org.mule.tools.deployment.artifact.ArtifactDeployer;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
-import org.mule.tools.deployment.artifact.ArtifactDeployer;
 import org.mule.tools.utils.DeployerLog;
+import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.lang.Integer.getInteger;
-import static java.lang.Long.getLong;
+import java.util.Map;
+import java.util.Optional;
+import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Deploys mule artifacts to CloudHub using the {@link CloudHubClient}.
  */
 public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
+  private static final String DEFAULT_CH_REGION = "us-east-1";
   private static final Long DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT = 600000L;
-  private final CloudHubDeployment deployment;
+
   private final DeployerLog log;
+  private final CloudHubDeployment deployment;
+
   private CloudHubClient client;
-  private ApplicationMetadata application;
-  private boolean isClientInitialized = false;
+  private DeploymentVerification deploymentVerification;
 
   public CloudHubArtifactDeployer(Deployment deployment, DeployerLog log) {
-    this(deployment, getCloudHubClient(deployment, log), log);
+    this(deployment, new CloudHubClient((CloudHubDeployment) deployment, log), log);
   }
 
   public CloudHubArtifactDeployer(Deployment deployment, CloudHubClient cloudHubClient, DeployerLog log) {
+    checkArgument(cloudHubClient != null, "The Cloudhub client must not be null.");
+
+    this.log = log;
+    this.client = cloudHubClient;
+    this.deploymentVerification = new CloudHubDeploymentVerification(client);
+
     this.deployment = (CloudHubDeployment) deployment;
     if (!this.deployment.getDeploymentTimeout().isPresent()) {
       this.deployment.setDeploymentTimeout(DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT);
     }
-    this.client = cloudHubClient;
-    this.log = log;
+  }
+
+  public void setDeploymentVerification(DeploymentVerification deploymentVerification) {
+    checkArgument(deploymentVerification != null, "The verificator must not be null.");
+    this.deploymentVerification = deploymentVerification;
   }
 
   @Override
@@ -66,8 +82,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
    */
   @Override
   public void deployApplication() throws DeploymentException {
-    persistApplication();
-    uploadContents();
+    createOrUpdateApplication();
     startApplication();
     checkApplicationHasStarted();
   }
@@ -80,55 +95,52 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   @Override
   public void undeployApplication() throws DeploymentException {
     log.info("Stopping application " + deployment.getApplicationName());
-    getClient().stopApplication(deployment.getApplicationName());
+    client.stopApplications(deployment.getApplicationName());
   }
 
   /**
-   * Creates the application in CloudHub if the domain is available. Otherwise, it tries to update the existent application.
+   * Retrieves the application name.
+   *
+   * @return The application name
+   */
+  public String getApplicationName() {
+    return deployment.getApplicationName();
+  }
+
+  /**
+   * Creates or update an application in CloudHub.
+   * 
+   * If the domain name is available it gets created. Otherwise, it tries to update the existent application.
    *
    * @throws DeploymentException If the application is not available and cannot be updated
    */
-  protected void persistApplication() throws DeploymentException {
-    ApplicationMetadata applicationMetadata = getMetadata();
-    boolean domainAvailable = getClient().isNameAvailable(deployment.getApplicationName());
-    if (domainAvailable) {
-      createApplication(applicationMetadata);
+  protected void createOrUpdateApplication() throws DeploymentException {
+    if (client.isDomainAvailable(deployment.getApplicationName())) {
+      createApplication();
     } else {
-      updateApplication(applicationMetadata);
+      updateApplication();
     }
   }
 
   /**
-   * Uploads the jar contents to CloudHub.
-   */
-  protected void uploadContents() {
-    log.info("Uploading application contents " + deployment.getApplicationName());
-    getClient().uploadFile(deployment.getApplicationName(), deployment.getArtifact());
-  }
-
-  /**
    * Creates the application in CloudHub.
-   *
-   * @param applicationMetadata The metadata of the application to be created
    */
-  protected void createApplication(ApplicationMetadata applicationMetadata) {
+  protected void createApplication() {
     log.info("Creating application: " + deployment.getApplicationName());
-    getClient().createApplication(applicationMetadata);
+    client.createApplications(getApplication(empty()), deployment.getArtifact());
   }
 
   /**
    * Updates the application in CloudHub.
    *
-   * @param applicationMetadata The metadata of the application to be updated
    * @throws DeploymentException In case the application is not available for the current user or some other internal in CloudHub
    *         happens
    */
-  protected void updateApplication(ApplicationMetadata applicationMetadata) throws DeploymentException {
-    Application currentApplication = findApplicationFromCurrentUser(deployment.getApplicationName());
+  protected void updateApplication() throws DeploymentException {
+    Application currentApplication = client.getApplications(deployment.getApplicationName());
     if (currentApplication != null) {
       log.info("Application: " + deployment.getApplicationName() + " already exists, redeploying");
-      applicationMetadata.updateValues(currentApplication);
-      getClient().updateApplication(applicationMetadata);
+      client.updateApplications(getApplication(Optional.of(currentApplication)), deployment.getArtifact());
     } else {
       log.error("Application name: " + deployment.getApplicationName() + " is not available. Aborting.");
       throw new DeploymentException("Domain " + deployment.getApplicationName() + " is not available. Aborting.");
@@ -141,7 +153,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
    */
   protected void startApplication() {
     log.info("Starting application: " + deployment.getApplicationName());
-    getClient().startApplication(deployment.getApplicationName());
+    client.startApplications(deployment.getApplicationName());
   }
 
   /**
@@ -151,68 +163,41 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
    */
   protected void checkApplicationHasStarted() throws DeploymentException {
     log.info("Checking if application: " + deployment.getApplicationName() + " has started");
-    CloudHubDeploymentVerification verification = getDeploymentVerification();
-    verification.assertDeployment(deployment);
+    deploymentVerification.assertDeployment(deployment);
   }
 
-  /**
-   * Tries to find the application id.
-   *
-   * @param appName The application name. It cannot be null nor blank
-   * @return The id if the application is available for the user defined in the client session; {@code null} otherwise
-   */
-  protected Application findApplicationFromCurrentUser(String appName) {
-    checkArgument(StringUtils.isNotBlank(appName), "Application name should not be blank nor null");
-    for (Application app : getClient().getApplications()) {
-      if (appName.equalsIgnoreCase(app.domain)) {
-        return app;
+
+  private Application getApplication(Optional<Application> originalApplication) {
+    Application application = new Application();
+    if (originalApplication.isPresent()) {
+      application.setDomain(deployment.getApplicationName());
+
+      MuleVersion muleVersion = new MuleVersion();
+      muleVersion.setVersion(deployment.getMuleVersion().get());
+      application.setMuleVersion(muleVersion);
+
+      Map<String, String> properties = originalApplication.get().getProperties();
+      properties.putAll(deployment.getProperties());
+      application.setProperties(properties);
+
+      if (isBlank(deployment.getRegion())) {
+        application.setRegion(originalApplication.get().getRegion());
+      } else {
+        application.setRegion(deployment.getRegion());
       }
+    } else {
+      application.setDomain(deployment.getApplicationName());
+
+      MuleVersion muleVersion = new MuleVersion();
+      muleVersion.setVersion(deployment.getMuleVersion().get());
+      application.setMuleVersion(muleVersion);
+
+      application.setProperties(deployment.getProperties());
+
+      String region = isBlank(deployment.getRegion()) ? DEFAULT_CH_REGION : deployment.getRegion();
+      application.setRegion(region);
     }
-    return null;
-  }
 
-  /**
-   * Retrieves the application name.
-   * 
-   * @return The application name
-   */
-  protected String getApplicationName() {
-    return deployment.getApplicationName();
-  }
-
-  public CloudHubClient getClient() {
-    if (!isClientInitialized) {
-      client.init();
-      isClientInitialized = true;
-    }
-    return client;
-  }
-
-
-  /**
-   * Retrieves a CloudHub client based on the deployment configuration and the log.
-   *
-   * @param deployment The deployment configuration.
-   * @param log
-   * @return A {@link CloudHubClient} created based on the deployment configuration and the log.
-   */
-  private static CloudHubClient getCloudHubClient(Deployment deployment, DeployerLog log) {
-    return new CloudHubClient((CloudHubDeployment) deployment, log);
-  }
-
-  /**
-   * Retrieves an application metadata based on the deployment configuration.
-   *
-   * @return An {@link ApplicationMetadata} based on the deployment configuration.
-   */
-  public ApplicationMetadata getMetadata() {
-    if (application == null) {
-      application = new ApplicationMetadata(deployment);
-    }
     return application;
-  }
-
-  public CloudHubDeploymentVerification getDeploymentVerification() {
-    return new CloudHubDeploymentVerification(getClient());
   }
 }

@@ -10,7 +10,7 @@
 
 package org.mule.tools.model.standalone;
 
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 
 import java.io.File;

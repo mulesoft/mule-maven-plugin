@@ -9,213 +9,218 @@
  */
 package org.mule.tools.client.cloudhub;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.String.format;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NOT_MODIFIED;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 import java.io.File;
-import java.util.*;
-import java.util.concurrent.TimeoutException;
+import java.lang.reflect.Type;
+import java.util.List;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
+
 import org.mule.tools.client.AbstractMuleClient;
-import org.mule.tools.client.exception.ClientException;
+import org.mule.tools.client.cloudhub.model.Application;
+import org.mule.tools.client.cloudhub.model.DomainAvailability;
+import org.mule.tools.client.cloudhub.model.PaginatedResponse;
+import org.mule.tools.client.cloudhub.model.SupportedVersion;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+/**
+ * Client to hit the CloudHub API
+ */
 public class CloudHubClient extends AbstractMuleClient {
 
-  public static final String STARTED_STATUS = "STARTED";
-  public static final String UNDEPLOYED_STATUS = "UNDEPLOYED";
+  private static final String API_VERSION = "v2";
+  private static final String BASE_API_PATH = "/cloudhub/api";
 
-  private static final String APPLICATIONS_PATH = "/cloudhub/api/applications";
-  private static final String DOMAINS_PATH = "/cloudhub/api/applications/domains/";
-  private static final String APPLICATION_UPDATE_PATH = "/cloudhub/api/v2/applications/%s";
-  private static final String APPLICATIONS_FILES_PATH = "/cloudhub/api/v2/applications/%s/files";
-  private static final String SUPPORTED_VERSIONS_PATH = "cloudhub/api/mule-versions";
-  private static final String CREATE_REQUEST_TEMPLATE = "{" +
-      "  \"domain\": \"%s\"," +
-      "  \"region\": \"%s\"," +
-      "  \"muleVersion\": \"%s\"," +
-      "  \"workers\": %d," +
-      "  \"workerType\": \"%s\"";
-  private static final String UPDATE_REQUEST_TEMPLATE = "{" +
-      "  \"region\":\"%s\"," +
-      "  \"muleVersion\": {\"version\": \"%s\"}," +
-      "  \"workers\": {" +
-      "    \"amount\": %d," +
-      "    \"type\": {" +
-      "        \"name\": \"%s\"" +
-      "    }" +
-      "  }";
-  private static final int OK = 200;
-  private static final int CREATED = 201;
-  private static final int NO_CONTENT = 204;
-  private static final int MOVED_PERMANENTLY = 301;
-  private static final int NOT_MODIFIED = 304;
-  private static final int NOT_FOUND = 404;
+  // TODO using version less
+  private static final String SUPPORTED_VERSIONS_PATH = BASE_API_PATH + "/mule-versions";
+  private static final String APPLICATION_STATUS = BASE_API_PATH + "/applications/%s/status";
+  private static final String APPLICATIONS_DOMAINS_PATH = BASE_API_PATH + "/applications" + "/domains/%s";
+
+  private static final String BASE_API_VERSION_PATH = BASE_API_PATH + "/" + API_VERSION;
+
+  private static final String APPLICATIONS_PATH = BASE_API_VERSION_PATH + "/applications";
+  private static final String A_APPLICATION_PATH = APPLICATIONS_PATH + "/%s";
 
   public CloudHubClient(CloudHubDeployment cloudhubDeployment, DeployerLog log) {
     super(cloudhubDeployment, log);
   }
 
-  public Application createApplication(ApplicationMetadata metadata) {
-    Entity<String> json = createApplicationRequest(metadata);
-    Response response = post(baseUri, APPLICATIONS_PATH, json);
-    if (response.getStatus() == CREATED) {
-      return response.readEntity(Application.class);
-    } else {
-      throw new ClientException(response);
-    }
-  }
-
-  private Entity<String> createApplicationRequest(ApplicationMetadata metadata) {
-    String json = String.format(CREATE_REQUEST_TEMPLATE, metadata.getName(), metadata.getRegion(),
-                                metadata.getMuleVersion().get(), metadata.getWorkers(),
-                                metadata.getWorkerType());
-    json = addProperties(metadata.getProperties(), json);
-    json = json + "}";
-    return Entity.json(json);
-  }
-
-  private Entity<String> updateApplicationRequest(ApplicationMetadata metadata) {
-    String json =
-        String.format(UPDATE_REQUEST_TEMPLATE, metadata.getRegion(), metadata.getMuleVersion().get(), metadata.getWorkers(),
-                      metadata.getWorkerType());
-    json = addProperties(metadata.getProperties(), json);
-    json = json + "}";
-    return Entity.json(json);
-  }
-
-  private String addProperties(Map<String, String> properties, String json) {
-    if (properties == null) {
-      return json;
-    }
-
-    json = json + ",";
-    json = json + "  \"properties\": {";
-    for (Map.Entry<String, String> entry : properties.entrySet()) {
-      json = json + "    \"" + entry.getKey() + "\":\"" + entry.getValue() + "\",";
-    }
-    if (json.charAt(json.length() - 1) == ',') {
-      json = json.substring(0, json.length() - 1);
-    }
-    json = json + "  }\n";
-    return json;
-  }
-
-  public void updateApplication(ApplicationMetadata metadata) {
-    Entity<String> json = updateApplicationRequest(metadata);
-    Response response = put(baseUri, String.format(APPLICATION_UPDATE_PATH, metadata.getName()), json);
-    if (response.getStatus() != OK && response.getStatus() != MOVED_PERMANENTLY) {
-      throw new ClientException(response);
-    }
-  }
-
   /**
-   * Looks up an application by its name.
-   * 
-   * @param appName The application name to look up.
-   * @return The details of an application, or null if it doesn't exist.
+   * Look up all the applications
+   *
+   * @return a list with all the {@link Application}
    */
-  public Application getApplication(String appName) {
-    Response response = get(baseUri, APPLICATIONS_PATH + "/" + appName);
-
-    if (response.getStatus() == OK) {
-      return response.readEntity(Application.class);
-    } else if (response.getStatus() == NOT_FOUND) {
-      return null;
-    } else {
-      throw new ClientException(response);
-    }
-  }
-
   public List<Application> getApplications() {
     Response response = get(baseUri, APPLICATIONS_PATH);
 
-    if (response.getStatus() == OK) {
-      return response.readEntity(new GenericType<List<Application>>() {});
-    } else {
-      throw new ClientException(response);
-    }
+    checkResponseStatus(response, OK);
+
+    return response.readEntity(new GenericType<List<Application>>() {});
   }
 
-  public void uploadFile(String appName, File file) {
-    FileDataBodyPart applicationPart = new FileDataBodyPart("file", file);
-    MultiPart multipart = new FormDataMultiPart().bodyPart(applicationPart);
+  /**
+   * Look up a {@link Application} based on its domain name
+   *
+   * @param domain the domain name of the application
+   * @return null if none found, otherwise the {@link Application}
+   */
+  public Application getApplications(String domain) {
+    checkArgument(isNotBlank(domain), "The domain must not be null nor empty.");
 
-    Response response =
-        post(baseUri, String.format(APPLICATIONS_FILES_PATH, appName), Entity.entity(multipart, multipart.getMediaType()));
+    Response response = get(baseUri, format(A_APPLICATION_PATH, domain));
 
-    if (response.getStatus() != OK) {
-      throw new ClientException(response);
-    }
-  }
+    checkResponseStatus(response, OK, NOT_FOUND);
 
-  public void startApplication(String appName) {
-    changeApplicationState(appName, "START");
-  }
-
-  public void stopApplication(String appName) {
-    changeApplicationState(appName, "STOP");
-  }
-
-  private void changeApplicationState(String appName, String state) {
-    Entity<String> json = Entity.json("{\"status\": \"" + state + "\"}");
-    Response response = post(baseUri, APPLICATIONS_PATH + "/" + appName + "/status", json);
-
-    if (response.getStatus() != OK && response.getStatus() != NOT_MODIFIED) {
-      throw new ClientException(response);
+    if (response.getStatus() == OK.getStatusCode()) {
+      return readJsonEntity(response, Application.class);
     }
 
+    return null;
   }
 
-  public void deleteApplication(String appName) {
-    Response response = delete(baseUri, APPLICATIONS_PATH + "/" + appName);
+  /**
+   * Creates an {@link Application}
+   *
+   * @param application the {@link Application} entity
+   * @param file the file of the {@link Application}
+   * @return the {@link Application} just created
+   */
+  public Application createApplications(Application application, File file) {
+    checkArgument(file != null, "The file must not be null.");
+    checkArgument(application != null, "The application must not be null.");
 
-    if (response.getStatus() != OK && response.getStatus() != NO_CONTENT) {
-      throw new ClientException(response);
-    }
+    Entity<MultiPart> entity = getMultiPartEntity(application, file);
 
+    Response response = post(baseUri, APPLICATIONS_PATH, entity);
+
+    checkResponseStatus(response, OK);
+
+    return response.readEntity(Application.class);
   }
 
+  /**
+   * Update an already existing {@link Application}
+   *
+   * @param application the {@link Application} entity
+   * @param file the file of the {@link Application}
+   * @return the {@link Application} just updated
+   */
+  public Application updateApplications(Application application, File file) {
+    checkArgument(file != null, "The file must not be null.");
+    checkArgument(application != null, "The application must not be null.");
+    checkArgument(isNotBlank(application.getDomain()), "The application domain must not be null nor empty.");
 
-  public boolean isNameAvailable(String appName) {
-    Response response = get(baseUri, DOMAINS_PATH + appName);
+    Entity<MultiPart> entity = getMultiPartEntity(application, file);
 
-    if (response.getStatus() == OK) {
-      DomainAvailability availability = response.readEntity(DomainAvailability.class);
-      return availability.available;
-    } else {
-      throw new ClientException(response);
-    }
+    Response response = put(baseUri, format(A_APPLICATION_PATH, application.getDomain()), entity);
 
+    checkResponseStatus(response, OK);
+
+    return response.readEntity(Application.class);
   }
 
-  public Set<String> getSupportedMuleVersions() {
-    Set<String> supportedMuleVersions = new HashSet<>();
+  /**
+   * Deletes an {@link Application} based on its domain name
+   *
+   * @param domain the domain name of the application
+   */
+  public void deleteApplications(String domain) {
+    checkArgument(isNotBlank(domain), "The domain must not be null nor empty.");
 
-    String jsonResponse = get(baseUri, SUPPORTED_VERSIONS_PATH).readEntity(String.class);
+    Response response = delete(baseUri, format(A_APPLICATION_PATH, domain));
 
-    JsonObject response = new JsonParser().parse(jsonResponse).getAsJsonObject();
-    JsonArray dataElements = response.get("data").getAsJsonArray();
-    for (JsonElement dataElement : dataElements) {
-      JsonObject data = dataElement.getAsJsonObject();
-      String muleVersion = data.get("version").getAsString();
-      supportedMuleVersions.add(muleVersion);
-    }
-
-    return supportedMuleVersions;
+    checkResponseStatus(response, OK, NO_CONTENT);
   }
 
-  private static class DomainAvailability {
+  /**
+   * Starts an {@link Application} based on its domain name
+   *
+   * @param domain the domain name of the application
+   */
+  public void startApplications(String domain) {
+    checkArgument(isNotBlank(domain), "The domain must not be null nor empty.");
 
-    public boolean available;
+    Application application = new Application();
+    application.setStatus("START");
+
+    Response response = post(baseUri, format(APPLICATION_STATUS, domain), new Gson().toJson(application));
+
+    checkResponseStatus(response, OK, NOT_MODIFIED);
+  }
+
+  /**
+   * Stops an {@link Application} based on its domain name
+   *
+   * @param domain the domain name of the application
+   */
+  public void stopApplications(String domain) {
+    checkArgument(isNotBlank(domain), "The domain must not be null nor empty.");
+
+    Application application = new Application();
+    application.setStatus("STOP");
+
+    Response response = post(baseUri, format(APPLICATION_STATUS, domain), new Gson().toJson(application));
+
+    checkResponseStatus(response, OK, NOT_MODIFIED);
+  }
+
+  /**
+   * It checks the availability of a given doamain name
+   *
+   * @param domain the domain name
+   * @return false if the domain is not available, true otherwise
+   */
+  public boolean isDomainAvailable(String domain) {
+    checkArgument(isNotBlank(domain), "The domain must not be null nor empty.");
+
+    Response response = get(baseUri, format(APPLICATIONS_DOMAINS_PATH, domain));
+
+    checkResponseStatus(response, OK);
+
+    DomainAvailability availability = response.readEntity(DomainAvailability.class);
+    return availability.isAvailable();
+  }
+
+  /**
+   * Retrieve a list of {@link SupportedVersion}
+   *
+   * @return a list of the {@link SupportedVersion}
+   */
+  public List<SupportedVersion> getSupportedMuleVersions() {
+    Response response = get(baseUri, SUPPORTED_VERSIONS_PATH);
+
+    checkResponseStatus(response, OK);
+
+    Type type = new TypeToken<PaginatedResponse<SupportedVersion>>() {}.getType();
+    PaginatedResponse<SupportedVersion> paginatedResponse = readJsonEntity(response, type);
+
+    return paginatedResponse.getData();
+  }
+
+  private Entity<MultiPart> getMultiPartEntity(Application application, File file) {
+    FileDataBodyPart filePart = new FileDataBodyPart("file", file);
+
+    FormDataBodyPart appInfoJsonPart = new FormDataBodyPart("appInfoJson", new Gson().toJson(application));
+
+    MultiPart multipart = new FormDataMultiPart().bodyPart(filePart).bodyPart(appInfoJsonPart);
+    return Entity.entity(multipart, multipart.getMediaType());
   }
 }

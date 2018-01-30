@@ -12,12 +12,8 @@ package org.mule.tools.model.agent;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
-import org.mule.tools.client.AbstractMuleClient;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
-
-import java.io.File;
-import java.util.Optional;
 
 import static java.lang.System.getProperty;
 import static org.apache.commons.lang3.StringUtils.isBlank;

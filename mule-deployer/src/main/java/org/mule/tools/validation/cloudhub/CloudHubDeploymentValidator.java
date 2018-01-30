@@ -10,13 +10,15 @@
 package org.mule.tools.validation.cloudhub;
 
 import org.mule.tools.client.cloudhub.CloudHubClient;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.cloudhub.model.SupportedVersion;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.validation.AbstractDeploymentValidator;
 import org.mule.tools.validation.EnvironmentSupportedVersions;
 
-import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Validates if the mule runtime version is valid in a CloudHub deployment scenario.
@@ -30,8 +32,9 @@ public class CloudHubDeploymentValidator extends AbstractDeploymentValidator {
   @Override
   public EnvironmentSupportedVersions getEnvironmentSupportedVersions() throws DeploymentException {
     CloudHubClient client = getCloudHubClient();
-    Set<String> supportedMuleVersions = client.getSupportedMuleVersions();
-    return new EnvironmentSupportedVersions(supportedMuleVersions);
+    List<SupportedVersion> supportedMuleVersions = client.getSupportedMuleVersions();
+    return new EnvironmentSupportedVersions(supportedMuleVersions.stream().map(sv -> sv.getVersion())
+        .collect(Collectors.toSet()));
   }
 
   /**
@@ -41,7 +44,6 @@ public class CloudHubDeploymentValidator extends AbstractDeploymentValidator {
    */
   private CloudHubClient getCloudHubClient() {
     CloudHubClient client = new CloudHubClient((CloudHubDeployment) deployment, null);
-    client.init();
     return client;
   }
 }

@@ -16,7 +16,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 
 import org.mule.tools.client.standalone.controller.MuleProcessController;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.deployment.DefaultDeployer;
 import org.mule.tools.deployment.Deployer;
 

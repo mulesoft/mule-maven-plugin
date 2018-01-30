@@ -15,14 +15,13 @@ import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.validation.deployment.ProjectDeploymentValidator;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.maven.mojo.AbstractGenericMojo;
 import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
 import org.mule.tools.model.Deployment;
@@ -33,12 +32,9 @@ import org.mule.tools.model.anypoint.DeploymentConfigurator;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkState;
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.DEPLOY;
 
 public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
 

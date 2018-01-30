@@ -38,9 +38,11 @@ import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappin
 
 public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleMapping {
 
-  private static final String MULE_MAVEN_PLUGIN = "org.mule.tools.maven:mule-maven-plugin";
+  private static final String MULE_DEPLOY = "muleDeploy";
 
   private static final String ORG_APACHE_MAVEN_PLUGINS = "org.apache.maven.plugins";
+  private static final String MULE_MAVEN_PLUGIN = "org.mule.tools.maven:mule-maven-plugin";
+
   private static final String MAVEN_RESOURCES_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-resources-plugin:3.0.2";
   private static final String MAVEN_CLEAN_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-clean-plugin:3.6.1";
   private static final String MAVEN_COMPILER_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-compiler-plugin:3.6.1";
@@ -89,7 +91,7 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
 
     phases.put(SITE.id(), buildGoals(mapping, MAVEN_SITE_PLUGIN + ":site", MULE_MAVEN_PLUGIN + ":site"));
 
-    String isMuleDeploy = System.getProperty("muleDeploy");
+    String isMuleDeploy = System.getProperty(MULE_DEPLOY);
     if (isMuleDeploy != null && isMuleDeploy.equals("true")) {
       phases.put(DEPLOY.id(), mapping.buildGoals(MULE_MAVEN_PLUGIN + ":deploy"));
     } else {

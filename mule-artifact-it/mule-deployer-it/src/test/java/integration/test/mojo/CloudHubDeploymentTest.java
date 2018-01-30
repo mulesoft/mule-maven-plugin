@@ -14,27 +14,30 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assume.assumeTrue;
 import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
-import static org.mule.tools.client.cloudhub.CloudHubClient.STARTED_STATUS;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
-import org.junit.*;
-
+import org.junit.AssumptionViolatedException;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.model.Statement;
-import org.mule.tools.client.cloudhub.Application;
-import org.mule.tools.client.cloudhub.CloudHubClient;
+
 import org.mule.tools.client.OperationRetrier;
 import org.mule.tools.client.OperationRetrier.RetriableOperation;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.cloudhub.CloudHubClient;
+import org.mule.tools.client.cloudhub.model.Application;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 
 @RunWith(Parameterized.class)
@@ -47,6 +50,8 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
   private static final String APPLICATION_NAME = randomAlphabetic(APPLICATION_NAME_LENGTH).toLowerCase();
   private static final String SNAPSHOT_SUFFIX = "-SNAPSHOT";
   private static final String DEPLOYMENT_TIMEOUT = "1000000";
+
+  private static final String STARTED_STATUS = "STARTED";
 
   private Verifier verifier;
   private CloudHubClient cloudHubClient;
@@ -61,7 +66,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
     @Override
     protected void succeeded(Description description) {
-      cloudHubClient.deleteApplication(APPLICATION_NAME);
+      cloudHubClient.deleteApplications(APPLICATION_NAME);
     }
 
     @Override
@@ -113,7 +118,9 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
   @Test
   public void testCloudHubDeploy() throws VerificationException, InterruptedException, TimeoutException, DeploymentException {
     String version = muleVersion.replace(SNAPSHOT_SUFFIX, "");
-    assumeTrue("Version not supported by CloudHub", cloudHubClient.getSupportedMuleVersions().contains(version));
+
+    assumeTrue("Version not supported by CloudHub", cloudHubClient.getSupportedMuleVersions().stream().map(sv -> sv.getVersion())
+        .collect(Collectors.toSet()).contains(version));
 
     log.info("Executing mule:deploy goal...");
     verifier.addCliOption("-DmuleDeploy");
@@ -137,7 +144,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     cloudHubDeployment.setBusinessGroup("");
 
     CloudHubClient cloudHubClient = new CloudHubClient(cloudHubDeployment, null);
-    cloudHubClient.init();
+
 
     return cloudHubClient;
   }
@@ -175,10 +182,12 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
     @Override
     public Boolean run() {
-      Application application = cloudHubClient.getApplication(applicationName);
-      applicationStatus = application.status;
-      if (application != null && expectedStatus.equals(application.status)) {
-        return false;
+      Application application = cloudHubClient.getApplications(applicationName);
+      if (application != null) {
+        applicationStatus = application.getStatus();
+        if (application != null && expectedStatus.equals(application.getStatus())) {
+          return false;
+        }
       }
       return true;
     }

@@ -15,7 +15,7 @@ import org.mule.tools.deployment.Deployer;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 
 /**
  * Undeploys all the applications on a Mule Runtime Standalone server, regardless of whether it was started using start or deploy

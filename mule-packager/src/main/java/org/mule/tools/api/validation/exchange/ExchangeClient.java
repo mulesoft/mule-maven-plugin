@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 
 import org.mule.tools.api.validation.exchange.model.Group;
-import org.mule.tools.client.agent.AbstractClient;
+import org.mule.tools.client.core.AbstractClient;
 import org.mule.tools.client.authentication.AuthenticationServiceClient;
 import org.mule.tools.client.authentication.model.Credentials;
 
@@ -48,12 +48,14 @@ public class ExchangeClient extends AbstractClient {
     this.authenticationServiceClient = new AuthenticationServiceClient(metadata.getBaseUri());
   }
 
+  protected void init() {}
+
   public String getGeneratedGroupId() {
     getBearerToken(metadata.getCredentials());
 
     Response response = get(metadata.getBaseUri(), String.format(GROUPS_PATH, metadata.getOrganizationId()));
 
-    validateStatusSuccess(response);
+    checkResponseStatus(response);
 
     Type listType = new TypeToken<ArrayList<Group>>() {}.getType();
     List<Group> groupList = new Gson().fromJson(response.readEntity(String.class), listType);

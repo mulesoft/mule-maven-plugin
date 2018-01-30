@@ -17,7 +17,7 @@ import org.mule.tools.client.standalone.configuration.ClusterConfigurator;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.mule.tools.client.standalone.controller.probing.PollingProber;
 import org.mule.tools.client.standalone.controller.probing.deployment.DeploymentProbe;
-import org.mule.tools.client.standalone.exception.DeploymentException;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.utils.DeployerLog;

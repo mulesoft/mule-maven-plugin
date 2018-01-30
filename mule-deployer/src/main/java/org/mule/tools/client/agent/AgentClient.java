@@ -10,7 +10,8 @@
 package org.mule.tools.client.agent;
 
 import org.mule.tools.client.agent.model.Application;
-import org.mule.tools.client.exception.ClientException;
+import org.mule.tools.client.core.AbstractClient;
+import org.mule.tools.client.core.exception.ClientException;
 
 import java.io.File;
 
@@ -37,6 +38,10 @@ public class AgentClient extends AbstractClient {
   public AgentClient(DeployerLog log, Deployment deployment) {
     super(log);
     this.uri = ((AgentDeployment) deployment).getUri();
+  }
+
+  protected void init() {
+    // DO NOTHING
   }
 
   /**

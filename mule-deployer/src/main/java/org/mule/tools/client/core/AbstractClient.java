@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.client.agent;
+package org.mule.tools.client.core;
 
 
 import static com.google.common.net.HttpHeaders.USER_AGENT;
@@ -19,19 +19,25 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.glassfish.jersey.client.HttpUrlConnectorProvider.SET_METHOD_WORKAROUND;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.LOGIN;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
-import com.sun.net.httpserver.Headers;
-import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
-import org.mule.tools.client.exception.ClientException;
+import org.mule.tools.client.core.exception.ClientException;
+import org.mule.tools.client.core.logging.ClientLoggingFilter;
 import org.mule.tools.utils.DeployerLog;
+
+import com.google.gson.Gson;
 
 public abstract class AbstractClient {
 
@@ -39,10 +45,71 @@ public abstract class AbstractClient {
 
   protected DeployerLog log;
 
+  private boolean isClientInitialized = false;
+
   public AbstractClient() {}
 
   public AbstractClient(DeployerLog log) {
     this.log = log;
+  }
+
+  protected Response post(String uri, String path, Entity entity) {
+    initialize();
+    return builder(uri, path).post(entity);
+  }
+
+  protected Response post(String uri, String path, Object entity) {
+    initialize();
+    return post(uri, path, Entity.entity(entity, APPLICATION_JSON_TYPE));
+  }
+
+  protected Response put(String uri, String path, Entity entity) {
+    initialize();
+    return builder(uri, path).put(entity);
+  }
+
+  protected Response put(String uri, String path, Object entity) {
+    initialize();
+    return put(uri, path, Entity.entity(entity, APPLICATION_JSON_TYPE));
+  }
+
+  protected Response delete(String uri, String path) {
+    initialize();
+    return builder(uri, path).delete();
+  }
+
+  protected Response get(String uri, String path) {
+    initialize();
+    return builder(uri, path).get();
+  }
+
+  protected <T> T get(String uri, String path, Class<T> clazz) {
+    initialize();
+    return get(uri, path).readEntity(clazz);
+  }
+
+  protected Response patch(String uri, String path, Entity entity) {
+    initialize();
+    Invocation.Builder builder = builder(uri, path);
+    builder.property(SET_METHOD_WORKAROUND, true);
+    return builder.method("PATCH", entity);
+  }
+
+
+  private synchronized void initialize() {
+    if (!isClientInitialized) {
+      isClientInitialized = true;
+      init();
+    }
+  }
+
+  protected abstract void init();
+
+  private Invocation.Builder builder(String uri, String path) {
+    WebTarget target = getTarget(uri, path);
+    Invocation.Builder builder = target.request(APPLICATION_JSON_TYPE).header(USER_AGENT, getUserAgent());
+    configureRequest(builder);
+    return builder;
   }
 
   protected WebTarget getTarget(String uri, String path) {
@@ -56,62 +123,12 @@ public abstract class AbstractClient {
     return client.target(uri).path(path);
   }
 
+  // TODO find a more generic way of doing this
   private boolean isLoginRequest(String path) {
     return LOGIN.equals(path);
   }
 
-  protected void validateStatusSuccess(Response response) {
-    if (familyOf(response.getStatus()) != SUCCESSFUL) {
-      throw new ClientException(response);
-    }
-  }
-
-  protected void configureSecurityContext(ClientBuilder builder) {
-    // Implemented in concrete classes
-  }
-
-  protected Response post(String uri, String path, Entity entity) {
-    return builder(uri, path).post(entity);
-  }
-
-  protected Response post(String uri, String path, Object entity) {
-    return post(uri, path, Entity.entity(entity, APPLICATION_JSON_TYPE));
-  }
-
-  protected Response put(String uri, String path, Entity entity) {
-    return builder(uri, path).put(entity);
-  }
-
-  protected Response put(String uri, String path, Object entity) {
-    return put(uri, path, Entity.entity(entity, APPLICATION_JSON_TYPE));
-  }
-
-  protected Response delete(String uri, String path) {
-    return builder(uri, path).delete();
-  }
-
-  protected Response get(String uri, String path) {
-    return builder(uri, path).get();
-  }
-
-  protected <T> T get(String uri, String path, Class<T> clazz) {
-    return get(uri, path).readEntity(clazz);
-  }
-
-  protected Response patch(String uri, String path, Entity entity) {
-    Invocation.Builder builder = builder(uri, path);
-    builder.property(SET_METHOD_WORKAROUND, true);
-    return builder.method("PATCH", entity);
-  }
-
-  private Invocation.Builder builder(String uri, String path) {
-    WebTarget target = getTarget(uri, path);
-    Invocation.Builder builder = target.request(APPLICATION_JSON_TYPE).header(USER_AGENT, getUserAgentMuleDeployer());
-    configureRequest(builder);
-    return builder;
-  }
-
-  protected String getUserAgentMuleDeployer() {
+  protected String getUserAgent() {
     Package classPackage = AbstractClient.class.getPackage();
     String implementationVersion = classPackage != null ? classPackage.getImplementationVersion() : EMPTY;
 
@@ -126,6 +143,35 @@ public abstract class AbstractClient {
    */
   protected void configureRequest(Invocation.Builder builder) {
 
+  }
+
+  protected void configureSecurityContext(ClientBuilder builder) {
+    // Implemented in concrete classes
+  }
+
+  protected void checkResponseStatus(Response response) {
+    if (familyOf(response.getStatus()) != SUCCESSFUL) {
+      throw new ClientException(response);
+    }
+  }
+
+  protected void checkResponseStatus(Response response, Status... expectedStatus) {
+    // TODO yes it can be done with a lambda but after cp to 2.x
+    List<Integer> success = new ArrayList<>();
+    for (Status s : expectedStatus) {
+      success.add(s.getStatusCode());
+    }
+
+    Integer statusCode = response.getStatus();
+    if (!success.contains(statusCode)) {
+      throw new ClientException(response);
+    }
+  }
+
+  // TODO find a way to dec
+  protected <T> T readJsonEntity(Response response, Type type) {
+    String jsonResponse = response.readEntity(String.class);
+    return new Gson().fromJson(jsonResponse, type);
   }
 
 }

@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.client.exception;
+package org.mule.tools.client.core.exception;
 
 import org.junit.Before;
 import org.junit.Rule;

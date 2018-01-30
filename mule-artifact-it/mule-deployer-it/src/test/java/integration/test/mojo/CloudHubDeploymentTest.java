@@ -83,7 +83,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
   @Parameterized.Parameters
   public static Iterable<? extends Object> data() {
-    return Arrays.asList("4.0.0", "4.1.0-SNAPSHOT");
+    return Arrays.asList("4.0.0", "4.1.0", "4.2.0-SNAPSHOT");
   }
 
   private String muleVersion;

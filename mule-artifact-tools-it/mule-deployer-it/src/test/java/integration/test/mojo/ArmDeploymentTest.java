@@ -13,7 +13,7 @@ import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import integration.test.util.environment.ArmEnvironment;
+import integration.test.util.rules.environment.ArmEnvironment;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.*;

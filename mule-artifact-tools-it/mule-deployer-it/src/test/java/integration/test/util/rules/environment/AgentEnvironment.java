@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package integration.test.util.environment;
+package integration.test.util.rules.environment;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class AgentEnvironment extends StandaloneEnvironment {
   private void unpackAgent() throws InterruptedException, IOException {
     List<String> commands = new ArrayList<>();
 
-    String amcExecutable = muleHome + AMC_SETUP_RELATIVE_FOLDER;
+    String amcExecutable = muleHome.getRoot().getAbsolutePath() + AMC_SETUP_RELATIVE_FOLDER;
 
     int tries = 0;
     Process applicationProcess;

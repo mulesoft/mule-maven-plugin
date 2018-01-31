@@ -6,7 +6,7 @@
     <groupId>com.mulesoft.muleesb.it</groupId>
     <artifactId>empty-mule-deploy-application-agent-project</artifactId>
     <version>1.0.0</version>
-    <packaging>mule-application</packaging>
+    <packaging>mule</packaging>
 
     <build>
         <plugins>
@@ -19,6 +19,8 @@
                     <agentDeployment>
                         <uri>http://localhost:9999/</uri>
                         <muleVersion>${mule.version}</muleVersion>
+                        <artifact>${project.basedir}/empty-mule-deploy-application-agent-project.zip</artifact>
+                        <deploymentTimeout>120000</deploymentTimeout>
                     </agentDeployment>
                 </configuration>
             </plugin>

@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package integration.test.util.environment;
+package integration.test.util.rules.environment;
 
 import static integration.test.util.FileUtils.copyDirectoryRecursively;
 import static org.junit.Assert.fail;
@@ -13,8 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.rules.ExternalResource;

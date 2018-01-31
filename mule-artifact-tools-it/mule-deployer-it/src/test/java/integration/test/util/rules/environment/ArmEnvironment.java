@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package integration.test.util.environment;
+package integration.test.util.rules.environment;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.client.arm.ArmClient;
@@ -12,14 +12,12 @@ import org.mule.tools.client.arm.model.Applications;
 import org.mule.tools.client.arm.model.Data;
 import org.mule.tools.client.arm.model.Servers;
 import org.mule.tools.client.arm.model.Target;
-import org.mule.tools.model.anypoint.ArmDeployment;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.junit.Assert.fail;
-import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
 
 public class ArmEnvironment extends StandaloneEnvironment {
 

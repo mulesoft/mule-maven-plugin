@@ -20,7 +20,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.slf4j.LoggerFactory;
 
-import integration.test.util.environment.StandaloneEnvironment;
+import integration.test.util.rules.environment.StandaloneEnvironment;
 
 public class StandaloneDeploymentTest extends AbstractDeploymentTest {
 

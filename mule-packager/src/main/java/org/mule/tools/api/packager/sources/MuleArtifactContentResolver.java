@@ -138,6 +138,7 @@ public class MuleArtifactContentResolver {
         .map(File::toPath)
         .map(p -> resourcesFolder.toPath().relativize(p))
         .map(Path::toString)
+        .map(p -> p.replace("\\", "/"))
         .collect(Collectors.toList());
   }
 }

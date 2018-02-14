@@ -49,8 +49,8 @@ public class ArmEnvironment extends StandaloneEnvironment {
 
   @Override
   public void start() throws IOException, InterruptedException, TimeoutException {
-    super.start();
     register(client.getRegistrationToken(), armInstanceName);
+    super.start();
     assertServerIsRunningInArm(4 * 60000);
   }
 

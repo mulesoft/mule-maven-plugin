@@ -23,7 +23,6 @@ import org.mule.tools.model.anypoint.ArmDeployment;
 
 import org.slf4j.LoggerFactory;
 
-@Ignore
 public class ArmDeploymentTest extends AbstractDeploymentTest {
 
 
@@ -58,7 +57,6 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
   @Test
   public void testArmDeploy() throws VerificationException, InterruptedException, TimeoutException {
     log.info("Executing mule:deploy goal...");
-    verifier.addCliOption("-DmuleDeploy");
     verifier.executeGoal(DEPLOY_GOAL);
 
 
@@ -80,8 +78,7 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
     armDeployment.setEnvironment(PRODUCTION_ENVIRONMENT);
     armDeployment.setArmInsecure(false);
 
-    ArmClient armClient = new ArmClient(armDeployment, null);
-    return armClient;
+    return new ArmClient(armDeployment, null);
   }
 
 

@@ -6,7 +6,7 @@
     <groupId>com.mulesoft.muleesb.it</groupId>
     <artifactId>arm-deploy</artifactId>
     <version>1.1.0</version>
-    <packaging>mule-application</packaging>
+    <packaging>mule</packaging>
 
     <build>
         <plugins>
@@ -23,6 +23,7 @@
                         <username>${username}</username>
                         <password>${password}</password>
                         <environment>${environment}</environment>
+                        <artifact>${project.basedir}/empty-mule-deploy-application-arm-project.zip</artifact>
                         <muleVersion>${mule.version}</muleVersion>
                     </armDeployment>
                 </configuration>

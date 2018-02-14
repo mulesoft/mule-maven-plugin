@@ -39,8 +39,6 @@ import org.mule.tools.client.cloudhub.model.SupportedVersion;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 
-@Ignore
-@RunWith(Parameterized.class)
 public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
   private static final long RETRY_SLEEP_TIME = 30000;
@@ -83,17 +81,6 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     }
   };
 
-  @Parameterized.Parameters
-  public static Iterable<? extends Object> data() {
-    return Arrays.asList("4.0.0", "4.1.0-SNAPSHOT");
-  }
-
-  private String muleVersion;
-
-  public CloudHubDeploymentTest(String muleVersion) {
-    this.muleVersion = muleVersion;
-  }
-
   public String getApplication() {
     return APPLICATION;
   }
@@ -106,7 +93,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     verifier.setEnvironmentVariable("username", username);
     verifier.setEnvironmentVariable("password", password);
     verifier.setEnvironmentVariable("environment", PRODUCTION_ENVIRONMENT);
-    verifier.setEnvironmentVariable("mule.version", muleVersion);
+    verifier.setEnvironmentVariable("mule.version", getMuleVersion());
     verifier.setEnvironmentVariable("cloudhub.application.name", APPLICATION_NAME);
     verifier.setEnvironmentVariable("cloudhub.deployment.timeout", DEPLOYMENT_TIMEOUT);
     cloudHubClient = getCloudHubClient();
@@ -114,17 +101,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
   @Test
   public void testCloudHubDeploy() throws VerificationException, InterruptedException, TimeoutException, DeploymentException {
-    String version = muleVersion.replace(SNAPSHOT_SUFFIX, "");
-
-    Set<String> supportedVersion = new HashSet();
-    for (SupportedVersion sv : cloudHubClient.getSupportedMuleVersions()) {
-      supportedVersion.add(sv.getVersion());
-    }
-
-    assumeTrue("Version not supported by CloudHub", supportedVersion.contains(version));
-
     log.info("Executing mule:deploy goal...");
-    verifier.addCliOption("-DmuleDeploy");
 
     verifier.executeGoal(DEPLOY_GOAL);
 

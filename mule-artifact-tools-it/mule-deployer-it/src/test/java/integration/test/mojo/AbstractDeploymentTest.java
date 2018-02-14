@@ -21,7 +21,6 @@ import integration.test.util.ProjectFactory;
  * @author Mulesoft Inc.
  * @since 2.0.0
  */
-@Ignore
 public abstract class AbstractDeploymentTest {
 
   private static final String MAVEN_OPTS = "MAVEN_OPTS";

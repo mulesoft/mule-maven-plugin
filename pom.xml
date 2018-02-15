@@ -47,7 +47,7 @@
         <licensePath>LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mule.version>3.8.2</mule.version>
+        <mule.version>3.8.0</mule.version>
         <suite>standalone</suite>
 
         <environment>Production</environment>
@@ -56,7 +56,7 @@
         <java.source>1.7</java.source>
         <java.target>1.7</java.target>
 
-        <mule.distribution.standalone.version>3.8.2</mule.distribution.standalone.version>
+        <mule.distribution.standalone.version>3.8.0</mule.distribution.standalone.version>
 
         <javaFormatter.plugin.version>1.7.0</javaFormatter.plugin.version>
         <license.plugin.version>2.6</license.plugin.version>

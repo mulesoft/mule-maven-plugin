@@ -67,8 +67,10 @@
         <groovy.version>2.0.1</groovy.version>
         <hamcrest.version>1.3</hamcrest.version>
         <json.version>20140107</json.version>
+        <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
 
         <skipVerifications>false</skipVerifications>
+        <skipTests>false</skipTests>
         <formatterGoal>validate</formatterGoal>
 
         <maven.version>3.5.0</maven.version>
@@ -105,6 +107,12 @@
         <maven.verifier.version>1.6</maven.verifier.version>
         <maven.surefire.plugin.version>2.20</maven.surefire.plugin.version>
 
+        <!--JaCoCo Settings-->
+        <skipJaCoCoCoverage>${skipTests}</skipJaCoCoCoverage>
+        <jacoco.report.location>${session.executionRootDirectory}/target/jacoco.exec</jacoco.report.location>
+        <jacoco.agent.argLine>
+            -javaagent:'${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.maven.plugin.version}/org.jacoco.agent-${jacoco.maven.plugin.version}-runtime.jar'=destfile='${session.executionRootDirectory}/target/jacoco.exec'
+        </jacoco.agent.argLine>
     </properties>
 
     <dependencyManagement>
@@ -328,9 +336,13 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven.surefire.plugin.version}</version>
                     <configuration>
+                        <argLine>${jacoco.agent.argLine}</argLine>
                         <systemPropertyVariables>
                             <mule.maven.plugin.version>${project.version}</mule.maven.plugin.version>
                             <mule.home.test>${project.build.directory}</mule.home.test>
+                            <argLine>
+                                -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.maven.plugin.version}/org.jacoco.agent-${jacoco.maven.plugin.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco-it.exec
+                            </argLine>
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>
@@ -461,6 +473,45 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <haltOnFailure>true</haltOnFailure>
+                    <skip>${skipJaCoCoCoverage}</skip>
+                    <append>true</append>
+                    <destFile>${jacoco.report.location}</destFile>
+                    <dataFile>${jacoco.report.location}</dataFile>
+                    <rules>
+                        <rule>
+                            <element>BUNDLE</element>
+                        </rule>
+                    </rules>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
     <reporting>
@@ -479,6 +530,11 @@
                     <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
                     <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.maven.plugin.version}</version>
             </plugin>
         </plugins>
     </reporting>

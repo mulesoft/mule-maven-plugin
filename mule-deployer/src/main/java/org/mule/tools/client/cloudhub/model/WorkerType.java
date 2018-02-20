@@ -13,7 +13,7 @@ package org.mule.tools.client.cloudhub.model;
 public class WorkerType {
 
   private String name;
-  private Long weight;
+  private Double weight;
   private String cpu;
   private String memory;
 
@@ -25,11 +25,11 @@ public class WorkerType {
     this.name = name;
   }
 
-  public Long getWeight() {
+  public Double getWeight() {
     return weight;
   }
 
-  public void setWeight(Long weight) {
+  public void setWeight(Double weight) {
     this.weight = weight;
   }
 

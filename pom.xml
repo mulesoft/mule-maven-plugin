@@ -74,21 +74,16 @@
         <formatterGoal>validate</formatterGoal>
 
         <maven.version>3.5.0</maven.version>
-        <maven.settings.version>3.0.4</maven.settings.version>
-        <maven.plugin.api.version>2.0</maven.plugin.api.version>
         <maven.plugin.annotations.version>3.2</maven.plugin.annotations.version>
         <maven.dependency.plugin.version>2.8</maven.dependency.plugin.version>
         <maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
         <maven.invoker.plugin.version>2.0.0</maven.invoker.plugin.version>
         <maven.plugin.plugin.version>3.5</maven.plugin.plugin.version>
-        <maven.artifact.version>2.0.9</maven.artifact.version>
         <maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
-        <maven.project.version>2.0</maven.project.version>
         <maven.javadoc.plugin.version>2.10.3</maven.javadoc.plugin.version>
         <maven.plugin.version>3.5.0</maven.plugin.version>
         <maven.settings.builder.version>3.3.9</maven.settings.builder.version>
-        <codehaus.plexus.archiver>2.3</codehaus.plexus.archiver>
-        <plexus.utils.version>3.0.8</plexus.utils.version>
+        <codehaus.plexus.archiver>3.4</codehaus.plexus.archiver>
         <project.info.plugin.version>2.4</project.info.plugin.version>
 
         <!-- Mule Deployer -->
@@ -102,6 +97,8 @@
         <powermock.version>1.7.0</powermock.version>
         <powermock.version>1.7.0</powermock.version>
         <semver4j.version>2.2.0</semver4j.version>
+        <semantic.version.version>1.1.0</semantic.version.version>
+
 
         <!-- Mule Artifact Tools IT -->
         <maven.verifier.version>1.6</maven.verifier.version>
@@ -120,40 +117,28 @@
             <!-- Maven Plugin Dependencies -->
             <dependency>
                 <groupId>org.apache.maven</groupId>
-                <artifactId>maven-settings</artifactId>
-                <version>${maven.settings.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
                 <artifactId>maven-plugin-api</artifactId>
-                <version>${maven.plugin.api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-artifact</artifactId>
-                <version>${maven.artifact.version}</version>
+                <version>${maven.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.maven</groupId>
+                        <artifactId>maven-model</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.maven</groupId>
+                        <artifactId>maven-artifact</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.eclipse.sisu</groupId>
+                        <artifactId>org.eclipse.sisu.plexus</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.plugin-tools</groupId>
                 <artifactId>maven-plugin-annotations</artifactId>
                 <version>${maven.plugin.annotations.version}</version>
                 <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-utils</artifactId>
-                <version>${plexus.utils.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-project</artifactId>
-                <version>${maven.project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven.plugin-testing</groupId>
-                <artifactId>maven-plugin-testing-harness</artifactId>
-                <version>${maven.plugin.api.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
@@ -231,6 +216,12 @@
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-settings-builder</artifactId>
                 <version>${maven.settings.builder.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.skuzzle</groupId>
+                <artifactId>semantic-version</artifactId>
+                <version>${semantic.version.version}</version>
             </dependency>
 
             <!-- Mule Deployer -->

@@ -9,9 +9,12 @@ package org.mule.tools.maven.mojo;
 import java.io.File;
 //import java.nio.file.Paths;
 //import java.util.Arrays;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Map;
 
 //import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 //import org.apache.maven.model.DeploymentRepository;
@@ -28,13 +31,16 @@ import org.apache.maven.project.MavenProject;
 //import org.mule.tools.api.packager.packaging.PackagingType;
 //import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
 //import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
-//import org.mule.tools.api.validation.project.AbstractProjectValidator;
+import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.validation.project.AbstractProjectValidator;
 //import org.mule.tools.api.validation.project.ProjectValidatorFactory;
 //import org.mule.tools.client.authentication.model.Credentials;
 //import org.mule.tools.maven.util.ArtifactUtils;
 //import org.mule.tools.maven.util.DependencyProject;
 //import org.mule.tools.maven.util.MavenPackagerLog;
 //import org.mule.tools.maven.util.ProjectDirectoryUpdater;
+import org.mule.tools.api.packager.ProjectInformation;
+import org.mule.tools.api.validation.project.ProjectValidatorFactory;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
@@ -68,16 +74,6 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   @Parameter(property = "project", required = true)
   protected MavenProject project;
 
-  // mule-packager
-
-  // @Parameter(property = "shared.libraries")
-  // protected List<SharedLibraryDependency> sharedLibraries;
-
-  // mule-packager
-
-  // @Parameter(defaultValue = "${strictCheck}")
-  // protected boolean strictCheck;
-
   @Parameter(defaultValue = "${project.basedir}")
   protected File projectBaseFolder;
 
@@ -89,30 +85,18 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   // @Parameter(readonly = true, required = true, defaultValue = "${project.remoteArtifactRepositories}")
   // protected List<ArtifactRepository> remoteArtifactRepositories;
 
-  // mule-packager
-
-  // @Parameter(defaultValue = "${testJar}")
-  // protected boolean testJar = false;
-
   @Parameter
   protected String classifier;
 
-  // mule-packager
-
-  // @Parameter(defaultValue = "${lightweightPackage}")
-  // protected boolean lightweightPackage = false;
-
-  // mule-packager
-
-  // protected AbstractProjectValidator validator;
+  protected AbstractProjectValidator validator;
 
   // Used mainly for repository generation in 3.x
 
   // protected AetherMavenClient aetherMavenClient;
 
-  // private ProjectInformation projectInformation;
+  private ProjectInformation projectInformation;
 
-  // public abstract String getPreviousRunPlaceholder();
+  public abstract String getPreviousRunPlaceholder();
 
   public abstract void doExecute() throws MojoExecutionException, MojoFailureException;
 
@@ -158,15 +142,13 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   // this.projectBaseFolder = projectBaseFolder;
   // }
 
-  // mule-packager
-
-  // public AbstractProjectValidator getProjectValidator() {
-  // if (validator == null) {
-  // validator =
-  // ProjectValidatorFactory.create(getAndSetProjectInformation(), getAetherMavenClient(), sharedLibraries, strictCheck);
-  // }
-  // return validator;
-  // }
+  public AbstractProjectValidator getProjectValidator() {
+    if (validator == null) {
+      validator =
+          ProjectValidatorFactory.create(getAndSetProjectInformation());
+    }
+    return validator;
+  }
 
   // mule-packager
 
@@ -189,73 +171,51 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   // return dependencies.stream().map(ArtifactUtils::toArtifactCoordinates).collect(Collectors.toList());
   // }
 
-  // protected ProjectInformation getAndSetProjectInformation() {
-  // ProjectInformation.Builder builder = new ProjectInformation.Builder();
-  // if (projectInformation == null) {
-  // boolean isDeployment = session.getGoals().stream().anyMatch(goal -> StringUtils.equals(goal, "deploy"));
-  // builder.withGroupId(project.getGroupId())
-  // .withArtifactId(project.getArtifactId())
-  // .withVersion(project.getVersion())
-  // .withPackaging(project.getPackaging())
-  // .withClassifier(getClassifier())
-  // .withProjectBaseFolder(Paths.get(projectBaseFolder.toURI()))
-  // .withBuildDirectory(Paths.get(project.getBuild().getDirectory()))
-  // .setTestProject(testJar)
-  // .withDependencyProject(new DependencyProject(project))
-  // .isDeployment(isDeployment);
-  //
-  // if (isDeployment) {
-  // DistributionManagement management = project.getDistributionManagement();
-  // DeploymentRepository repository = management != null ? management.getRepository() : null;
-  // Settings settings = session.getSettings();
-  // Optional<ExchangeRepositoryMetadata> metadata = getExchangeRepositoryMetadata(repository, settings);
-  // if (metadata.isPresent()) {
-  // builder.withExchangeRepositoryMetadata(metadata.get());
-  // } else {
-  // builder.withDeployments(Arrays.asList(agentDeployment, standaloneDeployment, armDeployment, cloudHubDeployment,
-  // clusterDeployment));
-  // }
-  // }
-  // projectInformation = builder.build();
-  // }
-  // return projectInformation;
-  // }
+  protected ProjectInformation getAndSetProjectInformation() {
+    ProjectInformation.Builder builder = new ProjectInformation.Builder();
+    if (projectInformation == null) {
+      boolean isDeployment = false;
+      for (String goal : session.getGoals()) {
+        isDeployment = isDeployment || StringUtils.equals(goal, "deploy");
+      }
+      builder.withGroupId(project.getGroupId())
+          .withArtifactId(project.getArtifactId())
+          .withVersion(project.getVersion())
+          .withPackaging(project.getPackaging())
+          .withProjectBaseFolder(Paths.get(projectBaseFolder.toURI()))
+          .withBuildDirectory(Paths.get(project.getBuild().getDirectory()))
+          .isDeployment(isDeployment);
 
-  // /**
-  // * This method avoids running a MoJo more than once.
-  // *
-  // * @return true if the MoJo run has already happened before
-  // */
-  // protected boolean hasExecutedBefore() {
-  // Map<String, String> pluginContext = getPluginContext();
-  // if (pluginContext.containsKey(getPreviousRunPlaceholder())) {
-  // return true;
-  // }
-  // getPluginContext().put(getPreviousRunPlaceholder(), getPreviousRunPlaceholder());
-  // return false;
-  // }
+      if (isDeployment) {
+        builder.withDeployments(Arrays.asList(agentDeployment, standaloneDeployment, armDeployment, cloudHubDeployment,
+                                              clusterDeployment));
+      }
+      projectInformation = builder.build();
+    }
+    return projectInformation;
+  }
+
+  /**
+   * This method avoids running a MoJo more than once.
+   *
+   * @return true if the MoJo run has already happened before
+   */
+  protected boolean hasExecutedBefore() {
+    Map<String, String> pluginContext = getPluginContext();
+    if (pluginContext.containsKey(getPreviousRunPlaceholder())) {
+      return true;
+    }
+    getPluginContext().put(getPreviousRunPlaceholder(), getPreviousRunPlaceholder());
+    return false;
+  }
 
 
-  // private Optional<ExchangeRepositoryMetadata> getExchangeRepositoryMetadata(DeploymentRepository repository, Settings
-  // settings) {
-  // ExchangeRepositoryMetadata metadata = null;
-  // if (repository != null && ExchangeRepositoryMetadata.isExchangeRepo(repository.getUrl())) {
-  // Server server = settings.getServer(repository.getId());
-  // Credentials credentials = new Credentials(server.getUsername(), server.getPassword());
-  // metadata = new ExchangeRepositoryMetadata(credentials, repository.getUrl());
-  // }
-  // return Optional.ofNullable(metadata);
-  // }
+  protected PackagingType getPackagingType() {
+    return PackagingType.fromString(project.getPackaging());
+  }
 
-  // mule-packager
 
-  // protected PackagingType getPackagingType() {
-  // return PackagingType.fromString(project.getPackaging());
-  // }
-
-  // mule-packager
-
-  // public String getClassifier() {
-  // return getPackagingType().resolveClassifier(classifier, lightweightPackage, testJar);
-  // }
+  public String getClassifier() {
+    return getPackagingType().resolveClassifier(classifier);
+  }
 }

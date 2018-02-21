@@ -85,44 +85,27 @@ public class MulePackageBuilder implements PackageBuilder {
   }
 
   /**
-   * Creates a mule app package based on the contents of the origin folder, writing them to the destination jar file. The target
+   * Creates a mule app package based on the contents of the origin folder, writing them to the destination zip file. The target
    * file is supposed to have more or less the structure of the example below:
    * 
    * <pre>
    *
-   *
-   * ├── log4j2.xml
-   * ├── org
-   * │   └── MyClass.class
+   * ├── classes
+   * │   ├── MyClass.class
+   * │   └── log4j2.xml
    * ├── mule
    * │   ├── package
    * │   └── mule-configuration(s).xml
    * ├── api
    * │   └── *.raml
-   * └── wsdl
+   * ├── wsdl
    * │   └── *.wsdl
-   * ├── META-INF
-   * │   ├── mule-src
-   * │   │   └── application-name
-   * │   ├── maven
-   * │   │   ├── group-id
-   * │   │   └── artifact-id
-   * │   │       ├── pom.xml
-   * │   │       └── pom.properties
-   * │   └── mule-artifact
-   * │       ├── classloader-model.json
-   * │       └── mule-artifact.json
-   * └── repository
-   *     ├── org
-   *     └── mule
-   *         ├── munit
-   *         └── munit-common
-   *             ├── 1.1.0
-   *             │   ├── *.jar
-   *             │   └── pom.xml
-   *             └── 2.0.0
-   *                 ├── *.jar
-   *                 └── pom.xml
+   * ├── test-classes
+   * │   └── MyTestClass.class
+   * │
+   * └── test-mule
+   *     └── munit-configuration(s).xml
+   * 
    * </pre>
    *
    * @param originFolderPath folder containing the source files.

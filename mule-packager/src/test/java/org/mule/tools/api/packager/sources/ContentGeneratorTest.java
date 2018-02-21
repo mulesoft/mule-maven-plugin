@@ -34,7 +34,6 @@ public class ContentGeneratorTest {
 
   private static final String POM_FILE_NAME = "pom.xml";
   private static final String FAKE_FILE_NAME = "fakeFile.xml";
-  private static final String MULE_ARTIFACT_DESCRIPTOR_FILE_NAME = "mule-artifact.json";
 
   @Rule
   public TemporaryFolder projectBaseFolder = new TemporaryFolder();
@@ -137,51 +136,10 @@ public class ContentGeneratorTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void createDescriptorsNoOriginalPom() throws IOException {
-    String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
-
-    Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
-    PackagerTestUtils.createFolder(sourceFolderPath, descriptorFileName, true);
-
-    contentGenerator.createDescriptors();
-  }
-
-  @Test(expected = IllegalArgumentException.class)
   public void createDescriptorsNoPomDestinationFolder() throws IOException {
 
     Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
     PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
-
-    contentGenerator.createDescriptors();
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void createDescriptorsNoOriginalDescriptor() throws IOException {
-    Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
-    PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
-
-    Path pomPropertiesDestinationPath =
-        projectTargetFolder.toPath().resolve(PackagerTestUtils.META_INF).resolve(
-                                                                                 PackagerTestUtils.MAVEN)
-            .resolve(GROUP_ID).resolve(ARTIFACT_ID);
-    PackagerTestUtils.createEmptyFolder(pomPropertiesDestinationPath);
-
-    contentGenerator.createDescriptors();
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void createDescriptorsNoDescriptorDestinationFolder() throws IOException {
-    String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
-
-    Path sourceFolderPath = projectBaseFolder.getRoot().toPath();
-    PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
-    PackagerTestUtils.createFolder(sourceFolderPath, descriptorFileName, true);
-
-    Path pomPropertiesDestinationPath =
-        projectTargetFolder.toPath().resolve(PackagerTestUtils.META_INF).resolve(
-                                                                                 PackagerTestUtils.MAVEN)
-            .resolve(GROUP_ID).resolve(ARTIFACT_ID);
-    PackagerTestUtils.createEmptyFolder(pomPropertiesDestinationPath);
 
     contentGenerator.createDescriptors();
   }

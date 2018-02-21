@@ -25,21 +25,10 @@ public class PackagerTestUtils {
   public static final String MAIN = "main";
 
   public static final String MULE = "mule";
-  public static final String POLICY = "policy";
 
   public static final String TEST = "test";
   public static final String TEST_MULE = "test-mule";
   public static final String MUNIT = "munit";
-
-  public static final String REPOSITORY = "repository";
-
-  public static final String MAVEN = "maven";
-  public static final String MULE_SRC = "mule-src";
-  public static final String MULE_ARTIFACT = "mule-artifact";
-  public static final String META_INF = "META-INF";
-
-  public static final String POM_PROPERTIES = "pom.properties";
-
 
   public static void createFolder(Path path, String fileName, Boolean createFile) throws IOException {
     path.toFile().mkdirs();

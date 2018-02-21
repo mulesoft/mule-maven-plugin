@@ -56,9 +56,9 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
 
   @Test
   public void testArmDeploy() throws VerificationException, InterruptedException, TimeoutException {
-    log.info("Executing mule:deploy goal...");
+    log.info("Deploying application...");
+    verifier.addCliOption("-DmuleDeploy");
     verifier.executeGoal(DEPLOY_GOAL);
-
 
     assertThat("Application was not deployed", armEnvironment.getApplicationStatus(), is(true));
     verifier.verifyErrorFreeLog();

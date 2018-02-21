@@ -19,7 +19,6 @@
                     <standaloneDeployment>
                         <muleVersion>${mule.version}</muleVersion>
                         <muleHome>${mule.home.test}</muleHome>
-                        <artifact>${project.basedir}/empty-mule-deploy-standalone-application-project.zip</artifact>
                         <deploymentTimeout>120000</deploymentTimeout>
                         <timeout>120000</timeout>
                     </standaloneDeployment>

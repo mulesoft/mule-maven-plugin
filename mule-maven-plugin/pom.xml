@@ -1,19 +1,21 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.mule.tools.maven</groupId>
         <artifactId>mule-artifact-tools</artifactId>
         <version>2.3.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    
+
     <artifactId>mule-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
 
     <name>Mule Maven Plugin</name>
 
     <description>
-        Maven plugin to deploy Mule applications to different kinds of servers: Standalone (both Community and Enterprise), Clustered, Anypoint Runtime Manager and CloudHub.
+        Maven plugin to deploy Mule applications to different kinds of servers: Standalone (both Community and
+        Enterprise), Clustered, Anypoint Runtime Manager and CloudHub.
         Main uses are running integration tests and deploying applications.
         Some of the features are:
         Download Mule Standalone from a Maven Repository and install it locally.
@@ -44,33 +46,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
-            <artifactId>maven-settings</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-artifact</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-utils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-project</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.plugin-testing</groupId>
-            <artifactId>maven-plugin-testing-harness</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
@@ -82,15 +63,6 @@
             <scope>test</scope>
         </dependency>
         <!-- Other Dependencies -->
-        <dependency>
-            <groupId>org.mule</groupId>
-            <artifactId>mule-core</artifactId>
-            <classifier>tests</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-tests-infrastructure</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>

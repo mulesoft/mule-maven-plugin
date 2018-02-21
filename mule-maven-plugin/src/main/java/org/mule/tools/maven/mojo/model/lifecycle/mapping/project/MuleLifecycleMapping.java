@@ -52,34 +52,33 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
   @Override
   public Map getLifecyclePhases(LifecycleMappingMavenVersionless mapping) {
     Map phases = new HashMap<>();
+    phases.put(CLEAN.id(), buildGoals(mapping, MAVEN_CLEAN_PLUGIN + ":clean", MULE_MAVEN_PLUGIN + ":clean"));
+    phases.put(VALIDATE.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":validate"));
+    phases.put(INITIALIZE.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":initialize"));
 
-    // phases.put(CLEAN.id(), buildGoals(mapping, MAVEN_CLEAN_PLUGIN + ":clean", MULE_MAVEN_PLUGIN + ":clean"));
-    //
-    // phases.put(VALIDATE.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":validate"));
-    // phases.put(INITIALIZE.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":initialize"));
-    // phases.put(GENERATE_SOURCES.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":generate-sources"));
-    // phases.put(PROCESS_SOURCES.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":process-sources"));
-    // phases.put(PROCESS_RESOURCES.id(),
-    // buildGoals(mapping, MAVEN_RESOURCES_PLUGIN + ":resources", MULE_MAVEN_PLUGIN + ":process-resources"));
-    // phases.put(COMPILE.id(), buildGoals(mapping, MAVEN_COMPILER_PLUGIN + ":compile", MULE_MAVEN_PLUGIN + ":compile"));
-    // phases.put(GENERATE_TEST_SOURCES.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":generate-test-sources"));
-    // phases.put(PROCESS_TEST_RESOURCES.id(),
-    // buildGoals(mapping, MAVEN_RESOURCES_PLUGIN + ":testResources", MULE_MAVEN_PLUGIN + ":generate-test-resources"));
-    // phases.put(TEST_COMPILE.id(),
-    // buildGoals(mapping, MAVEN_COMPILER_PLUGIN + ":testCompile", MULE_MAVEN_PLUGIN + ":test-compile"));
-    // phases.put(TEST.id(), buildGoals(mapping, MAVEN_SUREFIRE_PLUGIN + ":test"));
-    // phases.put(PACKAGE.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":package"));
-    // phases.put(INSTALL.id(), buildGoals(mapping, MAVEN_INSTALL_PLUGIN + ":install"));
-    //
-    // phases.put(SITE.id(), buildGoals(mapping, MAVEN_SITE_PLUGIN + ":site", MULE_MAVEN_PLUGIN + ":site"));
-    //
-    // String isMuleDeploy = System.getProperty("muleDeploy");
-    // if (isMuleDeploy != null && isMuleDeploy.equals("true")) {
-    phases.put(DEPLOY.id(), mapping.buildGoals(MULE_MAVEN_PLUGIN + ":deploy"));
-    // } else {
-    // phases.put(DEPLOY.id(), mapping.buildGoals(MAVEN_DEPLOY_PLUGIN + ":deploy"));
-    // }
+    phases.put(GENERATE_SOURCES.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":generate-sources"));
+    phases.put(PROCESS_SOURCES.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":process-sources"));
 
+    phases.put(PROCESS_RESOURCES.id(), buildGoals(mapping, MAVEN_RESOURCES_PLUGIN + ":resources"));
+
+    phases.put(COMPILE.id(), buildGoals(mapping, MAVEN_COMPILER_PLUGIN + ":compile", MULE_MAVEN_PLUGIN + ":compile"));
+
+    phases.put(PROCESS_TEST_RESOURCES.id(), buildGoals(mapping, MAVEN_RESOURCES_PLUGIN + ":testResources"));
+    phases.put(TEST_COMPILE.id(),
+               buildGoals(mapping, MAVEN_COMPILER_PLUGIN + ":testCompile", MULE_MAVEN_PLUGIN + ":test-compile"));
+    phases.put(TEST.id(), buildGoals(mapping, MAVEN_SUREFIRE_PLUGIN + ":test"));
+
+    phases.put(PACKAGE.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":package"));
+    phases.put(INSTALL.id(), buildGoals(mapping, MAVEN_INSTALL_PLUGIN + ":install"));
+
+    phases.put(SITE.id(), buildGoals(mapping, MAVEN_SITE_PLUGIN + ":site", MULE_MAVEN_PLUGIN + ":site"));
+
+    String isMuleDeploy = System.getProperty("muleDeploy");
+    if (isMuleDeploy != null && isMuleDeploy.equals("true")) {
+      phases.put(DEPLOY.id(), mapping.buildGoals(MULE_MAVEN_PLUGIN + ":deploy"));
+    } else {
+      phases.put(DEPLOY.id(), mapping.buildGoals(MAVEN_DEPLOY_PLUGIN + ":deploy"));
+    }
     return phases;
   }
 

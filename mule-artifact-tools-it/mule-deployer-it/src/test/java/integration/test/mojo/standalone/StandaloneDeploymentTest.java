@@ -61,7 +61,8 @@ public class StandaloneDeploymentTest extends AbstractDeploymentTest {
   }
 
   protected void deploy() throws VerificationException {
-    log.info("Executing mule:deploy goal...");
+    log.info("Deploying application...");
+    verifier.addCliOption("-DmuleDeploy");
     verifier.executeGoal(DEPLOY_GOAL);
     assertThat("Standalone should be running ", standaloneEnvironment.isRunning(), is(true));
   }

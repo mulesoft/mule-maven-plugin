@@ -25,7 +25,6 @@
                         <environment>${environment}</environment>
                         <muleVersion>${mule.version}</muleVersion>
                         <deploymentTimeout>${cloudhub.deployment.timeout}</deploymentTimeout>
-                        <artifact>${project.basedir}/empty-mule-deploy-application-cloudhub-project.zip</artifact>
                         <properties>
                             <key>value</key>
                         </properties>

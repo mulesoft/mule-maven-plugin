@@ -49,7 +49,7 @@ public abstract class AgentDeploymentTest extends AbstractDeploymentTest {
   }
 
   protected void deploy() throws VerificationException, InterruptedException {
-    log.info("Executing mule:deploy goal...");
+    log.info("Deploying application...");
 
     // TODO check why we have this sleep here
     Thread.sleep(30000);

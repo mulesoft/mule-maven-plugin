@@ -23,7 +23,6 @@
                         <username>${username}</username>
                         <password>${password}</password>
                         <environment>${environment}</environment>
-                        <artifact>${project.basedir}/empty-mule-deploy-application-arm-project.zip</artifact>
                         <muleVersion>${mule.version}</muleVersion>
                     </armDeployment>
                 </configuration>

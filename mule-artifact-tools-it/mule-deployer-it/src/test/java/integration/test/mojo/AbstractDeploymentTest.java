@@ -27,7 +27,7 @@ public abstract class AbstractDeploymentTest {
   private static final String DEFAULT_MULE_VERSION = "3.8.0";
   private static final String MAVEN_OPTS_PROPERTY_KEY = "argLine";
 
-  protected static final String DEPLOY_GOAL = "mule:deploy";
+  protected static final String DEPLOY_GOAL = "deploy";
   protected static final String PRODUCTION_ENVIRONMENT = "Production";
   protected static final String USERNAME_ENVIRONMENT_VARIABLE = "username";
   protected static final String PASSWORD_ENVIRONMENT_VARIABLE = "password";

@@ -101,8 +101,9 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
   @Test
   public void testCloudHubDeploy() throws VerificationException, InterruptedException, TimeoutException, DeploymentException {
-    log.info("Executing mule:deploy goal...");
+    log.info("Deploying application...");
 
+    verifier.addCliOption("-DmuleDeploy");
     verifier.executeGoal(DEPLOY_GOAL);
 
     String status = validateApplicationIsInStatus(APPLICATION_NAME, STARTED_STATUS);

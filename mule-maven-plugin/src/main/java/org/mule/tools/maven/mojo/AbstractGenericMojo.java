@@ -80,33 +80,25 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   @Parameter(defaultValue = "${projectBuildDirectory}")
   protected String projectBuildDirectory;
 
-  // mule-packager
-
-  // @Parameter(readonly = true, required = true, defaultValue = "${project.remoteArtifactRepositories}")
-  // protected List<ArtifactRepository> remoteArtifactRepositories;
+  /**
+   * Name of the generated Mule App.
+   *
+   * @parameter alias="appName" default-value="${project.build.finalName}"
+   * @required
+   */
+  @Parameter(alias = "appName", property = "appName", defaultValue = "${project.build.finalName}")
+  protected String finalName;
 
   @Parameter
   protected String classifier;
 
   protected AbstractProjectValidator validator;
 
-  // Used mainly for repository generation in 3.x
-
-  // protected AetherMavenClient aetherMavenClient;
-
   private ProjectInformation projectInformation;
 
   public abstract String getPreviousRunPlaceholder();
 
   public abstract void doExecute() throws MojoExecutionException, MojoFailureException;
-
-  // mule-packager
-
-  // public void initMojo() {
-  // if (projectBuildDirectory != null) {
-  // new ProjectDirectoryUpdater(project).updateBuildDirectory(projectBuildDirectory);
-  // }
-  // }
 
   public void setCloudHubDeployment(CloudHubDeployment cloudHubDeployment) {
     this.cloudHubDeployment = cloudHubDeployment;
@@ -136,12 +128,6 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
     this.project = project;
   }
 
-  // mule-packager
-
-  // public void setProjectBaseFolder(File projectBaseFolder) {
-  // this.projectBaseFolder = projectBaseFolder;
-  // }
-
   public AbstractProjectValidator getProjectValidator() {
     if (validator == null) {
       validator =
@@ -149,27 +135,6 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
     }
     return validator;
   }
-
-  // mule-packager
-
-  // protected AetherMavenClient getAetherMavenClient() {
-  // if (aetherMavenClient == null) {
-  // MavenExecutionRequest request = session.getRequest();
-  // List<RemoteRepository> remoteRepositories = RepositoryUtils.toRepos(remoteArtifactRepositories);
-  // aetherMavenClient = new MuleMavenPluginClientBuilder(new MavenPackagerLog(getLog()))
-  // .withRemoteRepositories(remoteRepositories)
-  // .withLocalRepository(request.getLocalRepositoryPath())
-  // .withUserSettings(request.getUserSettingsFile())
-  // .withGlobalSettings(request.getGlobalSettingsFile())
-  // .build();
-  // }
-  // return aetherMavenClient;
-  // }
-
-
-  // protected List<ArtifactCoordinates> toArtifactCoordinates(List<Dependency> dependencies) {
-  // return dependencies.stream().map(ArtifactUtils::toArtifactCoordinates).collect(Collectors.toList());
-  // }
 
   protected ProjectInformation getAndSetProjectInformation() {
     ProjectInformation.Builder builder = new ProjectInformation.Builder();

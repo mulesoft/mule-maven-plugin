@@ -59,7 +59,8 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
     phases.put(GENERATE_SOURCES.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":generate-sources"));
     phases.put(PROCESS_SOURCES.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":process-sources"));
 
-    phases.put(PROCESS_RESOURCES.id(), buildGoals(mapping, MAVEN_RESOURCES_PLUGIN + ":resources"));
+    phases.put(PROCESS_RESOURCES.id(),
+               buildGoals(mapping, MAVEN_RESOURCES_PLUGIN + ":resources", MULE_MAVEN_PLUGIN + ":process-resources"));
 
     phases.put(COMPILE.id(), buildGoals(mapping, MAVEN_COMPILER_PLUGIN + ":compile", MULE_MAVEN_PLUGIN + ":compile"));
 

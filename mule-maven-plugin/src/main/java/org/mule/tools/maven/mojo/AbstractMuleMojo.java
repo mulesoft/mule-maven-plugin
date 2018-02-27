@@ -26,9 +26,6 @@ public abstract class AbstractMuleMojo extends AbstractGenericMojo {
   @Component
   protected ProjectBuilder projectBuilder;
 
-  @Component
-  protected RepositorySystem repositorySystem;
-
   @Parameter(property = "project.build.directory", required = true)
   protected File outputDirectory;
 
@@ -39,7 +36,6 @@ public abstract class AbstractMuleMojo extends AbstractGenericMojo {
 
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (!hasExecutedBefore()) {
-      // initMojo();
       doExecute();
     } else {
       getLog().debug("Skipping execution because it has already been run");

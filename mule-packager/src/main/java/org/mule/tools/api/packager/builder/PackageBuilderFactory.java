@@ -6,6 +6,8 @@
  */
 package org.mule.tools.api.packager.builder;
 
+import org.mule.tools.api.packager.packaging.PackagingOptions;
+
 /**
  * Factory for package builders.
  */
@@ -13,8 +15,9 @@ public class PackageBuilderFactory {
 
   /**
    * @return
+   * @param packagingOptions
    */
-  public static PackageBuilder create() {
-    return new MulePackageBuilder();
+  public static PackageBuilder create(PackagingOptions packagingOptions) {
+    return new MulePackageBuilder(packagingOptions);
   }
 }

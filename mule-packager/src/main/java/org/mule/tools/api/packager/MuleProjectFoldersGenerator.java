@@ -29,6 +29,8 @@ public class MuleProjectFoldersGenerator extends AbstractProjectFoldersGenerator
 
     createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), MULE.value());
 
+    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), LIB.value());
+
     createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), API.value());
 
     createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), WSDL.value());

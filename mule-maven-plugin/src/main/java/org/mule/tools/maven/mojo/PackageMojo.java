@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -21,6 +23,9 @@ import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.mule.tools.api.packager.builder.PackageBuilder;
 import org.mule.tools.api.packager.builder.PackageBuilderFactory;
+import org.mule.tools.api.packager.packaging.Exclusion;
+import org.mule.tools.api.packager.packaging.Inclusion;
+import org.mule.tools.api.packager.packaging.PackagingOptions;
 
 /**
  * Build a Mule application archive.
@@ -34,6 +39,53 @@ public class PackageMojo extends AbstractMuleMojo {
 
   @Component
   protected MavenProjectHelper helper;
+
+  /**
+   * Whether a JAR file will be created for the classes in the app. Using this optional configuration parameter will make the
+   * generated classes to be archived into a jar file and the classes directory will then be excluded from the app.
+   *
+   * @parameter expression="${archiveClasses}" default-value="false"
+   */
+  private boolean archiveClasses;
+
+
+  /**
+   * List of exclusion elements (having groupId and artifactId children) to exclude from the application archive.
+   *
+   * @parameter
+   * @since 2.3.0
+   */
+  private ArrayList<Exclusion> exclusions;
+
+  /**
+   * List of inclusion elements (having groupId and artifactId children) to exclude from the application archive.
+   *
+   * @parameter
+   * @since 2.3.0
+   */
+  private ArrayList<Inclusion> inclusions;
+
+  /**
+   * Exclude all artifacts with Mule groupIds. Default is <code>true</code>.
+   *
+   * @parameter default-value="true"
+   * @since 2.3.0
+   */
+  private boolean excludeMuleDependencies;
+
+  /**
+   * @parameter default-value="false"
+   * @since 2.3.0
+   */
+  private boolean filterAppDirectory;
+
+  /**
+   * @parameter default-value="false"
+   * @since 2.3.0
+   */
+  private boolean prependGroupId;
+
+  private PackagingOptions packagingOptions;
 
   @Override
   public void doExecute() throws MojoExecutionException, MojoFailureException {
@@ -69,17 +121,31 @@ public class PackageMojo extends AbstractMuleMojo {
   }
 
   protected String getFileName() {
-    return project.getBuild().getFinalName() + "." + ZIP_EXTENSION;
+    return finalName + "." + ZIP_EXTENSION;
   }
 
   protected PackageBuilder getPackageBuilder() {
-    return PackageBuilderFactory.create();
+    return PackageBuilderFactory.create(getPackagingOptions());
   }
 
 
   @Override
   public String getPreviousRunPlaceholder() {
     return "MULE_MAVEN_PLUGIN_PACKAGE_PREVIOUS_RUN_PLACEHOLDER";
+  }
+
+  protected PackagingOptions getPackagingOptions() {
+    if (packagingOptions == null) {
+      PackagingOptions.PackagingOptionsBuilder builder = new PackagingOptions.PackagingOptionsBuilder();
+      builder.withArchiveClasses(archiveClasses)
+          .withExclusions(exclusions)
+          .withInclusions(inclusions)
+          .withExcludeMuleDependencies(excludeMuleDependencies)
+          .withFilterAppDirectory(filterAppDirectory)
+          .withPrependGroupId(prependGroupId);
+      packagingOptions = builder.build();
+    }
+    return packagingOptions;
   }
 
 }

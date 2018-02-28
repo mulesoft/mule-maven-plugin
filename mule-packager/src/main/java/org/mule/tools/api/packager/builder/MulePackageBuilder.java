@@ -28,6 +28,7 @@ public class MulePackageBuilder implements PackageBuilder {
   private File testClassesFolder = null;
   private File muleFolder = null;
   private File testMuleFolder = null;
+  private File libFolder = null;
 
   protected List<File> rootResources = new ArrayList<>();
 
@@ -84,6 +85,11 @@ public class MulePackageBuilder implements PackageBuilder {
     return this;
   }
 
+  protected MulePackageBuilder withLibFolder(File folder) {
+    this.libFolder = folder;
+    return this;
+  }
+
   /**
    * Creates a mule app package based on the contents of the origin folder, writing them to the destination zip file. The target
    * file is supposed to have more or less the structure of the example below:
@@ -103,8 +109,10 @@ public class MulePackageBuilder implements PackageBuilder {
    * ├── test-classes
    * │   └── MyTestClass.class
    * │
-   * └── test-mule
-   *     └── munit-configuration(s).xml
+   * ├── test-mule
+   * │   └── munit-configuration(s).xml
+   * └── lib
+   *     └── some-lib.jar
    * 
    * </pre>
    *
@@ -123,7 +131,8 @@ public class MulePackageBuilder implements PackageBuilder {
         .withMuleFolder(originFolderPath.resolve(MULE.value()).toFile())
         .withTestMuleFolder(originFolderPath.resolve(TEST_MULE.value()).toFile())
         .withApiFolder(originFolderPath.resolve(API.value()).toFile())
-        .withWsdlFolder(originFolderPath.resolve(WSDL.value()).toFile());
+        .withWsdlFolder(originFolderPath.resolve(WSDL.value()).toFile())
+        .withLibFolder(originFolderPath.resolve(LIB.value()).toFile());
 
     this.createArchive(destinationPath);
   }
@@ -152,6 +161,7 @@ public class MulePackageBuilder implements PackageBuilder {
     archiver.addClasses(classesFolder, null, null);
     archiver.addApi(apiFolder, null, null);
     archiver.addWsdl(wsdlFolder, null, null);
+    archiver.addLib(libFolder, null, null);
 
 
     archiver.setDestFile(destinationPath.toFile());

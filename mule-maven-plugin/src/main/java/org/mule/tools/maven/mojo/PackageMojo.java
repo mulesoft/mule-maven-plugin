@@ -19,8 +19,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.ArchiverException;
+import org.mule.tools.api.packager.builder.MulePackageBuilder;
 import org.mule.tools.api.packager.builder.PackageBuilder;
-import org.mule.tools.api.packager.builder.PackageBuilderFactory;
 
 /**
  * Build a Mule application archive.
@@ -69,11 +69,11 @@ public class PackageMojo extends AbstractMuleMojo {
   }
 
   protected String getFileName() {
-    return project.getBuild().getFinalName() + "." + ZIP_EXTENSION;
+    return finalName + "." + ZIP_EXTENSION;
   }
 
   protected PackageBuilder getPackageBuilder() {
-    return PackageBuilderFactory.create();
+    return new MulePackageBuilder();
   }
 
 

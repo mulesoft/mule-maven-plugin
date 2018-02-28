@@ -29,6 +29,7 @@ import org.junit.rules.TemporaryFolder;
 
 import org.mule.tools.api.packager.MuleProjectFoldersGenerator;
 import org.mule.tools.api.packager.archiver.MuleArchiver;
+import org.mule.tools.api.packager.packaging.PackagingOptions;
 import org.mule.tools.api.packager.packaging.PackagingType;
 
 public class MulePackageBuilderTest {
@@ -157,6 +158,8 @@ public class MulePackageBuilderTest {
     verify(archiverMock, times(1)).addClasses(targetPath.resolve(CLASSES.value()).toFile(), null, null);
     verify(archiverMock, times(1)).addWsdl(targetPath.resolve(WSDL.value()).toFile(), null,
                                            null);
+    verify(archiverMock, times(1)).addLib(targetPath.resolve(LIB.value()).toFile(), null,
+                                          null);
     verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_MULE.value()).toFile(), null, null);
     verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_CLASSES.value()).toFile(), null, null);
 

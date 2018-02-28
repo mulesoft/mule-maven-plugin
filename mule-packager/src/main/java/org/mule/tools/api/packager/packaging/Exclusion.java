@@ -4,17 +4,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.packager.builder;
+package org.mule.tools.api.packager.packaging;
 
-/**
- * Factory for package builders.
- */
-public class PackageBuilderFactory {
+public interface Exclusion {
 
-  /**
-   * @return
-   */
-  public static PackageBuilder create() {
-    return new MulePackageBuilder();
-  }
+  @Override
+  String toString();
+
+  String asFilter();
 }

@@ -6,16 +6,6 @@
  */
 package org.mule.tools.api.packager;
 
-import static org.mule.tools.api.packager.PackagerTestUtils.CLASSES;
-import static org.mule.tools.api.packager.PackagerTestUtils.MULE;
-import static org.mule.tools.api.packager.PackagerTestUtils.MUNIT;
-import static org.mule.tools.api.packager.PackagerTestUtils.TEST_CLASSES;
-import static org.mule.tools.api.packager.PackagerTestUtils.TEST_MULE;
-import static org.mule.tools.api.packager.PackagerTestUtils.assertFileExists;
-import static org.mule.tools.api.packager.PackagerTestUtils.assertFolderExist;
-import static org.mule.tools.api.packager.PackagerTestUtils.assertFolderIsEmpty;
-import static org.mule.tools.api.packager.PackagerTestUtils.createFolder;
-
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -25,6 +15,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.mule.tools.api.packager.packaging.PackagingType;
+
+import static org.mule.tools.api.packager.PackagerTestUtils.*;
 
 public class MuleProjectFoldersGeneratorTest {
 
@@ -73,6 +65,18 @@ public class MuleProjectFoldersGeneratorTest {
   }
 
   @Test
+  public void generateLibFolderAlreadyPresent() throws IOException {
+    Path classesBasePath = basePath.resolve(LIB);
+    createFolder(classesBasePath, FAKE_FILE_NAME, true);
+
+    generator = new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE);
+    generator.generate(projectBaseFolder.getRoot().toPath());
+
+    assertFolderExist(basePath.resolve(LIB));
+    assertFileExists(classesBasePath.resolve(FAKE_FILE_NAME));
+  }
+
+  @Test
   public void generateTestClassesFolderAlreadyPresent() throws IOException {
     Path classesBasePath = basePath.resolve(TEST_CLASSES);
     createFolder(classesBasePath, FAKE_FILE_NAME, true);
@@ -85,7 +89,7 @@ public class MuleProjectFoldersGeneratorTest {
   }
 
   @Test
-  public void generateMuleApplicationFolderAlreadyPresent() throws IOException {
+  public void generateMuleFolderAlreadyPresent() throws IOException {
     Path muleBasePath = basePath.resolve(MULE);
     createFolder(muleBasePath, FAKE_FILE_NAME, true);
 

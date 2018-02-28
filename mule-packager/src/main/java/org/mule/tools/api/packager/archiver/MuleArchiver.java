@@ -11,6 +11,10 @@ import org.codehaus.plexus.archiver.zip.ZipArchiver;
 
 import java.io.File;
 
+import static org.mule.tools.api.packager.structure.FolderNames.API;
+import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
+import static org.mule.tools.api.packager.structure.FolderNames.LIB;
+
 /**
  * Defines and creates the basic structure of Mule archive.
  *
@@ -18,8 +22,9 @@ import java.io.File;
  */
 public class MuleArchiver extends AbstractArchiver {
 
-  private static final String CLASSES_LOCATION = "classes" + File.separator;
-  private static final String API_LOCATION = "api" + File.separator;
+  private static final String CLASSES_LOCATION = CLASSES.value() + File.separator;
+  private static final String API_LOCATION = API.value() + File.separator;
+  private static final String LIB_LOCATION = LIB.value() + File.separator;
 
   public MuleArchiver() {
     this(new ZipArchiver());
@@ -55,6 +60,16 @@ public class MuleArchiver extends AbstractArchiver {
   public void addWsdl(File resource, String[] includes, String[] excludes) throws ArchiverException {
     if (resource != null && resource.exists() && resource.list() != null && resource.list().length != 0) {
       addClasses(resource, includes, excludes);
+    }
+  }
+
+  /**
+   * @param resource Folder which contents are going to be added to the lib folder.
+   * @return
+   */
+  public void addLib(File resource, String[] includes, String[] excludes) {
+    if (resource != null && resource.exists() && resource.list() != null && resource.list().length != 0) {
+      addResource(LIB_LOCATION, resource, includes, excludes);
     }
   }
 }

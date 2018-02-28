@@ -15,11 +15,11 @@ import java.util.List;
 import static org.apache.maven.artifact.Artifact.SCOPE_COMPILE;
 import static org.apache.maven.artifact.Artifact.SCOPE_RUNTIME;
 
-public class Artifact implements org.mule.tools.api.util.Artifact {
+public class DefaultArtifact implements org.mule.tools.api.util.Artifact {
 
   org.apache.maven.artifact.Artifact artifact;
 
-  public Artifact(org.apache.maven.artifact.Artifact artifact) {
+  public DefaultArtifact(org.apache.maven.artifact.Artifact artifact) {
     this.artifact = artifact;
   }
 
@@ -48,9 +48,9 @@ public class Artifact implements org.mule.tools.api.util.Artifact {
    * it.
    */
   @Override
-  public List getOnlyDependenciesTrail() {
+  public List<String> getOnlyDependenciesTrail() {
     List<String> trail = artifact.getDependencyTrail();
-    return trail.size() > 1 ? trail.subList(1, trail.size()) : new ArrayList<>();
+    return trail.size() > 1 ? trail.subList(1, trail.size()) : new ArrayList<String>();
   }
 
   @Override

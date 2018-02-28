@@ -6,5 +6,5 @@
  */
 package org.mule.tools.maven.utils;
 
-public class Inclusion extends Exclusion implements org.mule.tools.api.packager.packaging.Inclusion {
+public class DefaultInclusion extends DefaultExclusion implements org.mule.tools.api.packager.packaging.Inclusion {
 }

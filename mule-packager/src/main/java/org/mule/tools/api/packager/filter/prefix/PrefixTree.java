@@ -15,25 +15,25 @@ import static com.google.common.base.Preconditions.checkArgument;
  */
 class PrefixTree {
 
-  PrefixTreeNode root = new PrefixTreeNode();
+  protected PrefixTreeNode root = new PrefixTreeNode();
 
   private static final Character END_OF_PREFIX = '#';
 
-  PrefixTree(Collection<String> prefixes) {
+  protected PrefixTree(Collection<String> prefixes) {
     checkArgument(prefixes != null, "Prefixes collection should not be null");
     for (String prefix : prefixes) {
       addPrefix(prefix);
     }
   }
 
-  PrefixTree() {}
+  protected PrefixTree() {}
 
   /**
    * Add a prefix to the tree with an appended '#'.
    * 
    * @param prefix The prefix to be added
    */
-  void addPrefix(String prefix) {
+  protected void addPrefix(String prefix) {
     checkArgument(prefix != null, "Prefix should not be null");
     PrefixTreeNode current = root;
     for (Character c : prefix.toCharArray()) {
@@ -48,7 +48,7 @@ class PrefixTree {
    * @param input The string to be tested.
    * @return True if the {@param input} has a prefix defined in the tree, otherwise false
    */
-  boolean containsPrefixOf(String input) {
+  protected boolean containsPrefixOf(String input) {
     checkArgument(input != null, "Input should not be null");
     PrefixTreeNode current = root;
     for (int i = 0; i < input.length() && current.hasChild(input.charAt(i)) && !current.hasChild(END_OF_PREFIX); ++i) {

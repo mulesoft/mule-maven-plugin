@@ -6,7 +6,8 @@
  */
 package org.mule.tools.maven.utils;
 
-public class Exclusion extends org.apache.maven.model.Exclusion implements org.mule.tools.api.packager.packaging.Exclusion {
+public class DefaultExclusion extends org.apache.maven.model.Exclusion
+    implements org.mule.tools.api.packager.packaging.Exclusion {
 
   @Override
   public String toString() {

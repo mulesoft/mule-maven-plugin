@@ -14,8 +14,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.tools.api.packager.resources.MuleResourcesGenerator;
 import org.mule.tools.api.util.Artifact;
-import org.mule.tools.maven.utils.Exclusion;
-import org.mule.tools.maven.utils.Inclusion;
+import org.mule.tools.maven.utils.DefaultArtifact;
+import org.mule.tools.maven.utils.DefaultExclusion;
+import org.mule.tools.maven.utils.DefaultInclusion;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -33,32 +34,28 @@ public class ProcessResourcesMojo extends AbstractMuleMojo {
   /**
    * List of exclusion elements (having groupId and artifactId children) to exclude from the application archive.
    *
-   * @parameter
    * @since 2.3.0
    */
   @Parameter
-  private List<Exclusion> exclusions;
+  private List<DefaultExclusion> defaultExclusions;
 
   /**
    * List of inclusion elements (having groupId and artifactId children) to exclude from the application archive.
    *
-   * @parameter
    * @since 2.3.0
    */
   @Parameter
-  private List<Inclusion> inclusions;
+  private List<DefaultInclusion> defaultInclusions;
 
   /**
    * Exclude all artifacts with Mule groupIds. Default is <code>true</code>.
    *
-   * @parameter default-value="true"
    * @since 2.3.0
    */
   @Parameter(defaultValue = "true")
   private boolean excludeMuleDependencies;
 
   /**
-   * @parameter default-value="false"
    * @since 2.3.0
    */
   @Parameter(defaultValue = "false", property = "prependGroupId")
@@ -77,10 +74,10 @@ public class ProcessResourcesMojo extends AbstractMuleMojo {
   public MuleResourcesGenerator getResourcesContentGenerator() {
     Set<Artifact> projectArtifacts = new HashSet<>();
     for (org.apache.maven.artifact.Artifact artifact : project.getArtifacts()) {
-      projectArtifacts.add(new org.mule.tools.maven.utils.Artifact(artifact));
+      projectArtifacts.add(new DefaultArtifact(artifact));
     }
 
-    return new MuleResourcesGenerator(projectArtifacts, exclusions, inclusions, excludeMuleDependencies,
+    return new MuleResourcesGenerator(projectArtifacts, defaultExclusions, defaultInclusions, excludeMuleDependencies,
                                       getAndSetProjectInformation());
   }
 

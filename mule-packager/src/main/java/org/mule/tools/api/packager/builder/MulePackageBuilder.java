@@ -18,14 +18,12 @@ import java.util.List;
 
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.mule.tools.api.packager.archiver.MuleArchiver;
-import org.mule.tools.api.packager.packaging.PackagingOptions;
 
 /**
  * Builder for Mule Application packages.
  */
 public class MulePackageBuilder implements PackageBuilder {
 
-  private final PackagingOptions packagingOptions;
   private File classesFolder = null;
   private File testClassesFolder = null;
   private File muleFolder = null;
@@ -37,10 +35,6 @@ public class MulePackageBuilder implements PackageBuilder {
   private MuleArchiver archiver = null;
   private File apiFolder;
   private File wsdlFolder;
-
-  public MulePackageBuilder(PackagingOptions packagingOptions) {
-    this.packagingOptions = packagingOptions;
-  }
 
   protected MulePackageBuilder withClasses(File folder) {
     checkArgument(folder != null, "The folder must not be null");

@@ -18,6 +18,7 @@ import java.nio.file.Path;
 public class PackagerTestUtils {
 
   public static final String CLASSES = "classes";
+  public static final String LIB = "lib";
 
   public static final String TEST_CLASSES = "test-classes";
 

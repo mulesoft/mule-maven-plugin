@@ -13,18 +13,18 @@ class PrefixTreeNode {
 
   private Map<Character, PrefixTreeNode> children = new TreeMap<>();
 
-  PrefixTreeNode addChild(Character c) {
+  protected PrefixTreeNode addChild(Character c) {
     if (!hasChild(c)) {
       children.put(c, new PrefixTreeNode());
     }
     return children.get(c);
   }
 
-  boolean hasChild(Character c) {
+  protected boolean hasChild(Character c) {
     return children.containsKey(c);
   }
 
-  PrefixTreeNode getChild(Character c) {
+  protected PrefixTreeNode getChild(Character c) {
     return children.get(c);
   }
 }

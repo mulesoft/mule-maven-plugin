@@ -58,7 +58,7 @@ public class MulePackageBuilderTest {
 
     destinationFile = new File(fakeTargetFolder.getRoot(), "destination.jar");
 
-    builder = new MulePackageBuilder(mock(PackagingOptions.class));
+    builder = new MulePackageBuilder();
     builder.withArchiver(archiverMock);
 
     if (destinationFile.exists()) {

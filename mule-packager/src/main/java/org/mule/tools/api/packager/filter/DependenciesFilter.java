@@ -26,8 +26,8 @@ public class DependenciesFilter {
   private List<Inclusion> inclusions;
   private boolean excludeMuleArtifacts;
 
-  private final ArtifactFilter artifactFilter;
   private final HashSet<String> muleGroupIds;
+  protected ArtifactFilter artifactFilter;
 
   /**
    * By default, it is created with the default exclusions (of mule group ids): org.mule, com.mulesource.muleesb,
@@ -59,29 +59,29 @@ public class DependenciesFilter {
     return filteredArtifacts;
   }
 
-  private Set<Artifact> resolveNotCompileNorRuntimeArtifacts(Set<Artifact> projectArtifacts) {
+  protected Set<Artifact> resolveNotCompileNorRuntimeArtifacts(Set<Artifact> projectArtifacts) {
     ArtifactPredicate predicate = new CompileOrRuntimeScopePredicate();
     return artifactFilter.filter(projectArtifacts, new HashSet<Artifact>(), predicate);
   }
 
-  private Set<Artifact> removeDependenciesWithMuleGroupId(Set<Artifact> filteredArtifacts) {
+  protected Set<Artifact> removeDependenciesWithMuleGroupId(Set<Artifact> filteredArtifacts) {
     ArtifactPredicate predicate = new AbstractArtifactPrefixPredicate.OnlyDependenciesTrailFilterPredicate(muleGroupIds);
     return artifactFilter.filter(filteredArtifacts, new HashSet<Artifact>(), predicate);
   }
 
-  private Set<Artifact> applyExclusions(Set<Artifact> filteredArtifacts) {
+  protected Set<Artifact> applyExclusions(Set<Artifact> filteredArtifacts) {
     ArtifactPredicate predicate =
         new AbstractArtifactPrefixPredicate.TrailFilterPredicate(getAsFilters(exclusions));
     return artifactFilter.filter(filteredArtifacts, new HashSet<Artifact>(), predicate);
   }
 
-  private Set<Artifact> applyIncludes(Set<Artifact> filteredArtifacts) {
+  protected Set<Artifact> applyIncludes(Set<Artifact> filteredArtifacts) {
     ArtifactPredicate predicate =
         new AbstractArtifactPrefixPredicate.NotOptionalTrailFilterPredicate(getAsFilters(inclusions));
     return artifactFilter.filter(projectArtifacts, filteredArtifacts, predicate);
   }
 
-  private List<String> getAsFilters(List<? extends Exclusion> exclusions) {
+  protected List<String> getAsFilters(List<? extends Exclusion> exclusions) {
     List<String> filters = new ArrayList<>();
     for (Exclusion exclusion : exclusions) {
       filters.add(exclusion.asFilter() + ":");

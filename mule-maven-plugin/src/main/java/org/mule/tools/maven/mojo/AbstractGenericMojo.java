@@ -83,7 +83,6 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   /**
    * Name of the generated Mule App.
    *
-   * @parameter alias="appName" default-value="${project.build.finalName}"
    * @required
    */
   @Parameter(alias = "appName", property = "appName", defaultValue = "${project.build.finalName}")

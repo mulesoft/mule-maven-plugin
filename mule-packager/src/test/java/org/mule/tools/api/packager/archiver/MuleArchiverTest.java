@@ -43,6 +43,7 @@ public class MuleArchiverTest extends AbstractMuleArchiverTest {
     archiver.addClasses(getTestResourceFile(appBasePath.resolve(CLASSES.value())), null, null);
     archiver.addToRoot(getTestResourceFile(appBasePath.resolve(MULE.value())), null, null);
     archiver.addLib(getTestResourceFile(appBasePath.resolve(LIB.value())), null, null);
+    archiver.addMappings(getTestResourceFile(appBasePath.resolve(MAPPINGS.value())), null, null);
     archiver.setDestFile(destinationFile);
 
     archiver.createArchive();

@@ -17,6 +17,7 @@ import org.junit.rules.TemporaryFolder;
 import org.mule.tools.api.packager.packaging.PackagingType;
 
 import static org.mule.tools.api.packager.PackagerTestUtils.*;
+import static org.mule.tools.api.packager.structure.FolderNames.MAPPINGS;
 
 public class MuleProjectFoldersGeneratorTest {
 
@@ -55,25 +56,37 @@ public class MuleProjectFoldersGeneratorTest {
   @Test
   public void generateClassesFolderAlreadyPresent() throws IOException {
     Path classesBasePath = basePath.resolve(CLASSES);
-    createFolder(classesBasePath, FAKE_FILE_NAME, true);
+    createFolder(classesBasePath, CLASSES, true);
 
     generator = new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     assertFolderExist(basePath.resolve(CLASSES));
-    assertFileExists(classesBasePath.resolve(FAKE_FILE_NAME));
+    assertFileExists(classesBasePath.resolve(CLASSES));
   }
 
   @Test
   public void generateLibFolderAlreadyPresent() throws IOException {
-    Path classesBasePath = basePath.resolve(LIB);
-    createFolder(classesBasePath, FAKE_FILE_NAME, true);
+    Path libFolder = basePath.resolve(LIB);
+    createFolder(libFolder, LIB, true);
 
     generator = new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     assertFolderExist(basePath.resolve(LIB));
-    assertFileExists(classesBasePath.resolve(FAKE_FILE_NAME));
+    assertFileExists(libFolder.resolve(LIB));
+  }
+
+  @Test
+  public void generateMappingsFolderAlreadyPresent() throws IOException {
+    Path mappingsFolder = basePath.resolve(MAPPINGS.value());
+    createFolder(mappingsFolder, MAPPINGS.value(), true);
+
+    generator = new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE);
+    generator.generate(projectBaseFolder.getRoot().toPath());
+
+    assertFolderExist(basePath.resolve(MAPPINGS.value()));
+    assertFileExists(mappingsFolder.resolve(MAPPINGS.value()));
   }
 
   @Test
@@ -91,37 +104,25 @@ public class MuleProjectFoldersGeneratorTest {
   @Test
   public void generateMuleFolderAlreadyPresent() throws IOException {
     Path muleBasePath = basePath.resolve(MULE);
-    createFolder(muleBasePath, FAKE_FILE_NAME, true);
+    createFolder(muleBasePath, MULE, true);
 
     generator = new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     assertFolderExist(basePath.resolve(MULE));
-    assertFileExists(muleBasePath.resolve(FAKE_FILE_NAME));
-  }
-
-  @Test
-  public void generateMuleDomainFolderAlreadyPresent() throws IOException {
-    Path muleBasePath = basePath.resolve(MULE);
-    createFolder(muleBasePath, FAKE_FILE_NAME, true);
-
-    generator = new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE_DOMAIN);
-    generator.generate(projectBaseFolder.getRoot().toPath());
-
-    assertFolderExist(basePath.resolve(MULE));
-    assertFileExists(muleBasePath.resolve(FAKE_FILE_NAME));
+    assertFileExists(muleBasePath.resolve(MULE));
   }
 
   @Test
   public void generateTestMuleFolderAlreadyPresent() throws IOException {
     Path munitTestMulePath = basePath.resolve(TEST_MULE).resolve(MUNIT);
-    createFolder(munitTestMulePath, FAKE_FILE_NAME, true);
+    createFolder(munitTestMulePath, TEST_MULE, true);
 
     generator = new MuleProjectFoldersGenerator(GROUP_ID, ARTIFACT_ID, PackagingType.MULE);
     generator.generate(projectBaseFolder.getRoot().toPath());
 
     assertFolderExist(munitTestMulePath);
-    assertFileExists(munitTestMulePath.resolve(FAKE_FILE_NAME));
+    assertFileExists(munitTestMulePath.resolve(TEST_MULE));
   }
 
   private void checkNoPackageDependentFolders() {

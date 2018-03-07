@@ -27,6 +27,7 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
     try {
       ((MuleContentGenerator) getContentGenerator()).createApiContent();
       ((MuleContentGenerator) getContentGenerator()).createWsdlContent();
+      ((MuleContentGenerator) getContentGenerator()).createMappingsContent();
     } catch (Exception e) {
       String message = format("There was an exception while creating the repository of [%s]", project.toString());
       throw new MojoFailureException(message, e);

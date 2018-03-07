@@ -33,6 +33,8 @@ public enum FolderNames {
 
   LIB("lib"),
 
+  MAPPINGS("mappings"),
+
   MUNIT_WORKING_DIR("munitworkingdir"),
 
   JAVA("java"),

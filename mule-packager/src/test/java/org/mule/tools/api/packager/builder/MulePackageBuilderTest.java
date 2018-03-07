@@ -160,6 +160,8 @@ public class MulePackageBuilderTest {
                                            null);
     verify(archiverMock, times(1)).addLib(targetPath.resolve(LIB.value()).toFile(), null,
                                           null);
+    verify(archiverMock, times(1)).addMappings(targetPath.resolve(MAPPINGS.value()).toFile(), null,
+                                               null);
     verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_MULE.value()).toFile(), null, null);
     verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_CLASSES.value()).toFile(), null, null);
 

@@ -80,8 +80,10 @@ public abstract class AbstractMuleArchiverTest {
     tempBasePath = get(CLASSES.value());
     relativePaths.add(tempBasePath.resolve("org.fake.core").resolve("class1.clazz"));
     relativePaths.add(tempBasePath.resolve("org.fake.core").resolve("class2.clazz"));
+    relativePaths.add(tempBasePath.resolve("mappings-file"));
     tempBasePath = get(LIB.value());
     relativePaths.add(tempBasePath.resolve("bla.jar"));
+
     return relativePaths;
   }
 

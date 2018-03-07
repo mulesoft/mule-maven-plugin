@@ -11,6 +11,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
+import static org.mule.tools.api.packager.structure.FolderNames.MAPPINGS;
 
 import java.io.File;
 import java.io.IOException;
@@ -131,6 +132,36 @@ public class ContentGeneratorTest {
     PackagerTestUtils.createEmptyFolder(destinationFolderPath);
 
     contentGenerator.createTestFolderContent();
+
+    PackagerTestUtils.assertFileExists(destinationFolderPath.resolve(FAKE_FILE_NAME));
+  }
+
+  @Test
+  public void createMappingsContentNonExistingSourceFolder() throws IOException {
+    Path destinationFolderPath = projectTargetFolder.toPath().resolve(MAPPINGS.value());
+    PackagerTestUtils.createEmptyFolder(destinationFolderPath);
+
+    contentGenerator.createMappingsContent();
+    PackagerTestUtils.assertFolderIsEmpty(destinationFolderPath);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void createMappingsFolderContentNonExistingDestinationFolder() throws IOException {
+    Path sourceFolderPath = projectBaseFolder.getRoot().toPath().resolve(MAPPINGS.value());
+    PackagerTestUtils.createFolder(sourceFolderPath, FAKE_FILE_NAME, true);
+
+    contentGenerator.createMappingsContent();
+  }
+
+  @Test
+  public void createMappingsFolderContent() throws IOException {
+    Path sourceFolderPath = projectBaseFolder.getRoot().toPath().resolve(MAPPINGS.value());
+    PackagerTestUtils.createFolder(sourceFolderPath, FAKE_FILE_NAME, true);
+
+    Path destinationFolderPath = projectTargetFolder.toPath().resolve(MAPPINGS.value());
+    PackagerTestUtils.createEmptyFolder(destinationFolderPath);
+
+    contentGenerator.createMappingsContent();
 
     PackagerTestUtils.assertFileExists(destinationFolderPath.resolve(FAKE_FILE_NAME));
   }

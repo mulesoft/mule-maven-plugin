@@ -78,6 +78,12 @@ public class MuleContentGenerator extends ContentGenerator {
     copyContent(originPath, destinationPath, null, false, true);
   }
 
+  public void createMappingsContent() throws IOException {
+    Path originPath = projectInformation.getProjectStructure().getMappingsFolder();
+    Path destinationPath = projectInformation.getBuildDirectory().resolve(MAPPINGS.value());
+    copyContent(originPath, destinationPath, null, false, true);
+  }
+
 
   private void copyContent(Path originPath, Path destinationPath, List<Path> exclusions) throws IOException {
     copyContent(originPath, destinationPath, exclusions, true, true);

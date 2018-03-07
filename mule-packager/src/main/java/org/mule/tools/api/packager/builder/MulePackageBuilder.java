@@ -35,6 +35,7 @@ public class MulePackageBuilder implements PackageBuilder {
   private MuleArchiver archiver = null;
   private File apiFolder;
   private File wsdlFolder;
+  private File mappingsFolder;
 
   protected MulePackageBuilder withClasses(File folder) {
     checkArgument(folder != null, "The folder must not be null");
@@ -90,6 +91,11 @@ public class MulePackageBuilder implements PackageBuilder {
     return this;
   }
 
+  protected MulePackageBuilder withMappingsFolder(File folder) {
+    this.mappingsFolder = folder;
+    return this;
+  }
+
   /**
    * Creates a mule app package based on the contents of the origin folder, writing them to the destination zip file. The target
    * file is supposed to have more or less the structure of the example below:
@@ -132,7 +138,8 @@ public class MulePackageBuilder implements PackageBuilder {
         .withTestMuleFolder(originFolderPath.resolve(TEST_MULE.value()).toFile())
         .withApiFolder(originFolderPath.resolve(API.value()).toFile())
         .withWsdlFolder(originFolderPath.resolve(WSDL.value()).toFile())
-        .withLibFolder(originFolderPath.resolve(LIB.value()).toFile());
+        .withLibFolder(originFolderPath.resolve(LIB.value()).toFile())
+        .withMappingsFolder(originFolderPath.resolve(MAPPINGS.value()).toFile());
 
     this.createArchive(destinationPath);
   }
@@ -162,6 +169,7 @@ public class MulePackageBuilder implements PackageBuilder {
     archiver.addApi(apiFolder, null, null);
     archiver.addWsdl(wsdlFolder, null, null);
     archiver.addLib(libFolder, null, null);
+    archiver.addMappings(mappingsFolder, null, null);
 
 
     archiver.setDestFile(destinationPath.toFile());

@@ -72,4 +72,14 @@ public class MuleArchiver extends AbstractArchiver {
       addResource(LIB_LOCATION, resource, includes, excludes);
     }
   }
+
+  /**
+   * @param resource Folder which contents are going to be added to the classes folder.
+   * @return
+   */
+  public void addMappings(File resource, String[] includes, String[] excludes) {
+    if (resource != null && resource.exists() && resource.list() != null && resource.list().length != 0) {
+      addClasses(resource, includes, excludes);
+    }
+  }
 }

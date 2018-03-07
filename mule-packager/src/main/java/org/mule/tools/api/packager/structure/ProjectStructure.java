@@ -76,4 +76,8 @@ public class ProjectStructure {
   public Path getWsdlFolder() {
     return projectBaseFolder.resolve(SRC.value()).resolve(MAIN.value()).resolve(WSDL.value());
   }
+
+  public Path getMappingsFolder() {
+    return projectBaseFolder.resolve(MAPPINGS.value());
+  }
 }

@@ -194,7 +194,7 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
 
     when(resolverMock.getExportedResources()).thenReturn(exportedResources);
 
-    setBuilderWithDefaultExportedResourcesValue(defaultBuilder, resolverMock);
+    setBuilderWithDefaultExportedResourcesValue(defaultBuilder, muleArtifact, resolverMock);
 
     assertThat("Exported resources are not the expected",
                defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("exportedResources"),
@@ -218,7 +218,7 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
     when(resolverMock.getExportedResources()).thenReturn(exportedResources);
     when(resolverMock.getTestExportedResources()).thenReturn(testExportedResources);
 
-    setBuilderWithDefaultExportedResourcesValue(defaultBuilder, resolverMock);
+    setBuilderWithDefaultExportedResourcesValue(defaultBuilder, muleArtifact, resolverMock);
 
     assertThat("Exported resources are not the expected",
                (List<String>) defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes()
@@ -239,7 +239,7 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
     when(resolverMock.getExportedResources()).thenReturn(exportedResources);
     when(resolverMock.getTestExportedResources()).thenReturn(testExportedResources);
 
-    setBuilderWithDefaultExportedResourcesValue(defaultBuilder, resolverMock);
+    setBuilderWithDefaultExportedResourcesValue(defaultBuilder, muleArtifact, resolverMock);
 
     assertThat("Exported resources are not the expected",
                (List<String>) defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes()

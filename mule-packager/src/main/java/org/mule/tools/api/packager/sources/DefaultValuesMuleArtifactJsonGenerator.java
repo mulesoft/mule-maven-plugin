@@ -15,11 +15,7 @@ import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.io.FileUtils;
 
@@ -39,7 +35,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
   /**
    * Generates the default value for every non-defined fields in a mule-artifact.json file during build time and updates
    * accordingly
-   * 
+   *
    * @param muleArtifactContentResolver muleArtifactContentResolver of project being built
    */
   public static void generate(MuleArtifactContentResolver muleArtifactContentResolver) throws IOException {
@@ -59,10 +55,10 @@ public class DefaultValuesMuleArtifactJsonGenerator {
   /**
    * Generates the default value for every non-defined fields in a mule-artifact.json and copy this to the destination folder
    *
-   * @param originFolder folder location containing the original mule-artifact.json
-   * @param destinationFolder folder location where the updated mule-artifact.json is going to be written to
+   * @param originFolder                folder location containing the original mule-artifact.json
+   * @param destinationFolder           folder location where the updated mule-artifact.json is going to be written to
    * @param muleArtifactContentResolver resolves all the contents that are going to be defaulted in the generated the
-   *        mule-artifact.json
+   *                                    mule-artifact.json
    */
   public static void generate(Path originFolder, Path destinationFolder,
                               MuleArtifactContentResolver muleArtifactContentResolver)
@@ -78,7 +74,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
   /**
    * Writes the mule artifact to the corresponding file
    *
-   * @param muleArtifact mule artifact that is going to be persisted
+   * @param muleArtifact      mule artifact that is going to be persisted
    * @param destinationFolder destination folder where the mule-artifact.json file is going to be created
    */
   protected static void writeMuleArtifactToFile(MuleApplicationModel muleArtifact, Path destinationFolder)
@@ -101,7 +97,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
   /**
    * Generates a {@link MuleApplicationModel} with default values based on a {@link MuleArtifactContentResolver}.
    *
-   * @param originalMuleArtifact original mule application model
+   * @param originalMuleArtifact        original mule application model
    * @param muleArtifactContentResolver the application content resolver
    */
   protected static MuleApplicationModel generateMuleArtifactWithDefaultValues(MuleApplicationModel originalMuleArtifact,
@@ -116,8 +112,8 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * Updates a {@link MuleApplicationModel.MuleApplicationModelBuilder} with default values based on a
    * {@link MuleArtifactContentResolver}.
    *
-   * @param builder builder for the generated mule artifact based on the original one
-   * @param originalMuleArtifact original mule application model
+   * @param builder                     builder for the generated mule artifact based on the original one
+   * @param originalMuleArtifact        original mule application model
    * @param muleArtifactContentResolver the application content resolver
    */
   protected static void setBuilderWithDefaultValuesNotPresent(MuleApplicationModel.MuleApplicationModelBuilder builder,
@@ -127,7 +123,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
     setBuilderWithDefaultRedeploymentEnabled(builder, originalMuleArtifact);
     setBuilderWithDefaultConfigsValue(builder, originalMuleArtifact, muleArtifactContentResolver);
     // setBuilderWithDefaultExportedPackagesValue(builder, muleArtifactContentResolver);
-    setBuilderWithDefaultExportedResourcesValue(builder, muleArtifactContentResolver);
+    setBuilderWithDefaultExportedResourcesValue(builder, originalMuleArtifact, muleArtifactContentResolver);
     setBuilderWithIncludeTestDependencies(builder, muleArtifactContentResolver);
   }
 
@@ -145,18 +141,28 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * Updates a {@link MuleApplicationModel.MuleApplicationModelBuilder} exportedResources in the attributes field with default
    * values based on a {@link MuleArtifactContentResolver}.
    *
-   * @param builder builder for the mule artifact that is going to be generated
+   * @param builder                     builder for the mule artifact that is going to be generated
    * @param muleArtifactContentResolver the application content resolver
    */
   protected static void setBuilderWithDefaultExportedResourcesValue(MuleApplicationModel.MuleApplicationModelBuilder builder,
+                                                                    MuleApplicationModel originalMuleArtifact,
                                                                     MuleArtifactContentResolver muleArtifactContentResolver)
       throws IOException {
     MuleArtifactLoaderDescriptor descriptorLoader = builder.getClassLoaderModelDescriptorLoader();
 
-    List<String> exportedResources = muleArtifactContentResolver.getExportedResources();
-    exportedResources.addAll(muleArtifactContentResolver.getTestExportedResources());
+
+    Map<String, Object> originalAttributes = originalMuleArtifact.getClassLoaderModelLoaderDescriptor().getAttributes();
+    List<String> exportedResources = new ArrayList<>();
+
+    if (originalAttributes != null && originalAttributes.get("exportedResources") != null) {
+      exportedResources.addAll((Collection<String>) originalAttributes.get("exportedResources"));
+    } else {
+      exportedResources.addAll(muleArtifactContentResolver.getExportedResources());
+      exportedResources.addAll(muleArtifactContentResolver.getTestExportedResources());
+    }
+
     Map<String, Object> attributesCopy =
-        getUpdatedAttributes(descriptorLoader, "exportedResources", exportedResources);
+        getUpdatedAttributes(descriptorLoader, "exportedResources", new ArrayList<>(exportedResources));
     builder.withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(descriptorLoader.getId(), attributesCopy));
   }
 
@@ -164,7 +170,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * Updates a {@link MuleApplicationModel.MuleApplicationModelBuilder} exportedPackages in the attributes field with default
    * values based on a {@link MuleArtifactContentResolver}.
    *
-   * @param builder builder for the mule artifact that is going to be generated
+   * @param builder                     builder for the mule artifact that is going to be generated
    * @param muleArtifactContentResolver the application content resolver
    */
   protected static void setBuilderWithDefaultExportedPackagesValue(MuleApplicationModel.MuleApplicationModelBuilder builder,
@@ -192,8 +198,8 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * Updates a {@link MuleApplicationModel.MuleApplicationModelBuilder} configs field with default values based on a
    * {@link MuleArtifactContentResolver}.
    *
-   * @param builder builder for the mule artifact that is going to be generated
-   * @param originalMuleArtifact original mule application model
+   * @param builder                     builder for the mule artifact that is going to be generated
+   * @param originalMuleArtifact        original mule application model
    * @param muleArtifactContentResolver the application content resolver
    */
   protected static void setBuilderWithDefaultConfigsValue(MuleApplicationModel.MuleApplicationModelBuilder builder,
@@ -217,7 +223,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * Updates a {@link MuleApplicationModel.MuleApplicationModelBuilder} redeploymentEnabled field with default the default value
    * based on the {@link MuleApplicationModel}.
    *
-   * @param builder builder for the mule artifact that is going to be generated
+   * @param builder              builder for the mule artifact that is going to be generated
    * @param originalMuleArtifact the application content resolver
    */
   protected static void setBuilderWithDefaultRedeploymentEnabled(MuleApplicationModel.MuleApplicationModelBuilder builder,
@@ -229,7 +235,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * Updates a {@link MuleApplicationModel.MuleApplicationModelBuilder} bundleDescriptorLoader field with default the default
    * value based on the {@link MuleApplicationModel}.
    *
-   * @param builder builder for the mule artifact that is going to be generated
+   * @param builder              builder for the mule artifact that is going to be generated
    * @param originalMuleArtifact the application content resolver
    */
   protected static void setBuilderWithDefaultBundleDescriptorLoaderValue(MuleApplicationModel.MuleApplicationModelBuilder builder,

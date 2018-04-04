@@ -10,11 +10,13 @@
 
 package org.mule.tools.api.classloader.model;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
 import static org.mule.maven.client.internal.util.MavenUtils.getPomModelFromFile;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifactCoordinates;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifacts;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
+import static org.mule.tools.api.validation.VersionUtils.getMajor;
 
 import java.io.File;
 import java.net.URI;
@@ -29,6 +31,7 @@ import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.api.model.BundleScope;
 import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.tools.api.validation.VersionUtils;
 
 public class ApplicationClassLoaderModelAssembler {
 
@@ -70,11 +73,34 @@ public class ApplicationClassLoaderModelAssembler {
     for (Map.Entry<BundleDependency, List<BundleDependency>> mulePluginEntry : mulePluginDependencies.entrySet()) {
       ClassLoaderModel mulePluginClassloaderModel =
           new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, toArtifactCoordinates(mulePluginEntry.getKey().getDescriptor()));
-      mulePluginClassloaderModel.setDependencies(toArtifacts(mulePluginEntry.getValue()));
+      List<BundleDependency> mulePluginDependenciesDependencies =
+          resolveMulePluginsVersions(mulePluginEntry.getValue(), mulePlugins);
+      mulePluginClassloaderModel.setDependencies(toArtifacts(mulePluginDependenciesDependencies));
       applicationClassLoaderModel.addMulePluginClassloaderModel(mulePluginClassloaderModel);
     }
 
     return applicationClassLoaderModel;
+  }
+
+  protected List<BundleDependency> resolveMulePluginsVersions(List<BundleDependency> mulePluginsToResolve,
+                                                              List<BundleDependency> definitiveMulePlugins) {
+    List<BundleDependency> resolvedPlugins = new ArrayList<>();
+    checkArgument(mulePluginsToResolve != null, "List of mule plugins to resolve should not be null");
+    checkArgument(definitiveMulePlugins != null, "List of definitive mule plugins should not be null");
+
+    for (BundleDependency mulePluginToResolve : mulePluginsToResolve) {
+      Optional<BundleDependency> mulePlugin =
+          definitiveMulePlugins.stream().filter(p -> hasSameArtifactIdAndMajor(p, mulePluginToResolve)).findFirst();
+      resolvedPlugins.add(mulePlugin.orElse(mulePluginToResolve));
+    }
+    return resolvedPlugins;
+  }
+
+  protected boolean hasSameArtifactIdAndMajor(BundleDependency bundleDependency, BundleDependency otherBundleDependency) {
+    BundleDescriptor descriptor = bundleDependency.getDescriptor();
+    BundleDescriptor otherDescriptor = otherBundleDependency.getDescriptor();
+    return StringUtils.equals(descriptor.getArtifactId(), otherDescriptor.getArtifactId())
+        && StringUtils.equals(getMajor(descriptor.getBaseVersion()), getMajor(otherDescriptor.getBaseVersion()));
   }
 
   private List<Artifact> toApplicationModelArtifacts(List<BundleDependency> appDependencies) {
@@ -107,8 +133,8 @@ public class ApplicationClassLoaderModelAssembler {
   /**
    * Resolve the application dependencies, excluding mule domains.
    *
-   * @param targetFolder target folder of application that is going to be packaged, which need to contain at this stage the pom
-   *        file in the folder that is going to be resolved by {@link PomFileSupplierFactory}
+   * @param targetFolder            target folder of application that is going to be packaged, which need to contain at this stage the pom
+   *                                file in the folder that is going to be resolved by {@link PomFileSupplierFactory}
    * @param projectBundleDescriptor bundleDescriptor of application to be packaged
    */
   private List<BundleDependency> resolveApplicationDependencies(File targetFolder, BundleDescriptor projectBundleDescriptor) {

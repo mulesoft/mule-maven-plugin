@@ -48,6 +48,7 @@ import org.mule.tools.maven.utils.ArtifactUtils;
 import org.mule.tools.maven.utils.DependencyProject;
 import org.mule.tools.maven.utils.MavenPackagerLog;
 import org.mule.tools.maven.utils.ProjectDirectoryUpdater;
+import org.mule.tools.maven.utils.ResolvedPom;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
@@ -191,7 +192,8 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
           .withBuildDirectory(Paths.get(project.getBuild().getDirectory()))
           .setTestProject(testJar)
           .withDependencyProject(new DependencyProject(project))
-          .isDeployment(isDeployment);
+          .isDeployment(isDeployment)
+          .withResolvedPom(new ResolvedPom(project.getModel()));
 
       if (isDeployment) {
         DistributionManagement management = project.getDistributionManagement();

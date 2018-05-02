@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.mule.tools.api.packager.PackagerTestUtils;
+import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
@@ -63,6 +64,7 @@ public class ContentGeneratorTest {
         .setTestProject(false)
         .withBuildDirectory(projectTargetFolder.toPath())
         .withDependencyProject(Collections::emptyList)
+        .withResolvedPom(mock(Pom.class))
         .build();
     contentGenerator = new MuleContentGenerator(info);
   }
@@ -275,6 +277,7 @@ public class ContentGeneratorTest {
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
         .setTestProject(false)
         .withDependencyProject(() -> Collections.emptyList())
+        .withResolvedPom(mock(Pom.class))
         .withBuildDirectory(projectTargetFolder.toPath()).build();
     contentGenerator = new MuleContentGenerator(info);
 
@@ -314,6 +317,7 @@ public class ContentGeneratorTest {
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
         .setTestProject(false)
         .withDependencyProject(() -> Collections.emptyList())
+        .withResolvedPom(mock(Pom.class))
         .withBuildDirectory(projectTargetFolder.toPath()).build();
     contentGenerator = new MuleContentGenerator(info);
 

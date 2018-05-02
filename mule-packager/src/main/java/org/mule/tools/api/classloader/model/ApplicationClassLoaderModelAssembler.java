@@ -16,11 +16,13 @@ import static org.mule.maven.client.internal.util.MavenUtils.getPomModelFromFile
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifactCoordinates;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifacts;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
+import static org.mule.tools.api.packager.structure.FolderNames.TEMP;
 import static org.mule.tools.api.validation.VersionUtils.getMajor;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,9 +56,9 @@ public class ApplicationClassLoaderModelAssembler {
     ClassLoaderModel appModel = new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, appCoordinates);
 
     BundleDescriptor pomBundleDescriptor = getPomProjectBundleDescriptor(pomFile);
-
+    File effectivePomLocation = Paths.get(targetFolder.toURI()).resolve(TEMP.value()).toFile();
     List<BundleDependency> appDependencies =
-        resolveApplicationDependencies(targetFolder, pomBundleDescriptor);
+        resolveApplicationDependencies(effectivePomLocation, pomBundleDescriptor);
 
     List<BundleDependency> mulePlugins = appDependencies.stream()
         .filter(dep -> dep.getDescriptor().getClassifier().isPresent())

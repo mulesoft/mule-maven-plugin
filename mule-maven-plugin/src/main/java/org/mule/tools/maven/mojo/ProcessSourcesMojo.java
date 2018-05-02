@@ -11,7 +11,10 @@
 package org.mule.tools.maven.mojo;
 
 import static java.lang.String.format;
+import static org.mule.tools.api.packager.structure.FolderNames.TEMP;
+import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
 
+import java.io.File;
 import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.MojoExecutionException;

@@ -15,11 +15,14 @@ import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.dese
 import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.serializeToFile;
 import static org.mule.tools.api.packager.sources.DefaultValuesMuleArtifactJsonGenerator.generate;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
+import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
+import static org.mule.tools.api.packager.structure.FolderNames.TEMP;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
+import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +52,7 @@ public class MuleContentGenerator extends ContentGenerator {
 
   /**
    * It creates all the package content in the required folders
-   * 
+   *
    * @throws IOException
    */
   @Override
@@ -73,7 +76,7 @@ public class MuleContentGenerator extends ContentGenerator {
 
   /**
    * It creates the content that contains the test Mule source code. The name of the folder depends on the {@link PackagingType}
-   * 
+   *
    * @throws IOException
    */
   public void createTestFolderContent() throws IOException {
@@ -87,7 +90,7 @@ public class MuleContentGenerator extends ContentGenerator {
   /**
    * It creates the {@link org.mule.tools.api.packager.structure.FolderNames#MULE_SRC} folder used by IDEs to import the project
    * source code
-   * 
+   *
    * @throws IOException
    */
   public void createMetaInfMuleSourceFolderContent() throws IOException {
@@ -170,6 +173,13 @@ public class MuleContentGenerator extends ContentGenerator {
   public void createDescriptors() throws IOException {
     createMavenDescriptors();
     copyDescriptorFile();
+    createEffectivePom();
+  }
+
+  private void createEffectivePom() throws IOException {
+    projectInformation.getEffectivePom()
+        .persist(projectInformation.getBuildDirectory().resolve(TEMP.value()).resolve(META_INF.value()).resolve(MAVEN.value())
+            .resolve(projectInformation.getGroupId()).resolve(projectInformation.getArtifactId()).resolve(POM_XML));
   }
 
   private void copyDescriptorFile() throws IOException {

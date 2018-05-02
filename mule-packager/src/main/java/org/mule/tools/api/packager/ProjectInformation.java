@@ -38,12 +38,13 @@ public class ProjectInformation {
   private boolean isDeployment;
   private List<Deployment> deployments;
   private ExchangeRepositoryMetadata metadata;
+  private Pom resolvedPom;
 
 
   private ProjectInformation(String groupId, String artifactId, String version, String classifier, String packaging,
                              Path projectBaseFolder,
                              Path buildDirectory, boolean isTestProject, Project project, boolean isDeployment,
-                             ExchangeRepositoryMetadata metadata, List<Deployment> deployments) {
+                             ExchangeRepositoryMetadata metadata, List<Deployment> deployments, Pom resolvedPom) {
     this.groupId = groupId;
     this.artifactId = artifactId;
     this.version = version;
@@ -56,6 +57,7 @@ public class ProjectInformation {
     this.isDeployment = isDeployment;
     this.metadata = metadata;
     this.deployments = deployments;
+    this.resolvedPom = resolvedPom;
   }
 
   public String getGroupId() {
@@ -106,6 +108,10 @@ public class ProjectInformation {
     return deployments;
   }
 
+  public Pom getEffectivePom() {
+    return resolvedPom;
+  }
+
   public static class Builder {
 
     private String groupId;
@@ -120,6 +126,7 @@ public class ProjectInformation {
     private ExchangeRepositoryMetadata metadata;
     private String classifier;
     private List<Deployment> deployments;
+    private Pom resolvedPom;
 
     public Builder withGroupId(String groupId) {
       this.groupId = groupId;
@@ -181,6 +188,11 @@ public class ProjectInformation {
       return this;
     }
 
+    public Builder withResolvedPom(Pom pom) {
+      this.resolvedPom = pom;
+      return this;
+    }
+
     public ProjectInformation build() {
       checkArgument(isNotBlank(groupId), "Group id should not be null nor blank");
       checkArgument(isNotBlank(artifactId), "Artifact id should not be null nor blank");
@@ -189,9 +201,10 @@ public class ProjectInformation {
       checkArgument(projectBaseFolder != null, "Project base folder should not be null");
       checkArgument(buildDirectory != null, "Project build directory should not be null");
       checkArgument(isTestProject != null, "Project isTestProject property was not set");
+      checkArgument(resolvedPom != null, "Project pom was not set");
 
       return new ProjectInformation(groupId, artifactId, version, classifier, packaging, projectBaseFolder, buildDirectory,
-                                    isTestProject, project, isDeployment, metadata, deployments);
+                                    isTestProject, project, isDeployment, metadata, deployments, resolvedPom);
     }
 
 

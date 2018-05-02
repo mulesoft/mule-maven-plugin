@@ -40,6 +40,8 @@ public enum FolderNames {
 
   REPOSITORY("repository"),
 
+  TEMP("temp"),
+
   MUNIT_WORKING_DIR("munitworkingdir"),
 
   APPLICATION("application"),

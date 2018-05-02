@@ -23,12 +23,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
+import static org.mule.tools.api.packager.structure.FolderNames.TEMP;
 
+import org.junit.rules.TemporaryFolder;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -65,10 +68,15 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
+
+  @Rule
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
   private AetherMavenClient aetherMavenClientMock;
+  private File targetFolder;
 
   @Before
-  public void before() {
+  public void before() throws IOException {
     applicationClassLoaderModelAssembler = new ApplicationClassLoaderModelAssembler(mock(AetherMavenClient.class));
     pomModel = new Model();
     pomModel.setGroupId(GROUP_ID);
@@ -78,6 +86,8 @@ public class ApplicationClassLoaderModelAssemblerTest {
     parentProject.setVersion(PARENT_VERSION);
     parentProject.setGroupId(PARENT_GROUP_ID);
     pomModel.setParent(parentProject);
+    targetFolder = temporaryFolder.getRoot();
+    temporaryFolder.newFolder(TEMP.value());
   }
 
   @Test
@@ -108,7 +118,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
   }
 
   @Test
-  public void getClassLoaderModelTest() throws URISyntaxException {
+  public void getClassLoaderModelTest() throws URISyntaxException, IOException {
     List<BundleDependency> appDependencies = new ArrayList<>();
     BundleDependency dependency1 = buildBundleDependency(1, 1, StringUtils.EMPTY);
     BundleDependency dependency2 =
@@ -152,7 +162,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
 
     ApplicationClassloaderModel applicationClassloaderModel =
-        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), mock(File.class));
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), targetFolder);
 
     assertThat("Application dependencies are not the expected",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
@@ -178,7 +188,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
     ApplicationClassloaderModel applicationClassloaderModel =
         applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class),
-                                                                               mock(File.class));
+                                                                               targetFolder);
 
     assertThat("Application dependencies are not the expected",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
@@ -189,7 +199,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
   }
 
   @Test
-  public void getClassLoaderModelWithOneDependencyThatIsAMulePluginTest() throws URISyntaxException {
+  public void getClassLoaderModelWithOneDependencyThatIsAMulePluginTest() throws URISyntaxException, IOException {
     List<BundleDependency> appDependencies = new ArrayList<>();
 
     List<BundleDependency> appMulePluginDependencies = new ArrayList<>();
@@ -211,7 +221,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
     ApplicationClassloaderModel applicationClassloaderModel =
         applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class),
-                                                                               mock(File.class));
+                                                                               targetFolder);
 
     assertThat("The class loader model should have one dependency",
                applicationClassloaderModel.getClassLoaderModel().getDependencies().size(),

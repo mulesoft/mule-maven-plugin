@@ -52,6 +52,7 @@ import org.junit.rules.TemporaryFolder;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.validation.project.MuleProjectValidator;
 import org.mule.tools.model.Deployment;
@@ -91,6 +92,7 @@ public class MuleProjectValidatorTest {
         .withBuildDirectory(projectBuildFolder.getRoot().toPath())
         .setTestProject(false)
         .withDeployments(Arrays.asList(deploymentConfigurationMock))
+        .withResolvedPom(mock(Pom.class))
         .withDependencyProject(Collections::emptyList);
 
     validator = new MuleProjectValidator(builder.build(), new ArrayList<>(), false);

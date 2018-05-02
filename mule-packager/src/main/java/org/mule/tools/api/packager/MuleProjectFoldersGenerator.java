@@ -17,6 +17,7 @@ import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
 import static org.mule.tools.api.packager.structure.FolderNames.MUNIT;
 import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
+import static org.mule.tools.api.packager.structure.FolderNames.TEMP;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST_CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
 
@@ -49,6 +50,7 @@ public class MuleProjectFoldersGenerator extends AbstractProjectFoldersGenerator
 
     createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), REPOSITORY.value());
 
-
+    createFolderIfNecessary(targetFolder.toAbsolutePath().toString(), TEMP.value(), META_INF.value(), MAVEN.value(), getGroupId(),
+                            getArtifactId());
   }
 }

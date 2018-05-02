@@ -22,6 +22,7 @@ import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.util.Project;
 import org.mule.tools.api.validation.resolver.MulePluginResolver;
@@ -83,6 +84,7 @@ public class DomainBundleProjectValidatorTest {
         .withBuildDirectory(projectBuildFolder.getRoot().toPath())
         .setTestProject(false)
         .withDependencyProject(dependencyProjectMock)
+        .withResolvedPom(mock(Pom.class))
         .build();
     validator = new DomainBundleProjectValidator(projectInformation, aetherMavenClientMock);
   }

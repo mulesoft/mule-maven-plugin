@@ -22,6 +22,7 @@ import java.io.PrintStream;
 import com.google.common.collect.Lists;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Build;
+import org.apache.maven.model.Model;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
@@ -83,16 +84,17 @@ public class AbstractMuleMojoTest {
   /**
    * The goal of this method is to pupulate a {@link AbstractGenericMojo} and create the proper behavior so it does not fail when
    * calling {@link AbstractGenericMojo#getAndSetProjectInformation()}
-   * 
-   * @param mojo the mojo to populate
-   * @param groupId the group id of the project
+   *
+   * @param mojo       the mojo to populate
+   * @param groupId    the group id of the project
    * @param artifactId the artifact id of the project
-   * @param version the verion of the project
+   * @param version    the verion of the project
    */
   protected void prepareMojoForProjectInformation(AbstractGenericMojo mojo, String groupId, String artifactId, String version) {
     when(projectMock.getGroupId()).thenReturn(groupId);
     when(projectMock.getArtifactId()).thenReturn(artifactId);
     when(projectMock.getVersion()).thenReturn(version);
+    when(projectMock.getModel()).thenReturn(mock(Model.class));
 
     mojo.project = projectMock;
     mojo.session = mavenSessionMock;

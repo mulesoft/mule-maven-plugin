@@ -70,22 +70,14 @@
     </pluginRepository>
   </pluginRepositories>
   <build>
-    <sourceDirectory>/Users/william.pinho/IdeaProjects/mule-maven-plugin/mule-artifact-it/mule-packager-it/target/test-classes/empty-generate-test-sources-project/src/main/java</sourceDirectory>
-    <scriptSourceDirectory>/Users/william.pinho/IdeaProjects/mule-maven-plugin/mule-artifact-it/mule-packager-it/target/test-classes/empty-generate-test-sources-project/src/main/scripts</scriptSourceDirectory>
-    <testSourceDirectory>/Users/william.pinho/IdeaProjects/mule-maven-plugin/mule-artifact-it/mule-packager-it/target/test-classes/empty-generate-test-sources-project/src/test/java</testSourceDirectory>
-    <outputDirectory>/Users/william.pinho/IdeaProjects/mule-maven-plugin/mule-artifact-it/mule-packager-it/target/test-classes/empty-generate-test-sources-project/target/classes</outputDirectory>
-    <testOutputDirectory>/Users/william.pinho/IdeaProjects/mule-maven-plugin/mule-artifact-it/mule-packager-it/target/test-classes/empty-generate-test-sources-project/target/test-classes</testOutputDirectory>
     <resources>
       <resource>
-        <directory>/Users/william.pinho/IdeaProjects/mule-maven-plugin/mule-artifact-it/mule-packager-it/target/test-classes/empty-generate-test-sources-project/src/main/resources</directory>
-      </resource>
+       </resource>
     </resources>
     <testResources>
       <testResource>
-        <directory>/Users/william.pinho/IdeaProjects/mule-maven-plugin/mule-artifact-it/mule-packager-it/target/test-classes/empty-generate-test-sources-project/src/test/resources</directory>
       </testResource>
     </testResources>
-    <directory>/Users/william.pinho/IdeaProjects/mule-maven-plugin/mule-artifact-it/mule-packager-it/target/test-classes/empty-generate-test-sources-project/target</directory>
     <finalName>empty-generate-sources-project-1.0.0-SNAPSHOT</finalName>
     <pluginManagement>
       <plugins>
@@ -297,7 +289,6 @@
               <goal>site</goal>
             </goals>
             <configuration>
-              <outputDirectory>/Users/william.pinho/IdeaProjects/mule-maven-plugin/mule-artifact-it/mule-packager-it/target/test-classes/empty-generate-test-sources-project/target/site</outputDirectory>
               <reportPlugins>
                 <reportPlugin>
                   <groupId>org.apache.maven.plugins</groupId>
@@ -313,7 +304,6 @@
               <goal>site</goal>
             </goals>
             <configuration>
-              <outputDirectory>/Users/william.pinho/IdeaProjects/mule-maven-plugin/mule-artifact-it/mule-packager-it/target/test-classes/empty-generate-test-sources-project/target/site</outputDirectory>
               <reportPlugins>
                 <reportPlugin>
                   <groupId>org.apache.maven.plugins</groupId>
@@ -329,7 +319,6 @@
               <goal>deploy</goal>
             </goals>
             <configuration>
-              <outputDirectory>/Users/william.pinho/IdeaProjects/mule-maven-plugin/mule-artifact-it/mule-packager-it/target/test-classes/empty-generate-test-sources-project/target/site</outputDirectory>
               <reportPlugins>
                 <reportPlugin>
                   <groupId>org.apache.maven.plugins</groupId>
@@ -340,7 +329,6 @@
           </execution>
         </executions>
         <configuration>
-          <outputDirectory>/Users/william.pinho/IdeaProjects/mule-maven-plugin/mule-artifact-it/mule-packager-it/target/test-classes/empty-generate-test-sources-project/target/site</outputDirectory>
           <reportPlugins>
             <reportPlugin>
               <groupId>org.apache.maven.plugins</groupId>
@@ -365,6 +353,5 @@
     </plugins>
   </build>
   <reporting>
-    <outputDirectory>/Users/william.pinho/IdeaProjects/mule-maven-plugin/mule-artifact-it/mule-packager-it/target/test-classes/empty-generate-test-sources-project/target/site</outputDirectory>
   </reporting>
 </project>

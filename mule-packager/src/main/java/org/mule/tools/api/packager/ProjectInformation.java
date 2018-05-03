@@ -12,6 +12,10 @@ package org.mule.tools.api.packager;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
+import static org.mule.tools.api.packager.structure.FolderNames.TEMP;
+import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -110,6 +114,12 @@ public class ProjectInformation {
 
   public Pom getEffectivePom() {
     return resolvedPom;
+  }
+
+  public Path getEffectivePomLocation() {
+    return getBuildDirectory().resolve(TEMP.value()).resolve(META_INF.value()).resolve(MAVEN.value()).resolve(getGroupId())
+        .resolve(getArtifactId())
+        .resolve(POM_XML);
   }
 
   public static class Builder {

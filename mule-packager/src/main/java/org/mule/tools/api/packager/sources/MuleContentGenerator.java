@@ -172,8 +172,8 @@ public class MuleContentGenerator extends ContentGenerator {
    */
   public void createDescriptors() throws IOException {
     createMavenDescriptors();
-    copyDescriptorFile();
     createEffectivePom();
+    copyDescriptorFile();
   }
 
   private void createEffectivePom() throws IOException {
@@ -195,7 +195,7 @@ public class MuleContentGenerator extends ContentGenerator {
       ProjectStructure projectStructure =
           new ProjectStructure(projectInformation.getProjectBaseFolder(), projectInformation.getBuildDirectory(),
                                projectInformation.isTestProject());
-      muleArtifactContentResolver = new MuleArtifactContentResolver(projectStructure);
+      muleArtifactContentResolver = new MuleArtifactContentResolver(projectStructure, projectInformation.getEffectivePom());
     }
     return muleArtifactContentResolver;
   }

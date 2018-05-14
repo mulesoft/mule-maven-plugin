@@ -10,6 +10,7 @@
 package org.mule.tools.maven.utils;
 
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Resource;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.mule.tools.api.packager.Pom;
 
@@ -17,6 +18,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -36,5 +40,10 @@ public class ResolvedPom implements Pom {
     try (OutputStream outputStream = new FileOutputStream(pom.toFile())) {
       writer.write(outputStream, pomModel);
     }
+  }
+
+  @Override
+  public List<Path> getResourcesLocation() {
+    return pomModel.getBuild().getResources().stream().map(Resource::getDirectory).map(Paths::get).collect(Collectors.toList());
   }
 }

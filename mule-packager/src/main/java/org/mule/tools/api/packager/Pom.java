@@ -11,8 +11,11 @@ package org.mule.tools.api.packager;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 public interface Pom {
 
   void persist(Path pom) throws IOException;
+
+  List<Path> getResourcesLocation();
 }

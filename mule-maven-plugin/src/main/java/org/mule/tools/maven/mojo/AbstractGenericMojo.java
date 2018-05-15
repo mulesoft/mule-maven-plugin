@@ -47,6 +47,8 @@ import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
 
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+
 public abstract class AbstractGenericMojo extends AbstractMojo {
 
   @Parameter
@@ -140,7 +142,7 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
     if (projectInformation == null) {
       boolean isDeployment = false;
       for (String goal : session.getGoals()) {
-        isDeployment = isDeployment || StringUtils.equals(goal, "deploy");
+        isDeployment = isDeployment || StringUtils.containsIgnoreCase(goal, "deploy");
       }
       builder.withGroupId(project.getGroupId())
           .withArtifactId(project.getArtifactId())

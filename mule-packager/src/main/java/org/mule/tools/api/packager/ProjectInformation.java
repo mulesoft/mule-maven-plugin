@@ -7,217 +7,44 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package org.mule.tools.api.packager;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
-import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
-import static org.mule.tools.api.packager.structure.FolderNames.TEMP;
-import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
-
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
 
 import org.mule.tools.api.util.Project;
 import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
 import org.mule.tools.model.Deployment;
 
-/**
- * Represents the basic information of a project.
- */
-public class ProjectInformation {
-
-  private String groupId;
-  private String artifactId;
-  private String packaging;
-  private String version;
-  private final String classifier;
-  private Path projectBaseFolder;
-  private Path buildDirectory;
-  private boolean isTestProject;
-  private Project project;
-  private boolean isDeployment;
-  private List<Deployment> deployments;
-  private ExchangeRepositoryMetadata metadata;
-  private Pom resolvedPom;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
 
 
-  private ProjectInformation(String groupId, String artifactId, String version, String classifier, String packaging,
-                             Path projectBaseFolder,
-                             Path buildDirectory, boolean isTestProject, Project project, boolean isDeployment,
-                             ExchangeRepositoryMetadata metadata, List<Deployment> deployments, Pom resolvedPom) {
-    this.groupId = groupId;
-    this.artifactId = artifactId;
-    this.version = version;
-    this.classifier = classifier;
-    this.packaging = packaging;
-    this.projectBaseFolder = projectBaseFolder;
-    this.buildDirectory = buildDirectory;
-    this.isTestProject = isTestProject;
-    this.project = project;
-    this.isDeployment = isDeployment;
-    this.metadata = metadata;
-    this.deployments = deployments;
-    this.resolvedPom = resolvedPom;
-  }
+public interface ProjectInformation {
 
-  public String getGroupId() {
-    return groupId;
-  }
+  String getGroupId();
 
-  public String getArtifactId() {
-    return artifactId;
-  }
+  String getArtifactId();
 
-  public String getVersion() {
-    return version;
-  }
+  String getVersion();
 
-  public String getClassifier() {
-    return classifier;
-  }
+  String getClassifier();
 
-  public String getPackaging() {
-    return packaging;
-  }
+  String getPackaging();
 
-  public Path getProjectBaseFolder() {
-    return projectBaseFolder;
-  }
+  Path getProjectBaseFolder();
 
-  public Path getBuildDirectory() {
-    return buildDirectory;
-  }
+  Path getBuildDirectory();
 
-  public boolean isTestProject() {
-    return isTestProject;
-  }
+  boolean isTestProject();
 
-  public Project getProject() {
-    return project;
-  }
+  Project getProject();
 
-  public Optional<ExchangeRepositoryMetadata> getExchangeRepositoryMetadata() {
-    return Optional.ofNullable(metadata);
-  }
+  Optional<ExchangeRepositoryMetadata> getExchangeRepositoryMetadata();
 
-  public boolean isDeployment() {
-    return isDeployment;
-  }
+  boolean isDeployment();
 
-  public List<Deployment> getDeployments() {
-    return deployments;
-  }
+  List<Deployment> getDeployments();
 
-  public Pom getEffectivePom() {
-    return resolvedPom;
-  }
+  Pom getEffectivePom();
 
-  public Path getEffectivePomLocation() {
-    return getBuildDirectory().resolve(TEMP.value()).resolve(META_INF.value()).resolve(MAVEN.value()).resolve(getGroupId())
-        .resolve(getArtifactId())
-        .resolve(POM_XML);
-  }
-
-  public static class Builder {
-
-    private String groupId;
-    private String artifactId;
-    private String version;
-    private String packaging;
-    private Path projectBaseFolder;
-    private Path buildDirectory;
-    private Boolean isTestProject;
-    private Project project;
-    private boolean isDeployment;
-    private ExchangeRepositoryMetadata metadata;
-    private String classifier;
-    private List<Deployment> deployments;
-    private Pom resolvedPom;
-
-    public Builder withGroupId(String groupId) {
-      this.groupId = groupId;
-      return this;
-    }
-
-    public Builder withArtifactId(String artifactId) {
-      this.artifactId = artifactId;
-      return this;
-    }
-
-    public Builder withVersion(String version) {
-      this.version = version;
-      return this;
-    }
-
-    public Builder withPackaging(String packaging) {
-      this.packaging = packaging;
-      return this;
-    }
-
-    public Builder withProjectBaseFolder(Path projectBaseFolder) {
-      this.projectBaseFolder = projectBaseFolder;
-      return this;
-    }
-
-    public Builder withBuildDirectory(Path buildDirectory) {
-      this.buildDirectory = buildDirectory;
-      return this;
-    }
-
-    public Builder setTestProject(Boolean isTestProject) {
-      this.isTestProject = isTestProject;
-      return this;
-    }
-
-    public Builder withDependencyProject(Project project) {
-      this.project = project;
-      return this;
-    }
-
-    public Builder isDeployment(boolean isDeployment) {
-      this.isDeployment = isDeployment;
-      return this;
-    }
-
-    public Builder withExchangeRepositoryMetadata(ExchangeRepositoryMetadata metadata) {
-      this.metadata = metadata;
-      return this;
-    }
-
-    public Builder withClassifier(String classifier) {
-      this.classifier = classifier;
-      return this;
-    }
-
-    public Builder withDeployments(List<Deployment> deployments) {
-      this.deployments = deployments;
-      return this;
-    }
-
-    public Builder withResolvedPom(Pom pom) {
-      this.resolvedPom = pom;
-      return this;
-    }
-
-    public ProjectInformation build() {
-      checkArgument(isNotBlank(groupId), "Group id should not be null nor blank");
-      checkArgument(isNotBlank(artifactId), "Artifact id should not be null nor blank");
-      checkArgument(isNotBlank(version), "Version should not be null nor blank");
-      checkArgument(isNotBlank(packaging), "Packaging should not be null nor blank");
-      checkArgument(projectBaseFolder != null, "Project base folder should not be null");
-      checkArgument(buildDirectory != null, "Project build directory should not be null");
-      checkArgument(isTestProject != null, "Project isTestProject property was not set");
-      checkArgument(resolvedPom != null, "Project pom was not set");
-
-      return new ProjectInformation(groupId, artifactId, version, classifier, packaging, projectBaseFolder, buildDirectory,
-                                    isTestProject, project, isDeployment, metadata, deployments, resolvedPom);
-    }
-
-
-  }
-
+  Path getEffectivePomLocation();
 }

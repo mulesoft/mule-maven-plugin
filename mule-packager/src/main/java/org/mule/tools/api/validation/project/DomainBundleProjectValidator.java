@@ -37,9 +37,9 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
   private static final int DOMAIN_BUNDLE_VALID_NUMBER_OF_DOMAINS = 1;
   private final AetherMavenClient muleMavenPluginClient;
 
-  public DomainBundleProjectValidator(ProjectInformation projectInformation,
+  public DomainBundleProjectValidator(ProjectInformation defaultProjectInformation,
                                       AetherMavenClient aetherMavenClient) {
-    super(projectInformation, false);
+    super(defaultProjectInformation, false);
     this.muleMavenPluginClient = aetherMavenClient;
   }
 

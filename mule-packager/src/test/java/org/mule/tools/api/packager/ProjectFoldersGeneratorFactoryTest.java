@@ -21,11 +21,12 @@ public class ProjectFoldersGeneratorFactoryTest {
 
   @Test
   public void createDomainBundleProjectFoldersGeneratorTest() {
-    ProjectInformation projectInformation = mock(ProjectInformation.class);
-    when(projectInformation.getGroupId()).thenReturn("group.id");
-    when(projectInformation.getArtifactId()).thenReturn("artifact-id");
-    when(projectInformation.getPackaging()).thenReturn("mule-application");
-    assertThat("The project folder generator type is not the expected", ProjectFoldersGeneratorFactory.create(projectInformation),
+    DefaultProjectInformation defaultProjectInformation = mock(DefaultProjectInformation.class);
+    when(defaultProjectInformation.getGroupId()).thenReturn("group.id");
+    when(defaultProjectInformation.getArtifactId()).thenReturn("artifact-id");
+    when(defaultProjectInformation.getPackaging()).thenReturn("mule-application");
+    assertThat("The project folder generator type is not the expected",
+               ProjectFoldersGeneratorFactory.create(defaultProjectInformation),
                instanceOf(MuleProjectFoldersGenerator.class));
   }
 }

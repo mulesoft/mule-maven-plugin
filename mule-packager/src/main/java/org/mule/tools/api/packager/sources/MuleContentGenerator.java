@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.packager.structure.ProjectStructure;

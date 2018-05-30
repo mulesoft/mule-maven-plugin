@@ -57,7 +57,7 @@ public abstract class AbstractMuleMojo extends AbstractGenericMojo {
 
   public ContentGenerator getContentGenerator() {
     if (contentGenerator == null) {
-      contentGenerator = ContentGeneratorFactory.create(getAndSetProjectInformation());
+      contentGenerator = ContentGeneratorFactory.create(getProjectInformation());
     }
     return contentGenerator;
   }

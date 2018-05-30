@@ -72,7 +72,7 @@ public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
     log = new MavenDeployerLog(getLog());
     try {
       validateUniqueDeploymentConfiguration();
-      new ProjectDeploymentValidator(getAndSetProjectInformation()).isDeployable();
+      new ProjectDeploymentValidator(getProjectInformation()).isDeployable();
       deploymentConfiguration = getDeploymentConfiguration();
     } catch (DeploymentException | ValidationException e) {
       throw new MojoExecutionException("Deployment configuration is not valid, ", e);
@@ -92,7 +92,7 @@ public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
   }
 
   protected Deployment getDeploymentConfiguration() throws DeploymentException {
-    List<Deployment> deployments = getAndSetProjectInformation().getDeployments().stream().filter(Objects::nonNull)
+    List<Deployment> deployments = getProjectInformation().getDeployments().stream().filter(Objects::nonNull)
         .collect(Collectors.toList());
 
     Deployment deploymentConfiguration = deployments.get(0);
@@ -101,7 +101,7 @@ public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
   }
 
   private void validateUniqueDeploymentConfiguration() throws ValidationException {
-    List<Deployment> deployments = getAndSetProjectInformation().getDeployments().stream()
+    List<Deployment> deployments = getProjectInformation().getDeployments().stream()
         .filter(Objects::nonNull).collect(Collectors.toList());
 
     if (deployments.isEmpty()) {

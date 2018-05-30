@@ -30,7 +30,7 @@ import org.junit.rules.TemporaryFolder;
 
 import org.mule.tools.api.packager.PackagerTestUtils;
 import org.mule.tools.api.packager.Pom;
-import org.mule.tools.api.packager.ProjectInformation;
+import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
@@ -55,7 +55,7 @@ public class ContentGeneratorTest {
   @Before
   public void setUp() throws IOException {
     projectTargetFolder = projectBaseFolder.newFolder("target");
-    ProjectInformation info = new ProjectInformation.Builder()
+    DefaultProjectInformation info = new DefaultProjectInformation.Builder()
         .withGroupId(GROUP_ID)
         .withArtifactId(ARTIFACT_ID)
         .withVersion(VERSION)
@@ -71,7 +71,7 @@ public class ContentGeneratorTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void failCreationProjectBaseFolderNonExistent() {
-    ProjectInformation info = new ProjectInformation.Builder()
+    DefaultProjectInformation info = new DefaultProjectInformation.Builder()
         .withGroupId(GROUP_ID)
         .withArtifactId(ARTIFACT_ID)
         .withVersion(VERSION)
@@ -84,7 +84,7 @@ public class ContentGeneratorTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void failCreationProjectTargetFolderNonExistent() {
-    ProjectInformation info = new ProjectInformation.Builder()
+    DefaultProjectInformation info = new DefaultProjectInformation.Builder()
         .withGroupId(GROUP_ID)
         .withArtifactId(ARTIFACT_ID)
         .withVersion(VERSION)
@@ -269,7 +269,7 @@ public class ContentGeneratorTest {
 
   @Test
   public void createDescriptorsPolicy() throws IOException {
-    ProjectInformation info = new ProjectInformation.Builder()
+    DefaultProjectInformation info = new DefaultProjectInformation.Builder()
         .withGroupId(GROUP_ID)
         .withArtifactId(ARTIFACT_ID)
         .withVersion(VERSION)
@@ -309,7 +309,7 @@ public class ContentGeneratorTest {
 
   @Test
   public void createDescriptorsMuleDomain() throws IOException {
-    ProjectInformation info = new ProjectInformation.Builder()
+    DefaultProjectInformation info = new DefaultProjectInformation.Builder()
         .withGroupId(GROUP_ID)
         .withArtifactId(ARTIFACT_ID)
         .withVersion(VERSION)

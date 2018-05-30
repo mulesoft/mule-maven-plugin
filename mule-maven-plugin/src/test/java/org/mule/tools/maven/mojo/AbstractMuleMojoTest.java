@@ -83,7 +83,7 @@ public class AbstractMuleMojoTest {
 
   /**
    * The goal of this method is to pupulate a {@link AbstractGenericMojo} and create the proper behavior so it does not fail when
-   * calling {@link AbstractGenericMojo#getAndSetProjectInformation()}
+   * calling {@link AbstractGenericMojo#getProjectInformation()}
    *
    * @param mojo       the mojo to populate
    * @param groupId    the group id of the project

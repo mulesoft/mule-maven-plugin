@@ -12,8 +12,6 @@ package org.mule.tools.maven.mojo;
 
 import java.nio.file.Paths;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
@@ -29,13 +27,13 @@ import org.mule.tools.api.packager.*;
 public class InitializeMojo extends AbstractMuleMojo {
 
   @Override
-  public void doExecute() throws MojoExecutionException, MojoFailureException {
+  public void doExecute() {
     getLog().debug("Initializing Mule Maven Plugin...");
     getProjectFoldersGenerator().generate(Paths.get(project.getBuild().getDirectory()));
   }
 
   public AbstractProjectFoldersGenerator getProjectFoldersGenerator() {
-    return ProjectFoldersGeneratorFactory.create(getAndSetProjectInformation());
+    return ProjectFoldersGeneratorFactory.create(getProjectInformation());
   }
 
   @Override

@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Optional;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -30,7 +29,7 @@ import org.mule.tools.api.packager.resources.processor.ResourcesContentProcessor
 public class ProcessResourcesMojo extends AbstractMuleMojo {
 
   @Override
-  public void doExecute() throws MojoExecutionException, MojoFailureException {
+  public void doExecute() throws MojoFailureException {
     try {
       Optional<ResourcesContentProcessor> resourcesContentProcessor = getResourcesContentProcessor();
       if (resourcesContentProcessor.isPresent()) {
@@ -42,7 +41,7 @@ public class ProcessResourcesMojo extends AbstractMuleMojo {
   }
 
   protected Optional<ResourcesContentProcessor> getResourcesContentProcessor() {
-    PackagingType packaging = PackagingType.fromString(getAndSetProjectInformation().getPackaging());
+    PackagingType packaging = PackagingType.fromString(getProjectInformation().getPackaging());
     if (packaging == PackagingType.MULE_DOMAIN_BUNDLE) {
       return Optional.of(new DomainBundleProjectResourcesContentProcessor(Paths.get(project.getBuild().getDirectory())));
     } else {

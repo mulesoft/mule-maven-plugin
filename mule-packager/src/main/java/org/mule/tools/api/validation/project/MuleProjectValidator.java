@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.validation.MuleArtifactJsonValidator;

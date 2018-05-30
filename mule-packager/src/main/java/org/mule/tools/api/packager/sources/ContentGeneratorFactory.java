@@ -10,9 +10,9 @@
 
 package org.mule.tools.api.packager.sources;
 
+import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.packager.structure.ProjectStructure;
 
 /**
  * Factory of content generators. The corresponding generator type is based on the packaging type defined in the project

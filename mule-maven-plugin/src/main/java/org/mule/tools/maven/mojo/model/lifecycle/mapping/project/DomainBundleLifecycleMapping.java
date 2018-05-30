@@ -10,6 +10,7 @@
 
 package org.mule.tools.maven.mojo.model.lifecycle.mapping.project;
 
+import org.apache.maven.lifecycle.mapping.Lifecycle;
 import org.apache.maven.lifecycle.mapping.LifecycleMapping;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenFactory;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenVersionless;
@@ -36,15 +37,15 @@ public class DomainBundleLifecycleMapping implements LifecycleMapping, ProjectLi
   }
 
   @Override
-  public Map getLifecycles() {
+  public Map<String, Lifecycle> getLifecycles() {
     // This method implementation is to save issues between Maven versions 3.3.3/3.3./3.5.0
     LifecycleMappingMavenVersionless mapping = LifecycleMappingMavenFactory.buildLifecycleMappingMaven(this);
     return mapping.getLifecycles();
   }
 
   @Override
-  public Map getLifecyclePhases(LifecycleMappingMavenVersionless mapping) {
-    Map phases = new HashMap<>();
+  public <V> Map<String, V> getLifecyclePhases(LifecycleMappingMavenVersionless mapping) {
+    Map<String, V> phases = new HashMap<>();
     phases.put(VALIDATE.id(), mapping.buildGoals("org.mule.tools.maven:mule-maven-plugin:validate"));
     phases.put(INITIALIZE.id(), mapping.buildGoals("org.mule.tools.maven:mule-maven-plugin:initialize"));
     phases.put(GENERATE_RESOURCES.id(), mapping.buildGoals("org.mule.tools.maven:mule-maven-plugin:generate-resources"));

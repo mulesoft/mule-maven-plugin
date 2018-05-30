@@ -16,5 +16,5 @@ import java.util.Map;
 
 public interface ProjectLifecycleMapping {
 
-  Map getLifecyclePhases(LifecycleMappingMavenVersionless mapping);
+  <V> Map<String, V> getLifecyclePhases(LifecycleMappingMavenVersionless mapping);
 }

@@ -23,7 +23,7 @@ public class LifecycleMappingMaven339OrHigher extends LifecycleMappingMavenVersi
   }
 
   @Override
-  public Object buildGoals(String goals) {
+  public LifecyclePhase buildGoals(String goals) {
     return new LifecyclePhase(goals);
   }
 

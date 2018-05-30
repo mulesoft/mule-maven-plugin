@@ -33,7 +33,7 @@ import org.junit.rules.TemporaryFolder;
 
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.Pom;
-import org.mule.tools.api.packager.ProjectInformation;
+import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.model.Deployment;
 
 /**
@@ -52,7 +52,7 @@ public class ProjectDeploymentValidatorTest {
   public TemporaryFolder projectBuildFolder = new TemporaryFolder();
 
   private Deployment deploymentConfigurationMock;
-  private ProjectInformation.Builder projectInformationBuilder;
+  private DefaultProjectInformation.Builder projectInformationBuilder;
 
   private ProjectDeploymentValidator validator;
 
@@ -60,7 +60,7 @@ public class ProjectDeploymentValidatorTest {
   public void before() throws IOException, MojoExecutionException {
     deploymentConfigurationMock = mock(Deployment.class);
 
-    projectInformationBuilder = new ProjectInformation.Builder()
+    projectInformationBuilder = new DefaultProjectInformation.Builder()
         .withGroupId(GROUP_ID)
         .withArtifactId(ARTIFACT_ID)
         .withVersion(VERSION)

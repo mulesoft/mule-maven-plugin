@@ -10,21 +10,18 @@
 package org.mule.tools.maven.mojo;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DeploymentRepository;
-import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -37,6 +34,7 @@ import org.eclipse.aether.repository.RemoteRepository;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
+import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
@@ -45,17 +43,15 @@ import org.mule.tools.api.validation.project.AbstractProjectValidator;
 import org.mule.tools.api.validation.project.ProjectValidatorFactory;
 import org.mule.tools.client.authentication.model.Credentials;
 import org.mule.tools.maven.utils.ArtifactUtils;
-import org.mule.tools.maven.utils.DependencyProject;
 import org.mule.tools.maven.utils.MavenPackagerLog;
+import org.mule.tools.maven.utils.MavenProjectInformation;
 import org.mule.tools.maven.utils.ProjectDirectoryUpdater;
-import org.mule.tools.maven.utils.ResolvedPom;
+import org.mule.tools.model.Deployment;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
-
-import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 
 public abstract class AbstractGenericMojo extends AbstractMojo {
 
@@ -111,8 +107,6 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
 
   protected AetherMavenClient aetherMavenClient;
 
-  private ProjectInformation projectInformation;
-
   public abstract String getPreviousRunPlaceholder();
 
   public abstract void doExecute() throws MojoExecutionException, MojoFailureException;
@@ -158,7 +152,7 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   public AbstractProjectValidator getProjectValidator() {
     if (validator == null) {
       validator =
-          ProjectValidatorFactory.create(getAndSetProjectInformation(), getAetherMavenClient(), sharedLibraries, strictCheck);
+          ProjectValidatorFactory.create(getProjectInformation(), getAetherMavenClient(), sharedLibraries, strictCheck);
     }
     return validator;
   }
@@ -181,37 +175,10 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
     return dependencies.stream().map(ArtifactUtils::toArtifactCoordinates).collect(Collectors.toList());
   }
 
-  protected ProjectInformation getAndSetProjectInformation() {
-    ProjectInformation.Builder builder = new ProjectInformation.Builder();
-    if (projectInformation == null) {
-      boolean isDeployment = session.getGoals().stream().anyMatch(goal -> containsIgnoreCase(goal, "deploy"));
-      builder.withGroupId(project.getGroupId())
-          .withArtifactId(project.getArtifactId())
-          .withVersion(project.getVersion())
-          .withPackaging(project.getPackaging())
-          .withClassifier(getClassifier())
-          .withProjectBaseFolder(Paths.get(projectBaseFolder.toURI()))
-          .withBuildDirectory(Paths.get(project.getBuild().getDirectory()))
-          .setTestProject(testJar)
-          .withDependencyProject(new DependencyProject(project))
-          .isDeployment(isDeployment)
-          .withResolvedPom(new ResolvedPom(project.getModel()));
 
-      if (isDeployment) {
-        DistributionManagement management = project.getDistributionManagement();
-        DeploymentRepository repository = management != null ? management.getRepository() : null;
-        Settings settings = session.getSettings();
-        Optional<ExchangeRepositoryMetadata> metadata = getExchangeRepositoryMetadata(repository, settings);
-        if (metadata.isPresent()) {
-          builder.withExchangeRepositoryMetadata(metadata.get());
-        } else {
-          builder.withDeployments(Arrays.asList(agentDeployment, standaloneDeployment, armDeployment, cloudHubDeployment,
-                                                clusterDeployment));
-        }
-      }
-      projectInformation = builder.build();
-    }
-    return projectInformation;
+  protected ProjectInformation getProjectInformation() {
+    return MavenProjectInformation.getProjectInformation(session, project, projectBaseFolder, testJar, getDeployments(),
+                                                         getClassifier());
   }
 
   /**
@@ -229,21 +196,15 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   }
 
 
-  private Optional<ExchangeRepositoryMetadata> getExchangeRepositoryMetadata(DeploymentRepository repository, Settings settings) {
-    ExchangeRepositoryMetadata metadata = null;
-    if (repository != null && ExchangeRepositoryMetadata.isExchangeRepo(repository.getUrl())) {
-      Server server = settings.getServer(repository.getId());
-      Credentials credentials = new Credentials(server.getUsername(), server.getPassword());
-      metadata = new ExchangeRepositoryMetadata(credentials, repository.getUrl());
-    }
-    return Optional.ofNullable(metadata);
-  }
-
   protected PackagingType getPackagingType() {
     return PackagingType.fromString(project.getPackaging());
   }
 
   public String getClassifier() {
     return getPackagingType().resolveClassifier(classifier, lightweightPackage, testJar);
+  }
+
+  public List<Deployment> getDeployments() {
+    return Arrays.asList(cloudHubDeployment, clusterDeployment, agentDeployment, armDeployment, standaloneDeployment);
   }
 }

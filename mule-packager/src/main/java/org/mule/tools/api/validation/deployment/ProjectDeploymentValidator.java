@@ -19,7 +19,9 @@ import static org.mule.tools.api.validation.project.AbstractProjectValidator.isC
 import java.util.List;
 
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.ProjectInformation;
+import org.mule.tools.api.util.Project;
 
 /**
  * @author Mulesoft Inc.
@@ -42,7 +44,7 @@ public class ProjectDeploymentValidator {
     this.projectInformation = projectInformation;
   }
 
-  public ProjectInformation getProjectInformation() {
+  public ProjectInformation getDefaultProjectInformation() {
     return projectInformation;
   }
 

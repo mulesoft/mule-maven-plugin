@@ -53,8 +53,7 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.Pom;
-import org.mule.tools.api.packager.ProjectInformation;
-import org.mule.tools.api.validation.project.MuleProjectValidator;
+import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.model.Deployment;
 
 public class MuleProjectValidatorTest {
@@ -77,13 +76,13 @@ public class MuleProjectValidatorTest {
   public TemporaryFolder projectBuildFolder = new TemporaryFolder();
 
   private MuleProjectValidator validator;
-  private ProjectInformation.Builder builder;
+  private DefaultProjectInformation.Builder builder;
   private Deployment deploymentConfigurationMock;
 
   @Before
   public void before() throws IOException, MojoExecutionException {
 
-    builder = new ProjectInformation.Builder()
+    builder = new DefaultProjectInformation.Builder()
         .withGroupId(GROUP_ID)
         .withArtifactId(ARTIFACT_ID)
         .withVersion(VERSION)

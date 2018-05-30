@@ -11,13 +11,9 @@
 package org.mule.tools.maven.mojo;
 
 import static java.lang.String.format;
-import static org.mule.tools.api.packager.structure.FolderNames.TEMP;
-import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
 
-import java.io.File;
 import java.util.stream.Collectors;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -44,11 +40,11 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
   protected final MulePluginsCompatibilityValidator mulePluginsCompatibilityValidator = new MulePluginsCompatibilityValidator();
 
   @Override
-  public void doExecute() throws MojoExecutionException, MojoFailureException {
+  public void doExecute() throws MojoFailureException {
     getLog().debug("Processing sources...");
     if (!(lightweightPackage && skipPluginCompatibilityValidation)) {
       RepositoryGenerator repositoryGenerator =
-          new RepositoryGenerator(getAndSetProjectInformation().getEffectivePomLocation().toFile(), outputDirectory,
+          new RepositoryGenerator(getProjectInformation().getEffectivePomLocation().toFile(), outputDirectory,
                                   new ArtifactInstaller(new MavenPackagerLog(getLog())),
                                   getClassLoaderModelAssembler());
       try {

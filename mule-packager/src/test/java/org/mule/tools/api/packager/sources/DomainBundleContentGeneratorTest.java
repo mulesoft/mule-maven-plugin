@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mule.tools.api.packager.ProjectInformation;
+import org.mule.tools.api.packager.DefaultProjectInformation;
 
 import java.io.IOException;
 
@@ -29,16 +29,16 @@ public class DomainBundleContentGeneratorTest {
 
   @Rule
   public TemporaryFolder buidlDirectory = new TemporaryFolder();
-  private ProjectInformation projectInformation;
+  private DefaultProjectInformation defaultProjectInformation;
 
   @Before
   public void setUp() throws IOException {
-    projectInformation = mock(ProjectInformation.class);
+    defaultProjectInformation = mock(DefaultProjectInformation.class);
     projectBaseFolder.create();
     buidlDirectory.create();
-    when(projectInformation.getProjectBaseFolder()).thenReturn(projectBaseFolder.getRoot().toPath());
-    when(projectInformation.getBuildDirectory()).thenReturn(buidlDirectory.getRoot().toPath());
-    generator = new DomainBundleContentGenerator(projectInformation);
+    when(defaultProjectInformation.getProjectBaseFolder()).thenReturn(projectBaseFolder.getRoot().toPath());
+    when(defaultProjectInformation.getBuildDirectory()).thenReturn(buidlDirectory.getRoot().toPath());
+    generator = new DomainBundleContentGenerator(defaultProjectInformation);
   }
 
   @Test

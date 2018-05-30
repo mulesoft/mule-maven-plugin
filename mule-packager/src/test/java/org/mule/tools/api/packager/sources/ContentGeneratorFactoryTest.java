@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mule.tools.api.packager.ProjectInformation;
+import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 
 public class ContentGeneratorFactoryTest {
 
-  private ProjectInformation projectInformation;
+  private DefaultProjectInformation defaultProjectInformation;
 
   @Rule
   public TemporaryFolder projectBaseFolder = new TemporaryFolder();
@@ -36,38 +36,38 @@ public class ContentGeneratorFactoryTest {
 
   @Before
   public void setUp() throws IOException {
-    projectInformation = mock(ProjectInformation.class);
+    defaultProjectInformation = mock(DefaultProjectInformation.class);
     projectBaseFolder.create();
     buidlDirectory.create();
-    when(projectInformation.getProjectBaseFolder()).thenReturn(projectBaseFolder.getRoot().toPath());
-    when(projectInformation.getBuildDirectory()).thenReturn(buidlDirectory.getRoot().toPath());
+    when(defaultProjectInformation.getProjectBaseFolder()).thenReturn(projectBaseFolder.getRoot().toPath());
+    when(defaultProjectInformation.getBuildDirectory()).thenReturn(buidlDirectory.getRoot().toPath());
   }
 
   @Test
   public void createDomainBundleContentGeneratorTest() {
-    when(projectInformation.getPackaging()).thenReturn(PackagingType.MULE_DOMAIN_BUNDLE.toString());
-    ContentGenerator actualGenerator = ContentGeneratorFactory.create(projectInformation);
+    when(defaultProjectInformation.getPackaging()).thenReturn(PackagingType.MULE_DOMAIN_BUNDLE.toString());
+    ContentGenerator actualGenerator = ContentGeneratorFactory.create(defaultProjectInformation);
     assertThat("Content generator type is not the expected", actualGenerator, instanceOf(DomainBundleContentGenerator.class));
   }
 
   @Test
   public void createMuleContentGeneratorFromMuleApplicationPackagingTypeTest() {
-    when(projectInformation.getPackaging()).thenReturn(PackagingType.MULE_APPLICATION.toString());
-    ContentGenerator actualGenerator = ContentGeneratorFactory.create(projectInformation);
+    when(defaultProjectInformation.getPackaging()).thenReturn(PackagingType.MULE_APPLICATION.toString());
+    ContentGenerator actualGenerator = ContentGeneratorFactory.create(defaultProjectInformation);
     assertThat("Content generator type is not the expected", actualGenerator, instanceOf(MuleContentGenerator.class));
   }
 
   @Test
   public void createMuleContentGeneratorFromMuleDomainPackagingTypeTest() {
-    when(projectInformation.getPackaging()).thenReturn(PackagingType.MULE_DOMAIN.toString());
-    ContentGenerator actualGenerator = ContentGeneratorFactory.create(projectInformation);
+    when(defaultProjectInformation.getPackaging()).thenReturn(PackagingType.MULE_DOMAIN.toString());
+    ContentGenerator actualGenerator = ContentGeneratorFactory.create(defaultProjectInformation);
     assertThat("Content generator type is not the expected", actualGenerator, instanceOf(MuleContentGenerator.class));
   }
 
   @Test
   public void createMuleContentGeneratorFromMulePolicyPackagingTypeTest() {
-    when(projectInformation.getPackaging()).thenReturn(PackagingType.MULE_POLICY.toString());
-    ContentGenerator actualGenerator = ContentGeneratorFactory.create(projectInformation);
+    when(defaultProjectInformation.getPackaging()).thenReturn(PackagingType.MULE_POLICY.toString());
+    ContentGenerator actualGenerator = ContentGeneratorFactory.create(defaultProjectInformation);
     assertThat("Content generator type is not the expected", actualGenerator, instanceOf(MuleContentGenerator.class));
   }
 }

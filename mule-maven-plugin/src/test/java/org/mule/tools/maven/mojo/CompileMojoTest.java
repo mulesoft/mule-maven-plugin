@@ -20,7 +20,6 @@ import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
 import static org.mockito.Mockito.*;

@@ -43,7 +43,7 @@ public abstract class LifecycleMappingMavenVersionless {
     return lifecycle;
   }
 
-  public abstract Object buildGoals(String goals);
+  public abstract <T> T buildGoals(String goals);
 
   public abstract void setLifecyclePhases(Lifecycle lifecycle);
 

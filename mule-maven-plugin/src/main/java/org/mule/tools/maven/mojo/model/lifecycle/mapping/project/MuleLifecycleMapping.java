@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.lifecycle.mapping.Lifecycle;
 import org.apache.maven.lifecycle.mapping.LifecycleMapping;
 
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMaven333;
@@ -61,15 +62,15 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
   }
 
   @Override
-  public Map getLifecycles() {
+  public Map<String, Lifecycle> getLifecycles() {
     // This method implementation is to save issues between Maven versions 3.3.3/3.3./3.5.0
     LifecycleMappingMavenVersionless mapping = LifecycleMappingMavenFactory.buildLifecycleMappingMaven(this);
     return mapping.getLifecycles();
   }
 
   @Override
-  public Map getLifecyclePhases(LifecycleMappingMavenVersionless mapping) {
-    Map phases = new HashMap<>();
+  public <V> Map<String, V> getLifecyclePhases(LifecycleMappingMavenVersionless mapping) {
+    Map<String, V> phases = new HashMap<>();
     phases.put(CLEAN.id(), buildGoals(mapping, MAVEN_CLEAN_PLUGIN + ":clean", MULE_MAVEN_PLUGIN + ":clean"));
 
     phases.put(VALIDATE.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":validate"));
@@ -99,7 +100,7 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
     return phases;
   }
 
-  private Object buildGoals(LifecycleMappingMavenVersionless mapping, String... goals) {
+  private <V> V buildGoals(LifecycleMappingMavenVersionless mapping, String... goals) {
     return mapping.buildGoals(StringUtils.join(goals, ","));
   }
 }

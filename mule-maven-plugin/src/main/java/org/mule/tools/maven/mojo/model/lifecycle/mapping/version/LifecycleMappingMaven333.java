@@ -22,7 +22,7 @@ public class LifecycleMappingMaven333 extends LifecycleMappingMavenVersionless {
   }
 
   @Override
-  public Object buildGoals(String goals) {
+  public String buildGoals(String goals) {
     return goals;
   }
 

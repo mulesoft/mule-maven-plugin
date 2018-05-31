@@ -11,9 +11,7 @@
 package org.mule.tools.maven.mojo;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -30,7 +28,7 @@ import org.mule.tools.api.packager.sources.MuleContentGenerator;
 public class CompileMojo extends AbstractMuleMojo {
 
   @Override
-  public void doExecute() throws MojoExecutionException, MojoFailureException {
+  public void doExecute() throws MojoFailureException {
     getLog().debug("Generating mule source code...");
     try {
       ((MuleContentGenerator) getContentGenerator()).createMuleSrcFolderContent();

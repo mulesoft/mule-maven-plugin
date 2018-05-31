@@ -11,7 +11,6 @@
 package org.mule.tools.maven.mojo;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.api.packager.packaging.PackagingType.MULE_APPLICATION;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BUNDLE;
 
 import java.io.File;
@@ -19,10 +18,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.MessageFormat;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -35,7 +32,6 @@ import org.mule.tools.api.packager.builder.PackageBuilder;
 import org.mule.tools.api.packager.builder.PackageBuilderFactory;
 import org.mule.tools.api.packager.packaging.Classifier;
 import org.mule.tools.api.packager.packaging.PackagingOptions;
-import org.mule.tools.api.packager.packaging.PackagingType;
 
 /**
  * Build a Mule application archive.
@@ -59,7 +55,7 @@ public class PackageMojo extends AbstractMuleMojo {
   protected PackagingOptions options;
 
   @Override
-  public void doExecute() throws MojoExecutionException, MojoFailureException {
+  public void doExecute() throws MojoExecutionException {
     getLog().debug("Packaging...");
 
     String targetFolder = project.getBuild().getDirectory();

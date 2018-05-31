@@ -104,7 +104,7 @@ public class CloudHubDeployment extends AnypointDeployment {
       setWorkerType(cloudHubWorkerType);
     }
     if (isBlank(getWorkerType())) {
-      setWorkerType("Medium");
+      setWorkerType("Micro");
     }
 
     if (isBlank(getRegion())) {

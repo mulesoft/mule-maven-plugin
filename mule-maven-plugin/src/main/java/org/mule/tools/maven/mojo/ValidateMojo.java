@@ -15,7 +15,6 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALI
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
@@ -41,7 +40,7 @@ public class ValidateMojo extends AbstractMuleMojo {
   private static final String MIN_MAVEN_VERSION = "3.3.3";
 
   @Override
-  public void doExecute() throws MojoExecutionException, MojoFailureException {
+  public void doExecute() throws MojoExecutionException {
     if (!skipValidation) {
       try {
         validateMavenEnvironment();

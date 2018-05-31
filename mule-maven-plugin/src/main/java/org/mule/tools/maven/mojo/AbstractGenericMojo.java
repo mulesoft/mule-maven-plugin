@@ -13,7 +13,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.maven.RepositoryUtils;
@@ -21,27 +20,21 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
-import org.apache.maven.model.DeploymentRepository;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.settings.Server;
-import org.apache.maven.settings.Settings;
 import org.eclipse.aether.repository.RemoteRepository;
 
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
-import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
-import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
 import org.mule.tools.api.validation.project.AbstractProjectValidator;
 import org.mule.tools.api.validation.project.ProjectValidatorFactory;
-import org.mule.tools.client.authentication.model.Credentials;
 import org.mule.tools.maven.utils.ArtifactUtils;
 import org.mule.tools.maven.utils.MavenPackagerLog;
 import org.mule.tools.maven.utils.MavenProjectInformation;
@@ -182,12 +175,12 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   }
 
   /**
-   * This method avoids running a MoJo more than once.
+   * This method avoids running a Mojo more than once.
    *
-   * @return true if the MoJo run has already happened before
+   * @return true if the Mojo run has already happened before
    */
   protected boolean hasExecutedBefore() {
-    Map<String, String> pluginContext = getPluginContext();
+    Map<?, ?> pluginContext = getPluginContext();
     if (pluginContext.containsKey(getPreviousRunPlaceholder())) {
       return true;
     }

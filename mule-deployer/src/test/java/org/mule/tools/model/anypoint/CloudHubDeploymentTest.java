@@ -56,7 +56,7 @@ public class CloudHubDeploymentTest {
 
   @Test
   public void setCloudHubDeploymentDefaultValuesCloudHubWorkerTypeNotSetTest() throws DeploymentException {
-    String cloudHubWorkerTypeDefaultValue = "Medium";
+    String cloudHubWorkerTypeDefaultValue = "Micro";
     deploymentSpy.setEnvironmentSpecificValues();
     assertThat("The cloudhub worker type property was not resolved to the default value",
                deploymentSpy.getWorkerType(), equalTo(cloudHubWorkerTypeDefaultValue));

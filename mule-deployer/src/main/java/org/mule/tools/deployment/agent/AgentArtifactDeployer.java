@@ -45,21 +45,17 @@ public class AgentArtifactDeployer implements ArtifactDeployer {
 
   /**
    * Deploys the domain specified in the {@link Deployment} to the agent through the {@link AgentClient}.
-   * 
-   * @throws DeploymentException
    */
   @Override
-  public void deployDomain() throws DeploymentException {
+  public void deployDomain() {
     client.deployDomain(deployment.getApplicationName(), deployment.getArtifact());
   }
 
   /**
    * Undeploys the domain specified in the {@link Deployment} from the agent through the {@link AgentClient}.
-   * 
-   * @throws DeploymentException
    */
   @Override
-  public void undeployDomain() throws DeploymentException {
+  public void undeployDomain() {
     client.undeployDomain(deployment.getApplicationName());
   }
 
@@ -77,11 +73,9 @@ public class AgentArtifactDeployer implements ArtifactDeployer {
 
   /**
    * Undeploys the application specified in the {@link Deployment} from the agent through the {@link AgentClient}.
-   *
-   * @throws DeploymentException
    */
   @Override
-  public void undeployApplication() throws DeploymentException {
+  public void undeployApplication() {
     client.undeployApplication(deployment.getApplicationName());
   }
 

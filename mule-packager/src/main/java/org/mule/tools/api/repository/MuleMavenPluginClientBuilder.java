@@ -35,6 +35,7 @@ public class MuleMavenPluginClientBuilder {
   private File localRepository;
   private File globalSettings;
   private File userSettings;
+  private File securitySettings;
 
   public MuleMavenPluginClientBuilder(PackagerLog log) {
     this.log = log;
@@ -61,6 +62,11 @@ public class MuleMavenPluginClientBuilder {
     return this;
   }
 
+  public MuleMavenPluginClientBuilder withSecuritySettings(File securitySettings) {
+    this.securitySettings = securitySettings;
+    return this;
+  }
+
   public AetherMavenClient build() {
     MavenConfiguration mavenConfiguration = buildMavenConfiguration();
     AetherMavenClientProvider provider = new AetherMavenClientProvider();
@@ -74,9 +80,13 @@ public class MuleMavenPluginClientBuilder {
         : settingsSupplierFactory.environmentGlobalSettingsSupplier();
     Optional<File> userSettings =
         this.userSettings != null ? Optional.of(this.userSettings) : settingsSupplierFactory.environmentUserSettingsSupplier();
+    Optional<File> securitySettings =
+        this.securitySettings != null ? Optional.of(this.securitySettings)
+            : settingsSupplierFactory.environmentSettingsSecuritySupplier();
 
     globalSettings.ifPresent(mavenConfigurationBuilder::globalSettingsLocation);
     userSettings.ifPresent(mavenConfigurationBuilder::userSettingsLocation);
+    securitySettings.ifPresent(mavenConfigurationBuilder::settingsSecurityLocation);
 
     DefaultLocalRepositorySupplierFactory localRepositorySupplierFactory = new DefaultLocalRepositorySupplierFactory();
     Supplier<File> localMavenRepository =

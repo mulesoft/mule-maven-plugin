@@ -12,16 +12,23 @@ package org.mule.tools.api.repository;
 
 import static java.lang.String.format;
 import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
+import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
+import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
+import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.mule.tools.api.classloader.model.*;
-import org.mule.tools.api.util.FileUtils;
 
 public class RepositoryGenerator {
 
@@ -41,7 +48,7 @@ public class RepositoryGenerator {
 
   public ClassLoaderModel generate() throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
-        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory);
+        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile);
     installArtifacts(getRepositoryFolder(), artifactInstaller, appModel);
     return appModel.getClassLoaderModel();
   }

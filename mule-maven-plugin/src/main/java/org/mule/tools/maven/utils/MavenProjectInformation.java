@@ -9,14 +9,8 @@
  */
 package org.mule.tools.maven.utils;
 
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.DeploymentRepository;
-import org.apache.maven.model.DistributionManagement;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.settings.Server;
-import org.apache.maven.settings.Settings;
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import org.mule.tools.api.packager.DefaultProjectInformation;
-import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.util.Project;
 import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
@@ -29,7 +23,12 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
-import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.model.DeploymentRepository;
+import org.apache.maven.model.DistributionManagement;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.settings.Server;
+import org.apache.maven.settings.Settings;
 
 public class MavenProjectInformation implements ProjectInformation {
 
@@ -132,17 +131,6 @@ public class MavenProjectInformation implements ProjectInformation {
   public List<Deployment> getDeployments() {
     return projectInformation.getDeployments();
   }
-
-  @Override
-  public Pom getEffectivePom() {
-    return projectInformation.getEffectivePom();
-  }
-
-  @Override
-  public Path getEffectivePomLocation() {
-    return projectInformation.getEffectivePomLocation();
-  }
-
 
   private static Optional<ExchangeRepositoryMetadata> getExchangeRepositoryMetadata(DeploymentRepository repository,
                                                                                     Settings settings) {

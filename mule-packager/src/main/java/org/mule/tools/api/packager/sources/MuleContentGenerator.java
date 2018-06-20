@@ -15,14 +15,17 @@ import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.dese
 import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.serializeToFile;
 import static org.mule.tools.api.packager.sources.DefaultValuesMuleArtifactJsonGenerator.generate;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
-import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
-import static org.mule.tools.api.packager.structure.FolderNames.TEMP;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
-import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.packager.ProjectInformation;
+import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.packager.structure.ProjectStructure;
+import org.mule.tools.api.util.CopyFileVisitor;
+import org.mule.tools.api.util.exclude.MuleExclusionMatcher;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,14 +34,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.packager.DefaultProjectInformation;
-import org.mule.tools.api.packager.ProjectInformation;
-import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.packager.structure.ProjectStructure;
-import org.mule.tools.api.util.CopyFileVisitor;
-import org.mule.tools.api.util.exclude.MuleExclusionMatcher;
 
 /**
  * Generates the required content for each of the mandatory folders of a mule application package
@@ -126,10 +121,6 @@ public class MuleContentGenerator extends ContentGenerator {
     return deserialize(classLoaderModelDescriptor);
   }
 
-  private void copyContent(Path originPath, Path destinationPath, Optional<List<Path>> exclusions) throws IOException {
-    copyContent(originPath, destinationPath, exclusions, true, true);
-  }
-
   private void copyContent(Path originPath, Path destinationPath, Optional<List<Path>> exclusions, Boolean validateOrigin,
                            Boolean validateDestination)
       throws IOException {
@@ -173,14 +164,7 @@ public class MuleContentGenerator extends ContentGenerator {
    */
   public void createDescriptors() throws IOException {
     createMavenDescriptors();
-    createEffectivePom();
     copyDescriptorFile();
-  }
-
-  private void createEffectivePom() throws IOException {
-    projectInformation.getEffectivePom()
-        .persist(projectInformation.getBuildDirectory().resolve(TEMP.value()).resolve(META_INF.value()).resolve(MAVEN.value())
-            .resolve(projectInformation.getGroupId()).resolve(projectInformation.getArtifactId()).resolve(POM_XML));
   }
 
   private void copyDescriptorFile() throws IOException {
@@ -196,7 +180,7 @@ public class MuleContentGenerator extends ContentGenerator {
       ProjectStructure projectStructure =
           new ProjectStructure(projectInformation.getProjectBaseFolder(), projectInformation.getBuildDirectory(),
                                projectInformation.isTestProject());
-      muleArtifactContentResolver = new MuleArtifactContentResolver(projectStructure, projectInformation.getEffectivePom());
+      muleArtifactContentResolver = new MuleArtifactContentResolver(projectStructure);
     }
     return muleArtifactContentResolver;
   }

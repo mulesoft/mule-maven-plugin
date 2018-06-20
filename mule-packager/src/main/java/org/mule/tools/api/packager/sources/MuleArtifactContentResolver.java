@@ -11,6 +11,7 @@
 package org.mule.tools.api.packager.sources;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import org.mule.tools.api.packager.structure.ProjectStructure;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,9 +28,6 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
-import org.mule.tools.api.packager.Pom;
-import org.mule.tools.api.packager.structure.ProjectStructure;
-
 /**
  * Resolves the content of resources defined in mule-artifact.json based on the project base folder.
  */
@@ -44,12 +42,10 @@ public class MuleArtifactContentResolver {
   private List<String> exportedPackages;
   private List<String> exportedResources;
   private List<String> testExportedResources;
-  private Pom pom;
 
-  public MuleArtifactContentResolver(ProjectStructure projectStructure, Pom pom) {
+  public MuleArtifactContentResolver(ProjectStructure projectStructure) {
     checkArgument(projectStructure != null, "Project structure should not be null");
     this.projectStructure = projectStructure;
-    this.pom = pom;
   }
 
   /**
@@ -75,10 +71,7 @@ public class MuleArtifactContentResolver {
    */
   public List<String> getExportedResources() throws IOException {
     if (exportedResources == null) {
-      exportedResources = new ArrayList<>();
-      for (Path resourcePath : pom.getResourcesLocation()) {
-        exportedResources.addAll(getResources(resourcePath));
-      }
+      exportedResources = getResources(projectStructure.getExportedResourcesPath());
     }
     return exportedResources;
   }

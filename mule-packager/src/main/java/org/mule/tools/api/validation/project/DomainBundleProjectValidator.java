@@ -10,9 +10,10 @@
 
 package org.mule.tools.api.validation.project;
 
-import org.apache.commons.lang3.StringUtils;
-
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
 import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
@@ -24,8 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Validates if the project has an existent packaging type, the compatibility of mule plugins that are dependencies of this
@@ -34,6 +34,7 @@ import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
  */
 public class DomainBundleProjectValidator extends AbstractProjectValidator {
 
+  private static final String POM_TYPE = "pom";
   private static final int DOMAIN_BUNDLE_VALID_NUMBER_OF_DOMAINS = 1;
   private final AetherMavenClient muleMavenPluginClient;
 
@@ -118,8 +119,11 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
 
   protected List<BundleDependency> resolveApplicationDependencies(ArtifactCoordinates applicationCoordinates) {
     return muleMavenPluginClient.resolveBundleDescriptorDependencies(false, true,
-                                                                     ArtifactUtils
-                                                                         .toBundleDescriptor(applicationCoordinates));
+                                                                     new BundleDescriptor.Builder()
+                                                                         .setGroupId(applicationCoordinates.getGroupId())
+                                                                         .setArtifactId(applicationCoordinates.getArtifactId())
+                                                                         .setVersion(applicationCoordinates.getVersion())
+                                                                         .setType(POM_TYPE).build());
   }
 
   /**

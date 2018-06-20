@@ -9,7 +9,9 @@
  */
 package integration.test.mojo;
 
+import static com.google.common.collect.ImmutableList.of;
 import static integration.FileTreeMatcher.hasSameTreeStructure;
+import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -18,11 +20,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-import integration.ProjectFactory;
 import org.apache.maven.it.VerificationException;
-import org.eclipse.persistence.exceptions.i18n.ValidationExceptionResource;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -46,6 +45,9 @@ public class ProcessSourcesMojoTest extends MojoTest {
   private static final String COMPILED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
       "/mule-application-compile/target/META-INF/mule-artifact/classloader-model.json";
 
+  private static final String PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE =
+      "/mule-application-profile-activation-by-user-property/target/META-INF/mule-artifact/classloader-model.json";
+
   private static final String PROVIDED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
       "/mule-application-provided/target/META-INF/mule-artifact/classloader-model.json";
   private static final String RUNTIME_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
@@ -54,6 +56,10 @@ public class ProcessSourcesMojoTest extends MojoTest {
       "/mule-application-test/target/META-INF/mule-artifact/classloader-model.json";
   private static final String EXPECTED_COMPILED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-compile-scope-classloader-model.json";
+  private static final String EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE =
+      "/expected-files/expected-profile-activation-by-user-property-classloader-model.json";
+  private static final String EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_INACTIVE_GENERATED_CLASSLOADER_MODEL_FILE =
+      "/expected-files/expected-profile-activation-by-user-property-inactive-classloader-model.json";
   private static final String EXPECTED_PROVIDED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-provided-scope-classloader-model.json";
   private static final String EXPECTED_RUNTIME_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
@@ -150,6 +156,43 @@ public class ProcessSourcesMojoTest extends MojoTest {
   }
 
   @Test
+  public void testProcessSourcesActivateProfileByUserProperty() throws IOException, VerificationException {
+    processSourcesOnProject("mule-application-profile-activation-by-user-property", of("-DenablePluginA=true"));
+    List<String> generatedClassloaderModelFileContent =
+        getFileContent(PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
+    List<String> expectedClassloaderModelFileContent =
+        getFileContent(EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
+    assertThat("The classloader-model.json file of mule-application-compile project is different from the expected",
+               generatedClassloaderModelFileContent,
+               equalTo(expectedClassloaderModelFileContent));
+  }
+
+  @Test
+  public void testProcessSourcesActivateProfileById() throws IOException, VerificationException {
+    processSourcesOnProject("mule-application-profile-activation-by-user-property", of("-PmulePluginAProfileId"));
+    List<String> generatedClassloaderModelFileContent =
+        getFileContent(PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
+    List<String> expectedClassloaderModelFileContent =
+        getFileContent(EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
+    assertThat("The classloader-model.json file of mule-application-compile project is different from the expected",
+               generatedClassloaderModelFileContent,
+               equalTo(expectedClassloaderModelFileContent));
+  }
+
+  @Test
+  public void testProcessSourcesInactivateProfileById() throws IOException, VerificationException {
+    processSourcesOnProject("mule-application-profile-activation-by-user-property",
+                            of("-DenablePluginA=true", "-P !mulePluginAProfileId"));
+    List<String> generatedClassloaderModelFileContent =
+        getFileContent(PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
+    List<String> expectedClassloaderModelFileContent =
+        getFileContent(EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_INACTIVE_GENERATED_CLASSLOADER_MODEL_FILE);
+    assertThat("The classloader-model.json file of mule-application-compile project is different from the expected",
+               generatedClassloaderModelFileContent,
+               equalTo(expectedClassloaderModelFileContent));
+  }
+
+  @Test
   public void testProcessSourcesCorrectProvidedScopeTransitivity() throws IOException, VerificationException {
     processSourcesOnProject("mule-application-provided");
     List<String> generatedClassloaderModelFileContent = getFileContent(PROVIDED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
@@ -185,10 +228,16 @@ public class ProcessSourcesMojoTest extends MojoTest {
   }
 
   private void processSourcesOnProject(String applicationName) throws IOException, VerificationException {
+    processSourcesOnProject(applicationName, emptyList());
+  }
+
+  private void processSourcesOnProject(String applicationName, List<String> cliOptions)
+      throws IOException, VerificationException {
     projectBaseDirectory = builder.createProjectBaseDir(applicationName, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-DskipValidation=true");
+    cliOptions.stream().forEach(option -> verifier.addCliOption(option));
     verifier.executeGoal(PROCESS_SOURCES);
   }
 

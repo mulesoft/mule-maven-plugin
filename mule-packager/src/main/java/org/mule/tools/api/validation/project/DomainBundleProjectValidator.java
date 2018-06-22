@@ -13,7 +13,6 @@ package org.mule.tools.api.validation.project;
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
 import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
@@ -34,7 +33,6 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class DomainBundleProjectValidator extends AbstractProjectValidator {
 
-  private static final String POM_TYPE = "pom";
   private static final int DOMAIN_BUNDLE_VALID_NUMBER_OF_DOMAINS = 1;
   private final AetherMavenClient muleMavenPluginClient;
 
@@ -119,11 +117,8 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
 
   protected List<BundleDependency> resolveApplicationDependencies(ArtifactCoordinates applicationCoordinates) {
     return muleMavenPluginClient.resolveBundleDescriptorDependencies(false, true,
-                                                                     new BundleDescriptor.Builder()
-                                                                         .setGroupId(applicationCoordinates.getGroupId())
-                                                                         .setArtifactId(applicationCoordinates.getArtifactId())
-                                                                         .setVersion(applicationCoordinates.getVersion())
-                                                                         .setType(POM_TYPE).build());
+                                                                     ArtifactUtils
+                                                                         .toBundleDescriptor(applicationCoordinates));
   }
 
   /**

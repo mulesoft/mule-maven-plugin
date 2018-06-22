@@ -11,6 +11,7 @@
 package org.mule.tools.api.packager.sources;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
 import java.io.File;
@@ -42,10 +43,13 @@ public class MuleArtifactContentResolver {
   private List<String> exportedPackages;
   private List<String> exportedResources;
   private List<String> testExportedResources;
+  private Pom pom;
 
-  public MuleArtifactContentResolver(ProjectStructure projectStructure) {
+  public MuleArtifactContentResolver(ProjectStructure projectStructure, Pom pom) {
     checkArgument(projectStructure != null, "Project structure should not be null");
+    checkArgument(pom != null, "Pom should not be null");
     this.projectStructure = projectStructure;
+    this.pom = pom;
   }
 
   /**
@@ -71,7 +75,10 @@ public class MuleArtifactContentResolver {
    */
   public List<String> getExportedResources() throws IOException {
     if (exportedResources == null) {
-      exportedResources = getResources(projectStructure.getExportedResourcesPath());
+      exportedResources = new ArrayList<>();
+      for (Path resourcePath : pom.getResourcesLocation()) {
+        exportedResources.addAll(getResources(resourcePath));
+      }
     }
     return exportedResources;
   }

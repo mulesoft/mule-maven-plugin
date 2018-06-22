@@ -9,20 +9,16 @@
  */
 package org.mule.tools.maven.utils;
 
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Resource;
-import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
+import static com.google.common.base.Preconditions.checkArgument;
 import org.mule.tools.api.packager.Pom;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Resource;
 
 public class ResolvedPom implements Pom {
 
@@ -33,14 +29,6 @@ public class ResolvedPom implements Pom {
     this.pomModel = pomModel;
   }
 
-
-  @Override
-  public void persist(Path pom) throws IOException {
-    MavenXpp3Writer writer = new MavenXpp3Writer();
-    try (OutputStream outputStream = new FileOutputStream(pom.toFile())) {
-      writer.write(outputStream, pomModel);
-    }
-  }
 
   @Override
   public List<Path> getResourcesLocation() {

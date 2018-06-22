@@ -11,6 +11,7 @@ package org.mule.tools.maven.utils;
 
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import org.mule.tools.api.packager.DefaultProjectInformation;
+import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.util.Project;
 import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
@@ -130,6 +131,11 @@ public class MavenProjectInformation implements ProjectInformation {
   @Override
   public List<Deployment> getDeployments() {
     return projectInformation.getDeployments();
+  }
+
+  @Override
+  public Pom getEffectivePom() {
+    return projectInformation.getEffectivePom();
   }
 
   private static Optional<ExchangeRepositoryMetadata> getExchangeRepositoryMetadata(DeploymentRepository repository,

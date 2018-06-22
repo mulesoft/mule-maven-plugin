@@ -15,6 +15,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
 import java.io.File;
@@ -66,13 +69,15 @@ public class MuleArtifactContentResolverTest {
   @Before
   public void setUp() throws IOException {
     temporaryFolder.create();
-    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), false));
+    Pom pomMock = mock(Pom.class);
+    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), false), pomMock);
     javaFolder = new File(temporaryFolder.getRoot(), JAVA_FOLDER_LOCATION);
     muleFolder = new File(temporaryFolder.getRoot(), MULE_FOLDER_LOCATION);
     munitFolder = new File(temporaryFolder.getRoot(), MUNIT_FOLDER_LOCATION);
     resourcesFolder = new File(temporaryFolder.getRoot(), RESOURCES_FOLDER_LOCATION);
     List<Path> resourcesPath = new ArrayList<>();
     resourcesPath.add(resourcesFolder.toPath());
+    when(pomMock.getResourcesLocation()).thenReturn(resourcesPath);
     testResourcesFolder = new File(temporaryFolder.getRoot(), TEST_RESOURCES_FOLDER_LOCATION);
     muleFolder.mkdirs();
     munitFolder.mkdirs();
@@ -85,7 +90,7 @@ public class MuleArtifactContentResolverTest {
   public void muleArtifactContentResolverNullPathArgumentInConstructorTest() {
     expectedException.expect(IllegalArgumentException.class);
     expectedException.expectMessage("Project structure should not be null");
-    new MuleArtifactContentResolver(null);
+    new MuleArtifactContentResolver(null, null);
   }
 
   @Test
@@ -145,7 +150,7 @@ public class MuleArtifactContentResolverTest {
     jar2.createNewFile();
     jar3Folder.mkdirs();
     jar3.createNewFile();
-    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true));
+    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true), mock(Pom.class));
     List<String> actualExportedResources = resolver.getTestExportedResources();
 
     assertThat("Exported resources does not contain all expected elements", actualExportedResources,
@@ -192,7 +197,7 @@ public class MuleArtifactContentResolverTest {
     config3.createNewFile();
     commonFile.createNewFile();
 
-    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true));
+    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true), mock(Pom.class));
     List<String> actualConfigs = resolver.getTestConfigs();
 
     assertThat("Configs does not contain all expected elements", actualConfigs,

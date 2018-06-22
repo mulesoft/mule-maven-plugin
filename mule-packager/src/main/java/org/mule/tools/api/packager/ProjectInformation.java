@@ -44,4 +44,6 @@ public interface ProjectInformation {
 
   List<Deployment> getDeployments();
 
+  Pom getEffectivePom();
+
 }

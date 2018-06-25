@@ -33,6 +33,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.lifecycle.mapping.LifecycleMapping;
 
+import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMaven333;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenFactory;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenVersionless;
 
@@ -56,7 +57,7 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
 
   @Override
   public Map<String, String> getPhases(String lifecycle) {
-    return null;
+    return getLifecyclePhases(new LifecycleMappingMaven333(this));
   }
 
   @Override

@@ -45,6 +45,9 @@ public class ProcessSourcesMojoTest extends MojoTest {
   private static final String COMPILED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
       "/mule-application-compile/target/META-INF/mule-artifact/classloader-model.json";
 
+  private static final String DEPENDENCY_VERSION_CHANGED_BY_USER_PROPERTY =
+      "/mule-application-dependency-by-user-property/target/META-INF/mule-artifact/classloader-model.json";
+
   private static final String PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE =
       "/mule-application-profile-activation-by-user-property/target/META-INF/mule-artifact/classloader-model.json";
 
@@ -56,6 +59,10 @@ public class ProcessSourcesMojoTest extends MojoTest {
       "/mule-application-test/target/META-INF/mule-artifact/classloader-model.json";
   private static final String EXPECTED_COMPILED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-compile-scope-classloader-model.json";
+  private static final String EXPECTED_DEPENDENCY_VERSION_CHANGED_BY_USER_PROPERTY =
+      "/expected-files/expected-mule-application-dependency-by-user-property-classloader-model.json";
+  private static final String EXPECTED_DEPENDENCY_VERSION_DEFAULT =
+      "/expected-files/expected-mule-application-dependency-default-classloader-model.json";
   private static final String EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-profile-activation-by-user-property-classloader-model.json";
   private static final String EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_INACTIVE_GENERATED_CLASSLOADER_MODEL_FILE =
@@ -156,15 +163,47 @@ public class ProcessSourcesMojoTest extends MojoTest {
   }
 
   @Test
+  public void testProcessSourcesChangeDependencyByUserProperty() throws IOException, VerificationException {
+    processSourcesOnProject("mule-application-dependency-by-user-property", of("-Dmule.artifact.d.version=1.0.1"));
+    List<String> generatedClassloaderModelFileContent = getFileContent(DEPENDENCY_VERSION_CHANGED_BY_USER_PROPERTY);
+    List<String> expectedClassloaderModelFileContent =
+        getFileContent(EXPECTED_DEPENDENCY_VERSION_CHANGED_BY_USER_PROPERTY);
+    assertThat("The classloader-model.json file of mule-application-dependency-by-user-property project is different from the expected",
+               generatedClassloaderModelFileContent,
+               equalTo(expectedClassloaderModelFileContent));
+  }
+
+  @Test
+  public void testProcessSourcesDependencyDefaultProperty() throws IOException, VerificationException {
+    processSourcesOnProject("mule-application-dependency-by-user-property");
+    List<String> generatedClassloaderModelFileContent = getFileContent(DEPENDENCY_VERSION_CHANGED_BY_USER_PROPERTY);
+    List<String> expectedClassloaderModelFileContent =
+        getFileContent(EXPECTED_DEPENDENCY_VERSION_DEFAULT);
+    assertThat("The classloader-model.json file of mule-application-dependency-by-user-property project is different from the expected",
+               generatedClassloaderModelFileContent,
+               equalTo(expectedClassloaderModelFileContent));
+  }
+
+  @Test
   public void testProcessSourcesActivateProfileByUserProperty() throws IOException, VerificationException {
     processSourcesOnProject("mule-application-profile-activation-by-user-property", of("-DenablePluginA=true"));
     List<String> generatedClassloaderModelFileContent =
         getFileContent(PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
     List<String> expectedClassloaderModelFileContent =
         getFileContent(EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
-    assertThat("The classloader-model.json file of mule-application-compile project is different from the expected",
+    assertThat("The classloader-model.json file of mule-application-profile-activation-by-user-property project is different from the expected",
                generatedClassloaderModelFileContent,
                equalTo(expectedClassloaderModelFileContent));
+  }
+
+  @Test
+  public void testProcessSourcesActivateProfileByFileNotSupported() throws IOException, VerificationException {
+    try {
+      processSourcesOnProject("mule-application-profile-activation-by-file");
+    } catch (VerificationException e) {
+      verifier
+          .verifyTextInLog("java.lang.UnsupportedOperationException: Error while resolving dependencies for org.apache.maven.plugin.my.unit:mule-application-profile-activation-by-file:mule-application:1.0.0-SNAPSHOT due to profiles activation by file are not supported");
+    }
   }
 
   @Test
@@ -174,7 +213,7 @@ public class ProcessSourcesMojoTest extends MojoTest {
         getFileContent(PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
     List<String> expectedClassloaderModelFileContent =
         getFileContent(EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
-    assertThat("The classloader-model.json file of mule-application-compile project is different from the expected",
+    assertThat("The classloader-model.json file of mule-application-profile-activation-by-user-property project is different from the expected",
                generatedClassloaderModelFileContent,
                equalTo(expectedClassloaderModelFileContent));
   }
@@ -187,7 +226,7 @@ public class ProcessSourcesMojoTest extends MojoTest {
         getFileContent(PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
     List<String> expectedClassloaderModelFileContent =
         getFileContent(EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_INACTIVE_GENERATED_CLASSLOADER_MODEL_FILE);
-    assertThat("The classloader-model.json file of mule-application-compile project is different from the expected",
+    assertThat("The classloader-model.json file of mule-application-profile-activation-by-user-property project is different from the expected",
                generatedClassloaderModelFileContent,
                equalTo(expectedClassloaderModelFileContent));
   }

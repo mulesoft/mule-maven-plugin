@@ -11,29 +11,29 @@
 package org.mule.tools.api.classloader.model;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Optional.empty;
 import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
 import static org.mule.maven.client.internal.util.MavenUtils.getPomModelFromFile;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifactCoordinates;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifacts;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
-import static org.mule.tools.api.packager.structure.FolderNames.TEMP;
 import static org.mule.tools.api.validation.VersionUtils.getMajor;
-
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.model.Model;
-import org.mule.maven.client.api.PomFileSupplierFactory;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.api.model.BundleScope;
 import org.mule.maven.client.internal.AetherMavenClient;
-import org.mule.tools.api.validation.VersionUtils;
+
+import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.model.Model;
 
 public class ApplicationClassLoaderModelAssembler {
 
@@ -49,16 +49,13 @@ public class ApplicationClassLoaderModelAssembler {
     this.muleMavenPluginClient = muleMavenPluginClient;
   }
 
-  public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, File targetFolder)
+  public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile)
       throws IllegalStateException {
     ArtifactCoordinates appCoordinates = getApplicationArtifactCoordinates(pomFile);
 
     ClassLoaderModel appModel = new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, appCoordinates);
 
-    BundleDescriptor pomBundleDescriptor = getPomProjectBundleDescriptor(pomFile);
-    File effectivePomLocation = Paths.get(targetFolder.toURI()).resolve(TEMP.value()).toFile();
-    List<BundleDependency> appDependencies =
-        resolveApplicationDependencies(effectivePomLocation, pomBundleDescriptor);
+    List<BundleDependency> appDependencies = resolveApplicationDependencies(pomFile);
 
     List<BundleDependency> mulePlugins = appDependencies.stream()
         .filter(dep -> dep.getDescriptor().getClassifier().isPresent())
@@ -105,6 +102,7 @@ public class ApplicationClassLoaderModelAssembler {
         && StringUtils.equals(getMajor(descriptor.getBaseVersion()), getMajor(otherDescriptor.getBaseVersion()));
   }
 
+
   private List<Artifact> toApplicationModelArtifacts(List<BundleDependency> appDependencies) {
     List<Artifact> dependencies = toArtifacts(appDependencies);
     dependencies.forEach(this::updateScopeIfDomain);
@@ -135,14 +133,11 @@ public class ApplicationClassLoaderModelAssembler {
   /**
    * Resolve the application dependencies, excluding mule domains.
    *
-   * @param targetFolder            target folder of application that is going to be packaged, which need to contain at this stage the pom
-   *                                file in the folder that is going to be resolved by {@link PomFileSupplierFactory}
-   * @param projectBundleDescriptor bundleDescriptor of application to be packaged
+   * @param pomFile                 pom file
    */
-  private List<BundleDependency> resolveApplicationDependencies(File targetFolder, BundleDescriptor projectBundleDescriptor) {
+  private List<BundleDependency> resolveApplicationDependencies(File pomFile) {
     List<BundleDependency> resolvedApplicationDependencies =
-        muleMavenPluginClient.resolveBundleDescriptorDependenciesWithWorkspaceReader(targetFolder, false, true,
-                                                                                     projectBundleDescriptor)
+        muleMavenPluginClient.resolveArtifactDependencies(pomFile, false, true, empty(), empty(), empty())
             .stream()
             .filter(d -> !(d.getScope() == BundleScope.PROVIDED) || (d.getDescriptor().getClassifier().isPresent()
                 && d.getDescriptor().getClassifier().get().equals("mule-domain")))
@@ -161,8 +156,7 @@ public class ApplicationClassLoaderModelAssembler {
     for (BundleDependency muleDependency : mulePlugins) {
       List<BundleDependency> mulePluginDependencies =
           muleMavenPluginClient.resolveBundleDescriptorDependencies(false, false, muleDependency.getDescriptor());
-      muleDependenciesDependencies
-          .put(muleDependency, new ArrayList<>(mulePluginDependencies));
+      muleDependenciesDependencies.put(muleDependency, new ArrayList<>(mulePluginDependencies));
     }
     return muleDependenciesDependencies;
   }

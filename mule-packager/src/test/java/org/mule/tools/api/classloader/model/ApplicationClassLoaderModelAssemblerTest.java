@@ -14,7 +14,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.core.IsNot.not;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.doReturn;
@@ -23,9 +22,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
-import static org.mule.tools.api.packager.structure.FolderNames.TEMP;
-
-import org.junit.rules.TemporaryFolder;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
@@ -36,6 +32,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Model;
@@ -44,6 +41,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 public class ApplicationClassLoaderModelAssemblerTest {
 
@@ -65,7 +63,6 @@ public class ApplicationClassLoaderModelAssemblerTest {
   private Model pomModel;
   private Parent parentProject;
 
-
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
@@ -73,7 +70,6 @@ public class ApplicationClassLoaderModelAssemblerTest {
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
   private AetherMavenClient aetherMavenClientMock;
-  private File targetFolder;
 
   @Before
   public void before() throws IOException {
@@ -86,8 +82,6 @@ public class ApplicationClassLoaderModelAssemblerTest {
     parentProject.setVersion(PARENT_VERSION);
     parentProject.setGroupId(PARENT_GROUP_ID);
     pomModel.setParent(parentProject);
-    targetFolder = temporaryFolder.getRoot();
-    temporaryFolder.newFolder(TEMP.value());
   }
 
   @Test
@@ -162,7 +156,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
 
     ApplicationClassloaderModel applicationClassloaderModel =
-        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), targetFolder);
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class));
 
     assertThat("Application dependencies are not the expected",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
@@ -187,8 +181,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
 
     ApplicationClassloaderModel applicationClassloaderModel =
-        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class),
-                                                                               targetFolder);
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class));
 
     assertThat("Application dependencies are not the expected",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
@@ -220,8 +213,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
 
     ApplicationClassloaderModel applicationClassloaderModel =
-        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class),
-                                                                               targetFolder);
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class));
 
     assertThat("The class loader model should have one dependency",
                applicationClassloaderModel.getClassLoaderModel().getDependencies().size(),
@@ -359,9 +351,10 @@ public class ApplicationClassLoaderModelAssemblerTest {
                                                      List<BundleDependency> appMulePluginDependencies) {
     AetherMavenClient aetherMavenClientMock = mock(AetherMavenClient.class);
     appDependencies.addAll(appMulePluginDependencies);
-    when(aetherMavenClientMock.resolveBundleDescriptorDependenciesWithWorkspaceReader(any(File.class), anyBoolean(),
-                                                                                      anyBoolean(), any(BundleDescriptor.class)))
-                                                                                          .thenReturn(appDependencies);
+    when(aetherMavenClientMock.resolveArtifactDependencies(any(File.class), anyBoolean(),
+                                                           anyBoolean(), any(Optional.class),
+                                                           any(Optional.class), any(Optional.class)))
+                                                               .thenReturn(appDependencies);
 
     return aetherMavenClientMock;
   }

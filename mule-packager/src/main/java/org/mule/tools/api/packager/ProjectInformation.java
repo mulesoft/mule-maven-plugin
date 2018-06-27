@@ -46,5 +46,4 @@ public interface ProjectInformation {
 
   Pom getEffectivePom();
 
-  Path getEffectivePomLocation();
 }

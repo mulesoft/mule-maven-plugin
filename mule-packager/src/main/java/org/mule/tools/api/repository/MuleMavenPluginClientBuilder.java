@@ -10,12 +10,14 @@
 
 package org.mule.tools.api.repository;
 
-import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.repository.AuthenticationContext;
-import org.eclipse.aether.repository.RemoteRepository;
+import static com.google.common.base.Preconditions.checkArgument;
 import org.mule.maven.client.api.model.Authentication;
 import org.mule.maven.client.api.model.MavenConfiguration;
-import org.mule.maven.client.internal.*;
+import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.maven.client.internal.AetherMavenClientProvider;
+import org.mule.maven.client.internal.DefaultLocalRepositorySupplierFactory;
+import org.mule.maven.client.internal.DefaultSettingsSupplierFactory;
+import org.mule.maven.client.internal.MavenEnvironmentVariables;
 import org.mule.tools.api.util.PackagerLog;
 
 import java.io.File;
@@ -23,9 +25,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.function.Supplier;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.repository.AuthenticationContext;
+import org.eclipse.aether.repository.RemoteRepository;
 
 
 public class MuleMavenPluginClientBuilder {
@@ -35,7 +40,9 @@ public class MuleMavenPluginClientBuilder {
   private File localRepository;
   private File globalSettings;
   private File userSettings;
-  private File securitySettings;
+  private Properties userProperties;
+  private List<String> activeProfiles;
+  private List<String> inactiveProfiles;
 
   public MuleMavenPluginClientBuilder(PackagerLog log) {
     this.log = log;
@@ -57,13 +64,23 @@ public class MuleMavenPluginClientBuilder {
     return this;
   }
 
-  public MuleMavenPluginClientBuilder withUserSettings(File userSettings) {
-    this.userSettings = userSettings;
+  public MuleMavenPluginClientBuilder withUserProperties(Properties userProperties) {
+    this.userProperties = userProperties;
     return this;
   }
 
-  public MuleMavenPluginClientBuilder withSecuritySettings(File securitySettings) {
-    this.securitySettings = securitySettings;
+  public MuleMavenPluginClientBuilder withActiveProfiles(List<String> activeProfiles) {
+    this.activeProfiles = activeProfiles;
+    return this;
+  }
+
+  public MuleMavenPluginClientBuilder withInactiveProfiles(List<String> inactiveProfiles) {
+    this.inactiveProfiles = inactiveProfiles;
+    return this;
+  }
+
+  public MuleMavenPluginClientBuilder withUserSettings(File userSettings) {
+    this.userSettings = userSettings;
     return this;
   }
 
@@ -80,9 +97,7 @@ public class MuleMavenPluginClientBuilder {
         : settingsSupplierFactory.environmentGlobalSettingsSupplier();
     Optional<File> userSettings =
         this.userSettings != null ? Optional.of(this.userSettings) : settingsSupplierFactory.environmentUserSettingsSupplier();
-    Optional<File> securitySettings =
-        this.securitySettings != null ? Optional.of(this.securitySettings)
-            : settingsSupplierFactory.environmentSettingsSecuritySupplier();
+    Optional<File> securitySettings = settingsSupplierFactory.environmentSettingsSecuritySupplier();
 
     globalSettings.ifPresent(mavenConfigurationBuilder::globalSettingsLocation);
     userSettings.ifPresent(mavenConfigurationBuilder::userSettingsLocation);
@@ -94,6 +109,16 @@ public class MuleMavenPluginClientBuilder {
 
     this.remoteRepositories.stream().filter(this::hasValidURL).map(this::toRemoteRepo)
         .forEach(mavenConfigurationBuilder::remoteRepository);
+
+    if (userProperties != null) {
+      mavenConfigurationBuilder.userProperties(userProperties);
+    }
+    if (activeProfiles != null) {
+      mavenConfigurationBuilder.activeProfiles(activeProfiles);
+    }
+    if (inactiveProfiles != null) {
+      mavenConfigurationBuilder.inactiveProfiles(inactiveProfiles);
+    }
 
     return mavenConfigurationBuilder
         .localMavenRepositoryLocation(localMavenRepository.get())

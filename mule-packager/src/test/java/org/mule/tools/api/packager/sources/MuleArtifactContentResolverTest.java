@@ -10,7 +10,6 @@
 
 package org.mule.tools.api.packager.sources;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.join;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -18,12 +17,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import org.mule.tools.api.packager.Pom;
+import org.mule.tools.api.packager.structure.ProjectStructure;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +33,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-
-import org.mule.tools.api.packager.Pom;
-import org.mule.tools.api.packager.structure.ProjectStructure;
 
 public class MuleArtifactContentResolverTest {
 

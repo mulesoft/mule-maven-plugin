@@ -55,13 +55,6 @@ public class ProjectStructure {
   }
 
   /**
-   * Resolves the exported resources path based on the project base folder
-   */
-  public Path getExportedResourcesPath() {
-    return projectBaseFolder.resolve(SRC.value()).resolve(MAIN.value()).resolve(RESOURCES.value());
-  }
-
-  /**
    * Resolves the configs path based on the project base folder
    */
   public Path getConfigsPath() {

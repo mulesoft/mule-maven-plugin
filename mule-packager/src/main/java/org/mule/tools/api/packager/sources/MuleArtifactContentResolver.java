@@ -11,6 +11,8 @@
 package org.mule.tools.api.packager.sources;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import org.mule.tools.api.packager.Pom;
+import org.mule.tools.api.packager.structure.ProjectStructure;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,9 +28,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-
-import org.mule.tools.api.packager.Pom;
-import org.mule.tools.api.packager.structure.ProjectStructure;
 
 /**
  * Resolves the content of resources defined in mule-artifact.json based on the project base folder.
@@ -55,7 +54,7 @@ public class MuleArtifactContentResolver {
   /**
    * Returns the resolved list of exported packages paths.
    */
-  public ProjectStructure getProjectStructure() throws IOException {
+  public ProjectStructure getProjectStructure() {
     return projectStructure;
   }
 
@@ -144,7 +143,11 @@ public class MuleArtifactContentResolver {
         .map(File::toPath)
         .map(p -> resourcesFolder.toPath().relativize(p))
         .map(Path::toString)
-        .map(p -> p.replace("\\", "/"))
+        .map(MuleArtifactContentResolver::escapeSlashes)
         .collect(Collectors.toList());
+  }
+
+  public static String escapeSlashes(String p) {
+    return p.replace("\\", "/");
   }
 }

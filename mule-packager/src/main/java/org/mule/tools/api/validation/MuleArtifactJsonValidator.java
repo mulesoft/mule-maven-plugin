@@ -13,16 +13,6 @@ package org.mule.tools.api.validation;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 import static org.mule.tools.api.validation.VersionUtils.getBaseVersion;
 import static org.mule.tools.api.validation.VersionUtils.isVersionGreaterOrEquals;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.deployment.meta.Product;
@@ -30,6 +20,16 @@ import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSeria
 import org.mule.tools.api.exception.ValidationException;
 
 import com.google.gson.JsonSyntaxException;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class MuleArtifactJsonValidator {
 
@@ -92,7 +92,6 @@ public class MuleArtifactJsonValidator {
 
     checkName(muleArtifact, missingFields);
     checkMinMuleVersionValue(muleArtifact, missingFields, deployMuleVersion);
-    checkClassLoaderModelDescriptor(muleArtifact, missingFields);
     checkRequiredProduct(muleArtifact, missingFields);
 
     if (!missingFields.isEmpty()) {

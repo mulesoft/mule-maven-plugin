@@ -10,19 +10,30 @@
 
 package org.mule.tools.api.packager.sources;
 
+import static java.util.stream.Collectors.toList;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
+import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
+import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
+import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptorBuilder;
+import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
+import org.mule.tools.api.packager.structure.ProjectStructure;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
-
-import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
-import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
-import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
-import org.mule.tools.api.packager.structure.ProjectStructure;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * Generates default value for any non-defined fields in a mule-artifact.json file
@@ -31,6 +42,9 @@ public class DefaultValuesMuleArtifactJsonGenerator {
 
   private static final MuleApplicationModelJsonSerializer serializer = new MuleApplicationModelJsonSerializer();
   private static final String MULE_ID = "mule";
+  public static final String EXPORTED_PACKAGES = "exportedPackages";
+  public static final String EXPORTED_RESOURCES = "exportedResources";
+  public static final String COMPILED_JAVA_EXTENSION = "class";
 
   /**
    * Generates the default value for every non-defined fields in a mule-artifact.json file during build time and updates
@@ -148,22 +162,62 @@ public class DefaultValuesMuleArtifactJsonGenerator {
                                                                     MuleApplicationModel originalMuleArtifact,
                                                                     MuleArtifactContentResolver muleArtifactContentResolver)
       throws IOException {
-    MuleArtifactLoaderDescriptor descriptorLoader = builder.getClassLoaderModelDescriptorLoader();
+    MuleArtifactLoaderDescriptor classLoaderModelLoaderDescriptor;
+    if (originalMuleArtifact.getClassLoaderModelLoaderDescriptor() != null) {
+      //if classLoaderModelLoaderDescriptor is defined by the user, we will take it :)
+      // classLoaderModelLoaderDescriptor = originalMuleArtifact.getClassLoaderModelLoaderDescriptor();
+
+      Map<String, Object> originalAttributes = originalMuleArtifact.getClassLoaderModelLoaderDescriptor().getAttributes();
+      List<String> exportedResources = new ArrayList<>();
+
+      if (originalAttributes != null && originalAttributes.get("exportedResources") != null) {
+        exportedResources.addAll((Collection<String>) originalAttributes.get("exportedResources"));
+      } else {
+        exportedResources.addAll(muleArtifactContentResolver.getExportedResources());
+        exportedResources.addAll(muleArtifactContentResolver.getTestExportedResources());
+      }
+
+      Map<String, Object> attributesCopy =
+          getUpdatedAttributes(originalMuleArtifact.getClassLoaderModelLoaderDescriptor(), "exportedResources",
+                               new ArrayList<>(exportedResources));
+      classLoaderModelLoaderDescriptor =
+          new MuleArtifactLoaderDescriptor(originalMuleArtifact.getClassLoaderModelLoaderDescriptor().getId(), attributesCopy);
 
 
-    Map<String, Object> originalAttributes = originalMuleArtifact.getClassLoaderModelLoaderDescriptor().getAttributes();
-    List<String> exportedResources = new ArrayList<>();
-
-    if (originalAttributes != null && originalAttributes.get("exportedResources") != null) {
-      exportedResources.addAll((Collection<String>) originalAttributes.get("exportedResources"));
     } else {
-      exportedResources.addAll(muleArtifactContentResolver.getExportedResources());
-      exportedResources.addAll(muleArtifactContentResolver.getTestExportedResources());
+      Path outputDirectory = muleArtifactContentResolver.getProjectStructure().getOutputDirectory();
+      //look for all the sources under the output directory
+      List<Path> allOutputFiles = Files.walk(outputDirectory)
+          .filter(path -> Files.isRegularFile(path))
+          .collect(toList());
+      Predicate<Path> isJavaClass = path -> FilenameUtils.getExtension(path.toString()).endsWith(COMPILED_JAVA_EXTENSION);
+      //look for the java compiled classes, to then gather just the parent folders of them
+      List<String> packagesFolders = allOutputFiles.stream()
+          .filter(isJavaClass)
+          .map(path -> {
+            Path parent = outputDirectory.relativize(path).getParent();
+            //if parent is null, it implies "default package" in java, which means we need an empty string for the exportedPackages
+            return parent != null ? parent.toString() : "";
+          })
+          .map(MuleArtifactContentResolver::escapeSlashes)
+          .distinct()
+          .collect(Collectors.toList());
+      //look for all the resources (files that are not java compiled classes)
+      List<String> resources = allOutputFiles.stream()
+          .filter(isJavaClass.negate())
+          .map(path -> outputDirectory.relativize(path))
+          .map(Path::toString)
+          .map(MuleArtifactContentResolver::escapeSlashes)
+          .collect(toList());
+      //being consistent with old behaviour, check this later
+      resources.addAll(muleArtifactContentResolver.getTestExportedResources());
+      //assembly the classLoaderModelDescriptor
+      classLoaderModelLoaderDescriptor = new MuleArtifactLoaderDescriptorBuilder()
+          .setId(MULE_ID)
+          .addProperty(EXPORTED_PACKAGES, packagesFolders)
+          .addProperty(EXPORTED_RESOURCES, resources).build();
     }
-
-    Map<String, Object> attributesCopy =
-        getUpdatedAttributes(descriptorLoader, "exportedResources", new ArrayList<>(exportedResources));
-    builder.withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(descriptorLoader.getId(), attributesCopy));
+    builder.withClassLoaderModelDescriptorLoader(classLoaderModelLoaderDescriptor);
   }
 
   /**
@@ -179,7 +233,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
 
     MuleArtifactLoaderDescriptor descriptorLoader = builder.getClassLoaderModelDescriptorLoader();
     Map<String, Object> attributesCopy =
-        getUpdatedAttributes(descriptorLoader, "exportedPackages", muleArtifactContentResolver.getExportedPackages());
+        getUpdatedAttributes(descriptorLoader, EXPORTED_PACKAGES, muleArtifactContentResolver.getExportedPackages());
     builder.withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(descriptorLoader.getId(), attributesCopy));
   }
 
@@ -256,7 +310,6 @@ public class DefaultValuesMuleArtifactJsonGenerator {
   protected static MuleApplicationModel.MuleApplicationModelBuilder getBuilderWithRequiredValues(MuleApplicationModel muleArtifact) {
     MuleApplicationModel.MuleApplicationModelBuilder builder = new MuleApplicationModel.MuleApplicationModelBuilder();
     builder.setName(muleArtifact.getName());
-    builder.withClassLoaderModelDescriptorLoader(muleArtifact.getClassLoaderModelLoaderDescriptor());
     builder.setMinMuleVersion(muleArtifact.getMinMuleVersion());
     builder.setRequiredProduct(muleArtifact.getRequiredProduct());
     builder.setSecureProperties(muleArtifact.getSecureProperties());

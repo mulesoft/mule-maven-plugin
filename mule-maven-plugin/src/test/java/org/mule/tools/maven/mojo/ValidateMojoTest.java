@@ -16,11 +16,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.validation.project.AbstractProjectValidator;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.maven.execution.MavenExecutionRequest;
@@ -29,9 +29,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Before;
 import org.junit.Test;
-
-import org.mule.tools.api.exception.ValidationException;
-import org.mule.tools.api.validation.project.AbstractProjectValidator;
 
 public class ValidateMojoTest extends AbstractMuleMojoTest {
 
@@ -62,20 +59,7 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     doCallRealMethod().when(mojoMock).execute();
     mojoMock.execute();
 
-    verify(mojoMock, times(0)).getProjectValidator();
     verify(mojoMock, times(0)).validateMavenEnvironment();
-  }
-
-  @Test(expected = MojoExecutionException.class)
-  public void executeFailValidation()
-      throws MojoFailureException, MojoExecutionException, IOException, ValidationException {
-    when(validatorMock.isProjectValid(any())).thenThrow(new ValidationException());
-    when(mojoMock.getProjectValidator()).thenReturn(validatorMock);
-
-
-    doCallRealMethod().when(mojoMock).execute();
-    doCallRealMethod().when(mojoMock).doExecute();
-    mojoMock.execute();
   }
 
   @Test
@@ -89,9 +73,7 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     doCallRealMethod().when(mojoMock).doExecute();
     mojoMock.execute();
 
-    verify(mojoMock, times(1)).getProjectValidator();
     verify(mojoMock, times(1)).validateMavenEnvironment();
-    verify(validatorMock, times(1)).isProjectValid(any());
   }
 
   @Test

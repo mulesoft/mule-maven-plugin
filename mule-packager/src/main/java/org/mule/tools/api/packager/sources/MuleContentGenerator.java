@@ -23,6 +23,12 @@ import static org.mule.tools.api.packager.structure.FolderNames.TEMP;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.packager.ProjectInformation;
+import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.packager.structure.ProjectStructure;
+import org.mule.tools.api.util.CopyFileVisitor;
+import org.mule.tools.api.util.exclude.MuleExclusionMatcher;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,14 +37,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.packager.DefaultProjectInformation;
-import org.mule.tools.api.packager.ProjectInformation;
-import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.packager.structure.ProjectStructure;
-import org.mule.tools.api.util.CopyFileVisitor;
-import org.mule.tools.api.util.exclude.MuleExclusionMatcher;
 
 /**
  * Generates the required content for each of the mandatory folders of a mule application package
@@ -174,7 +172,6 @@ public class MuleContentGenerator extends ContentGenerator {
   public void createDescriptors() throws IOException {
     createMavenDescriptors();
     createEffectivePom();
-    copyDescriptorFile();
   }
 
   private void createEffectivePom() throws IOException {
@@ -183,7 +180,8 @@ public class MuleContentGenerator extends ContentGenerator {
             .resolve(projectInformation.getGroupId()).resolve(projectInformation.getArtifactId()).resolve(POM_XML));
   }
 
-  private void copyDescriptorFile() throws IOException {
+  @Override
+  public void copyDescriptorFile() throws IOException {
     Path originPath = projectInformation.getProjectBaseFolder().resolve(MULE_ARTIFACT_JSON);
     Path destinationPath = projectInformation.getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value());
     String destinationFileName = originPath.getFileName().toString();

@@ -18,6 +18,7 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.GENE
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.INITIALIZE;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.INSTALL;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PACKAGE;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_CLASSES;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_RESOURCES;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_SOURCES;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.PROCESS_TEST_RESOURCES;
@@ -25,6 +26,9 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.SITE
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST_COMPILE;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
+import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMaven333;
+import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenFactory;
+import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenVersionless;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,10 +37,6 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.lifecycle.mapping.Lifecycle;
 import org.apache.maven.lifecycle.mapping.LifecycleMapping;
-
-import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMaven333;
-import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenFactory;
-import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenVersionless;
 
 public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleMapping {
 
@@ -80,6 +80,7 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
     phases.put(PROCESS_RESOURCES.id(),
                buildGoals(mapping, MAVEN_RESOURCES_PLUGIN + ":resources", MULE_MAVEN_PLUGIN + ":process-resources"));
     phases.put(COMPILE.id(), buildGoals(mapping, MAVEN_COMPILER_PLUGIN + ":compile", MULE_MAVEN_PLUGIN + ":compile"));
+    phases.put(PROCESS_CLASSES.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":process-classes"));
     phases.put(GENERATE_TEST_SOURCES.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":generate-test-sources"));
     phases.put(PROCESS_TEST_RESOURCES.id(),
                buildGoals(mapping, MAVEN_RESOURCES_PLUGIN + ":testResources", MULE_MAVEN_PLUGIN + ":generate-test-resources"));
@@ -87,6 +88,7 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
                buildGoals(mapping, MAVEN_COMPILER_PLUGIN + ":testCompile", MULE_MAVEN_PLUGIN + ":test-compile"));
     phases.put(TEST.id(), buildGoals(mapping, MAVEN_SUREFIRE_PLUGIN + ":test"));
     phases.put(PACKAGE.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":package"));
+
     phases.put(INSTALL.id(), buildGoals(mapping, MAVEN_INSTALL_PLUGIN + ":install"));
 
     phases.put(SITE.id(), buildGoals(mapping, MAVEN_SITE_PLUGIN + ":site", MULE_MAVEN_PLUGIN + ":site"));

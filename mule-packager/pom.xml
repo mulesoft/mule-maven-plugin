@@ -14,7 +14,7 @@
         <licensePath>../LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
 
-        <coverageLineLimit>0.82</coverageLineLimit>
+        <coverageLineLimit>0.75</coverageLineLimit>
         <coverageBranchLimit>0.75</coverageBranchLimit>
     </properties>
 

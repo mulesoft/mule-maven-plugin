@@ -10,12 +10,19 @@
 
 package org.mule.tools.api.validation;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
+import static org.mule.tools.api.validation.MuleArtifactJsonValidator.checkClassLoaderModelDescriptor;
+import static org.mule.tools.api.validation.MuleArtifactJsonValidator.checkMinMuleVersionValue;
+import static org.mule.tools.api.validation.MuleArtifactJsonValidator.checkName;
+import static org.mule.tools.api.validation.MuleArtifactJsonValidator.isMuleArtifactJsonPresent;
+import static org.mule.tools.api.validation.MuleArtifactJsonValidator.isMuleArtifactJsonValid;
+import static org.mule.tools.api.validation.MuleArtifactJsonValidator.validateMuleArtifactMandatoryFields;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
 import org.mule.tools.api.exception.ValidationException;
@@ -27,14 +34,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
-import static org.mule.tools.api.validation.MuleArtifactJsonValidator.*;
+import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 public class MuleArtifactJsonValidatorTest {
 
@@ -174,7 +179,7 @@ public class MuleArtifactJsonValidatorTest {
   public void validateMuleArtifactMandatoryFieldsMissingTest() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException
-        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [name, minMuleVersion, classLoaderModelLoaderDescriptor, classLoaderModelLoaderDescriptor.id, requiredProduct]");
+        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [name, minMuleVersion, requiredProduct]");
 
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer()
@@ -212,7 +217,7 @@ public class MuleArtifactJsonValidatorTest {
   public void validateMuleArtifactMandatoryFieldsMissingclassLoaderModelLoaderDescriptorTest() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException
-        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [classLoaderModelLoaderDescriptor, classLoaderModelLoaderDescriptor.id, requiredProduct]. requiredProduct valid values are: MULE, MULE_EE");
+        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [requiredProduct]. requiredProduct valid values are: MULE, MULE_EE");
 
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer()
@@ -222,24 +227,11 @@ public class MuleArtifactJsonValidatorTest {
   }
 
   @Test
-  public void validateMuleArtifactMandatoryFieldsMissingclassLoaderModelLoaderDescriptorIdTest() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException
-        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [classLoaderModelLoaderDescriptor.id]");
-
-    MuleApplicationModel muleArtifact =
-        new MuleApplicationModelJsonSerializer()
-            .deserialize("{ name:lala, minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: {  }, requiredProduct: MULE_EE }");
-
-    validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
-  }
-
-  @Test
   public void validateMuleArtifactMandatoryFieldsMissingNameAndClassLoaderModelLoaderDescriptorIdTest()
       throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException
-        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [name, classLoaderModelLoaderDescriptor.id]");
+        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [name]");
 
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer()

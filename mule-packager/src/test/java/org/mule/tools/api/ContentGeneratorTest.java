@@ -15,6 +15,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
+import org.mule.tools.api.packager.DefaultProjectInformation;
+import org.mule.tools.api.packager.PackagerTestUtils;
+import org.mule.tools.api.packager.Pom;
+import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,12 +32,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import org.mule.tools.api.packager.PackagerTestUtils;
-import org.mule.tools.api.packager.Pom;
-import org.mule.tools.api.packager.DefaultProjectInformation;
-import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
 public class ContentGeneratorTest {
 
@@ -221,6 +220,7 @@ public class ContentGeneratorTest {
     PackagerTestUtils.createEmptyFolder(pomPropertiesDestinationPath);
 
     contentGenerator.createDescriptors();
+    contentGenerator.copyDescriptorFile();
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -238,6 +238,7 @@ public class ContentGeneratorTest {
     PackagerTestUtils.createEmptyFolder(pomPropertiesDestinationPath);
 
     contentGenerator.createDescriptors();
+    contentGenerator.copyDescriptorFile();
   }
 
   @Test
@@ -261,6 +262,7 @@ public class ContentGeneratorTest {
     PackagerTestUtils.createEmptyFolder(descriptorDestinationPath);
 
     contentGenerator.createDescriptors();
+    contentGenerator.copyDescriptorFile();
 
     PackagerTestUtils.assertFileExists(pomPropertiesDestinationPath.resolve(POM_FILE_NAME));
     PackagerTestUtils.assertFileExists(pomPropertiesDestinationPath.resolve(PackagerTestUtils.POM_PROPERTIES));
@@ -301,6 +303,7 @@ public class ContentGeneratorTest {
     PackagerTestUtils.createEmptyFolder(descriptorDestinationPath);
 
     contentGenerator.createDescriptors();
+    contentGenerator.copyDescriptorFile();
 
     PackagerTestUtils.assertFileExists(pomPropertiesDestinationPath.resolve(POM_FILE_NAME));
     PackagerTestUtils.assertFileExists(pomPropertiesDestinationPath.resolve(PackagerTestUtils.POM_PROPERTIES));
@@ -341,6 +344,7 @@ public class ContentGeneratorTest {
     PackagerTestUtils.createEmptyFolder(descriptorDestinationPath);
 
     contentGenerator.createDescriptors();
+    contentGenerator.copyDescriptorFile();
 
     PackagerTestUtils.assertFileExists(pomPropertiesDestinationPath.resolve(POM_FILE_NAME));
     PackagerTestUtils.assertFileExists(pomPropertiesDestinationPath.resolve(PackagerTestUtils.POM_PROPERTIES));

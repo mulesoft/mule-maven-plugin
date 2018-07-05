@@ -92,7 +92,6 @@ public class MuleArtifactJsonValidator {
 
     checkName(muleArtifact, missingFields);
     checkMinMuleVersionValue(muleArtifact, missingFields, deployMuleVersion);
-    // checkClassLoaderModelDescriptor(muleArtifact, missingFields);
     checkRequiredProduct(muleArtifact, missingFields);
 
     if (!missingFields.isEmpty()) {

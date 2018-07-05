@@ -74,22 +74,6 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
   }
 
   @Test
-  public void getBuilderWithRequiredValuesTest() {
-    // MuleApplicationModel.MuleApplicationModelBuilder actualBuilder =
-    //     DefaultValuesMuleArtifactJsonGenerator.getBuilderWithRequiredValues(muleArtifact);
-    //
-    // assertThat("Name defined in builder is not the expected", actualBuilder.getName(), equalTo(NAME));
-    // assertThat("MinMuleVersion defined in builder is not the expected", actualBuilder.getMinMuleVersion(),
-    //            equalTo(MIN_MULE_VERSION));
-    // assertThat("Class loader model descriptor loader id defined in builder is not the expected",
-    //            actualBuilder.getClassLoaderModelDescriptorLoader().getId(), equalTo(ID));
-    // assertThat("Secure properties defined in builder are not the expected",
-    //            actualBuilder.build().getSecureProperties(), equalTo(muleArtifact.getSecureProperties()));
-    // assertThat("Bundle descriptor loader id defined in builder is not the expected",
-    //            actualBuilder.getBundleDescriptorLoader().getId(), equalTo(MULE));
-  }
-
-  @Test
   public void setBuilderWithDefaultBundleDescriptorLoaderNullValueTest() {
     MuleApplicationModel muleArtifactSpy = spy(muleArtifact);
 

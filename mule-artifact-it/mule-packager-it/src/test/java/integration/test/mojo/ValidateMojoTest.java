@@ -32,7 +32,7 @@ public class ValidateMojoTest extends MojoTest {
     projectBaseDirectory = builder.createProjectBaseDir(EMPTY_PROJECT_NAME, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
-    verifier.executeGoal(VALIDATE);
+    verifier.executeGoal("process-classes");
     // verifier.verifyTextInLog("Invalid Mule project. Missing src/main/mule folder. This folder is mandatory");
   }
 
@@ -58,7 +58,7 @@ public class ValidateMojoTest extends MojoTest {
   public void testFailOnEmptyPolicyProject() throws Exception {
     projectBaseDirectory = builder.createProjectBaseDir(EMPTY_POLICY_NAME, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.executeGoal(VALIDATE);
+    verifier.executeGoal("process-classes");
     // verifier.verifyTextInLog("Invalid Mule project. Missing src/main/policy folder. This folder is mandatory");
   }
 
@@ -66,7 +66,7 @@ public class ValidateMojoTest extends MojoTest {
   public void testFailOnEmptyDomainProject() throws Exception {
     projectBaseDirectory = builder.createProjectBaseDir(EMPTY_DOMAIN_NAME, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.executeGoal(VALIDATE);
+    verifier.executeGoal("process-classes");
     // verifier.verifyTextInLog("Invalid Mule project. Missing src/main/mule folder. This folder is mandatory");
   }
 

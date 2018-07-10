@@ -55,7 +55,7 @@ public class MuleArtifactContentResolver {
   /**
    * Returns the resolved list of exported packages paths.
    */
-  public ProjectStructure getProjectStructure() throws IOException {
+  public ProjectStructure getProjectStructure() {
     return projectStructure;
   }
 
@@ -144,7 +144,11 @@ public class MuleArtifactContentResolver {
         .map(File::toPath)
         .map(p -> resourcesFolder.toPath().relativize(p))
         .map(Path::toString)
-        .map(p -> p.replace("\\", "/"))
+        .map(MuleArtifactContentResolver::escapeSlashes)
         .collect(Collectors.toList());
+  }
+
+  public static String escapeSlashes(String p) {
+    return p.replace("\\", "/");
   }
 }

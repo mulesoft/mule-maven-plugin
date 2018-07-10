@@ -10,6 +10,7 @@
 package org.mule.tools.api.packager.structure;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.JAVA;
 import static org.mule.tools.api.packager.structure.FolderNames.MAIN;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
@@ -80,5 +81,9 @@ public class ProjectStructure {
 
   public Path getMuleArtifactJsonPath() {
     return projectBuildDirectory.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value());
+  }
+
+  public Path getOutputDirectory() {
+    return projectBuildDirectory.resolve(CLASSES.value());
   }
 }

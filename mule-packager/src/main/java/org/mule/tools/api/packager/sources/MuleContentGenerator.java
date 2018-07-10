@@ -164,10 +164,10 @@ public class MuleContentGenerator extends ContentGenerator {
    */
   public void createDescriptors() throws IOException {
     createMavenDescriptors();
-    copyDescriptorFile();
   }
 
-  private void copyDescriptorFile() throws IOException {
+  @Override
+  public void copyDescriptorFile() throws IOException {
     Path originPath = projectInformation.getProjectBaseFolder().resolve(MULE_ARTIFACT_JSON);
     Path destinationPath = projectInformation.getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value());
     String destinationFileName = originPath.getFileName().toString();

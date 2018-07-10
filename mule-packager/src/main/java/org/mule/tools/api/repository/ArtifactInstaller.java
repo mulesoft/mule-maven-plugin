@@ -14,16 +14,15 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
 import static org.apache.commons.io.FileUtils.copyFile;
 import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
+import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.packager.sources.MuleContentGenerator;
+import org.mule.tools.api.util.PackagerLog;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.regex.Pattern;
-
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.packager.sources.MuleContentGenerator;
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.util.PackagerLog;
 
 public class ArtifactInstaller {
 
@@ -58,11 +57,11 @@ public class ArtifactInstaller {
     String artifactFilename = artifact.getFormattedArtifactFileName();
 
     File destinationArtifactFile = new File(artifactFolderDestination, artifactFilename);
-    log.info(format("Adding artifact <%s%s>",
-                    REPOSITORY.value(),
-                    destinationArtifactFile.getAbsolutePath()
-                        .replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
-                                      "")));
+    log.debug(format("Adding artifact <%s%s>",
+                     REPOSITORY.value(),
+                     destinationArtifactFile.getAbsolutePath()
+                         .replaceFirst(Pattern.quote(repositoryFile.getAbsolutePath()),
+                                       "")));
 
     copyFile(new File(artifact.getUri()), destinationArtifactFile);
   }

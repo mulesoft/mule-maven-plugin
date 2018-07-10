@@ -10,21 +10,18 @@
 
 package org.mule.tools.api.packager.sources;
 
-import org.mule.tools.api.packager.DefaultProjectInformation;
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
+import static org.mule.tools.api.packager.structure.PackagerFiles.POM_PROPERTIES;
+import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
 import org.mule.tools.api.packager.ProjectInformation;
-import org.mule.tools.api.util.Project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
-import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
-import static org.mule.tools.api.packager.structure.PackagerFiles.POM_PROPERTIES;
-import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
 
 /**
  * Generates the required content for each of the mandatory folders of a mule package
@@ -45,6 +42,8 @@ public abstract class ContentGenerator {
    * @throws IOException
    */
   public abstract void createContent() throws IOException;
+
+  public void copyDescriptorFile() throws IOException {}
 
   protected void copyPomFile() throws IOException {
     Path originPath = projectInformation.getProjectBaseFolder().resolve(POM_XML);

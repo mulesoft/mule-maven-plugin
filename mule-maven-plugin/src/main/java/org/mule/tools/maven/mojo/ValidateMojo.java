@@ -11,22 +11,20 @@
 package org.mule.tools.maven.mojo;
 
 import static org.mule.tools.api.validation.AllowedDependencyValidator.areDependenciesAllowed;
-import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.validation.VersionUtils;
+import org.mule.tools.api.validation.project.AbstractProjectValidator;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.exception.ValidationException;
-import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.validation.project.AbstractProjectValidator;
-import org.mule.tools.api.validation.VersionUtils;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**
@@ -50,8 +48,6 @@ public class ValidateMojo extends AbstractMuleMojo {
         AbstractProjectValidator.isPackagingTypeValid(project.getPackaging());
 
         validateNotAllowedDependencies();
-
-        getProjectValidator().isProjectValid(VALIDATE.id());
       } catch (ValidationException e) {
         throw new MojoExecutionException("Validation exception", e);
       }

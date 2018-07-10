@@ -203,11 +203,13 @@ public class DefaultValuesMuleArtifactJsonGenerator {
           .distinct()
           .collect(Collectors.toList());
       //look for all the resources (files that are not java compiled classes)
+      List<String> muleConfigs = muleArtifactContentResolver.getConfigs();
       List<String> resources = allOutputFiles.stream()
           .filter(isJavaClass.negate())
           .map(path -> outputDirectory.relativize(path))
           .map(Path::toString)
           .map(MuleArtifactContentResolver::escapeSlashes)
+          .filter(path -> !muleConfigs.contains(path))
           .collect(toList());
       //being consistent with old behaviour, check this later
       resources.addAll(muleArtifactContentResolver.getTestExportedResources());

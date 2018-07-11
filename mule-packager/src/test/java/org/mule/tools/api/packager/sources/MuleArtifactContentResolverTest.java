@@ -22,11 +22,13 @@ import org.mule.tools.api.packager.structure.ProjectStructure;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -65,12 +67,23 @@ public class MuleArtifactContentResolverTest {
   private File munitFolder;
   private File resourcesFolder;
   private File testResourcesFolder;
+  private String DEFAULT_MULE_CONFIG_CONTENT = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+      "<mule xmlns=\"http://www.mulesoft.org/schema/mule/core\"\n" +
+      "      xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+      "      xmlns:jms=\"http://www.mulesoft.org/schema/mule/jms\"\n" +
+      "      xsi:schemaLocation=\"\n" +
+      "\thttp://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd\n" +
+      "\thttp://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd\">\n" +
+      "\n" +
+      "\n" +
+      "</mule>";
 
   @Before
   public void setUp() throws IOException {
     temporaryFolder.create();
     Pom pomMock = mock(Pom.class);
-    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), false), pomMock);
+    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), false), pomMock,
+                                               new ArrayList<>());
     javaFolder = new File(temporaryFolder.getRoot(), JAVA_FOLDER_LOCATION);
     muleFolder = new File(temporaryFolder.getRoot(), MULE_FOLDER_LOCATION);
     munitFolder = new File(temporaryFolder.getRoot(), MUNIT_FOLDER_LOCATION);
@@ -90,7 +103,7 @@ public class MuleArtifactContentResolverTest {
   public void muleArtifactContentResolverNullPathArgumentInConstructorTest() {
     expectedException.expect(IllegalArgumentException.class);
     expectedException.expectMessage("Project structure should not be null");
-    new MuleArtifactContentResolver(null, null);
+    new MuleArtifactContentResolver(null, null, null);
   }
 
   @Test
@@ -150,7 +163,8 @@ public class MuleArtifactContentResolverTest {
     jar2.createNewFile();
     jar3Folder.mkdirs();
     jar3.createNewFile();
-    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true), mock(Pom.class));
+    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true), mock(Pom.class),
+                                               new ArrayList<>());
     List<String> actualExportedResources = resolver.getTestExportedResources();
 
     assertThat("Exported resources does not contain all expected elements", actualExportedResources,
@@ -167,9 +181,15 @@ public class MuleArtifactContentResolverTest {
     File commonFile = new File(muleFolder, COMMON_FILE);
 
     config1.createNewFile();
+    FileUtils.writeStringToFile(config1, DEFAULT_MULE_CONFIG_CONTENT, Charset.defaultCharset());
+
     config2.createNewFile();
+    FileUtils.writeStringToFile(config2, DEFAULT_MULE_CONFIG_CONTENT, Charset.defaultCharset());
+
     config3Folder.mkdirs();
     config3.createNewFile();
+    FileUtils.writeStringToFile(config3, DEFAULT_MULE_CONFIG_CONTENT, Charset.defaultCharset());
+
     commonFile.createNewFile();
 
 
@@ -192,12 +212,19 @@ public class MuleArtifactContentResolverTest {
     File commonFile = new File(munitFolder, COMMON_FILE);
 
     config1.createNewFile();
+    FileUtils.writeStringToFile(config1, DEFAULT_MULE_CONFIG_CONTENT, Charset.defaultCharset());
+
     config2.createNewFile();
+    FileUtils.writeStringToFile(config2, DEFAULT_MULE_CONFIG_CONTENT, Charset.defaultCharset());
+
     config3Folder.mkdirs();
     config3.createNewFile();
+    FileUtils.writeStringToFile(config3, DEFAULT_MULE_CONFIG_CONTENT, Charset.defaultCharset());
+
     commonFile.createNewFile();
 
-    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true), mock(Pom.class));
+    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true), mock(Pom.class),
+                                               new ArrayList<>());
     List<String> actualConfigs = resolver.getTestConfigs();
 
     assertThat("Configs does not contain all expected elements", actualConfigs,

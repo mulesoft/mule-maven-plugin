@@ -10,7 +10,11 @@
 
 package org.mule.tools.maven.utils;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.project.MavenProject;
+import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.maven.client.api.model.BundleScope;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.util.Project;
 
@@ -28,5 +32,25 @@ public class DependencyProject implements Project {
   @Override
   public List<ArtifactCoordinates> getDependencies() {
     return mavenProject.getDependencies().stream().map(ArtifactUtils::toArtifactCoordinates).collect(Collectors.toList());
+  }
+
+  @Override
+  public List<BundleDependency> getBundleDependencies() {
+    return mavenProject.getArtifacts().stream().map(this::toBundleDependency).collect(Collectors.toList());
+  }
+
+  private BundleDependency toBundleDependency(Artifact artifact) {
+    BundleDescriptor.Builder descriptorBuilder = new BundleDescriptor.Builder();
+    BundleDescriptor descriptor = descriptorBuilder.setArtifactId(artifact.getArtifactId())
+        .setGroupId(artifact.getGroupId())
+        .setVersion(artifact.getVersion())
+        .setBaseVersion(artifact.getBaseVersion())
+        .setClassifier(artifact.getClassifier())
+        .setType(artifact.getType()).build();
+    BundleDependency.Builder dependencyBuilder = new BundleDependency.Builder();
+    return dependencyBuilder.setBundleUri(artifact.getFile().toURI())
+        .setDescriptor(descriptor)
+        .setScope(BundleScope.valueOf(artifact.getScope().toUpperCase()))
+        .build();
   }
 }

@@ -13,7 +13,6 @@ package org.mule.tools.api.packager.sources;
 import static java.lang.Boolean.FALSE;
 import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.deserialize;
 import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.serializeToFile;
-import static org.mule.tools.api.packager.sources.DefaultValuesMuleArtifactJsonGenerator.generate;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
@@ -172,7 +171,8 @@ public class MuleContentGenerator extends ContentGenerator {
     Path destinationPath = projectInformation.getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value());
     String destinationFileName = originPath.getFileName().toString();
     copyFile(originPath, destinationPath, destinationFileName);
-    generate(getMuleArtifactContentResolver());
+    DefaultValuesMuleArtifactJsonGenerator generator = new DefaultValuesMuleArtifactJsonGenerator();
+    generator.generate(getMuleArtifactContentResolver());
   }
 
   public MuleArtifactContentResolver getMuleArtifactContentResolver() {
@@ -180,7 +180,8 @@ public class MuleContentGenerator extends ContentGenerator {
       ProjectStructure projectStructure =
           new ProjectStructure(projectInformation.getProjectBaseFolder(), projectInformation.getBuildDirectory(),
                                projectInformation.isTestProject());
-      muleArtifactContentResolver = new MuleArtifactContentResolver(projectStructure, projectInformation.getEffectivePom());
+      muleArtifactContentResolver = new MuleArtifactContentResolver(projectStructure, projectInformation.getEffectivePom(),
+                                                                    projectInformation.getProject().getBundleDependencies());
     }
     return muleArtifactContentResolver;
   }

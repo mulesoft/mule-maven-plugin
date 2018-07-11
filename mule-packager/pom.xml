@@ -15,7 +15,7 @@
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
 
         <coverageLineLimit>0.74</coverageLineLimit>
-        <coverageBranchLimit>0.74</coverageBranchLimit>
+        <coverageBranchLimit>0.73</coverageBranchLimit>
     </properties>
 
     <build>
@@ -85,6 +85,11 @@
         <dependency>
             <groupId>de.skuzzle</groupId>
             <artifactId>semantic-version</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom2</artifactId>
         </dependency>
 
         <dependency>

@@ -11,29 +11,57 @@
 package org.mule.tools.api.packager.sources;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.mule.maven.client.api.model.BundleScope.COMPILE;
+import static org.mule.runtime.internal.dsl.DslConstants.CORE_NAMESPACE;
+import static org.mule.runtime.internal.dsl.DslConstants.EE_NAMESPACE;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
+
+import com.google.gson.Gson;
+import org.apache.commons.io.IOUtils;
+import org.codehaus.plexus.util.StringUtils;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.client.api.model.BundleScope;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptorBuilder;
+import org.mule.runtime.api.deployment.meta.Product;
 import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
+import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import sun.tools.jar.resources.jar;
+
+import javax.naming.Name;
 
 /**
  * Generates default value for any non-defined fields in a mule-artifact.json file
@@ -52,7 +80,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    *
    * @param muleArtifactContentResolver muleArtifactContentResolver of project being built
    */
-  public static void generate(MuleArtifactContentResolver muleArtifactContentResolver) throws IOException {
+  public void generate(MuleArtifactContentResolver muleArtifactContentResolver) throws IOException {
     Path muleArtifactJsonLocation = resolveMuleArtifactJsonLocation(muleArtifactContentResolver.getProjectStructure());
     generate(muleArtifactJsonLocation, muleArtifactJsonLocation, muleArtifactContentResolver);
   }
@@ -62,7 +90,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    *
    * @param projectStructure projectStructure of project being built
    */
-  protected static Path resolveMuleArtifactJsonLocation(ProjectStructure projectStructure) {
+  protected Path resolveMuleArtifactJsonLocation(ProjectStructure projectStructure) {
     return projectStructure.getMuleArtifactJsonPath();
   }
 
@@ -74,8 +102,8 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * @param muleArtifactContentResolver resolves all the contents that are going to be defaulted in the generated the
    *                                    mule-artifact.json
    */
-  public static void generate(Path originFolder, Path destinationFolder,
-                              MuleArtifactContentResolver muleArtifactContentResolver)
+  public void generate(Path originFolder, Path destinationFolder,
+                       MuleArtifactContentResolver muleArtifactContentResolver)
       throws IOException {
     MuleApplicationModel originalMuleArtifact = getOriginalMuleArtifact(originFolder);
 
@@ -91,7 +119,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * @param muleArtifact      mule artifact that is going to be persisted
    * @param destinationFolder destination folder where the mule-artifact.json file is going to be created
    */
-  protected static void writeMuleArtifactToFile(MuleApplicationModel muleArtifact, Path destinationFolder)
+  protected void writeMuleArtifactToFile(MuleApplicationModel muleArtifact, Path destinationFolder)
       throws IOException {
     String generatedMuleArtifactJsonContent = serializer.serialize(muleArtifact);
     File generatedMuleArtifactJson = new File(destinationFolder.toFile(), MULE_ARTIFACT_JSON);
@@ -103,7 +131,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    *
    * @param originFolder folder path where the mule-artifact.json is located
    */
-  protected static MuleApplicationModel getOriginalMuleArtifact(Path originFolder) throws IOException {
+  protected MuleApplicationModel getOriginalMuleArtifact(Path originFolder) throws IOException {
     File originalMuleArtifactJsonFile = originFolder.resolve(MULE_ARTIFACT_JSON).toFile();
     return serializer.deserialize(FileUtils.readFileToString(originalMuleArtifactJsonFile, (String) null));
   }
@@ -114,8 +142,8 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * @param originalMuleArtifact        original mule application model
    * @param muleArtifactContentResolver the application content resolver
    */
-  protected static MuleApplicationModel generateMuleArtifactWithDefaultValues(MuleApplicationModel originalMuleArtifact,
-                                                                              MuleArtifactContentResolver muleArtifactContentResolver)
+  protected MuleApplicationModel generateMuleArtifactWithDefaultValues(MuleApplicationModel originalMuleArtifact,
+                                                                       MuleArtifactContentResolver muleArtifactContentResolver)
       throws IOException {
     MuleApplicationModel.MuleApplicationModelBuilder builder = getBuilderWithRequiredValues(originalMuleArtifact);
     setBuilderWithDefaultValuesNotPresent(builder, originalMuleArtifact, muleArtifactContentResolver);
@@ -130,19 +158,122 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * @param originalMuleArtifact        original mule application model
    * @param muleArtifactContentResolver the application content resolver
    */
-  protected static void setBuilderWithDefaultValuesNotPresent(MuleApplicationModel.MuleApplicationModelBuilder builder,
-                                                              MuleApplicationModel originalMuleArtifact,
-                                                              MuleArtifactContentResolver muleArtifactContentResolver)
+  protected void setBuilderWithDefaultValuesNotPresent(MuleApplicationModel.MuleApplicationModelBuilder builder,
+                                                       MuleApplicationModel originalMuleArtifact,
+                                                       MuleArtifactContentResolver muleArtifactContentResolver)
       throws IOException {
+    setBuilderWithDefaultName(builder, originalMuleArtifact, muleArtifactContentResolver);
+    setBuilderWithDefaultSecureProperties(builder, originalMuleArtifact);
     setBuilderWithDefaultRedeploymentEnabled(builder, originalMuleArtifact);
     setBuilderWithDefaultConfigsValue(builder, originalMuleArtifact, muleArtifactContentResolver);
+    setBuilderWithDefaultRequiredProduct(builder, originalMuleArtifact, muleArtifactContentResolver);
     // setBuilderWithDefaultExportedPackagesValue(builder, muleArtifactContentResolver);
     setBuilderWithDefaultExportedResourcesValue(builder, originalMuleArtifact, muleArtifactContentResolver);
     setBuilderWithIncludeTestDependencies(builder, muleArtifactContentResolver);
+    setBuilderWithDefaultBundleDescriptorLoaderValue(builder, originalMuleArtifact);
   }
 
-  protected static void setBuilderWithIncludeTestDependencies(MuleApplicationModel.MuleApplicationModelBuilder builder,
-                                                              MuleArtifactContentResolver muleArtifactContentResolver)
+  private void setBuilderWithDefaultRequiredProduct(MuleApplicationModel.MuleApplicationModelBuilder builder,
+                                                    MuleApplicationModel originalMuleArtifact,
+                                                    MuleArtifactContentResolver muleArtifactContentResolver)
+      throws IOException {
+    Product requiredProduct = originalMuleArtifact.getRequiredProduct();
+    if (requiredProduct == null) {
+      requiredProduct = Product.MULE;
+      if (doesSomeConfigRequireEE(originalMuleArtifact, muleArtifactContentResolver)
+          || anyMulePluginInDependenciesRequiresEE(muleArtifactContentResolver)
+          || anyProvidedDependencyRequiresEE(muleArtifactContentResolver)) {
+        requiredProduct = Product.MULE_EE;
+      }
+    }
+    builder.setRequiredProduct(requiredProduct);
+  }
+
+  private boolean anyProvidedDependencyRequiresEE(MuleArtifactContentResolver muleArtifactContentResolver) {
+    return muleArtifactContentResolver.getPom().getDependencies().stream()
+        .filter(coordinates -> StringUtils.equals(coordinates.getScope(), "provided"))
+        .anyMatch(coordinates -> coordinates.getGroupId().startsWith("com.mulesoft.mule"));
+  }
+
+  private boolean anyMulePluginInDependenciesRequiresEE(MuleArtifactContentResolver muleArtifactContentResolver) {
+    return muleArtifactContentResolver.getBundleDependencies().stream().filter(dep -> dep.getDescriptor().isPlugin())
+        .filter(dep -> dep.getScope().equals(COMPILE)).map(BundleDependency::getBundleUri).anyMatch(this::mulePluginRequiresEE);
+  }
+
+  private boolean mulePluginRequiresEE(URI uri) {
+    try {
+      JarFile pluginJar = new JarFile(uri.getPath());
+      JarEntry muleArtifactDescriptor = pluginJar.getJarEntry("META-INF/mule-artifact/mule-artifact.json");
+      InputStream is = pluginJar.getInputStream(muleArtifactDescriptor);
+      String muleArtifactJson = IOUtils.toString(is, StandardCharsets.UTF_8);
+      MuleApplicationModel mulePluginApplicationModel = serializer.deserialize(muleArtifactJson);
+      Product requiredProduct = mulePluginApplicationModel.getRequiredProduct();
+      return requiredProduct != null && requiredProduct.equals(Product.MULE_EE);
+    } catch (IOException e) {
+      return false;
+    }
+  }
+
+
+  private boolean doesSomeConfigRequireEE(MuleApplicationModel originalMuleArtifact,
+                                          MuleArtifactContentResolver muleArtifactContentResolver)
+      throws IOException {
+    Set<Path> configs = getConfigs(originalMuleArtifact, muleArtifactContentResolver).stream()
+        .map(config -> muleArtifactContentResolver.getProjectStructure().getConfigsPath().resolve(config))
+        .collect(toSet());
+    return configs.stream().map(this::toDocument).anyMatch(this::containsEENamespace);
+  }
+
+  private boolean containsEENamespace(Document doc) {
+    Element root = doc.getRootElement();
+    return root.getNamespace().getURI().contains(EE_NAMESPACE)
+        || doc.getRootElement().getAdditionalNamespaces().stream().anyMatch(n -> n.getURI().contains(EE_NAMESPACE));
+  }
+
+  private Document toDocument(Path filePath) {
+    SAXBuilder saxBuilder = new SAXBuilder();
+    try {
+      return saxBuilder.build(filePath.toFile());
+    } catch (JDOMException | IOException e) {
+      return new Document();
+    }
+  }
+
+  /**
+   * Sets the builder with an empty list of secure properties if not set in originalMuleArtifact
+   *
+   * @param builder
+   * @param originalMuleArtifact
+   */
+  protected void setBuilderWithDefaultSecureProperties(MuleApplicationModel.MuleApplicationModelBuilder builder,
+                                                       MuleApplicationModel originalMuleArtifact) {
+    List<String> secureProperties = originalMuleArtifact.getSecureProperties();
+    if (secureProperties == null) {
+      secureProperties = new ArrayList<>();
+    }
+    builder.setSecureProperties(secureProperties);
+  }
+
+  /**
+   * Sets the name as groupId:artifactId:version if not set in the originalMuleArtifact
+   *
+   * @param builder
+   * @param originalMuleArtifact
+   * @param muleArtifactContentResolver
+   */
+  protected void setBuilderWithDefaultName(MuleApplicationModel.MuleApplicationModelBuilder builder,
+                                           MuleApplicationModel originalMuleArtifact,
+                                           MuleArtifactContentResolver muleArtifactContentResolver) {
+    String name = originalMuleArtifact.getName();
+    if (isEmpty(name)) {
+      Pom pom = muleArtifactContentResolver.getPom();
+      name = pom.getGroupId() + ":" + pom.getArtifactId() + ":" + pom.getVersion();
+    }
+    builder.setName(name);
+  }
+
+  protected void setBuilderWithIncludeTestDependencies(MuleApplicationModel.MuleApplicationModelBuilder builder,
+                                                       MuleArtifactContentResolver muleArtifactContentResolver)
       throws IOException {
     MuleArtifactLoaderDescriptor descriptorLoader = builder.getClassLoaderModelDescriptorLoader();
     if (muleArtifactContentResolver.getProjectStructure().getTestConfigsPath().isPresent()) {
@@ -158,9 +289,9 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * @param builder                     builder for the mule artifact that is going to be generated
    * @param muleArtifactContentResolver the application content resolver
    */
-  protected static void setBuilderWithDefaultExportedResourcesValue(MuleApplicationModel.MuleApplicationModelBuilder builder,
-                                                                    MuleApplicationModel originalMuleArtifact,
-                                                                    MuleArtifactContentResolver muleArtifactContentResolver)
+  protected void setBuilderWithDefaultExportedResourcesValue(MuleApplicationModel.MuleApplicationModelBuilder builder,
+                                                             MuleApplicationModel originalMuleArtifact,
+                                                             MuleArtifactContentResolver muleArtifactContentResolver)
       throws IOException {
     MuleArtifactLoaderDescriptor classLoaderModelLoaderDescriptor;
     if (originalMuleArtifact.getClassLoaderModelLoaderDescriptor() != null) {
@@ -229,8 +360,8 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * @param builder                     builder for the mule artifact that is going to be generated
    * @param muleArtifactContentResolver the application content resolver
    */
-  protected static void setBuilderWithDefaultExportedPackagesValue(MuleApplicationModel.MuleApplicationModelBuilder builder,
-                                                                   MuleArtifactContentResolver muleArtifactContentResolver)
+  protected void setBuilderWithDefaultExportedPackagesValue(MuleApplicationModel.MuleApplicationModelBuilder builder,
+                                                            MuleArtifactContentResolver muleArtifactContentResolver)
       throws IOException {
 
     MuleArtifactLoaderDescriptor descriptorLoader = builder.getClassLoaderModelDescriptorLoader();
@@ -239,8 +370,8 @@ public class DefaultValuesMuleArtifactJsonGenerator {
     builder.withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(descriptorLoader.getId(), attributesCopy));
   }
 
-  private static Map<String, Object> getUpdatedAttributes(MuleArtifactLoaderDescriptor descriptorLoader, String attribute,
-                                                          Object value) {
+  private Map<String, Object> getUpdatedAttributes(MuleArtifactLoaderDescriptor descriptorLoader, String attribute,
+                                                   Object value) {
     Map<String, Object> originalAttributes = descriptorLoader.getAttributes();
     Map<String, Object> attributesCopy = new HashMap<>();
     if (originalAttributes != null) {
@@ -258,11 +389,19 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * @param originalMuleArtifact        original mule application model
    * @param muleArtifactContentResolver the application content resolver
    */
-  protected static void setBuilderWithDefaultConfigsValue(MuleApplicationModel.MuleApplicationModelBuilder builder,
-                                                          MuleApplicationModel originalMuleArtifact,
-                                                          MuleArtifactContentResolver muleArtifactContentResolver)
+  protected void setBuilderWithDefaultConfigsValue(MuleApplicationModel.MuleApplicationModelBuilder builder,
+                                                   MuleApplicationModel originalMuleArtifact,
+                                                   MuleArtifactContentResolver muleArtifactContentResolver)
       throws IOException {
 
+    Set<String> configs = getConfigs(originalMuleArtifact, muleArtifactContentResolver);
+    configs.addAll(muleArtifactContentResolver.getTestConfigs());
+    builder.setConfigs(configs);
+  }
+
+  private Set<String> getConfigs(MuleApplicationModel originalMuleArtifact,
+                                 MuleArtifactContentResolver muleArtifactContentResolver)
+      throws IOException {
     Set<String> configs = new HashSet<>();
     if (originalMuleArtifact.getConfigs() != null) {
       configs.addAll(originalMuleArtifact.getConfigs());
@@ -270,9 +409,8 @@ public class DefaultValuesMuleArtifactJsonGenerator {
       configs.addAll(muleArtifactContentResolver.getConfigs());
     }
 
-    configs.addAll(muleArtifactContentResolver.getTestConfigs());
 
-    builder.setConfigs(configs);
+    return configs;
   }
 
   /**
@@ -282,8 +420,8 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * @param builder              builder for the mule artifact that is going to be generated
    * @param originalMuleArtifact the application content resolver
    */
-  protected static void setBuilderWithDefaultRedeploymentEnabled(MuleApplicationModel.MuleApplicationModelBuilder builder,
-                                                                 MuleApplicationModel originalMuleArtifact) {
+  protected void setBuilderWithDefaultRedeploymentEnabled(MuleApplicationModel.MuleApplicationModelBuilder builder,
+                                                          MuleApplicationModel originalMuleArtifact) {
     builder.setRedeploymentEnabled(originalMuleArtifact.isRedeploymentEnabled());
   }
 
@@ -294,8 +432,8 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    * @param builder              builder for the mule artifact that is going to be generated
    * @param originalMuleArtifact the application content resolver
    */
-  protected static void setBuilderWithDefaultBundleDescriptorLoaderValue(MuleApplicationModel.MuleApplicationModelBuilder builder,
-                                                                         MuleApplicationModel originalMuleArtifact) {
+  protected void setBuilderWithDefaultBundleDescriptorLoaderValue(MuleApplicationModel.MuleApplicationModelBuilder builder,
+                                                                  MuleApplicationModel originalMuleArtifact) {
     MuleArtifactLoaderDescriptor bundleDescriptorLoader = originalMuleArtifact.getBundleDescriptorLoader();
     builder.withBundleDescriptorLoader(new MuleArtifactLoaderDescriptor(MULE_ID,
                                                                         bundleDescriptorLoader == null
@@ -309,13 +447,9 @@ public class DefaultValuesMuleArtifactJsonGenerator {
    *
    * @param muleArtifact mule application model that is going to be used to generate the builder
    */
-  protected static MuleApplicationModel.MuleApplicationModelBuilder getBuilderWithRequiredValues(MuleApplicationModel muleArtifact) {
+  protected MuleApplicationModel.MuleApplicationModelBuilder getBuilderWithRequiredValues(MuleApplicationModel muleArtifact) {
     MuleApplicationModel.MuleApplicationModelBuilder builder = new MuleApplicationModel.MuleApplicationModelBuilder();
-    builder.setName(muleArtifact.getName());
     builder.setMinMuleVersion(muleArtifact.getMinMuleVersion());
-    builder.setRequiredProduct(muleArtifact.getRequiredProduct());
-    builder.setSecureProperties(muleArtifact.getSecureProperties());
-    setBuilderWithDefaultBundleDescriptorLoaderValue(builder, muleArtifact);
     return builder;
   }
 }

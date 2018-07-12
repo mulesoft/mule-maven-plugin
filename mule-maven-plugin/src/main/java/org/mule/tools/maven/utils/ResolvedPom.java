@@ -17,12 +17,13 @@ import org.mule.tools.api.packager.Pom;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.stream.Collectors.toList;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 public class ResolvedPom implements Pom {
 
@@ -33,6 +34,25 @@ public class ResolvedPom implements Pom {
     this.pomModel = pomModel;
   }
 
+  @Override
+  public String getGroupId() {
+    return pomModel.getGroupId();
+  }
+
+  @Override
+  public String getArtifactId() {
+    return pomModel.getArtifactId();
+  }
+
+  @Override
+  public String getVersion() {
+    return pomModel.getVersion();
+  }
+
+  @Override
+  public List<ArtifactCoordinates> getDependencies() {
+    return pomModel.getDependencies().stream().map(ArtifactUtils::toArtifactCoordinates).collect(toList());
+  }
 
   @Override
   public void persist(Path pom) throws IOException {
@@ -44,6 +64,6 @@ public class ResolvedPom implements Pom {
 
   @Override
   public List<Path> getResourcesLocation() {
-    return pomModel.getBuild().getResources().stream().map(Resource::getDirectory).map(Paths::get).collect(Collectors.toList());
+    return pomModel.getBuild().getResources().stream().map(Resource::getDirectory).map(Paths::get).collect(toList());
   }
 }

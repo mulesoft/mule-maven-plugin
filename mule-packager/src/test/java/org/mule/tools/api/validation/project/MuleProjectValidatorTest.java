@@ -54,6 +54,7 @@ import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.DefaultProjectInformation;
+import org.mule.tools.api.util.Project;
 import org.mule.tools.model.Deployment;
 
 public class MuleProjectValidatorTest {
@@ -92,7 +93,7 @@ public class MuleProjectValidatorTest {
         .setTestProject(false)
         .withDeployments(Arrays.asList(deploymentConfigurationMock))
         .withResolvedPom(mock(Pom.class))
-        .withDependencyProject(Collections::emptyList);
+        .withDependencyProject(mock(Project.class));
 
     validator = new MuleProjectValidator(builder.build(), new ArrayList<>(), false);
 

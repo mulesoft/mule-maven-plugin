@@ -13,9 +13,8 @@
     <properties>
         <licensePath>../LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-
-        <coverageLineLimit>0.75</coverageLineLimit>
-        <coverageBranchLimit>0.75</coverageBranchLimit>
+        <coverageLineLimit>0.74</coverageLineLimit>
+        <coverageBranchLimit>0.73</coverageBranchLimit>
     </properties>
 
     <build>
@@ -85,6 +84,11 @@
         <dependency>
             <groupId>de.skuzzle</groupId>
             <artifactId>semantic-version</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom2</artifactId>
         </dependency>
 
         <dependency>

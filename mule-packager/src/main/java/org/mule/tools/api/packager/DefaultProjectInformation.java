@@ -17,13 +17,14 @@ import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.TEMP;
 import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
 
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
-
+import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.tools.api.util.Project;
 import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
 import org.mule.tools.model.Deployment;
+
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents the basic information of a project.
@@ -120,6 +121,10 @@ public class DefaultProjectInformation implements ProjectInformation {
     return getBuildDirectory().resolve(TEMP.value()).resolve(META_INF.value()).resolve(MAVEN.value()).resolve(getGroupId())
         .resolve(getArtifactId())
         .resolve(POM_XML);
+  }
+
+  public List<BundleDependency> getBundleDependencies() {
+    return project.getBundleDependencies();
   }
 
   public static class Builder {

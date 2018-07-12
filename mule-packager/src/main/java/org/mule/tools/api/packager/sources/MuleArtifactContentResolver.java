@@ -11,6 +11,12 @@
 package org.mule.tools.api.packager.sources;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.stream.Collectors.toList;
+
+import org.jdom2.Document;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
@@ -44,11 +50,13 @@ public class MuleArtifactContentResolver {
   private List<String> exportedResources;
   private List<String> testExportedResources;
   private Pom pom;
+  private List<BundleDependency> bundleDependencies;
 
-  public MuleArtifactContentResolver(ProjectStructure projectStructure, Pom pom) {
+  public MuleArtifactContentResolver(ProjectStructure projectStructure, Pom pom, List<BundleDependency> bundleDependencies) {
     checkArgument(projectStructure != null, "Project structure should not be null");
     this.projectStructure = projectStructure;
     this.pom = pom;
+    this.bundleDependencies = bundleDependencies;
   }
 
   /**
@@ -99,9 +107,27 @@ public class MuleArtifactContentResolver {
    */
   public List<String> getConfigs() throws IOException {
     if (configs == null) {
-      configs = getResources(projectStructure.getConfigsPath(), new SuffixFileFilter(CONFIG_FILE_EXTENSION));
+      List<String> candidateConfigs =
+          getResources(projectStructure.getConfigsPath(), new SuffixFileFilter(CONFIG_FILE_EXTENSION));
+      configs = candidateConfigs.stream()
+          .filter(config -> hasMuleAsRootElement(projectStructure.getConfigsPath().resolve(config))).collect(toList());
     }
     return configs;
+  }
+
+  private boolean hasMuleAsRootElement(Path path) {
+    Document doc;
+    try {
+      doc = generateDocument(path);
+    } catch (JDOMException | IOException e) {
+      return false;
+    }
+    return doc != null && "mule".equals(doc.getRootElement().getName());
+  }
+
+  private org.jdom2.Document generateDocument(Path filePath) throws JDOMException, IOException {
+    SAXBuilder saxBuilder = new SAXBuilder();
+    return saxBuilder.build(filePath.toFile());
   }
 
   /**
@@ -110,9 +136,13 @@ public class MuleArtifactContentResolver {
   public List<String> getTestConfigs() throws IOException {
     if (testConfigs == null) {
       Optional<Path> testConfigsPath = projectStructure.getTestConfigsPath();
-
-      testConfigs = testConfigsPath.isPresent() ? getResources(testConfigsPath.get(), new SuffixFileFilter(CONFIG_FILE_EXTENSION))
-          : Collections.emptyList();
+      testConfigs = Collections.emptyList();
+      if (testConfigsPath.isPresent()) {
+        List<String> candidateTestConfigs = getResources(testConfigsPath.get(), new SuffixFileFilter(CONFIG_FILE_EXTENSION));
+        testConfigs = candidateTestConfigs.stream()
+            .filter(testConfig -> hasMuleAsRootElement(projectStructure.getTestConfigsPath().get().resolve(testConfig)))
+            .collect(toList());
+      }
     }
     return testConfigs;
   }
@@ -144,10 +174,18 @@ public class MuleArtifactContentResolver {
         .map(p -> resourcesFolder.toPath().relativize(p))
         .map(Path::toString)
         .map(MuleArtifactContentResolver::escapeSlashes)
-        .collect(Collectors.toList());
+        .collect(toList());
   }
 
   public static String escapeSlashes(String p) {
     return p.replace("\\", "/");
+  }
+
+  public List<BundleDependency> getBundleDependencies() {
+    return bundleDependencies;
+  }
+
+  public Pom getPom() {
+    return this.pom;
   }
 }

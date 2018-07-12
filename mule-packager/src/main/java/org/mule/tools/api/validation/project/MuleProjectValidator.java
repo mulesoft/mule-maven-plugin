@@ -69,7 +69,7 @@ public class MuleProjectValidator extends AbstractProjectValidator {
   @Override
   protected void additionalValidation() throws ValidationException {
     isProjectStructureValid(projectInformation.getPackaging(), projectInformation.getProjectBaseFolder());
-    validateDescriptorFile(projectInformation.getProjectBaseFolder(), deployMuleVersion);
+    //    validateDescriptorFile(projectInformation.getProjectBaseFolder(), deployMuleVersion);
     validateSharedLibraries(sharedLibraries, projectInformation.getProject().getDependencies());
     validateReferencedDomainsIfPresent(projectInformation.getProject().getDependencies());
   }

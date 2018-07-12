@@ -11,15 +11,21 @@
 package org.mule.tools.maven.mojo;
 
 import static java.lang.String.format;
+
+import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.repository.ArtifactInstaller;
 import org.mule.tools.api.repository.RepositoryGenerator;
+import org.mule.tools.api.util.Project;
 import org.mule.tools.api.validation.MulePluginsCompatibilityValidator;
+import org.mule.tools.maven.utils.DependencyProject;
 import org.mule.tools.maven.utils.MavenPackagerLog;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.MojoFailureException;
@@ -48,11 +54,8 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
                                   getClassLoaderModelAssembler());
       try {
         ClassLoaderModel classLoaderModel = repositoryGenerator.generate();
-
-        mulePluginsCompatibilityValidator.validate(getResolver(() -> classLoaderModel.getDependencies()
-            .stream()
-            .map(Artifact::getArtifactCoordinates)
-            .collect(Collectors.toList())).resolve());
+        Project project = getProject(classLoaderModel);
+        mulePluginsCompatibilityValidator.validate(getResolver(project).resolve());
         if (!lightweightPackage) {
           ((MuleContentGenerator) getContentGenerator()).createApplicationClassLoaderModelJsonFile(classLoaderModel);
         }
@@ -71,5 +74,24 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
   @Override
   public String getPreviousRunPlaceholder() {
     return "MULE_MAVEN_PLUGIN_PROCESS_SOURCES_PREVIOUS_RUN_PLACEHOLDER";
+  }
+
+  public Project getProject(ClassLoaderModel classLoaderModel) {
+    Project dependencyProject = new DependencyProject(project);
+    return new Project() {
+
+      @Override
+      public List<ArtifactCoordinates> getDependencies() {
+        return classLoaderModel.getDependencies()
+            .stream()
+            .map(Artifact::getArtifactCoordinates)
+            .collect(Collectors.toList());
+      }
+
+      @Override
+      public List<BundleDependency> getBundleDependencies() {
+        return dependencyProject.getBundleDependencies();
+      }
+    };
   }
 }

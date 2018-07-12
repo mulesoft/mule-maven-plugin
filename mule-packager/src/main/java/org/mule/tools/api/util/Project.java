@@ -10,6 +10,7 @@
 
 package org.mule.tools.api.util;
 
+import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 
 import java.util.List;
@@ -17,4 +18,6 @@ import java.util.List;
 public interface Project {
 
   List<ArtifactCoordinates> getDependencies();
+
+  List<BundleDependency> getBundleDependencies();
 }

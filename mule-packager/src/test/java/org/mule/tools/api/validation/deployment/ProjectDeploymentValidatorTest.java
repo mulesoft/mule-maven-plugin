@@ -34,6 +34,7 @@ import org.junit.rules.TemporaryFolder;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.DefaultProjectInformation;
+import org.mule.tools.api.util.Project;
 import org.mule.tools.model.Deployment;
 
 /**
@@ -68,7 +69,7 @@ public class ProjectDeploymentValidatorTest {
         .withBuildDirectory(projectBuildFolder.getRoot().toPath())
         .setTestProject(false)
         .withResolvedPom(mock(Pom.class))
-        .withDependencyProject(Collections::emptyList);
+        .withDependencyProject(mock(Project.class));
   }
 
   @Test

@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mule.tools.api.util.Project;
 
 public class ContentGeneratorTest {
 
@@ -62,7 +63,7 @@ public class ContentGeneratorTest {
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
         .setTestProject(false)
         .withBuildDirectory(projectTargetFolder.toPath())
-        .withDependencyProject(Collections::emptyList)
+        .withDependencyProject(mock(Project.class))
         .withResolvedPom(mock(Pom.class))
         .build();
     contentGenerator = new MuleContentGenerator(info);
@@ -278,7 +279,7 @@ public class ContentGeneratorTest {
         .withPackaging(PackagingType.MULE_POLICY.toString())
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
         .setTestProject(false)
-        .withDependencyProject(() -> Collections.emptyList())
+        .withDependencyProject(mock(Project.class))
         .withResolvedPom(mock(Pom.class))
         .withBuildDirectory(projectTargetFolder.toPath()).build();
     contentGenerator = new MuleContentGenerator(info);
@@ -319,7 +320,7 @@ public class ContentGeneratorTest {
         .withPackaging(PackagingType.MULE_DOMAIN.toString())
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
         .setTestProject(false)
-        .withDependencyProject(() -> Collections.emptyList())
+        .withDependencyProject(mock(Project.class))
         .withResolvedPom(mock(Pom.class))
         .withBuildDirectory(projectTargetFolder.toPath()).build();
     contentGenerator = new MuleContentGenerator(info);

@@ -117,5 +117,9 @@
             <groupId>com.vdurmont</groupId>
             <artifactId>semver4j</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-netty</artifactId>
+        </dependency>
     </dependencies>
 </project>

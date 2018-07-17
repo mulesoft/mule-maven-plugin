@@ -22,6 +22,7 @@ import static org.mule.tools.client.authentication.AuthenticationServiceClient.L
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -63,6 +64,11 @@ public abstract class AbstractClient {
     return post(uri, path, Entity.entity(entity, APPLICATION_JSON_TYPE));
   }
 
+  protected Response post(String uri, Supplier<String> pathSupplier, Object entity) {
+    initialize();
+    return post(uri, pathSupplier.get(), Entity.entity(entity, APPLICATION_JSON_TYPE));
+  }
+
   protected Response put(String uri, String path, Entity entity) {
     initialize();
     return builder(uri, path).put(entity);
@@ -83,9 +89,19 @@ public abstract class AbstractClient {
     return builder(uri, path).get();
   }
 
+  protected Response get(String uri, Supplier<String> pathSupplier) {
+    initialize();
+    return builder(uri, pathSupplier.get()).get();
+  }
+
   protected <T> T get(String uri, String path, Class<T> clazz) {
     initialize();
     return get(uri, path).readEntity(clazz);
+  }
+
+  protected Response patch(String uri, Supplier<String> path, Object entity) {
+    initialize();
+    return patch(uri, path.get(), Entity.entity(entity, APPLICATION_JSON_TYPE));
   }
 
   protected Response patch(String uri, String path, Entity entity) {
@@ -96,7 +112,7 @@ public abstract class AbstractClient {
   }
 
 
-  private synchronized void initialize() {
+  public synchronized void initialize() {
     if (!isClientInitialized) {
       isClientInitialized = true;
       init();

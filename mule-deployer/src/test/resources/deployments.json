@@ -1,0 +1,53 @@
+{
+  "total" : 1,
+  "items" : [
+              {
+                "id": "73894e6e-d9c5-11e6-bf27-cec0c932ce01",
+                "name": "accountingToSalesforce",
+                "lastModifiedDate": "2016-02-28T16:41:41.090Z",
+                "creationDate": "2016-02-28T16:41:41.090Z",
+                "target": {
+                  "provider": "SERVER",
+                  "targetId": "6449d0e8-8e9e-11e7-bb31-be2e44b06b34"
+                },
+                "labels": [
+                  "TEST_API",
+                  "SANDBOX"
+                ],
+                "version": "6449d0e8-8e9e-11e7-bb32-be2e44b00b34",
+                "status": "UPDATED",
+                "ref": {
+                  "groupId": "com.salesforce",
+                  "artifactId": "saleApp",
+                  "version": "2.0.0",
+                  "packaging": "jar"
+                }
+              },
+              {
+                "id": "73894e6e-d9c5-11e6-bf27-cec0c932ce02",
+                "name": "gdriveToSalesforce",
+                "lastModifiedDate": "2016-02-28T16:41:41.090Z",
+                "creationDate": "2016-02-28T16:41:41.090Z",
+                "version": "6449d0e8-8e9e-11e7-bb32-be2e44b00b34",
+                "target": {
+                  "provider": "MC",
+                  "targetId": "6449d0e8-8e9e-11e7-bb31-be2e44b06c34",
+                  "deploymentSettings": {
+                    "memory": "1Gb",
+                    "muleVersion": "3.8.1-Mulesoft"
+                  }
+                },
+                "labels": [
+                  "TEST_API",
+                  "SANDBOX"
+                ],
+                "status": "UPDATED",
+                "ref": {
+                  "groupId": "com.mulesoft",
+                  "artifactId": "someApp",
+                  "version": "1.0.0",
+                  "packaging": "zip"
+                }
+              }
+            ]
+}

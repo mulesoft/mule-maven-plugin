@@ -81,6 +81,10 @@ public abstract class AbstractMuleClient extends AbstractClient {
     return getBusinessGroupIdByBusinessGroupPath();
   }
 
+  public String getEnvId() {
+    return envId;
+  }
+
   // TODO use AuthenticationServiceClient
   public Environment findEnvironmentByName(String name) {
     Environments response = get(baseUri, String.format(ENVIRONMENTS, orgId), Environments.class);
@@ -140,7 +144,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
     return groups.toArray(new String[0]);
   }
 
-  private String getBusinessGroupIdByBusinessGroupPath() {
+  public String getBusinessGroupIdByBusinessGroupPath() {
     String currentOrgId = null;
 
     Organization organizationHierarchy = getOrganizationHierarchy();

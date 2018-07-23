@@ -10,15 +10,21 @@
 
 package org.mule.tools.api.validation.project;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES;
 import static java.lang.String.format;
 import static java.lang.String.join;
+import static java.util.Arrays.asList;
 
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
+import org.mule.tools.api.validation.yaml.PolicyYaml;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.File;
-import java.nio.file.Path;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -26,40 +32,66 @@ import java.util.List;
  */
 public class MulePolicyProjectValidator extends MuleProjectValidator {
 
-  private static final String[] NECESSARY_FILES = {
-      "pom.xml",
-      "mule-artifact.json",
-      "exchange-template-pom.xml",
-      join(File.separator, "src", "main", "mule", "template.xml")
-  };
+  public static final String TEMPLATE_XML = join(File.separator, "src", "main", "mule", "template.xml");
+  public static final String POM_XML = "pom.xml";
+  public static final String MULE_ARTIFACT_JSON = "mule-artifact.json";
+  public static final String EXCHANGE_TEMPLATE_POM_XML = "exchange-template-pom.xml";
+  private final String yamlFileName;
 
   public MulePolicyProjectValidator(ProjectInformation projectInformation, List<SharedLibraryDependency> sharedLibraries,
                                     boolean strictCheck) {
     super(projectInformation, sharedLibraries, strictCheck);
+    yamlFileName = format("%s.yaml", projectInformation.getArtifactId());
   }
 
   @Override
   protected void additionalValidation() throws ValidationException {
-    isPolicyProjectStructureValid(projectInformation.getProjectBaseFolder());
+    isPolicyProjectStructureValid();
     super.additionalValidation();
+
   }
 
-  public void isPolicyProjectStructureValid(Path projectBaseDir) throws ValidationException {
+  public void isPolicyProjectStructureValid() throws ValidationException {
     allFilesPresent();
+    validateYaml();
   }
 
   private void allFilesPresent() throws ValidationException {
-    for (String file : NECESSARY_FILES) {
-      fileExists(projectInformation.getProjectBaseFolder(), file);
+    for (String file : getNecessaryFiles()) {
+      fileExists(getBaseDir(), file);
     }
-    fileExists(projectInformation.getProjectBaseFolder(), format("%s.yaml", projectInformation.getArtifactId()));
   }
 
-  private static void fileExists(Path baseDir, String fileName) throws ValidationException {
-    File file = new File(baseDir.toAbsolutePath().toString(), fileName);
+  private void validateYaml() throws ValidationException {
+    try {
+      ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+      mapper.configure(FAIL_ON_NULL_CREATOR_PROPERTIES, true);
+      mapper.readValue(new File(getBaseDir(), yamlFileName), PolicyYaml.class);
+    } catch (IOException e) {
+      throw new ValidationException(format("Error validating '%s'. %s", yamlFileName, e.getMessage()));
+    }
+  }
+
+  private String getBaseDir() {
+    return projectInformation.getProjectBaseFolder().toAbsolutePath().toString();
+  }
+
+  private List<String> getNecessaryFiles() {
+    return asList(
+                  POM_XML,
+                  MULE_ARTIFACT_JSON,
+                  EXCHANGE_TEMPLATE_POM_XML,
+                  TEMPLATE_XML,
+                  yamlFileName);
+  };
+
+  private static void fileExists(String baseDir, String fileName) throws ValidationException {
+    File file = new File(baseDir, fileName);
     if (!file.exists()) {
       throw new ValidationException(format("The file %s should be present.", fileName));
     }
   }
+
+
 
 }

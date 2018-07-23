@@ -1,4 +1,4 @@
-id: http-caching
+bleeep: ""
 name: HTTP Caching
 supportedPoliciesVersions: '>=v1'
 description: Provides caching service for HTTP requests.

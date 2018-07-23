@@ -38,6 +38,7 @@ public class MulePolicyProjectValidatorTest {
   private static final String MISSING_TEMPLATE_XML = concatPath(RESOURCES_FOLDER, "missing-template-xml");
   private static final String MISSING_YAML = concatPath(RESOURCES_FOLDER, "missing-yaml");
   private static final String MISSING_YAML2 = concatPath(RESOURCES_FOLDER, "missing-yaml2");
+  private static final String INVALID_YAML = concatPath(RESOURCES_FOLDER, "invalid-yaml");
 
   private static final String GROUP_ID = "com.mule.anypoint.api.manager";
   private static final String ARTIFACT_ID = "custom.policy.test";
@@ -89,6 +90,13 @@ public class MulePolicyProjectValidatorTest {
     expectedException.expect(ValidationException.class);
     expectedException.expectMessage("The file " + ARTIFACT_ID_2 + ".yaml should be present.");
     getValidator(ARTIFACT_ID_2, getTestResourceFolder(MISSING_YAML2)).additionalValidation();
+  }
+
+  @Test
+  public void isPolicyProjectStructureIsInvalidWithInvalidYaml() throws ValidationException {
+    expectedException.expect(ValidationException.class);
+    expectedException.expectMessage("Error validating '" + ARTIFACT_ID + ".yaml'. Missing required creator property 'id'");
+    getValidator(getTestResourceFolder(INVALID_YAML)).additionalValidation();
   }
 
   private Path getTestResourceFolder(String folderName) {

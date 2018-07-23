@@ -57,7 +57,7 @@ public class PackagerTestUtils {
   }
 
   public static void assertFolderExist(Path path) {
-    assertThat("The folder " + path.toString() + " should exits", path.toFile().exists(), is(true));
+    assertThat("The folder " + path.toString() + " should exist", path.toFile().exists(), is(true));
   }
 
   public static void assertFolderIsEmpty(Path path) {

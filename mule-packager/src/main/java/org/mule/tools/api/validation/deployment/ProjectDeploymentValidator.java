@@ -34,7 +34,7 @@ public class ProjectDeploymentValidator {
                                                                             MULE_APPLICATION_TEMPLATE.toString());
   // TODO maybe we need only specific things of the project information
   // TODO we should validate exchange here
-  // TODO we should validate that if artifact is present in configuration then the file should exits
+  // TODO we should validate that if artifact is present in configuration then the file should exist
 
   private ProjectInformation projectInformation;
 

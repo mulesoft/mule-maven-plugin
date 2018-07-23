@@ -17,6 +17,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
@@ -77,6 +80,8 @@ public class MuleArtifactContentResolverTest {
       "\n" +
       "\n" +
       "</mule>";
+  private Document documentMock;
+  private Element rootElementMock;
 
   @Before
   public void setUp() throws IOException {
@@ -97,6 +102,9 @@ public class MuleArtifactContentResolverTest {
     javaFolder.mkdirs();
     resourcesFolder.mkdirs();
     testResourcesFolder.mkdirs();
+    documentMock = mock(Document.class);
+    rootElementMock = mock(Element.class);
+    when(documentMock.getRootElement()).thenReturn(rootElementMock);
   }
 
   @Test
@@ -240,5 +248,40 @@ public class MuleArtifactContentResolverTest {
       return join(File.separator, segments);
     }
     return StringUtils.EMPTY;
+  }
+
+  @Test
+  public void hasMuleAsRootElementMuleRoot() {
+    when(rootElementMock.getName()).thenReturn("mule");
+    assertThat("Method should have returned true", resolver.hasMuleAsRootElement(documentMock));
+  }
+
+  @Test
+  public void hasMuleAsRootElementMuleDomainRoot() {
+    when(rootElementMock.getName()).thenReturn("mule-domain");
+    assertThat("Method should have returned true", resolver.hasMuleAsRootElement(documentMock));
+  }
+
+  @Test
+  public void hasMuleAsRootElementOtherThanMuleOrMuleDomainRoot() {
+    when(rootElementMock.getName()).thenReturn("mulesoft");
+    assertThat("Method should have returned false", !resolver.hasMuleAsRootElement(documentMock));
+  }
+
+  @Test
+  public void hasMuleAsRootElementWithNullName() {
+    when(rootElementMock.getName()).thenReturn(null);
+    assertThat("Method should have returned false", !resolver.hasMuleAsRootElement(null));
+  }
+
+  @Test
+  public void hasMuleAsRootElementWithNoRoot() {
+    when(documentMock.getRootElement()).thenReturn(null);
+    assertThat("Method should have returned false", !resolver.hasMuleAsRootElement(documentMock));
+  }
+
+  @Test
+  public void hasMuleAsRootElementWithNullDocument() {
+    assertThat("Method should have returned false", !resolver.hasMuleAsRootElement(null));
   }
 }

@@ -11,6 +11,7 @@
 package org.mule.tools.api.validation.project;
 
 import static java.lang.String.format;
+import static java.lang.String.join;
 
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
@@ -25,7 +26,12 @@ import java.util.List;
  */
 public class MulePolicyProjectValidator extends MuleProjectValidator {
 
-  private static final String[] NECESSARY_FILES = {"pom.xml", "mule-artifact.json"};
+  private static final String[] NECESSARY_FILES = {
+      "pom.xml",
+      "mule-artifact.json",
+      "exchange-template-pom.xml",
+      join(File.separator, "src","main", "mule", "template.xml")
+  };
 
   public MulePolicyProjectValidator(ProjectInformation projectInformation, List<SharedLibraryDependency> sharedLibraries,
                                     boolean strictCheck) {
@@ -51,7 +57,7 @@ public class MulePolicyProjectValidator extends MuleProjectValidator {
   private static void fileExists(String baseDir, String fileName) throws ValidationException {
     File file = new File(baseDir, fileName);
     if (!file.exists()) {
-      throw new ValidationException(format("The file %s should be present", file.getAbsolutePath()));
+      throw new ValidationException(format("The file %s should be present.", fileName));
     }
   }
 

@@ -33,16 +33,16 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
   @Override
   public void doExecute() throws MojoExecutionException {
     getLog().debug("Generating process-classes code...");
-    if (!skipValidation) {
-      try {
-        getLog().debug("Process classes Mule application...");
-        getContentGenerator().copyDescriptorFile();
+    try {
+      getContentGenerator().copyDescriptorFile();
+      if (!skipValidation) {
+        getLog().debug("executing validations in process-classes for Mule application");
         getProjectValidator().isProjectValid(VALIDATE.id());
-      } catch (ValidationException | IOException e) {
-        throw new MojoExecutionException("process-classes exception", e);
+      } else {
+        getLog().debug("skipping process-classes validation for Mule application");
       }
-    } else {
-      getLog().debug("Skipping process-classes  for Mule application");
+    } catch (ValidationException | IOException e) {
+      throw new MojoExecutionException("process-classes exception", e);
     }
   }
 

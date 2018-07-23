@@ -56,7 +56,7 @@ public abstract class ContentGenerator {
   }
 
   public static void checkPathExist(Path path) {
-    checkArgument(path.toFile().exists(), "The path: " + path.toString() + " should exits");
+    checkArgument(path.toFile().exists(), "The path: " + path.toString() + " should exist");
   }
 
   public static void copyFile(Path originPath, Path destinationPath, String destinationFileName) throws IOException {

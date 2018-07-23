@@ -9,6 +9,7 @@
  */
 package org.mule.tools.client;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.AUTHORIZATION_HEADER;
 
 import java.util.ArrayList;
@@ -87,8 +88,16 @@ public abstract class AbstractMuleClient extends AbstractClient {
 
   // TODO use AuthenticationServiceClient
   public Environment findEnvironmentByName(String name) {
-    Environments response = get(baseUri, String.format(ENVIRONMENTS, orgId), Environments.class);
-
+    Environments response = getEnvironments();
+    if (response == null || response.data == null) {
+      StringBuilder message = new StringBuilder();
+      message.append("Please check whether you have the access rights to this business group.");
+      if (isEmpty(businessGroupName)) {
+        message
+            .append(" Please set the businessGroup in the plugin configuration in case your user have access only within a business unit.");
+      }
+      throw new RuntimeException(message.toString());
+    }
     for (int i = 0; i < response.data.length; i++) {
       if (name.equals(response.data[i].name)) {
         return response.data[i];
@@ -111,7 +120,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
   }
 
   protected String[] createBusinessGroupPath() {
-    if (StringUtils.isEmpty(businessGroupName)) {
+    if (isEmpty(businessGroupName)) {
       return new String[0];
     }
 
@@ -192,5 +201,9 @@ public abstract class AbstractMuleClient extends AbstractClient {
     }
 
     return bearerToken;
+  }
+
+  public Environments getEnvironments() {
+    return get(baseUri, String.format(ENVIRONMENTS, orgId), Environments.class);
   }
 }

@@ -6,11 +6,18 @@
  */
 package org.mule.tools.client;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.mule.tools.client.arm.model.Environments;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
+
 
 public class AbstractMuleClientTestCase {
 
@@ -18,6 +25,9 @@ public class AbstractMuleClientTestCase {
 
   private AbstractMuleClient client;
   private CloudHubDeployment cloudHubDeployment;
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   private AbstractMuleClient createClient(String businessgroup) {
     cloudHubDeployment = new CloudHubDeployment();
@@ -90,6 +100,26 @@ public class AbstractMuleClientTestCase {
     assertThat(result.length, equalTo(2));
     assertThat(result[0], equalTo("root"));
     assertThat(result[1], equalTo("leaf"));
+  }
+
+  @Test
+  public void findEnvironmentByNameNoBusinessGroupAndNotPartOfMaster() {
+    expectedException.expect(RuntimeException.class);
+    expectedException
+        .expectMessage("Please set the businessGroup in the plugin configuration in case your user have access only within a business unit.");
+    client = spy(createClient(EMPTY));
+    doReturn(new Environments()).when(client).getEnvironments();
+    client.findEnvironmentByName("Production");
+  }
+
+  @Test
+  public void findEnvironmentByNameNoBusinessGroup() {
+    expectedException.expect(RuntimeException.class);
+    expectedException
+        .expectMessage("Please set the businessGroup in the plugin configuration in case your user have access only within a business unit.");
+    client = spy(createClient(EMPTY));
+    doReturn(null).when(client).getEnvironments();
+    client.findEnvironmentByName("Production");
   }
 
 }

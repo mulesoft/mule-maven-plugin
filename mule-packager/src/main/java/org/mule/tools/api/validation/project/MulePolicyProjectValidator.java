@@ -30,7 +30,7 @@ public class MulePolicyProjectValidator extends MuleProjectValidator {
       "pom.xml",
       "mule-artifact.json",
       "exchange-template-pom.xml",
-      join(File.separator, "src","main", "mule", "template.xml")
+      join(File.separator, "src", "main", "mule", "template.xml")
   };
 
   public MulePolicyProjectValidator(ProjectInformation projectInformation, List<SharedLibraryDependency> sharedLibraries,
@@ -44,18 +44,19 @@ public class MulePolicyProjectValidator extends MuleProjectValidator {
     super.additionalValidation();
   }
 
-  public static void isPolicyProjectStructureValid(Path projectBaseDir) throws ValidationException {
-    allFilesPresent(projectBaseDir);
+  public void isPolicyProjectStructureValid(Path projectBaseDir) throws ValidationException {
+    allFilesPresent();
   }
 
-  private static void allFilesPresent(Path projectBaseDir) throws ValidationException {
+  private void allFilesPresent() throws ValidationException {
     for (String file : NECESSARY_FILES) {
-      fileExists(projectBaseDir.toAbsolutePath().toString(), file);
+      fileExists(projectInformation.getProjectBaseFolder(), file);
     }
+    fileExists(projectInformation.getProjectBaseFolder(), format("%s.yaml", projectInformation.getArtifactId()));
   }
 
-  private static void fileExists(String baseDir, String fileName) throws ValidationException {
-    File file = new File(baseDir, fileName);
+  private static void fileExists(Path baseDir, String fileName) throws ValidationException {
+    File file = new File(baseDir.toAbsolutePath().toString(), fileName);
     if (!file.exists()) {
       throw new ValidationException(format("The file %s should be present.", fileName));
     }

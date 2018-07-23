@@ -12,16 +12,22 @@ package org.mule.tools.api.validation.project;
 
 import static java.lang.String.join;
 import static java.nio.file.Paths.get;
-import static org.mule.tools.api.validation.project.MulePolicyProjectValidator.isPolicyProjectStructureValid;
+import static org.mockito.Mockito.mock;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_POLICY;
 
 import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.packager.DefaultProjectInformation;
+import org.mule.tools.api.packager.Pom;
+import org.mule.tools.api.util.Project;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 public class MulePolicyProjectValidatorTest {
 
@@ -33,48 +39,56 @@ public class MulePolicyProjectValidatorTest {
   private static final String MISSING_YAML = concatPath(RESOURCES_FOLDER, "missing-yaml");
   private static final String MISSING_YAML2 = concatPath(RESOURCES_FOLDER, "missing-yaml2");
 
+  private static final String GROUP_ID = "com.mule.anypoint.api.manager";
+  private static final String ARTIFACT_ID = "custom.policy.test";
+  private static final String ARTIFACT_ID_2 = "custom.policy.test2";
+  private static final String VERSION = "1.0.0-SNAPSHOT";
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
+  @Rule
+  public TemporaryFolder projectBuildFolder = new TemporaryFolder();
+
+
   @Test
   public void isPolicyProjectStructureIsValid() throws ValidationException {
-    isPolicyProjectStructureValid(getTestResourceFolder(HAPPY_PATH));
+    getValidator(getTestResourceFolder(HAPPY_PATH)).additionalValidation();
   }
 
   @Test
   public void isPolicyProjectStructureIsInvalidWithoutMuleArtifact() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException.expectMessage("The file mule-artifact.json should be present.");
-    isPolicyProjectStructureValid(getTestResourceFolder(MISSING_MULE_ARTIFACT));
+    getValidator(getTestResourceFolder(MISSING_MULE_ARTIFACT)).additionalValidation();
   }
 
   @Test
   public void isPolicyProjectStructureIsInvalidWithoutExchangeTemplatePom() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException.expectMessage("The file exchange-template-pom.xml should be present.");
-    isPolicyProjectStructureValid(getTestResourceFolder(MISSING_EXCHANGE_TEMPLATE_POM));
+    getValidator(getTestResourceFolder(MISSING_EXCHANGE_TEMPLATE_POM)).additionalValidation();
   }
 
   @Test
   public void isPolicyProjectStructureIsInvalidWithoutTemplateXML() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException.expectMessage("The file " + concatPath("src", "main", "mule", "template.xml") + " should be present.");
-    isPolicyProjectStructureValid(getTestResourceFolder(MISSING_TEMPLATE_XML));
+    getValidator(getTestResourceFolder(MISSING_TEMPLATE_XML)).additionalValidation();
   }
 
   @Test
   public void isPolicyProjectStructureIsInvalidWithMissingYaml() throws ValidationException {
     expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("The file custom.policy.test.yaml should be present.");
-    isPolicyProjectStructureValid(getTestResourceFolder(MISSING_YAML));
+    expectedException.expectMessage("The file " + ARTIFACT_ID + ".yaml should be present.");
+    getValidator(getTestResourceFolder(MISSING_YAML)).additionalValidation();
   }
 
   @Test
   public void isPolicyProjectStructureIsInvalidWithMissingYaml2() throws ValidationException {
     expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("The file custom.policy.test2.yaml should be present.");
-    isPolicyProjectStructureValid(getTestResourceFolder(MISSING_YAML2));
+    expectedException.expectMessage("The file " + ARTIFACT_ID_2 + ".yaml should be present.");
+    getValidator(ARTIFACT_ID_2, getTestResourceFolder(MISSING_YAML2)).additionalValidation();
   }
 
   private Path getTestResourceFolder(String folderName) {
@@ -85,4 +99,23 @@ public class MulePolicyProjectValidatorTest {
     return join(File.separator, parts);
   }
 
+  private MuleProjectValidator getValidator(Path basePath) {
+    return getValidator(ARTIFACT_ID, basePath);
+  }
+
+  private MuleProjectValidator getValidator(String artifactId, Path basePath) {
+    DefaultProjectInformation.Builder builder = new DefaultProjectInformation.Builder()
+        .withGroupId(GROUP_ID)
+        .withArtifactId(artifactId)
+        .withVersion(VERSION)
+        .withPackaging(MULE_POLICY.toString())
+        .withProjectBaseFolder(basePath)
+        .withBuildDirectory(projectBuildFolder.getRoot().toPath())
+        .setTestProject(false)
+        .withResolvedPom(mock(Pom.class))
+        .withDependencyProject(mock(Project.class));
+
+    return new MulePolicyProjectValidator(builder.build(), new ArrayList<>(), false);
+
+  }
 }

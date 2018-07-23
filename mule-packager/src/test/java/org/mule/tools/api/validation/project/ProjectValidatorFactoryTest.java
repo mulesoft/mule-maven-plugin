@@ -78,6 +78,7 @@ public class ProjectValidatorFactoryTest {
     AbstractProjectValidator actualProjectValidator = ProjectValidatorFactory
         .create(defaultProjectInformationMock, aetherMavenClientMock, sharedLibraries, strictCheck);
 
-    assertThat("Project validator type is not the expected", actualProjectValidator, instanceOf(MuleProjectValidator.class));
+    assertThat("Project validator type is not the expected", actualProjectValidator,
+               instanceOf(MulePolicyProjectValidator.class));
   }
 }

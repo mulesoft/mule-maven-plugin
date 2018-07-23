@@ -20,6 +20,7 @@ import org.mule.tools.api.packager.packaging.PackagingType;
 import java.util.List;
 
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BUNDLE;
+import static org.mule.tools.api.packager.packaging.PackagingType.MULE_POLICY;
 
 public class ProjectValidatorFactory {
 
@@ -30,6 +31,8 @@ public class ProjectValidatorFactory {
 
     if (PackagingType.fromString(defaultProjectInformation.getPackaging()).equals(MULE_DOMAIN_BUNDLE)) {
       return new DomainBundleProjectValidator(defaultProjectInformation, aetherMavenClient);
+    } else if (PackagingType.fromString(defaultProjectInformation.getPackaging()).equals(MULE_POLICY)) {
+      return new MulePolicyProjectValidator(defaultProjectInformation, sharedLibraries, strictCheck);
     }
 
     return new MuleProjectValidator(defaultProjectInformation, sharedLibraries, strictCheck);

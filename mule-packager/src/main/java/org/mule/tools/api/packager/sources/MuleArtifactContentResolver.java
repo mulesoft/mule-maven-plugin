@@ -13,6 +13,7 @@ package org.mule.tools.api.packager.sources;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.toList;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -122,7 +123,15 @@ public class MuleArtifactContentResolver {
     } catch (JDOMException | IOException e) {
       return false;
     }
-    return doc != null && "mule".equals(doc.getRootElement().getName());
+    return hasMuleAsRootElement(doc);
+  }
+
+  protected boolean hasMuleAsRootElement(Document doc) {
+    if (doc != null && doc.getRootElement() != null) {
+      String rootElementName = doc.getRootElement().getName();
+      return StringUtils.equals(rootElementName, "mule") || StringUtils.equals(rootElementName, "mule-domain");
+    }
+    return false;
   }
 
   private org.jdom2.Document generateDocument(Path filePath) throws JDOMException, IOException {

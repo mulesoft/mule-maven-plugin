@@ -34,7 +34,6 @@ public class MulePolicyProjectValidatorTest {
   private static final String RESOURCES_FOLDER = "policy-validation";
   private static final String HAPPY_PATH = concatPath(RESOURCES_FOLDER, "happy-path");
   private static final String MISSING_MULE_ARTIFACT = concatPath(RESOURCES_FOLDER, "missing-mule-artifact");
-  private static final String MISSING_EXCHANGE_TEMPLATE_POM = concatPath(RESOURCES_FOLDER, "missing-exchange-template-pom");
   private static final String MISSING_TEMPLATE_XML = concatPath(RESOURCES_FOLDER, "missing-template-xml");
   private static final String MISSING_YAML = concatPath(RESOURCES_FOLDER, "missing-yaml");
   private static final String MISSING_YAML2 = concatPath(RESOURCES_FOLDER, "missing-yaml2");

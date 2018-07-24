@@ -126,6 +126,13 @@ public class PolicyYamlValidationTest {
     testYaml("missing-value.yaml");
   }
 
+  @Test
+  public void missingParameterFromConfigurationItemFailsParsing() throws IOException {
+    expectedException.expect(IOException.class);
+    expectMissingProperty("propertyName");
+    testYaml("missing-configurationProperty.yaml");
+  }
+
   private void expectMissingProperty(String property) {
     expectedException.expectMessage("Missing required creator property '" + property + "'");
   }

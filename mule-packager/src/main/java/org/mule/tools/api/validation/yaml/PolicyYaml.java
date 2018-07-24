@@ -14,22 +14,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
-import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PolicyYaml {
-
-  private String id;
-  private String name;
-  private String supportedPoliciesVersions;
-  private String description;
-  private String category;
-  private String type;
-  private Boolean resourceLevelSupported;
-  private Boolean standalone;
-  private List<String> requiredCharacteristics;
-  private List<String> providedCharacteristics;
-  private List<Map<String, Object>> configuration;
 
   @JsonCreator
   public PolicyYaml(
@@ -43,16 +30,14 @@ public class PolicyYaml {
                     @JsonProperty(value = "standalone", required = true) Boolean standalone,
                     @JsonProperty(value = "requiredCharacteristics", required = true) List<String> requiredCharacteristics,
                     @JsonProperty(value = "providedCharacteristics", required = true) List<String> providedCharacteristics,
-                    @JsonProperty(value = "configuration", required = true) List<Map<String, Object>> configuration) {
-    this.name = name;
-    this.supportedPoliciesVersions = supportedPoliciesVersions;
-    this.description = description;
-    this.category = category;
-    this.type = type;
-    this.resourceLevelSupported = resourceLevelSupported;
-    this.standalone = standalone;
-    this.requiredCharacteristics = requiredCharacteristics;
-    this.providedCharacteristics = providedCharacteristics;
-    this.configuration = configuration;
+                    @JsonProperty(value = "configuration", required = true) List<ConfigurationProperty> configuration) {}
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static class ConfigurationProperty {
+
+    @JsonCreator
+    public ConfigurationProperty(
+                                 @JsonProperty(value = "propertyName", required = true) String propertyName,
+                                 @JsonProperty(value = "type", required = true) String type) {}
   }
 }

@@ -9,11 +9,23 @@
  */
 package org.mule.tools.client.fabric.model;
 
-import java.util.Map;
+import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
 
 public class Target {
 
   public String targetId;
   public String provider;
-  public Map<String, String> deploymentSettings;
+  public RuntimeFabricDeploymentSettings deploymentSettings;
+
+  public void setTargetId(String targetId) {
+    this.targetId = targetId;
+  }
+
+  public void setProvider(String provider) {
+    this.provider = provider;
+  }
+
+  public void setDeploymentSettings(RuntimeFabricDeploymentSettings deploymentSettings) {
+    this.deploymentSettings = deploymentSettings;
+  }
 }

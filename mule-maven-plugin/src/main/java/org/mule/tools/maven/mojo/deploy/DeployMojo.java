@@ -24,9 +24,9 @@ import static org.mule.tools.validation.DeploymentValidatorFactory.createDeploym
 
 /**
  * Maven plugin to deploy Mule applications to different kind of servers: Standalone (both Community and Enterprise), Clustered,
- * Anypoint Runtime Manager and CloudHub. Main uses are running integration tests and deploying applications. Some of the features
+ * Anypoint Runtime Manager, CloudHub and Runtime Fabric. Main uses are running integration tests and deploying applications. Some of the features
  * are: Download Mule Standalone from a Maven Repository and install it locally. Deploy a Mule application to a server. Undeploy a
- * Mule appliction. Assemble a Mule cluster and deploy applications.
+ * Mule application. Assemble a Mule cluster and deploy applications.
  *
  * @see UndeployMojo
  * @see MuleProcessController

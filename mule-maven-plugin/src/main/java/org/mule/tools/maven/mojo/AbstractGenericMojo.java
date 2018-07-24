@@ -27,6 +27,7 @@ import org.mule.tools.model.Deployment;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
+import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
 import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
 
@@ -61,6 +62,9 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
 
   @Parameter
   protected AgentDeployment agentDeployment;
+
+  @Parameter
+  protected RuntimeFabricDeployment runtimeFabricDeployment;
 
   @Parameter
   protected ClusterDeployment clusterDeployment;
@@ -132,6 +136,10 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
 
   public void setClusterDeployment(ClusterDeployment clusterDeployment) {
     this.clusterDeployment = clusterDeployment;
+  }
+
+  public void setRuntimeFabricDeployment(RuntimeFabricDeployment runtimeFabricDeployment) {
+    this.runtimeFabricDeployment = runtimeFabricDeployment;
   }
 
   public void setSession(MavenSession session) {
@@ -213,6 +221,7 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   }
 
   public List<Deployment> getDeployments() {
-    return Arrays.asList(cloudHubDeployment, clusterDeployment, agentDeployment, armDeployment, standaloneDeployment);
+    return Arrays.asList(cloudHubDeployment, clusterDeployment, agentDeployment, armDeployment, standaloneDeployment,
+                         runtimeFabricDeployment);
   }
 }

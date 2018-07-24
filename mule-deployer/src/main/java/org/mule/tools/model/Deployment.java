@@ -46,6 +46,10 @@ public abstract class Deployment {
 
   private String packaging;
 
+  private String artifactId;
+  private String groupId;
+  private String version;
+
   /**
    * Application file to be deployed.
    *
@@ -163,5 +167,33 @@ public abstract class Deployment {
     if (isNotBlank(deploymentTimeout)) {
       setDeploymentTimeout(Long.valueOf(deploymentTimeout));
     }
+
+    setArtifactId(project.getArtifactId());
+    setGroupId(project.getGroupId());
+    setVersion(project.getVersion());
+  }
+
+  public void setArtifactId(String artifactId) {
+    this.artifactId = artifactId;
+  }
+
+  public void setGroupId(String groupId) {
+    this.groupId = groupId;
+  }
+
+  public void setVersion(String version) {
+    this.version = version;
+  }
+
+  public String getArtifactId() {
+    return artifactId;
+  }
+
+  public String getGroupId() {
+    return groupId;
+  }
+
+  public String getVersion() {
+    return version;
   }
 }

@@ -18,4 +18,20 @@ public class ApplicationRequest {
   public String desiredState;
   public Map<String, String> configuration;
   public List<AssetReference> assets;
+
+  public void setRef(AssetReference ref) {
+    this.ref = ref;
+  }
+
+  public void setDesiredState(String desiredState) {
+    this.desiredState = desiredState;
+  }
+
+  public void setConfiguration(Map<String, String> configuration) {
+    this.configuration = configuration;
+  }
+
+  public void setAssets(List<AssetReference> assets) {
+    this.assets = assets;
+  }
 }

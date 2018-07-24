@@ -14,10 +14,12 @@ import org.mule.tools.model.Deployment;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
+import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
 import org.mule.tools.validation.agent.AgentDeploymentValidator;
 import org.mule.tools.validation.arm.ArmDeploymentValidator;
 import org.mule.tools.validation.cloudhub.CloudHubDeploymentValidator;
+import org.mule.tools.validation.fabric.RuntimeFabricDeploymentValidator;
 import org.mule.tools.validation.standalone.StandaloneDeploymentValidator;
 
 /**
@@ -27,7 +29,7 @@ public class DeploymentValidatorFactory {
 
   /**
    * Creates a {@link AbstractDeploymentValidator} for the given deployment.
-   * 
+   *
    * @param deployment The deployment object.
    * @return A {@link AbstractDeploymentValidator}.
    * @throws DeploymentException if the deployment type is not supported.
@@ -41,6 +43,8 @@ public class DeploymentValidatorFactory {
       return new CloudHubDeploymentValidator(deployment);
     } else if (deployment instanceof ArmDeployment) {
       return new ArmDeploymentValidator(deployment);
+    } else if (deployment instanceof RuntimeFabricDeployment) {
+      return new RuntimeFabricDeploymentValidator(deployment);
     } else {
       throw new DeploymentException("Cannot configuration is not supported");
     }

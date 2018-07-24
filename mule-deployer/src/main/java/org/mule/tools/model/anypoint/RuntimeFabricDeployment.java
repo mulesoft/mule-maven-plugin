@@ -22,82 +22,50 @@ public class RuntimeFabricDeployment extends AnypointDeployment {
   @Parameter
   protected String target;
 
-  @Parameter(defaultValue = "1")
-  protected Integer replicas;
-
-  @Parameter(defaultValue = "false")
-  protected Boolean enableRuntimeClusterMode;
+  @Parameter
+  protected RuntimeFabricDeploymentSettings deploymentSettings;
 
   @Parameter
-  protected Double cores;
-
-  @Parameter
-  protected Double memory;
-
-  @Parameter
-  protected Map<String, String> properties = new HashMap<>();
+  protected String provider;
 
   public String getTarget() {
     return target;
   }
 
-  public void setTarget(String target) {
-    this.target = target;
+  public void setTarget(String targetId) {
+    this.target = targetId;
   }
 
-  public Integer getReplicas() {
-    return replicas;
+  public RuntimeFabricDeploymentSettings getDeploymentSettings() {
+    return deploymentSettings;
   }
 
-  public void setReplicas(Integer replicas) {
-    this.replicas = replicas;
+  public void setDeploymentSettings(RuntimeFabricDeploymentSettings settings) {
+    this.deploymentSettings = settings;
   }
 
-  public Boolean getEnableRuntimeClusterMode() {
-    return enableRuntimeClusterMode;
+  public String getProvider() {
+    return provider;
   }
 
-  public void setEnableRuntimeClusterMode(Boolean enableRuntimeClusterMode) {
-    this.enableRuntimeClusterMode = enableRuntimeClusterMode;
+  public void setProvider(String provider) {
+    this.provider = provider;
   }
 
-  public Double getCores() {
-    return cores;
-  }
-
-  public void setCores(Double cores) {
-    this.cores = cores;
-  }
-
-  public Double getMemory() {
-    return memory;
-  }
-
-  public void setMemory(Double memory) {
-    this.memory = memory;
-  }
-
-  public Map<String, String> getProperties() {
-    return properties;
-  }
-
-  public void setProperties(Map<String, String> properties) {
-    this.properties = properties;
-  }
 
   public void setEnvironmentSpecificValues() throws DeploymentException {
     super.setEnvironmentSpecificValues();
-    if (isEmpty(target)) {
+    if (isEmpty(getTarget())) {
       throw new DeploymentException("Invalid deployment configuration, missing target value. Please set it in the plugin configuration");
     }
-    if (getEnableRuntimeClusterMode() && getReplicas().equals(1)) {
-      throw new DeploymentException("Invalid deployment configuration, replicas must be bigger than 1 to enable Runtime Cluster Mode. Please either set enableRuntimeClusterMode to false or increase the number of replicas");
+
+    if (isEmpty(getProvider())) {
+      throw new DeploymentException("Invalid deployment configuration, missing provider value. Please set the provider as MC, CLUSTER or SERVER");
     }
-    if (getCores() == null) {
-      throw new DeploymentException("Invalid deployment configuration. Please set the number of cores in vCPU");
+    if (getDeploymentSettings() == null) {
+      setDeploymentSettings(new RuntimeFabricDeploymentSettings());
     }
-    if (getMemory() == null) {
-      throw new DeploymentException("Invalid deployment configuration. Please set the amount of memory in GB");
-    }
+    getDeploymentSettings().setRuntimeVersion(muleVersion);
+    getDeploymentSettings().setEnvironmentSpecificValues();
   }
 }

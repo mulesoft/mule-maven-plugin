@@ -14,30 +14,27 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mule.tools.client.core.exception.DeploymentException;
-
 import static org.junit.rules.ExpectedException.none;
+import static org.powermock.api.mockito.PowerMockito.mock;
 
 public class RuntimeFabricDeploymentTest {
 
-  public static final double CORES = 0.1;
   private static final String TARGET_NAME = "target";
-  public static final double MEMORY = 0.5;
-  public static final int REPLICAS = 1;
-  public static final boolean ENABLE_RUNTIME_CLUSTER_MODE = false;
+  public static final String PROVIDER = "SERVER";
   private RuntimeFabricDeployment fabricDeployment;
+
 
   @Rule
   public ExpectedException expectedException = none();
+  private RuntimeFabricDeploymentSettings deploymentSettingsMock;
 
   @Before
   public void setUp() {
     fabricDeployment = new RuntimeFabricDeployment();
     fabricDeployment.setTarget(TARGET_NAME);
-    fabricDeployment.setCores(CORES);
-    fabricDeployment.setMemory(MEMORY);
-    // These values are injected by Maven
-    fabricDeployment.setReplicas(REPLICAS);
-    fabricDeployment.setEnableRuntimeClusterMode(ENABLE_RUNTIME_CLUSTER_MODE);
+    fabricDeployment.setProvider(PROVIDER);
+    deploymentSettingsMock = mock(RuntimeFabricDeploymentSettings.class);
+    fabricDeployment.setDeploymentSettings(deploymentSettingsMock);
   }
 
   @Test
@@ -49,38 +46,15 @@ public class RuntimeFabricDeploymentTest {
   }
 
   @Test
-  public void getReplicas() throws DeploymentException {
+  public void getProvider() throws DeploymentException {
     expectedException.expect(DeploymentException.class);
-    expectedException.expectMessage("replicas must be bigger than 1 to enable Runtime Cluster Mode");
-    fabricDeployment.setEnableRuntimeClusterMode(true);
-    fabricDeployment.setEnvironmentSpecificValues();
-  }
-
-  @Test
-  public void getCores() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
-    expectedException.expectMessage("Please set the number of cores in vCPU");
-    fabricDeployment.setCores(null);
-    fabricDeployment.setEnvironmentSpecificValues();
-  }
-
-  @Test
-  public void getMemory() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
-    expectedException.expectMessage("Please set the amount of memory in GB");
-    fabricDeployment.setMemory(null);
+    expectedException.expectMessage("Please set the provider as MC, CLUSTER or SERVER");
+    fabricDeployment.setProvider(null);
     fabricDeployment.setEnvironmentSpecificValues();
   }
 
   @Test
   public void validReplicasAndEnableClusterDefaultConfiguration() throws DeploymentException {
-    fabricDeployment.setEnvironmentSpecificValues();
-  }
-
-  @Test
-  public void validMultipleReplicasAndEnableClusterDefaultTrueConfiguration() throws DeploymentException {
-    fabricDeployment.setReplicas(2);
-    fabricDeployment.setEnableRuntimeClusterMode(true);
     fabricDeployment.setEnvironmentSpecificValues();
   }
 

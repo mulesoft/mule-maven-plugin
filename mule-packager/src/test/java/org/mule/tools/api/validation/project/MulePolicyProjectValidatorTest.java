@@ -65,13 +65,6 @@ public class MulePolicyProjectValidatorTest {
   }
 
   @Test
-  public void isPolicyProjectStructureIsInvalidWithoutExchangeTemplatePom() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("The file exchange-template-pom.xml should be present.");
-    getValidator(getTestResourceFolder(MISSING_EXCHANGE_TEMPLATE_POM)).additionalValidation();
-  }
-
-  @Test
   public void isPolicyProjectStructureIsInvalidWithoutTemplateXML() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException.expectMessage("The file " + concatPath("src", "main", "mule", "template.xml") + " should be present.");

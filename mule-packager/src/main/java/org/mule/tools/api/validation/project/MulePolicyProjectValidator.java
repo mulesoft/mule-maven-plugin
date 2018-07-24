@@ -35,7 +35,6 @@ public class MulePolicyProjectValidator extends MuleProjectValidator {
   public static final String TEMPLATE_XML = join(File.separator, "src", "main", "mule", "template.xml");
   public static final String POM_XML = "pom.xml";
   public static final String MULE_ARTIFACT_JSON = "mule-artifact.json";
-  public static final String EXCHANGE_TEMPLATE_POM_XML = "exchange-template-pom.xml";
   private final String yamlFileName;
 
   public MulePolicyProjectValidator(ProjectInformation projectInformation, List<SharedLibraryDependency> sharedLibraries,
@@ -80,7 +79,6 @@ public class MulePolicyProjectValidator extends MuleProjectValidator {
     return asList(
                   POM_XML,
                   MULE_ARTIFACT_JSON,
-                  EXCHANGE_TEMPLATE_POM_XML,
                   TEMPLATE_XML,
                   yamlFileName);
   };

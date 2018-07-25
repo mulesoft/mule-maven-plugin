@@ -1,0 +1,10 @@
+id: test
+name: test
+supportedPoliciesVersions: '>=v1'
+category: Custom
+type: custom
+resourceLevelSupported: true
+standalone: true
+requiredCharacteristics: []
+providedCharacteristics: []
+configuration: []

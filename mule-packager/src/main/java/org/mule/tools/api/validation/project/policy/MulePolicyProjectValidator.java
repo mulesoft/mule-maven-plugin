@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.validation.project;
+package org.mule.tools.api.validation.project.policy;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES;
 import static java.lang.String.format;
@@ -18,7 +18,7 @@ import static java.util.Arrays.asList;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
-import org.mule.tools.api.validation.yaml.PolicyYaml;
+import org.mule.tools.api.validation.project.MuleProjectValidator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -53,6 +53,7 @@ public class MulePolicyProjectValidator extends MuleProjectValidator {
   public void isPolicyProjectStructureValid() throws ValidationException {
     allFilesPresent();
     validateYaml();
+    validateJson();
   }
 
   private void allFilesPresent() throws ValidationException {
@@ -69,6 +70,10 @@ public class MulePolicyProjectValidator extends MuleProjectValidator {
     } catch (IOException e) {
       throw new ValidationException(format("Error validating '%s'. %s", yamlFileName, e.getMessage()));
     }
+  }
+
+  private void validateJson() throws ValidationException {
+    PolicyMuleArtifactJsonValidator.validate(projectInformation, new File(getBaseDir(), MULE_ARTIFACT_JSON));
   }
 
   private String getBaseDir() {

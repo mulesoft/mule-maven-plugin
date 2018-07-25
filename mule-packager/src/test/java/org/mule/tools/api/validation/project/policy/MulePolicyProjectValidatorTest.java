@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.validation.project;
+package org.mule.tools.api.validation.project.policy;
 
 import static java.lang.String.join;
 import static java.nio.file.Paths.get;
@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
 
 public class MulePolicyProjectValidatorTest {
 
@@ -46,10 +45,6 @@ public class MulePolicyProjectValidatorTest {
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
-
-  @Rule
-  public TemporaryFolder projectBuildFolder = new TemporaryFolder();
-
 
   @Test
   public void isPolicyProjectStructureIsValid() throws ValidationException {
@@ -99,18 +94,18 @@ public class MulePolicyProjectValidatorTest {
     return join(File.separator, parts);
   }
 
-  private MuleProjectValidator getValidator(Path basePath) {
+  private MulePolicyProjectValidator getValidator(Path basePath) {
     return getValidator(ARTIFACT_ID, basePath);
   }
 
-  private MuleProjectValidator getValidator(String artifactId, Path basePath) {
+  private MulePolicyProjectValidator getValidator(String artifactId, Path basePath) {
     DefaultProjectInformation.Builder builder = new DefaultProjectInformation.Builder()
         .withGroupId(GROUP_ID)
         .withArtifactId(artifactId)
         .withVersion(VERSION)
         .withPackaging(MULE_POLICY.toString())
         .withProjectBaseFolder(basePath)
-        .withBuildDirectory(projectBuildFolder.getRoot().toPath())
+        .withBuildDirectory(basePath)
         .setTestProject(false)
         .withResolvedPom(mock(Pom.class))
         .withDependencyProject(mock(Project.class));

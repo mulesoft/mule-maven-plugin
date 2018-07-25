@@ -10,18 +10,20 @@
 
 package org.mule.tools.api.validation.project;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mule.maven.client.internal.AetherMavenClient;
-import org.mule.tools.api.packager.DefaultProjectInformation;
-import org.mule.tools.api.packager.packaging.PackagingType;
-
-import java.util.ArrayList;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.tools.api.packager.DefaultProjectInformation;
+import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.validation.project.policy.MulePolicyProjectValidator;
+
+import java.util.ArrayList;
+
+import org.junit.Before;
+import org.junit.Test;
 
 public class ProjectValidatorFactoryTest {
 

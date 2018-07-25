@@ -12,11 +12,6 @@ package org.mule.tools.api.packager.sources;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.toList;
-
-import org.apache.commons.lang3.StringUtils;
-import org.jdom2.Document;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
@@ -29,12 +24,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.lang3.StringUtils;
+import org.jdom2.Document;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 
 /**
  * Resolves the content of resources defined in mule-artifact.json based on the project base folder.
@@ -42,6 +40,7 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 public class MuleArtifactContentResolver {
 
   private static final String CONFIG_FILE_EXTENSION = ".xml";
+  public static final String CLASS_PATH_SEPARATOR = "/";
 
   private final ProjectStructure projectStructure;
 
@@ -187,7 +186,7 @@ public class MuleArtifactContentResolver {
   }
 
   public static String escapeSlashes(String p) {
-    return p.replace("\\", "/");
+    return p.replace("\\", CLASS_PATH_SEPARATOR);
   }
 
   public List<BundleDependency> getBundleDependencies() {

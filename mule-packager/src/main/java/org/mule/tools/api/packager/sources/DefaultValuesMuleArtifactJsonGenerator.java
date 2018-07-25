@@ -14,26 +14,15 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.mule.maven.client.api.model.BundleScope.COMPILE;
-import static org.mule.runtime.internal.dsl.DslConstants.CORE_NAMESPACE;
 import static org.mule.runtime.internal.dsl.DslConstants.EE_NAMESPACE;
+import static org.mule.tools.api.packager.sources.MuleArtifactContentResolver.CLASS_PATH_SEPARATOR;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
-
-import com.google.gson.Gson;
-import org.apache.commons.io.IOUtils;
-import org.codehaus.plexus.util.StringUtils;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleScope;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptorBuilder;
 import org.mule.runtime.api.deployment.meta.Product;
 import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
@@ -46,7 +35,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,9 +47,12 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import sun.tools.jar.resources.jar;
-
-import javax.naming.Name;
+import org.apache.commons.io.IOUtils;
+import org.codehaus.plexus.util.StringUtils;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 
 /**
  * Generates default value for any non-defined fields in a mule-artifact.json file
@@ -73,6 +64,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
   public static final String EXPORTED_PACKAGES = "exportedPackages";
   public static final String EXPORTED_RESOURCES = "exportedResources";
   public static final String COMPILED_JAVA_EXTENSION = "class";
+  public static final String PACKAGE_SEPARATOR = ".";
 
   /**
    * Generates the default value for every non-defined fields in a mule-artifact.json file during build time and updates
@@ -331,6 +323,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
             return parent != null ? parent.toString() : "";
           })
           .map(MuleArtifactContentResolver::escapeSlashes)
+          .map(s -> s.replace(CLASS_PATH_SEPARATOR, PACKAGE_SEPARATOR))
           .distinct()
           .collect(Collectors.toList());
       //look for all the resources (files that are not java compiled classes)

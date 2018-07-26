@@ -37,7 +37,7 @@ public class CompileMojoTest extends MojoTest implements SettingsConfigurator {
     verifier.executeGoal(GOAL);
     File expectedStructure = getExpectedStructure();
     assertThat("The directory structure is different from the expected", targetFolder,
-               hasSameTreeStructure(expectedStructure, excludes));
+               hasSameTreeStructure(expectedStructure, excludesCompile));
     verifier.verifyErrorFreeLog();
   }
 }

@@ -12,7 +12,7 @@ package integration.test.mojo;
 import static integration.FileTreeMatcher.hasSameTreeStructure;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.core.Is.is;
+import static org.mule.tools.api.packager.sources.DefaultValuesMuleArtifactJsonGenerator.DEFAULT_PACKAGE_EXPORT;
 import static org.mule.tools.api.packager.sources.DefaultValuesMuleArtifactJsonGenerator.EXPORTED_PACKAGES;
 import static org.mule.tools.api.packager.sources.DefaultValuesMuleArtifactJsonGenerator.EXPORTED_RESOURCES;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
@@ -24,7 +24,6 @@ import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSeria
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.it.VerificationException;
@@ -56,8 +55,8 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
         new String(Files.readAllBytes(targetFolder.toPath().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
             .resolve(MULE_ARTIFACT_JSON)));
     MuleApplicationModel muleApplicationModel = new MuleApplicationModelJsonSerializer().deserialize(json);
-    assertThat(muleApplicationModel.getClassLoaderModelLoaderDescriptor().getAttributes().get(EXPORTED_PACKAGES),
-               is(Collections.singletonList("org.mule.apackagehere")));
+    assertThat((List<String>) muleApplicationModel.getClassLoaderModelLoaderDescriptor().getAttributes().get(EXPORTED_PACKAGES),
+               containsInAnyOrder(DEFAULT_PACKAGE_EXPORT, "org.mule.apackagehere"));
 
     assertThat((List<String>) muleApplicationModel.getClassLoaderModelLoaderDescriptor().getAttributes().get(EXPORTED_RESOURCES),
                containsInAnyOrder(".placeholder", "some/path/file.txt"));

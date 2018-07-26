@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.validation.project.policy;
+package org.mule.tools.api.verifier.policy;
 
 import static java.lang.String.join;
 import static java.nio.file.Paths.get;

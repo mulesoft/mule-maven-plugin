@@ -8,17 +8,16 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.api.validation.project.policy;
+package org.mule.tools.api.verifier.policy;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
 
-import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
-import org.mule.tools.api.validation.project.MuleProjectValidator;
+import org.mule.tools.api.verifier.ProjectVerifier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -30,27 +29,22 @@ import java.util.List;
 /**
  * Ensures the project is valid
  */
-public class MulePolicyProjectValidator extends MuleProjectValidator {
+public class MulePolicyVerifier implements ProjectVerifier {
 
   public static final String TEMPLATE_XML = join(File.separator, "src", "main", "mule", "template.xml");
   public static final String POM_XML = "pom.xml";
   public static final String MULE_ARTIFACT_JSON = "mule-artifact.json";
   private final String yamlFileName;
+  private final ProjectInformation projectInformation;
 
-  public MulePolicyProjectValidator(ProjectInformation projectInformation, List<SharedLibraryDependency> sharedLibraries,
-                                    boolean strictCheck) {
-    super(projectInformation, sharedLibraries, strictCheck);
+  public MulePolicyVerifier(ProjectInformation projectInformation) {
+    this.projectInformation = projectInformation;
     yamlFileName = format("%s.yaml", projectInformation.getArtifactId());
   }
 
+
   @Override
-  protected void additionalValidation() throws ValidationException {
-    isPolicyProjectStructureValid();
-    super.additionalValidation();
-
-  }
-
-  public void isPolicyProjectStructureValid() throws ValidationException {
+  public void verify() throws ValidationException {
     allFilesPresent();
     validateYaml();
     validateJson();
@@ -73,7 +67,7 @@ public class MulePolicyProjectValidator extends MuleProjectValidator {
   }
 
   private void validateJson() throws ValidationException {
-    PolicyMuleArtifactJsonValidator.validate(projectInformation, getMuleArtifactFile());
+    PolicyMuleArtifactJsonVerifier.validate(projectInformation, getMuleArtifactFile());
   }
 
   private File getMuleArtifactFile() {

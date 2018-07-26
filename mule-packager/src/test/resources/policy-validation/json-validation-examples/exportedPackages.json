@@ -5,7 +5,7 @@
   "classLoaderModelLoaderDescriptor": {
     "id": "mule",
     "attributes": {
-      "exportedPackages": []
+      "exportedPackages": ["package1"]
     }
   },
   "bundleDescriptorLoader": {

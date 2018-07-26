@@ -4,7 +4,9 @@
   "requiredProduct": "MULE_EE",
   "classLoaderModelLoaderDescriptor": {
     "id": "mule",
-    "attributes": {}
+    "attributes": {
+      "exportedResources": []
+    }
   },
   "bundleDescriptorLoader": {
     "id": "mule",
@@ -15,5 +17,6 @@
       "classifier": "mule-policy",
       "type": "jar"
     }
-  }
+  },
+  "configs" : ["template.xml"]
 }

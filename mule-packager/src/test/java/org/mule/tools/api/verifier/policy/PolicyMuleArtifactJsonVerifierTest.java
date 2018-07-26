@@ -7,14 +7,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.validation.project.policy;
+package org.mule.tools.api.verifier.policy;
 
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.nio.file.Paths.get;
 import static org.mockito.Mockito.mock;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_POLICY;
-import static org.mule.tools.api.validation.project.policy.PolicyMuleArtifactJsonValidator.validate;
+import static org.mule.tools.api.verifier.policy.PolicyMuleArtifactJsonVerifier.validate;
 
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.DefaultProjectInformation;
@@ -28,7 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class PolicyMuleArtifactJsonValidatorTest {
+public class PolicyMuleArtifactJsonVerifierTest {
 
   private static final String GROUP_ID = "com.mule.anypoint.api.manager";
   private static final String ARTIFACT_ID = "custom.policy.test";
@@ -101,21 +101,23 @@ public class PolicyMuleArtifactJsonValidatorTest {
   @Test
   public void configsFailsValidation() throws ValidationException {
     expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("Error in file 'configs.json'. The field configs must not be defined.");
+    expectedException.expectMessage("Error in file 'configs.json'. The field configs must not be defined or be empty.");
     validateMuleArtifactJson("configs.json");
   }
 
   @Test
   public void exportedPackagesFailsValidation() throws ValidationException {
     expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("Error in file 'exportedPackages.json'. The field exportedPackages must not be defined.");
+    expectedException
+        .expectMessage("Error in file 'exportedPackages.json'. The field exportedPackages must not be defined or be empty.");
     validateMuleArtifactJson("exportedPackages.json");
   }
 
   @Test
   public void exportedResourcesFailsValidation() throws ValidationException {
     expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("Error in file 'exportedResources.json'. The field exportedResources must not be defined.");
+    expectedException
+        .expectMessage("Error in file 'exportedResources.json'. The field exportedResources must not be defined or be empty.");
     validateMuleArtifactJson("exportedResources.json");
   }
 

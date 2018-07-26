@@ -31,6 +31,8 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.SITE
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST_COMPILE;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VERIFY;
+
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.project.MuleLifecycleMapping;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenVersionless;
 
@@ -53,7 +55,8 @@ public class MuleLifecycleMappingMavenVersionlessTest {
     Set<MavenLifecyclePhase> expectedLifecyclePhases =
         Sets.newHashSet(CLEAN, VALIDATE, INITIALIZE, GENERATE_SOURCES, PROCESS_SOURCES, PROCESS_RESOURCES, COMPILE,
                         PROCESS_CLASSES,
-                        GENERATE_TEST_SOURCES, PROCESS_TEST_RESOURCES, TEST_COMPILE, TEST, PACKAGE, INSTALL, DEPLOY, SITE);
+                        GENERATE_TEST_SOURCES, PROCESS_TEST_RESOURCES, TEST_COMPILE, TEST, PACKAGE, VERIFY, INSTALL,
+                        DEPLOY, SITE);
 
     LifecycleMappingMavenVersionless lifecycleMappingMavenVersionlessMock = mock(LifecycleMappingMavenVersionless.class);
     when(lifecycleMappingMavenVersionlessMock.buildGoals(any())).thenReturn("");

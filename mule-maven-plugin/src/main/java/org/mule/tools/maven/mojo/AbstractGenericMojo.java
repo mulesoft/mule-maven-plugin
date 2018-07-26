@@ -14,6 +14,8 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.verifier.ProjectVerifier;
+import org.mule.tools.api.verifier.ProjectVerifyFactory;
 import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
 import org.mule.tools.api.validation.project.AbstractProjectValidator;
 import org.mule.tools.api.validation.project.ProjectValidatorFactory;
@@ -98,6 +100,8 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
 
   protected AbstractProjectValidator validator;
 
+  protected ProjectVerifier verifier;
+
   protected AetherMavenClient aetherMavenClient;
 
   public abstract String getPreviousRunPlaceholder();
@@ -140,6 +144,14 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
 
   public void setProjectBaseFolder(File projectBaseFolder) {
     this.projectBaseFolder = projectBaseFolder;
+  }
+
+  public ProjectVerifier getProjectVerifier() {
+    if (verifier == null) {
+      verifier =
+          ProjectVerifyFactory.create(getProjectInformation());
+    }
+    return verifier;
   }
 
   public AbstractProjectValidator getProjectValidator() {

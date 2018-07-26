@@ -16,5 +16,5 @@
       "type": "jar"
     }
   },
-  "configs" : []
+  "configs" : ["foo.bar"]
 }

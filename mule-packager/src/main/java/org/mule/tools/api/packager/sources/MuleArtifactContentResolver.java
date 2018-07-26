@@ -12,6 +12,8 @@ package org.mule.tools.api.packager.sources;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.toList;
+
+import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
@@ -32,7 +34,9 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Resolves the content of resources defined in mule-artifact.json based on the project base folder.
@@ -116,26 +120,26 @@ public class MuleArtifactContentResolver {
   }
 
   private boolean hasMuleAsRootElement(Path path) {
-    Document doc;
+    org.w3c.dom.Document doc;
     try {
       doc = generateDocument(path);
-    } catch (JDOMException | IOException e) {
+    } catch (IOException | ParserConfigurationException | SAXException e) {
       return false;
     }
     return hasMuleAsRootElement(doc);
   }
 
-  protected boolean hasMuleAsRootElement(Document doc) {
-    if (doc != null && doc.getRootElement() != null) {
-      String rootElementName = doc.getRootElement().getName();
+  protected boolean hasMuleAsRootElement(org.w3c.dom.Document doc) {
+    if (doc != null && doc.getDocumentElement() != null) {
+      String rootElementName = doc.getDocumentElement().getTagName();
       return StringUtils.equals(rootElementName, "mule") || StringUtils.equals(rootElementName, "mule-domain");
     }
     return false;
   }
 
-  private org.jdom2.Document generateDocument(Path filePath) throws JDOMException, IOException {
-    SAXBuilder saxBuilder = new SAXBuilder();
-    return saxBuilder.build(filePath.toFile());
+  private org.w3c.dom.Document generateDocument(Path filePath) throws IOException, ParserConfigurationException, SAXException {
+    javax.xml.parsers.DocumentBuilderFactory factory = new DocumentBuilderFactoryImpl();
+    return factory.newDocumentBuilder().parse(filePath.toFile());
   }
 
   /**

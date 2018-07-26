@@ -78,9 +78,11 @@ public class MuleArtifactContentResolverTest {
       "\thttp://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd\">\n" +
       "\n" +
       "\n" +
+      "\t\t<xml-module:validate-schema doc:name=\"Validate schema\" doc:id=\"f9656931-d3ca-4969-bf7d-4c8d87fe4918\" config-ref=\"XML_Config\" schemas=\"schemas/shipwire/warehouse/rma/v01/ASN.xsd\"/>\n"
+      +
       "</mule>";
-  private Document documentMock;
-  private Element rootElementMock;
+  private org.w3c.dom.Document documentMock;
+  private org.w3c.dom.Element rootElementMock;
 
   @Before
   public void setUp() throws IOException {
@@ -101,9 +103,9 @@ public class MuleArtifactContentResolverTest {
     javaFolder.mkdirs();
     resourcesFolder.mkdirs();
     testResourcesFolder.mkdirs();
-    documentMock = mock(Document.class);
-    rootElementMock = mock(Element.class);
-    when(documentMock.getRootElement()).thenReturn(rootElementMock);
+    documentMock = mock(org.w3c.dom.Document.class);
+    rootElementMock = mock(org.w3c.dom.Element.class);
+    when(documentMock.getDocumentElement()).thenReturn(rootElementMock);
   }
 
   @Test
@@ -251,31 +253,31 @@ public class MuleArtifactContentResolverTest {
 
   @Test
   public void hasMuleAsRootElementMuleRoot() {
-    when(rootElementMock.getName()).thenReturn("mule");
+    when(rootElementMock.getTagName()).thenReturn("mule");
     assertThat("Method should have returned true", resolver.hasMuleAsRootElement(documentMock));
   }
 
   @Test
   public void hasMuleAsRootElementMuleDomainRoot() {
-    when(rootElementMock.getName()).thenReturn("mule-domain");
+    when(rootElementMock.getTagName()).thenReturn("mule-domain");
     assertThat("Method should have returned true", resolver.hasMuleAsRootElement(documentMock));
   }
 
   @Test
   public void hasMuleAsRootElementOtherThanMuleOrMuleDomainRoot() {
-    when(rootElementMock.getName()).thenReturn("mulesoft");
+    when(rootElementMock.getTagName()).thenReturn("mulesoft");
     assertThat("Method should have returned false", !resolver.hasMuleAsRootElement(documentMock));
   }
 
   @Test
   public void hasMuleAsRootElementWithNullName() {
-    when(rootElementMock.getName()).thenReturn(null);
+    when(rootElementMock.getTagName()).thenReturn(null);
     assertThat("Method should have returned false", !resolver.hasMuleAsRootElement(null));
   }
 
   @Test
   public void hasMuleAsRootElementWithNoRoot() {
-    when(documentMock.getRootElement()).thenReturn(null);
+    when(documentMock.getDocumentElement()).thenReturn(null);
     assertThat("Method should have returned false", !resolver.hasMuleAsRootElement(documentMock));
   }
 

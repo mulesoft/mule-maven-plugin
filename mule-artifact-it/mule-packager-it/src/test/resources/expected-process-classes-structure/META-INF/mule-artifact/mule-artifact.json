@@ -1,0 +1,23 @@
+{
+  "configs": [],
+  "secureProperties": [],
+  "redeploymentEnabled": true,
+  "name": "org.apache.maven.plugin.my.unit:empty-process-classes-project:1.0.0-SNAPSHOT",
+  "minMuleVersion": "4.0.0",
+  "requiredProduct": "MULE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedPackages": [
+        "org.mule.apackagehere"
+      ],
+      "exportedResources": [
+        ".placeholder"
+      ]
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}

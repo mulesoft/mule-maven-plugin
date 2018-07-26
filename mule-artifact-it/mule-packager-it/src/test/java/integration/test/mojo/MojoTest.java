@@ -9,26 +9,26 @@
  */
 package integration.test.mojo;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static org.apache.commons.io.FileUtils.deleteDirectory;
+import org.mule.tools.api.util.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.StandardCopyOption;
 
+import integration.ProjectFactory;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
 import org.junit.After;
 import org.junit.Before;
 
-import integration.ProjectFactory;
-import org.mule.tools.api.util.FileUtils;
-
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import static org.apache.commons.io.FileUtils.deleteDirectory;
-
 
 public class MojoTest implements SettingsConfigurator {
 
   protected static final String[] excludes = new String[] {".placeholder", "log.txt"};
+  protected static final String[] excludesCompile = ArrayUtils.addAll(excludes, "maven-status");
 
   protected static final String TARGET_FOLDER_NAME = "target";
   protected static final String EMPTY_PROJECT_NAME = "empty-project";

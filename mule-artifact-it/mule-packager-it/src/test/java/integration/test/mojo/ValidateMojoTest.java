@@ -27,15 +27,6 @@ public class ValidateMojoTest extends MojoTest {
     this.goal = VALIDATE;
   }
 
-  @Test(expected = VerificationException.class)
-  public void testFailOnEmptyProject() throws Exception {
-    projectBaseDirectory = builder.createProjectBaseDir(EMPTY_PROJECT_NAME, this.getClass());
-    verifier = buildVerifier(projectBaseDirectory);
-
-    verifier.executeGoal("process-classes");
-    // verifier.verifyTextInLog("Invalid Mule project. Missing src/main/mule folder. This folder is mandatory");
-  }
-
   @Test
   public void testFailOnInvalidPackageType() throws Exception {
     projectBaseDirectory = builder.createProjectBaseDir(INVALID_PACKAGE_PROJECT, this.getClass());
@@ -52,22 +43,6 @@ public class ValidateMojoTest extends MojoTest {
 
     String textInLog = "Unknown packaging type jar. Please specify a valid mule packaging type:";
     executeGoalAndVerifyText(VALIDATE, textInLog);
-  }
-
-  @Test(expected = VerificationException.class)
-  public void testFailOnEmptyPolicyProject() throws Exception {
-    projectBaseDirectory = builder.createProjectBaseDir(EMPTY_POLICY_NAME, this.getClass());
-    verifier = buildVerifier(projectBaseDirectory);
-    verifier.executeGoal("process-classes");
-    // verifier.verifyTextInLog("Invalid Mule project. Missing src/main/policy folder. This folder is mandatory");
-  }
-
-  @Test(expected = VerificationException.class)
-  public void testFailOnEmptyDomainProject() throws Exception {
-    projectBaseDirectory = builder.createProjectBaseDir(EMPTY_DOMAIN_NAME, this.getClass());
-    verifier = buildVerifier(projectBaseDirectory);
-    verifier.executeGoal("process-classes");
-    // verifier.verifyTextInLog("Invalid Mule project. Missing src/main/mule folder. This folder is mandatory");
   }
 
   @Test

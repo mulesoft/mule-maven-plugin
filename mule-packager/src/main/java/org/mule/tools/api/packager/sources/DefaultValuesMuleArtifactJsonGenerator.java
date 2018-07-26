@@ -65,6 +65,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
   public static final String EXPORTED_RESOURCES = "exportedResources";
   public static final String COMPILED_JAVA_EXTENSION = "class";
   public static final String PACKAGE_SEPARATOR = ".";
+  public static final String DEFAULT_PACKAGE_EXPORT = "";
 
   /**
    * Generates the default value for every non-defined fields in a mule-artifact.json file during build time and updates
@@ -320,7 +321,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
           .map(path -> {
             Path parent = outputDirectory.relativize(path).getParent();
             //if parent is null, it implies "default package" in java, which means we need an empty string for the exportedPackages
-            return parent != null ? parent.toString() : "";
+            return parent != null ? parent.toString() : DEFAULT_PACKAGE_EXPORT;
           })
           .map(MuleArtifactContentResolver::escapeSlashes)
           .map(s -> s.replace(CLASS_PATH_SEPARATOR, PACKAGE_SEPARATOR))

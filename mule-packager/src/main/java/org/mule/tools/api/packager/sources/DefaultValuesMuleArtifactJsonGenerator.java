@@ -17,6 +17,8 @@ import static org.mule.maven.client.api.model.BundleScope.COMPILE;
 import static org.mule.runtime.internal.dsl.DslConstants.EE_NAMESPACE;
 import static org.mule.tools.api.packager.sources.MuleArtifactContentResolver.CLASS_PATH_SEPARATOR;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
+
+import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
@@ -51,8 +53,11 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Generates default value for any non-defined fields in a mule-artifact.json file
@@ -217,18 +222,33 @@ public class DefaultValuesMuleArtifactJsonGenerator {
     return configs.stream().map(this::toDocument).anyMatch(this::containsEENamespace);
   }
 
-  private boolean containsEENamespace(Document doc) {
-    Element root = doc.getRootElement();
-    return root.getNamespace().getURI().contains(EE_NAMESPACE)
-        || doc.getRootElement().getAdditionalNamespaces().stream().anyMatch(n -> n.getURI().contains(EE_NAMESPACE));
+  private boolean containsEENamespace(org.w3c.dom.Document doc) {
+    if (doc == null) {
+      return false;
+    }
+    org.w3c.dom.Element root = doc.getDocumentElement();
+    if (root.getNamespaceURI() != null && root.getNamespaceURI().contains(EE_NAMESPACE)) {
+      return true;
+    }
+    if (root.getAttributes() != null) {
+      NamedNodeMap attributes = root.getAttributes();
+      for (int i = 0; i < attributes.getLength(); ++i) {
+        Node uri = root.getAttributes().item(i);
+        if (uri.getNodeValue() != null && uri.getNodeValue().contains(EE_NAMESPACE)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
-  private Document toDocument(Path filePath) {
-    SAXBuilder saxBuilder = new SAXBuilder();
+  private org.w3c.dom.Document toDocument(Path filePath) {
+    javax.xml.parsers.DocumentBuilderFactory factory = new DocumentBuilderFactoryImpl();
     try {
-      return saxBuilder.build(filePath.toFile());
-    } catch (JDOMException | IOException e) {
-      return new Document();
+      return factory.newDocumentBuilder().parse(filePath.toFile());
+    } catch (SAXException | IOException | ParserConfigurationException e) {
+      return null;
     }
   }
 

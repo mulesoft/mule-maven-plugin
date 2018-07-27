@@ -37,13 +37,13 @@ public class PolicyYamlValidationTest {
   @Test
   public void minimalYamlParsesCorrectly() throws IOException {
     // A yaml with only the minimum amount necessary of fields.
-    testYaml("caching-yaml-example.yaml");
+    testYaml("minimal.yaml");
   }
 
   @Test
   public void extraFieldParsesCorrectly() throws IOException {
     // A yaml with only the minimum amount necessary of fields and an extra one.
-    testYaml("caching-yaml-example.yaml");
+    testYaml("extra-field.yaml");
   }
 
   @Test

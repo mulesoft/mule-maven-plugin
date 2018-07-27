@@ -39,7 +39,7 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
         getLog().debug("executing validations in process-classes for Mule application");
         getProjectValidator().isProjectValid(VALIDATE.id());
       } else {
-        getLog().debug("skipping process-classes validation for Mule application");
+        getLog().debug("Skipping process-classes validation for Mule application");
       }
     } catch (ValidationException | IOException e) {
       throw new MojoExecutionException("process-classes exception", e);

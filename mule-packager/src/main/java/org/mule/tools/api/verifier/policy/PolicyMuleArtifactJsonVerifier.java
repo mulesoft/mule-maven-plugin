@@ -37,15 +37,22 @@ class PolicyMuleArtifactJsonVerifier {
   private static final String EXPORTED_RESOURCES = "exportedResources";
   private static final String CONFIGS = "configs";
   public static final String TEMPLATE_XML = "template.xml";
+  private final ProjectInformation projectInformation;
+  private final File file;
 
-  public static void validate(ProjectInformation projectInformation, File file) throws ValidationException {
-    MuleApplicationModel muleArtifact = getMuleArtifact(file);
-    checkAttributesPresent(projectInformation, file, muleArtifact);
-    checkNoInvalidFields(file, muleArtifact);
+  public PolicyMuleArtifactJsonVerifier(ProjectInformation projectInformation, File file) {
+    this.projectInformation = projectInformation;
+    this.file = file;
   }
 
-  private static void checkNoInvalidFields(File file,
-                                           MuleApplicationModel muleApplicationModel)
+  public void validate() throws ValidationException {
+    MuleApplicationModel muleArtifact = getMuleArtifact(file);
+    checkAttributesPresent(projectInformation, file, muleArtifact);
+    checkOnlyValidFields(file, muleArtifact);
+  }
+
+  private void checkOnlyValidFields(File file,
+                                    MuleApplicationModel muleApplicationModel)
       throws ValidationException {
     final Map<String, Object> attributes = muleApplicationModel.getClassLoaderModelLoaderDescriptor().getAttributes();
     try {
@@ -58,8 +65,8 @@ class PolicyMuleArtifactJsonVerifier {
     }
   }
 
-  private static void checkAttributesPresent(ProjectInformation projectInformation, File file,
-                                             MuleApplicationModel muleApplicationModel)
+  private void checkAttributesPresent(ProjectInformation projectInformation, File file,
+                                      MuleApplicationModel muleApplicationModel)
       throws ValidationException {
     final Map<String, Object> attributes = muleApplicationModel.getBundleDescriptorLoader().getAttributes();
     try {
@@ -79,17 +86,17 @@ class PolicyMuleArtifactJsonVerifier {
     }
   }
 
-  private static Boolean checkNullOrEmptyCollection(Object object) {
+  private Boolean checkNullOrEmptyCollection(Object object) {
     return object == null || (object instanceof Collection && ((Collection) object).size() == 0);
   }
 
-  private static Boolean checkConfigsElementIsValid(Object object) {
+  private Boolean checkConfigsElementIsValid(Object object) {
     return object == null ||
         (object instanceof Collection && ((Collection) object).isEmpty()) ||
         (object instanceof Collection && ((Collection) object).size() == 1 && ((Collection) object).contains(TEMPLATE_XML));
   }
 
-  private static MuleApplicationModel getMuleArtifact(File file) throws ValidationException {
+  private MuleApplicationModel getMuleArtifact(File file) throws ValidationException {
     try {
       return new MuleApplicationModelJsonSerializer().deserialize(FileUtils.readFileToString(file, (String) null));
     } catch (IOException e) {
@@ -97,16 +104,16 @@ class PolicyMuleArtifactJsonVerifier {
     }
   }
 
-  private static String mustNotDefineFieldMessage(String field) {
+  private String mustNotDefineFieldMessage(String field) {
     return format("The field %s must not be defined or be empty.", field);
   }
 
-  private static String mismatchFieldWithPomMessage(String field, String expectedValue, Object actualValue) {
+  private String mismatchFieldWithPomMessage(String field, String expectedValue, Object actualValue) {
     return format("The %s does not match the one defined in the pom.xml. Expected '%s'. Actual '%s'.", field, expectedValue,
                   actualValue);
   }
 
-  private static String mismatchExpectedFieldValue(String fieldName, String expectedValue, Object actualValue) {
+  private String mismatchExpectedFieldValue(String fieldName, String expectedValue, Object actualValue) {
     return format("The field '%s' had an unexpected value. Expected '%s'. Actual '%s'.", fieldName, expectedValue, actualValue);
   }
 

@@ -14,7 +14,6 @@ import static java.lang.String.join;
 import static java.nio.file.Paths.get;
 import static org.mockito.Mockito.mock;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_POLICY;
-import static org.mule.tools.api.verifier.policy.PolicyMuleArtifactJsonVerifier.validate;
 
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.DefaultProjectInformation;
@@ -127,10 +126,11 @@ public class PolicyMuleArtifactJsonVerifierTest {
 
   public void validateMuleArtifactJson(String groupId, String artifactId, String version, String fileName)
       throws ValidationException {
-    validate(
-             getProjectInformation(groupId, artifactId, version, getTestResourceFolder()),
-             new File(getTestResourceFolder().toAbsolutePath().toString(),
-                      fileName));
+    new PolicyMuleArtifactJsonVerifier(
+                                       getProjectInformation(groupId, artifactId, version, getTestResourceFolder()),
+                                       new File(getTestResourceFolder().toAbsolutePath().toString(),
+                                                fileName))
+                                                    .validate();
   }
 
   private Path getTestResourceFolder() {

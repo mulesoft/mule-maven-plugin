@@ -24,12 +24,12 @@ public class VerifyMojo extends AbstractMuleMojo {
 
   @Override
   public void doExecute() throws MojoExecutionException {
-    getLog().debug("Verifying packaged files ...");
+    getLog().debug("Verifying packaged files...");
     try {
       if (!skipValidation) {
         getProjectVerifier().verify();
       } else {
-        getLog().debug("skipping verify validation for Mule application");
+        getLog().debug("Skipping verify validation for Mule application");
       }
     } catch (ValidationException e) {
       throw new MojoExecutionException("Verify exception", e);

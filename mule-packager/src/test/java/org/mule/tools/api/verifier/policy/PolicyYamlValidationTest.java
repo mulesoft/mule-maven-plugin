@@ -30,16 +30,19 @@ public class PolicyYamlValidationTest {
 
   @Test
   public void normalYamlParsesCorrectly() throws IOException {
+    // Example of yaml file extracted from the http caching policy.
     testYaml("caching-yaml-example.yaml");
   }
 
   @Test
   public void minimalYamlParsesCorrectly() throws IOException {
+    // A yaml with only the minimum amount necessary of fields.
     testYaml("caching-yaml-example.yaml");
   }
 
   @Test
   public void extraFieldParsesCorrectly() throws IOException {
+    // A yaml with only the minimum amount necessary of fields and an extra one.
     testYaml("caching-yaml-example.yaml");
   }
 

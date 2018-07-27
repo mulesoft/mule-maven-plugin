@@ -27,7 +27,10 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Ensures the project is valid
+ * Verifies that the packaged project is valid.
+ * Checks that all necessary files are present.
+ * Checks the validity of the yaml file.
+ * Checks the validity of the mule-artifact.json
  */
 public class MulePolicyVerifier implements ProjectVerifier {
 
@@ -67,7 +70,7 @@ public class MulePolicyVerifier implements ProjectVerifier {
   }
 
   private void validateJson() throws ValidationException {
-    PolicyMuleArtifactJsonVerifier.validate(projectInformation, getMuleArtifactFile());
+    new PolicyMuleArtifactJsonVerifier(projectInformation, getMuleArtifactFile()).validate();
   }
 
   private File getMuleArtifactFile() {
@@ -91,7 +94,7 @@ public class MulePolicyVerifier implements ProjectVerifier {
                   yamlFileName);
   };
 
-  private static void fileExists(String baseDir, String fileName) throws ValidationException {
+  private void fileExists(String baseDir, String fileName) throws ValidationException {
     File file = new File(baseDir, fileName);
     if (!file.exists()) {
       throw new ValidationException(format("The file %s should be present.", fileName));

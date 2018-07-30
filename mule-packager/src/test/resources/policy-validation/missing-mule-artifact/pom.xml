@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.mule.anypoint.api.manager</groupId>
+    <artifactId>custom.policy.test</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <name>test</name>
+    <description>tst</description>
+
+    <packaging>mule-policy</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jdk.version>1.8</jdk.version>
+        <mule.maven.plugin.version>3.1.0</mule.maven.plugin.version>
+        <exchange.groupId>bleh</exchange.groupId>
+        <exchange.repositoryUrl>bleh/bleh/maven</exchange.repositoryUrl>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.mule.tools.maven</groupId>
+                <artifactId>mule-maven-plugin</artifactId>
+                <version>${mule.maven.plugin.version}</version>
+                <extensions>true</extensions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>deploy-to-exchange</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.code.maven-replacer-plugin</groupId>
+                        <artifactId>replacer</artifactId>
+                        <version>1.5.3</version>
+                        <executions>
+                            <execution>
+                                <id>replace-exchange-pom</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>replace</goal>
+                                </goals>
+                                <configuration>
+                                    <ignoreMissingFile>false</ignoreMissingFile>
+                                    <basedir>${project.build.directory}/META-INF/mule-src/${project.artifactId}</basedir>
+                                    <file>exchange-template-pom.xml</file>
+                                    <replacements>
+                                        <replacement>
+                                            <token>%GROUP_ID%</token>
+                                            <value>${exchange.groupId}</value>
+                                        </replacement>
+                                        <replacement>
+                                            <token>%ARTIFACT_ID%</token>
+                                            <value>${project.artifactId}</value>
+                                        </replacement>
+                                        <replacement>
+                                            <token>%VERSION%</token>
+                                            <value>${project.version}</value>
+                                        </replacement>
+                                    </replacements>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>upload-template</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>deploy-file</goal>
+                                </goals>
+                                <configuration>
+                                    <repositoryId>exchange-server</repositoryId>
+                                    <file>
+                                        ${project.build.directory}/${project.artifactId}-${project.version}-mule-policy.jar
+                                    </file>
+                                    <url>${exchange.repositoryUrl}</url>
+                                    <packaging>jar</packaging>
+                                    <classifier>mule-policy</classifier>
+                                    <generatePom>false</generatePom>
+                                    <pomFile>${project.build.directory}/META-INF/mule-src/${project.artifactId}/exchange-template-pom.xml</pomFile>
+                                    <files>${project.basedir}/${project.artifactId}.yaml</files>
+                                    <types>yaml</types>
+                                    <classifiers>policy-definition</classifiers>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <repositories>
+        <repository>
+            <id>mule-ee-private</id>
+            <name>Private Release Repo</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>mule-ee-snapshots</id>
+            <name>Internal Release Repo</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/ci-snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>releases-ee</id>
+            <name>Mule Release Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/releases-ee/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>mulesoft-private</id>
+            <name>Mulesoft Private</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/private</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>mule-plugin</id>
+            <name>Mule Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+</project>

@@ -4,19 +4,16 @@
   "requiredProduct": "MULE_EE",
   "classLoaderModelLoaderDescriptor": {
     "id": "mule",
-    "attributes": {
-      "exportedResources": []
-    }
+    "attributes": {}
   },
   "bundleDescriptorLoader": {
     "id": "mule",
     "attributes": {
-      "groupId": "org.apache.maven.plugin.my.unit",
-      "artifactId": "empty-policy",
+      "groupId": "com.mule.anypoint.api.manager",
+      "artifactId": "custom.policy.test",
       "version": "1.0.0-SNAPSHOT",
-      "classifier": "mule-policy",
+      "classifier": "foo",
       "type": "jar"
     }
-  },
-  "configs" : ["template.xml"]
+  }
 }

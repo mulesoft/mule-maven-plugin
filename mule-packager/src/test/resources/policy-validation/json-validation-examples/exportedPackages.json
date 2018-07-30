@@ -5,18 +5,17 @@
   "classLoaderModelLoaderDescriptor": {
     "id": "mule",
     "attributes": {
-      "exportedResources": []
+      "exportedPackages": ["package1"]
     }
   },
   "bundleDescriptorLoader": {
     "id": "mule",
     "attributes": {
-      "groupId": "org.apache.maven.plugin.my.unit",
-      "artifactId": "empty-policy",
+      "groupId": "com.mule.anypoint.api.manager",
+      "artifactId": "custom.policy.test",
       "version": "1.0.0-SNAPSHOT",
       "classifier": "mule-policy",
       "type": "jar"
     }
-  },
-  "configs" : ["template.xml"]
+  }
 }

@@ -26,6 +26,8 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.SITE
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST_COMPILE;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
+import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VERIFY;
+
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMaven333;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenFactory;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenVersionless;
@@ -90,6 +92,7 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
                buildGoals(mapping, MAVEN_COMPILER_PLUGIN + ":testCompile", MULE_MAVEN_PLUGIN + ":test-compile"));
     phases.put(TEST.id(), buildGoals(mapping, MAVEN_SUREFIRE_PLUGIN + ":test"));
     phases.put(PACKAGE.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":package"));
+    phases.put(VERIFY.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":verify"));
 
     phases.put(INSTALL.id(), buildGoals(mapping, MAVEN_INSTALL_PLUGIN + ":install"));
 

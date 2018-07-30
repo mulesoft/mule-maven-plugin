@@ -53,6 +53,7 @@ public class DomainBundleLifecycleMapping implements LifecycleMapping, ProjectLi
     phases.put(PROCESS_RESOURCES.id(), mapping.buildGoals("org.mule.tools.maven:mule-maven-plugin:process-resources"));
     phases.put(GENERATE_SOURCES.id(), mapping.buildGoals("org.mule.tools.maven:mule-maven-plugin:generate-sources"));
     phases.put(PACKAGE.id(), mapping.buildGoals("org.mule.tools.maven:mule-maven-plugin:package"));
+    phases.put(VERIFY.id(), mapping.buildGoals("org.mule.tools.maven:mule-maven-plugin:verify"));
     phases.put(INSTALL.id(), mapping.buildGoals("org.apache.maven.plugins:maven-install-plugin:2.5.2:install"));
 
     String isMuleDeploy = System.getProperty(MULE_DEPLOY);

@@ -22,7 +22,6 @@ class PolicyYaml {
   public PolicyYaml(
                     @JsonProperty(value = "id", required = true) String id,
                     @JsonProperty(value = "name", required = true) String name,
-                    @JsonProperty(value = "supportedPoliciesVersions", required = true) String supportedPoliciesVersions,
                     @JsonProperty(value = "description", required = true) String description,
                     @JsonProperty(value = "category", required = true) String category,
                     @JsonProperty(value = "type", required = true) String type,

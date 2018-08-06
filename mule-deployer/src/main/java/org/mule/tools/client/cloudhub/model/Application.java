@@ -44,7 +44,7 @@ public class Application {
 
   private String region;
   private Workers workers;
-  private List<String> logLevels;
+  private List<LogLevelInfo> logLevels;
   private List<String> ipAddresses;
 
   // TODO a class VpnConfig
@@ -146,11 +146,11 @@ public class Application {
     this.ipAddresses = ipAddresses;
   }
 
-  public List<String> getLogLevels() {
+  public List<LogLevelInfo> getLogLevels() {
     return logLevels;
   }
 
-  public void setLogLevels(List<String> logLevels) {
+  public void setLogLevels(List<LogLevelInfo> logLevels) {
     this.logLevels = logLevels;
   }
 

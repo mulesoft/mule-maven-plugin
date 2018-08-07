@@ -61,9 +61,7 @@ public class PolicyYamlValidationTest {
   }
 
   @Test
-  public void missingSupportedPoliciesVersionsYamlFailsParsing() throws IOException {
-    expectedException.expect(IOException.class);
-    expectMissingProperty("supportedPoliciesVersions");
+  public void missingSupportedPoliciesVersionsYamlSucceeds() throws IOException {
     testYaml("missing-supportedPoliciesVersions.yaml");
   }
 

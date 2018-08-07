@@ -344,31 +344,6 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>${maven.dependency.plugin.version}</version>
-                    <configuration>
-                        <artifactItems>
-                            <artifactItem>
-                                <groupId>com.mulesoft.mule.distributions</groupId>
-                                <artifactId>mule-ee-distribution-standalone</artifactId>
-                                <version>${mule.distribution.standalone.version}</version>
-                                <type>tar.gz</type>
-                                <outputDirectory>${project.build.directory}</outputDirectory>
-                            </artifactItem>
-                        </artifactItems>
-                        <skip>${skipTests}</skip>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>unpack</goal>
-                            </goals>
-                            <phase>process-test-resources</phase>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven.compiler.plugin.version}</version>
                     <configuration>

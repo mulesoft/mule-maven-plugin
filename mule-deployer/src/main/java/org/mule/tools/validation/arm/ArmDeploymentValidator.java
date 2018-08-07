@@ -10,12 +10,21 @@
 package org.mule.tools.validation.arm;
 
 import org.mule.tools.client.arm.ArmClient;
+import org.mule.tools.client.arm.model.Server;
+import org.mule.tools.client.arm.model.Servers;
 import org.mule.tools.client.arm.model.Target;
+import org.mule.tools.client.model.TargetType;
 import org.mule.tools.client.standalone.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.validation.AbstractDeploymentValidator;
 import org.mule.tools.validation.EnvironmentSupportedVersions;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * Validates if the mule runtime version is valid in an ARM deployment scenario.
@@ -29,20 +38,37 @@ public class ArmDeploymentValidator extends AbstractDeploymentValidator {
   @Override
   public EnvironmentSupportedVersions getEnvironmentSupportedVersions() throws DeploymentException {
     ArmClient client = getArmClient();
-    String muleRuntimeVersion = findRuntimeVersion(client);
+    List<String> muleRuntimeVersion = findRuntimeVersion(client);
+    if (muleRuntimeVersion.isEmpty()) {
+      throw new DeploymentException("There are no runtime available in this server or serverGroup");
+    }
     return new EnvironmentSupportedVersions(muleRuntimeVersion);
   }
 
   /**
    * Find the mule runtime version in the target server configured in the deployment configuration.
-   * 
+   *
    * @param client The ARM client.
    * @return The mule runtime version running in the target.
    */
-  private String findRuntimeVersion(ArmClient client) {
-    Target target = client.findServerByName(((ArmDeployment) deployment).getTarget());
-    Integer serverId = Integer.valueOf(target.id);
-    return client.getServer(serverId).data[0].muleVersion;
+  private List<String> findRuntimeVersion(ArmClient client) {
+    TargetType targetType = ((ArmDeployment) deployment).getTargetType();
+    String id = client.getId(targetType, ((ArmDeployment) deployment).getTarget());
+    Integer serverId = Integer.valueOf(id);
+    List<String> runtimeVersions = new ArrayList<>();
+    if (TargetType.server.equals(targetType)) {
+      runtimeVersions.add(client.getServer(serverId).data[0].muleVersion);
+    } else {
+      Servers serverGroup = client.getServerGroup(serverId);
+      if (serverGroup.data != null) {
+        for (Server server : serverGroup.data) {
+          if (server.muleVersion != null) {
+            runtimeVersions.add(server.muleVersion);
+          }
+        }
+      }
+    }
+    return runtimeVersions;
   }
 
   /**
@@ -51,7 +77,7 @@ public class ArmDeploymentValidator extends AbstractDeploymentValidator {
    * @return The generated ARM client.
    */
   private ArmClient getArmClient() {
-    ArmClient client = new ArmClient((ArmDeployment) deployment, null);
+    ArmClient client = new ArmClient(deployment, null);
     client.init();
     return client;
   }

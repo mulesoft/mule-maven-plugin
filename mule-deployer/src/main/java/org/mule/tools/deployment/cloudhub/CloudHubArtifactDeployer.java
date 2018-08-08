@@ -9,10 +9,6 @@
  */
 package org.mule.tools.deployment.cloudhub;
 
-import static com.google.common.base.Preconditions.*;
-import static java.util.Optional.empty;
-import static org.apache.commons.lang3.StringUtils.*;
-
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.model.MuleVersion;
@@ -26,8 +22,10 @@ import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
 
 import java.util.Map;
 import java.util.Optional;
-import com.google.common.base.Preconditions;
-import org.apache.commons.lang3.StringUtils;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Optional.empty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Deploys mule artifacts to CloudHub using the {@link CloudHubClient}.

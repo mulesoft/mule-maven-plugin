@@ -50,12 +50,13 @@ public class ArmClient extends AbstractMuleClient {
   private static final String API_VERSION = "v1";
   public static final String BASE_HYBRID_API_PATH = "/hybrid/api";
   public static final String HYBRID_API_V1 = BASE_HYBRID_API_PATH + "/" + API_VERSION;
-  public static final String CLUSTERS = HYBRID_API_V1 + "/clusters";
-  public static final String APPLICATIONS = HYBRID_API_V1 + "/applications";
-  public static final String SERVER_GROUPS = HYBRID_API_V1 + "/serverGroups";
+  private static final String CLUSTERS = HYBRID_API_V1 + "/clusters";
+  private static final String APPLICATIONS = HYBRID_API_V1 + "/applications";
+  private static final String SERVER_GROUPS = HYBRID_API_V1 + "/serverGroups";
 
-  public static final String SERVERS = HYBRID_API_V1 + "/servers";
-  public static final String REGISTRATION = HYBRID_API_V1 + "/servers/registrationToken";
+  private static final String SERVERS = HYBRID_API_V1 + "/servers";
+  private static final String SERVER_GROUP = HYBRID_API_V1 + "/serverGroups";
+  private static final String REGISTRATION = HYBRID_API_V1 + "/servers/registrationToken";
 
   private boolean armInsecure;
 
@@ -123,7 +124,7 @@ public class ArmClient extends AbstractMuleClient {
     return body;
   }
 
-  private String getId(TargetType targetType, String target) {
+  public String getId(TargetType targetType, String target) {
     String id = null;
     switch (targetType) {
       case server:
@@ -151,6 +152,11 @@ public class ArmClient extends AbstractMuleClient {
 
   public Servers getServer(Integer serverId) {
     Servers target = get(baseUri, SERVERS + "/" + serverId, Servers.class);
+    return target;
+  }
+
+  public Servers getServerGroup(Integer serverGroupId) {
+    Servers target = get(baseUri, SERVER_GROUP + "/" + serverGroupId, Servers.class);
     return target;
   }
 

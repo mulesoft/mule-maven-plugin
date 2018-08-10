@@ -18,6 +18,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Parent;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,6 +31,8 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 
 public class ArtifactUtilsTest {
 
+  private static final String PARENT_VERSION = "2.0.0";
+  private static final String PARENT_GROUP_ID = "parent.group.id";
   private static final String GROUP_ID = "group.id";
   private static final String ARTIFACT_ID = "artifact-id";
   private static final String VERSION = "1.0.0";
@@ -41,6 +45,9 @@ public class ArtifactUtilsTest {
   private BundleDescriptor bundleDescriptor;
   private ArtifactCoordinates artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
   private URI bundleURI;
+  private Model pomModel;
+  private Parent parentProject;
+
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -51,6 +58,14 @@ public class ArtifactUtilsTest {
         new BundleDescriptor.Builder().setGroupId(GROUP_ID).setArtifactId(ARTIFACT_ID).setVersion(VERSION).setBaseVersion(VERSION)
             .build();
     bundleURI = new URI(RESOURCE_LOCATION);
+    pomModel = new Model();
+    pomModel.setGroupId(GROUP_ID);
+    pomModel.setArtifactId(ARTIFACT_ID);
+    pomModel.setVersion(VERSION);
+    parentProject = new Parent();
+    parentProject.setVersion(PARENT_VERSION);
+    parentProject.setGroupId(PARENT_GROUP_ID);
+    pomModel.setParent(parentProject);
   }
 
   @Test
@@ -131,5 +146,32 @@ public class ArtifactUtilsTest {
     assertThat("The classifier is not the expected", actualBundleDescriptor.getClassifier(),
                equalTo(Optional.of(MULE_APP_CLASSIFIER)));
     assertThat("The type is not the expected", actualBundleDescriptor.getType(), equalTo(DEFAULT_ARTIFACT_DESCRIPTOR_TYPE));
+  }
+
+  @Test
+  public void getBundleDescriptorTest() {
+    BundleDescriptor actualBundleDescriptor =
+        ArtifactUtils.getBundleDescriptor(pomModel);
+
+    assertThat("Group id is not the expected", actualBundleDescriptor.getGroupId(), equalTo(GROUP_ID));
+    assertThat("Artifact id is not the expected", actualBundleDescriptor.getArtifactId(), equalTo(ARTIFACT_ID));
+    assertThat("Version is not the expected", actualBundleDescriptor.getVersion(), equalTo(VERSION));
+    assertThat("Base version is not the expected", actualBundleDescriptor.getBaseVersion(), equalTo(VERSION));
+    assertThat("Type is not the expected", actualBundleDescriptor.getType(), equalTo(POM_TYPE));
+  }
+
+  @Test
+  public void getBundleDescriptorVersionFromParentTest() {
+    pomModel.setVersion(null);
+    BundleDescriptor actualBundleDescriptor = ArtifactUtils.getBundleDescriptor(pomModel);
+    assertThat("Version is not the expected", actualBundleDescriptor.getVersion(), equalTo(PARENT_VERSION));
+    assertThat("Base version is not the expected", actualBundleDescriptor.getBaseVersion(), equalTo(PARENT_VERSION));
+  }
+
+  @Test
+  public void getBundleDescriptorGroupIdFromParentTest() {
+    pomModel.setGroupId(null);
+    BundleDescriptor actualBundleDescriptor = ArtifactUtils.getBundleDescriptor(pomModel);
+    assertThat("Goup id is not the expected", actualBundleDescriptor.getGroupId(), equalTo(PARENT_GROUP_ID));
   }
 }

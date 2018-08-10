@@ -11,12 +11,18 @@
 package org.mule.tools.api.classloader.model.util;
 
 import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
+import static org.mule.maven.client.internal.util.MavenUtils.getPomModelFromFile;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
 
+import java.io.File;
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.model.Model;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.Artifact;
@@ -24,9 +30,13 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 
 /**
  * ArtifactUtils presents helper methods to convert artifact related classes and recognize mule plugin artifacts.
- *
  */
 public class ArtifactUtils {
+
+  private static final String PACKAGE_TYPE = "jar";
+  private static final String PROVIDED = "provided";
+  private static final URI EMPTY_RESOURCE = URI.create("");
+  private static final String POM_TYPE = "pom";
 
   /**
    * Convert a {@link BundleDescriptor} instance to {@link ArtifactCoordinates}.
@@ -91,4 +101,44 @@ public class ArtifactUtils {
         .setType(artifactCoordinates.getType()).build();
   }
 
+
+  public static List<Artifact> toApplicationModelArtifacts(List<BundleDependency> appDependencies) {
+    List<Artifact> dependencies = toArtifacts(appDependencies);
+    dependencies.forEach(ArtifactUtils::updateScopeIfDomain);
+    return dependencies;
+  }
+
+  public static void updateScopeIfDomain(Artifact artifact) {
+    String classifier = artifact.getArtifactCoordinates().getClassifier();
+    if (StringUtils.equals(classifier, MULE_DOMAIN.toString())) {
+      artifact.getArtifactCoordinates().setScope(PROVIDED);
+      artifact.setUri(EMPTY_RESOURCE);
+    }
+  }
+
+
+  public static ArtifactCoordinates getApplicationArtifactCoordinates(File pomFile) {
+    ArtifactCoordinates appCoordinates = toArtifactCoordinates(getPomProjectBundleDescriptor(pomFile));
+    appCoordinates.setType(PACKAGE_TYPE);
+    appCoordinates.setClassifier(getPomModelFromFile(pomFile).getPackaging());
+    return appCoordinates;
+  }
+
+  public static BundleDescriptor getPomProjectBundleDescriptor(File pomFile) {
+    Model pomModel = getPomModelFromFile(pomFile);
+    return getBundleDescriptor(pomModel);
+  }
+
+
+  public static BundleDescriptor getBundleDescriptor(Model pomModel) {
+    final String version =
+        StringUtils.isNotBlank(pomModel.getVersion()) ? pomModel.getVersion() : pomModel.getParent().getVersion();
+    return new BundleDescriptor.Builder()
+        .setGroupId(StringUtils.isNotBlank(pomModel.getGroupId()) ? pomModel.getGroupId() : pomModel.getParent().getGroupId())
+        .setArtifactId(pomModel.getArtifactId())
+        .setVersion(version)
+        .setBaseVersion(version)
+        .setType(POM_TYPE)
+        .build();
+  }
 }

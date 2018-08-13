@@ -10,7 +10,6 @@
 
 package org.mule.tools.api.classloader.model;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
@@ -35,9 +34,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Parent;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -46,22 +42,17 @@ import org.junit.rules.TemporaryFolder;
 public class ApplicationClassLoaderModelAssemblerTest {
 
 
-  private static final Object POM_TYPE = "pom";
-  private static final String PARENT_VERSION = "2.0.0";
-  private static final String PARENT_GROUP_ID = "parent.group.id";
+
   private static final String USER_REPOSITORY_LOCATION =
       "/Users/muleuser/.m2/repository";
   private static final String SEPARATOR = "/";
   private static final String MULE_PLUGIN_CLASSIFIER = "mule-plugin";
   private static final String GROUP_ID_SEPARATOR = ".";
   private static final String MULE_DOMAIN_CLASSIFIER = "mule-domain";
-  private ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssembler;
   private static final String GROUP_ID = "group.id";
   private static final String ARTIFACT_ID = "artifact-id";
   private static final String VERSION = "1.0.0";
   private static final String TYPE = "jar";
-  private Model pomModel;
-  private Parent parentProject;
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -71,48 +62,8 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
   private AetherMavenClient aetherMavenClientMock;
 
-  @Before
-  public void before() throws IOException {
-    applicationClassLoaderModelAssembler = new ApplicationClassLoaderModelAssembler(mock(AetherMavenClient.class));
-    pomModel = new Model();
-    pomModel.setGroupId(GROUP_ID);
-    pomModel.setArtifactId(ARTIFACT_ID);
-    pomModel.setVersion(VERSION);
-    parentProject = new Parent();
-    parentProject.setVersion(PARENT_VERSION);
-    parentProject.setGroupId(PARENT_GROUP_ID);
-    pomModel.setParent(parentProject);
-  }
-
   @Test
-  public void getBundleDescriptorTest() {
-    BundleDescriptor actualBundleDescriptor =
-        applicationClassLoaderModelAssembler.getBundleDescriptor(pomModel);
-
-    assertThat("Group id is not the expected", actualBundleDescriptor.getGroupId(), equalTo(GROUP_ID));
-    assertThat("Artifact id is not the expected", actualBundleDescriptor.getArtifactId(), equalTo(ARTIFACT_ID));
-    assertThat("Version is not the expected", actualBundleDescriptor.getVersion(), equalTo(VERSION));
-    assertThat("Base version is not the expected", actualBundleDescriptor.getBaseVersion(), equalTo(VERSION));
-    assertThat("Type is not the expected", actualBundleDescriptor.getType(), equalTo(POM_TYPE));
-  }
-
-  @Test
-  public void getBundleDescriptorVersionFromParentTest() {
-    pomModel.setVersion(null);
-    BundleDescriptor actualBundleDescriptor = applicationClassLoaderModelAssembler.getBundleDescriptor(pomModel);
-    assertThat("Version is not the expected", actualBundleDescriptor.getVersion(), equalTo(PARENT_VERSION));
-    assertThat("Base version is not the expected", actualBundleDescriptor.getBaseVersion(), equalTo(PARENT_VERSION));
-  }
-
-  @Test
-  public void getBundleDescriptorGroupIdFromParentTest() {
-    pomModel.setGroupId(null);
-    BundleDescriptor actualBundleDescriptor = applicationClassLoaderModelAssembler.getBundleDescriptor(pomModel);
-    assertThat("Goup id is not the expected", actualBundleDescriptor.getGroupId(), equalTo(PARENT_GROUP_ID));
-  }
-
-  @Test
-  public void getClassLoaderModelTest() throws URISyntaxException, IOException {
+  public void getClassLoaderModelTest() throws URISyntaxException {
     List<BundleDependency> appDependencies = new ArrayList<>();
     BundleDependency dependency1 = buildBundleDependency(1, 1, StringUtils.EMPTY);
     BundleDependency dependency2 =
@@ -227,85 +178,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
                containsInAnyOrder(toArtifact(mulePluginTransitiveDependency1)));
   }
 
-  @Test
-  public void hasSameArtifactId() throws URISyntaxException {
-    BundleDependency bundleDependency1 = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER);
-    BundleDependency bundleDependency2 = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER);
-    assertThat("Method should have returned true",
-               applicationClassLoaderModelAssembler.hasSameArtifactIdAndMajor(bundleDependency1, bundleDependency2), is(true));
-  }
 
-  @Test
-  public void hasSameArtifactIdFalse() throws URISyntaxException {
-    BundleDependency bundleDependency1 = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER);
-    BundleDependency bundleDependency2 = buildBundleDependency(1, 2, MULE_PLUGIN_CLASSIFIER);
-    assertThat("Method should have returned false",
-               applicationClassLoaderModelAssembler.hasSameArtifactIdAndMajor(bundleDependency1, bundleDependency2), is(false));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void resolveMulePluginsVersionsPluginsToResolveNull() {
-    applicationClassLoaderModelAssembler.resolveMulePluginsVersions(null, new ArrayList<>());
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void resolveMulePluginsVersionsDefinitivePluginsNull() {
-    applicationClassLoaderModelAssembler.resolveMulePluginsVersions(new ArrayList<>(), null);
-  }
-
-  @Test
-  public void resolveMulePluginsVersionsDefinitivePluginsNewer() throws URISyntaxException {
-    BundleDependency mulePluginToResolveOlder = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER, "1.0.0");
-    BundleDependency mulePluginToResolveNewer = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER, "1.0.1");
-
-    List<BundleDependency> mulePluginsToResolve = new ArrayList<>();
-    mulePluginsToResolve.add(mulePluginToResolveOlder);
-
-    List<BundleDependency> definitiveMulePlugins = new ArrayList<>();
-    definitiveMulePlugins.add(mulePluginToResolveNewer);
-
-    List<BundleDependency> resolvedPlugins =
-        applicationClassLoaderModelAssembler.resolveMulePluginsVersions(mulePluginsToResolve, definitiveMulePlugins);
-    assertThat("List should contain only the newer version", resolvedPlugins, containsInAnyOrder(mulePluginToResolveNewer));
-    assertThat("List should contain only one dependency", resolvedPlugins.size(), equalTo(1));
-  }
-
-  @Test
-  public void resolveMulePluginsVersionsDefinitivePluginsOlder() throws URISyntaxException {
-    BundleDependency mulePluginToResolveOlder = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER, "1.0.0");
-    BundleDependency mulePluginToResolveNewer = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER, "1.0.1");
-
-    List<BundleDependency> mulePluginsToResolve = new ArrayList<>();
-    mulePluginsToResolve.add(mulePluginToResolveNewer);
-
-    List<BundleDependency> definitiveMulePlugins = new ArrayList<>();
-    definitiveMulePlugins.add(mulePluginToResolveOlder);
-
-    List<BundleDependency> resolvedPlugins =
-        applicationClassLoaderModelAssembler.resolveMulePluginsVersions(mulePluginsToResolve, definitiveMulePlugins);
-    assertThat("List should contain only the older version", resolvedPlugins, containsInAnyOrder(mulePluginToResolveOlder));
-    assertThat("List should contain only one dependency", resolvedPlugins.size(), equalTo(1));
-  }
-
-  @Test
-  public void resolveMulePluginsVersions() throws URISyntaxException {
-    BundleDependency mulePluginToResolveOlder = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER, "1.0.0");
-    BundleDependency mulePluginToResolveNewer = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER, "1.0.1");
-    BundleDependency anotherRandomMulePlugin = buildBundleDependency(0, 0, MULE_PLUGIN_CLASSIFIER, "1.0.0");
-
-    List<BundleDependency> mulePluginsToResolve = new ArrayList<>();
-    mulePluginsToResolve.add(mulePluginToResolveNewer);
-    mulePluginsToResolve.add(anotherRandomMulePlugin);
-
-    List<BundleDependency> definitiveMulePlugins = new ArrayList<>();
-    definitiveMulePlugins.add(mulePluginToResolveOlder);
-
-    List<BundleDependency> resolvedPlugins =
-        applicationClassLoaderModelAssembler.resolveMulePluginsVersions(mulePluginsToResolve, definitiveMulePlugins);
-    assertThat("List should contain only the older version", resolvedPlugins,
-               containsInAnyOrder(mulePluginToResolveOlder, anotherRandomMulePlugin));
-    assertThat("List should contain only one dependency", resolvedPlugins.size(), equalTo(2));
-  }
 
   private BundleDependency buildBundleDependency(int groupIdSuffix, int artifactIdSuffix, String classifier)
       throws URISyntaxException {
@@ -335,8 +208,6 @@ public class ApplicationClassLoaderModelAssemblerTest {
         spy(new ApplicationClassLoaderModelAssembler(aetherMavenClientMock));
     ArtifactCoordinates projectArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
     doReturn(projectArtifactCoordinates).when(applicationClassLoaderModelAssemblerSpy).getApplicationArtifactCoordinates(any());
-    BundleDescriptor projectBundleDescriptor = mock(BundleDescriptor.class);
-    doReturn(projectBundleDescriptor).when(applicationClassLoaderModelAssemblerSpy).getPomProjectBundleDescriptor(any());
     return applicationClassLoaderModelAssemblerSpy;
   }
 

@@ -26,7 +26,7 @@ public class CloudHubDeploymentVerification implements DeploymentVerification {
   private final CloudHubClient client;
   private DefaultDeploymentVerification verification;
 
-  private static final String FAILED_STATUS = "FAILED";
+  private static final String FAILED_STATUS = "FAIL";
   public static final String STARTED_STATUS = "STARTED";
 
   public CloudHubDeploymentVerification(CloudHubClient client) {
@@ -46,7 +46,7 @@ public class CloudHubDeploymentVerification implements DeploymentVerification {
       return (deployment) -> {
         Application application = client.getApplication(deployment.getApplicationName());
         if (application != null) {
-          if (StringUtils.equals(FAILED_STATUS, application.status)) {
+          if (StringUtils.containsIgnoreCase(application.status, FAILED_STATUS)) {
             throw new IllegalStateException("Deployment failed");
           } else if (StringUtils.equals(STARTED_STATUS, application.status)) {
             return true;

@@ -49,7 +49,7 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
     getLog().debug("Processing sources...");
     if (!(lightweightPackage && skipPluginCompatibilityValidation)) {
       RepositoryGenerator repositoryGenerator =
-          new RepositoryGenerator(session.getRequest().getPom(), outputDirectory,
+          new RepositoryGenerator(session.getCurrentProject().getFile(), outputDirectory,
                                   new ArtifactInstaller(new MavenPackagerLog(getLog())),
                                   getClassLoaderModelAssembler());
       try {

@@ -266,6 +266,20 @@ public class ProcessSourcesMojoTest extends MojoTest {
                equalTo(expectedClassloaderModelFileContent));
   }
 
+  @Test
+  public void testMultiModuleRepositoryGeneration() throws IOException, VerificationException {
+    processSourcesOnProject("multi-module-application");
+    checkGeneratedRepository("app");
+    checkGeneratedRepository("policy");
+  }
+
+  private void checkGeneratedRepository(String type) throws IOException {
+    File emptySubmoduleRepository = getFile("/multi-module-application/empty-" + type + "/target/repository");
+    File expectedSubmoduleRepository = getExpectedStructure("/expected-empty-" + type + "-multimodule-repository");
+    assertThat("Repository has not the expected structure", emptySubmoduleRepository,
+               hasSameTreeStructure(expectedSubmoduleRepository, new String[] {}));
+  }
+
   private void processSourcesOnProject(String applicationName) throws IOException, VerificationException {
     processSourcesOnProject(applicationName, emptyList());
   }

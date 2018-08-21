@@ -90,16 +90,10 @@ public class CloudHubDeployment extends AnypointDeployment {
     if (isNotBlank(cloudHubWorkers)) {
       setWorkers(Integer.valueOf(cloudHubWorkers));
     }
-    if (getWorkers() == null) {
-      setWorkers(Integer.valueOf("1"));
-    }
 
     String cloudHubWorkerType = getProperty("cloudhub.workerType");
     if (isNotBlank(cloudHubWorkerType)) {
       setWorkerType(cloudHubWorkerType);
-    }
-    if (isBlank(getWorkerType())) {
-      setWorkerType("Medium");
     }
 
   }

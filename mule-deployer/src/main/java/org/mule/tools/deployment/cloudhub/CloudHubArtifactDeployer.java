@@ -183,12 +183,12 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
         application.setRegion(deployment.getRegion());
       }
 
-      Integer workersAmout =
+      Integer workersAmount =
           (deployment.getWorkers() == null) ? originalApplication.getWorkers().getAmount() : deployment.getWorkers();
       String workerType =
           isBlank(deployment.getWorkerType()) ? originalApplication.getWorkers().getType().getName() : deployment.getWorkerType();
 
-      application.setWorkers(getWorkers(workersAmout, workerType));
+      application.setWorkers(getWorkers(workersAmount, workerType));
 
     } else {
       application.setDomain(deployment.getApplicationName());

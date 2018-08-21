@@ -6,14 +6,11 @@
  */
 package org.mule.tools.deployment.cloudhub;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
-import java.util.Map;
-
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.model.MuleVersion;
+import org.mule.tools.client.cloudhub.model.WorkerType;
+import org.mule.tools.client.cloudhub.model.Workers;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.deployment.artifact.ArtifactDeployer;
 import org.mule.tools.model.Deployment;
@@ -21,6 +18,11 @@ import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
+
+import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Deploys mule artifacts to CloudHub using the {@link CloudHubClient}.
@@ -178,6 +180,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       } else {
         application.setRegion(deployment.getRegion());
       }
+      application.setWorkers(getWorkers());
     } else {
       application.setDomain(deployment.getApplicationName());
 
@@ -189,8 +192,19 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
       String region = isBlank(deployment.getRegion()) ? DEFAULT_CH_REGION : deployment.getRegion();
       application.setRegion(region);
+
+      application.setWorkers(getWorkers());
     }
 
     return application;
+  }
+
+  private Workers getWorkers() {
+    Workers workers = new Workers();
+    workers.setAmount(deployment.getWorkers());
+    WorkerType workerType = new WorkerType();
+    workerType.setName(deployment.getWorkerType());
+    workers.setType(workerType);
+    return workers;
   }
 }

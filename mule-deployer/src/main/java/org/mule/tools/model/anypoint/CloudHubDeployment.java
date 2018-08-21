@@ -56,8 +56,8 @@ public class CloudHubDeployment extends AnypointDeployment {
    *
    * @since 2.0
    */
-  public Optional<Integer> getWorkers() {
-    return Optional.ofNullable(workers);
+  public Integer getWorkers() {
+    return workers;
   }
 
   public void setWorkers(Integer workers) {
@@ -97,9 +97,6 @@ public class CloudHubDeployment extends AnypointDeployment {
     String cloudHubWorkers = getProperty("cloudhub.workers");
     if (isNotBlank(cloudHubWorkers)) {
       setWorkers(Integer.valueOf(cloudHubWorkers));
-    }
-    if (!getWorkers().isPresent()) {
-      setWorkers(Integer.valueOf("1"));
     }
 
     String cloudHubWorkerType = getProperty("cloudhub.workerType");

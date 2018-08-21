@@ -26,7 +26,7 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.replaceEachRepeatedly;
+
 
 /**
  * Deploys mule artifacts to CloudHub using the {@link CloudHubClient}.
@@ -191,12 +191,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
         application.setRegion(deployment.getRegion());
       }
 
-      Integer workersAmount =
-          (deployment.getWorkers() == null) ? originalApplication.getWorkers().getAmount() : deployment.getWorkers();
-      String workerType =
-          isBlank(deployment.getWorkerType()) ? originalApplication.getWorkers().getType().getName() : deployment.getWorkerType();
-
-      application.setWorkers(getWorkers(workersAmount, workerType));
+      application.setWorkers(getWorkers());
 
     } else {
       application.setDomain(deployment.getApplicationName());
@@ -211,10 +206,8 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       String region = isBlank(deployment.getRegion()) ? DEFAULT_CH_REGION : deployment.getRegion();
       application.setRegion(region);
 
-      Integer workersAmout = (deployment.getWorkers() == null) ? DEFAULT_CH_WORKERS : deployment.getWorkers();
-      String workerType = isBlank(deployment.getWorkerType()) ? DEFAULT_CH_WORKER_TYPE : deployment.getWorkerType();
+      application.setWorkers(getWorkers());
 
-      application.setWorkers(getWorkers(workersAmout, workerType));
     }
 
     return application;
@@ -231,12 +224,11 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     return originalProperties;
   }
 
-
-  private Workers getWorkers(Integer amount, String type) {
+  private Workers getWorkers() {
     Workers workers = new Workers();
-    workers.setAmount(amount);
+    workers.setAmount(deployment.getWorkers());
     WorkerType workerType = new WorkerType();
-    workerType.setName(type);
+    workerType.setName(deployment.getWorkerType());
     workers.setType(workerType);
     return workers;
   }

@@ -30,6 +30,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
   private static final String DEFAULT_CH_REGION = "us-east-1";
+  private static final String DEFAULT_CH_WORKER_TYPE = "Micro";
+  private static final Integer DEFAULT_CH_WORKERS = 1;
   private static final Long DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT = 600000L;
 
   private final DeployerLog log;
@@ -180,7 +182,14 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       } else {
         application.setRegion(deployment.getRegion());
       }
-      application.setWorkers(getWorkers());
+
+      Integer workersAmount =
+          (deployment.getWorkers() == null) ? originalApplication.getWorkers().getAmount() : deployment.getWorkers();
+      String workerType =
+          isBlank(deployment.getWorkerType()) ? originalApplication.getWorkers().getType().getName() : deployment.getWorkerType();
+
+      application.setWorkers(getWorkers(workersAmount, workerType));
+
     } else {
       application.setDomain(deployment.getApplicationName());
 
@@ -193,17 +202,20 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       String region = isBlank(deployment.getRegion()) ? DEFAULT_CH_REGION : deployment.getRegion();
       application.setRegion(region);
 
-      application.setWorkers(getWorkers());
+      Integer workersAmout = (deployment.getWorkers() == null) ? DEFAULT_CH_WORKERS : deployment.getWorkers();
+      String workerType = isBlank(deployment.getWorkerType()) ? DEFAULT_CH_WORKER_TYPE : deployment.getWorkerType();
+
+      application.setWorkers(getWorkers(workersAmout, workerType));
     }
 
     return application;
   }
 
-  private Workers getWorkers() {
+  private Workers getWorkers(Integer amount, String type) {
     Workers workers = new Workers();
-    workers.setAmount(deployment.getWorkers());
+    workers.setAmount(amount);
     WorkerType workerType = new WorkerType();
-    workerType.setName(deployment.getWorkerType());
+    workerType.setName(type);
     workers.setType(workerType);
     return workers;
   }

@@ -34,14 +34,6 @@ public class CloudHubDeploymentTest {
   }
 
   @Test
-  public void setCloudHubDeploymentDefaultValuesCloudHubWorkersNotSetTest() throws DeploymentException {
-    String cloudHubWorkersDefaultValue = "1";
-    deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The cloudhub workers property was not resolved to the default value",
-               deploymentSpy.getWorkers(), equalTo(Integer.valueOf(cloudHubWorkersDefaultValue)));
-  }
-
-  @Test
   public void setCloudHubDeploymentDefaultValuesCloudHubWorkerTypeSetSystemPropertyTest() throws DeploymentException {
     String cloudHubWorkerType = "worker-type";
     System.setProperty("cloudhub.workerType", cloudHubWorkerType);
@@ -51,11 +43,4 @@ public class CloudHubDeploymentTest {
     System.clearProperty("cloudhub.workerType");
   }
 
-  @Test
-  public void setCloudHubDeploymentDefaultValuesCloudHubWorkerTypeNotSetTest() throws DeploymentException {
-    String cloudHubWorkerTypeDefaultValue = "Medium";
-    deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The cloudhub worker type property was not resolved to the default value",
-               deploymentSpy.getWorkerType(), equalTo(cloudHubWorkerTypeDefaultValue));
-  }
 }

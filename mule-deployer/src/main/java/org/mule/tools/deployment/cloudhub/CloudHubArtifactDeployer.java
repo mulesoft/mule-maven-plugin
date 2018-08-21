@@ -193,6 +193,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     } else {
       application.setDomain(deployment.getApplicationName());
 
+      application.setMonitoringAutoRestart(true);
       MuleVersion muleVersion = new MuleVersion();
       muleVersion.setVersion(deployment.getMuleVersion());
       application.setMuleVersion(muleVersion);

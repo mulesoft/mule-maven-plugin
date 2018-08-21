@@ -23,10 +23,8 @@ import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Optional.empty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 
@@ -36,6 +34,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
   private static final String DEFAULT_CH_REGION = "us-east-1";
+  private static final String DEFAULT_CH_WORKER_TYPE = "Micro";
+  private static final Integer DEFAULT_CH_WORKERS = 1;
   private static final Long DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT = 600000L;
 
   private final DeployerLog log;
@@ -128,7 +128,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
    */
   protected void createApplication() {
     log.info("Creating application: " + deployment.getApplicationName());
-    client.createApplication(getApplication(empty()), deployment.getArtifact());
+    client.createApplication(getApplication(null), deployment.getArtifact());
   }
 
   /**
@@ -141,7 +141,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     Application currentApplication = client.getApplications(deployment.getApplicationName());
     if (currentApplication != null) {
       log.info("Application: " + deployment.getApplicationName() + " already exists, redeploying");
-      client.updateApplication(getApplication(Optional.of(currentApplication)), deployment.getArtifact());
+      client.updateApplication(getApplication(currentApplication), deployment.getArtifact());
     } else {
       log.error("Application name: " + deployment.getApplicationName() + " is not available. Aborting.");
       throw new DeploymentException("Domain " + deployment.getApplicationName() + " is not available. Aborting.");
@@ -168,25 +168,32 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   }
 
 
-  private Application getApplication(Optional<Application> originalApplication) {
+  private Application getApplication(Application originalApplication) {
     Application application = new Application();
-    if (originalApplication.isPresent()) {
+    if (originalApplication != null) {
       application.setDomain(deployment.getApplicationName());
 
       MuleVersion muleVersion = new MuleVersion();
       muleVersion.setVersion(deployment.getMuleVersion().get());
       application.setMuleVersion(muleVersion);
 
-      Map<String, String> resolvedProperties = resolveProperties(originalApplication.get().getProperties(),
+      Map<String, String> resolvedProperties = resolveProperties(originalApplication.getProperties(),
                                                                  deployment.getProperties(), deployment.overrideProperties());
       application.setProperties(resolvedProperties);
 
       if (isBlank(deployment.getRegion())) {
-        application.setRegion(originalApplication.get().getRegion());
+        application.setRegion(originalApplication.getRegion());
       } else {
         application.setRegion(deployment.getRegion());
       }
-      application.setWorkers(getWorkers());
+
+      Integer workersAmount =
+          (deployment.getWorkers() == null) ? originalApplication.getWorkers().getAmount() : deployment.getWorkers();
+      String workerType =
+          isBlank(deployment.getWorkerType()) ? originalApplication.getWorkers().getType().getName() : deployment.getWorkerType();
+
+      application.setWorkers(getWorkers(workersAmount, workerType));
+
     } else {
       application.setDomain(deployment.getApplicationName());
 
@@ -200,7 +207,10 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       String region = isBlank(deployment.getRegion()) ? DEFAULT_CH_REGION : deployment.getRegion();
       application.setRegion(region);
 
-      application.setWorkers(getWorkers());
+      Integer workersAmout = (deployment.getWorkers() == null) ? DEFAULT_CH_WORKERS : deployment.getWorkers();
+      String workerType = isBlank(deployment.getWorkerType()) ? DEFAULT_CH_WORKER_TYPE : deployment.getWorkerType();
+
+      application.setWorkers(getWorkers(workersAmout, workerType));
     }
 
     return application;
@@ -217,11 +227,11 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     return originalProperties;
   }
 
-  private Workers getWorkers() {
+  private Workers getWorkers(Integer amount, String type) {
     Workers workers = new Workers();
-    workers.setAmount(deployment.getWorkers());
+    workers.setAmount(amount);
     WorkerType workerType = new WorkerType();
-    workerType.setName(deployment.getWorkerType());
+    workerType.setName(type);
     workers.setType(workerType);
     return workers;
   }

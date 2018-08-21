@@ -103,10 +103,6 @@ public class CloudHubDeployment extends AnypointDeployment {
     if (isNotBlank(cloudHubWorkerType)) {
       setWorkerType(cloudHubWorkerType);
     }
-    if (isBlank(getWorkerType())) {
-      setWorkerType("Micro");
-    }
-
   }
 
   public boolean overrideProperties() {

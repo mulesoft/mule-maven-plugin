@@ -70,6 +70,8 @@ public class CloudHubArtifactDeployerTest {
     when(deploymentMock.getApplicationName()).thenReturn(FAKE_APPLICATION_NAME);
     when(deploymentMock.getMuleVersion()).thenReturn(Optional.of("4.0.0"));
     when(deploymentMock.getArtifact()).thenReturn(applicationFile);
+    when(deploymentMock.getWorkers()).thenReturn(1);
+    when(deploymentMock.getWorkerType()).thenReturn("Micro");
 
 
     when(clientMock.getApplications(FAKE_APPLICATION_NAME)).thenReturn(applicationMock);

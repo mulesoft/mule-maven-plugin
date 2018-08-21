@@ -20,7 +20,6 @@ import java.util.Optional;
 import static java.lang.System.getProperty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-
 import java.util.Map;
 
 public class ArmDeployment extends AnypointDeployment {

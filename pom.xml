@@ -91,7 +91,7 @@
         <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
         <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
         <findbugs.maven.plugin.version>3.0.4</findbugs.maven.plugin.version>
-        <formatter.maven.plugin.version>1.8.0</formatter.maven.plugin.version>
+        <formatter.maven.plugin.version>1.9.0</formatter.maven.plugin.version>
         <build.helper.maven.plugin.version>1.8</build.helper.maven.plugin.version>
 
         <maven.plugin.plugin.version>3.5</maven.plugin.plugin.version>
@@ -403,7 +403,6 @@
                         <compilerTargetPlatform>${java.source}</compilerTargetPlatform>
                         <configFile>${basedir}/${formatterConfigPath}</configFile>
                         <configJsFile>${basedir}/${formatterConfigPath}</configJsFile>
-                        <lineEnding>LF</lineEnding>
                         <aggregator>false</aggregator>
                         <executionRoot>true</executionRoot>
                         <skipFormatting>${skipVerifications}</skipFormatting>

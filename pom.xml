@@ -384,7 +384,6 @@
                         <compilerTargetPlatform>${java.source}</compilerTargetPlatform>
                         <configFile>${basedir}/${formatterConfigPath}</configFile>
                         <configJsFile>${basedir}/${formatterConfigPath}</configJsFile>
-                        <lineEnding>LF</lineEnding>
                         <aggregator>false</aggregator>
                         <executionRoot>true</executionRoot>
                         <skipFormatting>${skipVerifications}</skipFormatting>

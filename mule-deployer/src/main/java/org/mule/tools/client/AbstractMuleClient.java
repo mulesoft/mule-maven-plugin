@@ -13,16 +13,24 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.AUTHORIZATION_HEADER;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.client.Invocation;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.commons.lang3.StringUtils;
 
 import org.mule.tools.client.agent.AbstractClient;
 import org.mule.tools.client.arm.model.Environment;
 import org.mule.tools.client.arm.model.Environments;
 import org.mule.tools.client.arm.model.Organization;
+import org.mule.tools.client.arm.model.User;
 import org.mule.tools.client.arm.model.UserInfo;
 import org.mule.tools.client.authentication.AuthenticationServiceClient;
 import org.mule.tools.client.authentication.model.Credentials;
@@ -35,6 +43,11 @@ public abstract class AbstractMuleClient extends AbstractClient {
 
   private static final String ME = "/accounts/api/me";
   private static final String ENVIRONMENTS = "/accounts/api/organizations/%s/environments";
+  public static final String ORGANIZATION = "organization";
+  public static final String SUB_ORGANIZATION_IDS = "subOrganizationIds";
+  public static final String NAME = "name";
+  public static final String USER = "user";
+  public static final String ID = "id";
 
   private static final String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
   private static final String ORG_ID_HEADER = "X-ANYPNT-ORG-ID";
@@ -76,8 +89,62 @@ public abstract class AbstractMuleClient extends AbstractClient {
   }
 
   public UserInfo getMe() {
-    UserInfo userInfo = get(baseUri, ME, UserInfo.class);
+    String userInfoJsonString = get(baseUri, ME, String.class);
+    JsonObject userInfoJson = (JsonObject) new JsonParser().parse(userInfoJsonString);
+    Organization organization = buildOrganization(userInfoJson);
+    User user = new User();
+    user.organization = organization;
+    UserInfo userInfo = new UserInfo();
+    userInfo.user = user;
     return userInfo;
+  }
+
+  private Organization buildOrganization(JsonObject userInfoJson) {
+    Organization organization = new Organization();
+    if (userInfoJson != null && userInfoJson.has(USER)) {
+      JsonObject userJson = (JsonObject) userInfoJson.get(USER);
+      if (userJson != null && userJson.has(ORGANIZATION)) {
+        JsonObject organizationJson = userJson.getAsJsonObject(ORGANIZATION);
+        if (organizationJson.has(ID) && organizationJson.has(NAME)) {
+          organization.id = organizationJson.get(ID).getAsString();
+          organization.name = organizationJson.get(NAME).getAsString();
+          organization.subOrganizations = resolveSuborganizations(userJson, organizationJson);
+        }
+      }
+    }
+    return organization;
+  }
+
+  protected List<Organization> resolveSuborganizations(JsonObject userJson, JsonObject organizationJson) {
+    List<Organization> suborganizations = new ArrayList<>();
+    if (organizationJson.has(SUB_ORGANIZATION_IDS)) {
+      Set<String> ids = getSuborganizationIds(organizationJson);
+      suborganizations.addAll(resolveAllSuborganizations(ids, userJson, "memberOfOrganizations"));
+      suborganizations.addAll(resolveAllSuborganizations(ids, userJson, "contributorOfOrganizations"));
+    }
+    return suborganizations;
+  }
+
+  private Collection<? extends Organization> resolveAllSuborganizations(Set<String> ids, JsonObject userJson,
+                                                                        String organizationsDefinition) {
+    List<Organization> suborganizations = new ArrayList<>();
+    if (userJson.has(organizationsDefinition)) {
+      JsonArray subOrganizationUserIsMemberOf = userJson.get(organizationsDefinition).getAsJsonArray();
+      if (subOrganizationUserIsMemberOf != null) {
+        for (JsonElement org : subOrganizationUserIsMemberOf) {
+          if (org.isJsonObject()) {
+            Organization suborganization = new Organization();
+            suborganization.id = ((JsonObject) org).get(ID).getAsString();
+            if (ids.contains(suborganization.id)) {
+              suborganization.name = ((JsonObject) org).get(NAME).getAsString();
+              suborganizations.add(suborganization);
+              ids.remove(suborganization.id);
+            }
+          }
+        }
+      }
+    }
+    return suborganizations;
   }
 
   public String getOrgId() {
@@ -203,5 +270,16 @@ public abstract class AbstractMuleClient extends AbstractClient {
 
   public Environments getEnvironments() {
     return get(baseUri, String.format(ENVIRONMENTS, orgId), Environments.class);
+  }
+
+  public Set<String> getSuborganizationIds(JsonObject organizationJson) {
+    Set<String> suborganizationIds = new HashSet<>();
+    JsonArray subOrganizationIds = organizationJson.get("subOrganizationIds").getAsJsonArray();
+    if (subOrganizationIds != null) {
+      for (JsonElement id : subOrganizationIds) {
+        suborganizationIds.add(id.getAsString());
+      }
+    }
+    return suborganizationIds;
   }
 }

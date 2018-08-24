@@ -53,20 +53,13 @@ public class ArmDeploymentValidator extends AbstractDeploymentValidator {
    */
   private List<String> findRuntimeVersion(ArmClient client) {
     TargetType targetType = ((ArmDeployment) deployment).getTargetType();
-    String id = client.getId(targetType, ((ArmDeployment) deployment).getTarget());
-    Integer serverId = Integer.valueOf(id);
     List<String> runtimeVersions = new ArrayList<>();
     if (TargetType.server.equals(targetType)) {
+      String id = client.getId(targetType, ((ArmDeployment) deployment).getTarget());
+      Integer serverId = Integer.valueOf(id);
       runtimeVersions.add(client.getServer(serverId).data[0].muleVersion);
     } else {
-      Servers serverGroup = client.getServerGroup(serverId);
-      if (serverGroup.data != null) {
-        for (Server server : serverGroup.data) {
-          if (server.muleVersion != null) {
-            runtimeVersions.add(server.muleVersion);
-          }
-        }
-      }
+      runtimeVersions.add(deployment.getMuleVersion().get());
     }
     return runtimeVersions;
   }

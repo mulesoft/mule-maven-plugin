@@ -8,7 +8,7 @@ package org.mule.tools.client.cloudhub.model;
 
 /**
  * @author Mulesoft Inc.
- * @since 3.2.0
+ * @since 2.3.0
  */
 public class IpAddress {
 

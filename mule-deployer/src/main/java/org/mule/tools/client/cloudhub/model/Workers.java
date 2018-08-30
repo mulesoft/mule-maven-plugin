@@ -19,8 +19,8 @@ public class Workers {
 
   private WorkerType type;
   private Integer amount;
-  private Long remainingOrgWorkers;
-  private Long totalOrgWorkers;
+  private Double remainingOrgWorkers;
+  private Double totalOrgWorkers;
   private Map<String, String> recentStatistics;
 
   public WorkerType getType() {
@@ -39,19 +39,19 @@ public class Workers {
     this.amount = amount;
   }
 
-  public Long getRemainingOrgWorkers() {
+  public Double getRemainingOrgWorkers() {
     return remainingOrgWorkers;
   }
 
-  public void setRemainingOrgWorkers(Long remainingOrgWorkers) {
+  public void setRemainingOrgWorkers(Double remainingOrgWorkers) {
     this.remainingOrgWorkers = remainingOrgWorkers;
   }
 
-  public Long getTotalOrgWorkers() {
+  public Double getTotalOrgWorkers() {
     return totalOrgWorkers;
   }
 
-  public void setTotalOrgWorkers(Long totalOrgWorkers) {
+  public void setTotalOrgWorkers(Double totalOrgWorkers) {
     this.totalOrgWorkers = totalOrgWorkers;
   }
 

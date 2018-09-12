@@ -27,20 +27,18 @@ import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact
 
 public abstract class ClassloaderModelResolver {
 
-  protected final List<BundleDependency> appDependencies;
   protected final AetherMavenClient muleMavenPluginClient;
   private final String classifier;
   protected Map<BundleDependency, List<BundleDependency>> dependenciesMap;
 
-  public ClassloaderModelResolver(List<BundleDependency> appDependencies, AetherMavenClient muleMavenPluginClient,
+  public ClassloaderModelResolver(AetherMavenClient muleMavenPluginClient,
                                   String classifier) {
-    this.appDependencies = appDependencies;
     this.muleMavenPluginClient = muleMavenPluginClient;
     this.classifier = classifier;
     dependenciesMap = new HashMap<>();
   }
 
-  public final Collection<ClassLoaderModel> resolve() {
+  public final Collection<ClassLoaderModel> resolve(List<BundleDependency> appDependencies) {
     List<ClassLoaderModel> classloaderModels = new ArrayList<>();
 
     List<BundleDependency> dependencies = appDependencies.stream()

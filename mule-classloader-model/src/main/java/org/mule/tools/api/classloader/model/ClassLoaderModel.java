@@ -71,7 +71,7 @@ public class ClassLoaderModel {
     if (this == o) {
       return true;
     }
-    if (o == null || getClass() != o.getClass()) {
+    if (o == null || !(o instanceof ClassLoaderModel)) {
       return false;
     }
 

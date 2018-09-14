@@ -169,6 +169,10 @@ public class DefaultValuesMuleArtifactJsonGenerator {
     setBuilderWithDefaultExportedResourcesValue(builder, originalMuleArtifact, muleArtifactContentResolver);
     setBuilderWithIncludeTestDependencies(builder, muleArtifactContentResolver);
     setBuilderWithDefaultBundleDescriptorLoaderValue(builder, originalMuleArtifact);
+
+    if (originalMuleArtifact.getLogConfigFile() != null) {
+      builder.setLogConfigFile(originalMuleArtifact.getLogConfigFile());
+    }
   }
 
   private void setBuilderWithDefaultRequiredProduct(MuleApplicationModel.MuleApplicationModelBuilder builder,

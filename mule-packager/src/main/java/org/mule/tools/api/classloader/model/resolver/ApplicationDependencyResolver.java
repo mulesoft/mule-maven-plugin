@@ -42,4 +42,5 @@ public class ApplicationDependencyResolver {
 
     return resolvedApplicationDependencies;
   }
+
 }

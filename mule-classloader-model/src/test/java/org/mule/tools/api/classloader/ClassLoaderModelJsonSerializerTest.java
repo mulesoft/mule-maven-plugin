@@ -58,7 +58,7 @@ public class ClassLoaderModelJsonSerializerTest {
     List<Artifact> dependencies = getDependencies();
     expectedClassLoaderModel.setDependencies(dependencies);
     File classloaderModelJsonFile =
-            ClassLoaderModelJsonSerializer.serializeToFile(expectedClassLoaderModel, projectTargetFolder);
+        ClassLoaderModelJsonSerializer.serializeToFile(expectedClassLoaderModel, projectTargetFolder);
     assertThat("Classloader model json file name is incorrect",
                classloaderModelJsonFile.getName().endsWith(CLASSLOADER_MODEL_JSON_FILE_NAME), is(true));
     ClassLoaderModel actualClassloaderModel = ClassLoaderModelJsonSerializer.deserialize(classloaderModelJsonFile);

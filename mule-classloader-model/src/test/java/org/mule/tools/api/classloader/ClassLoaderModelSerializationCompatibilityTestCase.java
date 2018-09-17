@@ -1,3 +1,12 @@
+/*
+ * Mule ESB Maven Tools
+ * <p>
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * <p>
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 package org.mule.tools.api.classloader;
 
 
@@ -34,13 +43,14 @@ public class ClassLoaderModelSerializationCompatibilityTestCase {
   private static final URI TEST_URI = URI.create("test.com");
 
   private static final ArtifactCoordinates appArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, APP_ARTIFACT_ID, VERSION);
-  private static final ArtifactCoordinates pluginArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, PLUGIN_ARTIFACT_ID, VERSION);
+  private static final ArtifactCoordinates pluginArtifactCoordinates =
+      new ArtifactCoordinates(GROUP_ID, PLUGIN_ARTIFACT_ID, VERSION);
 
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
   @Test
-  public void testSerializationOfNewArtifactVersion() throws Exception{
+  public void testSerializationOfNewArtifactVersion() throws Exception {
     List<Artifact> dependencies = new ArrayList<>();
     dependencies.add(new ArtifactWithExtraFields(pluginArtifactCoordinates, TEST_URI, "transientField"));
     ClassLoaderModel classLoaderModel = new ClassLoaderModel(VERSION, appArtifactCoordinates);
@@ -51,7 +61,7 @@ public class ClassLoaderModelSerializationCompatibilityTestCase {
   }
 
   @Test
-  public void testSerializationOfNewModelVersion() throws Exception{
+  public void testSerializationOfNewModelVersion() throws Exception {
     List<Artifact> dependencies = new ArrayList<>();
     dependencies.add(new Artifact(pluginArtifactCoordinates, TEST_URI));
     ClassLoaderModel classLoaderModel = new ClassLoaderModelWithExtraField(VERSION, appArtifactCoordinates, "transientField");
@@ -76,7 +86,7 @@ public class ClassLoaderModelSerializationCompatibilityTestCase {
     assertThat(originalModel, equalTo(deserializedModel));
     List<Artifact> originalDependencies = originalModel.getDependencies();
     List<Artifact> deserializedDependencies = deserializedModel.getDependencies();
-    for(int i = 0; i<originalDependencies.size(); i++) {
+    for (int i = 0; i < originalDependencies.size(); i++) {
       Artifact originalArtifact = originalDependencies.get(i);
       Artifact deserializedArtifact = deserializedDependencies.get(i);
       assertThat(originalArtifact, equalTo(deserializedArtifact));
@@ -99,7 +109,7 @@ public class ClassLoaderModelSerializationCompatibilityTestCase {
 
   }
 
-  private class ClassLoaderModelWithExtraField extends ClassLoaderModel{
+  private class ClassLoaderModelWithExtraField extends ClassLoaderModel {
 
     private String newField;
 

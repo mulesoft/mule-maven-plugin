@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "artifactCoordinates": {
     "groupId": "org.apache.maven.plugin.my.unit",
     "artifactId": "empty-classloader-model-project",
@@ -14,7 +14,8 @@
         "version": "1.0.0-SNAPSHOT",
         "type": "jar"
       },
-      "uri": "repository/group/id/a/artifact-id-a/1.0.0-SNAPSHOT/artifact-id-a-1.0.0-SNAPSHOT.jar"
+      "uri": "repository/group/id/a/artifact-id-a/1.0.0-SNAPSHOT/artifact-id-a-1.0.0-SNAPSHOT.jar",
+      "isShared": "false"
     },
     {
       "artifactCoordinates": {
@@ -23,7 +24,8 @@
         "version": "1.0.0",
         "type": "jar"
       },
-      "uri": "repository/group/id/b/artifact-id-b/1.0.0/artifact-id-b-1.0.0.jar"
+      "uri": "repository/group/id/b/artifact-id-b/1.0.0/artifact-id-b-1.0.0.jar",
+      "isShared": "false"
     },
     {
       "artifactCoordinates": {
@@ -33,7 +35,8 @@
         "type": "jar",
         "classifier": "mule-plugin"
       },
-      "uri": "repository/org/mule/group/mule-plugin-a/1.0.0/mule-plugin-a-1.0.0-mule-plugin.jar"
+      "uri": "repository/org/mule/group/mule-plugin-a/1.0.0/mule-plugin-a-1.0.0-mule-plugin.jar",
+      "isShared": "false"
     },
     {
       "artifactCoordinates": {
@@ -43,7 +46,8 @@
         "type": "jar",
         "classifier": "mule-plugin"
       },
-      "uri": "repository/org/mule/group/mule-plugin-b/1.0.0/mule-plugin-b-1.0.0-mule-plugin.jar"
+      "uri": "repository/org/mule/group/mule-plugin-b/1.0.0/mule-plugin-b-1.0.0-mule-plugin.jar",
+      "isShared": "false"
     }
   ]
 }

@@ -23,21 +23,20 @@ import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 
 public class ApplicationClassLoaderModelAssembler {
 
-  public static final String CLASS_LOADER_MODEL_VERSION = "1.0.0";
+  public static final String CLASS_LOADER_MODEL_VERSION = "1.1.0";
 
   private ApplicationClassloaderModel applicationClassLoaderModel;
 
   private ApplicationDependencyResolver applicationDependencyResolver;
-  private ClassloaderModelResolver mulePluginClassLoderModelResolver;
+  private ClassloaderModelResolver mulePluginClassLoaderModelResolver;
   private ClassloaderModelResolver ramlClassLoaderModelResolver;
 
   public ApplicationClassLoaderModelAssembler(ApplicationDependencyResolver applicationDependencyResolver,
-                                              ClassloaderModelResolver mulePluginClassLoderModelResolver,
+                                              ClassloaderModelResolver mulePluginClassLoaderModelResolver,
                                               ClassloaderModelResolver ramlClassLoaderModelResolver) {
     this.applicationDependencyResolver = applicationDependencyResolver;
-    this.mulePluginClassLoderModelResolver = mulePluginClassLoderModelResolver;
+    this.mulePluginClassLoaderModelResolver = mulePluginClassLoaderModelResolver;
     this.ramlClassLoaderModelResolver = ramlClassLoaderModelResolver;
-
   }
 
   public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile)
@@ -52,7 +51,7 @@ public class ApplicationClassLoaderModelAssembler {
 
     applicationClassLoaderModel = new ApplicationClassloaderModel(appModel);
 
-    applicationClassLoaderModel.addAllMulePluginClassloaderModels(mulePluginClassLoderModelResolver.resolve(appDependencies));
+    applicationClassLoaderModel.addAllMulePluginClassloaderModels(mulePluginClassLoaderModelResolver.resolve(appDependencies));
 
     applicationClassLoaderModel.addAllRamlClassloaderModels(ramlClassLoaderModelResolver.resolve(appDependencies));
     applicationClassLoaderModel.addAllRamlToApplicationClassloaderModel(ramlClassLoaderModelResolver.getDependencies());

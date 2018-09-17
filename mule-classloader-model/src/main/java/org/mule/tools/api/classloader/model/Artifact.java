@@ -120,6 +120,7 @@ public class Artifact implements Comparable {
     } catch (URISyntaxException e) {
       throw new RuntimeException("Could not generate URI for resource, the given path is invalid: " + newUriPath, e);
     }
+    newArtifact.setShared(this.isShared());
     return newArtifact;
   }
 

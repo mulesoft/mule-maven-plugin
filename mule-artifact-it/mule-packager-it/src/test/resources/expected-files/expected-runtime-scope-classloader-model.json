@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "artifactCoordinates": {
     "groupId": "org.apache.maven.plugin.my.unit",
     "artifactId": "mule-application-compile",
@@ -16,7 +16,8 @@
         "type": "jar",
         "classifier": "mule-application"
       },
-      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-direct-dependency/1.0.0-SNAPSHOT/mule-application-direct-dependency-1.0.0-SNAPSHOT-mule-application.jar"
+      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-direct-dependency/1.0.0-SNAPSHOT/mule-application-direct-dependency-1.0.0-SNAPSHOT-mule-application.jar",
+      "isShared": false
     },
     {
       "artifactCoordinates": {
@@ -26,7 +27,8 @@
         "type": "jar",
         "classifier": "mule-application"
       },
-      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-a/1.0.0-SNAPSHOT/mule-application-a-1.0.0-SNAPSHOT-mule-application.jar"
+      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-a/1.0.0-SNAPSHOT/mule-application-a-1.0.0-SNAPSHOT-mule-application.jar",
+      "isShared": false
     },
     {
       "artifactCoordinates": {
@@ -36,7 +38,8 @@
         "type": "jar",
         "classifier": "mule-application"
       },
-      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-c/1.0.0-SNAPSHOT/mule-application-c-1.0.0-SNAPSHOT-mule-application.jar"
+      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-c/1.0.0-SNAPSHOT/mule-application-c-1.0.0-SNAPSHOT-mule-application.jar",
+      "isShared": false
     }
   ]
 }

@@ -16,7 +16,6 @@
         "type": "jar"
       },
       "uri": "repository/group/id/c/artifact-id-c/1.0.0-SNAPSHOT/artifact-id-c-1.0.0-SNAPSHOT.jar"
-      "isShared": "false"
     },
     {
       "artifactCoordinates": {
@@ -26,7 +25,6 @@
         "type": "jar"
       },
       "uri": "repository/group/id/d/artifact-id-d/1.0.0/artifact-id-d-1.0.0.jar"
-      "isShared": "false"
     }
   ]
 }

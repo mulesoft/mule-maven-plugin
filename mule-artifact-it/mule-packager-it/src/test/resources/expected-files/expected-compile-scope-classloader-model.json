@@ -16,8 +16,7 @@
         "type": "jar",
         "classifier": "mule-application"
       },
-      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-direct-dependency/1.0.0-SNAPSHOT/mule-application-direct-dependency-1.0.0-SNAPSHOT-mule-application.jar",
-      "isShared": false
+      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-direct-dependency/1.0.0-SNAPSHOT/mule-application-direct-dependency-1.0.0-SNAPSHOT-mule-application.jar"
     },
     {
       "artifactCoordinates": {
@@ -27,8 +26,7 @@
         "type": "jar",
         "classifier": "mule-application"
       },
-      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-a/1.0.0-SNAPSHOT/mule-application-a-1.0.0-SNAPSHOT-mule-application.jar",
-      "isShared": false
+      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-a/1.0.0-SNAPSHOT/mule-application-a-1.0.0-SNAPSHOT-mule-application.jar"
     },
     {
       "artifactCoordinates": {
@@ -38,8 +36,7 @@
         "type": "jar",
         "classifier": "mule-application"
       },
-      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-c/1.0.0-SNAPSHOT/mule-application-c-1.0.0-SNAPSHOT-mule-application.jar",
-      "isShared": false
+      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-c/1.0.0-SNAPSHOT/mule-application-c-1.0.0-SNAPSHOT-mule-application.jar"
     }
   ]
 }

@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -101,7 +102,6 @@ public class ArtifactUtils {
         .setType(artifactCoordinates.getType()).build();
   }
 
-
   public static List<Artifact> toApplicationModelArtifacts(List<BundleDependency> appDependencies) {
     List<Artifact> dependencies = toArtifacts(appDependencies);
     dependencies.forEach(ArtifactUtils::updateScopeIfDomain);
@@ -115,7 +115,6 @@ public class ArtifactUtils {
       artifact.setUri(EMPTY_RESOURCE);
     }
   }
-
 
   public static ArtifactCoordinates getApplicationArtifactCoordinates(File pomFile) {
     ArtifactCoordinates appCoordinates = toArtifactCoordinates(getPomProjectBundleDescriptor(pomFile));

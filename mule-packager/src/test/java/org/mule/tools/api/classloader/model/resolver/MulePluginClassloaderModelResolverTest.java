@@ -41,7 +41,7 @@ public class MulePluginClassloaderModelResolverTest {
 
   @Before
   public void setUp() {
-    resolver = new MulePluginClassloaderModelResolver(new ArrayList<>(), mock(AetherMavenClient.class));
+    resolver = new MulePluginClassloaderModelResolver(mock(AetherMavenClient.class));
   }
 
   @Test

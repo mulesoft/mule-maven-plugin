@@ -12,6 +12,8 @@ package org.mule.tools.api.classloader;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 import java.io.*;
@@ -28,7 +30,10 @@ public class ClassLoaderModelJsonSerializer {
    */
   public static ClassLoaderModel deserialize(File classLoaderModelDescriptor) {
     try {
-      Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
+      Gson gson = new GsonBuilder()
+          .enableComplexMapKeySerialization()
+          .setPrettyPrinting()
+          .create();
 
       Reader reader = new FileReader(classLoaderModelDescriptor);
       ClassLoaderModel classLoaderModel = gson.fromJson(reader, ClassLoaderModel.class);
@@ -47,7 +52,8 @@ public class ClassLoaderModelJsonSerializer {
    * @return string containing the classloader model's JSON representation
    */
   public static String serialize(ClassLoaderModel classLoaderModel) {
-    Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
+    Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting()
+        .registerTypeAdapter(Artifact.class, new ArtifactCustomJsonSerializer()).create();
     ClassLoaderModel parameterizedClassloaderModel = classLoaderModel.getParametrizedUriModel();
     return gson.toJson(parameterizedClassloaderModel);
   }

@@ -57,6 +57,10 @@ public class ProcessSourcesMojoTest extends MojoTest {
       "/mule-application-runtime/target/META-INF/mule-artifact/classloader-model.json";
   private static final String TEST_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
       "/mule-application-test/target/META-INF/mule-artifact/classloader-model.json";
+  private static final String SHARED_PLUGIN_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
+      "/mule-application-shared-dependency/target/META-INF/mule-artifact/classloader-model.json";
+  private static final String EXPECTED_SHARED_PLUGIN_DEPENDENCY_CLASSLOADER_MODEL_FILE =
+      "/expected-files/expected-shared-plugin-dependency-classloader-model.json";
   private static final String EXPECTED_COMPILED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-compile-scope-classloader-model.json";
   private static final String EXPECTED_DEPENDENCY_VERSION_CHANGED_BY_USER_PROPERTY =
@@ -262,6 +266,17 @@ public class ProcessSourcesMojoTest extends MojoTest {
     List<String> expectedClassloaderModelFileContent =
         getFileContent(EXPECTED_TEST_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
     assertThat("The classloader-model.json file of mule-application-test project is different from the expected",
+               generatedClassloaderModelFileContent,
+               equalTo(expectedClassloaderModelFileContent));
+  }
+
+  @Test
+  public void sharedLibrariesAreCorrectlyResolved() throws IOException, VerificationException {
+    processSourcesOnProject("mule-application-shared-dependency");
+    List<String> generatedClassloaderModelFileContent = getFileContent(SHARED_PLUGIN_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
+    List<String> expectedClassloaderModelFileContent =
+        getFileContent(EXPECTED_SHARED_PLUGIN_DEPENDENCY_CLASSLOADER_MODEL_FILE);
+    assertThat("The classloader-model.json file of shared project is different from the expected",
                generatedClassloaderModelFileContent,
                equalTo(expectedClassloaderModelFileContent));
   }

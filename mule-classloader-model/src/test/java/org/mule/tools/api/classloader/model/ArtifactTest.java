@@ -90,4 +90,10 @@ public class ArtifactTest {
     String expected = ARTIFACT_ID + "-" + VERSION + "." + TYPE;
     assertThat("Formatted file name is different from the expected", actual, equalTo(expected));
   }
+
+  @Test
+  public void artifactsAreNotSharedByDefault() {
+    artifact = new Artifact(artifactCoordinates, EXPECTED_URI);
+    assertThat(artifact.isShared(), equalTo(false));
+  }
 }

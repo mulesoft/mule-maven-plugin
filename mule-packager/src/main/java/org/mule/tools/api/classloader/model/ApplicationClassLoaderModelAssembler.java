@@ -13,26 +13,30 @@ package org.mule.tools.api.classloader.model;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toApplicationModelArtifacts;
 
 import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.internal.AetherMavenClient;
 
 import java.io.File;
 import java.util.List;
 
 import org.mule.tools.api.classloader.model.resolver.ApplicationDependencyResolver;
 import org.mule.tools.api.classloader.model.resolver.ClassloaderModelResolver;
-import org.mule.tools.api.classloader.model.resolver.MulePluginClassloaderModelResolver;
-import org.mule.tools.api.classloader.model.resolver.RamlClassloaderModelResolver;
 import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 
 public class ApplicationClassLoaderModelAssembler {
 
-  public static final String CLASS_LOADER_MODEL_VERSION = "1.0.0";
+  public static final String CLASS_LOADER_MODEL_VERSION = "1.1.0";
 
-  private final AetherMavenClient muleMavenPluginClient;
   private ApplicationClassloaderModel applicationClassLoaderModel;
 
-  public ApplicationClassLoaderModelAssembler(AetherMavenClient muleMavenPluginClient) {
-    this.muleMavenPluginClient = muleMavenPluginClient;
+  private ApplicationDependencyResolver applicationDependencyResolver;
+  private ClassloaderModelResolver mulePluginClassLoaderModelResolver;
+  private ClassloaderModelResolver ramlClassLoaderModelResolver;
+
+  public ApplicationClassLoaderModelAssembler(ApplicationDependencyResolver applicationDependencyResolver,
+                                              ClassloaderModelResolver mulePluginClassLoaderModelResolver,
+                                              ClassloaderModelResolver ramlClassLoaderModelResolver) {
+    this.applicationDependencyResolver = applicationDependencyResolver;
+    this.mulePluginClassLoaderModelResolver = mulePluginClassLoaderModelResolver;
+    this.ramlClassLoaderModelResolver = ramlClassLoaderModelResolver;
   }
 
   public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile)
@@ -41,22 +45,16 @@ public class ApplicationClassLoaderModelAssembler {
 
     ClassLoaderModel appModel = new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, appCoordinates);
 
-    ApplicationDependencyResolver appDependencyResolver = new ApplicationDependencyResolver(muleMavenPluginClient);
-    List<BundleDependency> appDependencies = appDependencyResolver.resolveApplicationDependencies(pomFile);
+    List<BundleDependency> appDependencies = applicationDependencyResolver.resolveApplicationDependencies(pomFile);
 
     appModel.setDependencies(toApplicationModelArtifacts(appDependencies));
 
     applicationClassLoaderModel = new ApplicationClassloaderModel(appModel);
 
-    ClassloaderModelResolver mulePluginClassloaderModelResolver =
-        new MulePluginClassloaderModelResolver(appDependencies, muleMavenPluginClient);
+    applicationClassLoaderModel.addAllMulePluginClassloaderModels(mulePluginClassLoaderModelResolver.resolve(appDependencies));
 
-    applicationClassLoaderModel.addAllMulePluginClassloaderModels(mulePluginClassloaderModelResolver.resolve());
-
-    ClassloaderModelResolver ramlClassloaderModelResolver =
-        new RamlClassloaderModelResolver(appDependencies, muleMavenPluginClient);
-    applicationClassLoaderModel.addAllRamlClassloaderModels(ramlClassloaderModelResolver.resolve());
-    applicationClassLoaderModel.addAllRamlToApplicationClassloaderModel(ramlClassloaderModelResolver.getDependencies());
+    applicationClassLoaderModel.addAllRamlClassloaderModels(ramlClassLoaderModelResolver.resolve(appDependencies));
+    applicationClassLoaderModel.addAllRamlToApplicationClassloaderModel(ramlClassLoaderModelResolver.getDependencies());
 
     return applicationClassLoaderModel;
   }

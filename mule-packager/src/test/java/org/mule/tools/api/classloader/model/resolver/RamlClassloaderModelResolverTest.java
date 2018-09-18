@@ -21,14 +21,10 @@ import java.util.HashSet;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Sets.newHashSet;
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -37,11 +33,12 @@ import static org.mockito.Mockito.when;
 public class RamlClassloaderModelResolverTest {
 
   private RamlClassloaderModelResolver resolver;
+  private List<BundleDependency> appDependencies;
 
   @Before
   public void setUp() {
-    List<BundleDependency> appDependencies = buildDependencies(5);
-    resolver = new RamlClassloaderModelResolver(appDependencies, mock(AetherMavenClient.class));
+    appDependencies = buildDependencies(5);
+    resolver = new RamlClassloaderModelResolver(mock(AetherMavenClient.class));
   }
 
 

@@ -13,27 +13,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
-import static org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler.CLASS_LOADER_MODEL_VERSION;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifactCoordinates;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifacts;
 import static org.mule.tools.api.validation.VersionUtils.getMajor;
 
 public class MulePluginClassloaderModelResolver extends ClassloaderModelResolver {
 
-  public MulePluginClassloaderModelResolver(List<BundleDependency> appDependencies, AetherMavenClient muleMavenPluginClient) {
-    super(appDependencies, muleMavenPluginClient, MULE_PLUGIN_CLASSIFIER);
+  public MulePluginClassloaderModelResolver(AetherMavenClient muleMavenPluginClient) {
+    super(muleMavenPluginClient, MULE_PLUGIN_CLASSIFIER);
   }
 
   @Override

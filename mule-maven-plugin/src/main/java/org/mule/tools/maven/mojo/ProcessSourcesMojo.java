@@ -13,10 +13,15 @@ package org.mule.tools.maven.mojo;
 import static java.lang.String.format;
 
 import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.classloader.model.SharedLibraryDependency;
+import org.mule.tools.api.classloader.model.resolver.ApplicationDependencyResolver;
+import org.mule.tools.api.classloader.model.resolver.MulePluginClassloaderModelResolver;
+import org.mule.tools.api.classloader.model.resolver.RamlClassloaderModelResolver;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.repository.ArtifactInstaller;
 import org.mule.tools.api.repository.RepositoryGenerator;
@@ -54,6 +59,12 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
                                   getClassLoaderModelAssembler());
       try {
         ClassLoaderModel classLoaderModel = repositoryGenerator.generate();
+        for (SharedLibraryDependency sharedLibraryDependency : sharedLibraries) {
+          classLoaderModel.getDependencies().stream()
+              .filter(dep -> dep.getArtifactCoordinates().getArtifactId().equals(sharedLibraryDependency.getArtifactId()) &&
+                  dep.getArtifactCoordinates().getGroupId().equals(sharedLibraryDependency.getGroupId()))
+              .findFirst().ifPresent(dep -> dep.setShared(true));
+        }
         Project project = getProject(classLoaderModel);
         mulePluginsCompatibilityValidator.validate(getResolver(project).resolve());
         if (!lightweightPackage) {
@@ -68,7 +79,10 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
 
 
   protected ApplicationClassLoaderModelAssembler getClassLoaderModelAssembler() {
-    return new ApplicationClassLoaderModelAssembler(getAetherMavenClient());
+    AetherMavenClient aetherMavenClient = getAetherMavenClient();
+    return new ApplicationClassLoaderModelAssembler(new ApplicationDependencyResolver(aetherMavenClient),
+                                                    new MulePluginClassloaderModelResolver(aetherMavenClient),
+                                                    new RamlClassloaderModelResolver(aetherMavenClient));
   }
 
   @Override

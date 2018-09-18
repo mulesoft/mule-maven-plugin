@@ -24,6 +24,9 @@ import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.tools.api.classloader.model.resolver.ApplicationDependencyResolver;
+import org.mule.tools.api.classloader.model.resolver.MulePluginClassloaderModelResolver;
+import org.mule.tools.api.classloader.model.resolver.RamlClassloaderModelResolver;
 
 import java.io.File;
 import java.io.IOException;
@@ -205,7 +208,10 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
   private ApplicationClassLoaderModelAssembler getClassLoaderModelAssemblySpy(AetherMavenClient aetherMavenClientMock) {
     ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
-        spy(new ApplicationClassLoaderModelAssembler(aetherMavenClientMock));
+        spy(new ApplicationClassLoaderModelAssembler(
+                                                     new ApplicationDependencyResolver(aetherMavenClientMock),
+                                                     new MulePluginClassloaderModelResolver(aetherMavenClientMock),
+                                                     new RamlClassloaderModelResolver(aetherMavenClientMock)));
     ArtifactCoordinates projectArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
     doReturn(projectArtifactCoordinates).when(applicationClassLoaderModelAssemblerSpy).getApplicationArtifactCoordinates(any());
     return applicationClassLoaderModelAssemblerSpy;

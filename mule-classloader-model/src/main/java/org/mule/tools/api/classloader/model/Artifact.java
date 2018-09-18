@@ -25,10 +25,16 @@ public class Artifact implements Comparable {
   private static final String MULE_DOMAIN = "mule-domain";
   private ArtifactCoordinates artifactCoordinates;
   private URI uri;
+  private boolean isShared = false;
 
   public Artifact(ArtifactCoordinates artifactCoordinates, URI uri) {
     setArtifactCoordinates(artifactCoordinates);
     setUri(uri);
+  }
+
+  public Artifact(ArtifactCoordinates artifactCoordinates, URI uri, boolean isShared) {
+    this(artifactCoordinates, uri);
+    this.isShared = isShared;
   }
 
   public ArtifactCoordinates getArtifactCoordinates() {
@@ -37,6 +43,13 @@ public class Artifact implements Comparable {
 
   public URI getUri() {
     return uri;
+  }
+
+  /**
+   * @return whether or not the artifact is shared with the application's plugins.
+   */
+  public boolean isShared() {
+    return this.isShared;
   }
 
   public void setUri(URI uri) {
@@ -49,6 +62,14 @@ public class Artifact implements Comparable {
   private void setArtifactCoordinates(ArtifactCoordinates artifactCoordinates) {
     checkNotNull(artifactCoordinates, "Artifact coordinates cannot be null");
     this.artifactCoordinates = artifactCoordinates;
+  }
+
+  /**
+   * Sets a boolean representing if the artifact will be shared with the app's plugins.
+   * @param isShared true if the artifact should be shared.
+   */
+  public void setShared(boolean isShared) {
+    this.isShared = isShared;
   }
 
   @Override
@@ -71,7 +92,7 @@ public class Artifact implements Comparable {
     if (this == o) {
       return true;
     }
-    if (o == null || getClass() != o.getClass()) {
+    if (o == null || !(o instanceof Artifact)) {
       return false;
     }
 
@@ -99,6 +120,7 @@ public class Artifact implements Comparable {
     } catch (URISyntaxException e) {
       throw new RuntimeException("Could not generate URI for resource, the given path is invalid: " + newUriPath, e);
     }
+    newArtifact.setShared(this.isShared());
     return newArtifact;
   }
 

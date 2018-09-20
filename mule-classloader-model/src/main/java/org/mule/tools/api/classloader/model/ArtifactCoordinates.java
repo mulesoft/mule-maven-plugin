@@ -17,12 +17,20 @@ import static com.google.common.base.Preconditions.checkArgument;
 public class ArtifactCoordinates {
 
   public static final String DEFAULT_ARTIFACT_TYPE = "jar";
+
   private String groupId;
   private String artifactId;
   private String version;
   private String type;
   private String classifier;
   private String scope;
+
+  /**
+   * Constructor added so that child classes can be instantiated by reflection.
+   */
+  protected ArtifactCoordinates() {
+    setType(DEFAULT_ARTIFACT_TYPE);
+  }
 
   public ArtifactCoordinates(String groupId, String artifactId, String version) {
     this(groupId, artifactId, version, DEFAULT_ARTIFACT_TYPE, null);

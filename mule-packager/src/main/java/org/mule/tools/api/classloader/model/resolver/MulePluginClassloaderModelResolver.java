@@ -10,9 +10,12 @@
 package org.mule.tools.api.classloader.model.resolver;
 
 import org.apache.commons.lang3.StringUtils;
+
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.tools.api.classloader.model.Plugin;
+import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -21,13 +24,23 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
 import static org.mule.tools.api.validation.VersionUtils.getMajor;
 
 public class MulePluginClassloaderModelResolver extends ClassloaderModelResolver {
 
+  private List<Plugin> pluginsWithAdditionalDependencies = new ArrayList<>();
+
   public MulePluginClassloaderModelResolver(AetherMavenClient muleMavenPluginClient) {
     super(muleMavenPluginClient, MULE_PLUGIN_CLASSIFIER);
+  }
+
+  public MulePluginClassloaderModelResolver(AetherMavenClient muleMavenPluginClient,
+                                            List<Plugin> pluginsWithAdditionalDependencies) {
+    super(muleMavenPluginClient, MULE_PLUGIN_CLASSIFIER);
+    this.pluginsWithAdditionalDependencies = pluginsWithAdditionalDependencies;
   }
 
   @Override
@@ -47,8 +60,17 @@ public class MulePluginClassloaderModelResolver extends ClassloaderModelResolver
     for (BundleDependency muleDependency : mulePlugins) {
       List<BundleDependency> mulePluginDependencies =
           muleMavenPluginClient.resolveBundleDescriptorDependencies(false, false, muleDependency.getDescriptor());
+      getAdditionalDependencies(muleDependency.getDescriptor()).forEach(
+                                                                        additionalDepDescriptor -> {
+                                                                          mulePluginDependencies.add(muleMavenPluginClient
+                                                                              .resolveBundleDescriptor(additionalDepDescriptor));
+                                                                          mulePluginDependencies.addAll(muleMavenPluginClient
+                                                                              .resolveBundleDescriptorDependencies(false, false,
+                                                                                                                   additionalDepDescriptor));
+                                                                        });
       muleDependenciesDependencies.put(muleDependency, new ArrayList<>(mulePluginDependencies));
     }
+
     return muleDependenciesDependencies;
   }
 
@@ -71,6 +93,19 @@ public class MulePluginClassloaderModelResolver extends ClassloaderModelResolver
     BundleDescriptor otherDescriptor = otherBundleDependency.getDescriptor();
     return StringUtils.equals(descriptor.getArtifactId(), otherDescriptor.getArtifactId())
         && StringUtils.equals(getMajor(descriptor.getBaseVersion()), getMajor(otherDescriptor.getBaseVersion()));
+  }
+
+  private List<BundleDescriptor> getAdditionalDependencies(BundleDescriptor plugin) {
+    return pluginsWithAdditionalDependencies
+        .stream()
+        .filter(
+                pluginWithAdditionalDependencies -> pluginWithAdditionalDependencies.getArtifactId()
+                    .equals(plugin.getArtifactId())
+                    && pluginWithAdditionalDependencies.getGroupId().equals(plugin.getGroupId()))
+        .findFirst()
+        .map((pluginWithAdditionalDependencies) -> pluginWithAdditionalDependencies.getDependencies().stream()
+            .map(dep -> ArtifactUtils.toBundleDescriptor(dep)).collect(toList()))
+        .orElse(emptyList());
   }
 
 }

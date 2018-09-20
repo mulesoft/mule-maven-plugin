@@ -11,6 +11,7 @@ package org.mule.tools.maven.mojo;
 
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.Plugin;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
@@ -76,6 +77,9 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
 
   @Parameter(property = "shared.libraries")
   protected List<SharedLibraryDependency> sharedLibraries;
+
+  @Parameter
+  protected List<Plugin> additionalPluginDependencies;
 
   @Parameter(defaultValue = "${strictCheck}")
   protected boolean strictCheck;

@@ -9,6 +9,7 @@
  */
 package integration.test.mojo;
 
+import static integration.ProjectFactory.createProjectBaseDir;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import org.mule.tools.api.util.FileUtils;
@@ -48,7 +49,7 @@ public class MojoTest implements SettingsConfigurator {
   @Before
   public void initializeContext() throws IOException, VerificationException {
     builder = new ProjectFactory();
-    projectBaseDirectory = builder.createProjectBaseDir("empty-" + goal + "-project", this.getClass());
+    projectBaseDirectory = createProjectBaseDir("empty-" + goal + "-project", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);

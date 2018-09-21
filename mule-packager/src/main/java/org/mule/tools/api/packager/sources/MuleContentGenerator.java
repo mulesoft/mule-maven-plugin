@@ -13,12 +13,14 @@ package org.mule.tools.api.packager.sources;
 import static java.lang.Boolean.FALSE;
 import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.deserialize;
 import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.serializeToFile;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_POLICY;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
+
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
@@ -66,7 +68,7 @@ public class MuleContentGenerator extends ContentGenerator {
         .getSourceFolderLocation(projectInformation.getProjectBaseFolder());
     Path destinationPath = projectInformation.getBuildDirectory().resolve(CLASSES.value());
 
-    copyContent(originPath, destinationPath, Optional.ofNullable(null), true, false);
+    copyContent(originPath, destinationPath, Optional.empty(), true, false);
   }
 
   /**
@@ -79,7 +81,7 @@ public class MuleContentGenerator extends ContentGenerator {
         .getTestSourceFolderLocation(projectInformation.getProjectBaseFolder());
     Path destinationPath = projectInformation.getBuildDirectory().resolve(TEST_MULE.value()).resolve(originPath.getFileName());
 
-    copyContent(originPath, destinationPath, Optional.ofNullable(null), false, true);
+    copyContent(originPath, destinationPath, Optional.empty(), false, true);
   }
 
   /**
@@ -171,11 +173,14 @@ public class MuleContentGenerator extends ContentGenerator {
     Path destinationPath = projectInformation.getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value());
     String destinationFileName = originPath.getFileName().toString();
     copyFile(originPath, destinationPath, destinationFileName);
-    DefaultValuesMuleArtifactJsonGenerator generator = new DefaultValuesMuleArtifactJsonGenerator();
+
+    AbstractDefaultValuesMuleArtifactJsonGenerator generator = MULE_POLICY.equals(projectInformation.getClassifier())
+        ? new DefaultValuesPolicyMuleArtifactJsonGenerator() : new DefaultValuesMuleArtifactJsonGenerator();
+
     generator.generate(getMuleArtifactContentResolver());
   }
 
-  public MuleArtifactContentResolver getMuleArtifactContentResolver() {
+  private MuleArtifactContentResolver getMuleArtifactContentResolver() {
     if (muleArtifactContentResolver == null) {
       ProjectStructure projectStructure =
           new ProjectStructure(projectInformation.getProjectBaseFolder(), projectInformation.getBuildDirectory(),

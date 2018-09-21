@@ -36,7 +36,8 @@ class PolicyMuleArtifactJsonVerifier {
   private static final String EXPORTED_PACKAGES = "exportedPackages";
   private static final String EXPORTED_RESOURCES = "exportedResources";
   private static final String CONFIGS = "configs";
-  public static final String TEMPLATE_XML = "template.xml";
+  private static final String TEMPLATE_XML = "template.xml";
+
   private final ProjectInformation projectInformation;
   private final File file;
 
@@ -47,47 +48,51 @@ class PolicyMuleArtifactJsonVerifier {
 
   public void validate() throws ValidationException {
     MuleApplicationModel muleArtifact = getMuleArtifact(file);
-    checkAttributesPresent(projectInformation, file, muleArtifact);
-    checkOnlyValidFields(file, muleArtifact);
+    checkAttributesPresent(projectInformation, muleArtifact);
+    checkOnlyValidFields(muleArtifact);
   }
 
-  private void checkOnlyValidFields(File file,
-                                    MuleApplicationModel muleApplicationModel)
+  private void checkOnlyValidFields(MuleApplicationModel muleApplicationModel)
       throws ValidationException {
-    final Map<String, Object> attributes = muleApplicationModel.getClassLoaderModelLoaderDescriptor().getAttributes();
-    try {
-      checkArgument(checkNullOrEmptyCollection(attributes.get(EXPORTED_PACKAGES)), mustNotDefineFieldMessage(EXPORTED_PACKAGES));
-      checkArgument(checkNullOrEmptyCollection(attributes.get(EXPORTED_RESOURCES)),
-                    mustNotDefineFieldMessage(EXPORTED_RESOURCES));
-      checkArgument(checkConfigsElementIsValid(muleApplicationModel.getConfigs()), mustNotDefineFieldMessage(CONFIGS));
-    } catch (Exception e) {
-      throw new ValidationException(format("Error in file '%s'. %s", file.getName(), e.getMessage()));
+
+    if (muleApplicationModel.getClassLoaderModelLoaderDescriptor() != null &&
+        muleApplicationModel.getClassLoaderModelLoaderDescriptor().getAttributes() != null) {
+      final Map<String, Object> attributes = muleApplicationModel.getClassLoaderModelLoaderDescriptor().getAttributes();
+
+      validCondition(checkNullOrEmptyCollection(attributes.get(EXPORTED_PACKAGES)),
+                     mustNotDefineFieldMessage(EXPORTED_PACKAGES));
+      validCondition(checkNullOrEmptyCollection(attributes.get(EXPORTED_RESOURCES)),
+                     mustNotDefineFieldMessage(EXPORTED_RESOURCES));
     }
+
+    validCondition(checkConfigsElementIsValid(muleApplicationModel.getConfigs()), mustNotDefineFieldMessage(CONFIGS));
   }
 
-  private void checkAttributesPresent(ProjectInformation projectInformation, File file,
-                                      MuleApplicationModel muleApplicationModel)
+  private void checkAttributesPresent(ProjectInformation projectInformation, MuleApplicationModel muleApplicationModel)
       throws ValidationException {
-    final Map<String, Object> attributes = muleApplicationModel.getBundleDescriptorLoader().getAttributes();
-    try {
-      checkArgument(projectInformation.getGroupId().equals(attributes.get(GROUP_ID)),
-                    mismatchFieldWithPomMessage(GROUP_ID, projectInformation.getGroupId(), attributes.get(GROUP_ID)));
-      checkArgument(projectInformation.getArtifactId().equals(attributes.get(ARTIFACT_ID)),
-                    mismatchFieldWithPomMessage(ARTIFACT_ID, projectInformation.getArtifactId(),
-                                                attributes.get(ARTIFACT_ID)));
-      checkArgument(projectInformation.getVersion().equals(attributes.get(VERSION)),
-                    mismatchFieldWithPomMessage(VERSION, projectInformation.getVersion(), attributes.get(VERSION)));
-      checkArgument(MULE_POLICY.toString().equals(attributes.get(CLASSIFIER)),
-                    mismatchExpectedFieldValue(CLASSIFIER, MULE_POLICY.toString(), attributes.get(CLASSIFIER)));
-      checkArgument(JAR_TYPE.equals(attributes.getOrDefault(TYPE, JAR_TYPE)),
-                    mismatchExpectedFieldValue(TYPE, JAR_TYPE, attributes.get(TYPE)));
-    } catch (Exception e) {
-      throw new ValidationException(format("Error validating attributes from '%s'. %s", file.getName(), e.getMessage()));
+
+    if (muleApplicationModel.getBundleDescriptorLoader() != null
+        && muleApplicationModel.getBundleDescriptorLoader().getAttributes() != null) {
+
+      Map<String, Object> attributes = muleApplicationModel.getBundleDescriptorLoader().getAttributes();
+
+      validCondition(!attributes.containsKey(GROUP_ID) || projectInformation.getGroupId().equals(attributes.get(GROUP_ID)),
+                     mismatchFieldWithPomMessage(GROUP_ID, projectInformation.getGroupId(), attributes.get(GROUP_ID)));
+      validCondition(!attributes.containsKey(ARTIFACT_ID)
+          || projectInformation.getArtifactId().equals(attributes.get(ARTIFACT_ID)),
+                     mismatchFieldWithPomMessage(ARTIFACT_ID, projectInformation.getArtifactId(),
+                                                 attributes.get(ARTIFACT_ID)));
+      validCondition(!attributes.containsKey(VERSION) || projectInformation.getVersion().equals(attributes.get(VERSION)),
+                     mismatchFieldWithPomMessage(VERSION, projectInformation.getVersion(), attributes.get(VERSION)));
+      validCondition(!attributes.containsKey(CLASSIFIER) || MULE_POLICY.toString().equals(attributes.get(CLASSIFIER)),
+                     mismatchExpectedFieldValue(CLASSIFIER, MULE_POLICY.toString(), attributes.get(CLASSIFIER)));
+      validCondition(JAR_TYPE.equals(attributes.getOrDefault(TYPE, JAR_TYPE)),
+                     mismatchExpectedFieldValue(TYPE, JAR_TYPE, attributes.get(TYPE)));
     }
   }
 
   private Boolean checkNullOrEmptyCollection(Object object) {
-    return object == null || (object instanceof Collection && ((Collection) object).size() == 0);
+    return object == null || (object instanceof Collection && ((Collection) object).isEmpty());
   }
 
   private Boolean checkConfigsElementIsValid(Object object) {
@@ -117,5 +122,12 @@ class PolicyMuleArtifactJsonVerifier {
     return format("The field '%s' had an unexpected value. Expected '%s'. Actual '%s'.", fieldName, expectedValue, actualValue);
   }
 
+  private void validCondition(Boolean condition, String message) throws ValidationException {
+    try {
+      checkArgument(condition, message);
+    } catch (Exception e) {
+      throw new ValidationException(format("Error in file '%s'. %s", file.getName(), e.getMessage()));
+    }
+  }
 
 }

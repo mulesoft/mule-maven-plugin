@@ -12,6 +12,7 @@ package org.mule.tools.api.verifier.policy;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.nio.file.Paths.get;
+import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Mockito.mock;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_POLICY;
 
@@ -34,7 +35,7 @@ public class PolicyMuleArtifactJsonVerifierTest {
   private static final String VERSION = "1.0.0-SNAPSHOT";
 
   @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+  public ExpectedException expectedException = none();
 
   @Test
   public void goodYamlSuccessfulValidation() throws ValidationException {
@@ -42,10 +43,15 @@ public class PolicyMuleArtifactJsonVerifierTest {
   }
 
   @Test
+  public void onlyMinMuleVersionIsSuccessful() throws ValidationException {
+    validateMuleArtifactJson("only-min-mule-version.json");
+  }
+
+  @Test
   public void wrongGroupIdFailsValidation() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException
-        .expectMessage(format("Error validating attributes from 'mule-artifact.json'. The groupId does not match the one defined in the pom.xml. Expected '%s'.",
+        .expectMessage(format("Error in file 'mule-artifact.json'. The groupId does not match the one defined in the pom.xml. Expected '%s'.",
                               GROUP_ID + 2));
     validateMuleArtifactJson(GROUP_ID + 2, ARTIFACT_ID, VERSION, "mule-artifact.json");
   }
@@ -54,7 +60,7 @@ public class PolicyMuleArtifactJsonVerifierTest {
   public void wrongArtifactIdFailsValidation() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException
-        .expectMessage(format("Error validating attributes from 'mule-artifact.json'. The artifactId does not match the one defined in the pom.xml. Expected '%s'.",
+        .expectMessage(format("Error in file 'mule-artifact.json'. The artifactId does not match the one defined in the pom.xml. Expected '%s'.",
                               ARTIFACT_ID + 2));
     validateMuleArtifactJson(GROUP_ID, ARTIFACT_ID + 2, VERSION, "mule-artifact.json");
   }
@@ -63,16 +69,23 @@ public class PolicyMuleArtifactJsonVerifierTest {
   public void wrongVersionFailsValidation() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException
-        .expectMessage(format("Error validating attributes from 'mule-artifact.json'. The version does not match the one defined in the pom.xml. Expected '%s'.",
+        .expectMessage(format("Error in file 'mule-artifact.json'. The version does not match the one defined in the pom.xml. Expected '%s'.",
                               VERSION + 2));
     validateMuleArtifactJson(GROUP_ID, ARTIFACT_ID, VERSION + 2, "mule-artifact.json");
   }
 
   @Test
+  public void missingBundleDescriptorLoader() throws ValidationException {
+    validateMuleArtifactJson("missing-bundle-descriptor-loader.json");
+  }
+
+  @Test
+  public void missingAttributes() throws ValidationException {
+    validateMuleArtifactJson("missing-attributes.json");
+  }
+
+  @Test
   public void missingClassifierFailsValidation() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException
-        .expectMessage("Error validating attributes from 'missing-classifier.json'. The field 'classifier' had an unexpected value. Expected 'mule-policy'.");
     validateMuleArtifactJson("missing-classifier.json");
   }
 
@@ -80,7 +93,7 @@ public class PolicyMuleArtifactJsonVerifierTest {
   public void wrongClassifierFailsValidation() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException
-        .expectMessage("Error validating attributes from 'wrong-classifier.json'. The field 'classifier' had an unexpected value. Expected 'mule-policy'.");
+        .expectMessage("Error in file 'wrong-classifier.json'. The field 'classifier' had an unexpected value. Expected 'mule-policy'.");
     validateMuleArtifactJson("wrong-classifier.json");
   }
 
@@ -93,7 +106,7 @@ public class PolicyMuleArtifactJsonVerifierTest {
   public void wrongTypeFailsValidation() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException
-        .expectMessage("Error validating attributes from 'wrong-type.json'. The field 'type' had an unexpected value. Expected 'jar'.");
+        .expectMessage("Error in file 'wrong-type.json'. The field 'type' had an unexpected value. Expected 'jar'.");
     validateMuleArtifactJson("wrong-type.json");
   }
 
@@ -108,23 +121,23 @@ public class PolicyMuleArtifactJsonVerifierTest {
   public void exportedPackagesFailsValidation() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException
-        .expectMessage("Error in file 'exportedPackages.json'. The field exportedPackages must not be defined or be empty.");
-    validateMuleArtifactJson("exportedPackages.json");
+        .expectMessage("Error in file 'exported-packages.json'. The field exportedPackages must not be defined or be empty.");
+    validateMuleArtifactJson("exported-packages.json");
   }
 
   @Test
   public void exportedResourcesFailsValidation() throws ValidationException {
     expectedException.expect(ValidationException.class);
     expectedException
-        .expectMessage("Error in file 'exportedResources.json'. The field exportedResources must not be defined or be empty.");
-    validateMuleArtifactJson("exportedResources.json");
+        .expectMessage("Error in file 'exported-resources.json'. The field exportedResources must not be defined or be empty.");
+    validateMuleArtifactJson("exported-resources.json");
   }
 
   private void validateMuleArtifactJson(String fileName) throws ValidationException {
     validateMuleArtifactJson(GROUP_ID, ARTIFACT_ID, VERSION, fileName);
   }
 
-  public void validateMuleArtifactJson(String groupId, String artifactId, String version, String fileName)
+  private void validateMuleArtifactJson(String groupId, String artifactId, String version, String fileName)
       throws ValidationException {
     new PolicyMuleArtifactJsonVerifier(
                                        getProjectInformation(groupId, artifactId, version, getTestResourceFolder()),
@@ -134,11 +147,7 @@ public class PolicyMuleArtifactJsonVerifierTest {
   }
 
   private Path getTestResourceFolder() {
-    return get(concatPath("target", "test-classes", "policy-validation", "json-validation-examples"));
-  }
-
-  private static String concatPath(String... parts) {
-    return join(File.separator, parts);
+    return get(join(File.separator, "target", "test-classes", "policy-validation", "json-validation-examples"));
   }
 
   private DefaultProjectInformation getProjectInformation(String groupId, String artifactId, String version, Path path) {

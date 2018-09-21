@@ -14,6 +14,8 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_NULL
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
+import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
+import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
 
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
@@ -34,17 +36,15 @@ import java.util.List;
  */
 public class MulePolicyVerifier implements ProjectVerifier {
 
-  public static final String TEMPLATE_XML = join(File.separator, "src", "main", "mule", "template.xml");
-  public static final String POM_XML = "pom.xml";
-  public static final String MULE_ARTIFACT_JSON = "mule-artifact.json";
+  private static final String TEMPLATE_XML = join(File.separator, "src", "main", "mule", "template.xml");
+
   private final String yamlFileName;
   private final ProjectInformation projectInformation;
 
   public MulePolicyVerifier(ProjectInformation projectInformation) {
     this.projectInformation = projectInformation;
-    yamlFileName = format("%s.yaml", projectInformation.getArtifactId());
+    this.yamlFileName = format("%s.yaml", projectInformation.getArtifactId());
   }
-
 
   @Override
   public void verify() throws ValidationException {

@@ -174,8 +174,8 @@ public class MuleContentGenerator extends ContentGenerator {
     String destinationFileName = originPath.getFileName().toString();
     copyFile(originPath, destinationPath, destinationFileName);
 
-    DefaultValuesMuleArtifactJsonGenerator generator = MULE_POLICY.equals(projectInformation.getClassifier())
-        ? new DefaultValuesPolicyMuleArtifactJsonGenerator() : new DefaultValuesAppMuleArtifactJsonGenerator();
+    AbstractDefaultValuesMuleArtifactJsonGenerator generator = MULE_POLICY.equals(projectInformation.getClassifier())
+        ? new DefaultValuesPolicyMuleArtifactJsonGenerator() : new DefaultValuesMuleArtifactJsonGenerator();
 
     generator.generate(getMuleArtifactContentResolver());
   }

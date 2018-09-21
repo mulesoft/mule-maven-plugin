@@ -37,7 +37,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-public class DefaultValuesAppMuleArtifactJsonGeneratorTest {
+public class DefaultValuesMuleArtifactJsonGeneratorTest {
 
   private static final String NAME = "name";
   private static final String MIN_MULE_VERSION = "4.0.0";
@@ -65,7 +65,7 @@ public class DefaultValuesAppMuleArtifactJsonGeneratorTest {
 
   @Before
   public void setUp() throws IOException {
-    generator = new DefaultValuesAppMuleArtifactJsonGenerator();
+    generator = new DefaultValuesMuleArtifactJsonGenerator();
     temporaryFolder.create();
     defaultBuilder = new MuleApplicationModel.MuleApplicationModelBuilder().setName(NAME).setMinMuleVersion(MIN_MULE_VERSION)
         .withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(ID, new HashMap<>()))

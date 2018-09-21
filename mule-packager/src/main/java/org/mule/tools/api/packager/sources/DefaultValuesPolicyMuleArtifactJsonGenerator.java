@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * Generates default value for any non-defined fields in a Policy mule-artifact.json file
  */
-public class DefaultValuesPolicyMuleArtifactJsonGenerator extends DefaultValuesMuleArtifactJsonGenerator {
+public class DefaultValuesPolicyMuleArtifactJsonGenerator extends AbstractDefaultValuesMuleArtifactJsonGenerator {
 
   private static final String GROUP_ID = "groupId";
   private static final String ARTIFACT_ID = "artifactId";

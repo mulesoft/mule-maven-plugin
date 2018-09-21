@@ -54,7 +54,7 @@ public class DefaultValuesPolicyMuleArtifactJsonGeneratorTest {
 
   private MuleApplicationModel.MuleApplicationModelBuilder builder;
   private MuleApplicationModel.MuleApplicationModelBuilder defaultBuilder;
-  private DefaultValuesMuleArtifactJsonGenerator generator;
+  private DefaultValuesPolicyMuleArtifactJsonGenerator generator;
 
   @Before
   public void setUp() throws IOException {

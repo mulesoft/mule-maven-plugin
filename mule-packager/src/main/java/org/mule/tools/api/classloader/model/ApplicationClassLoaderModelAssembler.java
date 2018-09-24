@@ -15,6 +15,7 @@ import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toApplicat
 import org.mule.maven.client.api.model.BundleDependency;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.mule.maven.client.internal.AetherMavenClient;
@@ -33,6 +34,9 @@ public class ApplicationClassLoaderModelAssembler {
   private ApplicationDependencyResolver applicationDependencyResolver;
   private ClassloaderModelResolver mulePluginClassLoaderModelResolver;
   private ClassloaderModelResolver ramlClassLoaderModelResolver;
+  private ClassloaderModelResolver additionalPluginDependenciesResolver;
+
+
 
   @Deprecated
   public ApplicationClassLoaderModelAssembler(AetherMavenClient aetherMavenClient) {
@@ -49,11 +53,21 @@ public class ApplicationClassLoaderModelAssembler {
     this.ramlClassLoaderModelResolver = ramlClassLoaderModelResolver;
   }
 
+  public ApplicationClassLoaderModelAssembler(ApplicationDependencyResolver applicationDependencyResolver,
+                                              ClassloaderModelResolver mulePluginClassLoaderModelResolver,
+                                              ClassloaderModelResolver ramlClassLoaderModelResolver,
+                                              ClassloaderModelResolver additionalPluginDependenciesResolver) {
+    this.applicationDependencyResolver = applicationDependencyResolver;
+    this.mulePluginClassLoaderModelResolver = mulePluginClassLoaderModelResolver;
+    this.ramlClassLoaderModelResolver = ramlClassLoaderModelResolver;
+    this.additionalPluginDependenciesResolver = additionalPluginDependenciesResolver;
+  }
+
   public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile)
       throws IllegalStateException {
     ArtifactCoordinates appCoordinates = getApplicationArtifactCoordinates(pomFile);
 
-    ClassLoaderModel appModel = new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, appCoordinates);
+    AppClassLoaderModel appModel = new AppClassLoaderModel(CLASS_LOADER_MODEL_VERSION, appCoordinates);
 
     List<BundleDependency> appDependencies = applicationDependencyResolver.resolveApplicationDependencies(pomFile);
 

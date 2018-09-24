@@ -4,14 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.mule.group</groupId>
-    <artifactId>mule-plugin-with-dependency-x</artifactId>
+    <artifactId>mule-plugin-with-dependency-y</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
     <name>Dependency</name>
     <dependencies>
         <dependency>
-            <groupId>group.id.x</groupId>
-            <artifactId>artifact-id-x</artifactId>
+            <groupId>group.id.y</groupId>
+            <artifactId>artifact-id-y</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>

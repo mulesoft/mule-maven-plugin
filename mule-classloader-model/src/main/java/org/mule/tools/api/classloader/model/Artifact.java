@@ -32,24 +32,12 @@ public class Artifact implements Comparable {
     setUri(uri);
   }
 
-  public Artifact(ArtifactCoordinates artifactCoordinates, URI uri, boolean isShared) {
-    this(artifactCoordinates, uri);
-    this.isShared = isShared;
-  }
-
   public ArtifactCoordinates getArtifactCoordinates() {
     return artifactCoordinates;
   }
 
   public URI getUri() {
     return uri;
-  }
-
-  /**
-   * @return whether or not the artifact is shared with the application's plugins.
-   */
-  public boolean isShared() {
-    return this.isShared;
   }
 
   public void setUri(URI uri) {
@@ -62,14 +50,6 @@ public class Artifact implements Comparable {
   private void setArtifactCoordinates(ArtifactCoordinates artifactCoordinates) {
     checkNotNull(artifactCoordinates, "Artifact coordinates cannot be null");
     this.artifactCoordinates = artifactCoordinates;
-  }
-
-  /**
-   * Sets a boolean representing if the artifact will be shared with the app's plugins.
-   * @param isShared true if the artifact should be shared.
-   */
-  public void setShared(boolean isShared) {
-    this.isShared = isShared;
   }
 
   @Override
@@ -115,12 +95,12 @@ public class Artifact implements Comparable {
     String artifactFilename = getFormattedArtifactFileName(newArtifact);
     String newUriPath = getFormattedMavenDirectory(repositoryFolder, this.getArtifactCoordinates()).getPath();
     File newArtifactFile = new File(newUriPath, artifactFilename);
+    newArtifact.setShared(isShared);
     try {
       setNewArtifactURI(newArtifact, newArtifactFile);
     } catch (URISyntaxException e) {
       throw new RuntimeException("Could not generate URI for resource, the given path is invalid: " + newUriPath, e);
     }
-    newArtifact.setShared(this.isShared());
     return newArtifact;
   }
 
@@ -203,6 +183,21 @@ public class Artifact implements Comparable {
    */
   public String getPomFileName() {
     return getPomFileName(this);
+  }
+
+  /**
+   * @return whether or not the artifact is shared with the application's plugins.
+   */
+  public boolean isShared() {
+    return this.isShared;
+  }
+
+  /**
+   * Sets a boolean representing if the artifact will be shared with the app's plugins.
+   * @param isShared true if the artifact should be shared.
+   */
+  public void setShared(boolean isShared) {
+    this.isShared = isShared;
   }
 
   public String getFormattedArtifactFileName() {

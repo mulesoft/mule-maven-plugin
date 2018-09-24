@@ -4,14 +4,20 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.apache.maven.plugin.my.unit</groupId>
-    <artifactId>mule-app-plugin-with-additional-dep</artifactId>
+    <artifactId>mule-app-multiple-plugins-with-additional-deps</artifactId>
     <version>1.0.0</version>
     <packaging>mule-application</packaging>
-    <name>mule-app-plugin-with-additional-dep</name>
+    <name>mule-app-multiple-plugins-with-additional-deps</name>
     <dependencies>
         <dependency>
             <groupId>org.mule.group</groupId>
             <artifactId>mule-plugin-with-dependency-x</artifactId>
+            <version>1.0.0</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.group</groupId>
+            <artifactId>mule-plugin-with-dependency-y</artifactId>
             <version>1.0.0</version>
             <classifier>mule-plugin</classifier>
         </dependency>
@@ -32,6 +38,17 @@
                                 <dependency>
                                     <groupId>group.id.y</groupId>
                                     <artifactId>artifact-id-y</artifactId>
+                                    <version>1.0.0</version>
+                                </dependency>
+                            </dependencies>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.mule.group</groupId>
+                            <artifactId>mule-plugin-with-dependency-y</artifactId>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>group.id.x</groupId>
+                                    <artifactId>artifact-id-x</artifactId>
                                     <version>1.0.0</version>
                                 </dependency>
                             </dependencies>

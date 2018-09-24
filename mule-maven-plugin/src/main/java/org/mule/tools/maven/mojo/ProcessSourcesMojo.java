@@ -81,8 +81,7 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
   protected ApplicationClassLoaderModelAssembler getClassLoaderModelAssembler() {
     AetherMavenClient aetherMavenClient = getAetherMavenClient();
     return new ApplicationClassLoaderModelAssembler(new ApplicationDependencyResolver(aetherMavenClient),
-                                                    new MulePluginClassloaderModelResolver(aetherMavenClient,
-                                                                                           additionalPluginDependencies),
+                                                    new MulePluginClassloaderModelResolver(aetherMavenClient),
                                                     new RamlClassloaderModelResolver(aetherMavenClient));
   }
 

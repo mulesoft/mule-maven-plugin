@@ -23,10 +23,10 @@ import org.junit.Test;
 
 public class AdditionalPluginDependenciesProcessSourcesMojoTest extends ProcessSourcesMojoTest {
 
-  private static final String GENERATED_PLUGIN_WITH_DEPENDENCY_A_CLASSLOADER_MODEL_PATH_SUFFIX =
-      "/target/repository/org/mule/group/mule-plugin-with-dependency-a/1.0.0/classloader-model.json";
-  private static final String GENERATED_PLUGIN_WITH_DEPENDENCY_B_CLASSLOADER_MODEL_PATH_SUFFIX =
-      "/target/repository/org/mule/group/mule-plugin-with-dependency-b/1.0.0/classloader-model.json";
+  private static final String GENERATED_PLUGIN_WITH_DEPENDENCY_X_CLASSLOADER_MODEL_PATH_SUFFIX =
+      "/target/repository/org/mule/group/mule-plugin-with-dependency-x/1.0.0/classloader-model.json";
+  private static final String GENERATED_PLUGIN_WITH_DEPENDENCY_Y_CLASSLOADER_MODEL_PATH_SUFFIX =
+      "/target/repository/org/mule/group/mule-plugin-with-dependency-y/1.0.0/classloader-model.json";
 
   private static final String GENERATED_CLASSLOADER_MODEL_PATH_COMMON_SUFFIX =
       "/target/META-INF/mule-artifact/classloader-model.json";
@@ -35,7 +35,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends ProcessS
   @Test
   public void muleAppWithPluginWithAdditionalDependency() throws Exception {
     final String appName = "mule-app-plugin-with-additional-dep";
-    final String appLocation = "/additional-plugin-dependencies/" + appName;
+    final String appLocation = getAppLocation(appName);
     processSourcesOnProject(appLocation);
     List<String> generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     List<String> expectedAppClassLoaderModelFileContent =
@@ -43,12 +43,58 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends ProcessS
     assertThat(generatedAppClassLoaderModelFileContent, equalTo(expectedAppClassLoaderModelFileContent));
 
     List<String> generatedPluginClassLoaderModelFileContent =
-        getFileContent(appLocation + GENERATED_PLUGIN_WITH_DEPENDENCY_A_CLASSLOADER_MODEL_PATH_SUFFIX);
+        getFileContent(appLocation + GENERATED_PLUGIN_WITH_DEPENDENCY_X_CLASSLOADER_MODEL_PATH_SUFFIX);
     List<String> expectedPluginClassLoaderModelFileContent =
-        getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, "mule-plugin-with-dependency-a"));
+        getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, "mule-plugin-with-dependency-x"));
     assertThat(generatedPluginClassLoaderModelFileContent, equalTo(expectedPluginClassLoaderModelFileContent));
   }
 
+  @Test
+  public void muleAppWithMultiplePluginsWithAdditionalDependencies() throws Exception {
+    final String appName = "mule-app-multiple-plugins-with-additional-deps";
+    final String appLocation = getAppLocation(appName);
+    processSourcesOnProject(appLocation);
+    List<String> generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
+    List<String> expectedAppClassLoaderModelFileContent =
+            getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
+    assertThat(generatedAppClassLoaderModelFileContent, equalTo(expectedAppClassLoaderModelFileContent));
+
+    List<String> generatedPluginClassLoaderModelFileContent =
+            getFileContent(appLocation + GENERATED_PLUGIN_WITH_DEPENDENCY_X_CLASSLOADER_MODEL_PATH_SUFFIX);
+    List<String> expectedPluginClassLoaderModelFileContent =
+            getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, "mule-plugin-with-dependency-x"));
+    assertThat(generatedPluginClassLoaderModelFileContent, equalTo(expectedPluginClassLoaderModelFileContent));
+
+    generatedPluginClassLoaderModelFileContent = getFileContent(appLocation + GENERATED_PLUGIN_WITH_DEPENDENCY_Y_CLASSLOADER_MODEL_PATH_SUFFIX);
+    expectedPluginClassLoaderModelFileContent = getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, "mule-plugin-with-dependency-y"));
+    assertThat(generatedPluginClassLoaderModelFileContent, equalTo(expectedPluginClassLoaderModelFileContent));
+  }
+
+
+  @Test
+  public void muleAppWithMultiplePluginsWithSameAdditionalDependencies() throws Exception {
+    final String appName = "mule-app-multiple-plugins-with-additional-deps";
+    final String appLocation = getAppLocation(appName);
+    processSourcesOnProject(appLocation);
+    List<String> generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
+    List<String> expectedAppClassLoaderModelFileContent =
+            getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
+    assertThat(generatedAppClassLoaderModelFileContent, equalTo(expectedAppClassLoaderModelFileContent));
+
+    List<String> generatedPluginClassLoaderModelFileContent =
+            getFileContent(appLocation + GENERATED_PLUGIN_WITH_DEPENDENCY_X_CLASSLOADER_MODEL_PATH_SUFFIX);
+    List<String> expectedPluginClassLoaderModelFileContent =
+            getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, "mule-plugin-with-dependency-x"));
+    assertThat(generatedPluginClassLoaderModelFileContent, equalTo(expectedPluginClassLoaderModelFileContent));
+
+    generatedPluginClassLoaderModelFileContent = getFileContent(appLocation + GENERATED_PLUGIN_WITH_DEPENDENCY_Y_CLASSLOADER_MODEL_PATH_SUFFIX);
+    expectedPluginClassLoaderModelFileContent = getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, "mule-plugin-with-dependency-y"));
+    assertThat(generatedPluginClassLoaderModelFileContent, equalTo(expectedPluginClassLoaderModelFileContent));
+  }
+
+  private String getAppLocation(String appName) {
+    return "/additional-plugin-dependencies/" + appName;
+  }
 
   private String getCorrectGeneratedClassloaderModelPath(String appName) {
     return appName + GENERATED_CLASSLOADER_MODEL_PATH_COMMON_SUFFIX;

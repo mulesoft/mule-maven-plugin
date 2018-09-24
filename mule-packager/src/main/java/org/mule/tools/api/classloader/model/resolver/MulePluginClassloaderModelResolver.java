@@ -60,17 +60,8 @@ public class MulePluginClassloaderModelResolver extends ClassloaderModelResolver
     for (BundleDependency muleDependency : mulePlugins) {
       List<BundleDependency> mulePluginDependencies =
           muleMavenPluginClient.resolveBundleDescriptorDependencies(false, false, muleDependency.getDescriptor());
-      getAdditionalDependencies(muleDependency.getDescriptor()).forEach(
-                                                                        additionalDepDescriptor -> {
-                                                                          mulePluginDependencies.add(muleMavenPluginClient
-                                                                              .resolveBundleDescriptor(additionalDepDescriptor));
-                                                                          mulePluginDependencies.addAll(muleMavenPluginClient
-                                                                              .resolveBundleDescriptorDependencies(false, false,
-                                                                                                                   additionalDepDescriptor));
-                                                                        });
       muleDependenciesDependencies.put(muleDependency, new ArrayList<>(mulePluginDependencies));
     }
-
     return muleDependenciesDependencies;
   }
 
@@ -93,19 +84,6 @@ public class MulePluginClassloaderModelResolver extends ClassloaderModelResolver
     BundleDescriptor otherDescriptor = otherBundleDependency.getDescriptor();
     return StringUtils.equals(descriptor.getArtifactId(), otherDescriptor.getArtifactId())
         && StringUtils.equals(getMajor(descriptor.getBaseVersion()), getMajor(otherDescriptor.getBaseVersion()));
-  }
-
-  private List<BundleDescriptor> getAdditionalDependencies(BundleDescriptor plugin) {
-    return pluginsWithAdditionalDependencies
-        .stream()
-        .filter(
-                pluginWithAdditionalDependencies -> pluginWithAdditionalDependencies.getArtifactId()
-                    .equals(plugin.getArtifactId())
-                    && pluginWithAdditionalDependencies.getGroupId().equals(plugin.getGroupId()))
-        .findFirst()
-        .map((pluginWithAdditionalDependencies) -> pluginWithAdditionalDependencies.getDependencies().stream()
-            .map(dep -> ArtifactUtils.toBundleDescriptor(dep)).collect(toList()))
-        .orElse(emptyList());
   }
 
 }

@@ -70,7 +70,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
   @Override
   public void undeployDomain() throws DeploymentException {
-    throw new DeploymentException("Uneployment of domains from CloudHub is not supported");
+    throw new DeploymentException("Undeployment of domains from CloudHub is not supported");
   }
 
   /**

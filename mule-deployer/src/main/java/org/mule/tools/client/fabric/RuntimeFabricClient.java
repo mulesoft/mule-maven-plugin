@@ -10,6 +10,9 @@
 package org.mule.tools.client.fabric;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.mule.tools.client.AbstractMuleClient;
 import org.mule.tools.client.fabric.model.DeploymentDetailedResponse;
 import org.mule.tools.client.fabric.model.DeploymentGenericResponse;
@@ -24,6 +27,7 @@ import javax.ws.rs.core.Response;
 import java.util.function.Supplier;
 
 import static java.lang.String.format;
+import static javax.ws.rs.core.Response.Status.ACCEPTED;
 import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.mule.tools.client.arm.ArmClient.BASE_HYBRID_API_PATH;
@@ -34,6 +38,8 @@ public class RuntimeFabricClient extends AbstractMuleClient {
   public static final String HYBRID_API = BASE_HYBRID_API_PATH + API_VERSION;
   public static final String RESOURCES_PATH = HYBRID_API + "/organizations/%s/environments/%s";
   public static final String DEPLOYMENTS_PATH = RESOURCES_PATH + "/deployments";
+  public static final String WORKERCLOUD_API_V1_AGENTS = "workercloud/api/organizations/%s/agents";
+  public static final String RUNTIME_FABRIC_TARGET_INFO = "runtimefabric/api/organizations/%s/targets/%s";
 
 
   public RuntimeFabricClient(RuntimeFabricDeployment runtimeFabricDeployment, DeployerLog log) {
@@ -57,8 +63,9 @@ public class RuntimeFabricClient extends AbstractMuleClient {
    * @return {@link DeploymentDetailedResponse}
    */
   public DeploymentDetailedResponse deploy(DeploymentRequest request) {
+    log.info("Deploying " + request.name);
     Response response = post(baseUri, getPathSupplier(), new Gson().toJson(request));
-    checkResponseStatus(response, CREATED);
+    checkResponseStatus(response, ACCEPTED);
     return response.readEntity(DeploymentDetailedResponse.class);
   }
 
@@ -68,6 +75,7 @@ public class RuntimeFabricClient extends AbstractMuleClient {
    * @return a list with all the {@link DeploymentGenericResponse}
    */
   public DeploymentDetailedResponse redeploy(DeploymentModify modify, String deploymentId) {
+    log.info("Redeploying...");
     Response response = patch(baseUri, getDeploymentPathSupplier(deploymentId), new Gson().toJson(modify));
     checkResponseStatus(response, OK);
     return response.readEntity(DeploymentDetailedResponse.class);
@@ -85,6 +93,7 @@ public class RuntimeFabricClient extends AbstractMuleClient {
   }
 
   /**
+   * f
    * Deletes an existing deployment
    *
    * @return {@link DeploymentDetailedResponse}
@@ -102,5 +111,22 @@ public class RuntimeFabricClient extends AbstractMuleClient {
 
   public Supplier<String> getPathSupplier() {
     return () -> format(DEPLOYMENTS_PATH, getOrgId(), getEnvId());
+  }
+
+  public Supplier<String> getAgentsPathSupplier() {
+    return () -> format(WORKERCLOUD_API_V1_AGENTS, getOrgId());
+  }
+
+  public JsonArray getTargets() {
+
+    Response response = get(baseUri, getAgentsPathSupplier());
+    checkResponseStatus(response, OK);
+    return new Gson().fromJson(response.readEntity(String.class), JsonElement.class).getAsJsonArray();
+  }
+
+  public JsonObject getTargetInfo(String targetId) {
+    Response response = get(baseUri, format(RUNTIME_FABRIC_TARGET_INFO, getOrgId(), targetId));
+    checkResponseStatus(response, OK);
+    return new Gson().fromJson(response.readEntity(String.class), JsonElement.class).getAsJsonObject();
   }
 }

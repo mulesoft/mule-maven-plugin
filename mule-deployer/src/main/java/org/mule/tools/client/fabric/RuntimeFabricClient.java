@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.Response.Status.ACCEPTED;
-import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.mule.tools.client.arm.ArmClient.BASE_HYBRID_API_PATH;
 
@@ -99,8 +99,8 @@ public class RuntimeFabricClient extends AbstractMuleClient {
    * @return {@link DeploymentDetailedResponse}
    */
   public DeploymentDetailedResponse deleteDeployment(String deploymentId) {
-    Response response = get(baseUri, getDeploymentPathSupplier(deploymentId));
-    checkResponseStatus(response, OK);
+    Response response = delete(baseUri, getDeploymentPathSupplier(deploymentId));
+    checkResponseStatus(response, NO_CONTENT);
     return response.readEntity(DeploymentDetailedResponse.class);
   }
 

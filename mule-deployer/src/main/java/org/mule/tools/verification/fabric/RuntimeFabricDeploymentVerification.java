@@ -37,13 +37,12 @@ public class RuntimeFabricDeploymentVerification implements DeploymentVerificati
 
   @Override
   public void assertDeployment(Deployment deployment) throws DeploymentException {
-    // MMP-378
-    //    verification.assertDeployment(deployment);
+    verification.assertDeployment(deployment);
   }
 
   private class RuntimeFabricDeploymentVerificationStrategy implements DeploymentVerificationStrategy {
 
-    private final Deployments deployments;
+    private Deployments deployments;
     private String deploymentId;
 
     private RuntimeFabricDeploymentVerificationStrategy() {
@@ -65,6 +64,7 @@ public class RuntimeFabricDeploymentVerification implements DeploymentVerificati
 
     private String getDeploymentId(Deployment deployment) {
       if (deploymentId == null) {
+        deployments = client.getDeployments();
         for (DeploymentGenericResponse dep : deployments) {
           if (StringUtils.equals(dep.name, deployment.getApplicationName())) {
             deploymentId = dep.id;

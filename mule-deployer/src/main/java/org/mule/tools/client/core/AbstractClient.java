@@ -42,7 +42,7 @@ import com.google.gson.Gson;
 
 public abstract class AbstractClient {
 
-  private static final String USER_AGENT_MULE_DEPLOYER = "mule-deployer%s";
+  private String userAgent = "mule-deployer%s";
 
   protected DeployerLog log;
 
@@ -92,6 +92,11 @@ public abstract class AbstractClient {
   protected Response get(String uri, Supplier<String> pathSupplier) {
     initialize();
     return builder(uri, pathSupplier.get()).get();
+  }
+
+  protected Response delete(String uri, Supplier<String> pathSupplier) {
+    initialize();
+    return builder(uri, pathSupplier.get()).delete();
   }
 
   protected <T> T get(String uri, String path, Class<T> clazz) {
@@ -148,13 +153,13 @@ public abstract class AbstractClient {
     Package classPackage = AbstractClient.class.getPackage();
     String implementationVersion = classPackage != null ? classPackage.getImplementationVersion() : EMPTY;
 
-    String version = isNotBlank(implementationVersion) ? "-[" + implementationVersion + "]" : EMPTY;
-    return String.format(USER_AGENT_MULE_DEPLOYER, version);
+    String version = isNotBlank(implementationVersion) ? "/" + implementationVersion : EMPTY;
+    return String.format(userAgent, version);
   }
 
   /**
    * Template method to allow subclasses to configure the request (adding headers for example).
-   * 
+   *
    * @param builder The invocation builder for the request.
    */
   protected void configureRequest(Invocation.Builder builder) {
@@ -188,6 +193,10 @@ public abstract class AbstractClient {
   protected <T> T readJsonEntity(Response response, Type type) {
     String jsonResponse = response.readEntity(String.class);
     return new Gson().fromJson(jsonResponse, type);
+  }
+
+  public void setUserAgent(String userAgent) {
+    this.userAgent = userAgent;
   }
 
 }

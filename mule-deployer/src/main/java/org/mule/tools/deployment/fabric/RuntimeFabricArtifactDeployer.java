@@ -21,11 +21,14 @@ import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.fabric.RuntimeFabricDeploymentVerification;
 
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+
 import static com.google.common.base.Preconditions.checkArgument;
 
 public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
 
   private static final Long DEFAULT_RUNTIME_FABRIC_DEPLOYMENT_TIMEOUT = 1200000L;
+  public static final int BAD_REQUEST = 400;
   private DeploymentVerification deploymentVerification;
   private RequestBuilder requestBuilder;
   private RuntimeFabricClient client;
@@ -56,8 +59,11 @@ public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
       DeploymentRequest request = requestBuilder.buildDeploymentRequest();
       client.deploy(request);
     } catch (ClientException e) {
-      throw new DeploymentException("Deployment failed: " + e.getMessage(), e);
-      //      redeployApplication();
+      if (e.getStatusCode() == BAD_REQUEST) {
+        redeployApplication();
+      } else {
+        throw new DeploymentException("Could not deploy application.", e);
+      }
     }
     checkApplicationHasStarted();
   }

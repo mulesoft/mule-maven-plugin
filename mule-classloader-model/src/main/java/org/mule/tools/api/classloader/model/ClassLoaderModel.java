@@ -59,12 +59,16 @@ public class ClassLoaderModel {
   }
 
   public ClassLoaderModel getParametrizedUriModel() {
+    ClassLoaderModel copy = doGetParameterizedUriModel();
     List<Artifact> dependenciesCopy = dependencies.stream().map(Artifact::copyWithParameterizedUri).collect(toList());
-    ClassLoaderModel copy = new ClassLoaderModel(version, artifactCoordinates);
     copy.setDependencies(dependenciesCopy);
-
     return copy;
   }
+
+  protected ClassLoaderModel doGetParameterizedUriModel() {
+    ClassLoaderModel copy = new ClassLoaderModel(version, artifactCoordinates);
+    return copy;
+  };
 
   @Override
   public boolean equals(Object o) {

@@ -11,7 +11,6 @@ package org.mule.tools.maven.mojo;
 
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.Plugin;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
@@ -20,6 +19,7 @@ import org.mule.tools.api.verifier.ProjectVerifyFactory;
 import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
 import org.mule.tools.api.validation.project.AbstractProjectValidator;
 import org.mule.tools.api.validation.project.ProjectValidatorFactory;
+import org.mule.tools.api.classloader.model.resolver.Plugin;
 import org.mule.tools.maven.utils.ArtifactUtils;
 import org.mule.tools.maven.utils.MavenPackagerLog;
 import org.mule.tools.maven.utils.MavenProjectInformation;

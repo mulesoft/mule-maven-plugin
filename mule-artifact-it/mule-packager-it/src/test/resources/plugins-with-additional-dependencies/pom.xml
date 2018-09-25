@@ -28,13 +28,13 @@
                         <plugin>
                             <groupId>org.mule.group</groupId>
                             <artifactId>mule-plugin-b</artifactId>
-                            <dependencies>
+                            <additionalDependencies>
                                 <dependency>
                                     <groupId>group.id.d</groupId>
                                     <artifactId>artifact-id-d</artifactId>
                                     <version>1.0.0-SNAPSHOT</version>
                                 </dependency>
-                            </dependencies>
+                            </additionalDependencies>
                         </plugin>
                     </additionalPluginDependencies>
                 </configuration>

@@ -15,7 +15,6 @@ import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.Plugin;
-import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -24,8 +23,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
 import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
 import static org.mule.tools.api.validation.VersionUtils.getMajor;
 

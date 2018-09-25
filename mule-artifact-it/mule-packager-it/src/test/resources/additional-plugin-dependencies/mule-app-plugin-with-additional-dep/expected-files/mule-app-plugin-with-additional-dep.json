@@ -1,4 +1,21 @@
 {
+  "pluginsWithAdditionalDependencies": [
+    {
+      "groupId": "org.mule.group",
+      "artifactId": "mule-plugin-with-dependency-x",
+      "additionalDependencies": [
+        {
+          "artifactCoordinates": {
+            "groupId": "group.id.y",
+            "artifactId": "artifact-id-y",
+            "version": "1.0.0",
+            "type": "jar"
+          },
+          "uri": "repository/group/id/y/artifact-id-y/1.0.0/artifact-id-y-1.0.0.jar"
+        }
+      ]
+    }
+  ],
   "version": "1.1.0",
   "artifactCoordinates": {
     "groupId": "org.apache.maven.plugin.my.unit",

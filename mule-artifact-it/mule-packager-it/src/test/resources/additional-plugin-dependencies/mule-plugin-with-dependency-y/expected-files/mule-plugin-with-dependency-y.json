@@ -16,15 +16,6 @@
         "type": "jar"
       },
       "uri": "repository/group/id/y/artifact-id-y/1.0.0/artifact-id-y-1.0.0.jar"
-    },
-    {
-      "artifactCoordinates": {
-        "groupId": "group.id.x",
-        "artifactId": "artifact-id-x",
-        "version": "1.0.0",
-        "type": "jar"
-      },
-      "uri": "repository/group/id/x/artifact-id-x/1.0.0/artifact-id-x-1.0.0.jar"
     }
   ]
 }

@@ -28,6 +28,11 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends ProcessS
   private static final String GENERATED_PLUGIN_WITH_DEPENDENCY_Y_CLASSLOADER_MODEL_PATH_SUFFIX =
       "/target/repository/org/mule/group/mule-plugin-with-dependency-y/1.0.0/classloader-model.json";
 
+  private static final String EXPECTED_PLUGIN_WITH_DEPENDENCY_X_CLASSLOADER_MODEL_PATH =
+      "/additional-plugin-dependencies/mule-plugin-with-dependency-x/expected-files/mule-plugin-with-dependency-x.json";
+  private static final String EXPECTED_PLUGIN_WITH_DEPENDENCY_Y_CLASSLOADER_MODEL_PATH =
+      "/additional-plugin-dependencies/mule-plugin-with-dependency-y/expected-files/mule-plugin-with-dependency-y.json";
+
   private static final String GENERATED_CLASSLOADER_MODEL_PATH_COMMON_SUFFIX =
       "/target/META-INF/mule-artifact/classloader-model.json";
 
@@ -45,7 +50,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends ProcessS
     List<String> generatedPluginClassLoaderModelFileContent =
         getFileContent(appLocation + GENERATED_PLUGIN_WITH_DEPENDENCY_X_CLASSLOADER_MODEL_PATH_SUFFIX);
     List<String> expectedPluginClassLoaderModelFileContent =
-        getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, "mule-plugin-with-dependency-x"));
+        getFileContent(EXPECTED_PLUGIN_WITH_DEPENDENCY_X_CLASSLOADER_MODEL_PATH);
     assertThat(generatedPluginClassLoaderModelFileContent, equalTo(expectedPluginClassLoaderModelFileContent));
   }
 
@@ -56,17 +61,19 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends ProcessS
     processSourcesOnProject(appLocation);
     List<String> generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     List<String> expectedAppClassLoaderModelFileContent =
-            getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
+        getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
     assertThat(generatedAppClassLoaderModelFileContent, equalTo(expectedAppClassLoaderModelFileContent));
 
     List<String> generatedPluginClassLoaderModelFileContent =
-            getFileContent(appLocation + GENERATED_PLUGIN_WITH_DEPENDENCY_X_CLASSLOADER_MODEL_PATH_SUFFIX);
+        getFileContent(appLocation + GENERATED_PLUGIN_WITH_DEPENDENCY_X_CLASSLOADER_MODEL_PATH_SUFFIX);
     List<String> expectedPluginClassLoaderModelFileContent =
-            getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, "mule-plugin-with-dependency-x"));
+        getFileContent(EXPECTED_PLUGIN_WITH_DEPENDENCY_X_CLASSLOADER_MODEL_PATH);
     assertThat(generatedPluginClassLoaderModelFileContent, equalTo(expectedPluginClassLoaderModelFileContent));
 
-    generatedPluginClassLoaderModelFileContent = getFileContent(appLocation + GENERATED_PLUGIN_WITH_DEPENDENCY_Y_CLASSLOADER_MODEL_PATH_SUFFIX);
-    expectedPluginClassLoaderModelFileContent = getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, "mule-plugin-with-dependency-y"));
+    generatedPluginClassLoaderModelFileContent =
+        getFileContent(appLocation + GENERATED_PLUGIN_WITH_DEPENDENCY_Y_CLASSLOADER_MODEL_PATH_SUFFIX);
+    expectedPluginClassLoaderModelFileContent =
+        getFileContent(EXPECTED_PLUGIN_WITH_DEPENDENCY_Y_CLASSLOADER_MODEL_PATH);
     assertThat(generatedPluginClassLoaderModelFileContent, equalTo(expectedPluginClassLoaderModelFileContent));
   }
 
@@ -78,17 +85,19 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends ProcessS
     processSourcesOnProject(appLocation);
     List<String> generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     List<String> expectedAppClassLoaderModelFileContent =
-            getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
+        getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
     assertThat(generatedAppClassLoaderModelFileContent, equalTo(expectedAppClassLoaderModelFileContent));
 
     List<String> generatedPluginClassLoaderModelFileContent =
-            getFileContent(appLocation + GENERATED_PLUGIN_WITH_DEPENDENCY_X_CLASSLOADER_MODEL_PATH_SUFFIX);
+        getFileContent(appLocation + GENERATED_PLUGIN_WITH_DEPENDENCY_X_CLASSLOADER_MODEL_PATH_SUFFIX);
     List<String> expectedPluginClassLoaderModelFileContent =
-            getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, "mule-plugin-with-dependency-x"));
+        getFileContent(EXPECTED_PLUGIN_WITH_DEPENDENCY_X_CLASSLOADER_MODEL_PATH);
     assertThat(generatedPluginClassLoaderModelFileContent, equalTo(expectedPluginClassLoaderModelFileContent));
 
-    generatedPluginClassLoaderModelFileContent = getFileContent(appLocation + GENERATED_PLUGIN_WITH_DEPENDENCY_Y_CLASSLOADER_MODEL_PATH_SUFFIX);
-    expectedPluginClassLoaderModelFileContent = getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, "mule-plugin-with-dependency-y"));
+    generatedPluginClassLoaderModelFileContent =
+        getFileContent(appLocation + GENERATED_PLUGIN_WITH_DEPENDENCY_Y_CLASSLOADER_MODEL_PATH_SUFFIX);
+    expectedPluginClassLoaderModelFileContent =
+        getFileContent(EXPECTED_PLUGIN_WITH_DEPENDENCY_Y_CLASSLOADER_MODEL_PATH);
     assertThat(generatedPluginClassLoaderModelFileContent, equalTo(expectedPluginClassLoaderModelFileContent));
   }
 
@@ -114,6 +123,5 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends ProcessS
     auxVerifier.executeGoal(INSTALL);
     auxVerifier.verifyErrorFreeLog();
   }
-
 
 }

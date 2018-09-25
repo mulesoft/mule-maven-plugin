@@ -34,24 +34,24 @@
                         <plugin>
                             <groupId>org.mule.group</groupId>
                             <artifactId>mule-plugin-with-dependency-x</artifactId>
-                            <dependencies>
+                            <additionalDependencies>
                                 <dependency>
                                     <groupId>group.id.c</groupId>
                                     <artifactId>artifact-id-c</artifactId>
                                     <version>1.0.0-SNAPSHOT</version>
                                 </dependency>
-                            </dependencies>
+                            </additionalDependencies>
                         </plugin>
                         <plugin>
                             <groupId>org.mule.group</groupId>
                             <artifactId>mule-plugin-with-dependency-b</artifactId>
-                            <dependencies>
+                            <additionalDependencies>
                                 <dependency>
                                     <groupId>group.id.c</groupId>
                                     <artifactId>artifact-id-c</artifactId>
                                     <version>1.0.0-SNAPSHOT</version>
                                 </dependency>
-                            </dependencies>
+                            </additionalDependencies>
                         </plugin>
                     </additionalPluginDependencies>
                 </configuration>

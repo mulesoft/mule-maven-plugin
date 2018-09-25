@@ -7,13 +7,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.classloader.model;
+
+package org.mule.tools.api.classloader.model.resolver;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import org.apache.maven.model.Dependency;
 
 /**
- * POJO to modelate a plugin that will declare additional dependencies.
+ * Mojo to modelate a plugin that will declare additional dependencies.
  *
  * @since 3.2.0
  */
@@ -23,7 +25,7 @@ public class Plugin {
 
   private String artifactId;
 
-  private List<Artifact> additionalDependencies;
+  private List<Dependency> additionalDependencies;
 
   public String getGroupId() {
     return groupId;
@@ -41,21 +43,11 @@ public class Plugin {
     this.artifactId = artifactId;
   }
 
-  public List<Artifact> getAdditionalDependencies() {
+  public List<Dependency> getAdditionalDependencies() {
     return additionalDependencies;
   }
 
-  public void setAdditionalDependencies(List<Artifact> dependencies) {
+  public void setAdditionalDependencies(List<Dependency> dependencies) {
     this.additionalDependencies = dependencies;
-  }
-
-  public Plugin copyWithParameterizedDependenciesUri() {
-    Plugin copy = new Plugin();
-    copy.setGroupId(this.groupId);
-    copy.setArtifactId(this.artifactId);
-    List<Artifact> dependenciesCopy =
-        additionalDependencies.stream().map(Artifact::copyWithParameterizedUri).collect(Collectors.toList());
-    copy.setAdditionalDependencies(dependenciesCopy);
-    return copy;
   }
 }

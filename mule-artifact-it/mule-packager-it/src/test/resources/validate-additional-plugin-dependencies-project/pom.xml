@@ -32,26 +32,26 @@
                     <plugin>
                         <groupId>group.id.a</groupId>
                         <artifactId>artifact-id-a</artifactId>
-                        <dependencies>
+                        <additionalDependencies>
                             <dependency>
                                 <groupId>org.mule.group</groupId>
                                 <artifactId>mule-plugin-a</artifactId>
                                 <version>1.0.0</version>
                                 <classifier>mule-plugin</classifier>
                             </dependency>
-                        </dependencies>
+                        </additionalDependencies>
                     </plugin>
                         <plugin>
                             <groupId>group.id.b</groupId>
                             <artifactId>artifact-id-b</artifactId>
-                            <dependencies>
+                            <additionalDependencies>
                                 <dependency>
                                     <groupId>org.mule.group</groupId>
                                     <artifactId>mule-plugin-b</artifactId>
                                     <version>1.0.0</version>
                                     <classifier>mule-plugin</classifier>
                                 </dependency>
-                            </dependencies>
+                            </additionalDependencies>
                         </plugin>
                 </additionalPluginDependencies>
                 </configuration>

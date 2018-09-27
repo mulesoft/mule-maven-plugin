@@ -92,8 +92,13 @@ public abstract class AbstractClient {
     return builder.method("PATCH", entity);
   }
 
+  protected Response patch(String uri, String path, Object entity) {
+    initialize();
+    return patch(uri, path, Entity.entity(entity, APPLICATION_JSON_TYPE));
+  }
 
-  private synchronized void initialize() {
+
+  protected synchronized void initialize() {
     if (!isClientInitialized) {
       isClientInitialized = true;
       init();

@@ -69,6 +69,10 @@ public abstract class AbstractMuleClient extends AbstractClient {
     envId = findEnvironmentByName(environmentName).id;
   }
 
+  public String getEnvId() {
+    return envId;
+  }
+
   public UserInfo getMe() {
     UserInfo userInfo = get(baseUri, ME, UserInfo.class);
     return userInfo;

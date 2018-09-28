@@ -9,18 +9,21 @@
  */
 package org.mule.tools.api.classloader.model.resolver;
 
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
+import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toBundleDescriptor;
 import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
-import org.mule.tools.api.classloader.model.util.ArtifactUtils;
+import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.maven.model.Dependency;
 
 
 /**
@@ -39,21 +42,29 @@ public class AdditionalPluginDependenciesResolver {
     this.pluginsWithAdditionalDependencies = additionalPluginDependencies;
   }
 
-  public Map<BundleDependency, List<BundleDependency>> resolveDependencies(List<BundleDependency> mulePlugins) {
+  public Map<BundleDependency, List<BundleDependency>> resolveDependencies(List<BundleDependency> mulePlugins,
+                                                                           Collection<ClassLoaderModel> mulePluginsClassLoaderModels) {
     Map<BundleDependency, List<BundleDependency>> pluginsWithAdditionalDeps = new LinkedHashMap<>();
     for (Plugin pluginWithAdditionalDependencies : pluginsWithAdditionalDependencies) {
+      BundleDependency pluginBundleDependency = getPluginBundleDependency(pluginWithAdditionalDependencies, mulePlugins);
+      ClassLoaderModel pluginClassLoaderModel =
+          getPluginClassLoaderModel(pluginWithAdditionalDependencies, mulePluginsClassLoaderModels);
       List<BundleDependency> additionalDependencies = new ArrayList<>();
-      pluginWithAdditionalDependencies.getAdditionalDependencies().forEach(
-                                                                           dep -> {
-                                                                             additionalDependencies.add(aetherMavenClient
-                                                                                 .resolveBundleDescriptor(toBundleDescriptor(dep)));
-                                                                             additionalDependencies.addAll(aetherMavenClient
-                                                                                 .resolveBundleDescriptorDependencies(false,
-                                                                                                                      false,
-                                                                                                                      toBundleDescriptor(dep)));
-                                                                           });
-      pluginsWithAdditionalDeps.put(getPluginBundleDependency(pluginWithAdditionalDependencies, mulePlugins),
-                                    additionalDependencies);
+      pluginWithAdditionalDependencies.getAdditionalDependencies().stream()
+          .filter(additionalDep -> !isPresentInClassLoaderModel(pluginClassLoaderModel, additionalDep))
+          .forEach(
+                   dep -> {
+                     additionalDependencies.add(aetherMavenClient
+                         .resolveBundleDescriptor(toBundleDescriptor(dep)));
+                     additionalDependencies.addAll(aetherMavenClient
+                         .resolveBundleDescriptorDependencies(false,
+                                                              false,
+                                                              toBundleDescriptor(dep)));
+                   });
+      if (!additionalDependencies.isEmpty()) {
+        pluginsWithAdditionalDeps.put(pluginBundleDependency,
+                                      additionalDependencies);
+      }
     }
     return pluginsWithAdditionalDeps;
   }
@@ -61,7 +72,30 @@ public class AdditionalPluginDependenciesResolver {
   private BundleDependency getPluginBundleDependency(Plugin plugin, List<BundleDependency> mulePlugins) {
     return mulePlugins.stream().filter(mulePlugin -> mulePlugin.getDescriptor().getArtifactId().equals(plugin.getArtifactId())
         && mulePlugin.getDescriptor().getGroupId().equals(plugin.getGroupId()))
-        .findFirst().orElseThrow(RuntimeException::new);
+        .findFirst()
+        .orElseThrow(() -> new MuleRuntimeException(createStaticMessage("Declared additional dependencies for a plugin not present: "
+            + plugin)));
+  }
+
+  private ClassLoaderModel getPluginClassLoaderModel(Plugin plugin, Collection<ClassLoaderModel> mulePluginsClassLoaderModels) {
+    return mulePluginsClassLoaderModels.stream().filter(
+                                                        pluginClassLoaderModel -> pluginClassLoaderModel.getArtifactCoordinates()
+                                                            .getGroupId().equals(plugin.getGroupId())
+                                                            && pluginClassLoaderModel.getArtifactCoordinates().getArtifactId()
+                                                                .equals(plugin.getArtifactId()))
+        .findFirst()
+        .orElseThrow(() -> new MuleRuntimeException(createStaticMessage("Could not find ClassLoaderModel resolved for plugin: "
+            + plugin)));
+  }
+
+  private boolean areSameArtifact(Dependency dependency, Artifact artifact) {
+    return dependency.getArtifactId().equals(artifact.getArtifactCoordinates().getArtifactId())
+        && dependency.getGroupId().equals(artifact.getArtifactCoordinates().getGroupId())
+        && dependency.getVersion().equals(artifact.getArtifactCoordinates().getVersion());
+  }
+
+  private boolean isPresentInClassLoaderModel(ClassLoaderModel classLoaderModel, Dependency dep) {
+    return classLoaderModel.getDependencies().stream().anyMatch(artifactDependency -> areSameArtifact(dep, artifactDependency));
   }
 
 }

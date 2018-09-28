@@ -13,6 +13,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class AppClassLoaderModel extends ClassLoaderModel {
 
@@ -30,6 +31,14 @@ public class AppClassLoaderModel extends ClassLoaderModel {
         pluginsWithAdditionalDependencies.stream().map(Plugin::copyWithParameterizedDependenciesUri).collect(toList());
     copy.setPluginsWithAdditionalDependencies(pluginsCopy);
     return copy;
+  }
+
+  @Override
+  public Set<Artifact> getArtifacts() {
+    Set<Artifact> artifacts = super.getArtifacts();
+    pluginsWithAdditionalDependencies.forEach(
+                                              plugin -> artifacts.addAll(plugin.getAdditionalDependencies()));
+    return artifacts;
   }
 
   public List<Plugin> getPluginsWithAdditionalDependencies() {

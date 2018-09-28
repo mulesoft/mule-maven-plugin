@@ -50,4 +50,9 @@ public class Plugin {
   public void setAdditionalDependencies(List<Dependency> dependencies) {
     this.additionalDependencies = dependencies;
   }
+
+  @Override
+  public String toString() {
+    return groupId + ":" + artifactId;
+  }
 }

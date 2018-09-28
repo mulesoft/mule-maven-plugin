@@ -14,12 +14,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.fail;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
-import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
 import org.junit.Test;
 
 public class AdditionalPluginDependenciesProcessSourcesMojoTest extends ProcessSourcesMojoTest {
@@ -140,17 +136,6 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends ProcessS
 
   private String getCorrectExpectedClassloaderModelPath(String appLocation, String fileName) {
     return appLocation + "/expected-files/" + fileName + ".json";
-  }
-
-  protected void installThirdPartyArtifact(String groupId, String artifactId, String version, String type,
-                                           String dependencyProjectName)
-      throws IOException, VerificationException {
-    File dependencyProjectRootFolder = builder.createProjectBaseDir(dependencyProjectName, this.getClass());
-    Verifier auxVerifier = buildVerifier(dependencyProjectRootFolder);
-    auxVerifier.deleteArtifact(groupId, artifactId, version, type);
-    auxVerifier.assertArtifactNotPresent(groupId, artifactId, version, type);
-    auxVerifier.executeGoal(INSTALL);
-    auxVerifier.verifyErrorFreeLog();
   }
 
 }

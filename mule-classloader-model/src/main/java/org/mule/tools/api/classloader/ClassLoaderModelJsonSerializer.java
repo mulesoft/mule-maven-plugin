@@ -64,7 +64,7 @@ public class ClassLoaderModelJsonSerializer {
   /**
    * Serializes the classloader model to the classloader-model.json file in the destination folder
    *
-   * @param classLoaderModel  the classloader model of the application being packaged
+   * @param classLoaderModel the classloader model of the application being packaged
    * @param destinationFolder the directory model where the file is going to be written
    * @return the created File containing the classloader model's JSON representation
    */

@@ -1,8 +1,0 @@
-#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Fri Sep 21 14:19:17 ART 2018
-https\://repository.mulesoft.org/nexus/content/repositories/releases-ee/.error=
-https\://maven-central.storage.googleapis.com/.lastUpdated=1537550357320
-https\://maven-central.storage.googleapis.com/.error=
-https\://repository.mulesoft.org/nexus/content/repositories/private/.error=
-https\://repository.mulesoft.org/nexus/content/repositories/private/.lastUpdated=1537550356638
-https\://repository.mulesoft.org/nexus/content/repositories/releases-ee/.lastUpdated=1537550356876

@@ -17,35 +17,35 @@ import java.util.Set;
 
 public class AppClassLoaderModel extends ClassLoaderModel {
 
-  private List<Plugin> pluginsWithAdditionalDependencies;
+  private List<Plugin> additionalPluginDependencies;
 
   public AppClassLoaderModel(String version, ArtifactCoordinates artifactCoordinates) {
     super(version, artifactCoordinates);
-    pluginsWithAdditionalDependencies = new ArrayList<>();
+    additionalPluginDependencies = new ArrayList<>();
   }
 
   @Override
   protected ClassLoaderModel doGetParameterizedUriModel() {
     AppClassLoaderModel copy = new AppClassLoaderModel(getVersion(), getArtifactCoordinates());
     List<Plugin> pluginsCopy =
-        pluginsWithAdditionalDependencies.stream().map(Plugin::copyWithParameterizedDependenciesUri).collect(toList());
-    copy.setPluginsWithAdditionalDependencies(pluginsCopy);
+        additionalPluginDependencies.stream().map(Plugin::copyWithParameterizedDependenciesUri).collect(toList());
+    copy.setAdditionalPluginDependencies(pluginsCopy);
     return copy;
   }
 
   @Override
   public Set<Artifact> getArtifacts() {
     Set<Artifact> artifacts = super.getArtifacts();
-    pluginsWithAdditionalDependencies.forEach(
-                                              plugin -> artifacts.addAll(plugin.getAdditionalDependencies()));
+    additionalPluginDependencies.forEach(
+                                         plugin -> artifacts.addAll(plugin.getAdditionalDependencies()));
     return artifacts;
   }
 
-  public List<Plugin> getPluginsWithAdditionalDependencies() {
-    return pluginsWithAdditionalDependencies;
+  public List<Plugin> getAdditionalPluginDependencies() {
+    return additionalPluginDependencies;
   }
 
-  public void setPluginsWithAdditionalDependencies(List<Plugin> pluginsWithAdditionalDependencies) {
-    this.pluginsWithAdditionalDependencies = pluginsWithAdditionalDependencies;
+  public void setAdditionalPluginDependencies(List<Plugin> additionalPluginDependencies) {
+    this.additionalPluginDependencies = additionalPluginDependencies;
   }
 }

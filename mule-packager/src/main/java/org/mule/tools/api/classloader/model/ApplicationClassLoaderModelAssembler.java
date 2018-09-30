@@ -18,7 +18,6 @@ import org.mule.maven.client.api.model.BundleDependency;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.mule.maven.client.internal.AetherMavenClient;
@@ -76,7 +75,7 @@ public class ApplicationClassLoaderModelAssembler {
     Collection<ClassLoaderModel> pluginsClassLoaderModels = mulePluginClassLoaderModelResolver.resolve(appDependencies);
     applicationClassLoaderModel.addAllMulePluginClassloaderModels(pluginsClassLoaderModels);
 
-    appModel.setPluginsWithAdditionalDependencies(toPluginDependencies(additionalPluginDependenciesResolver
+    appModel.setAdditionalPluginDependencies(toPluginDependencies(additionalPluginDependenciesResolver
         .resolveDependencies(appDependencies, pluginsClassLoaderModels)));
 
     applicationClassLoaderModel.addAllRamlClassloaderModels(ramlClassLoaderModelResolver.resolve(appDependencies));

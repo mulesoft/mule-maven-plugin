@@ -1,5 +1,5 @@
 {
-  "pluginsWithAdditionalDependencies": [
+  "additionalPluginDependencies": [
     {
       "groupId": "org.mule.group",
       "artifactId": "mule-plugin-with-dependency-x",

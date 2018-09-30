@@ -38,7 +38,7 @@ public class AppClassLoaderModelCustomJsonSerializer implements JsonSerializer<A
         .registerTypeAdapter(Artifact.class, new ArtifactCustomJsonSerializer())
         .create();
     JsonObject jsonObject = (JsonObject) gson.toJsonTree(classLoaderModel);
-    if (classLoaderModel.getPluginsWithAdditionalDependencies().isEmpty()) {
+    if (classLoaderModel.getAdditionalPluginDependencies().isEmpty()) {
       jsonObject.remove(ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD);
     }
     return jsonObject;

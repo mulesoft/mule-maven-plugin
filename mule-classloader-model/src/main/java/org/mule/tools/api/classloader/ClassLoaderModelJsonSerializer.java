@@ -10,6 +10,8 @@
 
 package org.mule.tools.api.classloader;
 
+import static org.mule.tools.api.classloader.Constants.CLASSLOADER_MODEL_FILE_NAME;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -20,8 +22,6 @@ import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import java.io.*;
 
 public class ClassLoaderModelJsonSerializer {
-
-  private static final String CLASSLOADER_MODEL_FILE_NAME = "classloader-model.json";
 
   /**
    * Creates a {@link ClassLoaderModel} from the JSON representation

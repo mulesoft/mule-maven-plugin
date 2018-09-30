@@ -9,6 +9,7 @@
  */
 package org.mule.tools.api.classloader;
 
+import static org.mule.tools.api.classloader.Constants.ARTIFACT_IS_SHARED_FIELD;
 import org.mule.tools.api.classloader.model.Artifact;
 
 import com.google.gson.Gson;
@@ -24,14 +25,12 @@ import java.lang.reflect.Type;
  */
 public class ArtifactCustomJsonSerializer implements JsonSerializer<Artifact> {
 
-  private static final String IS_SHARED_FIELD = "isShared";
-
   @Override
   public JsonElement serialize(Artifact artifact, Type type, JsonSerializationContext jsonSerializationContext) {
     Gson gson = new Gson();
     JsonObject jsonObject = (JsonObject) gson.toJsonTree(artifact);
     if (!artifact.isShared()) {
-      jsonObject.remove(IS_SHARED_FIELD);
+      jsonObject.remove(ARTIFACT_IS_SHARED_FIELD);
     }
     return jsonObject;
   }

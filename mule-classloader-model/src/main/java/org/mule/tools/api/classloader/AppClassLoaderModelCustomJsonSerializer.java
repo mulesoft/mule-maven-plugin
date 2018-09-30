@@ -9,6 +9,7 @@
  */
 package org.mule.tools.api.classloader;
 
+import static org.mule.tools.api.classloader.Constants.ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD;
 import org.mule.tools.api.classloader.model.AppClassLoaderModel;
 import org.mule.tools.api.classloader.model.Artifact;
 
@@ -27,8 +28,6 @@ import java.lang.reflect.Type;
  * @since 3.2.0
  */
 public class AppClassLoaderModelCustomJsonSerializer implements JsonSerializer<AppClassLoaderModel> {
-
-  private static final String ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD = "pluginsWithAdditionalDependencies";
 
   @Override
   public JsonElement serialize(AppClassLoaderModel classLoaderModel, Type type,

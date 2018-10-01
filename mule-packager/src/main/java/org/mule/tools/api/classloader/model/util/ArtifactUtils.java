@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
@@ -100,6 +101,23 @@ public class ArtifactUtils {
         .setBaseVersion(artifactCoordinates.getVersion())
         .setClassifier(artifactCoordinates.getClassifier())
         .setType(artifactCoordinates.getType()).build();
+  }
+
+  /**
+   * Converts a {@link Dependency} instance to a {@link BundleDescriptor} instance.
+   *
+   * @return the corresponding {@link BundleDescriptor} instance.
+   *
+   * @since 3.2.0
+   */
+  public static BundleDescriptor toBundleDescriptor(Dependency dependency) {
+    return new BundleDescriptor.Builder()
+        .setGroupId(dependency.getGroupId())
+        .setArtifactId(dependency.getArtifactId())
+        .setVersion(dependency.getVersion())
+        .setBaseVersion(dependency.getVersion())
+        .setClassifier(dependency.getClassifier())
+        .setType(dependency.getType()).build();
   }
 
   public static List<Artifact> toApplicationModelArtifacts(List<BundleDependency> appDependencies) {

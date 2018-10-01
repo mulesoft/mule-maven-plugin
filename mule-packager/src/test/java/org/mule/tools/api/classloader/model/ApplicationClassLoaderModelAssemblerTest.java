@@ -208,10 +208,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
   private ApplicationClassLoaderModelAssembler getClassLoaderModelAssemblySpy(AetherMavenClient aetherMavenClientMock) {
     ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
-        spy(new ApplicationClassLoaderModelAssembler(
-                                                     new ApplicationDependencyResolver(aetherMavenClientMock),
-                                                     new MulePluginClassloaderModelResolver(aetherMavenClientMock),
-                                                     new RamlClassloaderModelResolver(aetherMavenClientMock)));
+        spy(new ApplicationClassLoaderModelAssembler(aetherMavenClientMock));
     ArtifactCoordinates projectArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
     doReturn(projectArtifactCoordinates).when(applicationClassLoaderModelAssemblerSpy).getApplicationArtifactCoordinates(any());
     return applicationClassLoaderModelAssemblerSpy;

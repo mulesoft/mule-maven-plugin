@@ -19,6 +19,7 @@ import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
+import org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver;
 import org.mule.tools.api.classloader.model.resolver.ApplicationDependencyResolver;
 import org.mule.tools.api.classloader.model.resolver.MulePluginClassloaderModelResolver;
 import org.mule.tools.api.classloader.model.resolver.RamlClassloaderModelResolver;
@@ -30,6 +31,7 @@ import org.mule.tools.api.validation.MulePluginsCompatibilityValidator;
 import org.mule.tools.maven.utils.DependencyProject;
 import org.mule.tools.maven.utils.MavenPackagerLog;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,7 +84,11 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
     AetherMavenClient aetherMavenClient = getAetherMavenClient();
     return new ApplicationClassLoaderModelAssembler(new ApplicationDependencyResolver(aetherMavenClient),
                                                     new MulePluginClassloaderModelResolver(aetherMavenClient),
-                                                    new RamlClassloaderModelResolver(aetherMavenClient));
+                                                    new RamlClassloaderModelResolver(aetherMavenClient),
+                                                    new AdditionalPluginDependenciesResolver(aetherMavenClient,
+                                                                                             additionalPluginDependencies == null
+                                                                                                 ? new ArrayList<>()
+                                                                                                 : additionalPluginDependencies));
   }
 
   @Override

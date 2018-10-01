@@ -1,0 +1,21 @@
+{
+  "version": "1.1.0",
+  "artifactCoordinates": {
+    "groupId": "org.mule.group",
+    "artifactId": "mule-plugin-with-dependency-x",
+    "version": "1.0.0",
+    "type": "jar",
+    "classifier": "mule-plugin"
+  },
+  "dependencies": [
+    {
+      "artifactCoordinates": {
+        "groupId": "group.id.x",
+        "artifactId": "artifact-id-x",
+        "version": "1.0.0",
+        "type": "jar"
+      },
+      "uri": "repository/group/id/x/artifact-id-x/1.0.0/artifact-id-x-1.0.0.jar"
+    }
+  ]
+}

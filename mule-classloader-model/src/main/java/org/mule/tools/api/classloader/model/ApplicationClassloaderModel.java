@@ -38,7 +38,6 @@ public class ApplicationClassloaderModel {
 
   public Set<Artifact> getArtifacts() {
     Set<Artifact> artifacts = new HashSet<>();
-
     artifacts.addAll(classLoaderModel.getArtifacts());
     artifacts.addAll(mulePluginsClassloaderModels.stream()
         .map(ClassLoaderModel::getArtifacts)

@@ -19,6 +19,7 @@ import org.mule.tools.api.verifier.ProjectVerifyFactory;
 import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
 import org.mule.tools.api.validation.project.AbstractProjectValidator;
 import org.mule.tools.api.validation.project.ProjectValidatorFactory;
+import org.mule.tools.api.classloader.model.resolver.Plugin;
 import org.mule.tools.maven.utils.ArtifactUtils;
 import org.mule.tools.maven.utils.MavenPackagerLog;
 import org.mule.tools.maven.utils.MavenProjectInformation;
@@ -80,6 +81,9 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
 
   @Parameter(property = "shared.libraries")
   protected List<SharedLibraryDependency> sharedLibraries;
+
+  @Parameter
+  protected List<Plugin> additionalPluginDependencies;
 
   @Parameter(defaultValue = "${strictCheck}")
   protected boolean strictCheck;

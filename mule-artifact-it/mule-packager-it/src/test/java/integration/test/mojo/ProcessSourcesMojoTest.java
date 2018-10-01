@@ -15,12 +15,18 @@ import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
 import org.apache.maven.it.VerificationException;
+import org.apache.maven.it.Verifier;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -28,8 +34,10 @@ import org.junit.Test;
 public class ProcessSourcesMojoTest extends MojoTest {
 
   private static final String PROCESS_SOURCES = "process-sources";
+
   private static final String GENERATED_CLASSLOADER_MODEL_FILE =
       "/empty-classloader-model-project/target/META-INF/mule-artifact/classloader-model.json";
+
   private static final String GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE =
       "/empty-classloader-model-project/target/repository/org/mule/group/mule-plugin-a/1.0.0/classloader-model.json";
   private static final String GENERATED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE =
@@ -295,7 +303,7 @@ public class ProcessSourcesMojoTest extends MojoTest {
                hasSameTreeStructure(expectedSubmoduleRepository, new String[] {}));
   }
 
-  private void processSourcesOnProject(String applicationName) throws IOException, VerificationException {
+  protected void processSourcesOnProject(String applicationName) throws IOException, VerificationException {
     processSourcesOnProject(applicationName, emptyList());
   }
 
@@ -309,7 +317,7 @@ public class ProcessSourcesMojoTest extends MojoTest {
     verifier.executeGoal(PROCESS_SOURCES);
   }
 
-  private List<String> getFileContent(String path) throws IOException {
+  protected List<String> getFileContent(String path) throws IOException {
     File generatedClassloaderModelFile = getFile(path);
     return Files.readAllLines(generatedClassloaderModelFile.toPath());
   }

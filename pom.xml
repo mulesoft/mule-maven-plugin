@@ -80,7 +80,7 @@
         <maven.javadoc.plugin.version>2.10.3</maven.javadoc.plugin.version>
         <maven.plugin.version>3.5.0</maven.plugin.version>
         <maven.settings.builder.version>3.3.9</maven.settings.builder.version>
-        <codehaus.plexus.archiver>3.4</codehaus.plexus.archiver>
+        <codehaus.plexus.archiver>3.6.0</codehaus.plexus.archiver>
         <project.info.plugin.version>2.4</project.info.plugin.version>
 
         <!-- Mule Deployer -->

@@ -17,11 +17,10 @@ import java.util.Set;
 
 public class AppClassLoaderModel extends ClassLoaderModel {
 
-  private List<Plugin> additionalPluginDependencies;
+  private List<Plugin> additionalPluginDependencies = new ArrayList<>();
 
   public AppClassLoaderModel(String version, ArtifactCoordinates artifactCoordinates) {
     super(version, artifactCoordinates);
-    additionalPluginDependencies = new ArrayList<>();
   }
 
   @Override

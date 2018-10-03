@@ -221,7 +221,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
   private String getBusinessGroupIdByBusinessGroupPath() {
     String currentOrgId = null;
 
-    Organization organizationHierarchy = getOrganizationHierarchy();
+    Organization organizationHierarchy = getMe().user.organization;
     if (organizationHierarchy.subOrganizations.isEmpty()) {
       return organizationHierarchy.id;
     }
@@ -249,15 +249,6 @@ public abstract class AbstractMuleClient extends AbstractClient {
     }
 
     return currentOrgId;
-  }
-
-  private Organization getOrganizationHierarchy() {
-    String rootOrgId = getMe().user.organization.id;
-
-    String organizationHiearchy = get(baseUri, "accounts/api/organizations/" + rootOrgId + "/hierarchy", String.class);
-    Organization organization = new Gson().fromJson(organizationHiearchy, Organization.class);
-
-    return organization;
   }
 
   private String getBearerToken(Credentials credentials) {

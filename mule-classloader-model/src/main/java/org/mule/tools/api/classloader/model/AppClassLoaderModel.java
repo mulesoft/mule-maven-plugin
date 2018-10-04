@@ -9,19 +9,20 @@
  */
 package org.mule.tools.api.classloader.model;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class AppClassLoaderModel extends ClassLoaderModel {
 
-  private List<Plugin> additionalPluginDependencies;
+  private List<Plugin> additionalPluginDependencies = new ArrayList<>();
 
   public AppClassLoaderModel(String version, ArtifactCoordinates artifactCoordinates) {
     super(version, artifactCoordinates);
-    additionalPluginDependencies = new ArrayList<>();
   }
 
   @Override
@@ -41,8 +42,8 @@ public class AppClassLoaderModel extends ClassLoaderModel {
     return artifacts;
   }
 
-  public List<Plugin> getAdditionalPluginDependencies() {
-    return additionalPluginDependencies;
+  public Optional<List<Plugin>> getAdditionalPluginDependencies() {
+    return ofNullable(additionalPluginDependencies);
   }
 
   public void setAdditionalPluginDependencies(List<Plugin> additionalPluginDependencies) {

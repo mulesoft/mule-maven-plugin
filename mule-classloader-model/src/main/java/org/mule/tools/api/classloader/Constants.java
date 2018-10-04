@@ -23,7 +23,7 @@ public class Constants {
 
   public static final String ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD = "additionalPluginDependencies";
   public static final String PLUGIN_FIELD = "plugin";
-  public static final String PLUGIN_DEPENDENCIES_FIELD = "dependencies";
+  public static final String PLUGIN_DEPENDENCIES_FIELD = "additionalDependencies";
   public static final String PLUGIN_DEPENDENCY_FIELD = "dependency";
 
   public static final String ARTIFACT_IS_SHARED_FIELD = "isShared";

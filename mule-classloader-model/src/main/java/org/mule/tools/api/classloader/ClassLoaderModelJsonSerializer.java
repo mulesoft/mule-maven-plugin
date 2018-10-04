@@ -55,7 +55,8 @@ public class ClassLoaderModelJsonSerializer {
   public static String serialize(ClassLoaderModel classLoaderModel) {
     Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting()
         .registerTypeAdapter(Artifact.class, new ArtifactCustomJsonSerializer())
-        .registerTypeAdapter(AppClassLoaderModel.class, new AppClassLoaderModelCustomJsonSerializer())
+        .registerTypeAdapter(AppClassLoaderModel.class,
+                             new AppClassLoaderModelJsonSerializer.AppClassLoaderModelCustomJsonSerializer())
         .create();
     ClassLoaderModel parameterizedClassloaderModel = classLoaderModel.getParametrizedUriModel();
     return gson.toJson(parameterizedClassloaderModel);

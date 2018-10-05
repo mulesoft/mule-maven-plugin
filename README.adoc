@@ -37,3 +37,37 @@ Contains the integration tests for the modules:
 * mule-packager
 * mule-deployer
 * mule-maven-plugin
+
+== Debugging
+
+In case you run into problems while using the plugin and wants to try find the cause by yourself, you can easily debug the plugin using mvnDebug. These are the steps:
+
+* Clone this project;
+* In the project base folder, checkout to the tag that __corresponds to the version of the mule project that you are building/deploying__;
+* Then, run 
+```
+mvn clean install
+```
+* In your IDE, create a new remote debug configuration and set the port to 8000;
+* Run the command that failed and that you want to debug, but replace **mvn** by **mvnDebug** (check the tips session below);
+* Place a breakpoint in one of the mojos of the mule-maven-plugin module (that should be a good starting point);
+* Start debugging.
+
+=== Tips:
+
+To find the right tag, run
+```
+git tag -l
+```
+- And then run
+```
+git checkout <tag_name>
+```
+Also, if the build failed when invoking (as an example)
+```
+mvn clean deploy -DmuleDeploy
+```
+You should debug by running
+```
+mvnDebug clean deploy -DmuleDeploy
+```

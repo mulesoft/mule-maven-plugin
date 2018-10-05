@@ -88,6 +88,7 @@
         <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
         <jacoco.maven.plugin.version>0.8.2</jacoco.maven.plugin.version>
         <spotbugs.maven.plugin.version>3.1.6</spotbugs.maven.plugin.version>
+        <spotbugs.version>3.1.7</spotbugs.version>
         <formatter.maven.plugin.version>1.9.0</formatter.maven.plugin.version>
         <build.helper.maven.plugin.version>1.8</build.helper.maven.plugin.version>
 
@@ -442,6 +443,13 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                      <groupId>com.github.spotbugs</groupId>
+                      <artifactId>spotbugs</artifactId>
+                      <version>${spotbugs.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>

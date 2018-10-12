@@ -17,8 +17,6 @@ import org.mule.tools.verification.DefaultDeploymentVerification;
 import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.DeploymentVerificationStrategy;
 
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public class RuntimeFabricDeploymentVerification implements DeploymentVerification {
 

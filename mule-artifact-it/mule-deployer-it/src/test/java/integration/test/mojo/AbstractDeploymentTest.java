@@ -27,7 +27,7 @@ import integration.test.util.StandaloneEnvironment;
 public abstract class AbstractDeploymentTest {
 
   private static final String MAVEN_OPTS = "MAVEN_OPTS";
-  private static final String DEFAULT_MULE_VERSION = "4.2.0-SNAPSHOT";
+  private static final String DEFAULT_MULE_VERSION = "4.1.4";
   private static final String MAVEN_OPTS_PROPERTY_KEY = "argLine";
 
   protected static final String DEPLOY_GOAL = "deploy";

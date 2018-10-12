@@ -119,7 +119,7 @@ public class ArmClient extends AbstractMuleClient {
     return body;
   }
 
-  private String getId(TargetType targetType, String target) {
+  public String getId(TargetType targetType, String target) {
     String id = null;
     switch (targetType) {
       case server:

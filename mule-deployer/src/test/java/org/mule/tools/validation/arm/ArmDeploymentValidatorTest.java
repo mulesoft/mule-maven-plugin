@@ -16,6 +16,7 @@ import org.mule.tools.validation.EnvironmentSupportedVersions;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
@@ -45,7 +46,7 @@ public class ArmDeploymentValidatorTest {
     ArmClient clientSpy = spy(new ArmClient(armDeployment, LOG_MOCK));
     doReturn(clientSpy).when(validatorSpy, "getArmClient");
 
-    doReturn(MULE_VERSION).when(validatorSpy, "findRuntimeVersion", clientSpy);
+    doReturn(newArrayList(MULE_VERSION)).when(validatorSpy, "findRuntimeVersion", clientSpy);
 
     assertThat("Supported version that was generated is not the expected", validatorSpy.getEnvironmentSupportedVersions(),
                equalTo(EXPECTED_ENVIRONMENT_SUPPORTED_VERSIONS));

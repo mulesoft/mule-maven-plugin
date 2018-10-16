@@ -8,8 +8,11 @@ package org.mule.tools.model.anypoint;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mule.tools.client.model.TargetType;
 import org.mule.tools.client.core.exception.DeploymentException;
+
+import java.util.HashMap;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -18,6 +21,8 @@ import static org.mockito.Mockito.spy;
 public class ArmDeploymentTest {
 
   private ArmDeployment deploymentSpy;
+
+  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void setUp() {
@@ -68,5 +73,27 @@ public class ArmDeploymentTest {
     assertThat("The target type property was not resolved by system property",
                deploymentSpy.getTargetType(), equalTo(TargetType.server));
     System.clearProperty("anypoint.target.type");
+  }
+
+  @Test(expected = DeploymentException.class)
+  public void setPropertiesMuleVersionOlder3_9_0Test() throws DeploymentException {
+    expectedException.expectMessage("Properties are not allowed. Mule Runtime version should be at least 3.9.0");
+    deploymentSpy.setMuleVersion("3.8.0");
+    deploymentSpy.setProperties(new HashMap<String, String>());
+    deploymentSpy.setEnvironmentSpecificValues();
+  }
+
+  @Test
+  public void setPropertiesMuleVersionEqual3_9_0Test() throws DeploymentException {
+    deploymentSpy.setMuleVersion("3.9.0");
+    deploymentSpy.setProperties(new HashMap<String, String>());
+    deploymentSpy.setEnvironmentSpecificValues();
+  }
+
+  @Test
+  public void setPropertiesMuleVersionNewer3_9_0Test() throws DeploymentException {
+    deploymentSpy.setMuleVersion("3.9.1");
+    deploymentSpy.setProperties(new HashMap<String, String>());
+    deploymentSpy.setEnvironmentSpecificValues();
   }
 }

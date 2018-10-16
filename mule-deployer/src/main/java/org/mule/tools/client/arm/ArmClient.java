@@ -12,7 +12,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -24,6 +26,8 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
@@ -106,17 +110,33 @@ public class ArmClient extends AbstractMuleClient {
   }
 
   private MultiPart buildRequestBody(ApplicationMetadata metadata) {
-    return buildRequestBody(metadata.getFile(), metadata.getName(), metadata.getTargetType(), metadata.getTarget());
+    return buildRequestBody(metadata.getFile(), metadata.getName(), metadata.getTargetType(), metadata.getTarget(),
+                            metadata.getProperties());
   }
 
-  private MultiPart buildRequestBody(File app, String appName, TargetType targetType, String target) {
+  protected MultiPart buildRequestBody(File app, String appName, TargetType targetType, String target,
+                                       Map<String, String> propertiesMap) {
     String id = getId(targetType, target);
-    FileDataBodyPart applicationPart = new FileDataBodyPart("file", app);
-    MultiPart body = new FormDataMultiPart()
+    FileDataBodyPart applicationPart = createApplicationPart(app);
+    FormDataMultiPart formDataMultiPart = new FormDataMultiPart()
         .field("artifactName", appName)
-        .field("targetId", id)
-        .bodyPart(applicationPart);
-    return body;
+        .field("targetId", id);
+
+    if (propertiesMap != null) {
+      Map<String, Object> applicationPropertiesService = new HashMap<>();
+      Map<String, Object> properties = new HashMap<>();
+      properties.put("properties", propertiesMap);
+      properties.put("applicationName", appName);
+      applicationPropertiesService.put("mule.agent.application.properties.service", properties);
+      formDataMultiPart.field("configuration",
+                              new GsonBuilder().setPrettyPrinting().create().toJson(applicationPropertiesService));
+    }
+
+    return formDataMultiPart.bodyPart(applicationPart);
+  }
+
+  protected FileDataBodyPart createApplicationPart(File app) {
+    return new FileDataBodyPart("file", app);
   }
 
   public String getId(TargetType targetType, String target) {

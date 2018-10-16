@@ -41,7 +41,7 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
   }
 
   @Before
-  public void before() throws VerificationException, InterruptedException, IOException, TimeoutException {
+  public void before() throws VerificationException, IOException {
     log = LoggerFactory.getLogger(this.getClass());
     log.info("Initializing context...");
 
@@ -65,7 +65,7 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
   }
 
   @After
-  public void after() throws IOException, InterruptedException {
+  public void after() {
     verifier.resetStreams();
   }
 

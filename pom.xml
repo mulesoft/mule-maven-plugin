@@ -53,7 +53,7 @@
         <java.source>1.7</java.source>
         <java.target>1.7</java.target>
 
-        <mule.distribution.standalone.version>3.8.0</mule.distribution.standalone.version>
+        <mule.distribution.standalone.version>3.9.0</mule.distribution.standalone.version>
 
         <javaFormatter.plugin.version>1.7.0</javaFormatter.plugin.version>
         <license.plugin.version>2.6</license.plugin.version>

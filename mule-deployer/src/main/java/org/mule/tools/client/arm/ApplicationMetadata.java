@@ -12,6 +12,7 @@ package org.mule.tools.client.arm;
 import org.mule.tools.client.model.TargetType;
 
 import java.io.File;
+import java.util.Map;
 
 import static java.lang.String.format;
 
@@ -24,12 +25,14 @@ public class ApplicationMetadata {
   private final String name;
   private final TargetType targetType;
   private final String target;
+  private final Map<String, String> properties;
 
-  public ApplicationMetadata(File file, String name, TargetType targetType, String target) {
+  public ApplicationMetadata(File file, String name, TargetType targetType, String target, Map<String, String> properties) {
     this.file = file;
     this.name = name;
     this.targetType = targetType;
     this.target = target;
+    this.properties = properties;
   }
 
   public File getFile() {
@@ -48,9 +51,13 @@ public class ApplicationMetadata {
     return target;
   }
 
+  public Map<String, String> getProperties() {
+    return properties;
+  }
+
   @Override
   public String toString() {
     String description = "application %s on %s %s";
-    return format(description, name, targetType, target);
+    return format(description, name, targetType, target, properties);
   }
 }

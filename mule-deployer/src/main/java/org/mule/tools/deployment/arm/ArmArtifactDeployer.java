@@ -52,7 +52,7 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
    */
   public ApplicationMetadata getApplicationMetadata() {
     return new ApplicationMetadata(deployment.getArtifact(), deployment.getApplicationName(), deployment.getTargetType(),
-                                   deployment.getTarget());
+                                   deployment.getTarget(), deployment.getProperties());
   }
 
   /**

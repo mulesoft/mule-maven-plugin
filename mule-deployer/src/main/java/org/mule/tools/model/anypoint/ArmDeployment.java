@@ -14,10 +14,10 @@ import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.model.TargetType;
 
 import java.util.Optional;
+import java.util.Map;
 
 import static java.lang.System.getProperty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
 
 public class ArmDeployment extends AnypointDeployment {
 
@@ -32,6 +32,7 @@ public class ArmDeployment extends AnypointDeployment {
 
   @Parameter
   protected Boolean failIfNotExists;
+
 
   /**
    * Anypoint Platform target name.
@@ -85,6 +86,7 @@ public class ArmDeployment extends AnypointDeployment {
     this.failIfNotExists = failIfNotExists;
   }
 
+
   public void setEnvironmentSpecificValues() throws DeploymentException {
     super.setEnvironmentSpecificValues();
 
@@ -109,5 +111,6 @@ public class ArmDeployment extends AnypointDeployment {
     if (isNotBlank(targetType)) {
       setTargetType(TargetType.valueOf(targetType));
     }
+
   }
 }

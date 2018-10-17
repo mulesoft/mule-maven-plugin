@@ -8,6 +8,7 @@
  * LICENSE.txt file.
  */
 
+
 package org.mule.tools.model.anypoint;
 
 import org.apache.maven.plugins.annotations.Parameter;
@@ -18,15 +19,9 @@ import java.util.Optional;
 
 import static java.lang.System.getProperty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-/*
- * Mule ESB Maven Tools
- * <p>
- * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
- * <p>
- * The software in this package is published under the terms of the CPAL v1.0
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
- */
+
+
+import java.util.Map;
 
 public class ArmDeployment extends AnypointDeployment {
 
@@ -41,6 +36,9 @@ public class ArmDeployment extends AnypointDeployment {
 
   @Parameter
   protected Boolean failIfNotExists;
+
+  @Parameter
+  protected Map<String, String> properties;
 
   /**
    * Anypoint Platform target name.
@@ -94,6 +92,20 @@ public class ArmDeployment extends AnypointDeployment {
     this.failIfNotExists = failIfNotExists;
   }
 
+
+  /**
+   * Properties map.
+   *
+   * @return map of properties
+   */
+  public Map<String, String> getProperties() {
+    return properties;
+  }
+
+  public void setProperties(Map<String, String> properties) {
+    this.properties = properties;
+  }
+
   public void setEnvironmentSpecificValues() throws DeploymentException {
     super.setEnvironmentSpecificValues();
 
@@ -118,5 +130,6 @@ public class ArmDeployment extends AnypointDeployment {
     if (isNotBlank(targetType)) {
       setTargetType(TargetType.valueOf(targetType));
     }
+
   }
 }

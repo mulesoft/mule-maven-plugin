@@ -103,7 +103,7 @@ public class CloudHubClient extends AbstractMuleClient {
    * @param file the file of the {@link Application}
    * @return the {@link Application} just created
    */
-  public Application createApplications(Application application, File file) {
+  public Application createApplication(Application application, File file) {
     checkArgument(file != null, "The file must not be null.");
     checkArgument(application != null, "The application must not be null.");
 
@@ -123,7 +123,7 @@ public class CloudHubClient extends AbstractMuleClient {
    * @param file the file of the {@link Application}
    * @return the {@link Application} just updated
    */
-  public Application updateApplications(Application application, File file) {
+  public Application updateApplication(Application application, File file) {
     checkArgument(file != null, "The file must not be null.");
     checkArgument(application != null, "The application must not be null.");
     checkArgument(isNotBlank(application.getDomain()), "The application domain must not be null nor empty.");

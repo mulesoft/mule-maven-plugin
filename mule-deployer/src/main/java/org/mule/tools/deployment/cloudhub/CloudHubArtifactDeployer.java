@@ -26,6 +26,7 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Optional.empty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.replaceEachRepeatedly;
 
 /**
  * Deploys mule artifacts to CloudHub using the {@link CloudHubClient}.
@@ -107,7 +108,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
   /**
    * Creates or update an application in CloudHub.
-   * 
+   * <p>
    * If the domain name is available it gets created. Otherwise, it tries to update the existent application.
    *
    * @throws DeploymentException If the application is not available and cannot be updated
@@ -125,20 +126,20 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
    */
   protected void createApplication() {
     log.info("Creating application: " + deployment.getApplicationName());
-    client.createApplications(getApplication(empty()), deployment.getArtifact());
+    client.createApplication(getApplication(empty()), deployment.getArtifact());
   }
 
   /**
    * Updates the application in CloudHub.
    *
    * @throws DeploymentException In case the application is not available for the current user or some other internal in CloudHub
-   *         happens
+   *                             happens
    */
   protected void updateApplication() throws DeploymentException {
     Application currentApplication = client.getApplications(deployment.getApplicationName());
     if (currentApplication != null) {
       log.info("Application: " + deployment.getApplicationName() + " already exists, redeploying");
-      client.updateApplications(getApplication(Optional.of(currentApplication)), deployment.getArtifact());
+      client.updateApplication(getApplication(Optional.of(currentApplication)), deployment.getArtifact());
     } else {
       log.error("Application name: " + deployment.getApplicationName() + " is not available. Aborting.");
       throw new DeploymentException("Domain " + deployment.getApplicationName() + " is not available. Aborting.");
@@ -174,9 +175,9 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       muleVersion.setVersion(deployment.getMuleVersion().get());
       application.setMuleVersion(muleVersion);
 
-      Map<String, String> properties = originalApplication.get().getProperties();
-      properties.putAll(deployment.getProperties());
-      application.setProperties(properties);
+      Map<String, String> resolvedProperties = resolveProperties(originalApplication.get().getProperties(),
+                                                                 deployment.getProperties(), deployment.overrideProperties());
+      application.setProperties(resolvedProperties);
 
       if (isBlank(deployment.getRegion())) {
         application.setRegion(originalApplication.get().getRegion());
@@ -197,5 +198,16 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     }
 
     return application;
+  }
+
+  protected Map<String, String> resolveProperties(Map<String, String> originalProperties, Map<String, String> properties,
+                                                  boolean overrideProperties) {
+    if (properties != null) {
+      if (!overrideProperties) {
+        properties.putAll(originalProperties);
+      }
+      originalProperties = properties;
+    }
+    return originalProperties;
   }
 }

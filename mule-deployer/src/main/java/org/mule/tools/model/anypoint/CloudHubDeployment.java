@@ -33,7 +33,10 @@ public class CloudHubDeployment extends AnypointDeployment {
   protected String region;
 
   @Parameter
-  protected Map<String, String> properties = new HashMap<>();
+  protected Map<String, String> properties;
+
+  @Parameter
+  protected Boolean overrideProperties;
 
   /**
    * Region to deploy the application in Cloudhub.
@@ -107,5 +110,9 @@ public class CloudHubDeployment extends AnypointDeployment {
       setWorkerType("Micro");
     }
 
+  }
+
+  public boolean overrideProperties() {
+    return overrideProperties == null ? true : overrideProperties;
   }
 }

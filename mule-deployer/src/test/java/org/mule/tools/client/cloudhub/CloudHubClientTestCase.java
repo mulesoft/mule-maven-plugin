@@ -98,7 +98,7 @@ public class CloudHubClientTestCase {
   public void createApplicationValidParameters() {
     verifyAppDoesntExist(appName);
 
-    Application application = cloudHubClient.createApplications(baseApplication, applicationFile);
+    Application application = cloudHubClient.createApplication(baseApplication, applicationFile);
     assertThat(application.getDomain(), equalTo(appName));
 
     verifyAppExists(appName);
@@ -108,11 +108,11 @@ public class CloudHubClientTestCase {
   public void createApplicationThatAlreadyExists() throws Exception {
     verifyAppDoesntExist(appName);
 
-    cloudHubClient.createApplications(baseApplication, applicationFile);
+    cloudHubClient.createApplication(baseApplication, applicationFile);
 
     verifyAppExists(appName);
     try {
-      cloudHubClient.createApplications(baseApplication, applicationFile);
+      cloudHubClient.createApplication(baseApplication, applicationFile);
       fail();
     } catch (ClientException e) {
       assertThat(e.getStatusCode(), equalTo(409));
@@ -125,7 +125,7 @@ public class CloudHubClientTestCase {
   public void startApplication() {
     verifyAppDoesntExist(appName);
 
-    cloudHubClient.createApplications(baseApplication, applicationFile);
+    cloudHubClient.createApplication(baseApplication, applicationFile);
 
     verifyAppExists(appName);
 
@@ -135,7 +135,7 @@ public class CloudHubClientTestCase {
 
   @Test
   public void deleteApplication() {
-    cloudHubClient.createApplications(baseApplication, applicationFile);
+    cloudHubClient.createApplication(baseApplication, applicationFile);
 
     verifyAppExists(appName);
 

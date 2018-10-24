@@ -11,13 +11,11 @@ pipeline {
         label 'ubuntu-14.04'
     }
 
-    properties(
-        [parameters([
-            string(defaultValue: '3.2.0', description: 'Version of the plugin that will be released.', name: 'version_to'),
-            string(defaultValue: '3.2.1-SNAPSHOT', description: 'Next development version of the plugin.', name: 'devVersion_to'),
-            string(defaultValue: 'v3.2.0', description: 'Name of the release tag that will be create in github.', name: 'tag_name')
-        ])]
-    )
+    parameters {
+        string(name: 'version_to', defaultValue: '3.2.0', description: 'Version of the plugin that will be released.')
+        string(name: 'devVersion_to', defaultValue: '3.2.1-SNAPSHOT', description: 'Next development version of the plugin.')
+        string(name: 'tag_name', defaultValue: 'v3.2.0', description: 'Name of the release tag that will be create in github.')
+    }
 
     stages {
         stage('Prepare release') {

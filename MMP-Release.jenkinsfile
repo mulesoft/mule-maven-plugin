@@ -1,0 +1,39 @@
+pipeline {
+    options {
+        timeout(time: 1, unit: 'HOURS')
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+     tools {
+        jdk 'JDK8'
+        maven 'M3'
+    }
+    agent {
+        label 'ubuntu-14.04'
+    }
+
+    properties(
+        [parameters([
+            string(defaultValue: '3.2.0', description: 'Version of the plugin that will be released.', name: 'version_to'),
+            string(defaultValue: '3.2.1-SNAPSHOT', description: 'Next development version of the plugin.', name: 'devVersion_to'),
+            string(defaultValue: 'v3.2.0', description: 'Name of the release tag that will be create in github.', name: 'tag_name')
+        ])]
+    )
+
+    stages {
+        stage('Prepare release') {
+            steps {
+              sh "org.apache.maven.plugins:maven-release-plugin:2.5.3:prepare -DdryRun=true -X --batch-mode -Dtag=$tag_name -PfullIntegration -DreleaseVersion=$version_to -DdevelopmentVersion=$devVersion_to -Darguments='-DskipTests -Dmaven.javadoc.failOnError=false -PfullIntegration"
+            }
+        }
+        stage('Perform release') {
+            steps {
+              sh "org.apache.maven.plugins:maven-release-plugin:2.5.3:perform -DdryRun=true -Darguments='-DskipTests -Dmaven.javadoc.failOnError=false -PfullIntegration' -PfullIntegration"
+            }
+        }
+    }
+    post {
+        cleanup {
+            cleanWs()
+        }
+    }
+}

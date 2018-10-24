@@ -20,12 +20,12 @@ pipeline {
     stages {
         stage('Prepare release') {
             steps {
-              sh "org.apache.maven.plugins:maven-release-plugin:2.5.3:prepare -DdryRun=true -X --batch-mode -Dtag=$tag_name -PfullIntegration -DreleaseVersion=$version_to -DdevelopmentVersion=$devVersion_to -Darguments=\\\"-DskipTests -Dmaven.javadoc.failOnError=false -PfullIntegration\\\""
+              sh "mvn org.apache.maven.plugins:maven-release-plugin:2.5.3:prepare -X --batch-mode -Dtag=$tag_name -PfullIntegration -DreleaseVersion=$version_to -DdevelopmentVersion=$devVersion_to \\\"-Darguments=-DskipTests -Dmaven.javadoc.failOnError=false -PfullIntegration\\\""
             }
         }
         stage('Perform release') {
             steps {
-              sh "org.apache.maven.plugins:maven-release-plugin:2.5.3:perform -DdryRun=true -Darguments=\\\"-DskipTests -Dmaven.javadoc.failOnError=false -PfullIntegration\\\" -PfullIntegration"
+              sh "mvn org.apache.maven.plugins:maven-release-plugin:2.5.3:perform -PfullIntegration \\\"-Darguments=-DskipTests -Dmaven.javadoc.failOnError=false -PfullIntegration\\\""
             }
         }
     }

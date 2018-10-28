@@ -11,7 +11,6 @@
 package org.mule.tools.maven.mojo;
 
 import static java.lang.String.format;
-
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
@@ -31,6 +30,7 @@ import org.mule.tools.api.validation.MulePluginsCompatibilityValidator;
 import org.mule.tools.maven.utils.DependencyProject;
 import org.mule.tools.maven.utils.MavenPackagerLog;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -88,7 +88,8 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
                                                     new AdditionalPluginDependenciesResolver(aetherMavenClient,
                                                                                              additionalPluginDependencies == null
                                                                                                  ? new ArrayList<>()
-                                                                                                 : additionalPluginDependencies));
+                                                                                                 : additionalPluginDependencies,
+                                                                                             new File(outputDirectory, "temp")));
   }
 
   @Override

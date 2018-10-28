@@ -17,9 +17,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
@@ -140,6 +137,8 @@ public class MuleArtifactContentResolverTest {
     File jar2 = new File(resourcesFolder, JAR_2);
     File jar3Folder = new File(resourcesFolder, JAR_3_LOCATION);
     File jar3 = new File(jar3Folder, JAR_3);
+    String configFileName = "config.xml";
+    File config = new File(muleFolder, configFileName);
 
     File hiddenFile = new File(munitFolder, HIDDEN_FILE);
     // Ensure hidden fin in win based systems
@@ -151,16 +150,17 @@ public class MuleArtifactContentResolverTest {
     jar2.createNewFile();
     jar3Folder.mkdirs();
     jar3.createNewFile();
+    config.createNewFile();
     hiddenFile.createNewFile();
 
     List<String> actualExportedResources = resolver.getExportedResources();
 
     assertThat("Exported resources does not contain all expected elements", actualExportedResources,
-               containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + File.separator + JAR_3));
+               containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + File.separator + JAR_3, configFileName));
 
     assertThat("Configs contain an unexpected elements", actualExportedResources.contains(hiddenFile), is(false));
 
-    assertThat("Exported resources contains more elements than expected", actualExportedResources.size(), equalTo(3));
+    assertThat("Exported resources contains more elements than expected", actualExportedResources.size(), equalTo(4));
   }
 
   @Test

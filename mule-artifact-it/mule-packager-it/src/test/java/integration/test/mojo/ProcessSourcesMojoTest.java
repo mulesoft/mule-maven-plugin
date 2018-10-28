@@ -12,21 +12,16 @@ package integration.test.mojo;
 import static com.google.common.collect.ImmutableList.of;
 import static integration.FileTreeMatcher.hasSameTreeStructure;
 import static java.util.Collections.emptyList;
+import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
 import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -156,6 +151,7 @@ public class ProcessSourcesMojoTest extends MojoTest {
 
     File expectedStructure = getExpectedStructure("/expected-classloader-model-project");
     File targetStructure = new File(verifier.getBasedir() + File.separator + TARGET_FOLDER_NAME);
+    deleteDirectory(new File(targetStructure, "temp"));
 
     assertThat("The directory structure is different from the expected", targetStructure,
                hasSameTreeStructure(expectedStructure, excludes));

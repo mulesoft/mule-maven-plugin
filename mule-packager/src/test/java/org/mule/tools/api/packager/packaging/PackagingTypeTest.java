@@ -60,6 +60,7 @@ public class PackagingTypeTest {
   public void muleApplicationGetClassifiers() {
     assertThat("The mule application classifiers are not the expected", asList(MULE_APPLICATION.getClassifiers()),
                containsInAnyOrder(Classifier.MULE_APPLICATION,
+                                  Classifier.MULE_PLUGIN,
                                   MULE_APPLICATION_EXAMPLE,
                                   MULE_APPLICATION_TEMPLATE));
   }

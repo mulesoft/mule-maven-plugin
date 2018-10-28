@@ -9,6 +9,7 @@
  */
 package org.mule.tools.api.classloader.model.resolver;
 
+import static java.util.Optional.empty;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleScope;
 import org.mule.maven.client.internal.AetherMavenClient;
@@ -17,9 +18,9 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.Optional.empty;
-
 public class ApplicationDependencyResolver {
+
+  protected static final String MULE_DOMAIN_CLASSIFIER = "mule-domain";
 
   private final AetherMavenClient muleMavenPluginClient;
 
@@ -37,7 +38,7 @@ public class ApplicationDependencyResolver {
         muleMavenPluginClient.resolveArtifactDependencies(pomFile, false, true, empty(), empty(), empty())
             .stream()
             .filter(d -> !(d.getScope() == BundleScope.PROVIDED) || (d.getDescriptor().getClassifier().isPresent()
-                && d.getDescriptor().getClassifier().get().equals("mule-domain")))
+                && d.getDescriptor().getClassifier().get().equals(MULE_DOMAIN_CLASSIFIER)))
             .collect(Collectors.toList());
 
     return resolvedApplicationDependencies;

@@ -29,7 +29,9 @@ public enum PackagingType {
 
     @Override
     public Classifier[] getClassifiers() {
-      return new Classifier[] {Classifier.MULE_APPLICATION, Classifier.MULE_APPLICATION_EXAMPLE,
+      return new Classifier[] {Classifier.MULE_APPLICATION,
+          Classifier.MULE_PLUGIN,
+          Classifier.MULE_APPLICATION_EXAMPLE,
           Classifier.MULE_APPLICATION_TEMPLATE};
     }
   },

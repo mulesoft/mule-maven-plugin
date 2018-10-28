@@ -12,31 +12,30 @@ package org.mule.tools.api.packager.sources;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.toList;
-
-import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
+import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
-import org.jdom2.Document;
-import org.jdom2.JDOMException;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Resolves the content of resources defined in mule-artifact.json based on the project base folder.
@@ -90,6 +89,12 @@ public class MuleArtifactContentResolver {
       exportedResources = new ArrayList<>();
       for (Path resourcePath : pom.getResourcesLocation()) {
         exportedResources.addAll(getResources(resourcePath));
+      }
+      // process mule directory if not included since by default is not.
+      if (!pom.getResourcesLocation()
+          .stream()
+          .anyMatch(path -> path.endsWith(Paths.get("src", "main", "mule")))) {
+        exportedResources.addAll(getResources(projectStructure.getConfigsPath()));
       }
     }
     return exportedResources;

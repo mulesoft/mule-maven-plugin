@@ -10,6 +10,7 @@
 
 package org.mule.tools.api.packager.sources;
 
+import static java.io.File.separator;
 import static java.lang.String.join;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -127,7 +128,7 @@ public class MuleArtifactContentResolverTest {
     List<String> actualExportedPackages = resolver.getExportedPackages();
 
     assertThat("Exported packages does not contain all expected elements", actualExportedPackages,
-               containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + File.separator + JAR_3));
+               containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + separator + JAR_3));
     assertThat("Exported packages contains more elements than expected", actualExportedPackages.size(), equalTo(3));
   }
 
@@ -156,7 +157,7 @@ public class MuleArtifactContentResolverTest {
     List<String> actualExportedResources = resolver.getExportedResources();
 
     assertThat("Exported resources does not contain all expected elements", actualExportedResources,
-               containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + File.separator + JAR_3, configFileName));
+               containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + separator + JAR_3, configFileName));
 
     assertThat("Configs contain an unexpected elements", actualExportedResources.contains(hiddenFile), is(false));
 
@@ -178,7 +179,7 @@ public class MuleArtifactContentResolverTest {
     List<String> actualExportedResources = resolver.getTestExportedResources();
 
     assertThat("Exported resources does not contain all expected elements", actualExportedResources,
-               containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + File.separator + JAR_3));
+               containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + separator + JAR_3));
     assertThat("Exported resources contains more elements than expected", actualExportedResources.size(), equalTo(3));
   }
 
@@ -206,7 +207,7 @@ public class MuleArtifactContentResolverTest {
     List<String> actualConfigs = resolver.getConfigs();
 
     assertThat("Configs does not contain all expected elements", actualConfigs,
-               containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + File.separator + CONFIG_3));
+               containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + separator + CONFIG_3));
 
     assertThat("Configs contain an unexpected elements", actualConfigs.contains(COMMON_FILE), is(false));
 
@@ -238,7 +239,7 @@ public class MuleArtifactContentResolverTest {
     List<String> actualConfigs = resolver.getTestConfigs();
 
     assertThat("Configs does not contain all expected elements", actualConfigs,
-               containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + File.separator + CONFIG_3));
+               containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + separator + CONFIG_3));
 
     assertThat("Configs contain an unexpected elements", actualConfigs.contains(COMMON_FILE), is(false));
 
@@ -247,7 +248,7 @@ public class MuleArtifactContentResolverTest {
 
   private static String getRelativePath(String... segments) {
     if (segments != null && segments.length != 0) {
-      return join(File.separator, segments);
+      return join(separator, segments);
     }
     return StringUtils.EMPTY;
   }

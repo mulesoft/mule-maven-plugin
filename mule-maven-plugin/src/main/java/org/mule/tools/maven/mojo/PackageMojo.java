@@ -11,10 +11,12 @@
 package org.mule.tools.maven.mojo;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_EXAMPLE;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_TEMPLATE;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BUNDLE;
 import org.mule.tools.api.packager.builder.PackageBuilder;
 import org.mule.tools.api.packager.builder.PackageBuilderFactory;
-import org.mule.tools.api.packager.packaging.Classifier;
 import org.mule.tools.api.packager.packaging.PackagingOptions;
 
 import java.io.File;
@@ -98,9 +100,9 @@ public class PackageMojo extends AbstractMuleMojo {
   }
 
   protected PackagingOptions buildPackagingOptions() {
-    boolean isMuleApplicationTemplate = Classifier.MULE_APPLICATION_TEMPLATE.equals(classifier);
-    boolean isMuleApplicationExample = Classifier.MULE_APPLICATION_EXAMPLE.equals(classifier);
-    boolean isMuleReusableApp = Classifier.MULE_PLUGIN.equals(classifier);
+    boolean isMuleApplicationTemplate = MULE_APPLICATION_TEMPLATE.equals(classifier);
+    boolean isMuleApplicationExample = MULE_APPLICATION_EXAMPLE.equals(classifier);
+    boolean isMuleReusableApp = MULE_PLUGIN.equals(classifier);
     return new PackagingOptions(isMuleApplicationTemplate || onlyMuleSources,
                                 isMuleReusableApp || lightweightPackage, isMuleApplicationExample || attachMuleSources,
                                 testJar);

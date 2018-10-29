@@ -11,6 +11,7 @@
 package org.mule.tools.api.packager.sources;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.nio.file.Paths.get;
 import static java.util.stream.Collectors.toList;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.tools.api.packager.Pom;
@@ -21,7 +22,6 @@ import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -93,7 +93,7 @@ public class MuleArtifactContentResolver {
       // process mule directory if not included since by default is not.
       if (!pom.getResourcesLocation()
           .stream()
-          .anyMatch(path -> path.endsWith(Paths.get("src", "main", "mule")))) {
+          .anyMatch(path -> path.endsWith(get("src", "main", "mule")))) {
         exportedResources.addAll(getResources(projectStructure.getConfigsPath()));
       }
     }

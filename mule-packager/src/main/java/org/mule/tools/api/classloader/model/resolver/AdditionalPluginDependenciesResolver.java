@@ -14,6 +14,7 @@ import static org.apache.commons.io.FileUtils.toFile;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.tools.api.classloader.model.ArtifactCoordinates.DEFAULT_ARTIFACT_TYPE;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toBundleDescriptor;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
@@ -21,7 +22,6 @@ import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
-import org.mule.tools.api.packager.packaging.Classifier;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -95,7 +95,6 @@ public class AdditionalPluginDependenciesResolver {
     return pluginsWithAdditionalDeps;
   }
 
-
   private List<BundleDependency> resolveDependency(Dependency dependency) {
     BundleDescriptor bundleDescriptor = toBundleDescriptor(dependency);
     List<BundleDependency> resolvedDependencies = new ArrayList<>();
@@ -147,14 +146,14 @@ public class AdditionalPluginDependenciesResolver {
   private void addPluginDependenciesAdditionalLibraries(List<BundleDependency> applicationDependencies) {
     List<BundleDependency> mulePlugins = applicationDependencies
         .stream()
-        .filter(bundleDependency -> Classifier.MULE_PLUGIN
+        .filter(bundleDependency -> MULE_PLUGIN
             .equals(bundleDependency.getDescriptor().getClassifier().orElse(null)))
         .collect(Collectors.toList());
 
     Collection<Plugin> additionalDependenciesFromMulePlugins = resolveAdditionalDependenciesFromMulePlugins(mulePlugins);
 
     pluginsWithAdditionalDependencies.addAll(additionalDependenciesFromMulePlugins.stream()
-        .filter(notIsRedefinedAtApplicationLevel())
+        .filter(isNotRedefinedAtApplicationLevel())
         .collect(Collectors.toList()));
   }
 
@@ -267,7 +266,7 @@ public class AdditionalPluginDependenciesResolver {
     }
   }
 
-  private Predicate<Plugin> notIsRedefinedAtApplicationLevel() {
+  private Predicate<Plugin> isNotRedefinedAtApplicationLevel() {
     return dependencyPluginAdditionalDependencies -> !pluginsWithAdditionalDependencies.stream()
         .filter(applicationPluginAdditionalDependency -> (dependencyPluginAdditionalDependencies.getGroupId()
             .equals(applicationPluginAdditionalDependency.getGroupId())

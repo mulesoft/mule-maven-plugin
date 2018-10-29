@@ -1,56 +1,82 @@
-    classes/
-    META-INF/
-    └---maven/
-        └---org.apache.maven.plugin.my.unit/
-            └---empty-classloader-model-project/
-                └---pom.properties
-                └---pom.xml
-    └---mule-artifact/
-        └---classloader-model.json
-    └---mule-src/
-        └---empty-classloader-model-project/
-            └---mule-artifact.json
-            └---pom.xml
-            └---src/
-                └---main/
-                    └---mule/
-                └---test/
-                    └---munit/
-                        └---munit-test.xml
-    repository/
-    └---group/
-        └---id/
-            └---a/
-                └---artifact-id-a/
-                    └---1.0.0-SNAPSHOT/
-                        └---artifact-id-a-1.0.0-SNAPSHOT.jar
-                        └---artifact-id-a-1.0.0-SNAPSHOT.pom
-            └---b/
-                └---artifact-id-b/
-                    └---1.0.0/
-                        └---artifact-id-b-1.0.0.jar
-                        └---artifact-id-b-1.0.0.pom
-            └---c/
-                └---artifact-id-c/
-                    └---1.0.0-SNAPSHOT/
-                        └---artifact-id-c-1.0.0-SNAPSHOT.jar
-                        └---artifact-id-c-1.0.0-SNAPSHOT.pom
-            └---d/
-                └---artifact-id-d/
-                    └---1.0.0/
-                        └---artifact-id-d-1.0.0.jar
-                        └---artifact-id-d-1.0.0.pom
-    └---org/
-        └---mule/
-            └---group/
-                └---mule-plugin-a/
-                    └---1.0.0/
-                        └---classloader-model.json
-                        └---mule-plugin-a-1.0.0-mule-plugin.jar
-                └---mule-plugin-b/
-                    └---1.0.0/
-                        └---classloader-model.json
-                        └---mule-plugin-b-1.0.0-mule-plugin.jar
-    test-classes/
-    test-mule/
-    └---munit/
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.mule.fake</groupId>
+    <artifactId>complete-app</artifactId>
+    <version>1.0.0</version>
+    <name>A Mule Application fake</name>
+
+    <properties>
+        <javaVersion>1.8</javaVersion>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+    </properties>
+
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>mule-artifact-archiver</groupId>
+                <artifactId>mule-artifact-archiver</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-archiver</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+
+    <repositories>
+        <repository>
+            <id>mule-releases</id>
+            <name>MuleSoft Releases</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/releases</url>
+        </repository>
+        <repository>
+            <id>mule-snapshots</id>
+            <name>MuleSoft Snapshot Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>mule-releases</id>
+            <name>MuleSoft Release Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/releases</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>mule-snapshots</id>
+            <name>MuleSoft Snapshot Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/snapshots/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+
+</project>

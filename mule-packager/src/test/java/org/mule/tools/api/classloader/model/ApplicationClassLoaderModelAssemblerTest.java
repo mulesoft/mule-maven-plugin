@@ -24,9 +24,6 @@ import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
-import org.mule.tools.api.classloader.model.resolver.ApplicationDependencyResolver;
-import org.mule.tools.api.classloader.model.resolver.MulePluginClassloaderModelResolver;
-import org.mule.tools.api.classloader.model.resolver.RamlClassloaderModelResolver;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.model.Model;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -47,7 +45,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
 
   private static final String USER_REPOSITORY_LOCATION =
-      "/Users/muleuser/.m2/repository";
+      "file://Users/muleuser/.m2/repository";
   private static final String SEPARATOR = "/";
   private static final String MULE_PLUGIN_CLASSIFIER = "mule-plugin";
   private static final String GROUP_ID_SEPARATOR = ".";
@@ -207,11 +205,15 @@ public class ApplicationClassLoaderModelAssemblerTest {
   }
 
   private ApplicationClassLoaderModelAssembler getClassLoaderModelAssemblySpy(AetherMavenClient aetherMavenClientMock) {
-    ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
-        spy(new ApplicationClassLoaderModelAssembler(aetherMavenClientMock));
-    ArtifactCoordinates projectArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
-    doReturn(projectArtifactCoordinates).when(applicationClassLoaderModelAssemblerSpy).getApplicationArtifactCoordinates(any());
-    return applicationClassLoaderModelAssemblerSpy;
+    try {
+      ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
+          spy(new ApplicationClassLoaderModelAssembler(aetherMavenClientMock, temporaryFolder.newFolder()));
+      ArtifactCoordinates projectArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
+      doReturn(projectArtifactCoordinates).when(applicationClassLoaderModelAssemblerSpy).getApplicationArtifactCoordinates(any());
+      return applicationClassLoaderModelAssemblerSpy;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private void setPluginDependencyinAetherMavenClientMock(BundleDependency mulePlugin,
@@ -229,6 +231,8 @@ public class ApplicationClassLoaderModelAssemblerTest {
                                                            anyBoolean(), any(Optional.class),
                                                            any(Optional.class), any(Optional.class)))
                                                                .thenReturn(appDependencies);
+    when(aetherMavenClientMock.getEffectiveModel(any(), any()))
+        .thenReturn(new Model());
 
     return aetherMavenClientMock;
   }

@@ -1,0 +1,22 @@
+{
+  "version": "1.1.0",
+  "artifactCoordinates": {
+    "groupId": "org.apache.maven.plugin.my.unit",
+    "artifactId": "mule-app-plugin-with-dep-and-additional-dep-same-version",
+    "version": "1.0.0",
+    "type": "jar",
+    "classifier": "mule-application"
+  },
+  "dependencies": [
+    {
+      "artifactCoordinates": {
+        "groupId": "org.mule.group",
+        "artifactId": "mule-plugin-with-dependency-x",
+        "version": "1.0.0",
+        "type": "jar",
+        "classifier": "mule-plugin"
+      },
+      "uri": "repository/org/mule/group/mule-plugin-with-dependency-x/1.0.0/mule-plugin-with-dependency-x-1.0.0-mule-plugin.jar"
+    }
+  ]
+}

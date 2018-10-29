@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_EXAMPLE;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_TEMPLATE;
-import static org.mule.tools.api.packager.packaging.PackagingType.MULE_APPLICATION;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_POLICY;
 import static org.mule.tools.api.packager.structure.FolderNames.MAIN;
@@ -58,8 +58,9 @@ public class PackagingTypeTest {
 
   @Test
   public void muleApplicationGetClassifiers() {
-    assertThat("The mule application classifiers are not the expected", asList(MULE_APPLICATION.getClassifiers()),
+    assertThat("The mule application classifiers are not the expected", asList(PackagingType.MULE_APPLICATION.getClassifiers()),
                containsInAnyOrder(Classifier.MULE_APPLICATION,
+                                  MULE_PLUGIN,
                                   MULE_APPLICATION_EXAMPLE,
                                   MULE_APPLICATION_TEMPLATE));
   }
@@ -80,7 +81,7 @@ public class PackagingTypeTest {
   @Test
   public void muleApplicationFromString() {
     assertThat("Mule application packaging type was not correctly resolved", PackagingType.fromString("mule-application"),
-               equalTo(MULE_APPLICATION));
+               equalTo(PackagingType.MULE_APPLICATION));
   }
 
   @Test
@@ -116,7 +117,7 @@ public class PackagingTypeTest {
   @Test
   public void muleApplicationToString() {
     assertThat("Mule application packaging type toString return value is not the expected",
-               MULE_APPLICATION.toString(),
+               PackagingType.MULE_APPLICATION.toString(),
                equalTo("mule-application"));
   }
 
@@ -155,58 +156,59 @@ public class PackagingTypeTest {
   @Test
   public void muleApplicationGetSourceFolderLocationNullArgument() {
     expectedException.expect(IllegalArgumentException.class);
-    MULE_APPLICATION.getSourceFolderLocation(null);
+    PackagingType.MULE_APPLICATION.getSourceFolderLocation(null);
   }
 
   @Test
   public void muleApplicationGetTestSourceFolderLocationNullArgument() {
     expectedException.expect(IllegalArgumentException.class);
-    MULE_APPLICATION.getTestSourceFolderLocation(null);
+    PackagingType.MULE_APPLICATION.getTestSourceFolderLocation(null);
   }
 
   @Test
   public void muleApplicationResolveClassifierHeavyWeight() {
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(Classifier.MULE_APPLICATION.name(), false, false), equalTo("mule-application"));
+               PackagingType.MULE_APPLICATION.resolveClassifier(Classifier.MULE_APPLICATION.name(), false, false),
+               equalTo("mule-application"));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(Classifier.MULE_APPLICATION.name(), false, true),
+               PackagingType.MULE_APPLICATION.resolveClassifier(Classifier.MULE_APPLICATION.name(), false, true),
                equalTo("mule-application" + TEST_JAR_CLASSIFIER));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_TEMPLATE.name(), false, false),
+               PackagingType.MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_TEMPLATE.name(), false, false),
                equalTo("mule-application-template"));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_TEMPLATE.name(), false, true),
+               PackagingType.MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_TEMPLATE.name(), false, true),
                equalTo("mule-application-template" + TEST_JAR_CLASSIFIER));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_EXAMPLE.name(), false, false),
+               PackagingType.MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_EXAMPLE.name(), false, false),
                equalTo("mule-application-example"));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_EXAMPLE.name(), false, true),
+               PackagingType.MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_EXAMPLE.name(), false, true),
                equalTo("mule-application-example" + TEST_JAR_CLASSIFIER));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(UNKNOWN_CLASSIFIER, false, false), equalTo("mule-application"));
+               PackagingType.MULE_APPLICATION.resolveClassifier(UNKNOWN_CLASSIFIER, false, false), equalTo("mule-application"));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(UNKNOWN_CLASSIFIER, false, true), equalTo(
-                                                                                            "mule-application"
-                                                                                                + TEST_JAR_CLASSIFIER));
+               PackagingType.MULE_APPLICATION.resolveClassifier(UNKNOWN_CLASSIFIER, false, true), equalTo(
+                                                                                                          "mule-application"
+                                                                                                              + TEST_JAR_CLASSIFIER));
 
   }
 
   @Test
   public void muleApplicationResolveClassifierTestPackage() {
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(Classifier.MULE_APPLICATION.name(), false, true),
+               PackagingType.MULE_APPLICATION.resolveClassifier(Classifier.MULE_APPLICATION.name(), false, true),
                equalTo("mule-application" + TEST_JAR_CLASSIFIER));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_TEMPLATE.name(), false, true),
+               PackagingType.MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_TEMPLATE.name(), false, true),
                equalTo("mule-application-template" + TEST_JAR_CLASSIFIER));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_EXAMPLE.name(), false, true),
+               PackagingType.MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_EXAMPLE.name(), false, true),
                equalTo("mule-application-example" + TEST_JAR_CLASSIFIER));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(UNKNOWN_CLASSIFIER, false, true), equalTo(
-                                                                                            "mule-application"
-                                                                                                + TEST_JAR_CLASSIFIER));
+               PackagingType.MULE_APPLICATION.resolveClassifier(UNKNOWN_CLASSIFIER, false, true), equalTo(
+                                                                                                          "mule-application"
+                                                                                                              + TEST_JAR_CLASSIFIER));
   }
 
   @Test
@@ -248,32 +250,32 @@ public class PackagingTypeTest {
   @Test
   public void muleApplicationResolveClassifierLightWeight() {
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(Classifier.MULE_APPLICATION.name(), true, false),
+               PackagingType.MULE_APPLICATION.resolveClassifier(Classifier.MULE_APPLICATION.name(), true, false),
                equalTo("mule-application" + LIGHT_PACKAGE_CLASSIFIER));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_TEMPLATE.name(), true, false),
+               PackagingType.MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_TEMPLATE.name(), true, false),
                equalTo("mule-application-template" + LIGHT_PACKAGE_CLASSIFIER));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_EXAMPLE.name(), true, false),
+               PackagingType.MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_EXAMPLE.name(), true, false),
                equalTo("mule-application-example" + LIGHT_PACKAGE_CLASSIFIER));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(UNKNOWN_CLASSIFIER, true, false),
+               PackagingType.MULE_APPLICATION.resolveClassifier(UNKNOWN_CLASSIFIER, true, false),
                equalTo("mule-application" + LIGHT_PACKAGE_CLASSIFIER));
   }
 
   @Test
   public void muleApplicationResolveClassifierLightWeightTestPackage() {
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(Classifier.MULE_APPLICATION.name(), true, true),
+               PackagingType.MULE_APPLICATION.resolveClassifier(Classifier.MULE_APPLICATION.name(), true, true),
                equalTo("mule-application" + LIGHT_PACKAGE_CLASSIFIER + TEST_JAR_CLASSIFIER));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_TEMPLATE.name(), true, true),
+               PackagingType.MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_TEMPLATE.name(), true, true),
                equalTo("mule-application-template" + LIGHT_PACKAGE_CLASSIFIER + TEST_JAR_CLASSIFIER));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_EXAMPLE.name(), true, true),
+               PackagingType.MULE_APPLICATION.resolveClassifier(MULE_APPLICATION_EXAMPLE.name(), true, true),
                equalTo("mule-application-example" + LIGHT_PACKAGE_CLASSIFIER + TEST_JAR_CLASSIFIER));
     assertThat("Classifier resolution is not as expected",
-               MULE_APPLICATION.resolveClassifier(UNKNOWN_CLASSIFIER, true, true),
+               PackagingType.MULE_APPLICATION.resolveClassifier(UNKNOWN_CLASSIFIER, true, true),
                equalTo("mule-application" + LIGHT_PACKAGE_CLASSIFIER + TEST_JAR_CLASSIFIER));
   }
 

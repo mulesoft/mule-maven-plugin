@@ -1,0 +1,68 @@
+{
+  "additionalPluginDependencies": [
+    {
+      "groupId": "org.mule.group",
+      "artifactId": "mule-plugin-with-dependency-x",
+      "additionalDependencies": [
+        {
+          "artifactCoordinates": {
+            "groupId": "group.id.w",
+            "artifactId": "artifact-id-w",
+            "version": "2.0.0",
+            "type": "jar"
+          },
+          "uri": "repository/group/id/w/artifact-id-w/2.0.0/artifact-id-w-2.0.0.jar"
+        },
+        {
+          "artifactCoordinates": {
+            "groupId": "group.id.x",
+            "artifactId": "artifact-id-x",
+            "version": "1.0.0",
+            "type": "jar"
+          },
+          "uri": "repository/group/id/x/artifact-id-x/1.0.0/artifact-id-x-1.0.0.jar"
+        }
+      ]
+    }
+  ],
+  "version": "1.1.0",
+  "artifactCoordinates": {
+    "groupId": "org.apache.maven.plugin.my.unit",
+    "artifactId": "mule-app-plugin-with-reusable-app-w-and-reusable-app-w-v2",
+    "version": "1.0.0",
+    "type": "jar",
+    "classifier": "mule-application"
+  },
+  "dependencies": [
+    {
+      "artifactCoordinates": {
+        "groupId": "org.apache.maven.plugin.my.unit",
+        "artifactId": "reusable-mule-app-with-plugin-and-additional-dep-w",
+        "version": "1.0.0",
+        "type": "jar",
+        "classifier": "mule-plugin"
+      },
+      "uri": "repository/org/apache/maven/plugin/my/unit/reusable-mule-app-with-plugin-and-additional-dep-w/1.0.0/reusable-mule-app-with-plugin-and-additional-dep-w-1.0.0-mule-plugin.jar"
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "org.mule.group",
+        "artifactId": "mule-plugin-with-dependency-x",
+        "version": "1.0.0",
+        "type": "jar",
+        "classifier": "mule-plugin"
+      },
+      "uri": "repository/org/mule/group/mule-plugin-with-dependency-x/1.0.0/mule-plugin-with-dependency-x-1.0.0-mule-plugin.jar"
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "org.apache.maven.plugin.my.unit",
+        "artifactId": "reusable-mule-app-with-plugin-and-additional-dep-w-v2",
+        "version": "1.0.0",
+        "type": "jar",
+        "classifier": "mule-plugin"
+      },
+      "uri": "repository/org/apache/maven/plugin/my/unit/reusable-mule-app-with-plugin-and-additional-dep-w-v2/1.0.0/reusable-mule-app-with-plugin-and-additional-dep-w-v2-1.0.0-mule-plugin.jar"
+    }
+  ]
+}

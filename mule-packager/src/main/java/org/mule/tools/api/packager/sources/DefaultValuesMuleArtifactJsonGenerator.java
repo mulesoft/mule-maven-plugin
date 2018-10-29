@@ -208,7 +208,6 @@ public class DefaultValuesMuleArtifactJsonGenerator extends AbstractDefaultValue
           .map(path -> outputDirectory.relativize(path))
           .map(Path::toString)
           .map(MuleArtifactContentResolver::escapeSlashes)
-          .filter(path -> !muleConfigs.contains(path))
           .collect(toList());
       //being consistent with old behaviour, check this later
       resources.addAll(muleArtifactContentResolver.getTestExportedResources());

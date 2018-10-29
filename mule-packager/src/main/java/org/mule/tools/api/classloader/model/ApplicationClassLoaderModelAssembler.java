@@ -13,13 +13,7 @@ package org.mule.tools.api.classloader.model;
 import static java.util.Collections.emptyList;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toApplicationModelArtifacts;
 import static org.mule.tools.api.classloader.model.util.PluginUtils.toPluginDependencies;
-
 import org.mule.maven.client.api.model.BundleDependency;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver;
 import org.mule.tools.api.classloader.model.resolver.ApplicationDependencyResolver;
@@ -27,6 +21,10 @@ import org.mule.tools.api.classloader.model.resolver.ClassloaderModelResolver;
 import org.mule.tools.api.classloader.model.resolver.MulePluginClassloaderModelResolver;
 import org.mule.tools.api.classloader.model.resolver.RamlClassloaderModelResolver;
 import org.mule.tools.api.classloader.model.util.ArtifactUtils;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
 
 public class ApplicationClassLoaderModelAssembler {
 
@@ -42,11 +40,12 @@ public class ApplicationClassLoaderModelAssembler {
 
 
   @Deprecated
-  public ApplicationClassLoaderModelAssembler(AetherMavenClient aetherMavenClient) {
+  public ApplicationClassLoaderModelAssembler(AetherMavenClient aetherMavenClient, File temporaryFolder) {
     this.applicationDependencyResolver = new ApplicationDependencyResolver(aetherMavenClient);
     this.mulePluginClassLoaderModelResolver = new MulePluginClassloaderModelResolver(aetherMavenClient);
     this.ramlClassLoaderModelResolver = new RamlClassloaderModelResolver(aetherMavenClient);
-    this.additionalPluginDependenciesResolver = new AdditionalPluginDependenciesResolver(aetherMavenClient, emptyList());
+    this.additionalPluginDependenciesResolver =
+        new AdditionalPluginDependenciesResolver(aetherMavenClient, emptyList(), temporaryFolder);
   }
 
   public ApplicationClassLoaderModelAssembler(ApplicationDependencyResolver applicationDependencyResolver,

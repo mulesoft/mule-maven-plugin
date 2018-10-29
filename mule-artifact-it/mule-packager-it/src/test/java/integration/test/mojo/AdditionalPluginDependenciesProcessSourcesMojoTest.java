@@ -24,6 +24,8 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends ProcessS
       "/target/repository/group/id/x/artifact-id-x/1.0.0/artifact-id-x-1.0.0.jar";
   private static final String GENERATED__DEPENDENCY_X_V2_PATH_SUFFIX =
       "/target/repository/group/id/x/artifact-id-x/2.0.0/artifact-id-x-2.0.0.jar";
+  private static final String GENERATED__DEPENDENCY_X_V3_PATH_SUFFIX =
+      "/target/repository/group/id/x/artifact-id-x/3.0.0/artifact-id-x-3.0.0.jar";
   private static final String GENERATED__DEPENDENCY_Y_PATH_SUFFIX =
       "/target/repository/group/id/y/artifact-id-y/1.0.0/artifact-id-y-1.0.0.jar";
   private static final String GENERATED__DEPENDENCY_Z_PATH_SUFFIX =
@@ -116,6 +118,56 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends ProcessS
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Z_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Z_V2_PATH_SUFFIX);
   }
+
+  /**
+   * Validates that if a mule-plugin defined additional libraries those are taken into account.
+   */
+  @Test
+  public void muleAppWithReusableAppPlugin() throws Exception {
+    final String appName = "mule-app-plugin-with-reusable-app";
+    final String appLocation = getAppLocation(appName);
+    processSourcesOnProject(appLocation);
+    List<String> generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
+    List<String> expectedAppClassLoaderModelFileContent =
+        getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
+    assertThat(generatedAppClassLoaderModelFileContent, equalTo(expectedAppClassLoaderModelFileContent));
+    assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
+    assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Z_PATH_SUFFIX);
+  }
+
+  /**
+   * Validates that additional libraries defined at the mule application level overrides all other additional libraries from mule
+   * plugins.
+   */
+  @Test
+  public void muleAppWithReusableAppPluginAndOverridedAdditionalDependency() throws Exception {
+    final String appName = "mule-app-plugin-with-reusable-app-and-additional-dep-x-v2";
+    final String appLocation = getAppLocation(appName);
+    processSourcesOnProject(appLocation);
+    List<String> generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
+    List<String> expectedAppClassLoaderModelFileContent =
+        getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
+    assertThat(generatedAppClassLoaderModelFileContent, equalTo(expectedAppClassLoaderModelFileContent));
+    assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_V2_PATH_SUFFIX);
+  }
+
+  /**
+   * Validates that if two mule-plugin have the same additional library then the latest one is going to be used.
+   */
+  @Test
+  public void muleAppWithReusableAppAndUsingAnotherReusableAppWithANewestXVersion() throws Exception {
+    final String appName = "mule-app-plugin-with-reusable-app-and-reusable-app2";
+    final String appLocation = getAppLocation(appName);
+    processSourcesOnProject(appLocation);
+    List<String> generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
+    List<String> expectedAppClassLoaderModelFileContent =
+        getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
+    assertThat(generatedAppClassLoaderModelFileContent, equalTo(expectedAppClassLoaderModelFileContent));
+    assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_V3_PATH_SUFFIX);
+    assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
+    assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Z_PATH_SUFFIX);
+  }
+
 
   private String getAppLocation(String appName) {
     return "/additional-plugin-dependencies/" + appName;

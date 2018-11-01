@@ -33,9 +33,6 @@ public class CloudHubDeployment extends AnypointDeployment {
   protected String region;
 
   @Parameter
-  protected Map<String, String> properties;
-
-  @Parameter
   protected Boolean overrideProperties;
 
   /**
@@ -75,20 +72,6 @@ public class CloudHubDeployment extends AnypointDeployment {
 
   public void setWorkerType(String workerType) {
     this.workerType = workerType;
-  }
-
-  /**
-   * CloudHub properties.
-   *
-   * @since 2.0
-   *
-   */
-  public Map<String, String> getProperties() {
-    return properties;
-  }
-
-  public void setProperties(Map<String, String> properties) {
-    this.properties = properties;
   }
 
   public void setEnvironmentSpecificValues() throws DeploymentException {

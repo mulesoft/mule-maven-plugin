@@ -36,9 +36,6 @@ public class ArmDeployment extends AnypointDeployment {
   @Parameter
   protected Boolean failIfNotExists;
 
-  @Parameter
-  protected Map<String, String> properties;
-
   /**
    * Anypoint Platform target name.
    *
@@ -89,20 +86,6 @@ public class ArmDeployment extends AnypointDeployment {
 
   public void setFailIfNotExists(boolean failIfNotExists) {
     this.failIfNotExists = failIfNotExists;
-  }
-
-
-  /**
-   * Properties map.
-   *
-   * @return map of properties
-   */
-  public Map<String, String> getProperties() {
-    return properties;
-  }
-
-  public void setProperties(Map<String, String> properties) {
-    this.properties = properties;
   }
 
   public void setEnvironmentSpecificValues() throws DeploymentException {

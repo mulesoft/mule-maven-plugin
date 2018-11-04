@@ -13,6 +13,7 @@ public class DeploymentRequest {
   public String name;
   public ApplicationRequest application;
   public List<String> labels;
+  public Target target;
 
   public void setName(String name) {
     this.name = name;
@@ -29,6 +30,4 @@ public class DeploymentRequest {
   public void setTarget(Target target) {
     this.target = target;
   }
-
-  public Target target;
 }

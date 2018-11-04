@@ -120,7 +120,7 @@ public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
 
   public List<Deployment> getDeployments() {
     List<Deployment> allDeployments = asList(agentDeployment, standaloneDeployment, armDeployment, cloudHubDeployment,
-                                             clusterDeployment);
+                                             clusterDeployment, runtimeFabricDeployment);
     List<Deployment> deployments = new ArrayList<>();
     for (Deployment deployment : allDeployments) {
       if (deployment != null) {

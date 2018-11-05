@@ -26,10 +26,8 @@ import org.mule.tools.client.fabric.model.Target;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
 import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
 
-import java.util.Optional;
-
-import static java.util.Optional.empty;
-import static java.util.Optional.ofNullable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RequestBuilder {
 
@@ -56,6 +54,17 @@ public class RequestBuilder {
     deploymentRequest.setName(deployment.getApplicationName());
     deploymentRequest.setApplication(applicationRequest);
     deploymentRequest.setTarget(target);
+
+    if (deployment.getProperties() != null) {
+
+      Map<String, Object> applicationPropertiesService = new HashMap<>();
+      Map<String, Object> properties = new HashMap<>();
+      properties.put("properties", deployment.getProperties());
+      properties.put("applicationName", deployment.getApplicationName());
+      applicationPropertiesService.put("mule.agent.application.properties.service", properties);
+
+      applicationRequest.setConfiguration(applicationPropertiesService);
+    }
 
     return deploymentRequest;
   }
@@ -113,7 +122,7 @@ public class RequestBuilder {
       if (runtime.has("versions")) {
         JsonArray versions = runtime.getAsJsonArray("versions");
         for (int j = 0; j < versions.size(); j++) {
-          JsonObject version = versions.get(i).getAsJsonObject();
+          JsonObject version = versions.get(j).getAsJsonObject();
           if (version.has("baseVersion") && version.has("tag")) {
             if (StringUtils.equals(version.get("baseVersion").getAsString(), muleVersion)) {
               return version.get("tag").getAsString();
@@ -197,6 +206,17 @@ public class RequestBuilder {
     AssetReference assetReference = buildAssetReference();
     ApplicationModify applicationModify = new ApplicationModify();
     applicationModify.setRef(assetReference);
+
+    if (deployment.getProperties() != null) {
+      Map<String, Object> applicationPropertiesService = new HashMap<>();
+      Map<String, Object> properties = new HashMap<>();
+      properties.put("properties", deployment.getProperties());
+      properties.put("applicationName", deployment.getApplicationName());
+      applicationPropertiesService.put("mule.agent.application.properties.service", properties);
+
+      applicationModify.setConfiguration(applicationPropertiesService);
+    }
+
     return applicationModify;
   }
 }

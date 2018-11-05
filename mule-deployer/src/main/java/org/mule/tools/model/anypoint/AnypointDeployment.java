@@ -50,12 +50,12 @@ public abstract class AnypointDeployment extends Deployment {
   @Parameter
   protected String server;
 
-
   @Parameter
   protected Map<String, String> properties;
 
   @Parameter
   protected boolean skipDeploymentVerification = false;
+
 
   /**
    * Anypoint Platform username.

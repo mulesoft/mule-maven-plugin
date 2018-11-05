@@ -16,7 +16,7 @@ public class ApplicationRequest {
 
   public AssetReference ref;
   public String desiredState;
-  public Map<String, String> configuration;
+  public Map<String, Object> configuration;
   public List<AssetReference> assets;
 
   public void setRef(AssetReference ref) {
@@ -27,7 +27,7 @@ public class ApplicationRequest {
     this.desiredState = desiredState;
   }
 
-  public void setConfiguration(Map<String, String> configuration) {
+  public void setConfiguration(Map<String, Object> configuration) {
     this.configuration = configuration;
   }
 

@@ -43,31 +43,31 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
     getLog().debug("Processing sources...");
     if (skipPluginCompatibilityValidation) {
       getLog()
-              .warn(
-                      "Ignoring skipPluginCompatibilityValidation property as it is deprecated. Compatibility between mule-plugin versions is always done.");
+          .warn(
+                "Ignoring skipPluginCompatibilityValidation property as it is deprecated. Compatibility between mule-plugin versions is always done.");
     }
 
     MavenComponents mavenComponents =
-            new MavenComponents()
-                    .withLog(getLog())
-                    .withProject(project)
-                    .withOutputDirectory(outputDirectory)
-                    .withSession(session)
-                    .withSharedLibraries(sharedLibraries)
-                    .withProjectBuilder(projectBuilder)
-                    .withRepositorySystem(repositorySystem)
-                    .withLocalRepository(localRepository)
-                    .withRemoteArtifactRepositories(remoteArtifactRepositories)
-                    .withClassifier(classifier)
-                    .withAdditionalPluginDependencies(additionalPluginDependencies)
-                    .withProjectBaseFolder(projectBaseFolder);
+        new MavenComponents()
+            .withLog(getLog())
+            .withProject(project)
+            .withOutputDirectory(outputDirectory)
+            .withSession(session)
+            .withSharedLibraries(sharedLibraries)
+            .withProjectBuilder(projectBuilder)
+            .withRepositorySystem(repositorySystem)
+            .withLocalRepository(localRepository)
+            .withRemoteArtifactRepositories(remoteArtifactRepositories)
+            .withClassifier(classifier)
+            .withAdditionalPluginDependencies(additionalPluginDependencies)
+            .withProjectBaseFolder(projectBaseFolder);
 
     SourcesProcessor sourcesProcessor = new SourcesProcessor(mavenComponents);
 
     try {
       sourcesProcessor
-              .process(prettyPrinting, lightweightPackage, useLocalRepository, testJar, outputDirectory,
-                      getProjectInformation().getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile());
+          .process(prettyPrinting, lightweightPackage, useLocalRepository, testJar, outputDirectory,
+                   getProjectInformation().getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile());
     } catch (Exception e) {
       String message = format("There was an exception while creating the repository of [%s]", project.toString());
       throw new MojoFailureException(message, e);

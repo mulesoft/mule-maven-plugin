@@ -108,7 +108,7 @@ public class RequestBuilder {
       if (runtime.has("versions")) {
         JsonArray versions = runtime.getAsJsonArray("versions");
         for (int j = 0; j < versions.size(); j++) {
-          JsonObject version = versions.get(i).getAsJsonObject();
+          JsonObject version = versions.get(j).getAsJsonObject();
           if (version.has("baseVersion") && version.has("tag")) {
             if (StringUtils.equals(version.get("baseVersion").getAsString(), muleVersion)) {
               return version.get("tag").getAsString();

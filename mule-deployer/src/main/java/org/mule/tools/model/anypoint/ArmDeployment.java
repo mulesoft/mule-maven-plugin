@@ -81,6 +81,11 @@ public class ArmDeployment extends AnypointDeployment {
     this.failIfNotExists = failIfNotExists;
   }
 
+  /**
+   * Set the environment values for the ARM Deployment.
+   * The properties map is only available in versions greater than or equals to {@code FIRST_ARM_VERSION_THAT_ACCEPTS_PROPERTIES}.
+   *
+   */
   public void setEnvironmentSpecificValues() throws DeploymentException {
     super.setEnvironmentSpecificValues();
 

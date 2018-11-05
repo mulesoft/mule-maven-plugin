@@ -44,6 +44,7 @@ import org.mule.tools.api.validation.project.ProjectValidatorFactory;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
+import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
 import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
 
@@ -66,6 +67,8 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   @Parameter
   protected ClusterDeployment clusterDeployment;
 
+  @Parameter
+  protected RuntimeFabricDeployment runtimeFabricDeployment;
 
   @Parameter(readonly = true, required = true, defaultValue = "${localRepository}")
   protected ArtifactRepository localRepository;
@@ -119,6 +122,10 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
 
   public void setClusterDeployment(ClusterDeployment clusterDeployment) {
     this.clusterDeployment = clusterDeployment;
+  }
+
+  public void setRuntimeFabricDeployment(RuntimeFabricDeployment runtimeFabricDeployment) {
+    this.runtimeFabricDeployment = runtimeFabricDeployment;
   }
 
   public void setSession(MavenSession session) {

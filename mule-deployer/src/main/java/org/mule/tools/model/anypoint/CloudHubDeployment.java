@@ -9,11 +9,7 @@ package org.mule.tools.model.anypoint;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.client.core.exception.DeploymentException;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static java.lang.System.getProperty;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class CloudHubDeployment extends AnypointDeployment {
@@ -26,9 +22,6 @@ public class CloudHubDeployment extends AnypointDeployment {
 
   @Parameter
   protected String region;
-
-  @Parameter
-  protected Map<String, String> properties = new HashMap<>();
 
   /**
    * Region to deploy the application in Cloudhub.
@@ -67,20 +60,6 @@ public class CloudHubDeployment extends AnypointDeployment {
 
   public void setWorkerType(String workerType) {
     this.workerType = workerType;
-  }
-
-  /**
-   * CloudHub properties.
-   *
-   * @since 2.0
-   *
-   */
-  public Map<String, String> getProperties() {
-    return properties;
-  }
-
-  public void setProperties(Map<String, String> properties) {
-    this.properties = properties;
   }
 
   public void setEnvironmentSpecificValues() throws DeploymentException {

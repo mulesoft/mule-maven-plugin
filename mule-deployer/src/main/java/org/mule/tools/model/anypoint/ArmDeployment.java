@@ -6,16 +6,13 @@
  */
 package org.mule.tools.model.anypoint;
 
-import static java.lang.System.getProperty;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.mule.tools.utils.VersionUtils.isGreaterThanOrSameVersion;
-
 import org.apache.maven.plugins.annotations.Parameter;
-
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.model.TargetType;
 
-import java.util.Map;
+import static java.lang.System.getProperty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.mule.tools.utils.VersionUtils.isGreaterThanOrSameVersion;
 
 public class ArmDeployment extends AnypointDeployment {
 
@@ -31,9 +28,6 @@ public class ArmDeployment extends AnypointDeployment {
 
   @Parameter
   protected Boolean failIfNotExists;
-
-  @Parameter
-  protected Map<String, String> properties;
 
   /**
    * Anypoint Platform target name.
@@ -87,20 +81,11 @@ public class ArmDeployment extends AnypointDeployment {
     this.failIfNotExists = failIfNotExists;
   }
 
-
   /**
-   * Properties map. Available in versions greater than or equals to {@code FIRST_ARM_VERSION_THAT_ACCEPTS_PROPERTIES}.
+   * Set the environment values for the ARM Deployment.
+   * The properties map is only available in versions greater than or equals to {@code FIRST_ARM_VERSION_THAT_ACCEPTS_PROPERTIES}.
    *
-   * @return map of properties
    */
-  public Map<String, String> getProperties() {
-    return properties;
-  }
-
-  public void setProperties(Map<String, String> properties) {
-    this.properties = properties;
-  }
-
   public void setEnvironmentSpecificValues() throws DeploymentException {
     super.setEnvironmentSpecificValues();
 

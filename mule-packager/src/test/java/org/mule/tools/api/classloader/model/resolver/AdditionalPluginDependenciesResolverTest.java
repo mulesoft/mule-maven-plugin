@@ -19,12 +19,15 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.ADDITIONAL_DEPENDENCIES_ELEMENT;
 import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.ADDITIONAL_PLUGIN_DEPENDENCIES_ELEMENT;
-import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.ARTIFACT_ID_ELEMENET;
+import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.ARTIFACT_ID_ELEMENT;
 import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.DEPENDENCY_ELEMENT;
 import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.GROUP_ID_ELEMENT;
 import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.MULE_EXTENSIONS_PLUGIN_ARTIFACT_ID;
@@ -58,6 +61,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 
 public class AdditionalPluginDependenciesResolverTest {
@@ -229,12 +234,12 @@ public class AdditionalPluginDependenciesResolverTest {
 
   @Test
   public void additionalDependenciesFromPluginWithEmptyGroupIdAdditionalPluginDependencies() throws IOException {
-    testNoAddtionalPluginDependencyBundleDescriptorField(ARTIFACT_ID_ELEMENET, GROUP_ID_ELEMENT);
+    testNoAddtionalPluginDependencyBundleDescriptorField(ARTIFACT_ID_ELEMENT, GROUP_ID_ELEMENT);
   }
 
   @Test
   public void additionalDependenciesFromPluginWithEmptyArtifactIdAdditionalPluginDependencies() throws IOException {
-    testNoAddtionalPluginDependencyBundleDescriptorField(GROUP_ID_ELEMENT, ARTIFACT_ID_ELEMENET);
+    testNoAddtionalPluginDependencyBundleDescriptorField(GROUP_ID_ELEMENT, ARTIFACT_ID_ELEMENT);
   }
 
   @Test
@@ -244,7 +249,7 @@ public class AdditionalPluginDependenciesResolverTest {
     pair.getRight().addChild(additionalPluginDependencies);
     Xpp3Dom pluginChildren = new Xpp3Dom(PLUGIN_ELEMENT);
     additionalPluginDependencies.addChild(pluginChildren);
-    Xpp3Dom artifactId = new Xpp3Dom(ARTIFACT_ID_ELEMENET);
+    Xpp3Dom artifactId = new Xpp3Dom(ARTIFACT_ID_ELEMENT);
     pluginChildren.addChild(artifactId);
     artifactId.setValue(RESOLVED_BUNDLE_PLUGIN.getDescriptor().getArtifactId());
     Xpp3Dom groupId = new Xpp3Dom(GROUP_ID_ELEMENT);
@@ -256,6 +261,27 @@ public class AdditionalPluginDependenciesResolverTest {
     addDependency(additionalDependencies, "2");
     reset(mockedMavenClient);
     when(mockedMavenClient.getEffectiveModel(any(), any())).thenReturn(pair.getLeft());
+
+    BundleDependency mockedBundleDependency1 = mock(BundleDependency.class, RETURNS_DEEP_STUBS);
+    when(mockedBundleDependency1.getDescriptor().getArtifactId()).thenReturn(ARTIFACT_ID_ELEMENT + "1");
+    when(mockedBundleDependency1.getDescriptor().getGroupId()).thenReturn(GROUP_ID_ELEMENT + "1");
+    when(mockedBundleDependency1.getDescriptor().getVersion()).thenReturn("1.0.0");
+
+    BundleDependency mockedBundleDependency2 = mock(BundleDependency.class, RETURNS_DEEP_STUBS);
+    when(mockedBundleDependency2.getDescriptor().getArtifactId()).thenReturn(ARTIFACT_ID_ELEMENT + "2");
+    when(mockedBundleDependency2.getDescriptor().getGroupId()).thenReturn(GROUP_ID_ELEMENT + "2");
+    when(mockedBundleDependency2.getDescriptor().getVersion()).thenReturn("1.0.0");
+
+    doAnswer(invocationOnMock -> {
+      String artifactId1 = ((BundleDescriptor) invocationOnMock.getArgument(0)).getArtifactId();
+      if (artifactId1.equals(ARTIFACT_ID_ELEMENT + "1")) {
+        return mockedBundleDependency1;
+      } else {
+        return mockedBundleDependency2;
+      }
+    }).when(mockedMavenClient).resolveBundleDescriptor(any());
+
+    when(mockedMavenClient.resolveBundleDescriptorDependencies(eq(false), eq(false), any())).thenReturn(emptyList());
     Map<BundleDependency, List<BundleDependency>> resolvedAdditionalDependencies =
         createAdditionalPluginDependenciesResolver(emptyList())
             .resolveDependencies(of(RESOLVED_BUNDLE_PLUGIN), of(resolvedPluginClassLoaderModel));
@@ -270,8 +296,8 @@ public class AdditionalPluginDependenciesResolverTest {
     Xpp3Dom additionalDependency1GroupId = new Xpp3Dom(GROUP_ID_ELEMENT);
     additionalDependency1GroupId.setValue(GROUP_ID_ELEMENT + suffix);
     additionalDependency1.addChild(additionalDependency1GroupId);
-    Xpp3Dom additionalDependency1ArtifactId = new Xpp3Dom(ARTIFACT_ID_ELEMENET);
-    additionalDependency1ArtifactId.setValue(ARTIFACT_ID_ELEMENET + suffix);
+    Xpp3Dom additionalDependency1ArtifactId = new Xpp3Dom(ARTIFACT_ID_ELEMENT);
+    additionalDependency1ArtifactId.setValue(ARTIFACT_ID_ELEMENT + suffix);
     additionalDependency1.addChild(additionalDependency1ArtifactId);
     Xpp3Dom additionalDependency1Version = new Xpp3Dom(VERSION_ELEMENT);
     additionalDependency1Version.setValue(VERSION_ELEMENT + suffix);

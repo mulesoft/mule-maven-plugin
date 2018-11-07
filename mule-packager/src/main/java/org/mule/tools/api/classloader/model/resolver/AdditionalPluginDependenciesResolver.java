@@ -10,7 +10,6 @@
 package org.mule.tools.api.classloader.model.resolver;
 
 import static java.lang.System.lineSeparator;
-import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.apache.commons.io.FileUtils.toFile;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
@@ -61,7 +60,7 @@ public class AdditionalPluginDependenciesResolver {
   protected static final String ADDITIONAL_PLUGIN_DEPENDENCIES_ELEMENT = "additionalPluginDependencies";
   protected static final String ADDITIONAL_DEPENDENCIES_ELEMENT = "additionalDependencies";
   protected static final String GROUP_ID_ELEMENT = "groupId";
-  protected static final String ARTIFACT_ID_ELEMENET = "artifactId";
+  protected static final String ARTIFACT_ID_ELEMENT = "artifactId";
   protected static final String VERSION_ELEMENT = "version";
   protected static final String PLUGIN_ELEMENT = "plugin";
   protected static final String DEPENDENCY_ELEMENT = "dependency";
@@ -227,7 +226,7 @@ public class AdditionalPluginDependenciesResolver {
                       .forEach(additonalPluginDependencyDom -> {
                         String pluginGroupId = getChildParameterValue(additonalPluginDependencyDom, GROUP_ID_ELEMENT, true);
                         String pluginArtifactId =
-                            getChildParameterValue(additonalPluginDependencyDom, ARTIFACT_ID_ELEMENET, true);
+                            getChildParameterValue(additonalPluginDependencyDom, ARTIFACT_ID_ELEMENT, true);
                         Plugin alreadyDefinedPluginAdditionalDependencies =
                             additionalDependenciesFromMulePlugins.get(pluginGroupId + ":" + pluginArtifactId);
                         List<Dependency> additionalDependencyDependencies = Arrays
@@ -237,7 +236,7 @@ public class AdditionalPluginDependenciesResolver {
                               Dependency dependency = new Dependency();
                               dependency.setGroupId(getChildParameterValue(dependencyDom, GROUP_ID_ELEMENT, true));
                               dependency
-                                  .setArtifactId(getChildParameterValue(dependencyDom, ARTIFACT_ID_ELEMENET, true));
+                                  .setArtifactId(getChildParameterValue(dependencyDom, ARTIFACT_ID_ELEMENT, true));
                               dependency.setVersion(getChildParameterValue(dependencyDom, VERSION_ELEMENT, true));
                               String type = getChildParameterValue(dependencyDom, "type", false);
                               dependency.setType(type == null ? DEFAULT_ARTIFACT_TYPE : type);

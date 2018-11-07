@@ -15,10 +15,11 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doAnswer;
@@ -44,6 +45,8 @@ import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
+import com.google.common.collect.ImmutableList;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -61,9 +64,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
 
 public class AdditionalPluginDependenciesResolverTest {
 
@@ -71,9 +71,11 @@ public class AdditionalPluginDependenciesResolverTest {
   private static final String PLUGIN_WITH_ADDITIONAL_DEPENDENCY_GROUP_ID = "org.tests.plugins";
   private static final String PLUGIN_WITH_ADDITIONAL_DEPENDENCY_VERSION = "1.0.0";
   private static final String PLUGIN_WITH_ADDITIONAL_DEPENDENCY_CLASSIFIER = "mule-plugin";
-  private static final String DEPENDENCY_X_ARTIFACT_ID = "declaredPomDependencyX";
+  private static final String DEPENDENCY_X_ARTIFACT_ID = "declaredPomDependencyX10";
   private static final String DEPENDENCY_X_GROUP_ID = "dep.en.den.cy.x";
-  private static final String DEPENDENCY_X_VERSION = "1.0.0";
+  private static final String DEPENDENCY_X_VERSION_10 = "1.0.0";
+  private static final String DEPENDENCY_X_VERSION_11 = "1.1.0";
+  private static final String DEPENDENCY_X_VERSION_20 = "2.0.0";
 
   private static final Plugin DECLARED_POM_PLUGIN = new Plugin();
 
@@ -98,15 +100,23 @@ public class AdditionalPluginDependenciesResolverTest {
 
   private static ClassLoaderModel resolvedPluginClassLoaderModel;
 
-  private static Dependency declaredPomDependencyX;
+  private static Dependency declaredPomDependencyX10;
+  private static Dependency declaredPomDependencyX11;
+  private static Dependency declaredPomDependencyX20;
 
-  private static Artifact dependencyXArtifact;
-  private static ArtifactCoordinates dependencyXArtifactCoordinates;
+  private static Artifact dependencyX10Artifact;
+  private static Artifact dependencyX11Artifact;
+  private static Artifact dependencyX20Artifact;
 
-  private static BundleDependency resolvedDependencyX;
+  private static ArtifactCoordinates dependencyX10ArtifactCoordinates;
+  private static ArtifactCoordinates dependencyX11ArtifactCoordinates;
+  private static ArtifactCoordinates dependencyX20ArtifactCoordinates;
+
+  private static BundleDependency resolvedDependencyX10;
+  private static BundleDependency resolvedDependencyX11;
+  private static BundleDependency resolvedDependencyX20;
 
   private AetherMavenClient mockedMavenClient;
-
 
   @Rule
   public ExpectedException expectedException = none();
@@ -125,29 +135,84 @@ public class AdditionalPluginDependenciesResolverTest {
                                             PLUGIN_WITH_ADDITIONAL_DEPENDENCY_ARTIFACT_ID,
                                             PLUGIN_WITH_ADDITIONAL_DEPENDENCY_VERSION));
 
-    declaredPomDependencyX = mock(Dependency.class);
-    resolvedDependencyX = mock(BundleDependency.class);
-    dependencyXArtifact = mock(Artifact.class);
-    dependencyXArtifactCoordinates = mock(ArtifactCoordinates.class);
+    declaredPomDependencyX10 = mock(Dependency.class);
+    declaredPomDependencyX11 = mock(Dependency.class);
+    declaredPomDependencyX20 = mock(Dependency.class);
 
-    when(declaredPomDependencyX.getArtifactId()).thenReturn(DEPENDENCY_X_ARTIFACT_ID);
-    when(declaredPomDependencyX.getGroupId()).thenReturn(DEPENDENCY_X_GROUP_ID);
-    when(declaredPomDependencyX.getVersion()).thenReturn(DEPENDENCY_X_VERSION);
-    when(declaredPomDependencyX.getType()).thenReturn("dep");
-    when(dependencyXArtifactCoordinates.getArtifactId()).thenReturn(DEPENDENCY_X_ARTIFACT_ID);
-    when(dependencyXArtifactCoordinates.getGroupId()).thenReturn(DEPENDENCY_X_GROUP_ID);
-    when(dependencyXArtifactCoordinates.getVersion()).thenReturn(DEPENDENCY_X_VERSION);
-    when(dependencyXArtifact.getArtifactCoordinates()).thenReturn(dependencyXArtifactCoordinates);
+    resolvedDependencyX10 = mock(BundleDependency.class, RETURNS_DEEP_STUBS);
+    resolvedDependencyX11 = mock(BundleDependency.class, RETURNS_DEEP_STUBS);
+    resolvedDependencyX20 = mock(BundleDependency.class, RETURNS_DEEP_STUBS);
 
+    dependencyX10Artifact = mock(Artifact.class);
+    dependencyX11Artifact = mock(Artifact.class);
+    dependencyX20Artifact = mock(Artifact.class);
 
+    dependencyX10ArtifactCoordinates = mock(ArtifactCoordinates.class);
+    dependencyX11ArtifactCoordinates = mock(ArtifactCoordinates.class);
+    dependencyX20ArtifactCoordinates = mock(ArtifactCoordinates.class);
+
+    when(declaredPomDependencyX10.getArtifactId()).thenReturn(DEPENDENCY_X_ARTIFACT_ID);
+    when(declaredPomDependencyX10.getGroupId()).thenReturn(DEPENDENCY_X_GROUP_ID);
+    when(declaredPomDependencyX10.getVersion()).thenReturn(DEPENDENCY_X_VERSION_10);
+    when(declaredPomDependencyX10.getType()).thenReturn("dep");
+
+    when(declaredPomDependencyX11.getArtifactId()).thenReturn(DEPENDENCY_X_ARTIFACT_ID);
+    when(declaredPomDependencyX11.getGroupId()).thenReturn(DEPENDENCY_X_GROUP_ID);
+    when(declaredPomDependencyX11.getVersion()).thenReturn(DEPENDENCY_X_VERSION_11);
+    when(declaredPomDependencyX11.getType()).thenReturn("dep");
+
+    when(declaredPomDependencyX20.getArtifactId()).thenReturn(DEPENDENCY_X_ARTIFACT_ID);
+    when(declaredPomDependencyX20.getGroupId()).thenReturn(DEPENDENCY_X_GROUP_ID);
+    when(declaredPomDependencyX20.getVersion()).thenReturn(DEPENDENCY_X_VERSION_20);
+    when(declaredPomDependencyX20.getType()).thenReturn("dep");
+
+    when(dependencyX10ArtifactCoordinates.getArtifactId()).thenReturn(DEPENDENCY_X_ARTIFACT_ID);
+    when(dependencyX10ArtifactCoordinates.getGroupId()).thenReturn(DEPENDENCY_X_GROUP_ID);
+    when(dependencyX10ArtifactCoordinates.getVersion()).thenReturn(DEPENDENCY_X_VERSION_10);
+
+    when(dependencyX11ArtifactCoordinates.getArtifactId()).thenReturn(DEPENDENCY_X_ARTIFACT_ID);
+    when(dependencyX11ArtifactCoordinates.getGroupId()).thenReturn(DEPENDENCY_X_GROUP_ID);
+    when(dependencyX11ArtifactCoordinates.getVersion()).thenReturn(DEPENDENCY_X_VERSION_11);
+
+    when(dependencyX20ArtifactCoordinates.getArtifactId()).thenReturn(DEPENDENCY_X_ARTIFACT_ID);
+    when(dependencyX20ArtifactCoordinates.getGroupId()).thenReturn(DEPENDENCY_X_GROUP_ID);
+    when(dependencyX20ArtifactCoordinates.getVersion()).thenReturn(DEPENDENCY_X_VERSION_20);
+
+    when(dependencyX10Artifact.getArtifactCoordinates()).thenReturn(dependencyX10ArtifactCoordinates);
+    when(dependencyX11Artifact.getArtifactCoordinates()).thenReturn(dependencyX11ArtifactCoordinates);
+    when(dependencyX20Artifact.getArtifactCoordinates()).thenReturn(dependencyX20ArtifactCoordinates);
+
+    when(resolvedDependencyX10.getDescriptor().getArtifactId()).thenReturn(DEPENDENCY_X_ARTIFACT_ID);
+    when(resolvedDependencyX10.getDescriptor().getGroupId()).thenReturn(DEPENDENCY_X_GROUP_ID);
+    when(resolvedDependencyX10.getDescriptor().getVersion()).thenReturn(DEPENDENCY_X_VERSION_10);
+
+    when(resolvedDependencyX11.getDescriptor().getArtifactId()).thenReturn(DEPENDENCY_X_ARTIFACT_ID);
+    when(resolvedDependencyX11.getDescriptor().getGroupId()).thenReturn(DEPENDENCY_X_GROUP_ID);
+    when(resolvedDependencyX11.getDescriptor().getVersion()).thenReturn(DEPENDENCY_X_VERSION_11);
+
+    when(resolvedDependencyX20.getDescriptor().getArtifactId()).thenReturn(DEPENDENCY_X_ARTIFACT_ID);
+    when(resolvedDependencyX20.getDescriptor().getGroupId()).thenReturn(DEPENDENCY_X_GROUP_ID);
+    when(resolvedDependencyX20.getDescriptor().getVersion()).thenReturn(DEPENDENCY_X_VERSION_20);
   }
 
   @Before
   public void setUp() {
     mockedMavenClient = mock(AetherMavenClient.class);
-    when(mockedMavenClient
-        .resolveBundleDescriptor(argThat(descriptor -> descriptor.getArtifactId().equals(declaredPomDependencyX.getArtifactId())
-            && descriptor.getGroupId().equals(declaredPomDependencyX.getGroupId())))).thenReturn(resolvedDependencyX);
+    doAnswer(invocationOnMock -> {
+      BundleDescriptor descriptor = invocationOnMock.getArgument(0);
+      if(descriptor.getArtifactId().equals(DEPENDENCY_X_ARTIFACT_ID) &&
+              descriptor.getGroupId().equals(DEPENDENCY_X_GROUP_ID)) {
+        switch (descriptor.getVersion()) {
+          case DEPENDENCY_X_VERSION_10:
+            return resolvedDependencyX10;
+          case DEPENDENCY_X_VERSION_11:
+            return resolvedDependencyX11;
+          default:
+            return resolvedDependencyX20;
+        }
+      }
+      return null;
+    }).when(mockedMavenClient).resolveBundleDescriptor(any());
     when(mockedMavenClient.getEffectiveModel(any(), any())).thenReturn(new Model());
   }
 
@@ -180,17 +245,36 @@ public class AdditionalPluginDependenciesResolverTest {
 
   @Test
   public void additionalDependenciesGetResolved() throws IOException {
-    DECLARED_POM_PLUGIN.setAdditionalDependencies(of(declaredPomDependencyX));
+    DECLARED_POM_PLUGIN.setAdditionalDependencies(of(declaredPomDependencyX10));
     Map<BundleDependency, List<BundleDependency>> resolvedAdditionalDependencies =
         createAdditionalPluginDependenciesResolver(of(DECLARED_POM_PLUGIN))
             .resolveDependencies(of(RESOLVED_BUNDLE_PLUGIN), of(resolvedPluginClassLoaderModel));
-    assertThat(resolvedAdditionalDependencies, hasEntry(equalTo(RESOLVED_BUNDLE_PLUGIN), hasItem(resolvedDependencyX)));
+    assertThat(resolvedAdditionalDependencies, hasEntry(equalTo(RESOLVED_BUNDLE_PLUGIN), hasItem(resolvedDependencyX10)));
+  }
+
+  @Test
+  public void additionalPluginDependenciesVersionConflictFails() throws Exception{
+    DECLARED_POM_PLUGIN.setAdditionalDependencies(ImmutableList.of(declaredPomDependencyX10, declaredPomDependencyX20));
+    expectedException.expectMessage("Attempting to add different major versions");
+    createAdditionalPluginDependenciesResolver(of(DECLARED_POM_PLUGIN))
+            .resolveDependencies(of(RESOLVED_BUNDLE_PLUGIN), of(resolvedPluginClassLoaderModel));
+  }
+
+  @Test
+  public void additionalPluginDependenciesVersionConflictNewestRemain() throws Exception{
+    DECLARED_POM_PLUGIN.setAdditionalDependencies(ImmutableList.of(declaredPomDependencyX10, declaredPomDependencyX11));
+    Map<BundleDependency, List<BundleDependency>> resolvedAdditionalDependencies = createAdditionalPluginDependenciesResolver(of(DECLARED_POM_PLUGIN))
+            .resolveDependencies(of(RESOLVED_BUNDLE_PLUGIN), of(resolvedPluginClassLoaderModel));
+    assertThat(resolvedAdditionalDependencies.size(), is(1));
+    assertThat(resolvedAdditionalDependencies, hasKey(equalTo(RESOLVED_BUNDLE_PLUGIN)));
+    assertThat(resolvedAdditionalDependencies.get(RESOLVED_BUNDLE_PLUGIN), hasSize(1));
+    assertThat(resolvedAdditionalDependencies.get(RESOLVED_BUNDLE_PLUGIN), hasItem(resolvedDependencyX11));
   }
 
   @Test
   public void additionalDependencyIsNotAddedIfAlreadyAPluginDependency() throws IOException {
-    DECLARED_POM_PLUGIN.setAdditionalDependencies(of(declaredPomDependencyX));
-    when(resolvedPluginClassLoaderModel.getDependencies()).thenReturn(of(dependencyXArtifact));
+    DECLARED_POM_PLUGIN.setAdditionalDependencies(of(declaredPomDependencyX10));
+    when(resolvedPluginClassLoaderModel.getDependencies()).thenReturn(of(dependencyX10Artifact));
     Map<BundleDependency, List<BundleDependency>> resolvedAdditionalDependencies =
         createAdditionalPluginDependenciesResolver(of(DECLARED_POM_PLUGIN))
             .resolveDependencies(of(RESOLVED_BUNDLE_PLUGIN), of(resolvedPluginClassLoaderModel));

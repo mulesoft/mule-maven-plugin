@@ -200,8 +200,8 @@ public class AdditionalPluginDependenciesResolverTest {
     mockedMavenClient = mock(AetherMavenClient.class);
     doAnswer(invocationOnMock -> {
       BundleDescriptor descriptor = invocationOnMock.getArgument(0);
-      if(descriptor.getArtifactId().equals(DEPENDENCY_X_ARTIFACT_ID) &&
-              descriptor.getGroupId().equals(DEPENDENCY_X_GROUP_ID)) {
+      if (descriptor.getArtifactId().equals(DEPENDENCY_X_ARTIFACT_ID) &&
+          descriptor.getGroupId().equals(DEPENDENCY_X_GROUP_ID)) {
         switch (descriptor.getVersion()) {
           case DEPENDENCY_X_VERSION_10:
             return resolvedDependencyX10;
@@ -253,17 +253,18 @@ public class AdditionalPluginDependenciesResolverTest {
   }
 
   @Test
-  public void additionalPluginDependenciesVersionConflictFails() throws Exception{
+  public void additionalPluginDependenciesVersionConflictFails() throws Exception {
     DECLARED_POM_PLUGIN.setAdditionalDependencies(ImmutableList.of(declaredPomDependencyX10, declaredPomDependencyX20));
     expectedException.expectMessage("Attempting to add different major versions");
     createAdditionalPluginDependenciesResolver(of(DECLARED_POM_PLUGIN))
-            .resolveDependencies(of(RESOLVED_BUNDLE_PLUGIN), of(resolvedPluginClassLoaderModel));
+        .resolveDependencies(of(RESOLVED_BUNDLE_PLUGIN), of(resolvedPluginClassLoaderModel));
   }
 
   @Test
-  public void additionalPluginDependenciesVersionConflictNewestRemain() throws Exception{
+  public void additionalPluginDependenciesVersionConflictNewestRemain() throws Exception {
     DECLARED_POM_PLUGIN.setAdditionalDependencies(ImmutableList.of(declaredPomDependencyX10, declaredPomDependencyX11));
-    Map<BundleDependency, List<BundleDependency>> resolvedAdditionalDependencies = createAdditionalPluginDependenciesResolver(of(DECLARED_POM_PLUGIN))
+    Map<BundleDependency, List<BundleDependency>> resolvedAdditionalDependencies =
+        createAdditionalPluginDependenciesResolver(of(DECLARED_POM_PLUGIN))
             .resolveDependencies(of(RESOLVED_BUNDLE_PLUGIN), of(resolvedPluginClassLoaderModel));
     assertThat(resolvedAdditionalDependencies.size(), is(1));
     assertThat(resolvedAdditionalDependencies, hasKey(equalTo(RESOLVED_BUNDLE_PLUGIN)));

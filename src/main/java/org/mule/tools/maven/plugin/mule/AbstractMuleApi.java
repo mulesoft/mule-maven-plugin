@@ -9,12 +9,13 @@ package org.mule.tools.maven.plugin.mule;
 import static javax.ws.rs.core.Response.Status.Family.SUCCESSFUL;
 import static javax.ws.rs.core.Response.Status.Family.familyOf;
 
-import org.mule.tools.maven.plugin.mule.arm.AuthorizationResponse;
-import org.mule.tools.maven.plugin.mule.arm.Environment;
-import org.mule.tools.maven.plugin.mule.arm.Environments;
-import org.mule.tools.maven.plugin.mule.arm.UserInfo;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.mule.tools.maven.plugin.mule.arm.*;
 
-import java.util.ArrayList;
+import java.util.*;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -22,7 +23,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.logging.Log;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public abstract class AbstractMuleApi extends AbstractApi
@@ -34,6 +34,11 @@ public abstract class AbstractMuleApi extends AbstractApi
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String ENV_ID_HEADER = "X-ANYPNT-ENV-ID";
     private static final String ORG_ID_HEADER = "X-ANYPNT-ORG-ID";
+    public static final String ORGANIZATION = "organization";
+    public static final String SUB_ORGANIZATION_IDS = "subOrganizationIds";
+    public static final String NAME = "name";
+    public static final String USER = "user";
+    public static final String ID = "id";
 
     protected String uri;
     private String username;
@@ -81,7 +86,7 @@ public abstract class AbstractMuleApi extends AbstractApi
 
     public String getOrgId()
     {
-        return findBusinessGroup();
+        return getBusinessGroupIdByBusinessGroupPath();
     }
 
     public Environment findEnvironmentByName(String name)
@@ -113,40 +118,107 @@ public abstract class AbstractMuleApi extends AbstractApi
         }
     }
 
-    private JSONObject getHierarchy()
-    {
-        UserInfo response = get(uri, ME, UserInfo.class);
-        String rootOrgId = response.user.organization.id;
-        return new JSONObject(get(uri, "accounts/api/organizations/" + rootOrgId + "/hierarchy", String.class));
-    }
-
-    public String findBusinessGroup()
-    {
+    public String getBusinessGroupIdByBusinessGroupPath() {
         String currentOrgId = null;
-        String[] groups = createBusinessGroupPath();
-        JSONObject json = getHierarchy(); // Using JSON parsing because Jersey unmarshalling fails to create all business groups
-        JSONArray subOrganizations = (JSONArray) json.get("subOrganizations");
-        if (groups.length == 0)
-        {
-            return (String) json.get("id");
+
+        Organization organizationHierarchy = getMe().user.organization;
+        if (organizationHierarchy.subOrganizations.isEmpty()) {
+            return organizationHierarchy.id;
         }
-        for (int group = 0; group < groups.length; group++)
-        {
-            for (int organization = 0; organization < subOrganizations.length(); organization++)
-            {
-                JSONObject jsonObject = (JSONObject) subOrganizations.get(organization);
-                if (jsonObject.get("name").equals(groups[group]))
-                {
-                    currentOrgId = (String) jsonObject.get("id");
-                    subOrganizations = (JSONArray) jsonObject.get("subOrganizations");
+        List<Organization> subOrganizations = organizationHierarchy.subOrganizations;
+
+        String[] groups = createBusinessGroupPath();
+        if (groups.length == 0) {
+            currentOrgId = organizationHierarchy.id;
+        } else {
+            for (int group = 0; group < groups.length; group++) {
+                String groupName = groups[group];
+
+                for (Organization o : subOrganizations) {
+                    if (o.name.equals(groupName)) {
+                        currentOrgId = o.id;
+                        subOrganizations = o.subOrganizations;
+                        break;
+                    }
                 }
             }
         }
-        if (currentOrgId == null)
-        {
+
+        if (currentOrgId == null) {
             throw new ArrayIndexOutOfBoundsException("Cannot find business group.");
         }
+
         return currentOrgId;
+    }
+
+    public UserInfo getMe() {
+        String userInfoJsonString = get(uri, ME, String.class);
+        JsonObject userInfoJson = (JsonObject) new JsonParser().parse(userInfoJsonString);
+        Organization organization = buildOrganization(userInfoJson);
+        User user = new User();
+        user.organization = organization;
+        UserInfo userInfo = new UserInfo();
+        userInfo.user = user;
+        return userInfo;
+    }
+
+    private Organization buildOrganization(JsonObject userInfoJson) {
+        Organization organization = new Organization();
+        if (userInfoJson != null && userInfoJson.has(USER)) {
+            JsonObject userJson = (JsonObject) userInfoJson.get(USER);
+            if (userJson != null && userJson.has(ORGANIZATION)) {
+                JsonObject organizationJson = userJson.getAsJsonObject(ORGANIZATION);
+                if (organizationJson.has(ID) && organizationJson.has(NAME)) {
+                    organization.id = organizationJson.get(ID).getAsString();
+                    organization.name = organizationJson.get(NAME).getAsString();
+                    organization.subOrganizations = resolveSuborganizations(userJson, organizationJson);
+                }
+            }
+        }
+        return organization;
+    }
+
+    protected List<Organization> resolveSuborganizations(JsonObject userJson, JsonObject organizationJson) {
+        List<Organization> suborganizations = new ArrayList<>();
+        if (organizationJson.has(SUB_ORGANIZATION_IDS)) {
+            Set<String> ids = getSuborganizationIds(organizationJson);
+            suborganizations.addAll(resolveAllSuborganizations(ids, userJson, "memberOfOrganizations"));
+            suborganizations.addAll(resolveAllSuborganizations(ids, userJson, "contributorOfOrganizations"));
+        }
+        return suborganizations;
+    }
+
+    public Set<String> getSuborganizationIds(JsonObject organizationJson) {
+        Set<String> suborganizationIds = new HashSet<>();
+        JsonArray subOrganizationIds = organizationJson.get("subOrganizationIds").getAsJsonArray();
+        if (subOrganizationIds != null) {
+            for (JsonElement id : subOrganizationIds) {
+                suborganizationIds.add(id.getAsString());
+            }
+        }
+        return suborganizationIds;
+    }
+
+    private Collection<? extends Organization> resolveAllSuborganizations(Set<String> ids, JsonObject userJson,
+                                                                          String organizationsDefinition) {
+        List<Organization> suborganizations = new ArrayList<>();
+        if (userJson.has(organizationsDefinition)) {
+            JsonArray subOrganizationUserIsMemberOf = userJson.get(organizationsDefinition).getAsJsonArray();
+            if (subOrganizationUserIsMemberOf != null) {
+                for (JsonElement org : subOrganizationUserIsMemberOf) {
+                    if (org.isJsonObject()) {
+                        Organization suborganization = new Organization();
+                        suborganization.id = ((JsonObject) org).get(ID).getAsString();
+                        if (ids.contains(suborganization.id)) {
+                            suborganization.name = ((JsonObject) org).get(NAME).getAsString();
+                            suborganizations.add(suborganization);
+                            ids.remove(suborganization.id);
+                        }
+                    }
+                }
+            }
+        }
+        return suborganizations;
     }
 
     protected String[] createBusinessGroupPath()

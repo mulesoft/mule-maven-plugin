@@ -9,6 +9,7 @@
  */
 package org.mule.tools.api.classloader.model.resolver;
 
+import static com.vdurmont.semver4j.Semver.SemverType.LOOSE;
 import static java.lang.System.lineSeparator;
 import static java.util.Optional.of;
 import static org.apache.commons.io.FileUtils.toFile;
@@ -20,10 +21,11 @@ import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.runtime.api.exception.MuleRuntimeException;
-import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.util.Reference;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
+
+import com.vdurmont.semver4j.Semver;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -296,7 +298,7 @@ public class AdditionalPluginDependenciesResolver {
 
   private boolean isNewerVersion(String dependencyA, String dependencyB) {
     try {
-      return new MuleVersion(dependencyA).newerThan(dependencyB);
+      return new Semver(dependencyA, LOOSE).isGreaterThan(new Semver(dependencyB, LOOSE));
     } catch (IllegalArgumentException e) {
       // If not using semver lets just compare the strings.
       return dependencyA.compareTo(dependencyB) > 0;
@@ -305,7 +307,7 @@ public class AdditionalPluginDependenciesResolver {
 
   private boolean areSameMajor(String dependencyA, String dependencyB) {
     try {
-      return new MuleVersion(dependencyA).getMajor() == new MuleVersion(dependencyB).getMajor();
+      return new Semver(dependencyA, LOOSE).getMajor().equals(new Semver(dependencyB, LOOSE).getMajor());
     } catch (IllegalArgumentException e) {
       return false;
     }

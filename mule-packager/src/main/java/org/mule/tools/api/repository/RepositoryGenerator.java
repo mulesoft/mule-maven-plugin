@@ -12,6 +12,7 @@ package org.mule.tools.api.repository;
 
 import static java.lang.String.format;
 import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
+
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
 import org.mule.tools.api.classloader.model.Artifact;
@@ -50,6 +51,15 @@ public class RepositoryGenerator {
     ApplicationClassloaderModel appModel =
         applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile);
     installArtifacts(getRepositoryFolder(), artifactInstaller, appModel);
+    return appModel.getClassLoaderModel();
+  }
+
+  public ClassLoaderModel generate(boolean lightweight) throws IOException, IllegalStateException {
+    ApplicationClassloaderModel appModel =
+        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile);
+    if (!lightweight) {
+      installArtifacts(getRepositoryFolder(), artifactInstaller, appModel);
+    }
     return appModel.getClassLoaderModel();
   }
 

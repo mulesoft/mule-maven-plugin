@@ -60,7 +60,7 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
                                   new ArtifactInstaller(new MavenPackagerLog(getLog())),
                                   getClassLoaderModelAssembler());
       try {
-        ClassLoaderModel classLoaderModel = repositoryGenerator.generate();
+        ClassLoaderModel classLoaderModel = repositoryGenerator.generate(lightweightPackage);
         for (SharedLibraryDependency sharedLibraryDependency : sharedLibraries) {
           classLoaderModel.getDependencies().stream()
               .filter(dep -> dep.getArtifactCoordinates().getArtifactId().equals(sharedLibraryDependency.getArtifactId()) &&

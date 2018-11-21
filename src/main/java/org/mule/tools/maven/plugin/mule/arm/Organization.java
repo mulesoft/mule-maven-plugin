@@ -6,9 +6,11 @@
  */
 package org.mule.tools.maven.plugin.mule.arm;
 
+import java.util.List;
+
 public class Organization
 {
     public String id;
     public String name;
-    public Organization[] subOrganizations;
+    public List<Organization> subOrganizations;
 }

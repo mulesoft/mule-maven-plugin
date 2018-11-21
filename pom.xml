@@ -60,7 +60,7 @@
         <commons.exec.version>1.2</commons.exec.version>
         <commons.lang.version>3.7</commons.lang.version>
         <commons.cli.version>1.3.1</commons.cli.version>
-        <slf4j.api.version>1.8.0-alpha2</slf4j.api.version>
+        <slf4j.api.version>1.8.0-beta2</slf4j.api.version>
         <commons.logging.version>1.2</commons.logging.version>
         <jdom2.version>2.0.5</jdom2.version>
 

@@ -4,19 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.mule.app</groupId>
-    <artifactId>mule-app-a</artifactId>
-    <version>1.0.0</version>
+    <artifactId>semver-check</artifactId>
+    <version>abcd</version>
     <packaging>mule-application</packaging>
-    <name>mule-app-a</name>
-    <dependencies>
-        <dependency>
-            <groupId>org.mule.app</groupId>
-            <artifactId>mule-domain-x</artifactId>
-            <version>1.0.0</version>
-            <classifier>mule-domain</classifier>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -24,6 +14,9 @@
                 <artifactId>mule-maven-plugin</artifactId>
                 <version>${muleMavenPluginVersion}</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <enforceSemver>false</enforceSemver>
+                </configuration>
             </plugin>
         </plugins>
     </build>

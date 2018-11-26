@@ -38,7 +38,7 @@ public abstract class AbstractProjectValidator {
 
   protected final boolean strictCheck;
   protected final ProjectInformation projectInformation;
-  private final boolean enforceSemver;
+  private final boolean disableSemver;
 
   public AbstractProjectValidator(ProjectInformation projectInformation, boolean strictCheck) {
     this(projectInformation, new ProjectRequirement.ProjectRequirementBuilder().withStrictCheck(strictCheck).build());
@@ -47,7 +47,7 @@ public abstract class AbstractProjectValidator {
   public AbstractProjectValidator(ProjectInformation projectInformation, ProjectRequirement requirement) {
     this.projectInformation = projectInformation;
     this.strictCheck = requirement.isStrictCheck();
-    this.enforceSemver = requirement.enforceSemver();
+    this.disableSemver = requirement.disableSemver();
     checkState(projectInformation.getPackaging() != null, "Packaging type should not be null");
   }
 
@@ -64,7 +64,7 @@ public abstract class AbstractProjectValidator {
    */
   public Boolean isProjectValid(String goal) throws ValidationException {
     if (StringUtils.equals(VALIDATE_GOAL, goal)) {
-      if (enforceSemver) {
+      if (!disableSemver) {
         isProjectVersionValid(projectInformation.getVersion());
       }
       isPackagingTypeValid(projectInformation.getPackaging());

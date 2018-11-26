@@ -15,7 +15,7 @@
                 <version>${muleMavenPluginVersion}</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <enforceSemver>false</enforceSemver>
+                    <disableSemver>true</disableSemver>
                 </configuration>
             </plugin>
         </plugins>

@@ -89,8 +89,8 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   @Parameter(defaultValue = "${strictCheck}")
   protected boolean strictCheck;
 
-  @Parameter(defaultValue = "${enforceSemver}")
-  protected boolean enforceSemver = true;
+  @Parameter(defaultValue = "${disableSemver}")
+  protected boolean disableSemver;
 
   @Parameter(defaultValue = "${project.basedir}")
   protected File projectBaseFolder;
@@ -173,7 +173,7 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   public AbstractProjectValidator getProjectValidator() {
     if (validator == null) {
       ProjectRequirement requirement = new ProjectRequirement.ProjectRequirementBuilder().withStrictCheck(strictCheck)
-          .withSemverEnforcement(enforceSemver).build();
+          .withDisableSemver(disableSemver).build();
       validator =
           ProjectValidatorFactory.create(getProjectInformation(), getAetherMavenClient(), sharedLibraries, requirement);
     }

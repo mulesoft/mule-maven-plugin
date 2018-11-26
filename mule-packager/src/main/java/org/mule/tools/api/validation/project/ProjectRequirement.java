@@ -11,16 +11,16 @@ package org.mule.tools.api.validation.project;
 
 public class ProjectRequirement {
 
-  private boolean enforceSemver;
+  private boolean disableSemver;
   private boolean strictCheck;
 
-  public ProjectRequirement(boolean enforceSemver, boolean isStricCheck) {
-    this.enforceSemver = enforceSemver;
+  public ProjectRequirement(boolean disableSemver, boolean isStricCheck) {
+    this.disableSemver = disableSemver;
     this.strictCheck = isStricCheck;
   }
 
-  public boolean enforceSemver() {
-    return enforceSemver;
+  public boolean disableSemver() {
+    return disableSemver;
   }
 
   public boolean isStrictCheck() {
@@ -29,7 +29,7 @@ public class ProjectRequirement {
 
   public static class ProjectRequirementBuilder {
 
-    private boolean enforceSemver;
+    private boolean disableSemver;
     private boolean strictCheck;
 
     public ProjectRequirementBuilder withStrictCheck(boolean strictCheck) {
@@ -37,13 +37,13 @@ public class ProjectRequirement {
       return this;
     }
 
-    public ProjectRequirementBuilder withSemverEnforcement(boolean enforceSemver) {
-      this.enforceSemver = enforceSemver;
+    public ProjectRequirementBuilder withDisableSemver(boolean disableSemver) {
+      this.disableSemver = disableSemver;
       return this;
     }
 
     public ProjectRequirement build() {
-      return new ProjectRequirement(enforceSemver, strictCheck);
+      return new ProjectRequirement(disableSemver, strictCheck);
     }
   }
 }

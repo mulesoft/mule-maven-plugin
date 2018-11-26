@@ -14,6 +14,7 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.validation.project.ProjectRequirement;
 import org.mule.tools.api.verifier.ProjectVerifier;
 import org.mule.tools.api.verifier.ProjectVerifyFactory;
 import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
@@ -87,6 +88,9 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
 
   @Parameter(defaultValue = "${strictCheck}")
   protected boolean strictCheck;
+
+  @Parameter(defaultValue = "${disableSemver}")
+  protected boolean disableSemver;
 
   @Parameter(defaultValue = "${project.basedir}")
   protected File projectBaseFolder;
@@ -168,8 +172,10 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
 
   public AbstractProjectValidator getProjectValidator() {
     if (validator == null) {
+      ProjectRequirement requirement = new ProjectRequirement.ProjectRequirementBuilder().withStrictCheck(strictCheck)
+          .withDisableSemver(disableSemver).build();
       validator =
-          ProjectValidatorFactory.create(getProjectInformation(), getAetherMavenClient(), sharedLibraries, strictCheck);
+          ProjectValidatorFactory.create(getProjectInformation(), getAetherMavenClient(), sharedLibraries, requirement);
     }
     return validator;
   }

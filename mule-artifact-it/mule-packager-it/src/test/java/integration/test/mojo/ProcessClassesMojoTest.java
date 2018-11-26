@@ -83,4 +83,12 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
 
     verifier.executeGoal(GOAL);
   }
+
+  @Test
+  public void testDoNotCheckSemverProject() throws Exception {
+    projectBaseDirectory = builder.createProjectBaseDir(SEMVER_CHECK, this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+
+    verifier.executeGoal(GOAL);
+  }
 }

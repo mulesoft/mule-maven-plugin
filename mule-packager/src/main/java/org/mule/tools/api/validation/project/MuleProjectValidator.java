@@ -49,7 +49,13 @@ public class MuleProjectValidator extends AbstractProjectValidator {
 
   public MuleProjectValidator(ProjectInformation projectInformation, List<SharedLibraryDependency> sharedLibraries,
                               boolean strictCheck) {
-    super(projectInformation, strictCheck);
+    this(projectInformation, sharedLibraries,
+         new ProjectRequirement.ProjectRequirementBuilder().withStrictCheck(strictCheck).build());
+  }
+
+  public MuleProjectValidator(ProjectInformation projectInformation, List<SharedLibraryDependency> sharedLibraries,
+                              ProjectRequirement requirement) {
+    super(projectInformation, requirement);
     this.sharedLibraries = sharedLibraries;
 
     // TODO we should know how to validate each deployment regardles of how many are they

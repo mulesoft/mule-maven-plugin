@@ -38,10 +38,16 @@ public abstract class AbstractProjectValidator {
 
   protected final boolean strictCheck;
   protected final ProjectInformation projectInformation;
+  private final boolean disableSemver;
 
   public AbstractProjectValidator(ProjectInformation projectInformation, boolean strictCheck) {
+    this(projectInformation, new ProjectRequirement.ProjectRequirementBuilder().withStrictCheck(strictCheck).build());
+  }
+
+  public AbstractProjectValidator(ProjectInformation projectInformation, ProjectRequirement requirement) {
     this.projectInformation = projectInformation;
-    this.strictCheck = strictCheck;
+    this.strictCheck = requirement.isStrictCheck();
+    this.disableSemver = requirement.disableSemver();
     checkState(projectInformation.getPackaging() != null, "Packaging type should not be null");
   }
 
@@ -58,7 +64,9 @@ public abstract class AbstractProjectValidator {
    */
   public Boolean isProjectValid(String goal) throws ValidationException {
     if (StringUtils.equals(VALIDATE_GOAL, goal)) {
-      isProjectVersionValid(projectInformation.getVersion());
+      if (!disableSemver) {
+        isProjectVersionValid(projectInformation.getVersion());
+      }
       isPackagingTypeValid(projectInformation.getPackaging());
       additionalValidation();
       if (strictCheck) {
@@ -111,7 +119,8 @@ public abstract class AbstractProjectValidator {
     if (classifier == null || !allPossibleClassifiers.contains(classifier)) {
       List<String> classifierNames = allPossibleClassifiers.stream().collect(Collectors.toList());
       throw new ValidationException("Unknown classifier type " + classifier
-          + ". Please specify a valid mule classifier type: " + String.join(", ", classifierNames));
+          + ". Please specify a valid mule classifier type: " + String
+              .join(", ", classifierNames));
     }
     return true;
   }

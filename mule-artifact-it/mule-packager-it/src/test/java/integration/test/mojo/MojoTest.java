@@ -33,6 +33,7 @@ public class MojoTest implements SettingsConfigurator {
 
   protected static final String TARGET_FOLDER_NAME = "target";
   protected static final String EMPTY_PROJECT_NAME = "empty-project";
+  protected static final String SEMVER_CHECK = "semver-check";
   protected static final String EMPTY_DOMAIN_NAME = "empty-domain-project";
   protected static final String EMPTY_POLICY_NAME = "empty-policy-project";
   protected static final String PROJECT_BASE_DIR_PROPERTY = "project.basedir";

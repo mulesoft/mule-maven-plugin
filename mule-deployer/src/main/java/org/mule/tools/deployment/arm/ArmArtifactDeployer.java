@@ -83,7 +83,9 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
   @Override
   public void deployApplication() throws DeploymentException {
     client.deployApplication(getApplicationMetadata());
-    checkApplicationHasStarted();
+    if (!deployment.getSkipDeploymentVerification()) {
+      checkApplicationHasStarted();
+    }
   }
 
   /**

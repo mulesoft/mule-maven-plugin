@@ -88,6 +88,17 @@ public class ArmArtifactDeployerTest {
   }
 
   @Test
+  public void deployApplicationSkipVerificationTest() throws DeploymentException {
+    when(deploymentMock.getSkipDeploymentVerification()).thenReturn(true);
+    armArtifactDeployerSpy.deployApplication();
+
+    verify(clientMock).deployApplication(metadataMock);
+    verify(armArtifactDeployerSpy, never()).checkApplicationHasStarted();
+    verify(clientMock, never()).undeployApplication(metadataMock);
+    verify(clientMock, never()).redeployApplication(FAKE_APPLICATION_ID, metadataMock);
+  }
+
+  @Test
   public void undeployApplicationTest() throws DeploymentException {
     armArtifactDeployerSpy.undeployApplication();
 

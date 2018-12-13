@@ -47,6 +47,9 @@ public abstract class AnypointDeployment extends Deployment {
   @Parameter
   protected Map<String, String> properties;
 
+  @Parameter
+  protected boolean skipDeploymentVerification = false;
+
   /**
    * Anypoint Platform username.
    *
@@ -137,6 +140,19 @@ public abstract class AnypointDeployment extends Deployment {
 
   public void setProperties(Map<String, String> properties) {
     this.properties = properties;
+  }
+
+  /**
+   * Property to skip deployment verification to Anypoint Platform.
+   *
+   * @since 2.0
+   */
+  public Boolean getSkipDeploymentVerification() {
+    return skipDeploymentVerification;
+  }
+
+  public void setSkipDeploymentVerification(Boolean skipDeploymentVerification) {
+    this.skipDeploymentVerification = skipDeploymentVerification;
   }
 
   public void setEnvironmentSpecificValues() throws DeploymentException {

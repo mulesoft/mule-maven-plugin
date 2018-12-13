@@ -35,6 +35,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -99,13 +100,29 @@ public class CloudHubArtifactDeployerTest {
 
     cloudHubArtifactDeployerSpy.deployApplication();
 
-
     verify(clientMock).isDomainAvailable(any());
     verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
     verify(cloudHubArtifactDeployerSpy).createApplication();
     verify(cloudHubArtifactDeployerSpy).startApplication();
     verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
     verify(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
+  }
+
+  @Test
+  public void deployApplicationSkipVerification() throws DeploymentException {
+    when(clientMock.isDomainAvailable(any())).thenReturn(true);
+
+    when(deploymentMock.getSkipDeploymentVerification()).thenReturn(true);
+
+    cloudHubArtifactDeployerSpy.deployApplication();
+
+
+    verify(clientMock).isDomainAvailable(any());
+    verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
+    verify(cloudHubArtifactDeployerSpy).createApplication();
+    verify(cloudHubArtifactDeployerSpy).startApplication();
+    verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
+    verify(cloudHubArtifactDeployerSpy, never()).checkApplicationHasStarted();
   }
 
   @Test

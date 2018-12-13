@@ -65,7 +65,9 @@ public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
         throw new DeploymentException("Could not deploy application.", e);
       }
     }
-    checkApplicationHasStarted();
+    if (!deployment.getSkipDeploymentVerification()) {
+      checkApplicationHasStarted();
+    }
   }
 
   private void redeployApplication() throws DeploymentException {

@@ -85,7 +85,9 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   public void deployApplication() throws DeploymentException {
     createOrUpdateApplication();
     startApplication();
-    checkApplicationHasStarted();
+    if (!deployment.getSkipDeploymentVerification()) {
+      checkApplicationHasStarted();
+    }
   }
 
   /**

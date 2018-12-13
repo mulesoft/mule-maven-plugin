@@ -22,7 +22,8 @@ public class RuntimeFabricDeploymentVerification implements DeploymentVerificati
 
   private final RuntimeFabricClient client;
 
-  public static final String STARTED_STATUS = "STARTED";
+  private static final String FAILED_STATUS = "FAILED";
+  private static final String APPLIED_STATUS = "APPLIED";
 
   public RuntimeFabricDeploymentVerification(RuntimeFabricClient client) {
     this.client = client;
@@ -53,7 +54,14 @@ public class RuntimeFabricDeploymentVerification implements DeploymentVerificati
         return false;
       }
       DeploymentDetailedResponse response = client.getDeployment(deploymentId);
-      return response != null && StringUtils.equals(response.status, STARTED_STATUS);
+      if (response != null) {
+        if (StringUtils.equals(response.status, FAILED_STATUS)) {
+          throw new IllegalStateException("Deployment failed");
+        } else if (StringUtils.equals(response.status, APPLIED_STATUS)) {
+          return true;
+        }
+      }
+      return false;
     }
 
     private String getDeploymentId(Deployment deployment) {

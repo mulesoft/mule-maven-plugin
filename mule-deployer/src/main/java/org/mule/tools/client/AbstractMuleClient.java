@@ -13,11 +13,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.AUTHORIZATION_HEADER;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.ws.rs.client.Invocation;
 
@@ -80,6 +76,10 @@ public abstract class AbstractMuleClient extends AbstractClient {
     this.businessGroupName = anypointDeployment.getBusinessGroup();
   }
 
+  public AbstractMuleClient(DeployerLog log) {
+    super(log);
+  }
+
   public void init() {
     bearerToken = getBearerToken(credentials);
     orgId = getOrgId();
@@ -97,52 +97,82 @@ public abstract class AbstractMuleClient extends AbstractClient {
     return userInfo;
   }
 
-  private Organization buildOrganization(JsonObject userInfoJson) {
-    Organization organization = new Organization();
-    if (userInfoJson != null && userInfoJson.has(USER)) {
-      JsonObject userJson = (JsonObject) userInfoJson.get(USER);
-      if (userJson != null && userJson.has(ORGANIZATION)) {
-        JsonObject organizationJson = userJson.getAsJsonObject(ORGANIZATION);
-        if (organizationJson.has(ID) && organizationJson.has(NAME)) {
-          organization.id = organizationJson.get(ID).getAsString();
-          organization.name = organizationJson.get(NAME).getAsString();
-          organization.subOrganizations = resolveSuborganizations(userJson, organizationJson);
-        }
-      }
+  protected Organization buildOrganization(JsonObject userInfoJson) {
+    Map<String, Organization> organizationsIds = new HashMap<>();
+    Map<String, List<String>> organizationChildren = new HashMap<>();
+    buildOrganizationsMap(userInfoJson, organizationsIds, organizationChildren);
+    String root = getRootOrganization(userInfoJson);
+    return recurse(root, organizationsIds, organizationChildren);
+  }
+
+  private Organization recurse(String root, Map<String, Organization> organizationsIds,
+                               Map<String, List<String>> organizationChildren) {
+    Organization organization = organizationsIds.get(root);
+    for (String child : organizationChildren.get(root)) {
+      organization.subOrganizations.add(recurse(child, organizationsIds, organizationChildren));
     }
     return organization;
   }
 
-  protected List<Organization> resolveSuborganizations(JsonObject userJson, JsonObject organizationJson) {
-    List<Organization> suborganizations = new ArrayList<>();
-    if (organizationJson.has(SUB_ORGANIZATION_IDS)) {
-      Set<String> ids = getSuborganizationIds(organizationJson);
-      suborganizations.addAll(resolveAllSuborganizations(ids, userJson, "memberOfOrganizations"));
-      suborganizations.addAll(resolveAllSuborganizations(ids, userJson, "contributorOfOrganizations"));
-    }
-    return suborganizations;
-  }
-
-  private Collection<? extends Organization> resolveAllSuborganizations(Set<String> ids, JsonObject userJson,
-                                                                        String organizationsDefinition) {
-    List<Organization> suborganizations = new ArrayList<>();
-    if (userJson.has(organizationsDefinition)) {
-      JsonArray subOrganizationUserIsMemberOf = userJson.get(organizationsDefinition).getAsJsonArray();
-      if (subOrganizationUserIsMemberOf != null) {
-        for (JsonElement org : subOrganizationUserIsMemberOf) {
-          if (org.isJsonObject()) {
-            Organization suborganization = new Organization();
-            suborganization.id = ((JsonObject) org).get(ID).getAsString();
-            if (ids.contains(suborganization.id)) {
-              suborganization.name = ((JsonObject) org).get(NAME).getAsString();
-              suborganizations.add(suborganization);
-              ids.remove(suborganization.id);
-            }
-          }
+  private String getRootOrganization(JsonObject userInfoJson) {
+    if (userInfoJson != null && userInfoJson.has(USER)) {
+      JsonObject userJson = (JsonObject) userInfoJson.get(USER);
+      if (userJson != null && userJson.has(ORGANIZATION)) {
+        JsonObject organizationJson = userJson.getAsJsonObject(ORGANIZATION);
+        if (organizationJson.has(NAME)) {
+          return organizationJson.get(ID).getAsString();
         }
       }
     }
-    return suborganizations;
+    throw new IllegalStateException("Cannot find root organization");
+  }
+
+  /**
+   * Maps every organization id to a organization object
+   * Maps every organization id to its children organization ids
+   *
+   * @param userInfoJson
+   * @param organizationsIds
+   * @param organizationChildren
+   */
+  private void buildOrganizationsMap(JsonObject userInfoJson,
+                                     Map<String, Organization> organizationsIds,
+                                     Map<String, List<String>> organizationChildren) {
+    if (userInfoJson != null && userInfoJson.has(USER)) {
+      JsonObject userJson = (JsonObject) userInfoJson.get(USER);
+      JsonArray organizations = getAllOrganizations(userJson);
+      for (JsonElement orgJson : organizations) {
+        if (orgJson.isJsonObject()) {
+          Organization org = new Organization();
+          org.id = ((JsonObject) orgJson).get(ID).getAsString();
+          org.name = ((JsonObject) orgJson).get(NAME).getAsString();
+          org.subOrganizations = new ArrayList<>();
+          List<String> childrenIds = getChildren(orgJson);
+          organizationsIds.put(org.id, org);
+          organizationChildren.put(org.id, childrenIds);
+        }
+      }
+    }
+  }
+
+  private List<String> getChildren(JsonElement orgJson) {
+    JsonArray children = ((JsonObject) orgJson).get("subOrganizationIds").getAsJsonArray();
+    List<String> ids = new ArrayList<>();
+    for (int i = 0; i < children.size(); i++) {
+      ids.add(children.get(i).getAsString());
+    }
+    return ids;
+  }
+
+  private JsonArray getAllOrganizations(JsonObject userJson) {
+    JsonArray organizations = new JsonArray();
+    if (userJson.has("memberOfOrganizations")) {
+      organizations.addAll(userJson.get("memberOfOrganizations").getAsJsonArray());
+    }
+    if (userJson.has("contributorOfOrganizations")) {
+      organizations.addAll(userJson.get("contributorOfOrganizations").getAsJsonArray());
+    }
+    return organizations;
   }
 
   public String getOrgId() {
@@ -161,7 +191,8 @@ public abstract class AbstractMuleClient extends AbstractClient {
       message.append("Please check whether you have the access rights to this business group.");
       if (isEmpty(businessGroupName)) {
         message
-            .append(" Please set the businessGroup in the plugin configuration in case your user have access only within a business unit.");
+            .append(
+                    " Please set the businessGroup in the plugin configuration in case your user have access only within a business unit.");
       }
       throw new RuntimeException(message.toString());
     }

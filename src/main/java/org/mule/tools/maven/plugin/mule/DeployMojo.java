@@ -140,6 +140,8 @@ public class DeployMojo extends AbstractMuleMojo
 
     public void doExecute() throws MojoExecutionException, MojoFailureException
     {
+        getLog().debug("AAAAAAAAAA"+ settings.getActiveProxy().getHost());
+
         initializeApplication();
         initializeEnvironment();
         switch (deploymentType)

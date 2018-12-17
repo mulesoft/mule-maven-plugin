@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.tools.maven</groupId>
     <artifactId>mule-maven-plugin</artifactId>
-    <version>2.2.1</version>
+    <version>2.2.1-support</version>
     <packaging>maven-plugin</packaging>
     <name>Mule Maven Plugin</name>
     <description>
@@ -55,7 +55,7 @@
         <environment>Production</environment>
         <target>server-name</target>
 
-        <java.source>1.7</java.source>
+        <java.source>7</java.source>
         <java.target>1.7</java.target>
 
         <license.plugin.version>2.6</license.plugin.version>
@@ -194,6 +194,12 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-settings-builder</artifactId>
             <version>${maven.settings.builder.version}</version>
+        </dependency>
+        <!-- Support Team -->
+         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.1</version>
         </dependency>
     </dependencies>
 

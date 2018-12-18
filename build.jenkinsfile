@@ -4,7 +4,7 @@
 properties([
     parameters([
         string(name: 'JDK', defaultValue: "JDK8", description: 'JDK Version to be used'),
-        string(name: 'maven', defaultValue: "M3", description: 'Maven version to be used')
+        string(name: 'maven', defaultValue: "Maven (latest)", description: 'Maven version to be used')
     ]),
 ])
 

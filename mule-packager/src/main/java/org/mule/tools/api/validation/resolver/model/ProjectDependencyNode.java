@@ -19,6 +19,7 @@ import org.mule.tools.api.validation.resolver.visitor.DependencyNodeVisitor;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.mule.tools.api.validation.VersionUtils.isRange;
 
 /**
  * Represents a project dependency
@@ -70,7 +71,9 @@ public class ProjectDependencyNode {
     Set<ProjectDependencyNode> children = newHashSet();
 
     for (ArtifactCoordinates dependency : getDependencies(filter)) {
-      children.add(buildNode(dependency));
+      if (!isRange(dependency.getVersion())) {
+        children.add(buildNode(dependency));
+      }
     }
 
     return children;

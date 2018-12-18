@@ -285,4 +285,28 @@ public class VersionUtilsTest {
     return versions;
   }
 
+  @Test
+  public void isRangeTest() {
+    Map<String, Boolean> testInput = isRangeTestInput();
+    for (String version : testInput.keySet()) {
+      Boolean expectedResult = testInput.get(version);
+      assertThat("Expected result is not the expected", isRange(version), equalTo(expectedResult));
+    }
+  }
+
+  private Map<String, Boolean> isRangeTestInput() {
+    Map<String, Boolean> ranges = new HashMap<>();
+    ranges.put("(,1.0]", true);
+    ranges.put("[1.0]", true);
+    ranges.put("[1.2,1.3]", true);
+    ranges.put("[1.0,2.0)", true);
+    ranges.put("(,1.0],[1.2,)", true);
+    ranges.put("(,1.1),(1.1,)", true);
+    ranges.put("1.0", false);
+    ranges.put("0.1-SNAPSHOT", false);
+    ranges.put("0.1-rc.SNAPSHOT", false);
+    ranges.put("1.1+sha.12343", false);
+    return ranges;
+  }
+
 }

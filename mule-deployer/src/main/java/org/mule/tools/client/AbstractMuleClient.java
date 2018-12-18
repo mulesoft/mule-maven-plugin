@@ -130,8 +130,14 @@ public abstract class AbstractMuleClient extends AbstractClient {
   private Organization recurse(String root, Map<String, Organization> organizationsIds,
                                Map<String, List<String>> organizationChildren) {
     Organization organization = organizationsIds.get(root);
-    for (String child : organizationChildren.get(root)) {
-      organization.subOrganizations.add(recurse(child, organizationsIds, organizationChildren));
+    List<String> children = organizationChildren.get(root);
+    if (children != null) {
+      for (String child : children) {
+        Organization org = recurse(child, organizationsIds, organizationChildren);
+        if (org != null) {
+          organization.subOrganizations.add(org);
+        }
+      }
     }
     return organization;
   }

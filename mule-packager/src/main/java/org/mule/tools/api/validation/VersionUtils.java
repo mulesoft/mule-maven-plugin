@@ -13,6 +13,7 @@ import static com.vdurmont.semver4j.Semver.SemverType.LOOSE;
 import static de.skuzzle.semantic.Version.create;
 import static de.skuzzle.semantic.Version.isValidVersion;
 import static de.skuzzle.semantic.Version.parseVersion;
+import static java.util.regex.Pattern.matches;
 
 import com.vdurmont.semver4j.Semver;
 
@@ -90,5 +91,15 @@ public class VersionUtils {
    */
   public static String getMajor(String version) {
     return String.valueOf(new Semver(version).getMajor());
+  }
+
+  /**
+   * Checks whether a version is a range.
+   *
+   * @param version
+   * @return true if the version is a range; false otherwise.
+   */
+  public static boolean isRange(String version) {
+    return matches("^[\\[(].*[])]$", version);
   }
 }

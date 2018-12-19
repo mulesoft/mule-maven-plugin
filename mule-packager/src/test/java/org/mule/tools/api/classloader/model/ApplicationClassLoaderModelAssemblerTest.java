@@ -10,20 +10,18 @@
 
 package org.mule.tools.api.classloader.model;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
+
+import org.apache.maven.model.Build;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Plugin;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,16 +30,29 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.model.Model;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+import static org.mule.tools.api.classloader.Constants.MULE_MAVEN_PLUGIN_ARTIFACT_ID;
+import static org.mule.tools.api.classloader.Constants.MULE_MAVEN_PLUGIN_GROUP_ID;
+import static org.mule.tools.api.classloader.Constants.SHARED_LIBRARIES_FIELD;
+import static org.mule.tools.api.classloader.Constants.SHARED_LIBRARY_FIELD;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
 
 public class ApplicationClassLoaderModelAssemblerTest {
-
 
 
   private static final String USER_REPOSITORY_LOCATION =
@@ -66,9 +77,9 @@ public class ApplicationClassLoaderModelAssemblerTest {
   @Test
   public void getClassLoaderModelTest() throws URISyntaxException {
     List<BundleDependency> appDependencies = new ArrayList<>();
-    BundleDependency dependency1 = buildBundleDependency(1, 1, StringUtils.EMPTY);
+    BundleDependency dependency1 = buildBundleDependency(1, 1, EMPTY);
     BundleDependency dependency2 =
-        buildBundleDependency(1, 2, StringUtils.EMPTY);
+        buildBundleDependency(1, 2, EMPTY);
     BundleDependency dependency3 =
         buildBundleDependency(1, 3, MULE_DOMAIN_CLASSIFIER);
     appDependencies.add(dependency1);
@@ -87,11 +98,11 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
     List<BundleDependency> firstMulePluginDependencies = new ArrayList<>();
     BundleDependency dependency5 =
-        buildBundleDependency(1, 5, StringUtils.EMPTY);
+        buildBundleDependency(1, 5, EMPTY);
     BundleDependency dependency6 = buildBundleDependency(1, 6,
-                                                         StringUtils.EMPTY);
-    BundleDependency dependency7 = buildBundleDependency(1, 7, StringUtils.EMPTY);
-    BundleDependency dependency8 = buildBundleDependency(1, 8, StringUtils.EMPTY);
+                                                         EMPTY);
+    BundleDependency dependency7 = buildBundleDependency(1, 7, EMPTY);
+    BundleDependency dependency8 = buildBundleDependency(1, 8, EMPTY);
     firstMulePluginDependencies.add(secondMulePlugin);
     firstMulePluginDependencies.add(dependency5);
     firstMulePluginDependencies.add(dependency8);
@@ -117,10 +128,155 @@ public class ApplicationClassLoaderModelAssemblerTest {
   }
 
   @Test
+  public void getClassLoaderModelWithSharedDependencies() throws URISyntaxException {
+    List<BundleDependency> appDependencies = new ArrayList<>();
+    BundleDependency dependency1 = buildBundleDependency(1, 1,
+                                                         EMPTY);
+
+    BundleDependency sharedLibrary = buildBundleDependency(2, 2,
+                                                           EMPTY);
+    appDependencies.add(dependency1);
+    appDependencies.add(sharedLibrary);
+    ApplicationClassloaderModel applicationClassloaderModel =
+        testSharedDependencies(appDependencies, singletonList(sharedLibrary), Optional.empty());
+
+    assertThat("Application contains both libraries",
+               applicationClassloaderModel.getClassLoaderModel().getDependencies(),
+               containsInAnyOrder(toArtifact(dependency1), toArtifact(sharedLibrary)));
+
+    assertThat("Application shared library is marked as shared",
+               applicationClassloaderModel.getClassLoaderModel().getDependencies().stream().anyMatch(artifact -> artifact
+                   .getArtifactCoordinates().getArtifactId().equals(sharedLibrary.getDescriptor().getArtifactId()) &&
+                   artifact.getArtifactCoordinates().getGroupId().equals(sharedLibrary.getDescriptor().getGroupId()) &&
+                   artifact.isShared()),
+               is(true));
+  }
+
+  @Test
+  public void getClassLoaderModelWithSharedDependenciesWithTransitiveDependencies() throws URISyntaxException {
+    List<BundleDependency> appDependencies = new ArrayList<>();
+    BundleDependency dependency1 = buildBundleDependency(1, 1,
+                                                         EMPTY);
+
+    BundleDependency sharedLibraryTransitiveDependencyLevel2 = buildBundleDependency(2, 2,
+                                                                                     EMPTY, "1.0.0", emptyList()).build();
+    BundleDependency sharedLibraryTransitiveDependencyLevel1 = buildBundleDependency(3, 3,
+                                                                                     EMPTY, "1.0.0",
+                                                                                     singletonList(sharedLibraryTransitiveDependencyLevel2))
+                                                                                         .build();
+    BundleDependency sharedLibrary = buildBundleDependency(4, 4,
+                                                           EMPTY, "1.0.0", singletonList(sharedLibraryTransitiveDependencyLevel1))
+                                                               .build();
+
+    appDependencies.add(dependency1);
+    appDependencies.add(sharedLibraryTransitiveDependencyLevel2);
+    appDependencies.add(sharedLibraryTransitiveDependencyLevel1);
+    appDependencies.add(sharedLibrary);
+
+    ApplicationClassloaderModel applicationClassloaderModel =
+        testSharedDependencies(appDependencies, singletonList(sharedLibrary), Optional.empty());
+
+    assertThat("Application contains all libraries",
+               applicationClassloaderModel.getClassLoaderModel().getDependencies(),
+               containsInAnyOrder(toArtifact(dependency1), toArtifact(sharedLibrary),
+                                  toArtifact(sharedLibraryTransitiveDependencyLevel1),
+                                  toArtifact(sharedLibraryTransitiveDependencyLevel2)));
+
+    assertThat("Application contains shared libraries with transitive dependencies",
+               applicationClassloaderModel.getClassLoaderModel().getDependencies().stream()
+                   .filter(Artifact::isShared).collect(Collectors.toList()),
+               containsInAnyOrder(toArtifact(sharedLibrary),
+                                  toArtifact(sharedLibraryTransitiveDependencyLevel1),
+                                  toArtifact(sharedLibraryTransitiveDependencyLevel2)));
+
+    assertThat("Application shared library is marked as shared",
+               applicationClassloaderModel.getClassLoaderModel().getDependencies().stream().anyMatch(artifact -> artifact
+                   .getArtifactCoordinates().getArtifactId().equals(sharedLibrary.getDescriptor().getArtifactId()) &&
+                   artifact.getArtifactCoordinates().getGroupId().equals(sharedLibrary.getDescriptor().getGroupId()) &&
+                   artifact.isShared()),
+               is(true));
+  }
+
+  private ApplicationClassloaderModel testSharedDependencies(List<BundleDependency> appDependencies,
+                                                             List<BundleDependency> sharedLibraries,
+                                                             Optional<Model> providedModel) {
+
+
+    List<BundleDependency> appMulePluginDependencies = new ArrayList<>();
+
+    aetherMavenClientMock = getAetherMavenClientMock(appDependencies, appMulePluginDependencies);
+
+    when(aetherMavenClientMock.resolveBundleDescriptorDependencies(eq(false), eq(false), any()))
+        .thenReturn(appMulePluginDependencies);
+
+    ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
+        getClassLoaderModelAssemblySpy(aetherMavenClientMock);
+
+    Model artifactPomModel = providedModel.orElse(createArtifactModel(sharedLibraries));
+
+    doReturn(artifactPomModel).when(applicationClassLoaderModelAssemblerSpy).getPomFile(any());
+
+    ApplicationClassloaderModel applicationClassloaderModel =
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class));
+
+    return applicationClassloaderModel;
+  }
+
+  @Test
+  public void noBuildInModelDoesNotFail() {
+    testSharedDependencies(emptyList(), emptyList(), Optional.of(new Model()));
+  }
+
+  @Test
+  public void noMavenPluginInModelDoesNotFail() {
+    Model model = new Model();
+    model.setBuild(new Build());
+    testSharedDependencies(emptyList(), emptyList(), Optional.of(model));
+  }
+
+  @Test
+  public void noConfigurationInMavenPluginDoesNotFail() {
+    Model model = new Model();
+    Build build = new Build();
+    Plugin plugin = new Plugin();
+    plugin.setGroupId(MULE_MAVEN_PLUGIN_GROUP_ID);
+    plugin.setArtifactId(MULE_MAVEN_PLUGIN_ARTIFACT_ID);
+    build.addPlugin(plugin);
+    model.setBuild(build);
+    testSharedDependencies(emptyList(), emptyList(), Optional.of(model));
+  }
+
+  private Model createArtifactModel(List<BundleDependency> sharedLibraries) {
+    Model artifactPomModel = new Model();
+    Plugin plugin = new Plugin();
+    plugin.setArtifactId(MULE_MAVEN_PLUGIN_ARTIFACT_ID);
+    plugin.setGroupId(MULE_MAVEN_PLUGIN_GROUP_ID);
+    Xpp3Dom configuration = new Xpp3Dom("configuration");
+    plugin.setConfiguration(configuration);
+    Xpp3Dom sharedLibrariesDom = new Xpp3Dom(SHARED_LIBRARIES_FIELD);
+    configuration.addChild(sharedLibrariesDom);
+    sharedLibraries.stream()
+        .forEach(sharedLibraryToAdd -> {
+          Xpp3Dom sharedLibraryDom = new Xpp3Dom(SHARED_LIBRARY_FIELD);
+          sharedLibrariesDom.addChild(sharedLibraryDom);
+          Xpp3Dom groupIdDom = new Xpp3Dom("groupId");
+          groupIdDom.setValue(sharedLibraryToAdd.getDescriptor().getGroupId());
+          sharedLibraryDom.addChild(groupIdDom);
+          Xpp3Dom artifactIdDom = new Xpp3Dom("artifactId");
+          artifactIdDom.setValue(sharedLibraryToAdd.getDescriptor().getArtifactId());
+          sharedLibraryDom.addChild(artifactIdDom);
+        });
+
+    artifactPomModel.setBuild(new Build());
+    artifactPomModel.getBuild().addPlugin(plugin);
+    return artifactPomModel;
+  }
+
+  @Test
   public void getClassLoaderModelWithOneDependencyThatIsNotMulePluginTest() throws URISyntaxException {
     List<BundleDependency> appDependencies = new ArrayList<>();
     BundleDependency dependency1 = buildBundleDependency(1, 1,
-                                                         StringUtils.EMPTY);
+                                                         EMPTY);
     appDependencies.add(dependency1);
 
     List<BundleDependency> appMulePluginDependencies = new ArrayList<>();
@@ -156,7 +312,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
     List<BundleDependency> firstMulePluginDependencies = new ArrayList<>();
     BundleDependency mulePluginTransitiveDependency1 =
-        buildBundleDependency(1, 1, StringUtils.EMPTY);
+        buildBundleDependency(1, 1, EMPTY);
     firstMulePluginDependencies.add(mulePluginTransitiveDependency1);
 
     setPluginDependencyinAetherMavenClientMock(firstMulePlugin, firstMulePluginDependencies);
@@ -180,17 +336,19 @@ public class ApplicationClassLoaderModelAssemblerTest {
   }
 
 
-
   private BundleDependency buildBundleDependency(int groupIdSuffix, int artifactIdSuffix, String classifier)
       throws URISyntaxException {
-    return buildBundleDependency(groupIdSuffix, artifactIdSuffix, classifier, VERSION);
+    return buildBundleDependency(groupIdSuffix, artifactIdSuffix, classifier, VERSION, emptyList()).build();
   }
 
-  private BundleDependency buildBundleDependency(int groupIdSuffix, int artifactIdSuffix, String classifier, String version)
+  private BundleDependency.Builder buildBundleDependency(int groupIdSuffix, int artifactIdSuffix, String classifier,
+                                                         String version, List<BundleDependency> transitiveDependencies)
       throws URISyntaxException {
     BundleDescriptor bundleDescriptor = buildBundleDescriptor(groupIdSuffix, artifactIdSuffix, classifier, version);
     URI bundleUri = buildBundleURI(bundleDescriptor);
-    return new BundleDependency.Builder().setDescriptor(bundleDescriptor).setBundleUri(bundleUri).build();
+    BundleDependency.Builder builder = new BundleDependency.Builder().setDescriptor(bundleDescriptor).setBundleUri(bundleUri);
+    transitiveDependencies.stream().forEach(transitiveDependency -> builder.addTransitiveDependency(transitiveDependency));
+    return builder;
   }
 
   private URI buildBundleURI(BundleDescriptor bundleDescriptor) throws URISyntaxException {
@@ -209,6 +367,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
       ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
           spy(new ApplicationClassLoaderModelAssembler(aetherMavenClientMock, temporaryFolder.newFolder()));
       ArtifactCoordinates projectArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
+      doReturn(new Model()).when(applicationClassLoaderModelAssemblerSpy).getPomFile(any());
       doReturn(projectArtifactCoordinates).when(applicationClassLoaderModelAssemblerSpy).getApplicationArtifactCoordinates(any());
       return applicationClassLoaderModelAssemblerSpy;
     } catch (Exception e) {

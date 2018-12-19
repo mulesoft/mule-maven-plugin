@@ -10,9 +10,6 @@
 
 package org.mule.tools.api.classloader.model;
 
-import static java.util.Collections.emptyList;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toApplicationModelArtifacts;
-import static org.mule.tools.api.classloader.model.util.PluginUtils.toPluginDependencies;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver;
@@ -22,9 +19,17 @@ import org.mule.tools.api.classloader.model.resolver.MulePluginClassloaderModelR
 import org.mule.tools.api.classloader.model.resolver.RamlClassloaderModelResolver;
 import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 
+import org.apache.maven.model.Model;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+
+import static java.util.Collections.emptyList;
+import static org.mule.maven.client.internal.util.MavenUtils.getPomModelFromFile;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toApplicationModelArtifacts;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.updateArtifactsSharedState;
+import static org.mule.tools.api.classloader.model.util.PluginUtils.toPluginDependencies;
 
 public class ApplicationClassLoaderModelAssembler {
 
@@ -60,14 +65,18 @@ public class ApplicationClassLoaderModelAssembler {
 
   public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile)
       throws IllegalStateException {
-    ArtifactCoordinates appCoordinates = getApplicationArtifactCoordinates(pomFile);
+
+    Model pomModel = getPomFile(pomFile);
+
+    ArtifactCoordinates appCoordinates = getApplicationArtifactCoordinates(pomModel);
 
     AppClassLoaderModel appModel = new AppClassLoaderModel(CLASS_LOADER_MODEL_VERSION, appCoordinates);
 
     List<BundleDependency> appDependencies = applicationDependencyResolver.resolveApplicationDependencies(pomFile);
 
-    appModel.setDependencies(toApplicationModelArtifacts(appDependencies));
-
+    List<Artifact> dependencies =
+        updateArtifactsSharedState(appDependencies, toApplicationModelArtifacts(appDependencies), pomModel);
+    appModel.setDependencies(dependencies);
 
     applicationClassLoaderModel = new ApplicationClassloaderModel(appModel);
 
@@ -83,8 +92,12 @@ public class ApplicationClassLoaderModelAssembler {
     return applicationClassLoaderModel;
   }
 
-  public ArtifactCoordinates getApplicationArtifactCoordinates(File pomFile) {
-    return ArtifactUtils.getApplicationArtifactCoordinates(pomFile);
+  protected Model getPomFile(File pomFile) {
+    return getPomModelFromFile(pomFile);
+  }
+
+  public ArtifactCoordinates getApplicationArtifactCoordinates(Model pomModel) {
+    return ArtifactUtils.getApplicationArtifactCoordinates(pomModel);
   }
 
 }

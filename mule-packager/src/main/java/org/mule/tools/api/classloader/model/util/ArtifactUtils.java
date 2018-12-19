@@ -10,25 +10,36 @@
 
 package org.mule.tools.api.classloader.model.util;
 
-import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
-import static org.mule.maven.client.internal.util.MavenUtils.getPomModelFromFile;
-import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
+import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.tools.api.classloader.Constants;
+import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 
-import java.io.File;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.model.Build;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Plugin;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.model.Model;
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
+import static org.mule.runtime.api.util.Preconditions.checkState;
+import static org.mule.tools.api.classloader.Constants.ARTIFACT_ID;
+import static org.mule.tools.api.classloader.Constants.GROUP_ID;
+import static org.mule.tools.api.classloader.Constants.MULE_MAVEN_PLUGIN_ARTIFACT_ID;
+import static org.mule.tools.api.classloader.Constants.MULE_MAVEN_PLUGIN_GROUP_ID;
+import static org.mule.tools.api.classloader.Constants.SHARED_LIBRARIES_FIELD;
+import static org.mule.tools.api.classloader.Constants.SHARED_LIBRARY_FIELD;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
 
 /**
  * ArtifactUtils presents helper methods to convert artifact related classes and recognize mule plugin artifacts.
@@ -107,7 +118,6 @@ public class ArtifactUtils {
    * Converts a {@link Dependency} instance to a {@link BundleDescriptor} instance.
    *
    * @return the corresponding {@link BundleDescriptor} instance.
-   *
    * @since 3.2.0
    */
   public static BundleDescriptor toBundleDescriptor(Dependency dependency) {
@@ -126,6 +136,81 @@ public class ArtifactUtils {
     return dependencies;
   }
 
+  public static List<Artifact> updateArtifactsSharedState(List<BundleDependency> appDependencies, List<Artifact> artifacts,
+                                                          Model pomModel) {
+    Build build = pomModel.getBuild();
+    if (build != null) {
+      List<Plugin> plugins = build.getPlugins();
+      if (plugins != null) {
+        Optional<Plugin> muleMavenPluginOptional = plugins.stream()
+            .filter(plugin -> plugin.getGroupId().equalsIgnoreCase(MULE_MAVEN_PLUGIN_GROUP_ID) &&
+                plugin.getArtifactId().equalsIgnoreCase(MULE_MAVEN_PLUGIN_ARTIFACT_ID))
+            .findAny();
+        muleMavenPluginOptional.ifPresent(plugin -> {
+          Object configuration = plugin.getConfiguration();
+          if (configuration != null) {
+            Xpp3Dom sharedLibrariesDom = ((Xpp3Dom) configuration).getChild(SHARED_LIBRARIES_FIELD);
+            if (sharedLibrariesDom != null) {
+              Xpp3Dom[] sharedLibraries = sharedLibrariesDom.getChildren(SHARED_LIBRARY_FIELD);
+              if (sharedLibraries != null) {
+                for (Xpp3Dom sharedLibrary : sharedLibraries) {
+                  String groupId = getAttribute(sharedLibrary, GROUP_ID);
+                  String artifactId = getAttribute(sharedLibrary, ARTIFACT_ID);
+                  findAndExportSharedLibrary(groupId, artifactId, artifacts, appDependencies);
+                }
+              }
+            }
+          }
+        });
+      }
+    }
+    return artifacts;
+  }
+
+  private static void findAndExportSharedLibrary(String sharedLibraryGroupId, String sharedLibraryArtifactId,
+                                                 List<Artifact> artifacts, List<BundleDependency> appDependencies) {
+    appDependencies.stream()
+        .forEach(bundleDependency -> {
+          if (bundleDependency.getDescriptor().getGroupId().equals(sharedLibraryGroupId) &&
+              bundleDependency.getDescriptor().getArtifactId().equals(sharedLibraryArtifactId)) {
+            setArtifactTransitiveDependenciesAsShared(artifacts, bundleDependency);
+          }
+        });
+
+  }
+
+  private static void setArtifactTransitiveDependenciesAsShared(List<Artifact> artifacts, BundleDependency bundleDependency) {
+    setArtifactAsShared(bundleDependency.getDescriptor().getGroupId(), bundleDependency.getDescriptor().getArtifactId(),
+                        artifacts);
+    bundleDependency.getTransitiveDependencies()
+        .stream()
+        .forEach(transitiveDependency -> setArtifactTransitiveDependenciesAsShared(artifacts, transitiveDependency));
+  }
+
+  private static void setArtifactAsShared(String sharedLibraryGroupId, String sharedLibraryArtifactId, List<Artifact> artifacts) {
+    artifacts.stream()
+        .forEach(artifact -> {
+          if (artifact.getArtifactCoordinates().getGroupId().equals(sharedLibraryGroupId) &&
+              artifact.getArtifactCoordinates().getArtifactId().equals(sharedLibraryArtifactId)) {
+            artifact.setShared(true);
+
+          }
+        });
+  }
+
+
+  protected static String getAttribute(org.codehaus.plexus.util.xml.Xpp3Dom tag, String attributeName) {
+    org.codehaus.plexus.util.xml.Xpp3Dom attributeDom = tag.getChild(attributeName);
+    checkState(attributeDom != null, format("'%s' element not declared at '%s' in the pom file",
+                                            attributeName, tag.toString()));
+    String attributeValue = attributeDom.getValue().trim();
+    checkState(!isEmpty(attributeValue),
+               format("'%s' was defined but has an empty value at '%s' declared in the pom file",
+                      attributeName, tag.toString()));
+    return attributeValue;
+
+  }
+
   public static void updateScopeIfDomain(Artifact artifact) {
     String classifier = artifact.getArtifactCoordinates().getClassifier();
     if (StringUtils.equals(classifier, MULE_DOMAIN.toString())) {
@@ -134,15 +219,14 @@ public class ArtifactUtils {
     }
   }
 
-  public static ArtifactCoordinates getApplicationArtifactCoordinates(File pomFile) {
-    ArtifactCoordinates appCoordinates = toArtifactCoordinates(getPomProjectBundleDescriptor(pomFile));
+  public static ArtifactCoordinates getApplicationArtifactCoordinates(Model pomModel) {
+    ArtifactCoordinates appCoordinates = toArtifactCoordinates(getPomProjectBundleDescriptor(pomModel));
     appCoordinates.setType(PACKAGE_TYPE);
-    appCoordinates.setClassifier(getPomModelFromFile(pomFile).getPackaging());
+    appCoordinates.setClassifier(pomModel.getPackaging());
     return appCoordinates;
   }
 
-  public static BundleDescriptor getPomProjectBundleDescriptor(File pomFile) {
-    Model pomModel = getPomModelFromFile(pomFile);
+  public static BundleDescriptor getPomProjectBundleDescriptor(Model pomModel) {
     return getBundleDescriptor(pomModel);
   }
 

@@ -102,7 +102,7 @@ public class MuleMavenPluginClientBuilder {
     globalSettings.ifPresent(mavenConfigurationBuilder::globalSettingsLocation);
     userSettings.ifPresent(mavenConfigurationBuilder::userSettingsLocation);
     securitySettings.ifPresent(mavenConfigurationBuilder::settingsSecurityLocation);
-
+    mavenConfigurationBuilder.ignoreArtifactDescriptorRepositories(false);
     DefaultLocalRepositorySupplierFactory localRepositorySupplierFactory = new DefaultLocalRepositorySupplierFactory();
     Supplier<File> localMavenRepository =
         localRepository != null ? () -> localRepository : localRepositorySupplierFactory.environmentMavenRepositorySupplier();

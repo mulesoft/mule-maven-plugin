@@ -12,10 +12,12 @@ package org.mule.tools.api.classloader.model;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -95,5 +97,17 @@ public class ArtifactTest {
   public void artifactsAreNotSharedByDefault() {
     artifact = new Artifact(artifactCoordinates, EXPECTED_URI);
     assertThat(artifact.isShared(), equalTo(false));
+  }
+
+  @Test
+  public void artifactsWithDifferentClassifierAreNotEqual() {
+    ArtifactCoordinates classifiedCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, TYPE, null);
+    Artifact classifiedArtifact = new Artifact(classifiedCoordinates, URI.create(RESOURCE_FULL_PATH));
+
+    TreeSet<Artifact> artifacts = new TreeSet<>();
+    artifacts.add(classifiedArtifact);
+    artifacts.add(artifact);
+
+    assertThat(artifacts, hasSize(2));
   }
 }

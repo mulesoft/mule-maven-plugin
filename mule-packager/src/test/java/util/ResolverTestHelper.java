@@ -9,21 +9,30 @@
  */
 package util;
 
-import org.apache.commons.lang3.StringUtils;
-import org.mule.tools.api.exception.ProjectBuildingException;
-import org.mule.tools.api.validation.resolver.visitor.AbstractArtifactVisitor;
+import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Collections.emptyList;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.exception.ProjectBuildingException;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.util.Project;
 import org.mule.tools.api.util.ProjectBuilder;
 import org.mule.tools.api.validation.resolver.model.ProjectDependencyNode;
+import org.mule.tools.api.validation.resolver.visitor.AbstractArtifactVisitor;
 import org.mule.tools.api.validation.resolver.visitor.DependencyNodeVisitor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static com.google.common.collect.Sets.newHashSet;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.apache.commons.lang3.StringUtils;
 
 public class ResolverTestHelper {
 
@@ -181,11 +190,11 @@ public class ResolverTestHelper {
     transitiveDependency5Dependencies.add(dependency7);
     projectStructure.put(dependency5, transitiveDependency5Dependencies);
 
-    projectStructure.put(dependency2, Collections.emptyList());
-    projectStructure.put(dependency3, Collections.emptyList());
-    projectStructure.put(dependency6, Collections.emptyList());
-    projectStructure.put(dependency7, Collections.emptyList());
-    projectStructure.put(dependency7OtherVersion, Collections.emptyList());
+    projectStructure.put(dependency2, emptyList());
+    projectStructure.put(dependency3, emptyList());
+    projectStructure.put(dependency6, emptyList());
+    projectStructure.put(dependency7, emptyList());
+    projectStructure.put(dependency7OtherVersion, emptyList());
 
     return projectStructure;
   }

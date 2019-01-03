@@ -10,9 +10,9 @@
 
 package org.mule.tools.api.classloader.model;
 
-import org.apache.commons.lang3.StringUtils;
-
 import static com.google.common.base.Preconditions.checkArgument;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class ArtifactCoordinates {
 
@@ -129,6 +129,9 @@ public class ArtifactCoordinates {
     if (!getGroupId().equals(that.getGroupId())) {
       return false;
     }
+    if (!StringUtils.equals(getClassifier(), that.getClassifier())) {
+      return false;
+    }
     return getVersion().equals(that.getVersion());
   }
 
@@ -137,6 +140,9 @@ public class ArtifactCoordinates {
     int result = getArtifactId().hashCode();
     result = 31 * result + getGroupId().hashCode();
     result = 31 * result + getVersion().hashCode();
+    if (getClassifier() != null) {
+      result = 31 * result + getClassifier().hashCode();
+    }
     return result;
   }
 }

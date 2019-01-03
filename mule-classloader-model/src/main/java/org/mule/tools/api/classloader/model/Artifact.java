@@ -10,15 +10,15 @@
 
 package org.mule.tools.api.classloader.model;
 
-import org.apache.commons.lang3.StringUtils;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.io.File.separatorChar;
+import static org.apache.commons.io.FilenameUtils.normalize;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.io.File.separatorChar;
-import static org.apache.commons.io.FilenameUtils.*;
+import org.apache.commons.lang3.StringUtils;
 
 public class Artifact implements Comparable {
 
@@ -59,12 +59,7 @@ public class Artifact implements Comparable {
 
   @Override
   public int compareTo(Object that) {
-    return this.getSimplifiedMavenCoordinates().compareTo(((Artifact) that).getSimplifiedMavenCoordinates());
-  }
-
-  protected String getSimplifiedMavenCoordinates() {
-    ArtifactCoordinates coordinates = this.getArtifactCoordinates();
-    return coordinates.getGroupId() + ":" + coordinates.getArtifactId() + ":" + coordinates.getVersion();
+    return getArtifactCoordinates().toString().compareTo(that.toString());
   }
 
   @Override

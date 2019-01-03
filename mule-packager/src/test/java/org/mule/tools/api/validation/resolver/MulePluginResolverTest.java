@@ -10,22 +10,29 @@
 
 package org.mule.tools.api.validation.resolver;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static util.ResolverTestHelper.COMPILE_SCOPE;
+import static util.ResolverTestHelper.MULE_PLUGIN_CLASSIFIER;
+import static util.ResolverTestHelper.createDependencyWithClassifierAndScope;
+import static util.ResolverTestHelper.createMainResolvableProjectDependencyTree;
+import static util.ResolverTestHelper.setUpProjectBuilderMock;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ProjectBuildingException;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.util.Project;
 import org.mule.tools.api.util.ProjectBuilder;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static util.ResolverTestHelper.*;
+import org.junit.Before;
+import org.junit.Test;
 
 public class MulePluginResolverTest {
 
@@ -36,13 +43,17 @@ public class MulePluginResolverTest {
 
   @Before
   public void before() throws ProjectBuildingException {
-    projectBuilderMock = mock(ProjectBuilder.class);
+    projectBuilderMock = mock(ProjectBuilder.class, RETURNS_DEEP_STUBS);
     projectMock = mock(Project.class);
     resolver = new MulePluginResolver(projectBuilderMock, projectMock);
     dependency = createDependencyWithClassifierAndScope(MULE_PLUGIN_CLASSIFIER, COMPILE_SCOPE);
     Map<ArtifactCoordinates, List<ArtifactCoordinates>> projectStructure = createMainResolvableProjectDependencyTree(dependency);
     setUpProjectBuilderMock(projectStructure, projectBuilderMock);
-    when(projectMock.getDependencies()).thenReturn(projectStructure.get(dependency));
+    when(projectMock.getDependencies()).thenReturn(projectStructure.entrySet().stream().filter(entry -> {
+      ArtifactCoordinates coordinates = entry.getKey();
+      return coordinates.getGroupId().equals(dependency.getGroupId()) && coordinates.getArtifactId()
+          .equals(dependency.getArtifactId());
+    }).map(Entry::getValue).findFirst().get());
   }
 
   @Test

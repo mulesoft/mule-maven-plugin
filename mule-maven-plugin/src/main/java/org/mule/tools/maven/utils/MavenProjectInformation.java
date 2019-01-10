@@ -30,6 +30,7 @@ import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
+import org.mule.tools.model.anypoint.AnypointDeployment;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
 
 public class MavenProjectInformation implements ProjectInformation {
@@ -65,7 +66,7 @@ public class MavenProjectInformation implements ProjectInformation {
       Optional<ExchangeRepositoryMetadata> metadata = getExchangeRepositoryMetadata(repository, settings);
       if (metadata.isPresent()) {
         builder.withExchangeRepositoryMetadata(metadata.get());
-        if (deployments != null && isRuntimeFabricDeployment(deployments)) {
+        if (deployments != null && isPlatformDeployment(deployments)) {
           builder.withDeployments(deployments);
         }
       } else {
@@ -76,8 +77,8 @@ public class MavenProjectInformation implements ProjectInformation {
     return mavenProjectInformation;
   }
 
-  private static boolean isRuntimeFabricDeployment(List<Deployment> deployments) {
-    return deployments.stream().anyMatch(d -> d instanceof RuntimeFabricDeployment);
+  private static boolean isPlatformDeployment(List<Deployment> deployments) {
+    return deployments.stream().anyMatch(d -> d instanceof AnypointDeployment);
   }
 
 

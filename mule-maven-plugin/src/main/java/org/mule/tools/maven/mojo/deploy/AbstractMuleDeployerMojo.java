@@ -95,6 +95,10 @@ public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
     List<Deployment> deployments = getProjectInformation().getDeployments().stream().filter(Objects::nonNull)
         .collect(Collectors.toList());
 
+    if (deployments.isEmpty()) {
+      throw new DeploymentException("No deployment configuration was defined. Aborting.");
+    }
+
     Deployment deploymentConfiguration = deployments.get(0);
     deploymentConfiguration.setDefaultValues(mavenProject);
     return deploymentConfiguration;

@@ -30,6 +30,7 @@ import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
+import org.mule.tools.model.anypoint.AnypointDeployment;
 
 public class MavenProjectInformation implements ProjectInformation {
 
@@ -63,7 +64,9 @@ public class MavenProjectInformation implements ProjectInformation {
       Settings settings = session.getSettings();
       Optional<ExchangeRepositoryMetadata> metadata = getExchangeRepositoryMetadata(repository, settings);
       if (metadata.isPresent()) {
-        builder.withExchangeRepositoryMetadata(metadata.get());
+        if (deployments != null && isPlatformDeployment(deployments)) {
+          builder.withDeployments(deployments);
+        }
       } else {
         builder.withDeployments(deployments);
       }
@@ -72,6 +75,9 @@ public class MavenProjectInformation implements ProjectInformation {
     return mavenProjectInformation;
   }
 
+  private static boolean isPlatformDeployment(List<Deployment> deployments) {
+    return deployments.stream().anyMatch(d -> d instanceof AnypointDeployment);
+  }
 
   @Override
   public String getGroupId() {

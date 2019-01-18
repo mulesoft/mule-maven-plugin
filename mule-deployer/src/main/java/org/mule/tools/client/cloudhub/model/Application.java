@@ -22,6 +22,7 @@ public class Application {
   private Map<String, String> properties;
   // private propertiesOptions <-- dafuck
   private String status;
+  private String deploymentUpdateStatus;
   private Long lastUpdateTime;
   private String filename;
   private Integer tentants;
@@ -88,6 +89,14 @@ public class Application {
 
   public void setProperties(Map<String, String> properties) {
     this.properties = properties;
+  }
+
+  public String getDeploymentUpdateStatus() {
+    return deploymentUpdateStatus;
+  }
+
+  public void setDeploymentUpdateStatus(String deploymentUpdateStatus) {
+    this.deploymentUpdateStatus = deploymentUpdateStatus;
   }
 
   public String getStatus() {

@@ -23,6 +23,9 @@ public class CloudHubDeployment extends AnypointDeployment {
   @Parameter
   protected String region;
 
+  @Parameter
+  protected Boolean overrideProperties;
+
   /**
    * Region to deploy the application in Cloudhub.
    *
@@ -75,5 +78,9 @@ public class CloudHubDeployment extends AnypointDeployment {
       setWorkerType(cloudHubWorkerType);
     }
 
+  }
+
+  public boolean overrideProperties() {
+    return overrideProperties == null ? true : overrideProperties;
   }
 }

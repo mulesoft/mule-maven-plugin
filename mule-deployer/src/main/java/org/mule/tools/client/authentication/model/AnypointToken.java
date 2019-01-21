@@ -9,37 +9,28 @@
  */
 package org.mule.tools.client.authentication.model;
 
+import java.util.Objects;
 
 /**
  * @author Mulesoft Inc.
- * @since 2.0.0
+ * @since 3.3.0
  */
-public class Credentials extends AnypointCredential {
+public class AnypointToken extends AnypointCredential {
 
-  private final String username;
-  private final String password;
+  private final String bearerToken;
 
-  public Credentials(String username, String password) {
-    this.username = username;
-    this.password = password;
+  public AnypointToken(String bearerToken) {
+    Objects.requireNonNull(bearerToken, "Bearer token cannot be null");
+    this.bearerToken = bearerToken;
   }
 
-  public String getUsername() {
-    return username;
+  public String getToken() {
+    return this.bearerToken;
   }
 
-  public String getPassword() {
-    return password;
-  }
-
-  /**
-   * @since 3.3.0
-   */
   @Override
   public CredentialType credentialType() {
-    return CredentialType.user;
+    return CredentialType.token;
   }
-
-
 
 }

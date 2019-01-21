@@ -33,6 +33,9 @@ public abstract class AnypointDeployment extends Deployment {
   protected String password;
 
   @Parameter
+  protected String authToken;
+
+  @Parameter
   protected String environment;
 
   @Parameter
@@ -75,6 +78,19 @@ public abstract class AnypointDeployment extends Deployment {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  /**
+   * Anypoint Platform Pre-authenticated bearer token.
+   *
+   * @since 3.3.0
+   */
+  public String getAuthToken() {
+    return this.authToken;
+  }
+
+  public void setAuthToken(String authToken) {
+    this.authToken = authToken;
   }
 
   /**
@@ -193,6 +209,11 @@ public abstract class AnypointDeployment extends Deployment {
     String username = getProperty("anypoint.username");
     if (isNotBlank(username)) {
       setUsername(username);
+    }
+
+    String authToken = getProperty("anypoint.authToken");
+    if (isNotBlank(authToken)) {
+      setAuthToken(authToken);
     }
   }
 }

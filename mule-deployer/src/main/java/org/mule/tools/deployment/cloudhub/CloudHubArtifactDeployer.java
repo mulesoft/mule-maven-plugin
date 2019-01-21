@@ -176,7 +176,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       application.setMuleVersion(muleVersion);
 
       Map<String, String> resolvedProperties =
-          resolveProperties(originalApplication.getProperties(), deployment.getProperties(), deployment.overrideProperties());
+          resolveProperties(originalApplication.getProperties(), deployment.getProperties(), deployment.getOverrideProperties());
       application.setProperties(resolvedProperties);
 
       if (isBlank(deployment.getRegion())) {
@@ -229,7 +229,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       if (!overrideProperties) {
         properties.putAll(originalProperties);
       }
-      originalProperties = properties;
+      return properties;
     }
     return originalProperties;
   }

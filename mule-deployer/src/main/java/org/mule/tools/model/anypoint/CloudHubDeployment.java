@@ -6,6 +6,7 @@
  */
 package org.mule.tools.model.anypoint;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.client.core.exception.DeploymentException;
 
@@ -23,8 +24,8 @@ public class CloudHubDeployment extends AnypointDeployment {
   @Parameter
   protected String region;
 
-  @Parameter
-  protected Boolean overrideProperties;
+  @Parameter(defaultValue = "true")
+  protected Boolean overrideProperties = true;
 
   /**
    * Region to deploy the application in Cloudhub.
@@ -50,6 +51,19 @@ public class CloudHubDeployment extends AnypointDeployment {
 
   public void setWorkers(Integer workers) {
     this.workers = workers;
+  }
+
+  /**
+   * Flag to override properties defined on the application in Cloudhub.
+   *
+   * @since 2.0
+   */
+  public Boolean getOverrideProperties() {
+    return overrideProperties;
+  }
+
+  public void setOverrideProperties(Boolean overrideProperties) {
+    this.overrideProperties = overrideProperties;
   }
 
   /**
@@ -80,7 +94,4 @@ public class CloudHubDeployment extends AnypointDeployment {
 
   }
 
-  public boolean overrideProperties() {
-    return overrideProperties == null ? true : overrideProperties;
-  }
 }

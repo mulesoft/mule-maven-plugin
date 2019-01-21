@@ -52,6 +52,7 @@ public class CloudHubArtifactDeployerTest {
   private Application applicationMock;
   private CloudHubDeployment deploymentMock;
   private CloudHubArtifactDeployer cloudHubArtifactDeployerSpy;
+  private Map<String, String> originalProperties;
 
   private CloudHubArtifactDeployer cloudHubArtifactDeployer;
 
@@ -76,6 +77,8 @@ public class CloudHubArtifactDeployerTest {
     cloudHubArtifactDeployer = new CloudHubArtifactDeployer(deploymentMock, clientMock, logMock);
     cloudHubArtifactDeployerSpy = spy(cloudHubArtifactDeployer);
 
+    originalProperties = new HashMap<>();
+    originalProperties.put("foo", "bar");
   }
 
   @Test(expected = DeploymentException.class)
@@ -178,8 +181,6 @@ public class CloudHubArtifactDeployerTest {
 
   @Test
   public void resolvePropertiesNotSetAndOverrideTrue() {
-    Map<String, String> originalProperties = new HashMap<>();
-    originalProperties.put("foo", "bar");
     Map<String, String> resolvedProperties = cloudHubArtifactDeployer.resolveProperties(originalProperties, null, true);
     assertThat("originalProperties should have the same size", resolvedProperties.size(), equalTo(1));
     assertThat("resolvedProperties should contains the (foo,bar) entry", resolvedProperties, hasEntry("foo", "bar"));
@@ -187,8 +188,6 @@ public class CloudHubArtifactDeployerTest {
 
   @Test
   public void resolvePropertiesNotSetAndOverrideFalse() {
-    Map<String, String> originalProperties = new HashMap<>();
-    originalProperties.put("foo", "bar");
     Map<String, String> resolvedProperties = cloudHubArtifactDeployer.resolveProperties(originalProperties, null, false);
     assertThat("originalProperties should have the same size", resolvedProperties.size(), equalTo(1));
     assertThat("resolvedProperties should contains the (foo,bar) entry", resolvedProperties, hasEntry("foo", "bar"));
@@ -196,8 +195,6 @@ public class CloudHubArtifactDeployerTest {
 
   @Test
   public void resolvePropertiesSetAndOverrideTrue() {
-    Map<String, String> originalProperties = new HashMap<>();
-    originalProperties.put("foo", "bar");
     Map<String, String> properties = new HashMap<>();
     properties.put("key", "val");
     properties.put("foo", "lala");
@@ -209,8 +206,6 @@ public class CloudHubArtifactDeployerTest {
 
   @Test
   public void resolvePropertiesEmptyAndOverride() {
-    Map<String, String> originalProperties = new HashMap<>();
-    originalProperties.put("foo", "bar");
     Map<String, String> properties = new HashMap<>();
     Map<String, String> resolvedProperties = cloudHubArtifactDeployer.resolveProperties(originalProperties, properties, true);
     assertThat("resolvedProperties does not have the expected size", resolvedProperties.size(), equalTo(0));
@@ -218,8 +213,6 @@ public class CloudHubArtifactDeployerTest {
 
   @Test
   public void resolvePropertiesSetAndOverrideFalse() {
-    Map<String, String> originalProperties = new HashMap<>();
-    originalProperties.put("foo", "bar");
     Map<String, String> properties = new HashMap<>();
     properties.put("key", "val");
     properties.put("foo", "lala");

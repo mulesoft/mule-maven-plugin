@@ -23,6 +23,9 @@ public class CloudHubDeployment extends AnypointDeployment {
   @Parameter
   protected String region;
 
+  @Parameter(defaultValue = "true")
+  protected Boolean overrideProperties = true;
+
   /**
    * Region to deploy the application in Cloudhub.
    *
@@ -47,6 +50,19 @@ public class CloudHubDeployment extends AnypointDeployment {
 
   public void setWorkers(Integer workers) {
     this.workers = workers;
+  }
+
+  /**
+   * Flag to override properties defined on the application in Cloudhub.
+   *
+   * @since 2.0
+   */
+  public Boolean getOverrideProperties() {
+    return overrideProperties;
+  }
+
+  public void setOverrideProperties(Boolean overrideProperties) {
+    this.overrideProperties = overrideProperties;
   }
 
   /**
@@ -76,4 +92,5 @@ public class CloudHubDeployment extends AnypointDeployment {
     }
 
   }
+
 }

@@ -6,7 +6,6 @@
  */
 package org.mule.tools.model.anypoint;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.client.core.exception.DeploymentException;
 

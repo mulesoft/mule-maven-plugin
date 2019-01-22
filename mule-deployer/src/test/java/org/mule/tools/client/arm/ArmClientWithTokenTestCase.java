@@ -28,7 +28,7 @@ import org.mule.tools.model.anypoint.ArmDeployment;
 public class ArmClientWithTokenTestCase {
 
   private static final String AUTH_TOKEN = System.getProperty("anypoint.authToken");
-  
+
   private static final String ENVIRONMENT = "Production";
   private ArmClient armClient;
   private ArmDeployment armDeployment;

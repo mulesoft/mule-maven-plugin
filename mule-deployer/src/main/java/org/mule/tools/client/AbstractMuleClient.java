@@ -300,8 +300,10 @@ public abstract class AbstractMuleClient extends AbstractClient {
         case user:
           Credentials creds = (Credentials) credentials;
           bearerToken = authenticationServiceClient.getBearerToken(creds);
+          break;
         case token:
           bearerToken = ((AnypointToken) credentials).getToken();
+          break;
       }
     }
 

@@ -11,7 +11,7 @@ package org.mule.tools.client.authentication.model;
  * @author Mulesoft Inc.
  * @since 2.0.0
  */
-public class Credentials {
+public class Credentials extends AnypointCredential {
 
   private final String username;
   private final String password;
@@ -28,5 +28,15 @@ public class Credentials {
   public String getPassword() {
     return password;
   }
+
+  /**
+   * @since 3.3.0
+   */
+  @Override
+  public CredentialType credentialType() {
+    return CredentialType.user;
+  }
+
+
 
 }

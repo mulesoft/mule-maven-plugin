@@ -6,6 +6,7 @@
  */
 package org.mule.tools.client;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.AUTHORIZATION_HEADER;
 
@@ -17,7 +18,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.apache.commons.lang3.StringUtils;
 
 import org.mule.tools.client.arm.model.User;
 import org.mule.tools.client.core.AbstractClient;
@@ -26,6 +26,8 @@ import org.mule.tools.client.arm.model.Environments;
 import org.mule.tools.client.arm.model.Organization;
 import org.mule.tools.client.arm.model.UserInfo;
 import org.mule.tools.client.authentication.AuthenticationServiceClient;
+import org.mule.tools.client.authentication.model.AnypointCredential;
+import org.mule.tools.client.authentication.model.AnypointToken;
 import org.mule.tools.client.authentication.model.Credentials;
 import org.mule.tools.model.anypoint.AnypointDeployment;
 import org.mule.tools.utils.DeployerLog;
@@ -45,11 +47,12 @@ public abstract class AbstractMuleClient extends AbstractClient {
   public static final String USER = "user";
   public static final String ID = "id";
 
+  public static final String UNAUTHORIZED = "unauthorized";
 
   protected String baseUri;
 
   private String bearerToken;
-  private Credentials credentials;
+  private AnypointCredential credentials;
   protected AuthenticationServiceClient authenticationServiceClient;
 
   // TODO MMP-302
@@ -63,7 +66,11 @@ public abstract class AbstractMuleClient extends AbstractClient {
     super(log);
     this.baseUri = anypointDeployment.getUri();
 
-    this.credentials = new Credentials(anypointDeployment.getUsername(), anypointDeployment.getPassword());
+    if (!isEmpty(anypointDeployment.getAuthToken())) {
+      this.credentials = new AnypointToken(anypointDeployment.getAuthToken());
+    } else {
+      this.credentials = new Credentials(anypointDeployment.getUsername(), anypointDeployment.getPassword());
+    }
 
     this.authenticationServiceClient = new AuthenticationServiceClient(baseUri);
 
@@ -88,6 +95,11 @@ public abstract class AbstractMuleClient extends AbstractClient {
 
   public UserInfo getMe() {
     String userInfoJsonString = get(baseUri, ME, String.class);
+    if (userInfoJsonString.equalsIgnoreCase(UNAUTHORIZED)) {
+      StringBuilder message = new StringBuilder();
+      message.append("Unauthorized Access. Please verify that authToken is valid.");
+      throw new RuntimeException(message.toString());
+    }
     JsonObject userInfoJson = (JsonObject) new JsonParser().parse(userInfoJsonString);
     Organization organization = buildOrganization(userInfoJson);
     User user = new User();
@@ -134,8 +146,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
   }
 
   /**
-   * Maps every organization id to a organization object
-   * Maps every organization id to its children organization ids
+   * Maps every organization id to a organization object Maps every organization id to its children organization ids
    *
    * @param userInfoJson
    * @param organizationsIds
@@ -300,9 +311,17 @@ public abstract class AbstractMuleClient extends AbstractClient {
     return currentOrgId;
   }
 
-  private String getBearerToken(Credentials credentials) {
-    if (StringUtils.isBlank(bearerToken)) {
-      bearerToken = authenticationServiceClient.getBearerToken(credentials);
+  private String getBearerToken(AnypointCredential credentials) {
+    if (isBlank(bearerToken)) {
+      switch (credentials.credentialType()) {
+        case user:
+          Credentials creds = (Credentials) credentials;
+          bearerToken = authenticationServiceClient.getBearerToken(creds);
+          break;
+        case token:
+          bearerToken = ((AnypointToken) credentials).getToken();
+          break;
+      }
     }
 
     return bearerToken;

@@ -25,6 +25,7 @@ import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
+import org.mule.tools.maven.plugin.mule.proxy.ProxyConfiguration;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,6 +37,8 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static org.mule.tools.maven.plugin.mule.proxy.ProxyConfiguration.isAbleToSetupProxy;
 
 public abstract class AbstractMuleMojo extends AbstractMojo
 {
@@ -344,7 +347,6 @@ public abstract class AbstractMuleMojo extends AbstractMojo
         }
     }
 
-
     protected void initializeEnvironment() throws MojoExecutionException
     {
         if (server != null)
@@ -386,6 +388,15 @@ public abstract class AbstractMuleMojo extends AbstractMojo
                 getLog().error("Fail to provide support for IBM JDK", e);
             } catch (IllegalAccessException e) {
                 getLog().error("Fail to provide support for IBM JDK", e);
+            }
+        }
+
+        if (isAbleToSetupProxy(settings)) {
+            try {
+                ProxyConfiguration proxyConfiguration = new ProxyConfiguration(getLog(), settings);
+                proxyConfiguration.handleProxySettings();
+            } catch (Exception e) {
+                getLog().error("Fail to configure proxy settings.", e);
             }
         }
     }

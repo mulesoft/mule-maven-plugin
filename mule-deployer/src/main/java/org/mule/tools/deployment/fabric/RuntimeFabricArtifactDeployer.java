@@ -14,6 +14,7 @@ import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.fabric.RuntimeFabricClient;
 import org.mule.tools.client.fabric.model.DeploymentModify;
 import org.mule.tools.client.fabric.model.DeploymentRequest;
+import org.mule.tools.client.fabric.model.Target;
 import org.mule.tools.deployment.artifact.ArtifactDeployer;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
@@ -73,7 +74,7 @@ public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
   private void redeployApplication() throws DeploymentException {
     try {
       DeploymentModify modify = requestBuilder.buildDeploymentModify();
-      String deploymentId = requestBuilder.getDeploymentId();
+      String deploymentId = requestBuilder.getDeploymentId(modify.target);
       client.redeploy(modify, deploymentId);
     } catch (IllegalStateException e) {
       throw new DeploymentException("Could not redeploy application.", e);
@@ -84,7 +85,8 @@ public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
   @Override
   public void undeployApplication() throws DeploymentException {
     try {
-      String deploymentId = requestBuilder.getDeploymentId();
+      Target target = requestBuilder.buildTarget();
+      String deploymentId = requestBuilder.getDeploymentId(target);
       client.deleteDeployment(deploymentId);
     } catch (ClientException | IllegalStateException e) {
       throw new DeploymentException("Could not undeploy application.", e);

@@ -64,7 +64,7 @@ public class RequestBuilder {
     return deploymentRequest;
   }
 
-  private Target buildTarget() throws DeploymentException {
+  public Target buildTarget() throws DeploymentException {
     Target target = new Target();
     target.setProvider(deployment.getProvider());
     target.setTargetId(resolveTargetId());
@@ -161,10 +161,11 @@ public class RequestBuilder {
     return assetReference;
   }
 
-  public String getDeploymentId() {
+  public String getDeploymentId(Target target) {
     Deployments deployments = client.getDeployments();
     for (DeploymentGenericResponse deployment : deployments) {
-      if (StringUtils.equals(deployment.name, this.deployment.getApplicationName())) {
+      if (StringUtils.equals(deployment.name, this.deployment.getApplicationName()) &&
+          StringUtils.equals(deployment.target.targetId, target.targetId)) {
         return deployment.id;
       }
     }

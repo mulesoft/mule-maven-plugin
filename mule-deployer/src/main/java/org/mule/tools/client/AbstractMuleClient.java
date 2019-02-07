@@ -271,7 +271,8 @@ public abstract class AbstractMuleClient extends AbstractClient {
     String currentOrgId = null;
 
     Organization organizationHierarchy = getMe().user.organization;
-    if (organizationHierarchy.subOrganizations.isEmpty()) {
+    if (organizationHierarchy.subOrganizations.isEmpty() ||
+        organizationHierarchy.name.equals(businessGroupName)) {
       return organizationHierarchy.id;
     }
     List<Organization> subOrganizations = organizationHierarchy.subOrganizations;

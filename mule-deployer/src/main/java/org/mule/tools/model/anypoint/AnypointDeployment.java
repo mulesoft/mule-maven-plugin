@@ -38,6 +38,9 @@ public abstract class AnypointDeployment extends Deployment {
   protected String businessGroup;
 
   @Parameter
+  protected String businessGroupId;
+
+  @Parameter
   protected String uri;
 
   @Parameter
@@ -99,6 +102,19 @@ public abstract class AnypointDeployment extends Deployment {
 
   public void setEnvironment(String environment) {
     this.environment = environment;
+  }
+
+  /**
+   * Business group Id for deploymentConfiguration.
+   *
+   * @since 2.1
+   */
+  public String getBusinessGroupId() {
+    return businessGroupId;
+  }
+
+  public void setBusinessGroupId(String businessGroupId) {
+    this.businessGroupId = businessGroupId;
   }
 
   /**

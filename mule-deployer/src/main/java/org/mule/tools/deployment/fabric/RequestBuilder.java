@@ -173,7 +173,7 @@ public class RequestBuilder {
         return deployment.id;
       }
     }
-    throw new IllegalStateException("Could not find deployment ID.");
+    throw new IllegalStateException("Could not find deployment ID. Please check if there is an application with the same name under a different environment.");
   }
 
   public DeploymentModify buildDeploymentModify() throws DeploymentException {

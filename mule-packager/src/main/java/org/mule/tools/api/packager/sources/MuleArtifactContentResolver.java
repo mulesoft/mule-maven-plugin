@@ -130,7 +130,7 @@ public class MuleArtifactContentResolver {
     try {
       doc = generateDocument(path);
     } catch (IOException | ParserConfigurationException | SAXException e) {
-      return false;
+      throw new RuntimeException(e);
     }
     return hasMuleAsRootElement(doc);
   }

@@ -18,6 +18,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import org.hamcrest.core.StringContains;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
@@ -78,6 +80,18 @@ public class MuleArtifactContentResolverTest {
       "\n" +
       "\n" +
       "\t\t<xml-module:validate-schema doc:name=\"Validate schema\" doc:id=\"f9656931-d3ca-4969-bf7d-4c8d87fe4918\" config-ref=\"XML_Config\" schemas=\"schemas/shipwire/warehouse/rma/v01/ASN.xsd\"/>\n"
+      +
+      "</mule>";
+  private String MALFORMED_MULE_CONFIG_CONTENT = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+      "<mule xmlns=\"http://www.mulesoft.org/schema/mule/core\"\n" +
+      "      xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+      "      xmlns:jms=\"http://www.mulesoft.org/schema/mule/jms\"\n" +
+      "      xsi:schemaLocation=\"\n" +
+      "\thttp://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd\n" +
+      "\thttp://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd\">\n" +
+      "\n" +
+      "\n" +
+      "\t\t<xml-module:validate-schema doc:name=\"Validate schema\"config-ref=\"XML_Config\" schemas=\"schemas/shipwire/warehouse/rma/v01/ASN.xsd\"\"/>\n"
       +
       "</mule>";
   private org.w3c.dom.Document documentMock;
@@ -212,6 +226,24 @@ public class MuleArtifactContentResolverTest {
     assertThat("Configs contain an unexpected elements", actualConfigs.contains(COMMON_FILE), is(false));
 
     assertThat("Configs contains more elements than expected", actualConfigs.size(), equalTo(3));
+  }
+
+  @Test
+  public void getConfigsThrowsExceptionIfThereIsAnInvalidConfig() throws Exception {
+    File config1 = new File(muleFolder, CONFIG_1);
+    File config2 = new File(muleFolder, CONFIG_2);
+    String expectedExceptionMessage =
+        "Element type \"xml-module:validate-schema\" must be followed by either attribute specifications, \">\" or \"/>\"";
+
+    config1.createNewFile();
+    FileUtils.writeStringToFile(config1, DEFAULT_MULE_CONFIG_CONTENT, Charset.defaultCharset());
+
+    config2.createNewFile();
+    FileUtils.writeStringToFile(config2, MALFORMED_MULE_CONFIG_CONTENT, Charset.defaultCharset());
+
+    expectedException.expect(RuntimeException.class);
+    expectedException.expectMessage(StringContains.containsString(expectedExceptionMessage));
+    List<String> actualConfigs = resolver.getConfigs();
   }
 
   @Test

@@ -14,14 +14,16 @@ import static org.mule.tools.api.packager.structure.FolderNames.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 public enum PackagingType {
   MULE(Classifier.MULE) {
 
     @Override
     public Classifier[] getClassifiers() {
-      return new Classifier[] {Classifier.MULE};
+      return new Classifier[] {Classifier.MULE,
+          Classifier.MULE_APPLICATION,
+          Classifier.MULE_APPLICATION_TEMPLATE,
+          Classifier.MULE_APPLICATION_EXAMPLE};
     }
   },
 

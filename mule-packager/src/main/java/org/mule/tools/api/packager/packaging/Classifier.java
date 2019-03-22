@@ -10,7 +10,7 @@ import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
 
 public enum Classifier {
-  MULE, MULE_DOMAIN;
+  MULE, MULE_DOMAIN, MULE_APPLICATION, MULE_APPLICATION_EXAMPLE, MULE_APPLICATION_TEMPLATE;
 
   public static Classifier fromString(String name) {
     String classifierName = LOWER_HYPHEN.to(UPPER_UNDERSCORE, name);

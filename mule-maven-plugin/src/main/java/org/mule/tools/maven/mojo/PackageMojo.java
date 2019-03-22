@@ -46,7 +46,7 @@ public class PackageMojo extends AbstractMuleMojo {
     } catch (ArchiverException | IOException e) {
       throw new MojoExecutionException("Exception creating the Mule App", e);
     }
-    helper.attachArtifact(this.project, ZIP_EXTENSION, destinationFile);
+    helper.attachArtifact(this.project, ZIP_EXTENSION, getClassifier(), destinationFile);
   }
 
   /**
@@ -69,7 +69,7 @@ public class PackageMojo extends AbstractMuleMojo {
   }
 
   protected String getFileName() {
-    return finalName + "." + ZIP_EXTENSION;
+    return finalName + "-" + getClassifier() + "." + ZIP_EXTENSION;
   }
 
   protected PackageBuilder getPackageBuilder() {

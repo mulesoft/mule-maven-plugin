@@ -82,6 +82,8 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     createOrUpdateApplication();
     startApplication();
     if (!deployment.getSkipDeploymentVerification()) {
+      // we try to avoid a situation where the ongoing deployment is not yet described
+      Thread.sleep(2000);
       checkApplicationHasStarted();
     }
   }

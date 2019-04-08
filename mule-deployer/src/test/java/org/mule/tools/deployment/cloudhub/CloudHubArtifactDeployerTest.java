@@ -166,6 +166,7 @@ public class CloudHubArtifactDeployerTest {
   public void undeployApplicationTest() throws DeploymentException {
     cloudHubArtifactDeployer.undeployApplication();
     verify(clientMock, times(1)).stopApplications(FAKE_APPLICATION_NAME);
+    verify(clientMock, times(1)).deleteApplications(FAKE_APPLICATION_NAME);
   }
 
   @Test

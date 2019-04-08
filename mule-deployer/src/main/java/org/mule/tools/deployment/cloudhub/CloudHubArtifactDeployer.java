@@ -97,6 +97,8 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   public void undeployApplication() throws DeploymentException {
     log.info("Stopping application " + deployment.getApplicationName());
     client.stopApplications(deployment.getApplicationName());
+    log.info("Deleting application " + deployment.getApplicationName());
+    client.deleteApplications(deployment.getApplicationName());
   }
 
   /**

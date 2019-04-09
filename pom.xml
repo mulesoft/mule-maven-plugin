@@ -339,6 +339,7 @@
                 <groupId>org.mock-server</groupId>
                 <artifactId>mockserver-netty</artifactId>
                 <version>${mockserver.netty.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>log4j</groupId>

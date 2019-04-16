@@ -37,7 +37,7 @@ public class ProcessResourcesMojo extends AbstractMuleMojo {
    * @since 2.3.0
    */
   @Parameter
-  private List<DefaultExclusion> defaultExclusions;
+  private List<DefaultExclusion> exclusions;
 
   /**
    * List of inclusion elements (having groupId and artifactId children) to exclude from the application archive.
@@ -45,7 +45,7 @@ public class ProcessResourcesMojo extends AbstractMuleMojo {
    * @since 2.3.0
    */
   @Parameter
-  private List<DefaultInclusion> defaultInclusions;
+  private List<DefaultInclusion> inclusions;
 
   /**
    * Exclude all artifacts with Mule groupIds. Default is <code>true</code>.
@@ -54,6 +54,14 @@ public class ProcessResourcesMojo extends AbstractMuleMojo {
    */
   @Parameter(defaultValue = "true")
   private boolean excludeMuleDependencies;
+
+  /**
+   * Whether this project should attach mule sources to make it importable in Studio.
+   *
+   * @since 2.3.0
+   */
+  @Parameter(defaultValue = "${attachMuleSources}")
+  private boolean attachMuleSources = false;
 
   /**
    * @since 2.3.0
@@ -77,8 +85,8 @@ public class ProcessResourcesMojo extends AbstractMuleMojo {
       projectArtifacts.add(new DefaultArtifact(artifact));
     }
 
-    return new MuleResourcesGenerator(projectArtifacts, defaultExclusions, defaultInclusions, excludeMuleDependencies,
-                                      getAndSetProjectInformation());
+    return new MuleResourcesGenerator(projectArtifacts, exclusions, inclusions, excludeMuleDependencies,
+                                      getAndSetProjectInformation(), attachMuleSources);
   }
 
   @Override

@@ -4,7 +4,7 @@
 
     <groupId>org.mule.tools.maven</groupId>
     <artifactId>mule-artifact-tools</artifactId>
-    <version>3.3.0</version>
+    <version>3.3.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Mule Artifact Tools</name>
@@ -554,7 +554,7 @@
         <connection>scm:git:git://github.com/mulesoft/mule-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:mulesoft/mule-maven-plugin.git</developerConnection>
         <url>https://github.com/mulesoft/mule-maven-plugin</url>
-        <tag>v3.3.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
 </project>

@@ -14,6 +14,7 @@ import java.io.File;
 import static org.mule.tools.api.packager.structure.FolderNames.API;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.LIB;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 
 /**
  * Defines and creates the basic structure of Mule archive.
@@ -25,6 +26,7 @@ public class MuleArchiver extends AbstractArchiver {
   private static final String CLASSES_LOCATION = CLASSES.value() + File.separator;
   private static final String API_LOCATION = API.value() + File.separator;
   private static final String LIB_LOCATION = LIB.value() + File.separator;
+  private static final String META_INF_LOCATION = META_INF.value() + File.separator;
 
   public MuleArchiver() {
     this(new ZipArchiver());
@@ -40,6 +42,16 @@ public class MuleArchiver extends AbstractArchiver {
    */
   public void addClasses(File resource, String[] includes, String[] excludes) throws ArchiverException {
     addResource(CLASSES_LOCATION, resource, includes, excludes);
+  }
+
+  /**
+   * @param resource Folder or file that is going to be added to META_INF folder.
+   * @return
+   */
+  public void addMetaInf(File resource, String[] includes, String[] excludes) throws ArchiverException {
+    if (resource != null && resource.exists() && resource.list() != null && resource.list().length != 0) {
+      addResource(META_INF_LOCATION, resource, includes, excludes);
+    }
   }
 
   /**

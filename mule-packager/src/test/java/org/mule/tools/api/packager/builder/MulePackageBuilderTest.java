@@ -164,6 +164,7 @@ public class MulePackageBuilderTest {
                                                null);
     verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_MULE.value()).toFile(), null, null);
     verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_CLASSES.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addMetaInf(targetPath.resolve(META_INF.value()).toFile(), null, null);
 
     verify(archiverMock, times(1)).setDestFile(destinationFile);
     verify(archiverMock, times(1)).createArchive();

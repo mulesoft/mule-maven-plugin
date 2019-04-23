@@ -11,7 +11,8 @@ properties([
 def pipelineParams = [
   "agent": "ubuntu-14.04",
   "jdk": params.JDK,
-  "maven": params.maven
+  "maven": params.maven,
+  "projectKey": "mule-maven-plugin"
 ]
 
 build(pipelineParams)

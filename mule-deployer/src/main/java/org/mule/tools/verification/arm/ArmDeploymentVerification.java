@@ -54,7 +54,7 @@ public class ArmDeploymentVerification implements DeploymentVerification {
 
     @Override
     public String getRetryExhaustedMessage() {
-      return "ARM deployment has timeouted";
+      return "ARM deployment has timed out";
     }
   }
 }

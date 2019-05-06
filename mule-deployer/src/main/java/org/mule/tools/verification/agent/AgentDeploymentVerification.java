@@ -57,7 +57,7 @@ public class AgentDeploymentVerification implements DeploymentVerification {
 
     @Override
     public String getRetryExhaustedMessage() {
-      return "Agent deployment has timeouted";
+      return "Agent deployment has timed out";
     }
   }
 }

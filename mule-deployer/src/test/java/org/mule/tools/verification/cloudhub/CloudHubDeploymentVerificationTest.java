@@ -56,7 +56,7 @@ public class CloudHubDeploymentVerificationTest {
   @Test
   public void assertReDeploymentStartedFalse() throws DeploymentException {
     expectedException.expect(DeploymentException.class);
-    expectedException.expectMessage("Deployment has timeouted");
+    expectedException.expectMessage("Deployment has timed out");
     application.setStatus("STARTED");
     application.setDeploymentUpdateStatus("DEPLOYING");
     deployment.setDeploymentTimeout(1000L);
@@ -66,7 +66,7 @@ public class CloudHubDeploymentVerificationTest {
   @Test
   public void assertDeploymentStartedFalse() throws DeploymentException {
     expectedException.expect(DeploymentException.class);
-    expectedException.expectMessage("Deployment has timeouted");
+    expectedException.expectMessage("Deployment has timed out");
     application.setStatus("DEPLOYING");
     deployment.setDeploymentTimeout(1000L);
     verification.assertDeployment(deployment);

@@ -61,7 +61,7 @@ public class RuntimeFabricDeploymentVerificationTest {
   @Test
   public void assertDeploymentStartedFalse() throws DeploymentException {
     expectedException.expect(DeploymentException.class);
-    expectedException.expectMessage("Deployment has timeouted");
+    expectedException.expectMessage("Deployment has timed out");
     deploymentDetailedResponse.status = "DEPLOYING";
     deployment.setDeploymentTimeout(1000L);
     verification.assertDeployment(deployment);

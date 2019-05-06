@@ -68,7 +68,7 @@ public class CloudHubDeploymentVerification implements DeploymentVerification {
 
     @Override
     public String getRetryExhaustedMessage() {
-      return "CloudHub deployment has timeouted";
+      return "CloudHub deployment has timed out";
     }
   }
 }

@@ -18,11 +18,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ApplicationClassloaderModelTest {
 
@@ -38,12 +40,17 @@ public class ApplicationClassloaderModelTest {
     mulePluginClassloaderModels = buildMulePluginClassloaderModelListMock();
     ramlClassloaderModels = buildRamlClassloaderModelListMock();
     appDependenciesClassloaderModels = new ArrayList<>(mulePluginClassloaderModels.subList(0, 2));
-    appDependenciesClassloaderModels.addAll(ramlClassloaderModels.subList(0, 2));
+    appDependenciesClassloaderModels.addAll(ramlClassloaderModels);
     classloaderModelMock = mock(ClassLoaderModel.class);
+
+    when(classloaderModelMock.getArtifacts())
+        .thenReturn(appDependenciesClassloaderModels.stream()
+            .map(ClassLoaderModel::getArtifacts)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toSet()));
 
     appClassloaderModel = new ApplicationClassloaderModel(classloaderModelMock);
     appClassloaderModel.addAllMulePluginClassloaderModels(mulePluginClassloaderModels);
-    appClassloaderModel.addAllRamlClassloaderModels(ramlClassloaderModels);
   }
 
   @Test
@@ -56,20 +63,9 @@ public class ApplicationClassloaderModelTest {
     for (ClassLoaderModel cl : mulePluginClassloaderModels) {
       expectedArtifacts.addAll(cl.getArtifacts());
     }
-    for (ClassLoaderModel cl : ramlClassloaderModels) {
-      expectedArtifacts.addAll(cl.getArtifacts());
-    }
 
     assertThat("Should be the same set", appClassloaderModel.getArtifacts(), equalTo(expectedArtifacts));
   }
-
-  @Test
-  public void addAllRamlToApplicationClassloaderModel() {
-    Set<Artifact> originalSet = new HashSet<>(appClassloaderModel.getArtifacts());
-    appClassloaderModel.addAllRamlToApplicationClassloaderModel(ramlClassloaderModels.get(0).getDependencies());
-    assertThat("Set should not change", appClassloaderModel.getArtifacts(), equalTo(originalSet));
-  }
-
 
   private List<ClassLoaderModel> buildMulePluginClassloaderModelListMock() {
     ClassLoaderModel cl1 = buildMulePluginClassloaderModel(1);

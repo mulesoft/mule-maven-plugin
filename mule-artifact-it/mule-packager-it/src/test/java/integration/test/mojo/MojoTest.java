@@ -54,6 +54,7 @@ public class MojoTest implements SettingsConfigurator {
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
+    verifier.setDebug(true);
     copyNecessaryDependencies(new File(verifier.getLocalRepository()));
   }
 

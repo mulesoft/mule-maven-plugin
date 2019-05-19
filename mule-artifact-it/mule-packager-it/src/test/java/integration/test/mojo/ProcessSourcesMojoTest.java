@@ -292,6 +292,18 @@ public class ProcessSourcesMojoTest extends MojoTest {
     checkGeneratedRepository("policy");
   }
 
+  @Test
+  public void muleAppWithApis() throws Exception {
+    final String appName = "mule-application-with-apis";
+    final String classLoaderModelJsonLocation = "/" + appName + "/target/META-INF/mule-artifact/classloader-model.json";
+    final String expectedClassLoaderModelJson = "expected-" + appName + "-classloader-model.json";
+    final String expectedClassLoaderModelJsonLocation = "/expected-files/" + expectedClassLoaderModelJson;
+    processSourcesOnProject(appName);
+    List<String> generatedAppClassLoaderModelFileContent = getFileContent(classLoaderModelJsonLocation);
+    List<String> expectedAppClassLoaderModelFileContent = getFileContent(expectedClassLoaderModelJsonLocation);
+    assertThat(generatedAppClassLoaderModelFileContent, equalTo(expectedAppClassLoaderModelFileContent));
+  }
+
   private void checkGeneratedRepository(String type) throws IOException {
     File emptySubmoduleRepository = getFile("/multi-module-application/empty-" + type + "/target/repository");
     File expectedSubmoduleRepository = getExpectedStructure("/expected-empty-" + type + "-multimodule-repository");

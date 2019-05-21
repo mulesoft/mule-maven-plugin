@@ -34,6 +34,7 @@ import static org.mule.tools.api.classloader.model.util.PluginUtils.toPluginDepe
 public class ApplicationClassLoaderModelAssembler {
 
   public static final String CLASS_LOADER_MODEL_VERSION = "1.1.0";
+  public static final String CLASS_LOADER_MODEL_VERSION_120 = "1.2.0";
 
   private ApplicationClassloaderModel applicationClassLoaderModel;
 
@@ -41,8 +42,6 @@ public class ApplicationClassLoaderModelAssembler {
   private ClassloaderModelResolver mulePluginClassLoaderModelResolver;
   private ClassloaderModelResolver ramlClassLoaderModelResolver;
   private AdditionalPluginDependenciesResolver additionalPluginDependenciesResolver;
-
-
 
   @Deprecated
   public ApplicationClassLoaderModelAssembler(AetherMavenClient aetherMavenClient, File temporaryFolder) {
@@ -63,14 +62,15 @@ public class ApplicationClassLoaderModelAssembler {
     this.additionalPluginDependenciesResolver = additionalPluginDependenciesResolver;
   }
 
-  public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile)
+  public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, boolean legacyMode)
       throws IllegalStateException {
 
     Model pomModel = getPomFile(pomFile);
 
     ArtifactCoordinates appCoordinates = getApplicationArtifactCoordinates(pomModel);
 
-    AppClassLoaderModel appModel = new AppClassLoaderModel(CLASS_LOADER_MODEL_VERSION, appCoordinates);
+    AppClassLoaderModel appModel = new AppClassLoaderModel(legacyMode ? CLASS_LOADER_MODEL_VERSION
+        : CLASS_LOADER_MODEL_VERSION_120, appCoordinates);
 
     List<BundleDependency> appDependencies = applicationDependencyResolver.resolveApplicationDependencies(pomFile);
 
@@ -78,16 +78,19 @@ public class ApplicationClassLoaderModelAssembler {
         updateArtifactsSharedState(appDependencies, toApplicationModelArtifacts(appDependencies), pomModel);
     appModel.setDependencies(dependencies);
 
-    applicationClassLoaderModel = new ApplicationClassloaderModel(appModel);
+    if (legacyMode) {
+      applicationClassLoaderModel = new LegacyApplicationClassloaderModel(appModel);
+    } else {
+      applicationClassLoaderModel = new ApplicationClassloaderModel(appModel);
+    }
 
     Collection<ClassLoaderModel> pluginsClassLoaderModels = mulePluginClassLoaderModelResolver.resolve(appDependencies);
-    applicationClassLoaderModel.addAllMulePluginClassloaderModels(pluginsClassLoaderModels);
+    applicationClassLoaderModel.mergeDependencies(pluginsClassLoaderModels);
 
     appModel.setAdditionalPluginDependencies(toPluginDependencies(additionalPluginDependenciesResolver
         .resolveDependencies(appDependencies, pluginsClassLoaderModels)));
 
-    applicationClassLoaderModel.addAllRamlClassloaderModels(ramlClassLoaderModelResolver.resolve(appDependencies));
-    applicationClassLoaderModel.addAllRamlToApplicationClassloaderModel(ramlClassLoaderModelResolver.getDependencies());
+    applicationClassLoaderModel.addDirectDependencies(ramlClassLoaderModelResolver.getDependencies());
 
     return applicationClassLoaderModel;
   }

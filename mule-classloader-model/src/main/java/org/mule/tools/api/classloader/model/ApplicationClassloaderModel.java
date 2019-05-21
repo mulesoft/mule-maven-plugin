@@ -9,16 +9,18 @@
  */
 package org.mule.tools.api.classloader.model;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.String.format;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ApplicationClassloaderModel {
 
   private ClassLoaderModel classLoaderModel;
-  private List<ClassLoaderModel> mulePluginsClassloaderModels = new ArrayList<>();
-  private List<ClassLoaderModel> ramlsClassloaderModels = new ArrayList<>();
+  private Map<ArtifactCoordinates, ClassLoaderModel> nestedClassLoaderModels = new HashMap<>();
 
   public ApplicationClassloaderModel(ClassLoaderModel classLoaderModel) {
     this.classLoaderModel = classLoaderModel;
@@ -28,46 +30,40 @@ public class ApplicationClassloaderModel {
     return classLoaderModel;
   }
 
-  public void addMulePluginClassloaderModel(ClassLoaderModel mulePluginClassloaderModel) {
-    this.mulePluginsClassloaderModels.add(mulePluginClassloaderModel);
+  protected Map<ArtifactCoordinates, ClassLoaderModel> getNestedClassLoaderModels() {
+    return nestedClassLoaderModels;
   }
 
-  public void addAllMulePluginClassloaderModels(Collection<ClassLoaderModel> mulePluginClassloaderModels) {
-    this.mulePluginsClassloaderModels.addAll(mulePluginClassloaderModels);
+  public void mergeDependencies(Collection<ClassLoaderModel> otherClassloaderModels) {
+    for (ClassLoaderModel otherClassLoaderModel : otherClassloaderModels) {
+      Artifact pluginArtifact = getClassLoaderModel().getDependencies().stream()
+          .filter(dependency -> dependency.getArtifactCoordinates().equals(otherClassLoaderModel.getArtifactCoordinates()))
+          .findFirst()
+          .orElseThrow(() -> new IllegalStateException(format("Couldn't find an artifact coordinate for '%s' to merge dependencies as inline",
+                                                              otherClassLoaderModel.getArtifactCoordinates())));
+
+      if (nestedClassLoaderModels.putIfAbsent(otherClassLoaderModel.getArtifactCoordinates(), otherClassLoaderModel) != null) {
+        throw new IllegalArgumentException(format("Duplicated definition of a nested class loader model for artifact coordinates '%s'",
+                                                  otherClassLoaderModel.getArtifactCoordinates()));
+      }
+      pluginArtifact.setDependencies(otherClassLoaderModel.getDependencies());
+    }
   }
 
-  public Set<Artifact> getArtifacts() {
-    Set<Artifact> artifacts = new HashSet<>();
-    artifacts.addAll(classLoaderModel.getArtifacts());
-    artifacts.addAll(mulePluginsClassloaderModels.stream()
-        .map(ClassLoaderModel::getArtifacts)
-        .flatMap(Collection::stream)
-        .collect(Collectors.toList()));
-    artifacts.addAll(ramlsClassloaderModels.stream()
-        .map(ClassLoaderModel::getArtifacts)
-        .flatMap(Collection::stream)
-        .collect(Collectors.toList()));
-    return artifacts;
+  public List<Artifact> getArtifacts() {
+    return classLoaderModel.getArtifacts();
   }
 
-  public List<ClassLoaderModel> getMulePluginsClassloaderModels() {
-    return mulePluginsClassloaderModels;
-  }
-
-  public void addAllRamlClassloaderModels(Collection<ClassLoaderModel> ramlClassloaderModels) {
-    this.ramlsClassloaderModels.addAll(ramlClassloaderModels);
-  }
-
-  public void addAllRamlToApplicationClassloaderModel(List<Artifact> ramlArtifacts) {
-    checkArgument(ramlArtifacts != null, "Raml artifacts list cannot be null");
-    for (Artifact artifact : ramlArtifacts) {
+  public void addDirectDependencies(List<Artifact> dependencies) {
+    checkArgument(dependencies != null, "dependencies cannot be null");
+    for (Artifact artifact : dependencies) {
       if (!classLoaderModel.getDependencies().contains(artifact)) {
         classLoaderModel.getDependencies().add(artifact);
       }
     }
   }
 
-  public List<ClassLoaderModel> getRamlsClassloaderModels() {
-    return ramlsClassloaderModels;
+  public ClassLoaderModel getClassLoaderModel(Artifact artifact) {
+    return nestedClassLoaderModels.get(artifact.getArtifactCoordinates());
   }
 }

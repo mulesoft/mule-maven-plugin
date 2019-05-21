@@ -10,30 +10,10 @@
 
 package org.mule.tools.api.classloader.model;
 
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.maven.client.internal.AetherMavenClient;
-
-import org.apache.maven.model.Build;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Plugin;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -52,8 +32,31 @@ import static org.mule.tools.api.classloader.Constants.SHARED_LIBRARIES_FIELD;
 import static org.mule.tools.api.classloader.Constants.SHARED_LIBRARY_FIELD;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
 
-public class ApplicationClassLoaderModelAssemblerTest {
+import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.maven.client.internal.AetherMavenClient;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.maven.model.Build;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Plugin;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
+@RunWith(Parameterized.class)
+public class ApplicationClassLoaderModelAssemblerTest {
 
   private static final String USER_REPOSITORY_LOCATION =
       "file://Users/muleuser/.m2/repository";
@@ -73,6 +76,17 @@ public class ApplicationClassLoaderModelAssemblerTest {
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
   private AetherMavenClient aetherMavenClientMock;
+
+  @Parameterized.Parameter
+  public Boolean legacyModel;
+
+  @Parameterized.Parameters(name = "Running application class loader model assembler with legacyModel: {0}")
+  public static Collection<Object[]> data() {
+    return asList(new Object[][] {
+        {true},
+        {false}
+    });
+  }
 
   @Test
   public void getClassLoaderModelTest() throws URISyntaxException {
@@ -119,7 +133,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
 
     ApplicationClassloaderModel applicationClassloaderModel =
-        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class));
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), legacyModel);
 
     assertThat("Application dependencies are not the expected",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
@@ -184,7 +198,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
     assertThat("Application contains shared libraries with transitive dependencies",
                applicationClassloaderModel.getClassLoaderModel().getDependencies().stream()
-                   .filter(Artifact::isShared).collect(Collectors.toList()),
+                   .filter(Artifact::isShared).collect(toList()),
                containsInAnyOrder(toArtifact(sharedLibrary),
                                   toArtifact(sharedLibraryTransitiveDependencyLevel1),
                                   toArtifact(sharedLibraryTransitiveDependencyLevel2)));
@@ -217,7 +231,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
     doReturn(artifactPomModel).when(applicationClassLoaderModelAssemblerSpy).getPomFile(any());
 
     ApplicationClassloaderModel applicationClassloaderModel =
-        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class));
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), legacyModel);
 
     return applicationClassloaderModel;
   }
@@ -289,18 +303,28 @@ public class ApplicationClassLoaderModelAssemblerTest {
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
 
     ApplicationClassloaderModel applicationClassloaderModel =
-        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class));
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), legacyModel);
 
     assertThat("Application dependencies are not the expected",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
                containsInAnyOrder(toArtifact(dependency1)));
 
-    assertThat("The application should have no mule plugin dependencies",
-               applicationClassloaderModel.getMulePluginsClassloaderModels().size(), equalTo(0));
+    if (legacyModel) {
+      assertThat("The application should have no mule plugin dependencies",
+                 applicationClassloaderModel.getNestedClassLoaderModels().size(),
+                 equalTo(0));
+    } else {
+      assertThat("The application should have no mule plugin dependencies",
+                 applicationClassloaderModel.getArtifacts().stream()
+                     .filter(artifact -> artifact.getArtifactCoordinates().getClassifier().equals(MULE_PLUGIN_CLASSIFIER))
+                     .collect(toList())
+                     .size(),
+                 equalTo(0));
+    }
   }
 
   @Test
-  public void getClassLoaderModelWithOneDependencyThatIsAMulePluginTest() throws URISyntaxException, IOException {
+  public void getClassLoaderModelWithOneDependencyThatIsAMulePluginTest() throws URISyntaxException {
     List<BundleDependency> appDependencies = new ArrayList<>();
 
     List<BundleDependency> appMulePluginDependencies = new ArrayList<>();
@@ -321,7 +345,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
 
     ApplicationClassloaderModel applicationClassloaderModel =
-        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class));
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), legacyModel);
 
     assertThat("The class loader model should have one dependency",
                applicationClassloaderModel.getClassLoaderModel().getDependencies().size(),
@@ -330,9 +354,17 @@ public class ApplicationClassLoaderModelAssemblerTest {
     assertThat("Mule plugins are not the expected", applicationClassloaderModel.getClassLoaderModel().getDependencies(),
                containsInAnyOrder(toArtifact(firstMulePlugin)));
 
-    assertThat("First mule plugin dependencies are not the expected",
-               applicationClassloaderModel.getMulePluginsClassloaderModels().get(0).getDependencies(),
-               containsInAnyOrder(toArtifact(mulePluginTransitiveDependency1)));
+    if (legacyModel) {
+      assertThat("Mule plugin dependencies are not the expected",
+                 applicationClassloaderModel.getNestedClassLoaderModels().values().iterator().next().getDependencies(),
+                 containsInAnyOrder(toArtifact(mulePluginTransitiveDependency1)));
+    } else {
+      assertThat("Mule plugin dependencies are not the expected",
+                 applicationClassloaderModel.getArtifacts().stream()
+                     .filter(artifact -> artifact.getArtifactCoordinates().getClassifier().equals(MULE_PLUGIN_CLASSIFIER))
+                     .findFirst().orElseThrow(() -> new AssertionError("Couldn't find mule plugin")).getDependencies(),
+                 containsInAnyOrder(toArtifact(mulePluginTransitiveDependency1)));
+    }
   }
 
 

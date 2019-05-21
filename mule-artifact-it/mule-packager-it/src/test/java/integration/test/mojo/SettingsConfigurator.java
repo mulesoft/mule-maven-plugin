@@ -10,13 +10,10 @@
 
 package integration.test.mojo;
 
-import integration.ProjectFactory;
-import org.apache.commons.io.FileUtils;
+import java.io.File;
+
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
-
-import java.io.File;
-import java.io.IOException;
 
 public interface SettingsConfigurator {
 

@@ -11,23 +11,23 @@
 package org.mule.tools.api.repository;
 
 import static java.lang.String.format;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+import static java.util.stream.Collectors.toList;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
 import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
 
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
 import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,27 +38,30 @@ public class RepositoryGenerator {
   private final ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssembler;
   protected File outputDirectory;
   private File projectPomFile;
+  private boolean legacyMode;
 
   public RepositoryGenerator(File projectPomFile, File outputDirectory, ArtifactInstaller artifactInstaller,
-                             ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssembler) {
+                             ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssembler, boolean legacyMode) {
     this.projectPomFile = projectPomFile;
     this.outputDirectory = outputDirectory;
     this.artifactInstaller = artifactInstaller;
     this.applicationClassLoaderModelAssembler = applicationClassLoaderModelAssembler;
+    this.legacyMode = legacyMode;
   }
 
   public ClassLoaderModel generate() throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
-        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile);
-    installArtifacts(getRepositoryFolder(), artifactInstaller, appModel);
+        applicationClassLoaderModelAssembler
+            .getApplicationClassLoaderModel(projectPomFile, legacyMode);
+    installArtifacts(getRepositoryFolder(), artifactInstaller, appModel, legacyMode);
     return appModel.getClassLoaderModel();
   }
 
-  public ClassLoaderModel generate(boolean lightweight) throws IOException, IllegalStateException {
+  public ClassLoaderModel generate(boolean installArtifactsToArtifactRepository) throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
-        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile);
-    if (!lightweight) {
-      installArtifacts(getRepositoryFolder(), artifactInstaller, appModel);
+        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, legacyMode);
+    if (installArtifactsToArtifactRepository) {
+      installArtifacts(getRepositoryFolder(), artifactInstaller, appModel, legacyMode);
     }
     return appModel.getClassLoaderModel();
   }
@@ -71,25 +74,26 @@ public class RepositoryGenerator {
     return repositoryFolder;
   }
 
-  protected void installArtifacts(File repositoryFile, ArtifactInstaller installer, ApplicationClassloaderModel appModel)
+  protected void installArtifacts(File repositoryFile, ArtifactInstaller installer, ApplicationClassloaderModel appModel,
+                                  boolean legacyMode)
       throws IOException {
-    Map<ArtifactCoordinates, ClassLoaderModel> mulePluginsClassloaderModels = appModel.getMulePluginsClassloaderModels().stream()
-        .collect(Collectors.toMap(ClassLoaderModel::getArtifactCoordinates, Function.identity()));
     TreeSet<Artifact> sortedArtifacts = new TreeSet<>(removeProvidedArtifacts(appModel.getArtifacts()));
     if (sortedArtifacts.isEmpty()) {
       generateMarkerFileInRepositoryFolder(repositoryFile);
     }
     for (Artifact artifact : sortedArtifacts) {
-      Optional<ClassLoaderModel> classLoaderModelOptional =
-          Optional.ofNullable(mulePluginsClassloaderModels.get(artifact.getArtifactCoordinates()));
+      Optional<ClassLoaderModel> classLoaderModelOptional = empty();
+      if (legacyMode && MULE_PLUGIN.equals(artifact.getArtifactCoordinates().getClassifier())) {
+        classLoaderModelOptional = of(appModel.getClassLoaderModel(artifact));
+      }
       installer.installArtifact(repositoryFile, artifact, classLoaderModelOptional);
     }
   }
 
-  private Set<Artifact> removeProvidedArtifacts(Set<Artifact> artifacts) {
+  private List<Artifact> removeProvidedArtifacts(List<Artifact> artifacts) {
     return artifacts.stream()
         .filter(artifact -> !StringUtils.equals(artifact.getArtifactCoordinates().getScope(), PROVIDED_SCOPE))
-        .collect(Collectors.toSet());
+        .collect(toList());
   }
 
   protected void generateMarkerFileInRepositoryFolder(File repositoryFile) throws IOException {

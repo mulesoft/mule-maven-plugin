@@ -11,6 +11,7 @@
 package org.mule.tools.maven.mojo;
 
 import static java.lang.String.format;
+
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
@@ -58,9 +59,9 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
       RepositoryGenerator repositoryGenerator =
           new RepositoryGenerator(session.getCurrentProject().getFile(), outputDirectory,
                                   new ArtifactInstaller(new MavenPackagerLog(getLog())),
-                                  getClassLoaderModelAssembler());
+                                  getClassLoaderModelAssembler(), legacyMode);
       try {
-        ClassLoaderModel classLoaderModel = repositoryGenerator.generate(lightweightPackage);
+        ClassLoaderModel classLoaderModel = repositoryGenerator.generate(!(lightweightPackage || useLocalRepository));
         for (SharedLibraryDependency sharedLibraryDependency : sharedLibraries) {
           classLoaderModel.getDependencies().stream()
               .filter(dep -> dep.getArtifactCoordinates().getArtifactId().equals(sharedLibraryDependency.getArtifactId()) &&
@@ -69,7 +70,10 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
         }
         Project project = getProject(classLoaderModel);
         mulePluginsCompatibilityValidator.validate(getResolver(project).resolve());
-        if (!lightweightPackage) {
+        if (!lightweightPackage || (lightweightPackage && useLocalRepository)) {
+          if (lightweightPackage && useLocalRepository) {
+            classLoaderModel = new NotParameterizedClasLoaderModel(classLoaderModel);
+          }
           ((MuleContentGenerator) getContentGenerator()).createApplicationClassLoaderModelJsonFile(classLoaderModel);
         }
       } catch (Exception e) {
@@ -114,5 +118,45 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
         return dependencyProject.getBundleDependencies();
       }
     };
+  }
+
+  private class NotParameterizedClasLoaderModel extends ClassLoaderModel {
+
+    private final ClassLoaderModel classLoaderModel;
+
+    public NotParameterizedClasLoaderModel(ClassLoaderModel classLoaderModel) {
+      super(classLoaderModel.getVersion(), classLoaderModel.getArtifactCoordinates());
+      this.classLoaderModel = classLoaderModel;
+    }
+
+    @Override
+    public String getVersion() {
+      return classLoaderModel.getVersion();
+    }
+
+    @Override
+    public ArtifactCoordinates getArtifactCoordinates() {
+      return classLoaderModel.getArtifactCoordinates();
+    }
+
+    @Override
+    public List<Artifact> getDependencies() {
+      return classLoaderModel.getDependencies();
+    }
+
+    @Override
+    public void setDependencies(List<Artifact> dependencies) {
+      classLoaderModel.setDependencies(dependencies);
+    }
+
+    @Override
+    public List<Artifact> getArtifacts() {
+      return classLoaderModel.getArtifacts();
+    }
+
+    @Override
+    public ClassLoaderModel getParametrizedUriModel() {
+      return this.classLoaderModel;
+    }
   }
 }

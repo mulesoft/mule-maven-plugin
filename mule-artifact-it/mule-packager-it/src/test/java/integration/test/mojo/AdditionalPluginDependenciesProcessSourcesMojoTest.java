@@ -140,6 +140,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends ProcessS
    * plugins.
    */
   @Test
+  // TODO: Lucho could you explain what we are testing here?
   public void muleAppWithReusableAppPluginAndOverridedAdditionalDependency() throws Exception {
     final String appName = "mule-app-plugin-with-reusable-app-and-additional-dep-x-v2";
     final String appLocation = getAppLocation(appName);
@@ -155,6 +156,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends ProcessS
    * Validates that if two mule-plugin have the same additional library then the latest one is going to be used.
    */
   @Test
+  // TODO: Lucho could you explain what we are testing here?
   public void muleAppWithReusableAppAndUsingAnotherReusableAppWithANewestXVersion() throws Exception {
     final String appName = "mule-app-plugin-with-reusable-app-and-reusable-app2";
     final String appLocation = getAppLocation(appName);

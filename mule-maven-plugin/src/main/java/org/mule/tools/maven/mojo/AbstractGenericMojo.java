@@ -110,6 +110,12 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   @Parameter(defaultValue = "${lightweightPackage}")
   protected boolean lightweightPackage = false;
 
+  @Parameter(defaultValue = "${useLocalRepository}")
+  protected boolean useLocalRepository = false;
+
+  @Parameter(defaultValue = "${legacyMode}")
+  protected boolean legacyMode = false;
+
   protected AbstractProjectValidator validator;
 
   protected ProjectVerifier verifier;
@@ -123,6 +129,9 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   public void initMojo() {
     if (projectBuildDirectory != null) {
       new ProjectDirectoryUpdater(project).updateBuildDirectory(projectBuildDirectory);
+    }
+    if (!lightweightPackage) {
+      useLocalRepository = false;
     }
   }
 

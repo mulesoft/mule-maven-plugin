@@ -9,10 +9,13 @@
  */
 package org.mule.tools.api.classloader;
 
+import static org.mule.tools.api.classloader.Constants.ARTIFACT_DEPENDENCIES;
 import static org.mule.tools.api.classloader.Constants.ARTIFACT_IS_SHARED_FIELD;
+
 import org.mule.tools.api.classloader.model.Artifact;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
@@ -27,11 +30,26 @@ public class ArtifactCustomJsonSerializer implements JsonSerializer<Artifact> {
 
   @Override
   public JsonElement serialize(Artifact artifact, Type type, JsonSerializationContext jsonSerializationContext) {
-    Gson gson = new Gson();
+    Gson gson = new GsonBuilder()
+        .enableComplexMapKeySerialization()
+        .setPrettyPrinting()
+        .create();
     JsonObject jsonObject = (JsonObject) gson.toJsonTree(artifact);
-    if (!artifact.isShared()) {
+    removeEmptyFields(jsonObject);
+    return jsonObject;
+  }
+
+  private void removeEmptyFields(JsonObject jsonObject) {
+    if (jsonObject.has(ARTIFACT_IS_SHARED_FIELD) && !jsonObject.get(ARTIFACT_IS_SHARED_FIELD).getAsBoolean()) {
       jsonObject.remove(ARTIFACT_IS_SHARED_FIELD);
     }
-    return jsonObject;
+    if (jsonObject.has(ARTIFACT_DEPENDENCIES)) {
+      if (jsonObject.get(ARTIFACT_DEPENDENCIES).getAsJsonArray().size() == 0) {
+        jsonObject.remove(ARTIFACT_DEPENDENCIES);
+      } else {
+        jsonObject.get(ARTIFACT_DEPENDENCIES).getAsJsonArray()
+            .forEach(jsonElement -> removeEmptyFields(jsonElement.getAsJsonObject()));
+      }
+    }
   }
 }

@@ -15,7 +15,6 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public class AppClassLoaderModel extends ClassLoaderModel {
 
@@ -35,8 +34,8 @@ public class AppClassLoaderModel extends ClassLoaderModel {
   }
 
   @Override
-  public Set<Artifact> getArtifacts() {
-    Set<Artifact> artifacts = super.getArtifacts();
+  public List<Artifact> getArtifacts() {
+    List<Artifact> artifacts = super.getArtifacts();
     additionalPluginDependencies.forEach(
                                          plugin -> artifacts.addAll(plugin.getAdditionalDependencies()));
     return artifacts;

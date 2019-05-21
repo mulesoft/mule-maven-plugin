@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "artifactCoordinates": {
     "groupId": "org.apache.maven.plugin.my.unit",
     "artifactId": "mule-application-profile-activation-by-user-property",
@@ -16,7 +16,37 @@
         "type": "jar",
         "classifier": "mule-plugin"
       },
-      "uri": "repository/org/mule/group/mule-plugin-a/1.0.0/mule-plugin-a-1.0.0-mule-plugin.jar"
+      "uri": "repository/org/mule/group/mule-plugin-a/1.0.0/mule-plugin-a-1.0.0-mule-plugin.jar",
+      "dependencies": [
+        {
+          "artifactCoordinates": {
+            "groupId": "org.mule.group",
+            "artifactId": "mule-plugin-b",
+            "version": "1.0.0",
+            "type": "jar",
+            "classifier": "mule-plugin"
+          },
+          "uri": "repository/org/mule/group/mule-plugin-b/1.0.0/mule-plugin-b-1.0.0-mule-plugin.jar"
+        },
+        {
+          "artifactCoordinates": {
+            "groupId": "group.id.d",
+            "artifactId": "artifact-id-d",
+            "version": "1.0.0",
+            "type": "jar"
+          },
+          "uri": "repository/group/id/d/artifact-id-d/1.0.0/artifact-id-d-1.0.0.jar"
+        },
+        {
+          "artifactCoordinates": {
+            "groupId": "group.id.a",
+            "artifactId": "artifact-id-a",
+            "version": "1.0.0-SNAPSHOT",
+            "type": "jar"
+          },
+          "uri": "repository/group/id/a/artifact-id-a/1.0.0-SNAPSHOT/artifact-id-a-1.0.0-SNAPSHOT.jar"
+        }
+      ]
     },
     {
       "artifactCoordinates": {
@@ -26,7 +56,27 @@
         "type": "jar",
         "classifier": "mule-plugin"
       },
-      "uri": "repository/org/mule/group/mule-plugin-b/1.0.0/mule-plugin-b-1.0.0-mule-plugin.jar"
+      "uri": "repository/org/mule/group/mule-plugin-b/1.0.0/mule-plugin-b-1.0.0-mule-plugin.jar",
+      "dependencies": [
+        {
+          "artifactCoordinates": {
+            "groupId": "group.id.c",
+            "artifactId": "artifact-id-c",
+            "version": "1.0.0-SNAPSHOT",
+            "type": "jar"
+          },
+          "uri": "repository/group/id/c/artifact-id-c/1.0.0-SNAPSHOT/artifact-id-c-1.0.0-SNAPSHOT.jar"
+        },
+        {
+          "artifactCoordinates": {
+            "groupId": "group.id.d",
+            "artifactId": "artifact-id-d",
+            "version": "1.0.0",
+            "type": "jar"
+          },
+          "uri": "repository/group/id/d/artifact-id-d/1.0.0/artifact-id-d-1.0.0.jar"
+        }
+      ]
     }
   ]
 }

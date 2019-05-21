@@ -19,12 +19,19 @@ public class PackagingOptions {
   private final boolean lightweightPackage;
   private final boolean attachMuleSources;
   private final boolean testPackage;
+  private final boolean useLocalRepository;
 
   public PackagingOptions(boolean onlyMuleSources, boolean lightweightPackage, boolean attachMuleSources, boolean testPackage) {
+    this(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage, false);
+  }
+
+  public PackagingOptions(boolean onlyMuleSources, boolean lightweightPackage, boolean attachMuleSources, boolean testPackage,
+                          boolean useLocalRepository) {
     this.onlyMuleSources = onlyMuleSources;
     this.lightweightPackage = lightweightPackage;
     this.attachMuleSources = attachMuleSources;
     this.testPackage = testPackage;
+    this.useLocalRepository = useLocalRepository;
   }
 
   public boolean isOnlyMuleSources() {
@@ -41,5 +48,9 @@ public class PackagingOptions {
 
   public boolean isTestPackage() {
     return testPackage;
+  }
+
+  public boolean isUseLocalRepository() {
+    return useLocalRepository;
   }
 }

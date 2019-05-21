@@ -12,25 +12,35 @@ package org.mule.tools.api.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
+import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
+import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import org.apache.maven.project.*;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuildingException;
+import org.apache.maven.project.ProjectBuildingResult;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Spy;
-import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
-import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.util.FileUtils;
 
 public class RepositoryGeneratorTest {
 
@@ -46,7 +56,7 @@ public class RepositoryGeneratorTest {
   private MavenProject projectMock;
   private ArtifactInstaller artifactInstallerMock;
   private ProjectBuildingResult resultMock;
-  private Set<Artifact> artifacts;
+  private List<Artifact> artifacts;
   private ApplicationClassloaderModel appModelMock;
 
   @Rule
@@ -67,7 +77,7 @@ public class RepositoryGeneratorTest {
         mock(ApplicationClassLoaderModelAssembler.class);
     repositoryGenerator = new RepositoryGenerator(temporaryFolder.newFile("pom.xml"),
                                                   temporaryFolder.getRoot(), artifactInstallerMock,
-                                                  applicationClassloaderModelAssemblerMock);
+                                                  applicationClassloaderModelAssemblerMock, true);
     repositoryGeneratorSpy = spy(repositoryGenerator);
     appModelMock = mock(ApplicationClassloaderModel.class);
   }
@@ -101,8 +111,8 @@ public class RepositoryGeneratorTest {
   @Test
   public void installEmptySetArtifactsTest() throws IOException {
     File repositoryFolder = temporaryFolder.getRoot();
-    when(appModelMock.getArtifacts()).thenReturn(Collections.emptySet());
-    repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifactInstallerMock, appModelMock);
+    when(appModelMock.getArtifacts()).thenReturn(Collections.emptyList());
+    repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifactInstallerMock, appModelMock, true);
     verify(repositoryGeneratorSpy, times(1)).generateMarkerFileInRepositoryFolder(repositoryFolder);
     verify(artifactInstallerMock, times(0)).installArtifact(any(), any(), any());
   }
@@ -112,7 +122,7 @@ public class RepositoryGeneratorTest {
     File repositoryFolder = temporaryFolder.getRoot();
     buildArtifacts();
     when(appModelMock.getArtifacts()).thenReturn(artifacts);
-    repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifactInstallerMock, appModelMock);
+    repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifactInstallerMock, appModelMock, true);
     verify(repositoryGeneratorSpy, times(0)).generateMarkerFileInRepositoryFolder(repositoryFolder);
     verify(artifactInstallerMock, times(NUMBER_ARTIFACTS)).installArtifact(any(), any(), any());
   }
@@ -135,7 +145,7 @@ public class RepositoryGeneratorTest {
   }
 
   private void buildArtifacts() {
-    artifacts = new HashSet<>();
+    artifacts = new ArrayList<>();
     for (int i = 0; i < NUMBER_ARTIFACTS; ++i) {
       artifacts.add(createArtifact(i));
     }

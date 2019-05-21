@@ -12,24 +12,39 @@ package org.mule.tools.api.classloader.model;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.io.File.separatorChar;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FilenameUtils.normalize;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
 public class Artifact implements Comparable {
 
   private static final String MULE_DOMAIN = "mule-domain";
+
+  private transient ClassLoaderModel classLoaderModel;
+
   private ArtifactCoordinates artifactCoordinates;
   private URI uri;
   private boolean isShared = false;
+  private List<Artifact> dependencies = new ArrayList<>();
 
   public Artifact(ArtifactCoordinates artifactCoordinates, URI uri) {
     setArtifactCoordinates(artifactCoordinates);
     setUri(uri);
+  }
+
+  protected void setClassLoaderModel(ClassLoaderModel classLoaderModel) {
+    this.classLoaderModel = classLoaderModel;
+  }
+
+  public ClassLoaderModel getClassLoaderModel() {
+    return classLoaderModel;
   }
 
   public ArtifactCoordinates getArtifactCoordinates() {
@@ -50,6 +65,14 @@ public class Artifact implements Comparable {
   private void setArtifactCoordinates(ArtifactCoordinates artifactCoordinates) {
     checkNotNull(artifactCoordinates, "Artifact coordinates cannot be null");
     this.artifactCoordinates = artifactCoordinates;
+  }
+
+  public List<Artifact> getDependencies() {
+    return this.dependencies;
+  }
+
+  public void setDependencies(List<Artifact> dependencies) {
+    this.dependencies = dependencies;
   }
 
   @Override
@@ -96,6 +119,9 @@ public class Artifact implements Comparable {
     } catch (URISyntaxException e) {
       throw new RuntimeException("Could not generate URI for resource, the given path is invalid: " + newUriPath, e);
     }
+    newArtifact.setDependencies(dependencies.stream()
+        .map(dependency -> dependency.copyWithParameterizedUri())
+        .collect(toList()));
     return newArtifact;
   }
 

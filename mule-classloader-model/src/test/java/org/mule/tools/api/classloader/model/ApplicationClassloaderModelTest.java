@@ -9,125 +9,128 @@
  */
 package org.mule.tools.api.classloader.model;
 
-import org.junit.Before;
-import org.junit.Test;
+import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.Assert.assertThat;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
+import com.google.common.collect.ImmutableList;
+import org.hamcrest.CoreMatchers;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
 
+@RunWith(Parameterized.class)
 public class ApplicationClassloaderModelTest {
 
-  public static final String VERSION = "1.0.0";
-  private ClassLoaderModel classloaderModelMock;
-  private ApplicationClassloaderModel appClassloaderModel;
-  private List<ClassLoaderModel> mulePluginClassloaderModels;
-  private List<ClassLoaderModel> appDependenciesClassloaderModels;
-  private List<ClassLoaderModel> ramlClassloaderModels;
+  private static final String VERSION_100 = "1.0.0";
+  private static final String ORG_TESTS = "org.tests";
+
+  private static final String APPLICATION_ARTIFACT_ID = "application";
+  private static final String THIRD_PARTY_ARTIFACT_ID = "third-party";
+  private static final String PLUGIN_ARTIFACT_ID = "plugin";
+
+  private ApplicationClassloaderModel applicationClassloaderModel;
+  private ClassLoaderModel classloaderModel;
+
+  private Artifact thirdPartyArtifact;
+  private Artifact mulePluginArtifact;
+
+  @Parameter
+  public Boolean legacyModel;
+
+  @Parameterized.Parameters(name = "Running application class loader model with legacyModel: {0}")
+  public static Collection<Object[]> data() {
+    return asList(new Object[][] {
+        {true},
+        {false}
+    });
+  }
 
   @Before
   public void setUp() {
-    mulePluginClassloaderModels = buildMulePluginClassloaderModelListMock();
-    ramlClassloaderModels = buildRamlClassloaderModelListMock();
-    appDependenciesClassloaderModels = new ArrayList<>(mulePluginClassloaderModels.subList(0, 2));
-    appDependenciesClassloaderModels.addAll(ramlClassloaderModels.subList(0, 2));
-    classloaderModelMock = mock(ClassLoaderModel.class);
+    classloaderModel = new ClassLoaderModel(VERSION_100,
+                                            new ArtifactCoordinates(
+                                                                    ORG_TESTS,
+                                                                    APPLICATION_ARTIFACT_ID,
+                                                                    VERSION_100));
+    List<Artifact> dependencies = new ArrayList<>();
+    // 3-party artifact, just a simple dependency for the application
+    thirdPartyArtifact = new Artifact(new ArtifactCoordinates(ORG_TESTS, THIRD_PARTY_ARTIFACT_ID, VERSION_100), URI.create(""));
+    dependencies.add(thirdPartyArtifact);
+    // a mule-plugin dependency without their dependencies
+    mulePluginArtifact = new Artifact(new ArtifactCoordinates(ORG_TESTS, PLUGIN_ARTIFACT_ID, VERSION_100), URI.create(""));
+    dependencies.add(mulePluginArtifact);
+    classloaderModel.setDependencies(dependencies);
 
-    appClassloaderModel = new ApplicationClassloaderModel(classloaderModelMock);
-    appClassloaderModel.addAllMulePluginClassloaderModels(mulePluginClassloaderModels);
-    appClassloaderModel.addAllRamlClassloaderModels(ramlClassloaderModels);
+    applicationClassloaderModel =
+        legacyModel ? new LegacyApplicationClassloaderModel(classloaderModel) : new ApplicationClassloaderModel(classloaderModel);
   }
 
   @Test
   public void getArtifacts() {
-    Set<Artifact> expectedArtifacts = new HashSet<>();
+    assertThat(applicationClassloaderModel.getArtifacts(), hasSize(2));
+    assertThat(applicationClassloaderModel.getArtifacts(), contains(thirdPartyArtifact, mulePluginArtifact));
+  }
 
-    for (ClassLoaderModel cl : appDependenciesClassloaderModels) {
-      expectedArtifacts.addAll(cl.getArtifacts());
-    }
-    for (ClassLoaderModel cl : mulePluginClassloaderModels) {
-      expectedArtifacts.addAll(cl.getArtifacts());
-    }
-    for (ClassLoaderModel cl : ramlClassloaderModels) {
-      expectedArtifacts.addAll(cl.getArtifacts());
-    }
 
-    assertThat("Should be the same set", appClassloaderModel.getArtifacts(), equalTo(expectedArtifacts));
+  @Test
+  public void mergeDependencies() {
+    ClassLoaderModel pluginClassLoaderModel = new ClassLoaderModel(VERSION_100, mulePluginArtifact.getArtifactCoordinates());
+    Artifact otherThirdPartyArtifact =
+        new Artifact(new ArtifactCoordinates(ORG_TESTS, "other-third-party", VERSION_100), URI.create(""));
+    pluginClassLoaderModel.setDependencies(ImmutableList.of(otherThirdPartyArtifact));
+
+    applicationClassloaderModel.mergeDependencies(ImmutableList.of(pluginClassLoaderModel));
+
+    assertThat(applicationClassloaderModel.getArtifacts(), hasSize(3));
+    assertThat(applicationClassloaderModel.getArtifacts(),
+               contains(thirdPartyArtifact, mulePluginArtifact, otherThirdPartyArtifact));
+
+    List<Artifact> mergedDependencies = applicationClassloaderModel.getClassLoaderModel().getArtifacts().stream()
+        .filter(artifact -> artifact.getArtifactCoordinates().equals(mulePluginArtifact.getArtifactCoordinates())).findFirst()
+        .orElseThrow(() -> new AssertionError("Couldn't find other plugin artifact")).getDependencies();
+
+    if (!legacyModel) {
+      assertThat(mergedDependencies, contains(otherThirdPartyArtifact));
+    }
   }
 
   @Test
-  public void addAllRamlToApplicationClassloaderModel() {
-    Set<Artifact> originalSet = new HashSet<>(appClassloaderModel.getArtifacts());
-    appClassloaderModel.addAllRamlToApplicationClassloaderModel(ramlClassloaderModels.get(0).getDependencies());
-    assertThat("Set should not change", appClassloaderModel.getArtifacts(), equalTo(originalSet));
+  public void addDirectDependencies() {
+    Artifact otherThirdPartyArtifact =
+        new Artifact(new ArtifactCoordinates(ORG_TESTS, "other-third-party", VERSION_100), URI.create(""));
+    assertThat(applicationClassloaderModel.getClassLoaderModel().getDependencies(), not(hasItem(otherThirdPartyArtifact)));
+
+    applicationClassloaderModel.addDirectDependencies(ImmutableList.of(otherThirdPartyArtifact));
+
+    assertThat(applicationClassloaderModel.getClassLoaderModel().getDependencies(), hasItem(otherThirdPartyArtifact));
   }
 
+  @Test
+  public void getClassLoaderModelByArtifact() {
+    ClassLoaderModel pluginClassLoaderModel = new ClassLoaderModel(VERSION_100, mulePluginArtifact.getArtifactCoordinates());
+    Artifact otherThirdPartyArtifact =
+        new Artifact(new ArtifactCoordinates(ORG_TESTS, "other-third-party", VERSION_100), URI.create(""));
+    pluginClassLoaderModel.setDependencies(ImmutableList.of(otherThirdPartyArtifact));
 
-  private List<ClassLoaderModel> buildMulePluginClassloaderModelListMock() {
-    ClassLoaderModel cl1 = buildMulePluginClassloaderModel(1);
-    ClassLoaderModel cl2 = buildMulePluginClassloaderModel(2);
-    ClassLoaderModel cl3 = buildMulePluginClassloaderModel(3);
-    ClassLoaderModel cl4 = buildMulePluginClassloaderModel(4);
-    return newArrayList(cl1, cl2, cl3, cl4);
-  }
+    applicationClassloaderModel.mergeDependencies(ImmutableList.of(pluginClassLoaderModel));
 
-  private ClassLoaderModel buildMulePluginClassloaderModel(int i) {
-    ClassLoaderModel cl = new ClassLoaderModel(VERSION, buildMulePluginArtifactCoordinates(i, "1.0.0"));
-    cl.setDependencies(buildMulePluginArtifacts(i));
-    return cl;
-  }
+    assertThat(applicationClassloaderModel.getArtifacts(), hasSize(3));
+    assertThat(applicationClassloaderModel.getArtifacts(),
+               contains(thirdPartyArtifact, mulePluginArtifact, otherThirdPartyArtifact));
 
-  private List<Artifact> buildMulePluginArtifacts(int i) {
-    int prefix = i * 10;
-    Artifact a1 = new Artifact(buildMulePluginArtifactCoordinates(prefix + 1, "1.0.0"), URI.create("fake" + (prefix + 1)));
-    Artifact a2 = new Artifact(buildMulePluginArtifactCoordinates(prefix + 2, "1.0.0"), URI.create("fake" + (prefix + 2)));
-    Artifact a3 = new Artifact(buildMulePluginArtifactCoordinates(prefix + 3, "1.0.0"), URI.create("fake" + (prefix + 3)));
-    Artifact a4 = new Artifact(buildMulePluginArtifactCoordinates(prefix + 4, "1.0.0"), URI.create("fake" + (prefix + 4)));
-    Artifact a5 = new Artifact(buildMulePluginArtifactCoordinates(prefix + 5, "1.0.0"), URI.create("fake" + (prefix + 5)));
-    return newArrayList(a1, a2, a3, a4, a5);
-
-  }
-
-  private ArtifactCoordinates buildMulePluginArtifactCoordinates(int n, String version) {
-    return new ArtifactCoordinates("org.mule.connectors", "connector-" + n, version, "jar", "mule-plugin");
-  }
-
-
-  private List<ClassLoaderModel> buildRamlClassloaderModelListMock() {
-    ClassLoaderModel cl1 = buildRamlClassloaderModel(1);
-    ClassLoaderModel cl2 = buildRamlClassloaderModel(2);
-    ClassLoaderModel cl3 = buildRamlClassloaderModel(3);
-    ClassLoaderModel cl4 = buildRamlClassloaderModel(4);
-    return newArrayList(cl1, cl2, cl3, cl4);
-  }
-
-  private ClassLoaderModel buildRamlClassloaderModel(int i) {
-    ClassLoaderModel cl = new ClassLoaderModel(VERSION, buildRamlArtifactCoordinates(i, "1.0.0", ""));
-    cl.setDependencies(buildRamlArtifacts(i));
-    return cl;
-  }
-
-  private List<Artifact> buildRamlArtifacts(int i) {
-    int prefix = i * 10;
-    Artifact a1 = new Artifact(buildRamlArtifactCoordinates(prefix + 1, "1.0.0", "-fragment"), URI.create("fake" + (prefix + 1)));
-    Artifact a2 = new Artifact(buildRamlArtifactCoordinates(prefix + 2, "1.0.0", "-fragment"), URI.create("fake" + (prefix + 2)));
-    Artifact a3 = new Artifact(buildRamlArtifactCoordinates(prefix + 3, "1.0.0", "-fragment"), URI.create("fake" + (prefix + 3)));
-    Artifact a4 = new Artifact(buildRamlArtifactCoordinates(prefix + 4, "1.0.0", "-fragment"), URI.create("fake" + (prefix + 4)));
-    Artifact a5 = new Artifact(buildRamlArtifactCoordinates(prefix + 5, "1.0.0", "-fragment"), URI.create("fake" + (prefix + 5)));
-    return newArrayList(a1, a2, a3, a4, a5);
-
-  }
-
-  private ArtifactCoordinates buildRamlArtifactCoordinates(int n, String version, String packagingSuffix) {
-    return new ArtifactCoordinates("org.mycompany", "raml-" + n, version, "zip", "raml" + packagingSuffix);
+    assertThat(applicationClassloaderModel.getClassLoaderModel(mulePluginArtifact),
+               CoreMatchers.sameInstance(pluginClassLoaderModel));
   }
 
 }

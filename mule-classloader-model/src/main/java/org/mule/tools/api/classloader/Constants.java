@@ -18,6 +18,8 @@ public class Constants {
 
   public static final String CLASSLOADER_MODEL_FILE_NAME = "classloader-model.json";
 
+  public static final String CLASSLOADER_MODEL_DEPENDENCIES = "dependencies";
+
   public static final String SHARED_LIBRARIES_FIELD = "sharedLibraries";
   public static final String SHARED_LIBRARY_FIELD = "sharedLibrary";
 
@@ -27,6 +29,7 @@ public class Constants {
   public static final String PLUGIN_DEPENDENCY_FIELD = "dependency";
 
   public static final String ARTIFACT_IS_SHARED_FIELD = "isShared";
+  public static final String ARTIFACT_DEPENDENCIES = "dependencies";
 
   public static final String GROUP_ID = "groupId";
   public static final String ARTIFACT_ID = "artifactId";

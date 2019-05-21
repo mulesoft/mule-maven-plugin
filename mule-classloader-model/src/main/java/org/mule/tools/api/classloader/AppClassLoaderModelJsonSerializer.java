@@ -10,15 +10,9 @@
 package org.mule.tools.api.classloader;
 
 import static org.mule.tools.api.classloader.Constants.ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD;
+
 import org.mule.tools.api.classloader.model.AppClassLoaderModel;
 import org.mule.tools.api.classloader.model.Artifact;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 
 import java.io.File;
 import java.io.FileReader;
@@ -26,6 +20,13 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.List;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 /**
  * Deserializer for an AppClassLoaderModel
@@ -67,6 +68,9 @@ public class AppClassLoaderModelJsonSerializer extends ClassLoaderModelJsonSeria
           .registerTypeAdapter(Artifact.class, new ArtifactCustomJsonSerializer())
           .create();
       JsonObject jsonObject = (JsonObject) gson.toJsonTree(classLoaderModel);
+      // Move to the bottom the additional plugin dependencies field
+      jsonObject.add(ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD, jsonObject.remove(ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD));
+
       if (classLoaderModel.getAdditionalPluginDependencies().map(List::isEmpty).orElse(false)) {
         jsonObject.remove(ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD);
       }

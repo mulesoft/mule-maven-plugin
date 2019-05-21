@@ -15,16 +15,21 @@ import static java.util.Collections.emptyList;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.fail;
+import static org.junit.rules.ExpectedException.none;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.maven.it.VerificationException;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class ProcessSourcesMojoTest extends MojoTest {
 
@@ -37,6 +42,8 @@ public class ProcessSourcesMojoTest extends MojoTest {
       "/empty-classloader-model-project/target/repository/org/mule/group/mule-plugin-a/1.0.0/classloader-model.json";
   private static final String GENERATED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE =
       "/empty-classloader-model-project/target/repository/org/mule/group/mule-plugin-b/1.0.0/classloader-model.json";
+  private static final String EXPECTED_LEGACY_MODE_CLASSLOADER_MODEL_FILE =
+      "/expected-files/expected-legacy-mode-classloader-model.json";
   private static final String EXPECTED_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-classloader-model.json";
   private static final String EXPECTED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE =
@@ -72,6 +79,8 @@ public class ProcessSourcesMojoTest extends MojoTest {
       "/expected-files/expected-mule-application-dependency-default-classloader-model.json";
   private static final String EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-profile-activation-by-user-property-classloader-model.json";
+  private static final String EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_LEGACY_MODE_FILE =
+      "/expected-files/expected-profile-activation-by-user-property-legacy-mode-classloader-model.json";
   private static final String EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_INACTIVE_GENERATED_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-profile-activation-by-user-property-inactive-classloader-model.json";
   private static final String EXPECTED_PROVIDED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
@@ -111,12 +120,13 @@ public class ProcessSourcesMojoTest extends MojoTest {
     projectBaseDirectory = builder.createProjectBaseDir("empty-classloader-model-project", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-DlegacyMode=true");
     verifier.executeGoal(PROCESS_SOURCES);
 
     File generatedClassloaderModelFile = getFile(GENERATED_CLASSLOADER_MODEL_FILE);
     List<String> generatedClassloaderModelFileContent = Files.readAllLines(generatedClassloaderModelFile.toPath());
 
-    File expectedClassloaderModelFile = getFile(EXPECTED_CLASSLOADER_MODEL_FILE);
+    File expectedClassloaderModelFile = getFile(EXPECTED_LEGACY_MODE_CLASSLOADER_MODEL_FILE);
     List<String> expectedClassloaderModelFileContent = Files.readAllLines(expectedClassloaderModelFile.toPath());
 
     assertThat("The classloader-model.json file is different from the expected", generatedClassloaderModelFileContent,
@@ -148,6 +158,48 @@ public class ProcessSourcesMojoTest extends MojoTest {
     assertThat("The classloader-model.json file of the mule-plugin-b is different from the expected",
                generatedMulePluginBClassloaderModelFileContent,
                equalTo(expectedMulePluginBClassloaderModelFileContent));
+
+    File expectedStructure = getExpectedStructure("/expected-legacy-mode-classloader-model-project");
+    File targetStructure = new File(verifier.getBasedir() + File.separator + TARGET_FOLDER_NAME);
+    deleteDirectory(new File(targetStructure, "temp"));
+
+    assertThat("The directory structure is different from the expected", targetStructure,
+               hasSameTreeStructure(expectedStructure, excludes));
+
+    verifier.verifyErrorFreeLog();
+  }
+
+  // Please be aware that the order that the dependencies are installed is important:
+  // For instance, dependency D MUST be installed before C as the former is a transitive dependency of the latter
+  // and so it needs to be installed in the local repository in order to be resolved.
+  @Test
+  public void testProcessSourcesClassloaderModelInlineDependencies() throws IOException, VerificationException {
+    projectBaseDirectory = builder.createProjectBaseDir("empty-classloader-model-project", this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.executeGoal(PROCESS_SOURCES);
+
+    File generatedClassloaderModelFile = getFile(GENERATED_CLASSLOADER_MODEL_FILE);
+    List<String> generatedClassloaderModelFileContent = Files.readAllLines(generatedClassloaderModelFile.toPath());
+
+    File expectedClassloaderModelFile = getFile(EXPECTED_CLASSLOADER_MODEL_FILE);
+    List<String> expectedClassloaderModelFileContent = Files.readAllLines(expectedClassloaderModelFile.toPath());
+
+    assertThat("The classloader-model.json file is different from the expected", generatedClassloaderModelFileContent,
+               equalTo(expectedClassloaderModelFileContent));
+
+    try {
+      getFile(GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
+      fail("ClassLoader Model for plugin should not be generated");
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), equalTo("Resource not found: " + GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE));
+    }
+    try {
+      getFile(GENERATED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE);
+      fail("ClassLoader Model for plugin should not be generated");
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), equalTo("Resource not found: " + GENERATED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE));
+    }
 
     File expectedStructure = getExpectedStructure("/expected-classloader-model-project");
     File targetStructure = new File(verifier.getBasedir() + File.separator + TARGET_FOLDER_NAME);
@@ -227,6 +279,19 @@ public class ProcessSourcesMojoTest extends MojoTest {
   }
 
   @Test
+  public void testProcessSourcesActivateProfileByIdUsingLegacyMode() throws IOException, VerificationException {
+    processSourcesOnProject("mule-application-profile-activation-by-user-property",
+                            of("-PmulePluginAProfileId -DlegacyMode=true"));
+    List<String> generatedClassloaderModelFileContent =
+        getFileContent(PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
+    List<String> expectedClassloaderModelFileContent =
+        getFileContent(EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_LEGACY_MODE_FILE);
+    assertThat("The classloader-model.json file of mule-application-profile-activation-by-user-property project is different from the expected",
+               generatedClassloaderModelFileContent,
+               equalTo(expectedClassloaderModelFileContent));
+  }
+
+  @Test
   public void testProcessSourcesInactivateProfileById() throws IOException, VerificationException {
     processSourcesOnProject("mule-application-profile-activation-by-user-property",
                             of("-DenablePluginA=true", "-P !mulePluginAProfileId"));
@@ -276,7 +341,7 @@ public class ProcessSourcesMojoTest extends MojoTest {
 
   @Test
   public void sharedLibrariesAreCorrectlyResolved() throws IOException, VerificationException {
-    processSourcesOnProject("mule-application-shared-dependency");
+    processSourcesOnProject("mule-application-shared-dependency", ImmutableList.of("-DlegacyMode=true"));
     List<String> generatedClassloaderModelFileContent = getFileContent(SHARED_PLUGIN_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
     List<String> expectedClassloaderModelFileContent =
         getFileContent(EXPECTED_SHARED_PLUGIN_DEPENDENCY_CLASSLOADER_MODEL_FILE);
@@ -309,6 +374,7 @@ public class ProcessSourcesMojoTest extends MojoTest {
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-DskipValidation=true");
+    //verifier.setDebugJvm(true);
     cliOptions.stream().forEach(option -> verifier.addCliOption(option));
     verifier.executeGoal(PROCESS_SOURCES);
   }

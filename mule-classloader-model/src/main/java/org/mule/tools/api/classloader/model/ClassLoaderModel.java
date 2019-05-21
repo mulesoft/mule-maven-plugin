@@ -12,12 +12,9 @@ package org.mule.tools.api.classloader.model;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class ClassLoaderModel {
 
@@ -56,10 +53,11 @@ public class ClassLoaderModel {
     this.dependencies = dependencies;
   }
 
-  public Set<Artifact> getArtifacts() {
-    Set<Artifact> allDependencies = new TreeSet<>();
+  public List<Artifact> getArtifacts() {
+    List<Artifact> allDependencies = new ArrayList<>();
     allDependencies.addAll(dependencies);
-    return allDependencies.stream().collect(toSet());
+    dependencies.stream().forEach(dependency -> allDependencies.addAll(dependency.getDependencies()));
+    return allDependencies.stream().collect(toList());
   }
 
   public ClassLoaderModel getParametrizedUriModel() {

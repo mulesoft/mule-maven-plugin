@@ -292,13 +292,15 @@ public class MulePackageBuilderTest {
   }
 
   @Test
-  public void createPackageLightweight() throws IOException {
+  public void createPackageLightweightWithoutClassLoaderModel() throws IOException {
     boolean onlyMuleSources = false;
     boolean lightweightPackage = true;
+    boolean useLocalRepository = false;
     boolean attachMuleSources = true;
     boolean testPackage = false;
 
-    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage,
+                                                      useLocalRepository));
 
     builder.createPackage(fakeTargetFolder.getRoot().toPath(), destinationFile.toPath());
 
@@ -307,6 +309,34 @@ public class MulePackageBuilderTest {
     verify(archiverMock, times(1)).addMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile(), null, null);
     verify(archiverMock, times(1)).addMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
                                                    null, new String[] {CLASSLOADER_MODEL_JSON});
+    verify(archiverMock, times(1)).addMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(), null,
+                                              null);
+    verify(archiverMock, times(0)).addRepository(targetPath.resolve(REPOSITORY.value()).toFile(), null, null);
+    verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_MULE.value()).toFile(), null, null);
+    verify(archiverMock, times(0)).addToRoot(targetPath.resolve(TEST_CLASSES.value()).toFile(), null, null);
+
+    verify(archiverMock, times(1)).setDestFile(destinationFile);
+    verify(archiverMock, times(1)).createArchive();
+  }
+
+  @Test
+  public void createPackageLightweightWithClassLoaderModelUsingLocalRepository() throws IOException {
+    boolean onlyMuleSources = false;
+    boolean lightweightPackage = true;
+    boolean useLocalRepository = true;
+    boolean attachMuleSources = true;
+    boolean testPackage = false;
+
+    builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage,
+                                                      useLocalRepository));
+
+    builder.createPackage(fakeTargetFolder.getRoot().toPath(), destinationFile.toPath());
+
+    Path targetPath = fakeTargetFolder.getRoot().toPath();
+    verify(archiverMock, times(1)).addToRoot(targetPath.resolve(CLASSES.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile(), null, null);
+    verify(archiverMock, times(1)).addMuleArtifact(targetPath.resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
+                                                   null, null);
     verify(archiverMock, times(1)).addMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile(), null,
                                               null);
     verify(archiverMock, times(0)).addRepository(targetPath.resolve(REPOSITORY.value()).toFile(), null, null);

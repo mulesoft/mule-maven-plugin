@@ -10,6 +10,7 @@
 package org.mule.tools.api.classloader.model;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
@@ -130,7 +131,7 @@ public class ApplicationClassloaderModelTest {
                contains(thirdPartyArtifact, mulePluginArtifact, otherThirdPartyArtifact));
 
     assertThat(applicationClassloaderModel.getClassLoaderModel(mulePluginArtifact),
-               CoreMatchers.sameInstance(pluginClassLoaderModel));
+               sameInstance(pluginClassLoaderModel));
   }
 
 }

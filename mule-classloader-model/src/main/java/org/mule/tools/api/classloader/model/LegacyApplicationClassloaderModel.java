@@ -9,7 +9,6 @@
  */
 package org.mule.tools.api.classloader.model;
 
-import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
 import java.util.Collection;
@@ -25,19 +24,8 @@ public class LegacyApplicationClassloaderModel extends ApplicationClassloaderMod
 
   @Override
   public void mergeDependencies(Collection<ClassLoaderModel> otherClassloaderModels) {
-    for (ClassLoaderModel otherClassLoaderModel : otherClassloaderModels) {
-      getClassLoaderModel().getDependencies().stream()
-          .filter(dependency -> dependency.getArtifactCoordinates().equals(otherClassLoaderModel.getArtifactCoordinates()))
-          .findFirst()
-          .orElseThrow(() -> new IllegalStateException(format("Couldn't find an artifact coordinate for '%s' to merge dependencies as inline",
-                                                              otherClassLoaderModel.getArtifactCoordinates())));
-
-      if (getNestedClassLoaderModels().putIfAbsent(otherClassLoaderModel.getArtifactCoordinates(),
-                                                   otherClassLoaderModel) != null) {
-        throw new IllegalArgumentException(format("Duplicated definition of a nested class loader model for artifact coordinates '%s'",
-                                                  otherClassLoaderModel.getArtifactCoordinates()));
-      }
-    }
+    doMergeDependencies(otherClassloaderModels, context -> {
+    });
   }
 
   @Override

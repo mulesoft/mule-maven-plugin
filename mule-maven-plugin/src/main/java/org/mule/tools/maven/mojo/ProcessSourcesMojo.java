@@ -120,6 +120,11 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
     };
   }
 
+  /**
+   * Decorator for {@link ClassLoaderModel} that will not resolve the URIs
+   * parameterized, used when building a class loader model that should reference to the resolved
+   * artifact URIs in the local Maven repository.
+   */
   private class NotParameterizedClasLoaderModel extends ClassLoaderModel {
 
     private final ClassLoaderModel classLoaderModel;

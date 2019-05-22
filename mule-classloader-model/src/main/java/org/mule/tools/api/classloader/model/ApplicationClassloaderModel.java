@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class ApplicationClassloaderModel {
 
@@ -35,8 +36,15 @@ public class ApplicationClassloaderModel {
   }
 
   public void mergeDependencies(Collection<ClassLoaderModel> otherClassloaderModels) {
+    doMergeDependencies(otherClassloaderModels, context -> {
+      context.getArtifact().setDependencies(context.getClassLoaderModel().getDependencies());
+    });
+  }
+
+  protected final void doMergeDependencies(Collection<ClassLoaderModel> otherClassloaderModels,
+                                           Consumer<MergeDependenciesContext> action) {
     for (ClassLoaderModel otherClassLoaderModel : otherClassloaderModels) {
-      Artifact pluginArtifact = getClassLoaderModel().getDependencies().stream()
+      Artifact artifact = getClassLoaderModel().getDependencies().stream()
           .filter(dependency -> dependency.getArtifactCoordinates().equals(otherClassLoaderModel.getArtifactCoordinates()))
           .findFirst()
           .orElseThrow(() -> new IllegalStateException(format("Couldn't find an artifact coordinate for '%s' to merge dependencies as inline",
@@ -46,7 +54,7 @@ public class ApplicationClassloaderModel {
         throw new IllegalArgumentException(format("Duplicated definition of a nested class loader model for artifact coordinates '%s'",
                                                   otherClassLoaderModel.getArtifactCoordinates()));
       }
-      pluginArtifact.setDependencies(otherClassLoaderModel.getDependencies());
+      action.accept(new MergeDependenciesContext(artifact, otherClassLoaderModel));
     }
   }
 
@@ -65,5 +73,24 @@ public class ApplicationClassloaderModel {
 
   public ClassLoaderModel getClassLoaderModel(Artifact artifact) {
     return nestedClassLoaderModels.get(artifact.getArtifactCoordinates());
+  }
+
+  class MergeDependenciesContext {
+
+    private Artifact artifact;
+    private ClassLoaderModel classLoaderModel;
+
+    public MergeDependenciesContext(Artifact artifact, ClassLoaderModel classLoaderModel) {
+      this.artifact = artifact;
+      this.classLoaderModel = classLoaderModel;
+    }
+
+    public Artifact getArtifact() {
+      return artifact;
+    }
+
+    public ClassLoaderModel getClassLoaderModel() {
+      return classLoaderModel;
+    }
   }
 }

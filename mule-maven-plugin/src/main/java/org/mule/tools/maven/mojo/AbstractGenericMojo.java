@@ -130,7 +130,8 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
     if (projectBuildDirectory != null) {
       new ProjectDirectoryUpdater(project).updateBuildDirectory(projectBuildDirectory);
     }
-    if (!lightweightPackage) {
+    if (!lightweightPackage && useLocalRepository) {
+      getLog().info("'useLocalRepository' would be ignored, it could only be used when 'lightweightPackage' is enabled");
       useLocalRepository = false;
     }
   }

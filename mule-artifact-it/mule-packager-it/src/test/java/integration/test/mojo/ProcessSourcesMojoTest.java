@@ -11,12 +11,16 @@ package integration.test.mojo;
 
 import static com.google.common.collect.ImmutableList.of;
 import static integration.FileTreeMatcher.hasSameTreeStructure;
+import static java.io.File.separator;
+import static java.nio.file.Files.readAllLines;
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.fail;
-import static org.junit.rules.ExpectedException.none;
+
+import org.mule.maven.client.api.MavenClientProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,10 +30,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import org.apache.maven.it.VerificationException;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class ProcessSourcesMojoTest extends MojoTest {
 
@@ -46,6 +47,8 @@ public class ProcessSourcesMojoTest extends MojoTest {
       "/expected-files/expected-legacy-mode-classloader-model.json";
   private static final String EXPECTED_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-classloader-model.json";
+  private static final String EXPECTED_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE =
+      "/expected-files/expected-lightweight-local-repository-classloader-model.json";
   private static final String EXPECTED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-mule-plugin-a-classloader-model.json";
   private static final String EXPECTED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE =
@@ -124,21 +127,21 @@ public class ProcessSourcesMojoTest extends MojoTest {
     verifier.executeGoal(PROCESS_SOURCES);
 
     File generatedClassloaderModelFile = getFile(GENERATED_CLASSLOADER_MODEL_FILE);
-    List<String> generatedClassloaderModelFileContent = Files.readAllLines(generatedClassloaderModelFile.toPath());
+    List<String> generatedClassloaderModelFileContent = readAllLines(generatedClassloaderModelFile.toPath());
 
     File expectedClassloaderModelFile = getFile(EXPECTED_LEGACY_MODE_CLASSLOADER_MODEL_FILE);
-    List<String> expectedClassloaderModelFileContent = Files.readAllLines(expectedClassloaderModelFile.toPath());
+    List<String> expectedClassloaderModelFileContent = readAllLines(expectedClassloaderModelFile.toPath());
 
     assertThat("The classloader-model.json file is different from the expected", generatedClassloaderModelFileContent,
                equalTo(expectedClassloaderModelFileContent));
 
     File generatedMulePluginAClassloaderModelFile = getFile(GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
     List<String> generatedMulePluginAClassloaderModelFileContent =
-        Files.readAllLines(generatedMulePluginAClassloaderModelFile.toPath());
+        readAllLines(generatedMulePluginAClassloaderModelFile.toPath());
 
     File expectedMulePluginAClassloaderModelFile = getFile(EXPECTED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
     List<String> expectedMulePluginAClassloaderModelFileContent =
-        Files.readAllLines(expectedMulePluginAClassloaderModelFile.toPath());
+        readAllLines(expectedMulePluginAClassloaderModelFile.toPath());
 
     assertThat("The classloader-model.json file of the mule-plugin-a is different from the expected",
                generatedMulePluginAClassloaderModelFileContent,
@@ -148,19 +151,19 @@ public class ProcessSourcesMojoTest extends MojoTest {
     File generatedMulePluginBClassloaderModelFile =
         getFile(GENERATED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE);
     List<String> generatedMulePluginBClassloaderModelFileContent =
-        Files.readAllLines(generatedMulePluginBClassloaderModelFile.toPath());
+        readAllLines(generatedMulePluginBClassloaderModelFile.toPath());
 
     File expectedMulePluginBClassloaderModelFile =
         getFile(EXPECTED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE);
     List<String> expectedMulePluginBClassloaderModelFileContent =
-        Files.readAllLines(expectedMulePluginBClassloaderModelFile.toPath());
+        readAllLines(expectedMulePluginBClassloaderModelFile.toPath());
 
     assertThat("The classloader-model.json file of the mule-plugin-b is different from the expected",
                generatedMulePluginBClassloaderModelFileContent,
                equalTo(expectedMulePluginBClassloaderModelFileContent));
 
     File expectedStructure = getExpectedStructure("/expected-legacy-mode-classloader-model-project");
-    File targetStructure = new File(verifier.getBasedir() + File.separator + TARGET_FOLDER_NAME);
+    File targetStructure = new File(verifier.getBasedir() + separator + TARGET_FOLDER_NAME);
     deleteDirectory(new File(targetStructure, "temp"));
 
     assertThat("The directory structure is different from the expected", targetStructure,
@@ -180,10 +183,10 @@ public class ProcessSourcesMojoTest extends MojoTest {
     verifier.executeGoal(PROCESS_SOURCES);
 
     File generatedClassloaderModelFile = getFile(GENERATED_CLASSLOADER_MODEL_FILE);
-    List<String> generatedClassloaderModelFileContent = Files.readAllLines(generatedClassloaderModelFile.toPath());
+    List<String> generatedClassloaderModelFileContent = readAllLines(generatedClassloaderModelFile.toPath());
 
     File expectedClassloaderModelFile = getFile(EXPECTED_CLASSLOADER_MODEL_FILE);
-    List<String> expectedClassloaderModelFileContent = Files.readAllLines(expectedClassloaderModelFile.toPath());
+    List<String> expectedClassloaderModelFileContent = readAllLines(expectedClassloaderModelFile.toPath());
 
     assertThat("The classloader-model.json file is different from the expected", generatedClassloaderModelFileContent,
                equalTo(expectedClassloaderModelFileContent));
@@ -202,7 +205,55 @@ public class ProcessSourcesMojoTest extends MojoTest {
     }
 
     File expectedStructure = getExpectedStructure("/expected-classloader-model-project");
-    File targetStructure = new File(verifier.getBasedir() + File.separator + TARGET_FOLDER_NAME);
+    File targetStructure = new File(verifier.getBasedir() + separator + TARGET_FOLDER_NAME);
+    deleteDirectory(new File(targetStructure, "temp"));
+
+    assertThat("The directory structure is different from the expected", targetStructure,
+               hasSameTreeStructure(expectedStructure, excludes));
+
+    verifier.verifyErrorFreeLog();
+  }
+
+  // Please be aware that the order that the dependencies are installed is important:
+  // For instance, dependency D MUST be installed before C as the former is a transitive dependency of the latter
+  // and so it needs to be installed in the local repository in order to be resolved.
+  @Test
+  public void testProcessSourcesClassloaderModelLightweightUsingLocalRepository() throws IOException, VerificationException {
+    projectBaseDirectory = builder.createProjectBaseDir("empty-classloader-model-project", this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-DlightweightPackage=true");
+    verifier.addCliOption("-DuseLocalRepository=true");
+    verifier.executeGoal(PROCESS_SOURCES);
+
+    File generatedClassloaderModelFile = getFile(GENERATED_CLASSLOADER_MODEL_FILE);
+    List<String> generatedClassloaderModelFileContent = readAllLines(generatedClassloaderModelFile.toPath());
+
+    File expectedClassloaderModelFile = getFile(EXPECTED_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE);
+    List<String> expectedClassloaderModelFileContent = readAllLines(expectedClassloaderModelFile.toPath());
+    File localRepository = MavenClientProvider.discoverProvider(this.getClass().getClassLoader()).getLocalRepositorySuppliers()
+        .environmentMavenRepositorySupplier().get();
+    expectedClassloaderModelFileContent = expectedClassloaderModelFileContent.stream()
+        .map(line -> line.replace("${localRepository}", localRepository.getAbsolutePath())).collect(toList());
+
+    assertThat("The classloader-model.json file is different from the expected", generatedClassloaderModelFileContent,
+               equalTo(expectedClassloaderModelFileContent));
+
+    try {
+      getFile(GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
+      fail("ClassLoader Model for plugin should not be generated");
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), equalTo("Resource not found: " + GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE));
+    }
+    try {
+      getFile(GENERATED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE);
+      fail("ClassLoader Model for plugin should not be generated");
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), equalTo("Resource not found: " + GENERATED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE));
+    }
+
+    File expectedStructure = getExpectedStructure("/expected-lightweight-local-repository-classloader-model-project");
+    File targetStructure = new File(verifier.getBasedir() + separator + TARGET_FOLDER_NAME);
     deleteDirectory(new File(targetStructure, "temp"));
 
     assertThat("The directory structure is different from the expected", targetStructure,
@@ -315,8 +366,6 @@ public class ProcessSourcesMojoTest extends MojoTest {
                equalTo(expectedClassloaderModelFileContent));
   }
 
-
-  @Ignore // Reenable test - MMP-292
   @Test
   public void testProcessSourcesCorrectRuntimeScopeTransitivity() throws IOException, VerificationException {
     processSourcesOnProject("mule-application-runtime");
@@ -374,13 +423,12 @@ public class ProcessSourcesMojoTest extends MojoTest {
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-DskipValidation=true");
-    //verifier.setDebugJvm(true);
     cliOptions.stream().forEach(option -> verifier.addCliOption(option));
     verifier.executeGoal(PROCESS_SOURCES);
   }
 
   protected List<String> getFileContent(String path) throws IOException {
     File generatedClassloaderModelFile = getFile(path);
-    return Files.readAllLines(generatedClassloaderModelFile.toPath());
+    return readAllLines(generatedClassloaderModelFile.toPath());
   }
 }

@@ -17,10 +17,13 @@ import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.Plugin;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
@@ -55,11 +58,20 @@ public class MulePluginClassloaderModelResolver extends ClassloaderModelResolver
   public Map<BundleDependency, List<BundleDependency>> resolveDependencies(List<BundleDependency> mulePlugins) {
     Map<BundleDependency, List<BundleDependency>> muleDependenciesDependencies = new LinkedHashMap<>();
     for (BundleDependency muleDependency : mulePlugins) {
-      List<BundleDependency> mulePluginDependencies =
-          muleMavenPluginClient.resolveBundleDescriptorDependencies(false, false, muleDependency.getDescriptor());
-      muleDependenciesDependencies.put(muleDependency, new ArrayList<>(mulePluginDependencies));
+      muleDependenciesDependencies.put(muleDependency, collectTransitiveDependencies(muleDependency));
     }
     return muleDependenciesDependencies;
+  }
+
+  private List<BundleDependency> collectTransitiveDependencies(BundleDependency rootDependency) {
+    List<BundleDependency> allTransitiveDependencies = new LinkedList<>();
+    for (BundleDependency transitiveDependency : rootDependency.getTransitiveDependencies()) {
+      allTransitiveDependencies.add(transitiveDependency);
+      if (transitiveDependency.getDescriptor().getClassifier().map(c -> !MULE_PLUGIN_CLASSIFIER.equals(c)).orElse(true)) {
+        allTransitiveDependencies.addAll(collectTransitiveDependencies(transitiveDependency));
+      }
+    }
+    return allTransitiveDependencies;
   }
 
   protected List<BundleDependency> resolveMulePluginsVersions(List<BundleDependency> mulePluginsToResolve,

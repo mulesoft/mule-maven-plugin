@@ -24,7 +24,6 @@ import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver;
 import org.mule.tools.api.classloader.model.resolver.ApplicationDependencyResolver;
 import org.mule.tools.api.classloader.model.resolver.MulePluginClassloaderModelResolver;
-import org.mule.tools.api.classloader.model.resolver.RamlClassloaderModelResolver;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.repository.ArtifactInstaller;
 import org.mule.tools.api.repository.RepositoryGenerator;
@@ -102,7 +101,6 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
     AetherMavenClient aetherMavenClient = getAetherMavenClient();
     return new ApplicationClassLoaderModelAssembler(new ApplicationDependencyResolver(aetherMavenClient),
                                                     new MulePluginClassloaderModelResolver(aetherMavenClient),
-                                                    new RamlClassloaderModelResolver(aetherMavenClient),
                                                     new AdditionalPluginDependenciesResolver(aetherMavenClient,
                                                                                              additionalPluginDependencies == null
                                                                                                  ? new ArrayList<>()

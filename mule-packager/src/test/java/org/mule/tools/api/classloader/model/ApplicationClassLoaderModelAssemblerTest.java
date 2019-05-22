@@ -87,33 +87,32 @@ public class ApplicationClassLoaderModelAssemblerTest {
     appDependencies.add(dependency3);
 
     List<BundleDependency> appMulePluginDependencies = new ArrayList<>();
-    BundleDependency firstMulePlugin =
-        buildBundleDependency(2, 3, MULE_PLUGIN_CLASSIFIER);
-    BundleDependency secondMulePlugin = buildBundleDependency(2, 4,
-                                                              MULE_PLUGIN_CLASSIFIER);
-    appMulePluginDependencies.add(firstMulePlugin);
-    appMulePluginDependencies.add(secondMulePlugin);
 
-    aetherMavenClientMock = getAetherMavenClientMock(appDependencies, appMulePluginDependencies);
-
-    List<BundleDependency> firstMulePluginDependencies = new ArrayList<>();
-    BundleDependency dependency5 =
-        buildBundleDependency(1, 5, EMPTY);
-    BundleDependency dependency6 = buildBundleDependency(1, 6,
-                                                         EMPTY);
+    BundleDependency dependency5 = buildBundleDependency(1, 5, EMPTY);
+    BundleDependency dependency6 = buildBundleDependency(1, 6, EMPTY);
     BundleDependency dependency7 = buildBundleDependency(1, 7, EMPTY);
     BundleDependency dependency8 = buildBundleDependency(1, 8, EMPTY);
-    firstMulePluginDependencies.add(secondMulePlugin);
-    firstMulePluginDependencies.add(dependency5);
-    firstMulePluginDependencies.add(dependency8);
-
-    setPluginDependencyinAetherMavenClientMock(firstMulePlugin, firstMulePluginDependencies);
 
     List<BundleDependency> secondMulePluginDependencies = new ArrayList<>();
     secondMulePluginDependencies.add(dependency6);
     secondMulePluginDependencies.add(dependency7);
 
-    setPluginDependencyinAetherMavenClientMock(secondMulePlugin, secondMulePluginDependencies);
+    BundleDependency secondMulePlugin =
+        buildBundleDependency(2, 4, MULE_PLUGIN_CLASSIFIER, VERSION, secondMulePluginDependencies).build();
+
+
+    List<BundleDependency> firstMulePluginDependencies = new ArrayList<>();
+    firstMulePluginDependencies.add(secondMulePlugin);
+    firstMulePluginDependencies.add(dependency5);
+    firstMulePluginDependencies.add(dependency8);
+
+    BundleDependency firstMulePlugin =
+        buildBundleDependency(2, 3, MULE_PLUGIN_CLASSIFIER, VERSION, firstMulePluginDependencies).build();
+
+    appMulePluginDependencies.add(firstMulePlugin);
+    appMulePluginDependencies.add(secondMulePlugin);
+
+    aetherMavenClientMock = getAetherMavenClientMock(appDependencies, appMulePluginDependencies);
 
     ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
@@ -303,19 +302,13 @@ public class ApplicationClassLoaderModelAssemblerTest {
   public void getClassLoaderModelWithOneDependencyThatIsAMulePluginTest() throws URISyntaxException, IOException {
     List<BundleDependency> appDependencies = new ArrayList<>();
 
-    List<BundleDependency> appMulePluginDependencies = new ArrayList<>();
-    BundleDependency firstMulePlugin =
-        buildBundleDependency(2, 3, MULE_PLUGIN_CLASSIFIER);
-    appMulePluginDependencies.add(firstMulePlugin);
-
-    aetherMavenClientMock = getAetherMavenClientMock(appDependencies, appMulePluginDependencies);
-
-    List<BundleDependency> firstMulePluginDependencies = new ArrayList<>();
     BundleDependency mulePluginTransitiveDependency1 =
         buildBundleDependency(1, 1, EMPTY);
-    firstMulePluginDependencies.add(mulePluginTransitiveDependency1);
 
-    setPluginDependencyinAetherMavenClientMock(firstMulePlugin, firstMulePluginDependencies);
+    BundleDependency firstMulePlugin =
+        buildBundleDependency(2, 3, MULE_PLUGIN_CLASSIFIER, VERSION, singletonList(mulePluginTransitiveDependency1)).build();
+
+    aetherMavenClientMock = getAetherMavenClientMock(appDependencies, singletonList(firstMulePlugin));
 
     ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
@@ -334,7 +327,6 @@ public class ApplicationClassLoaderModelAssemblerTest {
                applicationClassloaderModel.getMulePluginsClassloaderModels().get(0).getDependencies(),
                containsInAnyOrder(toArtifact(mulePluginTransitiveDependency1)));
   }
-
 
   private BundleDependency buildBundleDependency(int groupIdSuffix, int artifactIdSuffix, String classifier)
       throws URISyntaxException {
@@ -375,12 +367,6 @@ public class ApplicationClassLoaderModelAssemblerTest {
     }
   }
 
-  private void setPluginDependencyinAetherMavenClientMock(BundleDependency mulePlugin,
-                                                          List<BundleDependency> mulePluginDependencies) {
-    when(aetherMavenClientMock.resolveBundleDescriptorDependencies(eq(false), eq(false),
-                                                                   eq(mulePlugin.getDescriptor())))
-                                                                       .thenReturn(mulePluginDependencies);
-  }
 
   private AetherMavenClient getAetherMavenClientMock(List<BundleDependency> appDependencies,
                                                      List<BundleDependency> appMulePluginDependencies) {

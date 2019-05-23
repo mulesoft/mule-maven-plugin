@@ -143,7 +143,7 @@ public class RuntimeFabricDeploymentSettings {
     }
 
     if (isEmpty(getMemoryMax())) {
-      setMemoryMax("700Mi");
+      setMemoryMax(getMemoryReserved());
     }
 
     if (isEmpty(getCpuReserved())) {
@@ -151,7 +151,7 @@ public class RuntimeFabricDeploymentSettings {
     }
 
     if (isEmpty(getCpuMax())) {
-      setCpuMax("500m");
+      setCpuMax(getCpuReserved());
     }
   }
 }

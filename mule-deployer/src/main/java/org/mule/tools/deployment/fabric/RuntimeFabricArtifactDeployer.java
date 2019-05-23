@@ -22,8 +22,6 @@ import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.fabric.RuntimeFabricDeploymentVerification;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-
 import static com.google.common.base.Preconditions.checkArgument;
 
 public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {

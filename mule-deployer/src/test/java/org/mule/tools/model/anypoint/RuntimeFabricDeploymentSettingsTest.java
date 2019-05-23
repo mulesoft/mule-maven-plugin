@@ -15,6 +15,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mule.tools.client.core.exception.DeploymentException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.rules.ExpectedException.none;
 
 public class RuntimeFabricDeploymentSettingsTest {
@@ -24,8 +26,10 @@ public class RuntimeFabricDeploymentSettingsTest {
   public static final int REPLICAS = 1;
   public static final boolean ENABLE_RUNTIME_CLUSTER_MODE = false;
   public static final String PROVIDER = "SERVER";
-  public static final String CPU_MAX = "1";
-  public static final String MEMORY_MAX = "1";
+  public static final String CPU_RESERVED = "1";
+  public static final String CPU_MAX = "2";
+  public static final String MEMORY_RESERVED = "1";
+  public static final String MEMORY_MAX = "3";
   public static final String PUBLIC_URL = "www.pepe.com";
   private RuntimeFabricDeploymentSettings deploymentSettings;
 
@@ -39,8 +43,8 @@ public class RuntimeFabricDeploymentSettingsTest {
     deploymentSettings.setCpuReserved(CORES);
     deploymentSettings.setMemoryReserved(MEMORY);
     deploymentSettings.setRuntimeVersion("4.1.3");
-    deploymentSettings.setCpuMax(CPU_MAX);
-    deploymentSettings.setMemoryMax(MEMORY_MAX);
+    deploymentSettings.setCpuReserved(CPU_RESERVED);
+    deploymentSettings.setMemoryReserved(MEMORY_RESERVED);
     deploymentSettings.setPublicUrl(PUBLIC_URL);
     deploymentSettings.setLastMileSecurity(true);
     // These values are injected by Maven
@@ -61,6 +65,34 @@ public class RuntimeFabricDeploymentSettingsTest {
     deploymentSettings.setReplicationFactor(2);
     deploymentSettings.setClusteringEnabled(true);
     deploymentSettings.setEnvironmentSpecificValues();
+  }
+
+  @Test
+  public void undefinedCPUMaxUseCPUReservedValue() throws DeploymentException {
+    deploymentSettings.setEnvironmentSpecificValues();
+    assertThat("The CpuMax value is not the same as CpuReserved", deploymentSettings.getCpuMax(),
+               equalTo(deploymentSettings.getCpuReserved()));
+  }
+
+  @Test
+  public void setCPUMaxValue() throws DeploymentException {
+    deploymentSettings.setCpuMax(CPU_MAX);
+    deploymentSettings.setEnvironmentSpecificValues();
+    assertThat("The CpuMax value is not right", deploymentSettings.getCpuMax(), equalTo(CPU_MAX));
+  }
+
+  @Test
+  public void undefinedMemoryMaxUseMemoryReservedValue() throws DeploymentException {
+    deploymentSettings.setEnvironmentSpecificValues();
+    assertThat("The MemoryMax value is not the same as MemoryReserved", deploymentSettings.getMemoryMax(),
+               equalTo(deploymentSettings.getMemoryReserved()));
+  }
+
+  @Test
+  public void setMemoryMaxValue() throws DeploymentException {
+    deploymentSettings.setMemoryMax(MEMORY_MAX);
+    deploymentSettings.setEnvironmentSpecificValues();
+    assertThat("The MemoryMax value is not right", deploymentSettings.getMemoryMax(), equalTo(MEMORY_MAX));
   }
 
 }

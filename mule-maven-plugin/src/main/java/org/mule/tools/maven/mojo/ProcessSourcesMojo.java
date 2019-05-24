@@ -48,6 +48,9 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class ProcessSourcesMojo extends AbstractMuleMojo {
 
+  /**
+   * @deprecated Should not be considered as validations for compatible plugins is already done when resolving dependencies.
+   */
   @Parameter(defaultValue = "${skipPluginCompatibilityValidation}")
   protected boolean skipPluginCompatibilityValidation = false;
   protected final MulePluginsCompatibilityValidator mulePluginsCompatibilityValidator = new MulePluginsCompatibilityValidator();
@@ -55,11 +58,18 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
   @Override
   public void doExecute() throws MojoFailureException {
     getLog().debug("Processing sources...");
-    if (!(lightweightPackage && skipPluginCompatibilityValidation)) {
+    if (skipPluginCompatibilityValidation) {
+      getLog()
+          .warn("Ignoring skipPluginCompatibilityValidation property as it is deprecated. Compatibility between mule-plugin versions is always done.");
+    }
+
+    boolean isHeavyWeight = !lightweightPackage;
+    boolean isLightWeightUsingLocalRepository = lightweightPackage && useLocalRepository;
+    if (isLightWeightUsingLocalRepository || isHeavyWeight) {
       RepositoryGenerator repositoryGenerator =
           new RepositoryGenerator(session.getCurrentProject().getFile(), outputDirectory,
                                   new ArtifactInstaller(new MavenPackagerLog(getLog())),
-                                  getClassLoaderModelAssembler(), legacyMode);
+                                  getClassLoaderModelAssembler(), isHeavyWeight);
       try {
         ClassLoaderModel classLoaderModel = repositoryGenerator.generate(!(lightweightPackage || useLocalRepository));
         for (SharedLibraryDependency sharedLibraryDependency : sharedLibraries) {
@@ -70,12 +80,10 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
         }
         Project project = getProject(classLoaderModel);
         mulePluginsCompatibilityValidator.validate(getResolver(project).resolve());
-        if (!lightweightPackage || (lightweightPackage && useLocalRepository)) {
-          if (lightweightPackage && useLocalRepository) {
-            classLoaderModel = new NotParameterizedClasLoaderModel(classLoaderModel);
-          }
-          ((MuleContentGenerator) getContentGenerator()).createApplicationClassLoaderModelJsonFile(classLoaderModel);
+        if (isLightWeightUsingLocalRepository) {
+          classLoaderModel = new NotParameterizedClasLoaderModel(classLoaderModel);
         }
+        ((MuleContentGenerator) getContentGenerator()).createApplicationClassLoaderModelJsonFile(classLoaderModel);
       } catch (Exception e) {
         String message = format("There was an exception while creating the repository of [%s]", project.toString());
         throw new MojoFailureException(message, e);

@@ -62,14 +62,14 @@ public class ApplicationClassLoaderModelAssembler {
     this.additionalPluginDependenciesResolver = additionalPluginDependenciesResolver;
   }
 
-  public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, boolean legacyMode)
+  public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, boolean useClassLoaderModelPerArtifact)
       throws IllegalStateException {
 
     Model pomModel = getPomFile(pomFile);
 
     ArtifactCoordinates appCoordinates = getApplicationArtifactCoordinates(pomModel);
 
-    AppClassLoaderModel appModel = new AppClassLoaderModel(legacyMode ? CLASS_LOADER_MODEL_VERSION
+    AppClassLoaderModel appModel = new AppClassLoaderModel(useClassLoaderModelPerArtifact ? CLASS_LOADER_MODEL_VERSION
         : CLASS_LOADER_MODEL_VERSION_120, appCoordinates);
 
     List<BundleDependency> appDependencies = applicationDependencyResolver.resolveApplicationDependencies(pomFile);
@@ -78,10 +78,10 @@ public class ApplicationClassLoaderModelAssembler {
         updateArtifactsSharedState(appDependencies, toApplicationModelArtifacts(appDependencies), pomModel);
     appModel.setDependencies(dependencies);
 
-    if (legacyMode) {
-      applicationClassLoaderModel = new LegacyApplicationClassloaderModel(appModel);
-    } else {
+    if (useClassLoaderModelPerArtifact) {
       applicationClassLoaderModel = new ApplicationClassloaderModel(appModel);
+    } else {
+      applicationClassLoaderModel = new InlineApplicationClassloaderModel(appModel);
     }
 
     Collection<ClassLoaderModel> pluginsClassLoaderModels = mulePluginClassLoaderModelResolver.resolve(appDependencies);

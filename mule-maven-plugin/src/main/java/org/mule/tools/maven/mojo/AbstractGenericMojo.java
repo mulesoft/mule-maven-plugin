@@ -113,9 +113,6 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   @Parameter(defaultValue = "${useLocalRepository}")
   protected boolean useLocalRepository = false;
 
-  @Parameter(defaultValue = "${legacyMode}")
-  protected boolean legacyMode = false;
-
   protected AbstractProjectValidator validator;
 
   protected ProjectVerifier verifier;

@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,9 +46,9 @@ public class ApplicationClassloaderModelTest {
   private Artifact mulePluginArtifact;
 
   @Parameter
-  public Boolean legacyModel;
+  public Boolean useClassLoaderModelPerArtifact;
 
-  @Parameterized.Parameters(name = "Running application class loader model with legacyModel: {0}")
+  @Parameterized.Parameters(name = "Running application class loader model with useClassLoaderModelPerArtifact: {0}")
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
         {true},
@@ -74,7 +73,8 @@ public class ApplicationClassloaderModelTest {
     classloaderModel.setDependencies(dependencies);
 
     applicationClassloaderModel =
-        legacyModel ? new LegacyApplicationClassloaderModel(classloaderModel) : new ApplicationClassloaderModel(classloaderModel);
+        useClassLoaderModelPerArtifact ? new ApplicationClassloaderModel(classloaderModel)
+            : new InlineApplicationClassloaderModel(classloaderModel);
   }
 
   @Test
@@ -101,7 +101,7 @@ public class ApplicationClassloaderModelTest {
         .filter(artifact -> artifact.getArtifactCoordinates().equals(mulePluginArtifact.getArtifactCoordinates())).findFirst()
         .orElseThrow(() -> new AssertionError("Couldn't find other plugin artifact")).getDependencies();
 
-    if (!legacyModel) {
+    if (!useClassLoaderModelPerArtifact) {
       assertThat(mergedDependencies, contains(otherThirdPartyArtifact));
     }
   }

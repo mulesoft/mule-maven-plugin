@@ -80,7 +80,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
   @Parameterized.Parameter
   public Boolean legacyModel;
 
-  @Parameterized.Parameters(name = "Running application class loader model assembler with legacyModel: {0}")
+  @Parameterized.Parameters(name = "Running application class loader model assembler with useClassLoaderModelPerArtifact: {0}")
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
         {true},

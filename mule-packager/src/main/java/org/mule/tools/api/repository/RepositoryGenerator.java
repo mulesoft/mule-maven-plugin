@@ -38,30 +38,31 @@ public class RepositoryGenerator {
   private final ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssembler;
   protected File outputDirectory;
   private File projectPomFile;
-  private boolean legacyMode;
+  private boolean useClassLoaderModelPerArtifact;
 
   public RepositoryGenerator(File projectPomFile, File outputDirectory, ArtifactInstaller artifactInstaller,
-                             ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssembler, boolean legacyMode) {
+                             ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssembler,
+                             boolean useClassLoaderModelPerArtifact) {
     this.projectPomFile = projectPomFile;
     this.outputDirectory = outputDirectory;
     this.artifactInstaller = artifactInstaller;
     this.applicationClassLoaderModelAssembler = applicationClassLoaderModelAssembler;
-    this.legacyMode = legacyMode;
+    this.useClassLoaderModelPerArtifact = useClassLoaderModelPerArtifact;
   }
 
   public ClassLoaderModel generate() throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
         applicationClassLoaderModelAssembler
-            .getApplicationClassLoaderModel(projectPomFile, legacyMode);
-    installArtifacts(getRepositoryFolder(), artifactInstaller, appModel, legacyMode);
+            .getApplicationClassLoaderModel(projectPomFile, useClassLoaderModelPerArtifact);
+    installArtifacts(getRepositoryFolder(), artifactInstaller, appModel, useClassLoaderModelPerArtifact);
     return appModel.getClassLoaderModel();
   }
 
   public ClassLoaderModel generate(boolean installArtifactsToArtifactRepository) throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
-        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, legacyMode);
+        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, useClassLoaderModelPerArtifact);
     if (installArtifactsToArtifactRepository) {
-      installArtifacts(getRepositoryFolder(), artifactInstaller, appModel, legacyMode);
+      installArtifacts(getRepositoryFolder(), artifactInstaller, appModel, useClassLoaderModelPerArtifact);
     }
     return appModel.getClassLoaderModel();
   }
@@ -75,7 +76,7 @@ public class RepositoryGenerator {
   }
 
   protected void installArtifacts(File repositoryFile, ArtifactInstaller installer, ApplicationClassloaderModel appModel,
-                                  boolean legacyMode)
+                                  boolean useClassLoaderModelPerArtifact)
       throws IOException {
     TreeSet<Artifact> sortedArtifacts = new TreeSet<>(removeProvidedArtifacts(appModel.getArtifacts()));
     if (sortedArtifacts.isEmpty()) {
@@ -83,7 +84,7 @@ public class RepositoryGenerator {
     }
     for (Artifact artifact : sortedArtifacts) {
       Optional<ClassLoaderModel> classLoaderModelOptional = empty();
-      if (legacyMode && MULE_PLUGIN.equals(artifact.getArtifactCoordinates().getClassifier())) {
+      if (useClassLoaderModelPerArtifact && MULE_PLUGIN.equals(artifact.getArtifactCoordinates().getClassifier())) {
         classLoaderModelOptional = of(appModel.getClassLoaderModel(artifact));
       }
       installer.installArtifact(repositoryFile, artifact, classLoaderModelOptional);

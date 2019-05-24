@@ -11,12 +11,15 @@ package org.mule.tools.api.classloader.model;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import com.google.common.collect.ImmutableList;
 
 public class ApplicationClassloaderModel {
 
@@ -37,7 +40,6 @@ public class ApplicationClassloaderModel {
 
   public void mergeDependencies(Collection<ClassLoaderModel> otherClassloaderModels) {
     doMergeDependencies(otherClassloaderModels, context -> {
-      context.getArtifact().setDependencies(context.getClassLoaderModel().getDependencies());
     });
   }
 
@@ -59,7 +61,11 @@ public class ApplicationClassloaderModel {
   }
 
   public List<Artifact> getArtifacts() {
-    return classLoaderModel.getArtifacts();
+    return ImmutableList.<Artifact>builder()
+        .addAll(getClassLoaderModel().getArtifacts())
+        .addAll(getNestedClassLoaderModels().values().stream()
+            .flatMap(nestedClassLoaderModels -> nestedClassLoaderModels.getArtifacts().stream()).collect(toList()))
+        .build();
   }
 
   public void addDirectDependencies(List<Artifact> dependencies) {

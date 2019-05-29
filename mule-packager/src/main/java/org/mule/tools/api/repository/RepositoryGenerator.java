@@ -11,6 +11,8 @@
 package org.mule.tools.api.repository;
 
 import static java.lang.String.format;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
 
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
@@ -18,6 +20,8 @@ import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.classloader.model.NotParameterizedClassLoaderModel;
+import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.util.FileUtils;
 
 import java.io.File;
@@ -54,13 +58,39 @@ public class RepositoryGenerator {
     return appModel.getClassLoaderModel();
   }
 
-  public ClassLoaderModel generate(boolean lightweight) throws IOException, IllegalStateException {
+  public ClassLoaderModel generate(boolean lightweight, boolean useLocalRepository) throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
         applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile);
     if (!lightweight) {
       installArtifacts(getRepositoryFolder(), artifactInstaller, appModel);
     }
+    if (useLocalRepository) {
+      generateClassLoaderModelRepositoryFiles(appModel);
+    }
     return appModel.getClassLoaderModel();
+  }
+
+  private void generateClassLoaderModelRepositoryFiles(ApplicationClassloaderModel appModel) {
+    appModel.getMulePluginsClassloaderModels().stream().forEach(mulePluginClassLoaderModel -> {
+      Artifact artifact = appModel.getArtifacts().stream()
+          .filter(possibleArtifact -> possibleArtifact.getArtifactCoordinates()
+              .equals(mulePluginClassLoaderModel.getArtifactCoordinates()))
+          .findFirst()
+          .orElseThrow(() -> new RuntimeException(format("Cannot resolve artifact folder for class loader model: [%s]",
+                                                         mulePluginClassLoaderModel.getArtifactCoordinates())));
+      File artifactFolderDestination = artifact.getFormattedMavenDirectory(outputDirectory.toPath().resolve(META_INF.value())
+          .resolve(MULE_ARTIFACT.value()).toFile());
+      if (!artifactFolderDestination.exists()) {
+        artifactFolderDestination.mkdirs();
+      }
+      MuleContentGenerator.createClassLoaderModelJsonFile(new NotParameterizedClassLoaderModel(mulePluginClassLoaderModel),
+                                                          artifactFolderDestination);
+    });
+
+  }
+
+  public ClassLoaderModel generate(boolean lightweight) throws IOException, IllegalStateException {
+    return generate(lightweight, false);
   }
 
   protected File getRepositoryFolder() {

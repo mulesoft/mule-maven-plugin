@@ -18,7 +18,6 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.fail;
 
 import org.mule.maven.client.api.MavenClientProvider;
 
@@ -36,6 +35,8 @@ public class ProcessSourcesMojoTest extends MojoTest {
 
   private static final String GENERATED_CLASSLOADER_MODEL_FILE =
       "/empty-classloader-model-project/target/META-INF/mule-artifact/classloader-model.json";
+  private static final String GENERATED_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE =
+      "/empty-lightweight-local-repository-classloader-model-project/target/META-INF/mule-artifact/classloader-model.json";
 
   private static final String GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE =
       "/empty-classloader-model-project/target/repository/org/mule/group/mule-plugin-a/1.0.0/classloader-model.json";
@@ -43,6 +44,7 @@ public class ProcessSourcesMojoTest extends MojoTest {
       "/empty-classloader-model-project/target/repository/org/mule/group/mule-plugin-b/1.0.0/classloader-model.json";
   private static final String EXPECTED_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-classloader-model.json";
+
   private static final String EXPECTED_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-lightweight-local-repository-classloader-model.json";
   private static final String EXPECTED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE =
@@ -51,13 +53,17 @@ public class ProcessSourcesMojoTest extends MojoTest {
       "/expected-files/expected-mule-plugin-b-classloader-model.json";
 
   private static final String GENERATED_MULE_PLUGIN_A_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE =
-      "/empty-classloader-model-project/target/META-INF/mule-artifact/org/mule/group/mule-plugin-a/1.0.0/classloader-model.json";
+      "/empty-lightweight-local-repository-classloader-model-project/target/META-INF/mule-artifact/org/mule/group/mule-plugin-a/1.0.0/classloader-model.json";
   private static final String GENERATED_MULE_PLUGIN_B_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE =
-      "/empty-classloader-model-project/target/META-INF/mule-artifact/org/mule/group/mule-plugin-b/1.0.0/classloader-model.json";
+      "/empty-lightweight-local-repository-classloader-model-project/target/META-INF/mule-artifact/org/mule/group/mule-plugin-b/1.1.0/classloader-model.json";
+  private static final String GENERATED_MULE_PLUGIN_C_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE =
+      "/empty-lightweight-local-repository-classloader-model-project/target/META-INF/mule-artifact/org/mule/group/mule-plugin-c/1.0.0/classloader-model.json";
   private static final String EXPECTED_MULE_PLUGIN_A_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-mule-plugin-a-lightweight-local-repository-classloader-model.json";
   private static final String EXPECTED_MULE_PLUGIN_B_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-mule-plugin-b-lightweight-local-repository-classloader-model.json";
+  private static final String EXPECTED_MULE_PLUGIN_C_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE =
+      "/expected-files/expected-mule-plugin-c-lightweight-local-repository-classloader-model.json";
 
   private static final String GROUP_ID = "org.apache.maven.plugin.my.unit";
   private static final String COMPILED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
@@ -179,14 +185,15 @@ public class ProcessSourcesMojoTest extends MojoTest {
   // and so it needs to be installed in the local repository in order to be resolved.
   @Test
   public void testProcessSourcesClassloaderModelLightweightUsingLocalRepository() throws IOException, VerificationException {
-    projectBaseDirectory = builder.createProjectBaseDir("empty-classloader-model-project", this.getClass());
+    projectBaseDirectory =
+        builder.createProjectBaseDir("empty-lightweight-local-repository-classloader-model-project", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-DlightweightPackage=true");
     verifier.addCliOption("-DuseLocalRepository=true");
     verifier.executeGoal(PROCESS_SOURCES);
 
-    File generatedClassloaderModelFile = getFile(GENERATED_CLASSLOADER_MODEL_FILE);
+    File generatedClassloaderModelFile = getFile(GENERATED_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE);
     List<String> generatedClassloaderModelFileContent = readAllLines(generatedClassloaderModelFile.toPath());
 
     File expectedClassloaderModelFile = getFile(EXPECTED_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE);
@@ -199,12 +206,6 @@ public class ProcessSourcesMojoTest extends MojoTest {
     assertThat("The classloader-model.json file is different from the expected", generatedClassloaderModelFileContent,
                equalTo(expectedClassloaderModelFileContent));
 
-    try {
-      getFile(GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
-      fail("ClassLoader Model for plugin should not be generated");
-    } catch (IllegalArgumentException e) {
-      assertThat(e.getMessage(), equalTo("Resource not found: " + GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE));
-    }
     File generatedMulePluginAClassloaderModelFile =
         getFile(GENERATED_MULE_PLUGIN_A_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE);
     List<String> generatedMulePluginAClassloaderModelFileContent =
@@ -221,12 +222,6 @@ public class ProcessSourcesMojoTest extends MojoTest {
                generatedMulePluginAClassloaderModelFileContent,
                equalTo(expectedMulePluginAClassloaderModelFileContent));
 
-    try {
-      getFile(GENERATED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE);
-      fail("ClassLoader Model for plugin should not be generated");
-    } catch (IllegalArgumentException e) {
-      assertThat(e.getMessage(), equalTo("Resource not found: " + GENERATED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE));
-    }
     File generatedMulePluginBClassloaderModelFile =
         getFile(GENERATED_MULE_PLUGIN_B_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE);
     List<String> generatedMulePluginBClassloaderModelFileContent =
@@ -239,9 +234,25 @@ public class ProcessSourcesMojoTest extends MojoTest {
     expectedMulePluginBClassloaderModelFileContent = expectedMulePluginBClassloaderModelFileContent.stream()
         .map(line -> line.replace("${localRepository}", localRepository.getAbsolutePath())).collect(toList());
 
-    assertThat("The classloader-model.json file of the mule-plugin-a is different from the expected",
+    assertThat("The classloader-model.json file of the mule-plugin-b is different from the expected",
                generatedMulePluginBClassloaderModelFileContent,
                equalTo(expectedMulePluginBClassloaderModelFileContent));
+
+    File generatedMulePluginCClassloaderModelFile =
+        getFile(GENERATED_MULE_PLUGIN_C_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE);
+    List<String> generatedMulePluginCClassloaderModelFileContent =
+        readAllLines(generatedMulePluginCClassloaderModelFile.toPath());
+
+    File expectedMulePluginCClassloaderModelFile =
+        getFile(EXPECTED_MULE_PLUGIN_C_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE);
+    List<String> expectedMulePluginCClassloaderModelFileContent =
+        readAllLines(expectedMulePluginCClassloaderModelFile.toPath());
+    expectedMulePluginCClassloaderModelFileContent = expectedMulePluginCClassloaderModelFileContent.stream()
+        .map(line -> line.replace("${localRepository}", localRepository.getAbsolutePath())).collect(toList());
+
+    assertThat("The classloader-model.json file of the mule-plugin-c is different from the expected",
+               generatedMulePluginCClassloaderModelFileContent,
+               equalTo(expectedMulePluginCClassloaderModelFileContent));
 
     File expectedStructure = getExpectedStructure("/expected-lightweight-local-repository-classloader-model-project");
     File targetStructure = new File(verifier.getBasedir() + separator + TARGET_FOLDER_NAME);

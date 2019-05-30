@@ -11,6 +11,7 @@
 package org.mule.tools.api.repository;
 
 import static java.lang.String.format;
+import static org.mule.tools.api.packager.sources.MuleContentGenerator.createClassLoaderModelJsonFile;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
@@ -83,8 +84,8 @@ public class RepositoryGenerator {
       if (!artifactFolderDestination.exists()) {
         artifactFolderDestination.mkdirs();
       }
-      MuleContentGenerator.createClassLoaderModelJsonFile(new NotParameterizedClassLoaderModel(mulePluginClassLoaderModel),
-                                                          artifactFolderDestination);
+      createClassLoaderModelJsonFile(new NotParameterizedClassLoaderModel(mulePluginClassLoaderModel),
+                                     artifactFolderDestination);
     });
 
   }

@@ -16,6 +16,8 @@ import java.util.Set;
  * Decorator for {@link ClassLoaderModel} that will not resolve the URIs
  * parameterized, used when building a class loader model that should reference to the resolved
  * artifact URIs in the local Maven repository.
+ *
+ * @since 3.4.0
  */
 public class NotParameterizedClassLoaderModel extends ClassLoaderModel {
 

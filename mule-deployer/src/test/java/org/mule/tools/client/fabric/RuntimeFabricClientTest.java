@@ -13,7 +13,6 @@ import com.google.common.net.MediaType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockserver.client.server.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mule.tools.client.fabric.model.DeploymentGenericResponse;
 import org.mule.tools.client.fabric.model.Deployments;

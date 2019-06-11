@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
   <groupId>org.mule.group</groupId>
-  <artifactId>mule-plugin-b</artifactId>
+  <artifactId>mule-plugin-c</artifactId>
   <versioning>
     <release>1.0.0</release>
     <versions>
       <version>1.0.0</version>
-      <release>1.1.0</release>
     </versions>
     <lastUpdated>20171220204433</lastUpdated>
   </versioning>

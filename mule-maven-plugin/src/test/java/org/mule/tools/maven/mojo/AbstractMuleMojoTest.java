@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Properties;
 
 import com.google.common.collect.Lists;
 import org.apache.maven.execution.MavenSession;
@@ -77,6 +78,10 @@ public class AbstractMuleMojoTest {
     when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
 
     when(mavenSessionMock.getGoals()).thenReturn(Lists.newArrayList());
+
+    Properties systemProperties = new Properties();
+    systemProperties.put("muleDeploy", "false");
+    when(mavenSessionMock.getSystemProperties()).thenReturn(systemProperties);
 
     when(buildMock.getDirectory()).thenReturn(buildFolderFolder.getRoot().getAbsolutePath());
   }

@@ -45,7 +45,7 @@ public class MavenProjectInformation implements ProjectInformation {
   public static MavenProjectInformation getProjectInformation(MavenSession session, MavenProject project, File projectBaseFolder,
                                                               boolean testJar, List<Deployment> deployments, String classifier) {
     DefaultProjectInformation.Builder builder = new DefaultProjectInformation.Builder();
-    boolean isDeployment = session.getGoals().stream().anyMatch(goal -> containsIgnoreCase(goal, "deploy"));
+    boolean isDeployment = isDeploymentGoal(session);
     builder.withGroupId(project.getGroupId())
         .withArtifactId(project.getArtifactId())
         .withVersion(project.getVersion())
@@ -73,6 +73,11 @@ public class MavenProjectInformation implements ProjectInformation {
     }
     mavenProjectInformation.projectInformation = builder.build();
     return mavenProjectInformation;
+  }
+
+  private static boolean isDeploymentGoal(MavenSession session) {
+    return session.getGoals().stream().anyMatch(goal -> containsIgnoreCase(goal, "deploy"))
+        || session.getSystemProperties().getProperty("muleDeploy") != null;
   }
 
   private static boolean isPlatformDeployment(List<Deployment> deployments) {

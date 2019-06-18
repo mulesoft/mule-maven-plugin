@@ -37,6 +37,8 @@ public class ProcessSourcesMojoTest extends MojoTest {
       "/empty-classloader-model-project/target/META-INF/mule-artifact/classloader-model.json";
   private static final String GENERATED_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE =
       "/empty-lightweight-local-repository-classloader-model-project/target/META-INF/mule-artifact/classloader-model.json";
+  private static final String GENERATED_PROVIDED_CLASSLOADER_MODEL_FILE =
+      "/provided-mule-plugin-classloader-model-project/target/META-INF/mule-artifact/classloader-model.json";
 
   private static final String GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE =
       "/empty-classloader-model-project/target/repository/org/mule/group/mule-plugin-a/1.0.0/classloader-model.json";
@@ -45,12 +47,20 @@ public class ProcessSourcesMojoTest extends MojoTest {
   private static final String EXPECTED_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-classloader-model.json";
 
+  private static final String EXPECTED_PROVIDED_CLASSLOADER_MODEL_FILE =
+      "/expected-files/expected-provided-mule-plugin-classloader-model.json";
+  private static final String GENERATED_PROVIDED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE =
+      "/provided-mule-plugin-classloader-model-project/target/repository/org/mule/group/mule-plugin-a/1.0.0/classloader-model.json";
+
   private static final String EXPECTED_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-lightweight-local-repository-classloader-model.json";
   private static final String EXPECTED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-mule-plugin-a-classloader-model.json";
   private static final String EXPECTED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-mule-plugin-b-classloader-model.json";
+
+  private static final String EXPECTED_PROVIDED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE =
+      "/expected-files/expected-provided-mule-plugin-a-classloader-model.json";
 
   private static final String GENERATED_MULE_PLUGIN_A_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE =
       "/empty-lightweight-local-repository-classloader-model-project/target/META-INF/mule-artifact/org/mule/group/mule-plugin-a/1.0.0/classloader-model.json";
@@ -119,6 +129,45 @@ public class ProcessSourcesMojoTest extends MojoTest {
     File expectedStructure = getExpectedStructure();
 
     assertThat("The directory structure is different from the expected", targetFolder,
+               hasSameTreeStructure(expectedStructure, excludes));
+
+    verifier.verifyErrorFreeLog();
+  }
+
+  @Test
+  public void testProvidedMulePluginShouldBeExcludedFromApplicationClassLoaderModel() throws IOException, VerificationException {
+    projectBaseDirectory = builder.createProjectBaseDir("provided-mule-plugin-classloader-model-project", this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.executeGoal(PROCESS_SOURCES);
+
+    File generatedClassloaderModelFile = getFile(GENERATED_PROVIDED_CLASSLOADER_MODEL_FILE);
+    List<String> generatedClassloaderModelFileContent = readAllLines(generatedClassloaderModelFile.toPath());
+
+    File expectedClassloaderModelFile = getFile(EXPECTED_PROVIDED_CLASSLOADER_MODEL_FILE);
+    List<String> expectedClassloaderModelFileContent = readAllLines(expectedClassloaderModelFile.toPath());
+
+    assertThat("The classloader-model.json file is different from the expected", generatedClassloaderModelFileContent,
+               equalTo(expectedClassloaderModelFileContent));
+
+    File generatedMulePluginAClassloaderModelFile = getFile(GENERATED_PROVIDED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
+    List<String> generatedMulePluginAClassloaderModelFileContent =
+        readAllLines(generatedMulePluginAClassloaderModelFile.toPath());
+
+    File expectedMulePluginAClassloaderModelFile = getFile(EXPECTED_PROVIDED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
+    List<String> expectedMulePluginAClassloaderModelFileContent =
+        readAllLines(expectedMulePluginAClassloaderModelFile.toPath());
+
+    assertThat("The classloader-model.json file of the mule-plugin-a is different from the expected",
+               generatedMulePluginAClassloaderModelFileContent,
+               equalTo(expectedMulePluginAClassloaderModelFileContent));
+
+
+    File expectedStructure = getExpectedStructure("/expected-provided-classloader-model-project");
+    File targetStructure = new File(verifier.getBasedir() + separator + TARGET_FOLDER_NAME);
+    deleteDirectory(new File(targetStructure, "temp"));
+
+    assertThat("The directory structure is different from the expected", targetStructure,
                hasSameTreeStructure(expectedStructure, excludes));
 
     verifier.verifyErrorFreeLog();

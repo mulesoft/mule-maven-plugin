@@ -9,7 +9,9 @@
  */
 package org.mule.tools.api.classloader.model.resolver;
 
-import org.apache.commons.lang3.StringUtils;
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
+import static org.mule.tools.api.validation.VersionUtils.getMajor;
 
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
@@ -17,17 +19,13 @@ import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.Plugin;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
-import static org.mule.tools.api.validation.VersionUtils.getMajor;
+import org.apache.commons.lang3.StringUtils;
 
 public class MulePluginClassloaderModelResolver extends ClassloaderModelResolver {
 
@@ -66,9 +64,12 @@ public class MulePluginClassloaderModelResolver extends ClassloaderModelResolver
   private List<BundleDependency> collectTransitiveDependencies(BundleDependency rootDependency) {
     List<BundleDependency> allTransitiveDependencies = new LinkedList<>();
     for (BundleDependency transitiveDependency : rootDependency.getTransitiveDependencies()) {
-      allTransitiveDependencies.add(transitiveDependency);
-      if (transitiveDependency.getDescriptor().getClassifier().map(c -> !MULE_PLUGIN_CLASSIFIER.equals(c)).orElse(true)) {
-        allTransitiveDependencies.addAll(collectTransitiveDependencies(transitiveDependency));
+      // runtime, provided or test dependencies will not be resolved but part of the transitive dependencies graph
+      if (transitiveDependency.getBundleUri() != null) {
+        allTransitiveDependencies.add(transitiveDependency);
+        if (transitiveDependency.getDescriptor().getClassifier().map(c -> !MULE_PLUGIN_CLASSIFIER.equals(c)).orElse(true)) {
+          allTransitiveDependencies.addAll(collectTransitiveDependencies(transitiveDependency));
+        }
       }
     }
     return allTransitiveDependencies;

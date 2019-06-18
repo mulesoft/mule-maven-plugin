@@ -35,10 +35,10 @@ public class ApplicationDependencyResolver {
    */
   public List<BundleDependency> resolveApplicationDependencies(File pomFile) {
     List<BundleDependency> resolvedApplicationDependencies =
-        muleMavenPluginClient.resolveArtifactDependencies(pomFile, false, true, empty(), empty(), empty())
+        muleMavenPluginClient.resolveArtifactDependencies(pomFile, false, false, empty(), empty(), empty())
             .stream()
-            .filter(d -> !(d.getScope() == BundleScope.PROVIDED) || (d.getDescriptor().getClassifier().isPresent()
-                && d.getDescriptor().getClassifier().get().equals(MULE_DOMAIN_CLASSIFIER)))
+            .filter(d -> d.getBundleUri() != null
+                || MULE_DOMAIN_CLASSIFIER.equals(d.getDescriptor().getClassifier().orElse(null)))
             .collect(Collectors.toList());
 
     return resolvedApplicationDependencies;

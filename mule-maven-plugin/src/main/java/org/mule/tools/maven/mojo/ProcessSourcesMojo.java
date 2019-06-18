@@ -11,6 +11,7 @@
 package org.mule.tools.maven.mojo;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.internal.AetherMavenClient;
@@ -35,7 +36,6 @@ import org.mule.tools.maven.utils.MavenPackagerLog;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -52,6 +52,7 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
   /**
    * @deprecated Should not be considered as validations for compatible plugins is already done when resolving dependencies.
    */
+  @Deprecated
   @Parameter(defaultValue = "${skipPluginCompatibilityValidation}")
   protected boolean skipPluginCompatibilityValidation = false;
   protected final MulePluginsCompatibilityValidator mulePluginsCompatibilityValidator = new MulePluginsCompatibilityValidator();
@@ -77,7 +78,12 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
           classLoaderModel.getDependencies().stream()
               .filter(dep -> dep.getArtifactCoordinates().getArtifactId().equals(sharedLibraryDependency.getArtifactId()) &&
                   dep.getArtifactCoordinates().getGroupId().equals(sharedLibraryDependency.getGroupId()))
-              .findFirst().ifPresent(dep -> dep.setShared(true));
+              .findFirst().ifPresent(dep -> {
+                if (!validateMuleRuntimeSharedLibrary(dep.getArtifactCoordinates().getArtifactId(),
+                                                      dep.getArtifactCoordinates().getGroupId())) {
+                  dep.setShared(true);
+                }
+              });
         }
         Project project = getProject(classLoaderModel);
         mulePluginsCompatibilityValidator.validate(getResolver(project).resolve());
@@ -104,6 +110,17 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
                                                                                              new File(outputDirectory, "temp")));
   }
 
+  protected final boolean validateMuleRuntimeSharedLibrary(String groupId, String artifactId) {
+    if ("org.mule.runtime".equals(groupId)
+        || "com.mulesoft.mule.runtime.modules".equals(groupId)) {
+      getLog().warn("Shared library '" + groupId + ":" + artifactId
+          + "' is a Mule Runtime dependency. It will not be shared by the app in order to avoid classloading issues. Please consider removing it, or at least not putting it as a sharedLibrary.");
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   @Override
   public String getPreviousRunPlaceholder() {
     return "MULE_MAVEN_PLUGIN_PROCESS_SOURCES_PREVIOUS_RUN_PLACEHOLDER";
@@ -118,7 +135,7 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
         return classLoaderModel.getDependencies()
             .stream()
             .map(Artifact::getArtifactCoordinates)
-            .collect(Collectors.toList());
+            .collect(toList());
       }
 
       @Override

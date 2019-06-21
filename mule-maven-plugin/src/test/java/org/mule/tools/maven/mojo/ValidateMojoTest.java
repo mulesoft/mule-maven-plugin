@@ -10,6 +10,8 @@
 
 package org.mule.tools.maven.mojo;
 
+import static java.util.Collections.singletonList;
+import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
@@ -28,7 +30,9 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class ValidateMojoTest extends AbstractMuleMojoTest {
 
@@ -36,6 +40,9 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
   private MavenExecutionRequest mavenExecutionRequestMock;
 
   private AbstractProjectValidator validatorMock;
+
+  @Rule
+  public ExpectedException expectedException = none();
 
   @Before
   public void before() throws IOException {
@@ -140,6 +147,68 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
 
     doCallRealMethod().when(mojoMock).buildArtifactCoordinates(any());
     doCallRealMethod().when(mojoMock).validateNotAllowedDependencies();
+    mojoMock.validateNotAllowedDependencies();
+  }
+
+  @Test
+  public void validateNotAllowedMunitRunnerDependenciesWithCompileScope() throws Exception {
+    Dependency dependencyMock = mock(Dependency.class);
+
+    when(dependencyMock.getGroupId()).thenReturn("com.mulesoft.munit");
+    when(dependencyMock.getArtifactId()).thenReturn("munit-runner");
+    when(dependencyMock.getVersion()).thenReturn("0.0.0");
+    when(dependencyMock.getScope()).thenReturn("compile");
+    when(dependencyMock.getType()).thenReturn("jar");
+    when(dependencyMock.getClassifier()).thenReturn("mule-plugin");
+
+    when(projectMock.getDependencies()).thenReturn(singletonList(dependencyMock));
+    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
+
+    doCallRealMethod().when(mojoMock).buildArtifactCoordinates(any());
+    doCallRealMethod().when(mojoMock).validateNotAllowedDependencies();
+
+    expectedException.expect(ValidationException.class);
+    mojoMock.validateNotAllowedDependencies();
+  }
+
+  @Test
+  public void validateNotAllowedMunitToolsDependenciesWithCompileScope() throws Exception {
+    Dependency dependencyMock = mock(Dependency.class);
+
+    when(dependencyMock.getGroupId()).thenReturn("com.mulesoft.munit");
+    when(dependencyMock.getArtifactId()).thenReturn("munit-tools");
+    when(dependencyMock.getVersion()).thenReturn("0.0.0");
+    when(dependencyMock.getScope()).thenReturn("compile");
+    when(dependencyMock.getType()).thenReturn("jar");
+    when(dependencyMock.getClassifier()).thenReturn("mule-plugin");
+
+    when(projectMock.getDependencies()).thenReturn(singletonList(dependencyMock));
+    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
+
+    doCallRealMethod().when(mojoMock).buildArtifactCoordinates(any());
+    doCallRealMethod().when(mojoMock).validateNotAllowedDependencies();
+
+    expectedException.expect(ValidationException.class);
+    mojoMock.validateNotAllowedDependencies();
+  }
+
+  @Test
+  public void mUnitDependenciesDoesNotFailWithTestScope() throws Exception {
+    Dependency dependencyMock = mock(Dependency.class);
+
+    when(dependencyMock.getGroupId()).thenReturn("com.mulesoft.munit");
+    when(dependencyMock.getArtifactId()).thenReturn("munit-tools");
+    when(dependencyMock.getVersion()).thenReturn("0.0.0");
+    when(dependencyMock.getScope()).thenReturn("test");
+    when(dependencyMock.getType()).thenReturn("jar");
+    when(dependencyMock.getClassifier()).thenReturn("mule-plugin");
+
+    when(projectMock.getDependencies()).thenReturn(singletonList(dependencyMock));
+    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
+
+    doCallRealMethod().when(mojoMock).buildArtifactCoordinates(any());
+    doCallRealMethod().when(mojoMock).validateNotAllowedDependencies();
+
     mojoMock.validateNotAllowedDependencies();
   }
 

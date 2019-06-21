@@ -34,7 +34,8 @@ public class ProcessResourcesMojo extends AbstractMuleMojo {
   /**
    * List of exclusion elements (having groupId and artifactId children) to exclude from the application archive.
    *
-   * @since 2.3.0
+   * (in 2.3.0, 2.3.1 and 2.3.2 the field name was defaultExclusions)
+   * @since 2.3.3
    */
   @Parameter
   private List<DefaultExclusion> exclusions;
@@ -42,7 +43,8 @@ public class ProcessResourcesMojo extends AbstractMuleMojo {
   /**
    * List of inclusion elements (having groupId and artifactId children) to exclude from the application archive.
    *
-   * @since 2.3.0
+   * (in 2.3.0, 2.3.1 and 2.3.2 the field name was defaultInclusions)
+   * @since 2.3.3
    */
   @Parameter
   private List<DefaultInclusion> inclusions;

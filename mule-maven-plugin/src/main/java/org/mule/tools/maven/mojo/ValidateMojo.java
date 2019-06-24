@@ -10,10 +10,13 @@
 
 package org.mule.tools.maven.mojo;
 
+import static java.util.Arrays.asList;
 import static org.mule.tools.api.validation.AllowedDependencyValidator.areDependenciesAllowed;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.validation.DependencyValidator;
+import org.mule.tools.api.validation.TestScopeDependencyValidator;
 import org.mule.tools.api.validation.VersionUtils;
 import org.mule.tools.api.validation.project.AbstractProjectValidator;
 
@@ -36,6 +39,12 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 public class ValidateMojo extends AbstractMuleMojo {
 
   private static final String MIN_MAVEN_VERSION = "3.3.3";
+  private static final DependencyValidator TEST_SCOPE_DEPENDENCY_VALIDATOR = new TestScopeDependencyValidator(
+                                                                                                              asList(
+                                                                                                                     new TestScopeDependencyValidator.Dependency("com.mulesoft.munit",
+                                                                                                                                                                 "munit-runner"),
+                                                                                                                     new TestScopeDependencyValidator.Dependency("com.mulesoft.munit",
+                                                                                                                                                                 "munit-tools")));
 
   @Override
   public void doExecute() throws MojoExecutionException {
@@ -67,12 +76,12 @@ public class ValidateMojo extends AbstractMuleMojo {
   }
 
   protected void validateNotAllowedDependencies() throws ValidationException {
+    List<ArtifactCoordinates> dependencies =
+        project.getDependencies().stream().map(d -> buildArtifactCoordinates(d)).collect(Collectors.toList());
     if (!project.getPackaging().equals(PackagingType.MULE_DOMAIN_BUNDLE.toString())) {
-      List<ArtifactCoordinates> dependencies =
-          project.getDependencies().stream().map(d -> buildArtifactCoordinates(d)).collect(Collectors.toList());
-
       areDependenciesAllowed(dependencies);
     }
+    TEST_SCOPE_DEPENDENCY_VALIDATOR.areDependenciesValid(dependencies);
   }
 
   @Override

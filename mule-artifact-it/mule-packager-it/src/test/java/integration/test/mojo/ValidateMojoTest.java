@@ -65,6 +65,15 @@ public class ValidateMojoTest extends MojoTest {
     verifier.verifyErrorFreeLog();
   }
 
+  @Test
+  public void testProjectWithMunitAsCompileDependency() throws Exception {
+    projectBaseDirectory = builder.createProjectBaseDir("munit-as-compile", this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+
+    String textInLog = "should have scope \'test\'";
+    executeGoalAndVerifyText(VALIDATE, textInLog);
+  }
+
   private void executeGoalAndVerifyText(String goal, String text) throws VerificationException {
     try {
       verifier.executeGoal(goal);

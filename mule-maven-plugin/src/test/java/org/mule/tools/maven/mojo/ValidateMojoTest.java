@@ -10,6 +10,7 @@
 
 package org.mule.tools.maven.mojo;
 
+import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +36,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class ValidateMojoTest extends AbstractMuleMojoTest {
+
+  private static final String MUNIT_RUNNER_ARTIFACT_ID = "munit-runner";
+  private static final String MUNIT_TOOLS_ARTIFACT_ID = "munit-tools";
+  private static final String MUNIT_GROUP_ID = "com.mulesoft.munit";
 
   private ValidateMojo mojoMock;
   private MavenExecutionRequest mavenExecutionRequestMock;
@@ -152,11 +157,14 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
 
   @Test
   public void validateNotAllowedMunitRunnerDependenciesWithCompileScope() throws Exception {
+
     Dependency dependencyMock = mock(Dependency.class);
 
-    when(dependencyMock.getGroupId()).thenReturn("com.mulesoft.munit");
-    when(dependencyMock.getArtifactId()).thenReturn("munit-runner");
-    when(dependencyMock.getVersion()).thenReturn("0.0.0");
+    final String version = "0.0.0";
+
+    when(dependencyMock.getGroupId()).thenReturn(MUNIT_GROUP_ID);
+    when(dependencyMock.getArtifactId()).thenReturn(MUNIT_RUNNER_ARTIFACT_ID);
+    when(dependencyMock.getVersion()).thenReturn(version);
     when(dependencyMock.getScope()).thenReturn("compile");
     when(dependencyMock.getType()).thenReturn("jar");
     when(dependencyMock.getClassifier()).thenReturn("mule-plugin");
@@ -168,6 +176,8 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     doCallRealMethod().when(mojoMock).validateNotAllowedDependencies();
 
     expectedException.expect(ValidationException.class);
+    expectedException.expectMessage(format("%s:%s:%s", MUNIT_GROUP_ID, MUNIT_RUNNER_ARTIFACT_ID, version));
+    expectedException.expectMessage("should have scope \'test\', found \'compile\'");
     mojoMock.validateNotAllowedDependencies();
   }
 
@@ -175,9 +185,11 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
   public void validateNotAllowedMunitToolsDependenciesWithCompileScope() throws Exception {
     Dependency dependencyMock = mock(Dependency.class);
 
-    when(dependencyMock.getGroupId()).thenReturn("com.mulesoft.munit");
-    when(dependencyMock.getArtifactId()).thenReturn("munit-tools");
-    when(dependencyMock.getVersion()).thenReturn("0.0.0");
+    final String version = "0.0.0";
+
+    when(dependencyMock.getGroupId()).thenReturn(MUNIT_GROUP_ID);
+    when(dependencyMock.getArtifactId()).thenReturn(MUNIT_TOOLS_ARTIFACT_ID);
+    when(dependencyMock.getVersion()).thenReturn(version);
     when(dependencyMock.getScope()).thenReturn("compile");
     when(dependencyMock.getType()).thenReturn("jar");
     when(dependencyMock.getClassifier()).thenReturn("mule-plugin");
@@ -189,6 +201,8 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     doCallRealMethod().when(mojoMock).validateNotAllowedDependencies();
 
     expectedException.expect(ValidationException.class);
+    expectedException.expectMessage(format("%s:%s:%s", MUNIT_GROUP_ID, MUNIT_TOOLS_ARTIFACT_ID, version));
+    expectedException.expectMessage("should have scope \'test\', found \'compile\'");
     mojoMock.validateNotAllowedDependencies();
   }
 
@@ -196,8 +210,8 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
   public void mUnitDependenciesDoesNotFailWithTestScope() throws Exception {
     Dependency dependencyMock = mock(Dependency.class);
 
-    when(dependencyMock.getGroupId()).thenReturn("com.mulesoft.munit");
-    when(dependencyMock.getArtifactId()).thenReturn("munit-tools");
+    when(dependencyMock.getGroupId()).thenReturn(MUNIT_GROUP_ID);
+    when(dependencyMock.getArtifactId()).thenReturn(MUNIT_TOOLS_ARTIFACT_ID);
     when(dependencyMock.getVersion()).thenReturn("0.0.0");
     when(dependencyMock.getScope()).thenReturn("test");
     when(dependencyMock.getType()).thenReturn("jar");

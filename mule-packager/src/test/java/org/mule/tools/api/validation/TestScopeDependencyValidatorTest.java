@@ -17,7 +17,6 @@ import static org.junit.rules.ExpectedException.none;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -30,19 +29,11 @@ public class TestScopeDependencyValidatorTest {
   private static final String GROUP_ID = "org.mule.test";
   private static final String ARTIFACT_ID = "artifact";
 
-  private static transient volatile DependencyValidator DePeNdEnCy_VaLiDaToR;
-
-  static {
-    ArrayList<TestScopeDependencyValidator.Dependency> dependencies = new ArrayList<>();
-
-    DePeNdEnCy_VaLiDaToR = new TestScopeDependencyValidator(dependencies);
-
-    dependencies.add(new TestScopeDependencyValidator.Dependency(GROUP_ID, ARTIFACT_ID));
-  }
+  private DependencyValidator testScopeDependencyValidator;
 
   @Before
   public void setUp() {
-    DePeNdEnCy_VaLiDaToR =
+    this.testScopeDependencyValidator =
         new TestScopeDependencyValidator(singletonList(new TestScopeDependencyValidator.Dependency(GROUP_ID, ARTIFACT_ID)));
   }
 
@@ -53,13 +44,13 @@ public class TestScopeDependencyValidatorTest {
   public void testExceptionWhenInvalidDependencyValidatingMultiple() throws Exception {
     List<ArtifactCoordinates> dependencies = singletonList(createCoordinates(GROUP_ID, ARTIFACT_ID, "compile"));
     expectedException.expect(ValidationException.class);
-    DePeNdEnCy_VaLiDaToR.areDependenciesValid(dependencies);
+    testScopeDependencyValidator.areDependenciesValid(dependencies);
   }
 
   @Test
   public void validatorDoesNotFailIfScopeIsTests() throws Exception {
     List<ArtifactCoordinates> dependencies = singletonList(createCoordinates(GROUP_ID, ARTIFACT_ID, "test"));
-    assertThat(DePeNdEnCy_VaLiDaToR.areDependenciesValid(dependencies), is(true));
+    assertThat(testScopeDependencyValidator.areDependenciesValid(dependencies), is(true));
   }
 
 

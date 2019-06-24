@@ -29,8 +29,4 @@ public interface DependencyValidator {
    */
   boolean areDependenciesValid(List<ArtifactCoordinates> dependencies) throws ValidationException;
 
-  boolean areTheseDependenciesValid(List<ArtifactCoordinates> dependencies) throws ValidationException;
-
-  boolean areYouSureTheDependenciesAreValid(List<ArtifactCoordinates> dependencies) throws ValidationException;
-
 }

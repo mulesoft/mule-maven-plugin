@@ -26,20 +26,6 @@ public class TestScopeDependencyValidator implements DependencyValidator {
   }
 
   @Override
-  public boolean isValid(ArtifactCoordinates dependency) throws ValidationException {
-    boolean isDependencyPresent =
-        expectedDependencies.stream().anyMatch(d -> d.artifactId.equals(dependency.getArtifactId())
-            && d.groupId.equals(dependency.getGroupId()));
-    if (isDependencyPresent) {
-      if (!TEST.equals(dependency.getScope())) {
-        throw new ValidationException("Dependency: " + dependency + " should have scope \'test\', found \'"
-            + dependency.getScope() + "\'");
-      }
-    }
-    return true;
-  }
-
-  @Override
   public boolean areDependenciesValid(List<ArtifactCoordinates> dependencies) throws ValidationException {
     List<String> invalidDependenciesExceptionsMessages = new ArrayList<>();
     for (ArtifactCoordinates dependency : dependencies) {
@@ -55,6 +41,19 @@ public class TestScopeDependencyValidator implements DependencyValidator {
       throw new ValidationException("The following dependencies are not allowed unless their scope is [" + TEST + "]: "
           + lineSeparator() + invalidDependenciesMessage.toString());
 
+    }
+    return true;
+  }
+
+  private boolean isValid(ArtifactCoordinates dependency) throws ValidationException {
+    boolean isDependencyPresent =
+        expectedDependencies.stream().anyMatch(d -> d.artifactId.equals(dependency.getArtifactId())
+            && d.groupId.equals(dependency.getGroupId()));
+    if (isDependencyPresent) {
+      if (!TEST.equals(dependency.getScope())) {
+        throw new ValidationException("Dependency: " + dependency + " should have scope \'test\', found \'"
+            + dependency.getScope() + "\'");
+      }
     }
     return true;
   }

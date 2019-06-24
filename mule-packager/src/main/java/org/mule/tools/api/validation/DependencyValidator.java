@@ -21,15 +21,6 @@ import java.util.List;
 public interface DependencyValidator {
 
   /**
-   * Validates that the {@link ArtifactCoordinates} is correct.
-   * @param dependency the dependency to be validated
-   * @return true if the dependency is valid, false otherwise
-   * @throws ValidationException if there is a problem with the {@link ArtifactCoordinates}
-   * and validation should be stopped.
-   */
-  boolean isValid(ArtifactCoordinates dependency) throws ValidationException;
-
-  /**
    * Validates that the {@link ArtifactCoordinates} are correct.
    * @param dependencies the dependencies to be validated
    * @return true if the dependencies are valid, false otherwise

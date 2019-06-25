@@ -11,6 +11,8 @@ package org.mule.tools.api.classloader.model.resolver;
 
 import static com.google.common.collect.ImmutableList.of;
 import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -37,22 +39,24 @@ import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDepe
 import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.MULE_MAVEN_PLUGIN_GROUP_ID;
 import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.PLUGIN_ELEMENT;
 import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.VERSION_ELEMENT;
+
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.maven.client.api.model.MavenConfiguration;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
-import com.google.common.collect.ImmutableList;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
@@ -117,6 +121,7 @@ public class AdditionalPluginDependenciesResolverTest {
   private static BundleDependency resolvedDependencyX20;
 
   private AetherMavenClient mockedMavenClient;
+  private MavenConfiguration mockedMavenConfiguration;
 
   @Rule
   public ExpectedException expectedException = none();
@@ -196,24 +201,35 @@ public class AdditionalPluginDependenciesResolverTest {
   }
 
   @Before
-  public void setUp() {
+  public void setUp() throws IOException {
     mockedMavenClient = mock(AetherMavenClient.class);
     doAnswer(invocationOnMock -> {
-      BundleDescriptor descriptor = invocationOnMock.getArgument(0);
-      if (descriptor.getArtifactId().equals(DEPENDENCY_X_ARTIFACT_ID) &&
-          descriptor.getGroupId().equals(DEPENDENCY_X_GROUP_ID)) {
-        switch (descriptor.getVersion()) {
-          case DEPENDENCY_X_VERSION_10:
-            return resolvedDependencyX10;
-          case DEPENDENCY_X_VERSION_11:
-            return resolvedDependencyX11;
-          default:
-            return resolvedDependencyX20;
-        }
-      }
-      return null;
-    }).when(mockedMavenClient).resolveBundleDescriptor(any());
+      List<BundleDescriptor> dependencies = invocationOnMock.getArgument(0);
+      return dependencies.stream()
+          .map(dep -> resolveBundleDescriptor(dep))
+          .filter(dependencyOptional -> dependencyOptional.isPresent())
+          .map(dependencyOptional -> dependencyOptional.get())
+          .collect(toList());
+    }).when(mockedMavenClient).resolveArtifactDependencies(any(), any(), any());
     when(mockedMavenClient.getEffectiveModel(any(), any())).thenReturn(new Model());
+    mockedMavenConfiguration = mock(MavenConfiguration.class);
+    when(mockedMavenConfiguration.getLocalMavenRepositoryLocation()).thenReturn(temporaryFolder.newFolder());
+    when(mockedMavenClient.getMavenConfiguration()).thenReturn(mockedMavenConfiguration);
+  }
+
+  private Optional<BundleDependency> resolveBundleDescriptor(BundleDescriptor bundleDescriptor) {
+    if (bundleDescriptor.getArtifactId().equals(DEPENDENCY_X_ARTIFACT_ID) &&
+        bundleDescriptor.getGroupId().equals(DEPENDENCY_X_GROUP_ID)) {
+      switch (bundleDescriptor.getVersion()) {
+        case DEPENDENCY_X_VERSION_10:
+          return Optional.of(resolvedDependencyX10);
+        case DEPENDENCY_X_VERSION_11:
+          return Optional.of(resolvedDependencyX11);
+        default:
+          return Optional.of(resolvedDependencyX20);
+      }
+    }
+    return empty();
   }
 
   @Before
@@ -253,15 +269,18 @@ public class AdditionalPluginDependenciesResolverTest {
   }
 
   @Test
-  public void additionalPluginDependenciesVersionConflictFails() throws Exception {
-    DECLARED_POM_PLUGIN.setAdditionalDependencies(ImmutableList.of(declaredPomDependencyX10, declaredPomDependencyX20));
-    expectedException.expectMessage("Attempting to add different major versions");
-    createAdditionalPluginDependenciesResolver(of(DECLARED_POM_PLUGIN))
-        .resolveDependencies(of(RESOLVED_BUNDLE_PLUGIN), of(resolvedPluginClassLoaderModel));
-  }
+  public void additionalPluginDependenciesVersionConflictLatestDeclaredRemains() throws Exception {
+    // Maven Client will resolve and get the latest declared dependency when they have the same GA (different version)
+    doAnswer(invocationOnMock -> {
+      List<BundleDescriptor> dependencies = invocationOnMock.getArgument(0);
+      return dependencies.stream()
+          .map(dep -> resolveBundleDescriptor(dep))
+          .filter(dependencyOptional -> dependencyOptional.isPresent())
+          .map(dependencyOptional -> dependencyOptional.get())
+          .skip(1)
+          .collect(toList());
+    }).when(mockedMavenClient).resolveArtifactDependencies(any(), any(), any());
 
-  @Test
-  public void additionalPluginDependenciesVersionConflictNewestRemain() throws Exception {
     DECLARED_POM_PLUGIN.setAdditionalDependencies(ImmutableList.of(declaredPomDependencyX10, declaredPomDependencyX11));
     Map<BundleDependency, List<BundleDependency>> resolvedAdditionalDependencies =
         createAdditionalPluginDependenciesResolver(of(DECLARED_POM_PLUGIN))
@@ -347,6 +366,8 @@ public class AdditionalPluginDependenciesResolverTest {
     reset(mockedMavenClient);
     when(mockedMavenClient.getEffectiveModel(any(), any())).thenReturn(pair.getLeft());
 
+    when(mockedMavenClient.getMavenConfiguration()).thenReturn(mockedMavenConfiguration);
+
     BundleDependency mockedBundleDependency1 = mock(BundleDependency.class, RETURNS_DEEP_STUBS);
     when(mockedBundleDependency1.getDescriptor().getArtifactId()).thenReturn(ARTIFACT_ID_ELEMENT + "1");
     when(mockedBundleDependency1.getDescriptor().getGroupId()).thenReturn(GROUP_ID_ELEMENT + "1");
@@ -358,13 +379,18 @@ public class AdditionalPluginDependenciesResolverTest {
     when(mockedBundleDependency2.getDescriptor().getVersion()).thenReturn("1.0.0");
 
     doAnswer(invocationOnMock -> {
-      String artifactId1 = ((BundleDescriptor) invocationOnMock.getArgument(0)).getArtifactId();
-      if (artifactId1.equals(ARTIFACT_ID_ELEMENT + "1")) {
-        return mockedBundleDependency1;
-      } else {
-        return mockedBundleDependency2;
-      }
-    }).when(mockedMavenClient).resolveBundleDescriptor(any());
+      List<BundleDescriptor> dependencies = invocationOnMock.getArgument(0);
+      return dependencies.stream()
+          .map(dep -> {
+            String artifactId1 = dep.getArtifactId();
+            if (artifactId1.equals(ARTIFACT_ID_ELEMENT + "1")) {
+              return mockedBundleDependency1;
+            } else {
+              return mockedBundleDependency2;
+            }
+          })
+          .collect(toList());
+    }).when(mockedMavenClient).resolveArtifactDependencies(any(), any(), any());
 
     when(mockedMavenClient.resolveBundleDescriptorDependencies(eq(false), eq(false), any())).thenReturn(emptyList());
     Map<BundleDependency, List<BundleDependency>> resolvedAdditionalDependencies =

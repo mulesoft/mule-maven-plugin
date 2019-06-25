@@ -1,0 +1,15 @@
+[INFO] Error stacktraces are turned on.
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Test MyMojo 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-cli) @ empty-classloader-model-project ---
+[INFO] Deleting /Users/ms0374/Documents/projects/mule-artifact-tools/mule-artifact-it/target/test-classes/empty-classloader-model-project/target
+[INFO] 
+[INFO] --- mule-maven-plugin:3.0.0-SNAPSHOT:validate (default-validate) @ empty-classloader-model-project ---
+[INFO] 
+[INFO] --- mule-maven-plugin:3.0.0-SNAPSHOT:initialize (default-initialize) @ empty-classloader-model-project ---
+[INFO] 
+[INFO] --- mule-maven-plugin:3.0.0-SNAPSHOT:generate-sources (default-generate-sources) @ empty-classloader-model-project ---

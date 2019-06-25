@@ -1,0 +1,30 @@
+{
+  "version": "1.1.0",
+  "artifactCoordinates": {
+    "groupId": "org.mule.group",
+    "artifactId": "mule-plugin-a",
+    "version": "1.0.0",
+    "type": "jar",
+    "classifier": "mule-plugin"
+  },
+  "dependencies": [
+    {
+      "artifactCoordinates": {
+        "groupId": "group.id.d",
+        "artifactId": "artifact-id-d",
+        "version": "1.0.0",
+        "type": "jar"
+      },
+      "uri": "repository/group/id/d/artifact-id-d/1.0.0/artifact-id-d-1.0.0.jar"
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "group.id.a",
+        "artifactId": "artifact-id-a",
+        "version": "1.0.0-SNAPSHOT",
+        "type": "jar"
+      },
+      "uri": "repository/group/id/a/artifact-id-a/1.0.0-SNAPSHOT/artifact-id-a-1.0.0-SNAPSHOT.jar"
+    }
+  ]
+}

@@ -10,22 +10,21 @@
 package org.mule.tools.api.classloader.model.resolver;
 
 import static com.vdurmont.semver4j.Semver.SemverType.LOOSE;
-import static java.lang.System.lineSeparator;
+import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.toFile;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.tools.api.classloader.model.ArtifactCoordinates.DEFAULT_ARTIFACT_TYPE;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toBundleDescriptor;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
+
 import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.runtime.api.exception.MuleRuntimeException;
-import org.mule.runtime.api.util.Reference;
 import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
-
-import com.vdurmont.semver4j.Semver;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -38,8 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
+import com.vdurmont.semver4j.Semver;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Build;
@@ -87,11 +86,10 @@ public class AdditionalPluginDependenciesResolver {
           getPluginBundleDependency(pluginWithAdditionalDependencies, applicationDependencies);
       ClassLoaderModel pluginClassLoaderModel =
           getPluginClassLoaderModel(pluginWithAdditionalDependencies, mulePluginsClassLoaderModels);
-      List<BundleDependency> additionalDependencies = new ArrayList<>();
-      pluginWithAdditionalDependencies.getAdditionalDependencies().stream()
-          .filter(additionalDep -> !isPresentInClassLoaderModel(pluginClassLoaderModel, additionalDep))
-          .forEach(dep -> resolveDependency(dep)
-              .forEach(resolvedDependency -> updateAdditionalDependencyOrFail(additionalDependencies, resolvedDependency)));
+      List<BundleDependency> additionalDependencies =
+          resolveDependencies(pluginWithAdditionalDependencies.getAdditionalDependencies().stream()
+              .filter(additionalDep -> !isPresentInClassLoaderModel(pluginClassLoaderModel, additionalDep))
+              .collect(toList()));
       if (!additionalDependencies.isEmpty()) {
         pluginsWithAdditionalDeps.put(pluginBundleDependency,
                                       additionalDependencies);
@@ -100,48 +98,13 @@ public class AdditionalPluginDependenciesResolver {
     return pluginsWithAdditionalDeps;
   }
 
-  private void updateAdditionalDependencyOrFail(List<BundleDependency> additionalDependencies,
-                                                BundleDependency bundleDependency) {
-    Reference<BundleDependency> replace = new Reference<>();
-    additionalDependencies.stream()
-        .filter(additionalBundleDependency -> StringUtils.equals(additionalBundleDependency.getDescriptor().getGroupId(),
-                                                                 bundleDependency.getDescriptor().getGroupId())
-            &&
-            StringUtils.equals(additionalBundleDependency.getDescriptor().getArtifactId(),
-                               bundleDependency.getDescriptor().getArtifactId()))
-        .findFirst()
-        .map(additionalBundleDependency -> {
-          String additionalBundleDependencyVersion = additionalBundleDependency.getDescriptor().getVersion();
-          String bundleDependencyVersion = bundleDependency.getDescriptor().getVersion();
-          if (areSameMajor(bundleDependencyVersion, additionalBundleDependencyVersion)) {
-            if (isNewerVersion(bundleDependencyVersion, additionalBundleDependencyVersion)) {
-              replace.set(additionalBundleDependency);
-            }
-          } else {
-            throw new MuleRuntimeException(createStaticMessage("Attempting to add different major versions of the same dependency as additional plugin dependency. If this is not explicitly defined, check transitive dependencies."
-                +
-                lineSeparator() +
-                "These are: " +
-                lineSeparator() +
-                additionalBundleDependency.toString() +
-                lineSeparator() +
-                bundleDependency.toString()));
-          }
-          return true;
-        }).orElseGet(
-                     () -> additionalDependencies.add(bundleDependency));
-    if (replace.get() != null) {
-      additionalDependencies.remove(replace.get());
-      additionalDependencies.add(bundleDependency);
-    }
-  }
-
-  private List<BundleDependency> resolveDependency(Dependency dependency) {
-    BundleDescriptor bundleDescriptor = toBundleDescriptor(dependency);
-    List<BundleDependency> resolvedDependencies = new ArrayList<>();
-    resolvedDependencies.add(aetherMavenClient.resolveBundleDescriptor(bundleDescriptor));
-    resolvedDependencies.addAll(aetherMavenClient.resolveBundleDescriptorDependencies(false, false, bundleDescriptor));
-    return resolvedDependencies;
+  private List<BundleDependency> resolveDependencies(List<Dependency> additionalDependencies) {
+    return aetherMavenClient.resolveArtifactDependencies(additionalDependencies.stream()
+        .map(additionalDependency -> toBundleDescriptor(additionalDependency))
+        .collect(toList()),
+                                                         of(aetherMavenClient.getMavenConfiguration()
+                                                             .getLocalMavenRepositoryLocation()),
+                                                         empty());
   }
 
   private BundleDependency getPluginBundleDependency(Plugin plugin, List<BundleDependency> mulePlugins) {
@@ -189,13 +152,13 @@ public class AdditionalPluginDependenciesResolver {
         .stream()
         .filter(bundleDependency -> MULE_PLUGIN
             .equals(bundleDependency.getDescriptor().getClassifier().orElse(null)))
-        .collect(Collectors.toList());
+        .collect(toList());
 
     Collection<Plugin> additionalDependenciesFromMulePlugins = resolveAdditionalDependenciesFromMulePlugins(mulePlugins);
 
     pluginsWithAdditionalDependencies.addAll(additionalDependenciesFromMulePlugins.stream()
         .filter(isNotRedefinedAtApplicationLevel())
-        .collect(Collectors.toList()));
+        .collect(toList()));
   }
 
   protected Collection<Plugin> resolveAdditionalDependenciesFromMulePlugins(List<BundleDependency> mulePlugins) {
@@ -246,7 +209,7 @@ public class AdditionalPluginDependenciesResolver {
                               dependency.setSystemPath(getChildParameterValue(dependencyDom, "systemPath", false));
                               return dependency;
                             })
-                            .collect(Collectors.toList());
+                            .collect(toList());
                         if (alreadyDefinedPluginAdditionalDependencies != null) {
                           LinkedList<Dependency> effectiveDependencies =
                               new LinkedList<>(alreadyDefinedPluginAdditionalDependencies.getAdditionalDependencies());
@@ -302,14 +265,6 @@ public class AdditionalPluginDependenciesResolver {
     } catch (IllegalArgumentException e) {
       // If not using semver lets just compare the strings.
       return dependencyA.compareTo(dependencyB) > 0;
-    }
-  }
-
-  private boolean areSameMajor(String dependencyA, String dependencyB) {
-    try {
-      return new Semver(dependencyA, LOOSE).getMajor().equals(new Semver(dependencyB, LOOSE).getMajor());
-    } catch (IllegalArgumentException e) {
-      return false;
     }
   }
 

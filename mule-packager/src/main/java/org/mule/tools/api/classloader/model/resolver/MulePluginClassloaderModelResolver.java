@@ -64,13 +64,9 @@ public class MulePluginClassloaderModelResolver extends ClassloaderModelResolver
   private List<BundleDependency> collectTransitiveDependencies(BundleDependency rootDependency) {
     List<BundleDependency> allTransitiveDependencies = new LinkedList<>();
     for (BundleDependency transitiveDependency : rootDependency.getTransitiveDependencies()) {
-      // runtime, provided or test dependencies will not be resolved but they are still part of the dependencies graph, therefore
-      // we filter out them from this list
-      if (transitiveDependency.getBundleUri() != null) {
-        allTransitiveDependencies.add(transitiveDependency);
-        if (transitiveDependency.getDescriptor().getClassifier().map(c -> !MULE_PLUGIN_CLASSIFIER.equals(c)).orElse(true)) {
-          allTransitiveDependencies.addAll(collectTransitiveDependencies(transitiveDependency));
-        }
+      allTransitiveDependencies.add(transitiveDependency);
+      if (transitiveDependency.getDescriptor().getClassifier().map(c -> !MULE_PLUGIN_CLASSIFIER.equals(c)).orElse(true)) {
+        allTransitiveDependencies.addAll(collectTransitiveDependencies(transitiveDependency));
       }
     }
     return allTransitiveDependencies;

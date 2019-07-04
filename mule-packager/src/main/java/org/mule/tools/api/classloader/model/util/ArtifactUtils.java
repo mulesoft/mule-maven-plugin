@@ -12,7 +12,7 @@ package org.mule.tools.api.classloader.model.util;
 
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.tools.api.classloader.Constants;
+import org.mule.tools.api.classloader.model.ApplicationGAVModel;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 
@@ -219,26 +219,24 @@ public class ArtifactUtils {
     }
   }
 
-  public static ArtifactCoordinates getApplicationArtifactCoordinates(Model pomModel) {
-    ArtifactCoordinates appCoordinates = toArtifactCoordinates(getPomProjectBundleDescriptor(pomModel));
+  public static ArtifactCoordinates getApplicationArtifactCoordinates(Model pomModel, ApplicationGAVModel appGAVModel) {
+    ArtifactCoordinates appCoordinates = toArtifactCoordinates(getPomProjectBundleDescriptor(appGAVModel));
     appCoordinates.setType(PACKAGE_TYPE);
     appCoordinates.setClassifier(pomModel.getPackaging());
     return appCoordinates;
   }
 
-  public static BundleDescriptor getPomProjectBundleDescriptor(Model pomModel) {
-    return getBundleDescriptor(pomModel);
+  public static BundleDescriptor getPomProjectBundleDescriptor(ApplicationGAVModel appGAVModel) {
+    return getBundleDescriptor(appGAVModel);
   }
 
 
-  public static BundleDescriptor getBundleDescriptor(Model pomModel) {
-    final String version =
-        StringUtils.isNotBlank(pomModel.getVersion()) ? pomModel.getVersion() : pomModel.getParent().getVersion();
+  public static BundleDescriptor getBundleDescriptor(ApplicationGAVModel appGAVModel) {
     return new BundleDescriptor.Builder()
-        .setGroupId(StringUtils.isNotBlank(pomModel.getGroupId()) ? pomModel.getGroupId() : pomModel.getParent().getGroupId())
-        .setArtifactId(pomModel.getArtifactId())
-        .setVersion(version)
-        .setBaseVersion(version)
+        .setGroupId(appGAVModel.getGroupId())
+        .setArtifactId(appGAVModel.getArtifactId())
+        .setVersion(appGAVModel.getVersion())
+        .setBaseVersion(appGAVModel.getVersion())
         .setType(POM_TYPE)
         .build();
   }

@@ -18,11 +18,11 @@ import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
 
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
+import org.mule.tools.api.classloader.model.ApplicationGAVModel;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.classloader.model.NotParameterizedClassLoaderModel;
-import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.util.FileUtils;
 
 import java.io.File;
@@ -43,25 +43,28 @@ public class RepositoryGenerator {
   private final ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssembler;
   protected File outputDirectory;
   private File projectPomFile;
+  private ApplicationGAVModel appGAVModel;
 
   public RepositoryGenerator(File projectPomFile, File outputDirectory, ArtifactInstaller artifactInstaller,
-                             ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssembler) {
+                             ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssembler,
+                             ApplicationGAVModel appGAVModel) {
     this.projectPomFile = projectPomFile;
     this.outputDirectory = outputDirectory;
     this.artifactInstaller = artifactInstaller;
     this.applicationClassLoaderModelAssembler = applicationClassLoaderModelAssembler;
+    this.appGAVModel = appGAVModel;
   }
 
   public ClassLoaderModel generate() throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
-        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile);
+        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, appGAVModel);
     installArtifacts(getRepositoryFolder(), artifactInstaller, appModel);
     return appModel.getClassLoaderModel();
   }
 
   public ClassLoaderModel generate(boolean lightweight, boolean useLocalRepository) throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
-        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile);
+        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, appGAVModel);
     if (!lightweight) {
       installArtifacts(getRepositoryFolder(), artifactInstaller, appModel);
     }

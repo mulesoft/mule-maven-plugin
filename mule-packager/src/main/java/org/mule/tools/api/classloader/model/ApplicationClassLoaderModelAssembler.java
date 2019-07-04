@@ -58,12 +58,12 @@ public class ApplicationClassLoaderModelAssembler {
     this.additionalPluginDependenciesResolver = additionalPluginDependenciesResolver;
   }
 
-  public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile)
+  public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, ApplicationGAVModel appGAVModel)
       throws IllegalStateException {
 
     Model pomModel = getPomFile(pomFile);
 
-    ArtifactCoordinates appCoordinates = getApplicationArtifactCoordinates(pomModel);
+    ArtifactCoordinates appCoordinates = getApplicationArtifactCoordinates(pomModel, appGAVModel);
 
     AppClassLoaderModel appModel = new AppClassLoaderModel(CLASS_LOADER_MODEL_VERSION, appCoordinates);
 
@@ -88,8 +88,8 @@ public class ApplicationClassLoaderModelAssembler {
     return getPomModelFromFile(pomFile);
   }
 
-  public ArtifactCoordinates getApplicationArtifactCoordinates(Model pomModel) {
-    return ArtifactUtils.getApplicationArtifactCoordinates(pomModel);
+  public ArtifactCoordinates getApplicationArtifactCoordinates(Model pomModel, ApplicationGAVModel appGAVModel) {
+    return ArtifactUtils.getApplicationArtifactCoordinates(pomModel, appGAVModel);
   }
 
 }

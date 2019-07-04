@@ -118,7 +118,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
 
     ApplicationClassloaderModel applicationClassloaderModel =
-        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class));
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), mock(ApplicationGAVModel.class));
 
     assertThat("Application dependencies are not the expected",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
@@ -216,7 +216,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
     doReturn(artifactPomModel).when(applicationClassLoaderModelAssemblerSpy).getPomFile(any());
 
     ApplicationClassloaderModel applicationClassloaderModel =
-        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class));
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), mock(ApplicationGAVModel.class));
 
     return applicationClassloaderModel;
   }
@@ -288,7 +288,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
 
     ApplicationClassloaderModel applicationClassloaderModel =
-        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class));
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), mock(ApplicationGAVModel.class));
 
     assertThat("Application dependencies are not the expected",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
@@ -314,7 +314,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
 
     ApplicationClassloaderModel applicationClassloaderModel =
-        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class));
+        applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), mock(ApplicationGAVModel.class));
 
     assertThat("The class loader model should have one dependency",
                applicationClassloaderModel.getClassLoaderModel().getDependencies().size(),
@@ -360,7 +360,8 @@ public class ApplicationClassLoaderModelAssemblerTest {
           spy(new ApplicationClassLoaderModelAssembler(aetherMavenClientMock, temporaryFolder.newFolder()));
       ArtifactCoordinates projectArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
       doReturn(new Model()).when(applicationClassLoaderModelAssemblerSpy).getPomFile(any());
-      doReturn(projectArtifactCoordinates).when(applicationClassLoaderModelAssemblerSpy).getApplicationArtifactCoordinates(any());
+      doReturn(projectArtifactCoordinates).when(applicationClassLoaderModelAssemblerSpy).getApplicationArtifactCoordinates(any(),
+                                                                                                                           any());
       return applicationClassLoaderModelAssemblerSpy;
     } catch (Exception e) {
       throw new RuntimeException(e);

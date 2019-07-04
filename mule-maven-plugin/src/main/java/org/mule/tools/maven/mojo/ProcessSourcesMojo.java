@@ -16,6 +16,7 @@ import static java.util.stream.Collectors.toList;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
+import org.mule.tools.api.classloader.model.ApplicationGAVModel;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
@@ -68,10 +69,11 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
     boolean isLightWeightUsingLocalRepository = lightweightPackage && useLocalRepository;
     if (isLightWeightUsingLocalRepository || isHeavyWeight) {
       try {
+        ApplicationGAVModel appGAV = new ApplicationGAVModel(project.getGroupId(), project.getArtifactId(), project.getVersion());
         RepositoryGenerator repositoryGenerator =
             new RepositoryGenerator(session.getCurrentProject().getFile(), outputDirectory,
                                     new ArtifactInstaller(new MavenPackagerLog(getLog())),
-                                    getClassLoaderModelAssembler());
+                                    getClassLoaderModelAssembler(), appGAV);
         ClassLoaderModel classLoaderModel = repositoryGenerator.generate(lightweightPackage, useLocalRepository);
         for (SharedLibraryDependency sharedLibraryDependency : sharedLibraries) {
           classLoaderModel.getDependencies().stream()

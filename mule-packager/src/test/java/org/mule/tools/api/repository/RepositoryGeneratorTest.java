@@ -28,6 +28,7 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.Spy;
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
+import org.mule.tools.api.classloader.model.ApplicationGAVModel;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.util.FileUtils;
@@ -48,6 +49,7 @@ public class RepositoryGeneratorTest {
   private ProjectBuildingResult resultMock;
   private Set<Artifact> artifacts;
   private ApplicationClassloaderModel appModelMock;
+  private ApplicationGAVModel appGAVModel;
 
   @Rule
   public ExpectedException exception = ExpectedException.none();
@@ -65,9 +67,10 @@ public class RepositoryGeneratorTest {
     artifactInstallerMock = mock(ArtifactInstaller.class);
     ApplicationClassLoaderModelAssembler applicationClassloaderModelAssemblerMock =
         mock(ApplicationClassLoaderModelAssembler.class);
+    appGAVModel = new ApplicationGAVModel(GROUP_ID, ARTIFACT_ID, VERSION);
     repositoryGenerator = new RepositoryGenerator(temporaryFolder.newFile("pom.xml"),
                                                   temporaryFolder.getRoot(), artifactInstallerMock,
-                                                  applicationClassloaderModelAssemblerMock);
+                                                  applicationClassloaderModelAssemblerMock, appGAVModel);
     repositoryGeneratorSpy = spy(repositoryGenerator);
     appModelMock = mock(ApplicationClassloaderModel.class);
   }

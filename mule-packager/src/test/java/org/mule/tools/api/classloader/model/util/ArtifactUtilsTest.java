@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.tools.api.classloader.model.ApplicationGAVModel;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 
@@ -150,28 +151,13 @@ public class ArtifactUtilsTest {
 
   @Test
   public void getBundleDescriptorTest() {
-    BundleDescriptor actualBundleDescriptor =
-        ArtifactUtils.getBundleDescriptor(pomModel);
+    ApplicationGAVModel appGAVModel = new ApplicationGAVModel(GROUP_ID, ARTIFACT_ID, VERSION);
+    BundleDescriptor actualBundleDescriptor = ArtifactUtils.getBundleDescriptor(appGAVModel);
 
     assertThat("Group id is not the expected", actualBundleDescriptor.getGroupId(), equalTo(GROUP_ID));
     assertThat("Artifact id is not the expected", actualBundleDescriptor.getArtifactId(), equalTo(ARTIFACT_ID));
     assertThat("Version is not the expected", actualBundleDescriptor.getVersion(), equalTo(VERSION));
     assertThat("Base version is not the expected", actualBundleDescriptor.getBaseVersion(), equalTo(VERSION));
     assertThat("Type is not the expected", actualBundleDescriptor.getType(), equalTo(POM_TYPE));
-  }
-
-  @Test
-  public void getBundleDescriptorVersionFromParentTest() {
-    pomModel.setVersion(null);
-    BundleDescriptor actualBundleDescriptor = ArtifactUtils.getBundleDescriptor(pomModel);
-    assertThat("Version is not the expected", actualBundleDescriptor.getVersion(), equalTo(PARENT_VERSION));
-    assertThat("Base version is not the expected", actualBundleDescriptor.getBaseVersion(), equalTo(PARENT_VERSION));
-  }
-
-  @Test
-  public void getBundleDescriptorGroupIdFromParentTest() {
-    pomModel.setGroupId(null);
-    BundleDescriptor actualBundleDescriptor = ArtifactUtils.getBundleDescriptor(pomModel);
-    assertThat("Goup id is not the expected", actualBundleDescriptor.getGroupId(), equalTo(PARENT_GROUP_ID));
   }
 }

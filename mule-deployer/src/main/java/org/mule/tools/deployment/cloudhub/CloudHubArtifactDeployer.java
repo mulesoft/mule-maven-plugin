@@ -175,12 +175,6 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   private Application getApplication(Application originalApplication) {
     Application application = new Application();
     if (originalApplication != null) {
-      application.setDomain(deployment.getApplicationName());
-
-      MuleVersion muleVersion = new MuleVersion();
-      muleVersion.setVersion(deployment.getMuleVersion().get());
-      application.setMuleVersion(muleVersion);
-
       Map<String, String> resolvedProperties = resolveProperties(originalApplication.getProperties(),
                                                                  deployment.getProperties(), deployment.overrideProperties());
       application.setProperties(resolvedProperties);
@@ -191,24 +185,24 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
         application.setRegion(deployment.getRegion());
       }
 
-      application.setWorkers(getWorkers());
-
     } else {
-      application.setDomain(deployment.getApplicationName());
-
       application.setMonitoringAutoRestart(true);
-      MuleVersion muleVersion = new MuleVersion();
-      muleVersion.setVersion(deployment.getMuleVersion().get());
-      application.setMuleVersion(muleVersion);
-
       application.setProperties(deployment.getProperties());
 
       String region = isBlank(deployment.getRegion()) ? DEFAULT_CH_REGION : deployment.getRegion();
       application.setRegion(region);
-
-      application.setWorkers(getWorkers());
-
     }
+
+    application.setDomain(deployment.getApplicationName());
+
+    MuleVersion muleVersion = new MuleVersion();
+    muleVersion.setVersion(deployment.getMuleVersion().get());
+    application.setMuleVersion(muleVersion);
+
+    application.setWorkers(getWorkers());
+
+    application.setObjectStoreV1(!deployment.getObjectStoreV2());
+    application.setPersistentQueues(deployment.getPersistentQueues());
 
     return application;
   }

@@ -35,6 +35,12 @@ public class CloudHubDeployment extends AnypointDeployment {
   @Parameter
   protected Boolean overrideProperties;
 
+  @Parameter
+  protected Boolean objectStoreV2 = false;
+
+  @Parameter
+  protected Boolean persistentQueues = false;
+
   /**
    * Region to deploy the application in Cloudhub.
    *
@@ -72,6 +78,33 @@ public class CloudHubDeployment extends AnypointDeployment {
 
   public void setWorkerType(String workerType) {
     this.workerType = workerType;
+  }
+
+
+  /**
+   * Define object store version of the application in Cloudhub.
+   *
+   * @since 3.3.3
+   */
+  public Boolean getObjectStoreV2() {
+    return objectStoreV2;
+  }
+
+  public void setObjectStoreV2(Boolean objectStoreV2) {
+    this.objectStoreV2 = objectStoreV2;
+  }
+
+  /**
+   * Define object store version of the application in Cloudhub.
+   *
+   * @since 3.3.3
+   */
+  public Boolean getPersistentQueues() {
+    return persistentQueues;
+  }
+
+  public void setPersistentQueues(Boolean persistentQueues) {
+    this.persistentQueues = persistentQueues;
   }
 
   public void setEnvironmentSpecificValues() throws DeploymentException {

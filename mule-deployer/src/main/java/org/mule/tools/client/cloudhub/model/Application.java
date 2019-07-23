@@ -40,6 +40,7 @@ public class Application {
   private Boolean hasFile;
   private Boolean secureDataGatewayEnabled;
   private Boolean vpnEnabled;
+  private Boolean objectStoreV1;
   private Map<String, String> trackingSettings;
   private MuleVersion muleVersion;
   private MuleVersion previousMuleVersion;
@@ -291,5 +292,13 @@ public class Application {
 
   public void setRegion(String region) {
     this.region = region;
+  }
+
+  public Boolean getObjectStoreV1() {
+    return objectStoreV1;
+  }
+
+  public void setObjectStoreV1(Boolean objectStoreV1) {
+    this.objectStoreV1 = objectStoreV1;
   }
 }

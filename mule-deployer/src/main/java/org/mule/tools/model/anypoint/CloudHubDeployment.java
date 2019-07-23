@@ -33,10 +33,13 @@ public class CloudHubDeployment extends AnypointDeployment {
   protected String region;
 
   @Parameter
-  protected Map<String, String> properties;
+  protected Boolean overrideProperties;
 
   @Parameter
-  protected Boolean overrideProperties;
+  protected Boolean objectStoreV2 = false;
+
+  @Parameter
+  protected Boolean persistentQueues = false;
 
   /**
    * Region to deploy the application in Cloudhub.
@@ -78,17 +81,29 @@ public class CloudHubDeployment extends AnypointDeployment {
   }
 
   /**
-   * CloudHub properties.
+   * Define object store version of the application in Cloudhub.
    *
-   * @since 2.0
-   *
+   * @since 3.3.3
    */
-  public Map<String, String> getProperties() {
-    return properties;
+  public Boolean getObjectStoreV2() {
+    return objectStoreV2;
   }
 
-  public void setProperties(Map<String, String> properties) {
-    this.properties = properties;
+  public void setObjectStoreV2(Boolean objectStoreV2) {
+    this.objectStoreV2 = objectStoreV2;
+  }
+
+  /**
+   * Define object store version of the application in Cloudhub.
+   *
+   * @since 3.3.3
+   */
+  public Boolean getPersistentQueues() {
+    return persistentQueues;
+  }
+
+  public void setPersistentQueues(Boolean persistentQueues) {
+    this.persistentQueues = persistentQueues;
   }
 
   public void setEnvironmentSpecificValues() throws DeploymentException {

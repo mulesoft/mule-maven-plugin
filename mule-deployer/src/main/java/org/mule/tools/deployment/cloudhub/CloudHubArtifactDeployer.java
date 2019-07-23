@@ -26,7 +26,6 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Optional.empty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.replaceEachRepeatedly;
 
 /**
  * Deploys mule artifacts to CloudHub using the {@link CloudHubClient}.

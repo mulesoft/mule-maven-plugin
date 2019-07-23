@@ -61,4 +61,17 @@ public class CloudHubDeploymentTest {
     assertThat("The cloudhub worker type property was not resolved to the default value",
                deploymentSpy.getWorkerType(), equalTo(cloudHubWorkerTypeDefaultValue));
   }
+
+  @Test
+  public void defaultOsV2ValueIsFalse() {
+    assertThat("The default value for Object Store v2 property is not false",
+               deploymentSpy.getObjectStoreV2(), equalTo(false));
+  }
+
+  @Test
+  public void defaultPersistentQueuesValueIsFalse() {
+    assertThat("The default value for Persistent Queues property is not false",
+               deploymentSpy.getPersistentQueues(), equalTo(false));
+  }
+
 }

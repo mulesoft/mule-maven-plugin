@@ -172,8 +172,8 @@ public class DefaultValuesMuleArtifactJsonGenerator extends AbstractDefaultValue
         exportedResources.addAll((Collection<String>) originalAttributes.get("exportedResources"));
       } else {
         exportedResources.addAll(muleArtifactContentResolver.getExportedResources());
-        exportedResources.addAll(muleArtifactContentResolver.getTestExportedResources());
       }
+      exportedResources.addAll(muleArtifactContentResolver.getTestExportedResources());
 
       Map<String, Object> attributesCopy =
           getUpdatedAttributes(originalMuleArtifact.getClassLoaderModelLoaderDescriptor(), "exportedResources",

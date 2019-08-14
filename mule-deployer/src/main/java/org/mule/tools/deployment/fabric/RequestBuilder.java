@@ -38,6 +38,7 @@ public class RequestBuilder {
   private RuntimeFabricClient client;
   private static final String AGENT_INFO = "agentInfo";
   private static final String NAME = "name";
+  private static final String DOMAIN_WILDCARD = "*";
 
   protected RequestBuilder(RuntimeFabricDeployment deployment, RuntimeFabricClient client) {
     this.deployment = deployment;
@@ -64,24 +65,37 @@ public class RequestBuilder {
     target.setProvider(deployment.getProvider());
     target.setTargetId(resolveTargetId());
 
-    RuntimeFabricDeploymentSettings resolvedMuleVersionDeploymentSettings =
-        resolveMuleVersionDeploymentSettings(deployment.getDeploymentSettings());
-    target.setDeploymentSettings(resolvedMuleVersionDeploymentSettings);
+    RuntimeFabricDeploymentSettings resolvedDeploymentSettings =
+        resolveDeploymentSettings(deployment.getDeploymentSettings());
+    target.setDeploymentSettings(resolvedDeploymentSettings);
     return target;
   }
 
-  private RuntimeFabricDeploymentSettings resolveMuleVersionDeploymentSettings(RuntimeFabricDeploymentSettings settings)
+  private RuntimeFabricDeploymentSettings resolveDeploymentSettings(RuntimeFabricDeploymentSettings settings)
       throws DeploymentException {
-    RuntimeFabricDeploymentSettings resolvedMuleVersionDeploymentSettings = new RuntimeFabricDeploymentSettings(settings);
+    RuntimeFabricDeploymentSettings resolvedDeploymentSettings = new RuntimeFabricDeploymentSettings(settings);
     String targetId = resolveTargetId();
     String muleVersion = deployment.getMuleVersion().get();
     String tag = resolveTag(targetId, muleVersion);
     if (tag != null) {
-      resolvedMuleVersionDeploymentSettings.setRuntimeVersion(muleVersion + ":" + tag);
+      resolvedDeploymentSettings.setRuntimeVersion(muleVersion + ":" + tag);
     } else {
       throw new DeploymentException("Could not resolve tag for this mule version");
     }
-    return resolvedMuleVersionDeploymentSettings;
+    String url = resolveUrl(settings, targetId);
+    resolvedDeploymentSettings.setPublicUrl(url);
+
+    return resolvedDeploymentSettings;
+  }
+
+  private String resolveUrl(RuntimeFabricDeploymentSettings deploymentSettings, String targetId) {
+    JsonArray domains = client.getDomainInfo(targetId);
+    if (deploymentSettings.getPublicUrl() == null && domains.size() > 0) {
+      String domain = domains.get(0).getAsString();
+      return domain.replace(DOMAIN_WILDCARD, deployment.getApplicationName());
+    } else {
+      return deploymentSettings.getPublicUrl();
+    }
   }
 
   private String resolveTag(String targetId, String muleVersion) {

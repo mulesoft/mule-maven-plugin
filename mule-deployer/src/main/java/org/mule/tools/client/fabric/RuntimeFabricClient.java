@@ -40,7 +40,7 @@ public class RuntimeFabricClient extends AbstractMuleClient {
   public static final String DEPLOYMENTS_PATH = RESOURCES_PATH + "/deployments";
   public static final String WORKERCLOUD_API_V1_AGENTS = "workercloud/api/organizations/%s/agents";
   public static final String RUNTIME_FABRIC_TARGET_INFO = "runtimefabric/api/organizations/%s/targets/%s";
-
+  public static final String RUNTIME_FABRIC_DOMAIN_INFO = RUNTIME_FABRIC_TARGET_INFO + "/environments/%s/domains";
 
   public RuntimeFabricClient(RuntimeFabricDeployment runtimeFabricDeployment, DeployerLog log) {
     super(runtimeFabricDeployment, log);
@@ -128,5 +128,11 @@ public class RuntimeFabricClient extends AbstractMuleClient {
     Response response = get(baseUri, format(RUNTIME_FABRIC_TARGET_INFO, getOrgId(), targetId));
     checkResponseStatus(response, OK);
     return new Gson().fromJson(response.readEntity(String.class), JsonElement.class).getAsJsonObject();
+  }
+
+  public JsonArray getDomainInfo(String targetId) {
+    Response response = get(baseUri, format(RUNTIME_FABRIC_DOMAIN_INFO, getOrgId(), targetId, getEnvId()));
+    checkResponseStatus(response, OK);
+    return new Gson().fromJson(response.readEntity(String.class), JsonArray.class).getAsJsonArray();
   }
 }

@@ -54,6 +54,8 @@ public class Application {
   // TODO a class VpnConfig
   private Map<String, String> vpnConfig;
 
+  private String deploymentUpdateStatus;
+
   public String getId() {
     return id;
   }
@@ -300,5 +302,13 @@ public class Application {
 
   public void setObjectStoreV1(Boolean objectStoreV1) {
     this.objectStoreV1 = objectStoreV1;
+  }
+
+  public String getDeploymentUpdateStatus() {
+    return deploymentUpdateStatus;
+  }
+
+  public void setDeploymentUpdateStatus(String deploymentUpdateStatus) {
+    this.deploymentUpdateStatus = deploymentUpdateStatus;
   }
 }

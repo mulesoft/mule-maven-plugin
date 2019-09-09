@@ -9,22 +9,20 @@
  */
 package integration.test.mojo;
 
-import static integration.FileTreeMatcher.hasSameTreeStructure;
-import static org.apache.commons.lang3.ArrayUtils.addAll;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.maven.it.VerificationException;
-import org.bouncycastle.util.Arrays;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+
+import static integration.FileTreeMatcher.hasSameTreeStructure;
+import static org.apache.commons.lang3.ArrayUtils.addAll;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 
 public class PackageMojoTest extends MojoTest implements SettingsConfigurator {

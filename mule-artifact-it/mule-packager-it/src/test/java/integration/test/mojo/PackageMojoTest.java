@@ -10,12 +10,15 @@
 package integration.test.mojo;
 
 import static integration.FileTreeMatcher.hasSameTreeStructure;
+import static org.apache.commons.lang3.ArrayUtils.addAll;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.maven.it.VerificationException;
+import org.bouncycastle.util.Arrays;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
@@ -47,6 +50,29 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     assertThat("The directory structure is different from the expected", targetFolder,
                hasSameTreeStructure(expectedStructure, excludes));
 
+    verifier.verifyErrorFreeLog();
+  }
+
+  @Test
+  public void testPackageAppUsingLightweightWithLocalRepository() throws IOException, VerificationException {
+    String artifactId = "empty-lightweight-local-repository-classloader-model-project";
+    projectBaseDirectory =
+        builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-DlightweightPackage=true");
+    verifier.addCliOption("-DuseLocalRepository=true");
+    verifier.executeGoal(PACKAGE);
+
+    File expectedStructure = getExpectedStructure("/expected-lightweight-local-repository-classloader-model-project");
+    File targetStructure = new File(verifier.getBasedir() + File.separator + TARGET_FOLDER_NAME);
+
+    assertThat("The directory structure is different from the expected", targetStructure,
+               hasSameTreeStructure(expectedStructure,
+                                    addAll(excludes,
+                                           new String[] {
+                                               "empty-lightweight-local-repository-classloader-model-project-1.0.0-SNAPSHOT-mule-application-light-package.jar",
+                                               "temp", "munit-test.xml"})));
     verifier.verifyErrorFreeLog();
   }
 

@@ -105,7 +105,7 @@ public class PackageMojo extends AbstractMuleMojo {
     boolean isMuleReusableApp = MULE_PLUGIN.equals(classifier);
     return new PackagingOptions(isMuleApplicationTemplate || onlyMuleSources,
                                 isMuleReusableApp || lightweightPackage, isMuleApplicationExample || attachMuleSources,
-                                testJar);
+                                testJar, useLocalRepository);
   }
 
   private String getType() {

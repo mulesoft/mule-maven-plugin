@@ -213,7 +213,7 @@ public class MulePackageBuilder implements PackageBuilder {
       archiver.addToRoot(classesFolder, null, null);
       archiver.addMaven(mavenFolder, null, null);
 
-      if (packagingOptions.isLightweightPackage()) {
+      if (packagingOptions.isLightweightPackage() && !packagingOptions.isUseLocalRepository()) {
         archiver.addMuleArtifact(muleArtifactFolder, null, new String[] {CLASSLOADER_MODEL_JSON});
       } else {
         archiver.addMuleArtifact(muleArtifactFolder, null, null);

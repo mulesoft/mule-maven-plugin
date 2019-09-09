@@ -23,8 +23,10 @@ import org.mule.maven.client.api.MavenClientProvider;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.maven.it.VerificationException;
 import org.junit.Before;
 import org.junit.Test;
@@ -308,7 +310,7 @@ public class ProcessSourcesMojoTest extends MojoTest {
     deleteDirectory(new File(targetStructure, "temp"));
 
     assertThat("The directory structure is different from the expected", targetStructure,
-               hasSameTreeStructure(expectedStructure, excludes));
+               hasSameTreeStructure(expectedStructure, ArrayUtils.add(excludes, "mule-artifact.json")));
 
     verifier.verifyErrorFreeLog();
   }

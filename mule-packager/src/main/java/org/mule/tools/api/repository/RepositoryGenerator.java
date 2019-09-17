@@ -57,14 +57,14 @@ public class RepositoryGenerator {
 
   public ClassLoaderModel generate() throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
-        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, appGAVModel);
+        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory, appGAVModel);
     installArtifacts(getRepositoryFolder(), artifactInstaller, appModel);
     return appModel.getClassLoaderModel();
   }
 
   public ClassLoaderModel generate(boolean lightweight, boolean useLocalRepository) throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
-        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, appGAVModel);
+        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory, appGAVModel);
     if (!lightweight) {
       installArtifacts(getRepositoryFolder(), artifactInstaller, appModel);
     }

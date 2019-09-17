@@ -62,12 +62,12 @@ public class MulePluginClassloaderModelResolverTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void resolveMulePluginsVersionsPluginsToResolveNull() {
-    resolver.resolveMulePluginsVersions(null, new ArrayList<>());
+    resolver.resolveConflicts(null, new ArrayList<>());
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void resolveMulePluginsVersionsDefinitivePluginsNull() {
-    resolver.resolveMulePluginsVersions(new ArrayList<>(), null);
+    resolver.resolveConflicts(new ArrayList<>(), null);
   }
 
   @Test
@@ -82,7 +82,7 @@ public class MulePluginClassloaderModelResolverTest {
     definitiveMulePlugins.add(mulePluginToResolveNewer);
 
     List<BundleDependency> resolvedPlugins =
-        resolver.resolveMulePluginsVersions(mulePluginsToResolve, definitiveMulePlugins);
+        resolver.resolveConflicts(mulePluginsToResolve, definitiveMulePlugins);
     assertThat("List should contain only the newer version", resolvedPlugins, containsInAnyOrder(mulePluginToResolveNewer));
     assertThat("List should contain only one dependency", resolvedPlugins.size(), equalTo(1));
   }
@@ -99,7 +99,7 @@ public class MulePluginClassloaderModelResolverTest {
     definitiveMulePlugins.add(mulePluginToResolveOlder);
 
     List<BundleDependency> resolvedPlugins =
-        resolver.resolveMulePluginsVersions(mulePluginsToResolve, definitiveMulePlugins);
+        resolver.resolveConflicts(mulePluginsToResolve, definitiveMulePlugins);
     assertThat("List should contain only the older version", resolvedPlugins, containsInAnyOrder(mulePluginToResolveOlder));
     assertThat("List should contain only one dependency", resolvedPlugins.size(), equalTo(1));
   }
@@ -118,7 +118,7 @@ public class MulePluginClassloaderModelResolverTest {
     definitiveMulePlugins.add(mulePluginToResolveOlder);
 
     List<BundleDependency> resolvedPlugins =
-        resolver.resolveMulePluginsVersions(mulePluginsToResolve, definitiveMulePlugins);
+        resolver.resolveConflicts(mulePluginsToResolve, definitiveMulePlugins);
     assertThat("List should contain only the older version", resolvedPlugins,
                containsInAnyOrder(mulePluginToResolveOlder, anotherRandomMulePlugin));
     assertThat("List should contain only one dependency", resolvedPlugins.size(), equalTo(2));

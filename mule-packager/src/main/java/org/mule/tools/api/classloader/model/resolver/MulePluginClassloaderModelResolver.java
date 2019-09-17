@@ -16,7 +16,6 @@ import static org.mule.tools.api.validation.VersionUtils.getMajor;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.internal.AetherMavenClient;
-import org.mule.tools.api.classloader.model.Plugin;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -29,16 +28,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public class MulePluginClassloaderModelResolver extends ClassloaderModelResolver {
 
-  private List<Plugin> pluginsWithAdditionalDependencies = new ArrayList<>();
-
   public MulePluginClassloaderModelResolver(AetherMavenClient muleMavenPluginClient) {
     super(muleMavenPluginClient, MULE_PLUGIN_CLASSIFIER);
-  }
-
-  public MulePluginClassloaderModelResolver(AetherMavenClient muleMavenPluginClient,
-                                            List<Plugin> pluginsWithAdditionalDependencies) {
-    super(muleMavenPluginClient, MULE_PLUGIN_CLASSIFIER);
-    this.pluginsWithAdditionalDependencies = pluginsWithAdditionalDependencies;
   }
 
   @Override

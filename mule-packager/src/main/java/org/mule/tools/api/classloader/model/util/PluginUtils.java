@@ -11,6 +11,8 @@ package org.mule.tools.api.classloader.model.util;
 
 import static java.util.stream.Collectors.toList;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toApplicationModelArtifacts;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.updatePackagesResources;
+
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.tools.api.classloader.model.Plugin;
 
@@ -31,9 +33,9 @@ public class PluginUtils {
                                                             plugin.setArtifactId(pluginEntry.getKey().getDescriptor()
                                                                 .getArtifactId());
                                                             plugin.setGroupId(pluginEntry.getKey().getDescriptor().getGroupId());
-                                                            plugin
-                                                                .setAdditionalDependencies(toApplicationModelArtifacts(pluginEntry
-                                                                    .getValue()));
+                                                            plugin.setAdditionalDependencies(
+                                                                                             updatePackagesResources(toApplicationModelArtifacts(pluginEntry
+                                                                                                 .getValue())));
                                                             return plugin;
                                                           })
         .collect(toList());

@@ -46,4 +46,12 @@ public class ApplicationClassloaderModel {
   public List<ClassLoaderModel> getMulePluginsClassloaderModels() {
     return mulePluginsClassloaderModels;
   }
+
+  public String[] getPackages() {
+    return classLoaderModel.getPackages();
+  }
+
+  public String[] getResources() {
+    return classLoaderModel.getResources();
+  }
 }

@@ -22,10 +22,12 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Artifact implements Comparable {
 
-  private static final String MULE_DOMAIN = "mule-domain";
+  public static final String MULE_DOMAIN = "mule-domain";
   private ArtifactCoordinates artifactCoordinates;
   private URI uri;
   private boolean isShared = false;
+  private String[] packages;
+  private String[] resources;
 
   public Artifact(ArtifactCoordinates artifactCoordinates, URI uri) {
     setArtifactCoordinates(artifactCoordinates);
@@ -91,6 +93,8 @@ public class Artifact implements Comparable {
     String newUriPath = getFormattedMavenDirectory(repositoryFolder, this.getArtifactCoordinates()).getPath();
     File newArtifactFile = new File(newUriPath, artifactFilename);
     newArtifact.setShared(isShared);
+    newArtifact.setPackages(packages);
+    newArtifact.setResources(resources);
     try {
       setNewArtifactURI(newArtifact, newArtifactFile);
     } catch (URISyntaxException e) {
@@ -201,5 +205,21 @@ public class Artifact implements Comparable {
 
   public File getFormattedMavenDirectory(File repositoryFile) {
     return getFormattedMavenDirectory(repositoryFile, artifactCoordinates);
+  }
+
+  public String[] getPackages() {
+    return packages;
+  }
+
+  public String[] getResources() {
+    return resources;
+  }
+
+  public void setPackages(String[] packages) {
+    this.packages = packages;
+  }
+
+  public void setResources(String[] resources) {
+    this.resources = resources;
   }
 }

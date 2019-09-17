@@ -25,6 +25,9 @@ public class ClassLoaderModel {
   private ArtifactCoordinates artifactCoordinates;
   private List<Artifact> dependencies = new ArrayList<>();
 
+  private String[] packages;
+  private String[] resources;
+
   public ClassLoaderModel(String version, ArtifactCoordinates artifactCoordinates) {
     setArtifactCoordinates(artifactCoordinates);
     setVersion(version);
@@ -66,12 +69,30 @@ public class ClassLoaderModel {
     ClassLoaderModel copy = doGetParameterizedUriModel();
     List<Artifact> dependenciesCopy = dependencies.stream().map(Artifact::copyWithParameterizedUri).collect(toList());
     copy.setDependencies(dependenciesCopy);
+    copy.setPackages(getPackages());
+    copy.setResources(getResources());
     return copy;
   }
 
   protected ClassLoaderModel doGetParameterizedUriModel() {
     ClassLoaderModel copy = new ClassLoaderModel(version, artifactCoordinates);
     return copy;
+  }
+
+  public String[] getPackages() {
+    return packages;
+  }
+
+  public void setPackages(String[] packages) {
+    this.packages = packages;
+  }
+
+  public String[] getResources() {
+    return resources;
+  }
+
+  public void setResources(String[] resources) {
+    this.resources = resources;
   }
 
   @Override

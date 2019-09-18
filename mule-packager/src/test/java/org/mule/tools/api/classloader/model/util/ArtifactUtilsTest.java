@@ -10,25 +10,36 @@
 
 package org.mule.tools.api.classloader.model.util;
 
+import static java.nio.file.Paths.get;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
+import static org.hamcrest.collection.IsArrayWithSize.arrayWithSize;
 import static org.hamcrest.core.Is.is;
+import static org.mule.tools.api.classloader.model.Artifact.MULE_DOMAIN;
+import static org.mule.tools.api.classloader.model.util.ZipUtils.compress;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Optional;
-
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Parent;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.ApplicationGAVModel;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Optional;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Parent;
+import org.hamcrest.collection.IsArrayWithSize;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 public class ArtifactUtilsTest {
 
@@ -41,7 +52,7 @@ public class ArtifactUtilsTest {
   private static final String DEFAULT_ARTIFACT_DESCRIPTOR_TYPE = "jar";
   private static final String POM_TYPE = "pom";
   private static final String MULE_PLUGIN = "mule-plugin";
-  private static final String RESOURCE_LOCATION = "/Users/username/.m2/group/id/artifact-id/1.0.0/artifact-id-1.0.0.jar";
+  private static final String RESOURCE_LOCATION = "groupid/artifact-id/1.0.0/artifact-id-1.0.0.jar";
   private static final String NOT_MULE_PLUGIN = "javadoc";
   private BundleDescriptor bundleDescriptor;
   private ArtifactCoordinates artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
@@ -49,16 +60,22 @@ public class ArtifactUtilsTest {
   private Model pomModel;
   private Parent parentProject;
 
-
+  @Rule
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
+  private File localRepository;
+
   @Before
-  public void before() throws URISyntaxException {
+  public void before() throws IOException {
+    localRepository = temporaryFolder.newFolder();
+
     bundleDescriptor =
         new BundleDescriptor.Builder().setGroupId(GROUP_ID).setArtifactId(ARTIFACT_ID).setVersion(VERSION).setBaseVersion(VERSION)
             .build();
-    bundleURI = new URI(RESOURCE_LOCATION);
+
+    bundleURI = buildBundleURI();
     pomModel = new Model();
     pomModel.setGroupId(GROUP_ID);
     pomModel.setArtifactId(ARTIFACT_ID);
@@ -67,6 +84,25 @@ public class ArtifactUtilsTest {
     parentProject.setVersion(PARENT_VERSION);
     parentProject.setGroupId(PARENT_GROUP_ID);
     pomModel.setParent(parentProject);
+  }
+
+
+  private URI buildBundleURI() {
+    File bundleFile = new File(localRepository.getAbsolutePath(), RESOURCE_LOCATION);
+    assertThat(bundleFile.mkdirs(), is(true));
+    return bundleFile.toURI();
+  }
+
+  @Test
+  public void getApplicationArtifactCoordinates() {
+    ApplicationGAVModel appGAVModel =
+        new ApplicationGAVModel(pomModel.getGroupId(), pomModel.getArtifactId(), pomModel.getVersion());
+    ArtifactCoordinates applicationArtifactCoordinates = ArtifactUtils.getApplicationArtifactCoordinates(pomModel, appGAVModel);
+    assertThat(applicationArtifactCoordinates.getType(), equalTo("jar"));
+    assertThat(applicationArtifactCoordinates.getClassifier(), equalTo(pomModel.getPackaging()));
+    assertThat(applicationArtifactCoordinates.getGroupId(), equalTo(appGAVModel.getGroupId()));
+    assertThat(applicationArtifactCoordinates.getArtifactId(), equalTo(appGAVModel.getArtifactId()));
+    assertThat(applicationArtifactCoordinates.getVersion(), equalTo(appGAVModel.getVersion()));
   }
 
   @Test
@@ -88,7 +124,7 @@ public class ArtifactUtilsTest {
   }
 
   @Test
-  public void toDependencyTest() throws URISyntaxException {
+  public void toDependencyTest() {
     BundleDependency bundleDependency =
         new BundleDependency.Builder().sedBundleDescriptor(bundleDescriptor).setBundleUri(bundleURI).build();
 
@@ -96,6 +132,47 @@ public class ArtifactUtilsTest {
 
     assertArtifactCoordinates(actualArtifact.getArtifactCoordinates(), DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, null);
     assertThat("Artifact path location is not the expected", actualArtifact.getUri(), equalTo(bundleURI));
+  }
+
+  @Test
+  public void checkPackagesAndResourcesTests() throws Exception {
+    BundleDependency bundleDependency =
+        new BundleDependency.Builder().sedBundleDescriptor(bundleDescriptor).setBundleUri(bundleURI).build();
+
+    File jarFile = FileUtils.toFile(bundleDependency.getBundleUri().toURL());
+    jarFile.delete();
+    compress(jarFile,
+             get(this.getClass().getClassLoader().getResource("org/mule/tools/api/classloader/model/util/testpackages").toURI())
+                 .toFile());
+
+    Artifact actualArtifact = ArtifactUtils.updatePackagesResources(ArtifactUtils.toArtifact(bundleDependency));
+
+    assertArtifactCoordinates(actualArtifact.getArtifactCoordinates(), DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, null);
+    assertThat("Artifact packages are not the expected", actualArtifact.getPackages(), arrayWithSize(2));
+    assertThat(actualArtifact.getPackages(), arrayContaining("testpackage1", "testpackage2"));
+    assertThat("Artifact resources are not the expected", actualArtifact.getResources(), arrayWithSize(1));
+    assertThat(actualArtifact.getResources(), arrayContaining("testpackage1/myresource.properties"));
+  }
+
+  @Test
+  public void checkPackagesAndResourcesWithNullUriTests() {
+    bundleDescriptor =
+        new BundleDescriptor.Builder()
+            .setGroupId(GROUP_ID)
+            .setArtifactId(ARTIFACT_ID)
+            .setVersion(VERSION)
+            .setBaseVersion(VERSION)
+            .setClassifier(MULE_DOMAIN)
+            .build();
+
+    BundleDependency bundleDependency =
+        new BundleDependency.Builder().sedBundleDescriptor(bundleDescriptor).build();
+
+    Artifact actualArtifact = ArtifactUtils.updatePackagesResources(ArtifactUtils.toArtifact(bundleDependency));
+
+    assertArtifactCoordinates(actualArtifact.getArtifactCoordinates(), DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, MULE_DOMAIN);
+    assertThat(actualArtifact.getPackages(), is(nullValue()));
+    assertThat(actualArtifact.getResources(), is(nullValue()));
   }
 
   private void assertArtifactCoordinates(ArtifactCoordinates actualArtifactCoordinates, String type,

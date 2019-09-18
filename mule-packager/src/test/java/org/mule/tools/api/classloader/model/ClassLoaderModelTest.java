@@ -10,6 +10,9 @@
 
 package org.mule.tools.api.classloader.model;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -23,6 +26,12 @@ public class ClassLoaderModelTest {
   private ArtifactCoordinates artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
+
+  @Test
+  public void equals() {
+    assertThat(new ClassLoaderModel("1.0", artifactCoordinates).equals(new ClassLoaderModel("2.0", artifactCoordinates)),
+               is(true));
+  }
 
   @Test
   public void checkNullVersionTest() {

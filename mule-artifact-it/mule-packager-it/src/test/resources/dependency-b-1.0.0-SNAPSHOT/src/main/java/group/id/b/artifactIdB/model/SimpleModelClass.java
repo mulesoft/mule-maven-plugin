@@ -7,10 +7,9 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.packager.sources;
 
-public class MuleArtifactModel {
+package group.id.b.artifactIdB.model;
 
-  private String name;
+public class SimpleModelClass {
 
 }

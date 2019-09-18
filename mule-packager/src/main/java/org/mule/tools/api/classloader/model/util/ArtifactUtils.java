@@ -10,26 +10,9 @@
 
 package org.mule.tools.api.classloader.model.util;
 
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.tools.api.classloader.model.ApplicationGAVModel;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.model.Build;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Plugin;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
-
-import java.net.URI;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
 import static org.mule.runtime.api.util.Preconditions.checkState;
@@ -40,6 +23,28 @@ import static org.mule.tools.api.classloader.Constants.MULE_MAVEN_PLUGIN_GROUP_I
 import static org.mule.tools.api.classloader.Constants.SHARED_LIBRARIES_FIELD;
 import static org.mule.tools.api.classloader.Constants.SHARED_LIBRARY_FIELD;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
+
+import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.tools.api.classloader.model.ApplicationGAVModel;
+import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.util.FileJarExplorer;
+import org.mule.tools.api.util.JarInfo;
+
+import java.io.File;
+import java.net.URI;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.model.Build;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Plugin;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 /**
  * ArtifactUtils presents helper methods to convert artifact related classes and recognize mule plugin artifacts.
@@ -83,7 +88,7 @@ public class ArtifactUtils {
    * @return the corresponding artifact list, each one with normalized version.
    */
   public static List<Artifact> toArtifacts(Collection<BundleDependency> dependencies) {
-    return dependencies.stream().map(ArtifactUtils::toArtifact).collect(Collectors.toList());
+    return dependencies.stream().map(ArtifactUtils::toArtifact).collect(toList());
   }
 
   /**
@@ -134,6 +139,23 @@ public class ArtifactUtils {
     List<Artifact> dependencies = toArtifacts(appDependencies);
     dependencies.forEach(ArtifactUtils::updateScopeIfDomain);
     return dependencies;
+  }
+
+  public static List<Artifact> updatePackagesResources(List<Artifact> artifacts) {
+    return artifacts.stream().map(artifact -> updatePackagesResources(artifact)).collect(toList());
+  }
+
+  public static Artifact updatePackagesResources(Artifact artifact) {
+    if (MULE_PLUGIN.equals(artifact.getArtifactCoordinates().getClassifier())
+        || artifact.getUri() == null
+        // mule-domain are set with a "" URI
+        || isBlank(artifact.getUri().getPath())) {
+      return artifact;
+    }
+    JarInfo jarInfo = new FileJarExplorer().explore(artifact.getUri());
+    artifact.setPackages(jarInfo.getPackages().toArray(new String[jarInfo.getPackages().size()]));
+    artifact.setResources(jarInfo.getResources().toArray(new String[jarInfo.getResources().size()]));
+    return artifact;
   }
 
   public static List<Artifact> updateArtifactsSharedState(List<BundleDependency> appDependencies, List<Artifact> artifacts,

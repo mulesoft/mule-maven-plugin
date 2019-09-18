@@ -28,6 +28,7 @@ import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.util.Project;
 import org.mule.tools.api.validation.resolver.MulePluginResolver;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,6 +36,7 @@ import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BUNDLE;
@@ -63,18 +65,23 @@ public class DomainBundleProjectValidatorTest {
   public TemporaryFolder projectBuildFolder = new TemporaryFolder();
 
   @Rule
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+  @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
+  private File localRepository;
+
   public Project dependencyProjectMock;
-  private MulePluginResolver resolverMock;
   private AetherMavenClient aetherMavenClientMock;
   private DefaultProjectInformation defaultProjectInformation;
 
   @Before
   public void setUp() throws IOException {
+    localRepository = temporaryFolder.newFolder();
+
     projectBaseDir.create();
     dependencyProjectMock = mock(Project.class);
-    resolverMock = mock(MulePluginResolver.class);
     aetherMavenClientMock = mock(AetherMavenClient.class);
     defaultProjectInformation = new DefaultProjectInformation.Builder()
         .withGroupId(GROUP_ID)
@@ -328,16 +335,19 @@ public class DomainBundleProjectValidatorTest {
     return artifactCoordinates;
   }
 
-  private BundleDependency buildBundleDependency(int groupIdSuffix, int artifactIdSuffix, String classifier)
-      throws URISyntaxException {
+  private BundleDependency buildBundleDependency(int groupIdSuffix, int artifactIdSuffix, String classifier) {
     BundleDescriptor bundleDescriptor = buildBundleDescriptor(groupIdSuffix, artifactIdSuffix, classifier);
     URI bundleUri = buildBundleURI(bundleDescriptor);
     return new BundleDependency.Builder().setDescriptor(bundleDescriptor).setBundleUri(bundleUri).build();
   }
 
-  private URI buildBundleURI(BundleDescriptor bundleDescriptor) throws URISyntaxException {
-    return new URI(USER_REPOSITORY_LOCATION + SEPARATOR + bundleDescriptor.getGroupId().replace(GROUP_ID_SEPARATOR, SEPARATOR) +
-        bundleDescriptor.getArtifactId() + SEPARATOR + bundleDescriptor.getBaseVersion());
+  private URI buildBundleURI(BundleDescriptor bundleDescriptor) {
+    File bundleFile = new File(localRepository.getAbsolutePath() + SEPARATOR
+        + bundleDescriptor.getGroupId().replace(GROUP_ID_SEPARATOR, SEPARATOR) +
+        bundleDescriptor.getArtifactId() + SEPARATOR + bundleDescriptor.getBaseVersion() + bundleDescriptor.getArtifactId()
+        + ".jar");
+    assertThat(bundleFile.mkdirs(), is(true));
+    return bundleFile.toURI();
 
   }
 

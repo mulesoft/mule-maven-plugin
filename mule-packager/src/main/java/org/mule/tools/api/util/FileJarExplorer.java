@@ -29,7 +29,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * Discovers Java packages from files and folders
+ * Discovers Java packages from files and folders.
+ * This class has been copied from Mule Runtime as we don't have a common simple utils API that could be shared.
  */
 public class FileJarExplorer implements JarExplorer {
 

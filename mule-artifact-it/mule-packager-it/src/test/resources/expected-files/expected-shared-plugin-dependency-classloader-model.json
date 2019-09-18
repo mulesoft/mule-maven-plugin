@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "artifactCoordinates": {
     "groupId": "org.apache.maven.plugin.my.unit",
     "artifactId": "mule-application-shared-dependency",
@@ -30,5 +30,7 @@
       "uri": "repository/org/mule/group/mule-plugin-b/1.0.0/mule-plugin-b-1.0.0-mule-plugin.jar",
       "isShared": true
     }
-  ]
+  ],
+  "packages": [],
+  "resources": []
 }

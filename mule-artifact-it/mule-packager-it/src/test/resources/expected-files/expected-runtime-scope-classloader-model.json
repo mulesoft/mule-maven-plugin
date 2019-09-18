@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "artifactCoordinates": {
     "groupId": "org.apache.maven.plugin.my.unit",
     "artifactId": "mule-application-runtime",
@@ -16,7 +16,17 @@
         "type": "jar",
         "classifier": "mule-application"
       },
-      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-direct-dependency/1.0.0-SNAPSHOT/mule-application-direct-dependency-1.0.0-SNAPSHOT-mule-application.jar"
+      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-direct-dependency/1.0.0-SNAPSHOT/mule-application-direct-dependency-1.0.0-SNAPSHOT-mule-application.jar",
+      "packages": [],
+      "resources": [
+        ".placeholder",
+        "META-INF/maven/org.apache.maven.plugin.my.unit/mule-application-direct-dependency/pom.properties",
+        "META-INF/maven/org.apache.maven.plugin.my.unit/mule-application-direct-dependency/pom.xml",
+        "META-INF/mule-artifact/classloader-model.json",
+        "META-INF/mule-artifact/mule-artifact.json",
+        "repository/org/apache/maven/plugin/my/unit/mule-application-a/1.0.0-SNAPSHOT/mule-application-a-1.0.0-SNAPSHOT-mule-application.jar",
+        "repository/org/apache/maven/plugin/my/unit/mule-application-a/1.0.0-SNAPSHOT/mule-application-a-1.0.0-SNAPSHOT.pom"
+      ]
     },
     {
       "artifactCoordinates": {
@@ -26,7 +36,16 @@
         "type": "jar",
         "classifier": "mule-application"
       },
-      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-a/1.0.0-SNAPSHOT/mule-application-a-1.0.0-SNAPSHOT-mule-application.jar"
+      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-a/1.0.0-SNAPSHOT/mule-application-a-1.0.0-SNAPSHOT-mule-application.jar",
+      "packages": [],
+      "resources": [
+        ".placeholder",
+        "META-INF/maven/org.apache.maven.plugin.my.unit/mule-application-a/pom.properties",
+        "META-INF/maven/org.apache.maven.plugin.my.unit/mule-application-a/pom.xml",
+        "META-INF/mule-artifact/classloader-model.json",
+        "META-INF/mule-artifact/mule-artifact.json",
+        "repository/.marker"
+      ]
     },
     {
       "artifactCoordinates": {
@@ -36,7 +55,18 @@
         "type": "jar",
         "classifier": "mule-application"
       },
-      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-c/1.0.0-SNAPSHOT/mule-application-c-1.0.0-SNAPSHOT-mule-application.jar"
+      "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-c/1.0.0-SNAPSHOT/mule-application-c-1.0.0-SNAPSHOT-mule-application.jar",
+      "packages": [],
+      "resources": [
+        ".placeholder",
+        "META-INF/maven/org.apache.maven.plugin.my.unit/mule-application-c/pom.properties",
+        "META-INF/maven/org.apache.maven.plugin.my.unit/mule-application-c/pom.xml",
+        "META-INF/mule-artifact/classloader-model.json",
+        "META-INF/mule-artifact/mule-artifact.json",
+        "repository/.marker"
+      ]
     }
-  ]
+  ],
+  "packages": [],
+  "resources": []
 }

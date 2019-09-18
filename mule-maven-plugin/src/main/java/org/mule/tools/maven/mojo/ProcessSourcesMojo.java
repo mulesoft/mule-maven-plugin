@@ -28,6 +28,7 @@ import org.mule.tools.api.classloader.model.resolver.MulePluginClassloaderModelR
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.repository.ArtifactInstaller;
 import org.mule.tools.api.repository.RepositoryGenerator;
+import org.mule.tools.api.util.FileJarExplorer;
 import org.mule.tools.api.util.Project;
 import org.mule.tools.api.validation.MulePluginsCompatibilityValidator;
 import org.mule.tools.maven.utils.DependencyProject;
@@ -107,7 +108,8 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
                                                                                              additionalPluginDependencies == null
                                                                                                  ? new ArrayList<>()
                                                                                                  : additionalPluginDependencies,
-                                                                                             new File(outputDirectory, "temp")));
+                                                                                             new File(outputDirectory, "temp")),
+                                                    new FileJarExplorer());
   }
 
   protected final boolean validateMuleRuntimeSharedLibrary(String groupId, String artifactId) {

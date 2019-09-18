@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import static org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler.CLASS_LOADER_MODEL_VERSION;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifactCoordinates;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifacts;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.updatePackagesResources;
 
 public abstract class ClassloaderModelResolver {
 
@@ -54,7 +55,7 @@ public abstract class ClassloaderModelResolver {
           new ClassLoaderModel(CLASS_LOADER_MODEL_VERSION, toArtifactCoordinates(dependencyListEntry.getKey().getDescriptor()));
       List<BundleDependency> dependencyDependencies =
           resolveConflicts(dependencyListEntry.getValue(), dependencies);
-      dependencyClassloaderModel.setDependencies(toArtifacts(dependencyDependencies));
+      dependencyClassloaderModel.setDependencies(updatePackagesResources(toArtifacts(dependencyDependencies)));
       classloaderModels.add(dependencyClassloaderModel);
     }
     return classloaderModels;

@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "artifactCoordinates": {
     "groupId": "org.mule.group",
     "artifactId": "mule-plugin-a",
@@ -25,7 +25,13 @@
         "version": "1.0.0",
         "type": "jar"
       },
-      "uri": "file:${localRepository}/group/id/d/artifact-id-d/1.0.0/artifact-id-d-1.0.0.jar"
+      "uri": "file:${localRepository}/group/id/d/artifact-id-d/1.0.0/artifact-id-d-1.0.0.jar",
+      "packages": [],
+      "resources": [
+        "META-INF/MANIFEST.MF",
+        "META-INF/maven/group.id.d/artifact-id-d/pom.properties",
+        "META-INF/maven/group.id.d/artifact-id-d/pom.xml"
+      ]
     },
     {
       "artifactCoordinates": {
@@ -34,7 +40,15 @@
         "version": "1.0.0-SNAPSHOT",
         "type": "jar"
       },
-      "uri": "file:${localRepository}/group/id/a/artifact-id-a/1.0.0-SNAPSHOT/artifact-id-a-1.0.0-SNAPSHOT.jar"
+      "uri": "file:${localRepository}/group/id/a/artifact-id-a/1.0.0-SNAPSHOT/artifact-id-a-1.0.0-SNAPSHOT.jar",
+      "packages": [
+        "group.id.a.artifactIdA"
+      ],
+      "resources": [
+        "META-INF/MANIFEST.MF",
+        "META-INF/maven/group.id.a/artifact-id-a/pom.properties",
+        "META-INF/maven/group.id.a/artifact-id-a/pom.xml"
+      ]
     }
   ]
 }

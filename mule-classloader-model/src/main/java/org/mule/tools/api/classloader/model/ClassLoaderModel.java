@@ -79,6 +79,11 @@ public class ClassLoaderModel {
     return copy;
   }
 
+
+  /**
+   * Introspection of this artifact, it will contain the array of Java packages for this artifact.
+   * @return {@link String[]} with the packages discovered for this artifact.
+   */
   public String[] getPackages() {
     return packages;
   }
@@ -87,6 +92,10 @@ public class ClassLoaderModel {
     this.packages = packages;
   }
 
+  /**
+   * Introspection of this artifact, it will contain the array of resources for this artifact.
+   * @return {@link String[]} with the resources discovered for this artifact.
+   */
   public String[] getResources() {
     return resources;
   }

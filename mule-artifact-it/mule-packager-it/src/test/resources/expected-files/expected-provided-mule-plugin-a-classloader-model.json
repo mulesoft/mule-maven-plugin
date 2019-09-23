@@ -40,5 +40,13 @@
         "META-INF/maven/group.id.a/artifact-id-a/pom.xml"
       ]
     }
+  ],
+  "packages": [
+    "org.mule.group.plugin.a.api"
+  ],
+  "resources": [
+    "META-INF/MANIFEST.MF",
+    "META-INF/maven/org.mule.group/mule-plugin-a/pom.properties",
+    "META-INF/maven/org.mule.group/mule-plugin-a/pom.xml"
   ]
 }

@@ -58,4 +58,9 @@ public class CloudHubDeploymentTest {
                deploymentSpy.getPersistentQueues(), equalTo(false));
   }
 
+  @Test
+  public void defaultWaitBeforeValidationIsZero() {
+    assertThat("The default value for pepe is not zero",
+               deploymentSpy.getWaitBeforeValidation(), equalTo(2000));
+  }
 }

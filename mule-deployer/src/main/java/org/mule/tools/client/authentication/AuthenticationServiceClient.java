@@ -40,6 +40,8 @@ public class AuthenticationServiceClient extends AbstractClient {
 
   public static final String AUTHORIZATION_HEADER = "Authorization";
 
+  public static final String ANYPOINT_SEESION_EXTEND = "x-anypoint-session-extend";
+
   public static final String LOGIN = "/accounts/login";
 
   public static final String BASE = "/accounts/api";

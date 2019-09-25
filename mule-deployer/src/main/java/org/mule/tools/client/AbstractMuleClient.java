@@ -12,6 +12,7 @@ package org.mule.tools.client;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.AUTHORIZATION_HEADER;
+import static org.mule.tools.client.authentication.AuthenticationServiceClient.ANYPOINT_SEESION_EXTEND;
 
 import java.util.*;
 
@@ -224,6 +225,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
   protected void configureRequest(Invocation.Builder builder) {
     if (bearerToken != null) {
       builder.header(AUTHORIZATION_HEADER, "bearer " + bearerToken);
+      builder.header(ANYPOINT_SEESION_EXTEND, true);
     }
 
     if (envId != null && orgId != null) {

@@ -24,6 +24,7 @@ public class Application {
   private String description;
   private Map<String, String> properties;
   // private propertiesOptions <-- dafuck
+  private String deploymentUpdateStatus;
   private String status;
   private Long lastUpdateTime;
   private String filename;
@@ -53,6 +54,14 @@ public class Application {
 
   // TODO a class VpnConfig
   private Map<String, String> vpnConfig;
+
+  public void setDeploymentUpdateStatus(String deploymentUpdateStatus) {
+    this.deploymentUpdateStatus = deploymentUpdateStatus;
+  }
+
+  public String getDeploymentUpdateStatus() {
+    return deploymentUpdateStatus;
+  }
 
   public String getId() {
     return id;

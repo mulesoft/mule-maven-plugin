@@ -37,7 +37,7 @@ public class CloudHubDeployment extends AnypointDeployment {
   protected Boolean persistentQueues = false;
 
   @Parameter
-  protected Integer waitBeforeValidation = 0;
+  protected Integer waitBeforeValidation = 2000;
 
   /**
    * Region to deploy the application in Cloudhub.

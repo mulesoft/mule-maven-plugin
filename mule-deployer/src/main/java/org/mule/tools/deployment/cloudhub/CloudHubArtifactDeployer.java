@@ -124,6 +124,11 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       createApplication();
     } else {
       updateApplication();
+      try {
+        Thread.sleep(deployment.getWaitBeforeValidation());
+      } catch (InterruptedException e) {
+        log.warn("Could not wait for application start-up validation. Application may still be deploying.");
+      }
     }
   }
 

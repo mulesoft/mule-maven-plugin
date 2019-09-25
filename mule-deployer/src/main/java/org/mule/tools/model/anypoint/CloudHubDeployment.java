@@ -13,12 +13,7 @@ package org.mule.tools.model.anypoint;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.client.core.exception.DeploymentException;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import static java.lang.System.getProperty;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class CloudHubDeployment extends AnypointDeployment {
@@ -40,6 +35,9 @@ public class CloudHubDeployment extends AnypointDeployment {
 
   @Parameter
   protected Boolean persistentQueues = false;
+
+  @Parameter
+  protected Integer waitBeforeValidation = 2000;
 
   /**
    * Region to deploy the application in Cloudhub.
@@ -105,6 +103,14 @@ public class CloudHubDeployment extends AnypointDeployment {
 
   public void setPersistentQueues(Boolean persistentQueues) {
     this.persistentQueues = persistentQueues;
+  }
+
+  public Integer getWaitBeforeValidation() {
+    return waitBeforeValidation;
+  }
+
+  public void setWaitBeforeValidation(Integer time) {
+    this.waitBeforeValidation = time;
   }
 
   public void setEnvironmentSpecificValues() throws DeploymentException {

@@ -33,7 +33,6 @@ public class ClassLoaderModelJsonSerializer {
     try {
       Gson gson = new GsonBuilder()
           .enableComplexMapKeySerialization()
-          .setPrettyPrinting()
           .create();
 
       Reader reader = new FileReader(classLoaderModelDescriptor);
@@ -52,8 +51,24 @@ public class ClassLoaderModelJsonSerializer {
    * @param classLoaderModel the classloader model of the application being packaged
    * @return string containing the classloader model's JSON representation
    */
+  @Deprecated
   public static String serialize(ClassLoaderModel classLoaderModel) {
-    Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting()
+    return serialize(classLoaderModel, true);
+  }
+
+  /**
+   * Serializes the classloader model to a string
+   *
+   * @param classLoaderModel the classloader model of the application being packaged
+   * @param prettyPrinting if {@code true} the json will be printed with pretty print mode
+   * @return string containing the classloader model's JSON representation
+   */
+  private static String serialize(ClassLoaderModel classLoaderModel, boolean prettyPrinting) {
+    GsonBuilder gsonBuilder = new GsonBuilder().enableComplexMapKeySerialization();
+    if (prettyPrinting) {
+      gsonBuilder = gsonBuilder.setPrettyPrinting();
+    }
+    Gson gson = gsonBuilder
         .registerTypeAdapter(Artifact.class, new ArtifactCustomJsonSerializer())
         .registerTypeAdapter(AppClassLoaderModel.class,
                              new AppClassLoaderModelJsonSerializer.AppClassLoaderModelCustomJsonSerializer())
@@ -70,11 +85,23 @@ public class ClassLoaderModelJsonSerializer {
    * @return the created File containing the classloader model's JSON representation
    */
   public static File serializeToFile(ClassLoaderModel classLoaderModel, File destinationFolder) {
+    return serializeToFile(classLoaderModel, destinationFolder, true);
+  }
+
+  /**
+   * Serializes the classloader model to the classloader-model.json file in the destination folder
+   *
+   * @param classLoaderModel the classloader model of the application being packaged
+   * @param destinationFolder the directory model where the file is going to be written
+   * @param prettyPrinting if {@code true} the json will be printed with pretty print mode
+   * @return the created File containing the classloader model's JSON representation
+   */
+  public static File serializeToFile(ClassLoaderModel classLoaderModel, File destinationFolder, boolean prettyPrinting) {
     File destinationFile = new File(destinationFolder, CLASSLOADER_MODEL_FILE_NAME);
     try {
       destinationFile.createNewFile();
       Writer writer = new FileWriter(destinationFile.getAbsolutePath());
-      writer.write(serialize(classLoaderModel));
+      writer.write(serialize(classLoaderModel, prettyPrinting));
       writer.close();
       return destinationFile;
     } catch (IOException e) {

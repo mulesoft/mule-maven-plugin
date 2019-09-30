@@ -63,12 +63,14 @@ public class AppClassLoaderModelJsonSerializer extends ClassLoaderModelJsonSeria
                                  JsonSerializationContext jsonSerializationContext) {
       Gson gson = new GsonBuilder()
           .enableComplexMapKeySerialization()
-          .setPrettyPrinting()
           .registerTypeAdapter(Artifact.class, new ArtifactCustomJsonSerializer())
           .create();
       JsonObject jsonObject = (JsonObject) gson.toJsonTree(classLoaderModel);
       if (classLoaderModel.getAdditionalPluginDependencies().map(List::isEmpty).orElse(false)) {
         jsonObject.remove(ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD);
+      } else {
+        // ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD should go at the end of the json file
+        jsonObject.add(ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD, jsonObject.remove(ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD));
       }
       return jsonObject;
     }

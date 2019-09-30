@@ -51,7 +51,7 @@ public class ArtifactInstallerTest {
   @Rule
   public ExpectedException exception = ExpectedException.none();
   @Rule
-  public TemporaryFolder outputFolder = new TemporaryFolder();;
+  public TemporaryFolder outputFolder = new TemporaryFolder();
   @Rule
   public TemporaryFolder artifactFileFolder = new TemporaryFolder();
   private ClassLoaderModel classLoaderModel;
@@ -99,11 +99,12 @@ public class ArtifactInstallerTest {
   @Test
   public void generateDependencyDescriptorFileWhenClassloaderIsPresentTest() throws IOException {
     ArtifactInstaller artifactInstallerSpy = spy(installer);
-    doNothing().when(artifactInstallerSpy).generateClassloderModelFile(classLoaderModel, artifactFileFolder.getRoot());
+    doNothing().when(artifactInstallerSpy).generateClassloderModelFile(classLoaderModel, artifactFileFolder.getRoot(), false);
 
-    artifactInstallerSpy.generateDependencyDescriptorFile(artifact, artifactFileFolder.getRoot(), Optional.of(classLoaderModel));
+    artifactInstallerSpy.generateDependencyDescriptorFile(artifact, artifactFileFolder.getRoot(), Optional.of(classLoaderModel),
+                                                          false);
 
-    verify(artifactInstallerSpy, times(1)).generateClassloderModelFile(classLoaderModel, artifactFileFolder.getRoot());
+    verify(artifactInstallerSpy, times(1)).generateClassloderModelFile(classLoaderModel, artifactFileFolder.getRoot(), false);
     verify(artifactInstallerSpy, times(0)).generatePomFile(any(), any());
   }
 

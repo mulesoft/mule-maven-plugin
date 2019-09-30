@@ -106,10 +106,22 @@ public class MuleContentGenerator extends ContentGenerator {
    *
    * @param classLoaderModel the classloader model of the application being packaged
    */
+  @Deprecated
   public void createApplicationClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel) {
+    createApplicationClassLoaderModelJsonFile(classLoaderModel, true);
+  }
+
+  /**
+   * It creates classloader-model.json in META-INF/mule-artifact
+   *
+   * @param classLoaderModel the classloader model of the application being packaged
+   * @param prettyPrinting
+   */
+  @Deprecated
+  public void createApplicationClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel, boolean prettyPrinting) {
     File destinationFolder =
         projectInformation.getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile();
-    createClassLoaderModelJsonFile(classLoaderModel, destinationFolder);
+    createClassLoaderModelJsonFile(classLoaderModel, destinationFolder, prettyPrinting);
   }
 
   /**
@@ -153,8 +165,21 @@ public class MuleContentGenerator extends ContentGenerator {
    * @param classLoaderModel the classloader model of the application being packaged
    * @return the created File containing the classloader model's JSON representation
    */
+  @Deprecated
   public static File createClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel, File destinationFolder) {
-    return serializeToFile(classLoaderModel, destinationFolder);
+    return createClassLoaderModelJsonFile(classLoaderModel, destinationFolder, true);
+  }
+
+  /**
+   * It creates classloader-model.json in the destination folder
+   *
+   * @param classLoaderModel the classloader model of the application being packaged
+   * @param prettyPrinting if {@code true} will print the json using pretty print.
+   * @return the created File containing the classloader model's JSON representation
+   */
+  public static File createClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel, File destinationFolder,
+                                                    boolean prettyPrinting) {
+    return serializeToFile(classLoaderModel, destinationFolder, prettyPrinting);
   }
 
   /**

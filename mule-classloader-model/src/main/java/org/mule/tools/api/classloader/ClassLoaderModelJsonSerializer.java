@@ -63,7 +63,7 @@ public class ClassLoaderModelJsonSerializer {
    * @param prettyPrinting if {@code true} the json will be printed with pretty print mode
    * @return string containing the classloader model's JSON representation
    */
-  private static String serialize(ClassLoaderModel classLoaderModel, boolean prettyPrinting) {
+  public static String serialize(ClassLoaderModel classLoaderModel, boolean prettyPrinting) {
     GsonBuilder gsonBuilder = new GsonBuilder().enableComplexMapKeySerialization();
     if (prettyPrinting) {
       gsonBuilder = gsonBuilder.setPrettyPrinting();

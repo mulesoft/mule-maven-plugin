@@ -117,7 +117,6 @@ public class MuleContentGenerator extends ContentGenerator {
    * @param classLoaderModel the classloader model of the application being packaged
    * @param prettyPrinting
    */
-  @Deprecated
   public void createApplicationClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel, boolean prettyPrinting) {
     File destinationFolder =
         projectInformation.getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile();

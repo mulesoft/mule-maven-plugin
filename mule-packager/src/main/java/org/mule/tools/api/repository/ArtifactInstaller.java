@@ -33,7 +33,14 @@ public class ArtifactInstaller {
     this.log = log;
   }
 
+  @Deprecated
   public void installArtifact(File repositoryFile, Artifact artifact, Optional<ClassLoaderModel> classLoaderModel)
+      throws IOException {
+    installArtifact(repositoryFile, artifact, classLoaderModel, true);
+  }
+
+  public void installArtifact(File repositoryFile, Artifact artifact, Optional<ClassLoaderModel> classLoaderModel,
+                              boolean prettyPrinting)
       throws IOException {
     checkArgument(artifact != null, "Artifact to be installed should not be null");
     File artifactFolderDestination = artifact.getFormattedMavenDirectory(repositoryFile);
@@ -44,7 +51,7 @@ public class ArtifactInstaller {
 
     try {
       generateArtifactFile(artifact, artifactFolderDestination, repositoryFile);
-      generateDependencyDescriptorFile(artifact, artifactFolderDestination, classLoaderModel);
+      generateDependencyDescriptorFile(artifact, artifactFolderDestination, classLoaderModel, prettyPrinting);
     } catch (IOException e) {
       throw new IOException(
                             format("There was a problem while copying the artifact [%s] file [%s] to the application local repository",
@@ -66,11 +73,18 @@ public class ArtifactInstaller {
     copyFile(new File(artifact.getUri()), destinationArtifactFile);
   }
 
+  @Deprecated
   protected void generateDependencyDescriptorFile(Artifact artifact, File artifactFolderDestination,
                                                   Optional<ClassLoaderModel> classLoaderModel)
       throws IOException {
+    generateDependencyDescriptorFile(artifact, artifactFolderDestination, classLoaderModel, true);
+  }
+
+  protected void generateDependencyDescriptorFile(Artifact artifact, File artifactFolderDestination,
+                                                  Optional<ClassLoaderModel> classLoaderModel, boolean prettyPrinting)
+      throws IOException {
     if (classLoaderModel.isPresent()) {
-      generateClassloderModelFile(classLoaderModel.get(), artifactFolderDestination);
+      generateClassloderModelFile(classLoaderModel.get(), artifactFolderDestination, prettyPrinting);
     } else {
       generatePomFile(artifact, artifactFolderDestination);
     }
@@ -87,7 +101,13 @@ public class ArtifactInstaller {
     copyFile(srcPomFile, destinationPomFile);
   }
 
+  @Deprecated
   protected void generateClassloderModelFile(ClassLoaderModel classLoaderModel, File artifactFolderDestination) {
-    MuleContentGenerator.createClassLoaderModelJsonFile(classLoaderModel, artifactFolderDestination);
+    generateClassloderModelFile(classLoaderModel, artifactFolderDestination, true);
+  }
+
+  protected void generateClassloderModelFile(ClassLoaderModel classLoaderModel, File artifactFolderDestination,
+                                             boolean prettyPrinting) {
+    MuleContentGenerator.createClassLoaderModelJsonFile(classLoaderModel, artifactFolderDestination, prettyPrinting);
   }
 }

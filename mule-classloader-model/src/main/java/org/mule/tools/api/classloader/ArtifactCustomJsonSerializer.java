@@ -13,6 +13,7 @@ import static org.mule.tools.api.classloader.Constants.ARTIFACT_IS_SHARED_FIELD;
 import org.mule.tools.api.classloader.model.Artifact;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
@@ -27,7 +28,7 @@ public class ArtifactCustomJsonSerializer implements JsonSerializer<Artifact> {
 
   @Override
   public JsonElement serialize(Artifact artifact, Type type, JsonSerializationContext jsonSerializationContext) {
-    Gson gson = new Gson();
+    Gson gson = new GsonBuilder().create();
     JsonObject jsonObject = (JsonObject) gson.toJsonTree(artifact);
     if (!artifact.isShared()) {
       jsonObject.remove(ARTIFACT_IS_SHARED_FIELD);

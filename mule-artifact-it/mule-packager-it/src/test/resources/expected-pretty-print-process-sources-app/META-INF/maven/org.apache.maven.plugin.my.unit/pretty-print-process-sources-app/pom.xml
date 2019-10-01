@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.apache.maven.plugin.my.unit</groupId>
+    <artifactId>pretty-print-process-sources-app</artifactId>
+    <version>1.0.0</version>
+    <packaging>mule-application</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mule.group</groupId>
+            <artifactId>mule-plugin-a</artifactId>
+            <version>1.0.0</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>group.id.x</groupId>
+            <artifactId>artifact-id-x</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.mule.tools.maven</groupId>
+                <artifactId>mule-maven-plugin</artifactId>
+                <version>${muleMavenPluginVersion}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <additionalPluginDependencies>
+                        <plugin>
+                            <groupId>org.mule.group</groupId>
+                            <artifactId>mule-plugin-a</artifactId>
+                            <additionalDependencies>
+                                <dependency>
+                                    <groupId>group.id.y</groupId>
+                                    <artifactId>artifact-id-y</artifactId>
+                                    <version>1.0.0</version>
+                                </dependency>
+                            </additionalDependencies>
+                        </plugin>
+                    </additionalPluginDependencies>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

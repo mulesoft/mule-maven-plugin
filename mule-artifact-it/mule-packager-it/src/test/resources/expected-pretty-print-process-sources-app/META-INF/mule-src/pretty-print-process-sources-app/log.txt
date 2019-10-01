@@ -1,0 +1,15 @@
+[INFO] Error stacktraces are turned on.
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --< org.apache.maven.plugin.my.unit:pretty-print-process-sources-app >--
+[INFO] Building pretty-print-process-sources-app 1.0.0
+[INFO] --------------------------[ mule-application ]--------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-cli) @ pretty-print-process-sources-app ---
+[INFO] Deleting /Users/guillermo.fernandes/Development/mule-maven-plugin/mule-artifact-it/mule-packager-it/target/test-classes/pretty-print-process-sources-app/target
+[INFO] 
+[INFO] --- mule-maven-plugin:3.4.0-SNAPSHOT:validate (default-validate) @ pretty-print-process-sources-app ---
+[INFO] 
+[INFO] --- mule-maven-plugin:3.4.0-SNAPSHOT:initialize (default-initialize) @ pretty-print-process-sources-app ---
+[INFO] 
+[INFO] --- mule-maven-plugin:3.4.0-SNAPSHOT:generate-sources (default-generate-sources) @ pretty-print-process-sources-app ---

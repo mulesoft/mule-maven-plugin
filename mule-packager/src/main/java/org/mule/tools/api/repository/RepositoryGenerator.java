@@ -55,26 +55,28 @@ public class RepositoryGenerator {
     this.appGAVModel = appGAVModel;
   }
 
+  @Deprecated
   public ClassLoaderModel generate() throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
         applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory, appGAVModel);
-    installArtifacts(getRepositoryFolder(), artifactInstaller, appModel);
+    installArtifacts(getRepositoryFolder(), artifactInstaller, appModel, false);
     return appModel.getClassLoaderModel();
   }
 
-  public ClassLoaderModel generate(boolean lightweight, boolean useLocalRepository) throws IOException, IllegalStateException {
+  public ClassLoaderModel generate(boolean lightweight, boolean useLocalRepository, boolean prettyPrinting)
+      throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
         applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory, appGAVModel);
     if (!lightweight) {
-      installArtifacts(getRepositoryFolder(), artifactInstaller, appModel);
+      installArtifacts(getRepositoryFolder(), artifactInstaller, appModel, prettyPrinting);
     }
     if (useLocalRepository) {
-      generateClassLoaderModelRepositoryFiles(appModel);
+      generateClassLoaderModelRepositoryFiles(appModel, prettyPrinting);
     }
     return appModel.getClassLoaderModel();
   }
 
-  private void generateClassLoaderModelRepositoryFiles(ApplicationClassloaderModel appModel) {
+  private void generateClassLoaderModelRepositoryFiles(ApplicationClassloaderModel appModel, boolean prettyPrinting) {
     appModel.getMulePluginsClassloaderModels().stream().forEach(mulePluginClassLoaderModel -> {
       Artifact artifact = appModel.getArtifacts().stream()
           .filter(possibleArtifact -> possibleArtifact.getArtifactCoordinates()
@@ -88,13 +90,14 @@ public class RepositoryGenerator {
         artifactFolderDestination.mkdirs();
       }
       createClassLoaderModelJsonFile(new NotParameterizedClassLoaderModel(mulePluginClassLoaderModel),
-                                     artifactFolderDestination);
+                                     artifactFolderDestination, prettyPrinting);
     });
 
   }
 
+  @Deprecated
   public ClassLoaderModel generate(boolean lightweight) throws IOException, IllegalStateException {
-    return generate(lightweight, false);
+    return generate(lightweight, false, false);
   }
 
   protected File getRepositoryFolder() {
@@ -105,7 +108,8 @@ public class RepositoryGenerator {
     return repositoryFolder;
   }
 
-  protected void installArtifacts(File repositoryFile, ArtifactInstaller installer, ApplicationClassloaderModel appModel)
+  protected void installArtifacts(File repositoryFile, ArtifactInstaller installer, ApplicationClassloaderModel appModel,
+                                  boolean prettyPrinting)
       throws IOException {
     Map<ArtifactCoordinates, ClassLoaderModel> mulePluginsClassloaderModels = appModel.getMulePluginsClassloaderModels().stream()
         .collect(Collectors.toMap(ClassLoaderModel::getArtifactCoordinates, Function.identity()));
@@ -116,7 +120,7 @@ public class RepositoryGenerator {
     for (Artifact artifact : sortedArtifacts) {
       Optional<ClassLoaderModel> classLoaderModelOptional =
           Optional.ofNullable(mulePluginsClassloaderModels.get(artifact.getArtifactCoordinates()));
-      installer.installArtifact(repositoryFile, artifact, classLoaderModelOptional);
+      installer.installArtifact(repositoryFile, artifact, classLoaderModelOptional, prettyPrinting);
     }
   }
 

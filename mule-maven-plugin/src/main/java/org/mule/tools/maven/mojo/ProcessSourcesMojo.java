@@ -58,6 +58,9 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
   protected boolean skipPluginCompatibilityValidation = false;
   protected final MulePluginsCompatibilityValidator mulePluginsCompatibilityValidator = new MulePluginsCompatibilityValidator();
 
+  @Parameter(defaultValue = "${prettyPrinting}")
+  protected boolean prettyPrinting = false;
+
   @Override
   public void doExecute() throws MojoFailureException {
     getLog().debug("Processing sources...");
@@ -75,7 +78,7 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
             new RepositoryGenerator(session.getCurrentProject().getFile(), outputDirectory,
                                     new ArtifactInstaller(new MavenPackagerLog(getLog())),
                                     getClassLoaderModelAssembler(), appGAV);
-        ClassLoaderModel classLoaderModel = repositoryGenerator.generate(lightweightPackage, useLocalRepository);
+        ClassLoaderModel classLoaderModel = repositoryGenerator.generate(lightweightPackage, useLocalRepository, prettyPrinting);
         for (SharedLibraryDependency sharedLibraryDependency : sharedLibraries) {
           classLoaderModel.getDependencies().stream()
               .filter(dep -> dep.getArtifactCoordinates().getArtifactId().equals(sharedLibraryDependency.getArtifactId()) &&
@@ -92,7 +95,8 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
         if (isLightWeightUsingLocalRepository) {
           classLoaderModel = new NotParameterizedClassLoaderModel(classLoaderModel);
         }
-        ((MuleContentGenerator) getContentGenerator()).createApplicationClassLoaderModelJsonFile(classLoaderModel);
+        ((MuleContentGenerator) getContentGenerator()).createApplicationClassLoaderModelJsonFile(classLoaderModel,
+                                                                                                 prettyPrinting);
       } catch (Exception e) {
         String message = format("There was an exception while creating the repository of [%s]", project.toString());
         throw new MojoFailureException(message, e);

@@ -12,6 +12,7 @@ package org.mule.tools.api.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
@@ -105,9 +106,9 @@ public class RepositoryGeneratorTest {
   public void installEmptySetArtifactsTest() throws IOException {
     File repositoryFolder = temporaryFolder.getRoot();
     when(appModelMock.getArtifacts()).thenReturn(Collections.emptySet());
-    repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifactInstallerMock, appModelMock);
+    repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifactInstallerMock, appModelMock, false);
     verify(repositoryGeneratorSpy, times(1)).generateMarkerFileInRepositoryFolder(repositoryFolder);
-    verify(artifactInstallerMock, times(0)).installArtifact(any(), any(), any());
+    verify(artifactInstallerMock, times(0)).installArtifact(any(), any(), any(), eq(false));
   }
 
   @Test
@@ -115,9 +116,9 @@ public class RepositoryGeneratorTest {
     File repositoryFolder = temporaryFolder.getRoot();
     buildArtifacts();
     when(appModelMock.getArtifacts()).thenReturn(artifacts);
-    repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifactInstallerMock, appModelMock);
+    repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifactInstallerMock, appModelMock, true);
     verify(repositoryGeneratorSpy, times(0)).generateMarkerFileInRepositoryFolder(repositoryFolder);
-    verify(artifactInstallerMock, times(NUMBER_ARTIFACTS)).installArtifact(any(), any(), any());
+    verify(artifactInstallerMock, times(NUMBER_ARTIFACTS)).installArtifact(any(), any(), any(), eq(true));
   }
 
   @Test

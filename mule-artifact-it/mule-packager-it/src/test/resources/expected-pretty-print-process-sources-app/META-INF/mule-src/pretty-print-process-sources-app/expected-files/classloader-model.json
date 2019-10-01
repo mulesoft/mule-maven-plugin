@@ -1,0 +1,72 @@
+{
+  "version": "1.2.0",
+  "artifactCoordinates": {
+    "groupId": "org.apache.maven.plugin.my.unit",
+    "artifactId": "pretty-print-process-sources-app",
+    "version": "1.0.0",
+    "type": "jar",
+    "classifier": "mule-application"
+  },
+  "dependencies": [
+    {
+      "artifactCoordinates": {
+        "groupId": "org.mule.group",
+        "artifactId": "mule-plugin-a",
+        "version": "1.0.0",
+        "type": "jar",
+        "classifier": "mule-plugin"
+      },
+      "uri": "repository/org/mule/group/mule-plugin-a/1.0.0/mule-plugin-a-1.0.0-mule-plugin.jar"
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "org.mule.group",
+        "artifactId": "mule-plugin-b",
+        "version": "1.0.0",
+        "type": "jar",
+        "classifier": "mule-plugin"
+      },
+      "uri": "repository/org/mule/group/mule-plugin-b/1.0.0/mule-plugin-b-1.0.0-mule-plugin.jar"
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "group.id.x",
+        "artifactId": "artifact-id-x",
+        "version": "1.0.0",
+        "type": "jar"
+      },
+      "uri": "repository/group/id/x/artifact-id-x/1.0.0/artifact-id-x-1.0.0.jar",
+      "packages": [],
+      "resources": [
+        "META-INF/MANIFEST.MF",
+        "META-INF/maven/group.id.x/artifact-id-x/pom.properties",
+        "META-INF/maven/group.id.x/artifact-id-x/pom.xml"
+      ]
+    }
+  ],
+  "packages": [],
+  "resources": [],
+  "additionalPluginDependencies": [
+    {
+      "groupId": "org.mule.group",
+      "artifactId": "mule-plugin-a",
+      "additionalDependencies": [
+        {
+          "artifactCoordinates": {
+            "groupId": "group.id.y",
+            "artifactId": "artifact-id-y",
+            "version": "1.0.0",
+            "type": "jar"
+          },
+          "uri": "repository/group/id/y/artifact-id-y/1.0.0/artifact-id-y-1.0.0.jar",
+          "packages": [],
+          "resources": [
+            "META-INF/MANIFEST.MF",
+            "META-INF/maven/group.id.y/artifact-id-y/pom.properties",
+            "META-INF/maven/group.id.y/artifact-id-y/pom.xml"
+          ]
+        }
+      ]
+    }
+  ]
+}

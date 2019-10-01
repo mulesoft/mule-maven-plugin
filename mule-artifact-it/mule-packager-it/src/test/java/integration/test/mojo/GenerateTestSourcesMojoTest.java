@@ -29,7 +29,7 @@ public class GenerateTestSourcesMojoTest extends MojoTest implements SettingsCon
   }
 
   @Before
-  public void before() throws IOException, VerificationException {
+  public void before() throws IOException {
     clearResources();
   }
 

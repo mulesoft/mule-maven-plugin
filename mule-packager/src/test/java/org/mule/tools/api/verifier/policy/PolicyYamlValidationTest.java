@@ -9,19 +9,15 @@
  */
 package org.mule.tools.api.verifier.policy;
 
-import static java.lang.String.join;
-import static java.nio.file.Paths.get;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
-import java.io.File;
-import java.io.IOException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mule.tools.api.exception.ValidationException;
+
+import java.io.File;
+
+import static java.lang.String.join;
+import static java.nio.file.Paths.get;
 
 public class PolicyYamlValidationTest {
 
@@ -29,115 +25,115 @@ public class PolicyYamlValidationTest {
   public ExpectedException expectedException = ExpectedException.none();
 
   @Test
-  public void normalYamlParsesCorrectly() throws IOException {
+  public void normalYamlParsesCorrectly() throws ValidationException {
     // Example of yaml file extracted from the http caching policy.
     testYaml("caching-yaml-example.yaml");
   }
 
   @Test
-  public void minimalYamlParsesCorrectly() throws IOException {
+  public void minimalYamlParsesCorrectly() throws ValidationException {
     // A yaml with only the minimum amount necessary of fields.
     testYaml("minimal.yaml");
   }
 
   @Test
-  public void extraFieldParsesCorrectly() throws IOException {
+  public void extraFieldParsesCorrectly() throws ValidationException {
     // A yaml with only the minimum amount necessary of fields and an extra one.
     testYaml("extra-field.yaml");
   }
 
   @Test
-  public void missingIdYamlFailsParsing() throws IOException {
-    expectedException.expect(IOException.class);
+  public void missingIdYamlFailsParsing() throws ValidationException {
+    expectedException.expect(ValidationException.class);
     expectMissingProperty("id");
     testYaml("missing-id.yaml");
   }
 
   @Test
-  public void missingNameYamlFailsParsing() throws IOException {
-    expectedException.expect(IOException.class);
+  public void missingNameYamlFailsParsing() throws ValidationException {
+    expectedException.expect(ValidationException.class);
     expectMissingProperty("name");
     testYaml("missing-name.yaml");
   }
 
   @Test
-  public void missingSupportedPoliciesVersionsYamlSucceeds() throws IOException {
+  public void missingSupportedPoliciesVersionsYamlSucceeds() throws ValidationException {
     testYaml("missing-supportedPoliciesVersions.yaml");
   }
 
   @Test
-  public void missingDescriptionYamlFailsParsing() throws IOException {
-    expectedException.expect(IOException.class);
+  public void missingDescriptionYamlFailsParsing() throws ValidationException {
+    expectedException.expect(ValidationException.class);
     expectMissingProperty("description");
     testYaml("missing-description.yaml");
   }
 
   @Test
-  public void missingCategoryYamlFailsParsing() throws IOException {
-    expectedException.expect(IOException.class);
+  public void missingCategoryYamlFailsParsing() throws ValidationException {
+    expectedException.expect(ValidationException.class);
     expectMissingProperty("category");
     testYaml("missing-category.yaml");
   }
 
   @Test
-  public void missingTypeYamlFailsParsing() throws IOException {
-    expectedException.expect(IOException.class);
+  public void missingTypeYamlFailsParsing() throws ValidationException {
+    expectedException.expect(ValidationException.class);
     expectMissingProperty("type");
     testYaml("missing-type.yaml");
   }
 
   @Test
-  public void missingResourceLevelSupportedYamlFailsParsing() throws IOException {
-    expectedException.expect(IOException.class);
+  public void missingResourceLevelSupportedYamlFailsParsing() throws ValidationException {
+    expectedException.expect(ValidationException.class);
     expectMissingProperty("resourceLevelSupported");
     testYaml("missing-resourceLevelSupported.yaml");
   }
 
   @Test
-  public void missingStandaloneYamlFailsParsing() throws IOException {
-    expectedException.expect(IOException.class);
+  public void missingStandaloneYamlFailsParsing() throws ValidationException {
+    expectedException.expect(ValidationException.class);
     expectMissingProperty("standalone");
     testYaml("missing-standalone.yaml");
   }
 
   @Test
-  public void missingRequiredCharacteristicsYamlFailsParsing() throws IOException {
-    expectedException.expect(IOException.class);
+  public void missingRequiredCharacteristicsYamlFailsParsing() throws ValidationException {
+    expectedException.expect(ValidationException.class);
     expectMissingProperty("requiredCharacteristics");
     testYaml("missing-requiredCharacteristics.yaml");
   }
 
   @Test
-  public void missingProvidedCharacteristicsYamlFailsParsing() throws IOException {
-    expectedException.expect(IOException.class);
+  public void missingProvidedCharacteristicsYamlFailsParsing() throws ValidationException {
+    expectedException.expect(ValidationException.class);
     expectMissingProperty("providedCharacteristics");
     testYaml("missing-providedCharacteristics.yaml");
   }
 
   @Test
-  public void missingConfigurationYamlFailsParsing() throws IOException {
-    expectedException.expect(IOException.class);
+  public void missingConfigurationYamlFailsParsing() throws ValidationException {
+    expectedException.expect(ValidationException.class);
     expectMissingProperty("configuration");
     testYaml("missing-configuration.yaml");
   }
 
   @Test
-  public void wrongTypeFailsParsing() throws IOException {
-    expectedException.expect(IOException.class);
-    expectedException.expectMessage("Cannot deserialize value of type `java.lang.Boolean`");
+  public void wrongTypeFailsParsing() throws ValidationException {
+    expectedException.expect(ValidationException.class);
+    expectedException.expectMessage("Missing required creator property 'resourceLevelSupported'");
     testYaml("wrong-type.yaml");
   }
 
   @Test
-  public void missingValueYamlFailsParsing() throws IOException {
-    expectedException.expect(IOException.class);
-    expectedException.expectMessage("Null value for creator property 'requiredCharacteristics'");
+  public void missingValueYamlFailsParsing() throws ValidationException {
+    expectedException.expect(ValidationException.class);
+    expectedException.expectMessage("Missing required creator property 'requiredCharacteristics'");
     testYaml("missing-value.yaml");
   }
 
   @Test
-  public void missingParameterFromConfigurationItemFailsParsing() throws IOException {
-    expectedException.expect(IOException.class);
+  public void missingParameterFromConfigurationItemFailsParsing() throws ValidationException {
+    expectedException.expect(ValidationException.class);
     expectMissingProperty("propertyName");
     testYaml("missing-configurationProperty.yaml");
   }
@@ -146,10 +142,8 @@ public class PolicyYamlValidationTest {
     expectedException.expectMessage("Missing required creator property '" + property + "'");
   }
 
-  private void testYaml(String file) throws IOException {
-    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-    mapper.configure(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES, true);
-    mapper.readValue(new File(getTestResourceFolder(), file), PolicyYaml.class);
+  private void testYaml(String file) throws ValidationException {
+    new PolicyYamlVerifier(getTestResourceFolder(), file).validate();
   }
 
   private String getTestResourceFolder() {

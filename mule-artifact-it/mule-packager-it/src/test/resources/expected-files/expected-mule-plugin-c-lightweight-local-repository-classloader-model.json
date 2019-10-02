@@ -19,7 +19,6 @@
       "uri": "file:${localRepository}/org/mule/group/mule-plugin-b/1.1.0/mule-plugin-b-1.1.0-mule-plugin.jar"
     }
   ],
-  "packages": [],
   "resources": [
     "META-INF/MANIFEST.MF",
     "META-INF/maven/org.mule.group/mule-plugin-c/pom.properties",

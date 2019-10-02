@@ -12,7 +12,6 @@
             "type": "jar"
           },
           "uri": "repository/group/id/z/artifact-id-z/1.0.0/artifact-id-z-1.0.0.jar",
-          "packages": [],
           "resources": [
             "META-INF/MANIFEST.MF",
             "META-INF/maven/group.id.z/artifact-id-z/pom.properties",
@@ -33,7 +32,6 @@
             "type": "jar"
           },
           "uri": "repository/group/id/z/artifact-id-z/1.0.0/artifact-id-z-1.0.0.jar",
-          "packages": [],
           "resources": [
             "META-INF/MANIFEST.MF",
             "META-INF/maven/group.id.z/artifact-id-z/pom.properties",
@@ -72,7 +70,5 @@
       },
       "uri": "repository/org/mule/group/mule-plugin-with-dependency-y/1.0.0/mule-plugin-with-dependency-y-1.0.0-mule-plugin.jar"
     }
-  ],
-  "packages": [],
-  "resources": []
+  ]
 }

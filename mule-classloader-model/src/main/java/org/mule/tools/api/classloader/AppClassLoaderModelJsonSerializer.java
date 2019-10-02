@@ -10,6 +10,11 @@
 package org.mule.tools.api.classloader;
 
 import static org.mule.tools.api.classloader.Constants.ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD;
+import static org.mule.tools.api.classloader.Constants.ARTIFACT_PACKAGES_FIELD;
+import static org.mule.tools.api.classloader.Constants.ARTIFACT_RESOURCES_FIELD;
+import static org.mule.tools.api.classloader.Constants.PACKAGES_FIELD;
+import static org.mule.tools.api.classloader.Constants.RESOURCES_FIELD;
+
 import org.mule.tools.api.classloader.model.AppClassLoaderModel;
 import org.mule.tools.api.classloader.model.Artifact;
 
@@ -72,6 +77,14 @@ public class AppClassLoaderModelJsonSerializer extends ClassLoaderModelJsonSeria
         // ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD should go at the end of the json file
         jsonObject.add(ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD, jsonObject.remove(ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD));
       }
+
+      if (classLoaderModel.getPackages() == null || classLoaderModel.getPackages().length == 0) {
+        jsonObject.remove(PACKAGES_FIELD);
+      }
+      if (classLoaderModel.getResources() == null || classLoaderModel.getResources().length == 0) {
+        jsonObject.remove(RESOURCES_FIELD);
+      }
+
       return jsonObject;
     }
   }

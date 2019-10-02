@@ -17,7 +17,6 @@
         "classifier": "mule-application"
       },
       "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-direct-dependency/1.0.0-SNAPSHOT/mule-application-direct-dependency-1.0.0-SNAPSHOT-mule-application.jar",
-      "packages": [],
       "resources": [
         ".placeholder",
         "META-INF/maven/org.apache.maven.plugin.my.unit/mule-application-direct-dependency/pom.properties",
@@ -37,7 +36,6 @@
         "classifier": "mule-application"
       },
       "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-a/1.0.0-SNAPSHOT/mule-application-a-1.0.0-SNAPSHOT-mule-application.jar",
-      "packages": [],
       "resources": [
         ".placeholder",
         "META-INF/maven/org.apache.maven.plugin.my.unit/mule-application-a/pom.properties",
@@ -56,7 +54,6 @@
         "classifier": "mule-application"
       },
       "uri": "repository/org/apache/maven/plugin/my/unit/mule-application-c/1.0.0-SNAPSHOT/mule-application-c-1.0.0-SNAPSHOT-mule-application.jar",
-      "packages": [],
       "resources": [
         ".placeholder",
         "META-INF/maven/org.apache.maven.plugin.my.unit/mule-application-c/pom.properties",
@@ -66,7 +63,5 @@
         "repository/.marker"
       ]
     }
-  ],
-  "packages": [],
-  "resources": []
+  ]
 }

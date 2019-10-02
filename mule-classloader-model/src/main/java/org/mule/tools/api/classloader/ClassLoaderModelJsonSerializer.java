@@ -11,15 +11,27 @@
 package org.mule.tools.api.classloader;
 
 import static org.mule.tools.api.classloader.Constants.CLASSLOADER_MODEL_FILE_NAME;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import static org.mule.tools.api.classloader.Constants.PACKAGES_FIELD;
+import static org.mule.tools.api.classloader.Constants.RESOURCES_FIELD;
 
 import org.mule.tools.api.classloader.model.AppClassLoaderModel;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.lang.reflect.Type;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 public class ClassLoaderModelJsonSerializer {
 
@@ -72,6 +84,8 @@ public class ClassLoaderModelJsonSerializer {
         .registerTypeAdapter(Artifact.class, new ArtifactCustomJsonSerializer())
         .registerTypeAdapter(AppClassLoaderModel.class,
                              new AppClassLoaderModelJsonSerializer.AppClassLoaderModelCustomJsonSerializer())
+        .registerTypeAdapter(ClassLoaderModel.class,
+                             new ClassLoaderModelCustomJsonSerializer())
         .create();
     ClassLoaderModel parameterizedClassloaderModel = classLoaderModel.getParametrizedUriModel();
     return gson.toJson(parameterizedClassloaderModel);
@@ -106,6 +120,28 @@ public class ClassLoaderModelJsonSerializer {
       return destinationFile;
     } catch (IOException e) {
       throw new RuntimeException("Could not create classloader-model.json", e);
+    }
+  }
+
+  private static class ClassLoaderModelCustomJsonSerializer implements JsonSerializer<ClassLoaderModel> {
+
+    @Override
+    public JsonElement serialize(ClassLoaderModel classLoaderModel, Type type,
+                                 JsonSerializationContext jsonSerializationContext) {
+      Gson gson = new GsonBuilder()
+          .enableComplexMapKeySerialization()
+          .registerTypeAdapter(Artifact.class, new ArtifactCustomJsonSerializer())
+          .create();
+      JsonObject jsonObject = (JsonObject) gson.toJsonTree(classLoaderModel);
+
+      if (classLoaderModel.getPackages() == null || classLoaderModel.getPackages().length == 0) {
+        jsonObject.remove(PACKAGES_FIELD);
+      }
+      if (classLoaderModel.getResources() == null || classLoaderModel.getResources().length == 0) {
+        jsonObject.remove(RESOURCES_FIELD);
+      }
+
+      return jsonObject;
     }
   }
 }

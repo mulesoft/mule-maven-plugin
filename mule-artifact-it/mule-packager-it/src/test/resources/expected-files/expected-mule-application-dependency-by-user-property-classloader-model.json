@@ -16,7 +16,6 @@
         "type": "jar"
       },
       "uri": "repository/group/id/d/artifact-id-d/1.0.1/artifact-id-d-1.0.1.jar",
-      "packages": [],
       "resources": [
         "META-INF/MANIFEST.MF",
         "META-INF/maven/group.id.d/artifact-id-d/pom.properties",
@@ -40,7 +39,5 @@
         "META-INF/maven/group.id.a/artifact-id-a/pom.xml"
       ]
     }
-  ],
-  "packages": [],
-  "resources": []
+  ]
 }

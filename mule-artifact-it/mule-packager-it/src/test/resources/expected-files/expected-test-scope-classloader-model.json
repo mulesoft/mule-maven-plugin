@@ -7,7 +7,5 @@
     "type": "jar",
     "classifier": "mule-application"
   },
-  "dependencies": [],
-  "packages": [],
-  "resources": []
+  "dependencies": []
 }

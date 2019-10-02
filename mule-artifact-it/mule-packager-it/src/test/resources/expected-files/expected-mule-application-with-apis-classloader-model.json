@@ -17,7 +17,6 @@
         "classifier": "raml"
       },
       "uri": "repository/org/mule/test/raml-a/1.0.0/raml-a-1.0.0-raml.jar",
-      "packages": [],
       "resources": [
         "META-INF/MANIFEST.MF",
         "META-INF/maven/org.mule.test/raml-a/pom.properties",
@@ -33,7 +32,6 @@
         "classifier": "raml-fragment"
       },
       "uri": "repository/org/mule/test/raml-fragment/1.0.0/raml-fragment-1.0.0-raml-fragment.jar",
-      "packages": [],
       "resources": [
         "META-INF/MANIFEST.MF",
         "META-INF/maven/org.mule.test/raml-fragment/pom.properties",
@@ -49,7 +47,6 @@
         "classifier": "raml"
       },
       "uri": "repository/org/mule/test/raml-b/1.0.0/raml-b-1.0.0-raml.jar",
-      "packages": [],
       "resources": [
         "META-INF/MANIFEST.MF",
         "META-INF/maven/org.mule.test/raml-b/pom.properties",
@@ -65,14 +62,11 @@
         "classifier": "raml-fragment"
       },
       "uri": "repository/org/mule/test/raml-fragment/2.0.0/raml-fragment-2.0.0-raml-fragment.jar",
-      "packages": [],
       "resources": [
         "META-INF/MANIFEST.MF",
         "META-INF/maven/org.mule.test/raml-fragment/pom.properties",
         "META-INF/maven/org.mule.test/raml-fragment/pom.xml"
       ]
     }
-  ],
-  "packages": [],
-  "resources": []
+  ]
 }

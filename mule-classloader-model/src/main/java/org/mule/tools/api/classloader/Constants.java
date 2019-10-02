@@ -25,8 +25,12 @@ public class Constants {
   public static final String PLUGIN_FIELD = "plugin";
   public static final String PLUGIN_DEPENDENCIES_FIELD = "additionalDependencies";
   public static final String PLUGIN_DEPENDENCY_FIELD = "dependency";
+  public static final String PACKAGES_FIELD = "packages";
+  public static final String RESOURCES_FIELD = "resources";
 
   public static final String ARTIFACT_IS_SHARED_FIELD = "isShared";
+  public static final String ARTIFACT_PACKAGES_FIELD = "packages";
+  public static final String ARTIFACT_RESOURCES_FIELD = "resources";
 
   public static final String GROUP_ID = "groupId";
   public static final String ARTIFACT_ID = "artifactId";

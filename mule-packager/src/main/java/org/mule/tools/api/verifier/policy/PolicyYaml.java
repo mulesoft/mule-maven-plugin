@@ -9,34 +9,100 @@
  */
 package org.mule.tools.api.verifier.policy;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-class PolicyYaml {
+public class PolicyYaml {
 
-  @JsonCreator
-  public PolicyYaml(
-                    @JsonProperty(value = "id", required = true) String id,
-                    @JsonProperty(value = "name", required = true) String name,
-                    @JsonProperty(value = "description", required = true) String description,
-                    @JsonProperty(value = "category", required = true) String category,
-                    @JsonProperty(value = "type", required = true) String type,
-                    @JsonProperty(value = "resourceLevelSupported", required = true) Boolean resourceLevelSupported,
-                    @JsonProperty(value = "standalone", required = true) Boolean standalone,
-                    @JsonProperty(value = "requiredCharacteristics", required = true) List<String> requiredCharacteristics,
-                    @JsonProperty(value = "providedCharacteristics", required = true) List<String> providedCharacteristics,
-                    @JsonProperty(value = "configuration", required = true) List<ConfigurationProperty> configuration) {}
+  public String id;
+  public String name;
+  public String description;
+  public String category;
+  public String type;
+  public Boolean resourceLevelSupported;
+  public Boolean standalone;
+  public List<String> requiredCharacteristics;
+  public List<String> providedCharacteristics;
+  public List<ConfigurationProperty> configuration;
 
-  @JsonIgnoreProperties(ignoreUnknown = true)
-  public static class ConfigurationProperty {
-
-    @JsonCreator
-    public ConfigurationProperty(
-                                 @JsonProperty(value = "propertyName", required = true) String propertyName,
-                                 @JsonProperty(value = "type", required = true) String type) {}
+  public String getId() {
+    return id;
   }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getCategory() {
+    return category;
+  }
+
+  public void setCategory(String category) {
+    this.category = category;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public Boolean getResourceLevelSupported() {
+    return resourceLevelSupported;
+  }
+
+  public void setResourceLevelSupported(Boolean resourceLevelSupported) {
+    this.resourceLevelSupported = resourceLevelSupported;
+  }
+
+  public Boolean getStandalone() {
+    return standalone;
+  }
+
+  public void setStandalone(Boolean standalone) {
+    this.standalone = standalone;
+  }
+
+  public List<String> getRequiredCharacteristics() {
+    return requiredCharacteristics;
+  }
+
+  public void setRequiredCharacteristics(List<String> requiredCharacteristics) {
+    this.requiredCharacteristics = requiredCharacteristics;
+  }
+
+  public List<String> getProvidedCharacteristics() {
+    return providedCharacteristics;
+  }
+
+  public void setProvidedCharacteristics(List<String> providedCharacteristics) {
+    this.providedCharacteristics = providedCharacteristics;
+  }
+
+  public List<ConfigurationProperty> getConfiguration() {
+    return configuration;
+  }
+
+  public void setConfiguration(List<ConfigurationProperty> configuration) {
+    this.configuration = configuration;
+  }
+
+
 }

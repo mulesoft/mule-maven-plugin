@@ -10,23 +10,24 @@
 
 package org.mule.tools.api.verifier.policy;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES;
+import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.packager.ProjectInformation;
+import org.mule.tools.api.verifier.ProjectVerifier;
+import org.yaml.snakeyaml.TypeDescription;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.representer.Representer;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.List;
+
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 import static org.mule.tools.api.packager.structure.PackagerFiles.POM_XML;
-
-import org.mule.tools.api.exception.ValidationException;
-import org.mule.tools.api.packager.ProjectInformation;
-import org.mule.tools.api.verifier.ProjectVerifier;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Verifies that the packaged project is valid.
@@ -60,13 +61,7 @@ public class MulePolicyVerifier implements ProjectVerifier {
   }
 
   private void validateYaml() throws ValidationException {
-    try {
-      ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-      mapper.configure(FAIL_ON_NULL_CREATOR_PROPERTIES, true);
-      mapper.readValue(new File(getBaseDir(), yamlFileName), PolicyYaml.class);
-    } catch (IOException e) {
-      throw new ValidationException(format("Error validating '%s'. %s", yamlFileName, e.getMessage()));
-    }
+    new PolicyYamlVerifier(getBaseDir(), yamlFileName).validate();
   }
 
   private void validateJson() throws ValidationException {

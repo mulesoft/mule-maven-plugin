@@ -1,0 +1,77 @@
+{
+  "version": "1.2.0",
+  "artifactCoordinates": {
+    "groupId": "org.apache.maven.plugin.my.unit",
+    "artifactId": "test-jar-classloader-model-project",
+    "version": "1.0.0-SNAPSHOT",
+    "type": "jar",
+    "classifier": "mule-application"
+  },
+  "dependencies": [
+    {
+      "artifactCoordinates": {
+        "groupId": "group.id.a",
+        "artifactId": "artifact-id-a",
+        "version": "1.0.0-SNAPSHOT",
+        "type": "jar"
+      },
+      "uri": "file:${localRepository}/group/id/a/artifact-id-a/1.0.0-SNAPSHOT/artifact-id-a-1.0.0-SNAPSHOT.jar",
+      "packages": [
+        "group.id.a.artifactIdA"
+      ],
+      "resources": [
+        "META-INF/MANIFEST.MF",
+        "META-INF/maven/group.id.a/artifact-id-a/pom.properties",
+        "META-INF/maven/group.id.a/artifact-id-a/pom.xml"
+      ]
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "org.mule.group",
+        "artifactId": "mule-plugin-a",
+        "version": "1.0.0",
+        "type": "jar",
+        "classifier": "mule-plugin"
+      },
+      "uri": "file:${localRepository}/org/mule/group/mule-plugin-a/1.0.0/mule-plugin-a-1.0.0-mule-plugin.jar"
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "org.mule.group",
+        "artifactId": "mule-plugin-b",
+        "version": "1.0.0",
+        "type": "jar",
+        "classifier": "mule-plugin"
+      },
+      "uri": "file:${localRepository}/org/mule/group/mule-plugin-b/1.0.0/mule-plugin-b-1.0.0-mule-plugin.jar"
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "group.id.b",
+        "artifactId": "artifact-id-b",
+        "version": "1.0.0",
+        "type": "jar"
+      },
+      "uri": "file:${localRepository}/group/id/b/artifact-id-b/1.0.0/artifact-id-b-1.0.0.jar",
+      "packages": [
+        "group.id.b.artifactIdB",
+        "group.id.b.artifactIdB.model"
+      ],
+      "resources": [
+        "META-INF/MANIFEST.MF",
+        "META-INF/maven/group.id.b/artifact-id-b/pom.properties",
+        "META-INF/maven/group.id.b/artifact-id-b/pom.xml"
+      ]
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "org.mule.group",
+        "artifactId": "mule-plugin-d",
+        "version": "1.0.0",
+        "type": "jar",
+        "classifier": "mule-plugin"
+      },
+      "uri": "file:${localRepository}/org/mule/group/mule-plugin-d/1.0.0/mule-plugin-d-1.0.0-mule-plugin.jar"
+    }
+  ]
+}

@@ -10,7 +10,6 @@
 
 package org.mule.tools.api.packager.sources;
 
-import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 

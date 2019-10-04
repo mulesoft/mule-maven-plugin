@@ -33,9 +33,19 @@ public class ApplicationDependencyResolver {
    *
    * @param pomFile pom file
    */
+  @Deprecated
   public List<BundleDependency> resolveApplicationDependencies(File pomFile) {
+    return resolveApplicationDependencies(pomFile, false);
+  }
+
+  /**
+   * Resolve the application dependencies, excluding mule domains.
+   *
+   * @param pomFile pom file
+   */
+  public List<BundleDependency> resolveApplicationDependencies(File pomFile, boolean includeTestDependencies) {
     List<BundleDependency> resolvedApplicationDependencies =
-        muleMavenPluginClient.resolveArtifactDependencies(pomFile, false, true, empty(), empty(), empty())
+        muleMavenPluginClient.resolveArtifactDependencies(pomFile, includeTestDependencies, true, empty(), empty(), empty())
             .stream()
             .filter(d -> !(d.getScope() == BundleScope.PROVIDED) || (d.getDescriptor().getClassifier().isPresent()
                 && d.getDescriptor().getClassifier().get().equals(MULE_DOMAIN_CLASSIFIER)))

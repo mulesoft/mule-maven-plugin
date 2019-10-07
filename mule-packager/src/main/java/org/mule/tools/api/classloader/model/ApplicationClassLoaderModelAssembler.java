@@ -72,7 +72,7 @@ public class ApplicationClassLoaderModelAssembler {
 
   public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, File outputDirectory,
                                                                     ApplicationGAVModel appGAVModel,
-                                                                    boolean includeTestScopeDependencies)
+                                                                    boolean includeTestDependencies)
       throws IllegalStateException {
 
     Model pomModel = getPomFile(pomFile);
@@ -88,7 +88,7 @@ public class ApplicationClassLoaderModelAssembler {
     }
 
     List<BundleDependency> appDependencies =
-        applicationDependencyResolver.resolveApplicationDependencies(pomFile, includeTestScopeDependencies);
+        applicationDependencyResolver.resolveApplicationDependencies(pomFile, includeTestDependencies);
 
     List<Artifact> dependencies =
         updateArtifactsSharedState(appDependencies, updatePackagesResources(toApplicationModelArtifacts(appDependencies)),

@@ -6,9 +6,10 @@
  */
 package org.mule.tools.deployment.fabric;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.fabric.RuntimeFabricClient;
@@ -22,9 +23,11 @@ import org.mule.tools.client.fabric.model.Deployments;
 import org.mule.tools.client.fabric.model.Target;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
 import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
+import org.mule.tools.utils.PropertiesUtils;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 public class RequestBuilder {
 
@@ -51,10 +54,15 @@ public class RequestBuilder {
     deploymentRequest.setApplication(applicationRequest);
     deploymentRequest.setTarget(target);
 
-
     Map<String, Object> applicationPropertiesService = new HashMap<>();
     Map<String, Object> properties = new HashMap<>();
-    properties.put("properties", deployment.getProperties());
+    try {
+      properties.put("properties",
+                     PropertiesUtils.resolvePropertiesFromFile(deployment.getProperties(),
+                                                               deployment.getPropertiesFile(), false));
+    } catch (IOException e) {
+      throw new DeploymentException(e.getMessage(), e);
+    }
     properties.put("secureproperties", new HashMap<String, String>());
     properties.put("applicationName", deployment.getApplicationName());
     applicationPropertiesService.put("mule.agent.application.properties.service", properties);
@@ -188,6 +196,7 @@ public class RequestBuilder {
   }
 
   public DeploymentModify buildDeploymentModify() throws DeploymentException {
+
     Target target = buildTarget();
 
     ApplicationModify applicationModify = buildApplicationModify();
@@ -199,15 +208,21 @@ public class RequestBuilder {
     return deploymentModify;
   }
 
-  private ApplicationModify buildApplicationModify() {
+  private ApplicationModify buildApplicationModify() throws DeploymentException {
     AssetReference assetReference = buildAssetReference();
     ApplicationModify applicationModify = new ApplicationModify();
     applicationModify.setRef(assetReference);
 
-    if (deployment.getProperties() != null) {
+    if (deployment.getProperties() != null || deployment.getPropertiesFile() != null) {
       Map<String, Object> applicationPropertiesService = new HashMap<>();
       Map<String, Object> properties = new HashMap<>();
-      properties.put("properties", deployment.getProperties());
+      try {
+        properties.put("properties",
+                       PropertiesUtils.resolvePropertiesFromFile(deployment.getProperties(), deployment.getPropertiesFile(),
+                                                                 false));
+      } catch (IOException e) {
+        throw new DeploymentException(e.getMessage(), e);
+      }
       properties.put("applicationName", deployment.getApplicationName());
       applicationPropertiesService.put("mule.agent.application.properties.service", properties);
 

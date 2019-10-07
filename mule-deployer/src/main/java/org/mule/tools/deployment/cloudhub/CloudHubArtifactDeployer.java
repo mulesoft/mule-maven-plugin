@@ -6,6 +6,12 @@
  */
 package org.mule.tools.deployment.cloudhub;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
+import java.io.IOException;
+import java.util.Map;
+
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.model.MuleVersion;
@@ -16,13 +22,9 @@ import org.mule.tools.deployment.artifact.ArtifactDeployer;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
+import org.mule.tools.utils.PropertiesUtils;
 import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
-
-import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Deploys mule artifacts to CloudHub using the {@link CloudHubClient}.
@@ -125,8 +127,10 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
   /**
    * Creates the application in CloudHub.
+   * 
+   * @throws DeploymentException
    */
-  protected void createApplication() {
+  protected void createApplication() throws DeploymentException {
     log.info("Creating application: " + deployment.getApplicationName());
     client.createApplications(getApplication(null), deployment.getArtifact());
   }
@@ -168,7 +172,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   }
 
 
-  private Application getApplication(Application originalApplication) {
+  private Application getApplication(Application originalApplication) throws DeploymentException {
     Application application = new Application();
     if (originalApplication != null) {
       application.setDomain(deployment.getApplicationName());
@@ -176,10 +180,16 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       MuleVersion muleVersion = new MuleVersion();
       muleVersion.setVersion(deployment.getMuleVersion());
       application.setMuleVersion(muleVersion);
-
-      Map<String, String> resolvedProperties =
-          resolveProperties(originalApplication.getProperties(), deployment.getProperties(), deployment.getOverrideProperties());
-      application.setProperties(resolvedProperties);
+      try {
+        Map<String, String> resolvedProperties =
+            PropertiesUtils.resolveProperties(originalApplication.getProperties(),
+                                              PropertiesUtils.resolvePropertiesFromFile(deployment.getProperties(),
+                                                                                        deployment.getPropertiesFile(), false),
+                                              deployment.getOverrideProperties());
+        application.setProperties(resolvedProperties);
+      } catch (IOException e) {
+        throw new DeploymentException(e.getMessage(), e);
+      }
 
       if (isBlank(deployment.getRegion())) {
         application.setRegion(originalApplication.getRegion());
@@ -223,16 +233,5 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     workerType.setName(type);
     workers.setType(workerType);
     return workers;
-  }
-
-  protected Map<String, String> resolveProperties(Map<String, String> originalProperties, Map<String, String> properties,
-                                                  Boolean overrideProperties) {
-    if (properties != null) {
-      if (!overrideProperties) {
-        properties.putAll(originalProperties);
-      }
-      return properties;
-    }
-    return originalProperties;
   }
 }

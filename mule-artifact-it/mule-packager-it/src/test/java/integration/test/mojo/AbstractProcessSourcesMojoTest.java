@@ -51,6 +51,8 @@ public abstract class AbstractProcessSourcesMojoTest extends MojoTest {
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-DskipValidation=true");
+    //verifier.setDebugJvm(true);
+    //verifier.setDebug(true);
     cliOptions.stream().forEach(option -> verifier.addCliOption(option));
     verifier.executeGoal(PROCESS_SOURCES);
   }

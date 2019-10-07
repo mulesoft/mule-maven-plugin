@@ -33,6 +33,10 @@ import org.junit.Test;
 
 public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
 
+  private static final String CLASSLOADER_MODEL_FILE = "classloader-model.json";
+  private static final String CLASSLOADER_MODEL_LOCATION = "/target/META-INF/mule-artifact/" + CLASSLOADER_MODEL_FILE;
+  private static final String EXPECTED_CLASSLOADER_MODEL_FILE_ROOT_FOLDER = "/expected-files/";
+
   private static final String GENERATED_CLASSLOADER_MODEL_FILE =
       "/empty-classloader-model-project/target/META-INF/mule-artifact/classloader-model.json";
   private static final String GENERATED_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE =
@@ -483,6 +487,32 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     String generatedAppClassLoaderModelFileContent = getFileContent(classLoaderModelJsonLocation);
     String expectedAppClassLoaderModelFileContent = getFileContent(expectedClassLoaderModelJsonLocation);
     assertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent, true);
+  }
+
+  @Test
+  public void appWithSameDependencyWithDifferentClassifier() throws Exception {
+    final String appName = "mule-application-with-same-dep-different-classifier";
+    processSourcesOnProject(appName);
+    String generatedClassloaderModelFileContent = getGeneratedClassloaderModelContent(appName);
+    String expectedClassLoaderModelFileContent = getExpectedClassLoaderModelContent(appName);
+    assertEquals(generatedClassloaderModelFileContent, expectedClassLoaderModelFileContent, true);
+  }
+
+  @Test
+  public void appWithSameDependencyWithDifferentClassifierAsTransitive() throws Exception {
+    final String appName = "mule-application-with-same-dep-different-classifier-as-transitive";
+    processSourcesOnProject(appName);
+    String generatedClassloaderModelFileContent = getGeneratedClassloaderModelContent(appName);
+    String expectedClassLoaderModelFileContent = getExpectedClassLoaderModelContent(appName);
+    assertEquals(generatedClassloaderModelFileContent, expectedClassLoaderModelFileContent, true);
+  }
+
+  private String getGeneratedClassloaderModelContent(String appName) throws Exception {
+    return getFileContent("/" + appName + CLASSLOADER_MODEL_LOCATION);
+  }
+
+  private String getExpectedClassLoaderModelContent(String appName) throws Exception {
+    return getFileContent(EXPECTED_CLASSLOADER_MODEL_FILE_ROOT_FOLDER + "expected-" + appName + "-" + CLASSLOADER_MODEL_FILE);
   }
 
 }

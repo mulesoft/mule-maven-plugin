@@ -58,15 +58,17 @@ public class RepositoryGenerator {
   @Deprecated
   public ClassLoaderModel generate() throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
-        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory, appGAVModel);
+        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory, appGAVModel, false);
     installArtifacts(getRepositoryFolder(), artifactInstaller, appModel, false);
     return appModel.getClassLoaderModel();
   }
 
-  public ClassLoaderModel generate(boolean lightweight, boolean useLocalRepository, boolean prettyPrinting)
+  public ClassLoaderModel generate(boolean lightweight, boolean useLocalRepository, boolean prettyPrinting,
+                                   boolean includeTestDependencies)
       throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
-        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory, appGAVModel);
+        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory, appGAVModel,
+                                                                            includeTestDependencies);
     if (!lightweight) {
       installArtifacts(getRepositoryFolder(), artifactInstaller, appModel, prettyPrinting);
     }
@@ -97,7 +99,7 @@ public class RepositoryGenerator {
 
   @Deprecated
   public ClassLoaderModel generate(boolean lightweight) throws IOException, IllegalStateException {
-    return generate(lightweight, false, false);
+    return generate(lightweight, false, false, false);
   }
 
   protected File getRepositoryFolder() {

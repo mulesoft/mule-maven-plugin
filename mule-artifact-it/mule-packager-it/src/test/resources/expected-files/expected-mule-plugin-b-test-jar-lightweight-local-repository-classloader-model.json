@@ -1,0 +1,45 @@
+{
+  "version": "1.2.0",
+  "artifactCoordinates": {
+    "groupId": "org.mule.group",
+    "artifactId": "mule-plugin-b",
+    "version": "1.0.0",
+    "type": "jar",
+    "classifier": "mule-plugin"
+  },
+  "dependencies": [
+    {
+      "artifactCoordinates": {
+        "groupId": "group.id.c",
+        "artifactId": "artifact-id-c",
+        "version": "1.0.0-SNAPSHOT",
+        "type": "jar"
+      },
+      "uri": "file:${localRepository}/group/id/c/artifact-id-c/1.0.0-SNAPSHOT/artifact-id-c-1.0.0-SNAPSHOT.jar",
+      "resources": [
+        "META-INF/MANIFEST.MF",
+        "META-INF/maven/group.id.c/artifact-id-c/pom.properties",
+        "META-INF/maven/group.id.c/artifact-id-c/pom.xml"
+      ]
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "group.id.d",
+        "artifactId": "artifact-id-d",
+        "version": "1.0.0",
+        "type": "jar"
+      },
+      "uri": "file:${localRepository}/group/id/d/artifact-id-d/1.0.0/artifact-id-d-1.0.0.jar",
+      "resources": [
+        "META-INF/MANIFEST.MF",
+        "META-INF/maven/group.id.d/artifact-id-d/pom.properties",
+        "META-INF/maven/group.id.d/artifact-id-d/pom.xml"
+      ]
+    }
+  ],
+  "resources": [
+    "META-INF/MANIFEST.MF",
+    "META-INF/maven/org.mule.group/mule-plugin-b/pom.properties",
+    "META-INF/maven/org.mule.group/mule-plugin-b/pom.xml"
+  ]
+}

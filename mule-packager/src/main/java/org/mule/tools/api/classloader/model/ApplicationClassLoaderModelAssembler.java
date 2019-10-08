@@ -67,11 +67,12 @@ public class ApplicationClassLoaderModelAssembler {
   @Deprecated
   public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, ApplicationGAVModel appGAVModel)
       throws IllegalStateException {
-    return getApplicationClassLoaderModel(pomFile, null, appGAVModel);
+    return getApplicationClassLoaderModel(pomFile, null, appGAVModel, false);
   }
 
   public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, File outputDirectory,
-                                                                    ApplicationGAVModel appGAVModel)
+                                                                    ApplicationGAVModel appGAVModel,
+                                                                    boolean includeTestDependencies)
       throws IllegalStateException {
 
     Model pomModel = getPomFile(pomFile);
@@ -86,7 +87,8 @@ public class ApplicationClassLoaderModelAssembler {
       appModel.setResources(jarInfo.getResources().toArray(new String[jarInfo.getResources().size()]));
     }
 
-    List<BundleDependency> appDependencies = applicationDependencyResolver.resolveApplicationDependencies(pomFile);
+    List<BundleDependency> appDependencies =
+        applicationDependencyResolver.resolveApplicationDependencies(pomFile, includeTestDependencies);
 
     List<Artifact> dependencies =
         updateArtifactsSharedState(appDependencies, updatePackagesResources(toApplicationModelArtifacts(appDependencies)),

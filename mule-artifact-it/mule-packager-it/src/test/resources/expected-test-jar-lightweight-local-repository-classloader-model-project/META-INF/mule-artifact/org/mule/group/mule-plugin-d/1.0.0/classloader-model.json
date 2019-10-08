@@ -1,0 +1,31 @@
+{
+  "version": "1.2.0",
+  "artifactCoordinates": {
+    "groupId": "org.mule.group",
+    "artifactId": "mule-plugin-d",
+    "version": "1.0.0",
+    "type": "jar",
+    "classifier": "mule-plugin"
+  },
+  "dependencies": [
+    {
+      "artifactCoordinates": {
+        "groupId": "group.id.x",
+        "artifactId": "artifact-id-x",
+        "version": "1.0.0",
+        "type": "jar"
+      },
+      "uri": "repository/group/id/x/artifact-id-x/1.0.0/artifact-id-x-1.0.0.jar",
+      "resources": [
+        "META-INF/MANIFEST.MF",
+        "META-INF/maven/group.id.x/artifact-id-x/pom.properties",
+        "META-INF/maven/group.id.x/artifact-id-x/pom.xml"
+      ]
+    }
+  ],
+  "resources": [
+    "META-INF/MANIFEST.MF",
+    "META-INF/maven/org.mule.group/mule-plugin-d/pom.properties",
+    "META-INF/maven/org.mule.group/mule-plugin-d/pom.xml"
+  ]
+}

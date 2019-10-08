@@ -154,7 +154,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
     when(jarExplorer.explore(classesDirectory.toURI())).thenReturn(new JarInfo(packages, resources));
     ApplicationClassloaderModel applicationClassloaderModel =
         applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), outputDirectory,
-                                                                               mock(ApplicationGAVModel.class));
+                                                                               mock(ApplicationGAVModel.class), true);
 
     assertThat("Application dependencies are not the expected",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
@@ -256,7 +256,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
     try {
       return applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), temporaryFolder.newFolder(),
-                                                                                    mock(ApplicationGAVModel.class));
+                                                                                    mock(ApplicationGAVModel.class), false);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

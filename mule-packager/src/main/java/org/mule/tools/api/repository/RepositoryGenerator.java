@@ -64,11 +64,11 @@ public class RepositoryGenerator {
   }
 
   public ClassLoaderModel generate(boolean lightweight, boolean useLocalRepository, boolean prettyPrinting,
-                                   boolean includeTestScopeDependencies)
+                                   boolean includeTestDependencies)
       throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
         applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory, appGAVModel,
-                                                                            includeTestScopeDependencies);
+                                                                            includeTestDependencies);
     if (!lightweight) {
       installArtifacts(getRepositoryFolder(), artifactInstaller, appModel, prettyPrinting);
     }

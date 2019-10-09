@@ -167,6 +167,36 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Z_PATH_SUFFIX);
   }
 
+  @Test
+  public void muleAppWithPluginWithSameDependencyAsAdditionalDifferentClassifier() throws Exception {
+    final String appName = "mule-app-plugin-with-same-additional-dep-different-classifier";
+    final String appLocation = getAppLocation(appName);
+    processSourcesOnProject(appLocation);
+    String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
+    String expectedAppClassLoaderModelFileContent =
+        getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
+    assertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent, true);
+    assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
+    assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
+    assertArtifactInstalled(appLocation, "/target/repository/group/id/y/artifact-id-y/1.0.0/artifact-id-y-1.0.0-test-jar.jar");
+  }
+
+  @Test
+  public void muleAppWithPluginWithSameDependencyAsAdditionalDifferentClassifierAsTransitive() throws Exception {
+    final String appName = "mule-app-plugin-with-same-additional-dep-different-classifier-as-transitive";
+    final String appLocation = getAppLocation(appName);
+    processSourcesOnProject(appLocation);
+    String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
+    String expectedAppClassLoaderModelFileContent =
+        getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
+    assertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent, true);
+    assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
+    assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
+    assertArtifactInstalled(appLocation,
+                            "/target/repository/group/id/y/artifact-with-y-as-test-jar/1.0.0/artifact-with-y-as-test-jar-1.0.0.jar");
+    assertArtifactInstalled(appLocation, "/target/repository/group/id/y/artifact-id-y/1.0.0/artifact-id-y-1.0.0-test-jar.jar");
+  }
+
 
   private String getAppLocation(String appName) {
     return "/additional-plugin-dependencies/" + appName;

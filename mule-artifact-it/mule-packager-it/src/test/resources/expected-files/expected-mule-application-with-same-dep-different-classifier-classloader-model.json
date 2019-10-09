@@ -1,0 +1,47 @@
+{
+  "version": "1.2.0",
+  "artifactCoordinates": {
+    "groupId": "org.apache.maven.plugin.my.unit",
+    "artifactId": "mule-application-with-same-dep-different-classifier",
+    "version": "1.0.0-SNAPSHOT",
+    "type": "jar",
+    "classifier": "mule-application"
+  },
+  "dependencies": [
+    {
+      "artifactCoordinates": {
+        "groupId": "group.id.a",
+        "artifactId": "artifact-id-a",
+        "version": "1.0.0-SNAPSHOT",
+        "type": "jar"
+      },
+      "uri": "repository/group/id/a/artifact-id-a/1.0.0-SNAPSHOT/artifact-id-a-1.0.0-SNAPSHOT.jar",
+      "packages": [
+        "group.id.a.artifactIdA"
+      ],
+      "resources": [
+        "META-INF/MANIFEST.MF",
+        "META-INF/maven/group.id.a/artifact-id-a/pom.properties",
+        "META-INF/maven/group.id.a/artifact-id-a/pom.xml"
+      ]
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "group.id.a",
+        "artifactId": "artifact-id-a",
+        "version": "1.0.0-SNAPSHOT",
+        "type": "jar",
+        "classifier": "test-jar"
+      },
+      "uri": "repository/group/id/a/artifact-id-a/1.0.0-SNAPSHOT/artifact-id-a-1.0.0-SNAPSHOT-test-jar.jar",
+      "packages": [
+        "group.id.a.artifactIdA"
+      ],
+      "resources": [
+        "META-INF/MANIFEST.MF",
+        "META-INF/maven/group.id.a/artifact-id-a/pom.properties",
+        "META-INF/maven/group.id.a/artifact-id-a/pom.xml"
+      ]
+    }
+  ]
+}

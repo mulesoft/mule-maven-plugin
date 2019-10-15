@@ -85,7 +85,7 @@ public class RuntimeFabricDeploymentVerification implements DeploymentVerificati
 
     @Override
     public Consumer<Deployment> onTimeout() {
-      return deployment -> client.deleteDeployment(getDeploymentId(deployment));
+      return deployment -> client.getDeployment(getDeploymentId(deployment));
     }
   }
 }

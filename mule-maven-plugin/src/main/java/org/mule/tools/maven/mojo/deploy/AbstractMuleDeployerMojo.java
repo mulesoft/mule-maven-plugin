@@ -9,6 +9,23 @@
  */
 package org.mule.tools.maven.mojo.deploy;
 
+import static org.mule.tools.maven.config.proxy.ProxyConfiguration.isAbleToSetupProxy;
+import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.validation.deployment.ProjectDeploymentValidator;
+import org.mule.tools.client.core.exception.DeploymentException;
+import org.mule.tools.maven.config.proxy.ProxyConfiguration;
+import org.mule.tools.maven.mojo.AbstractGenericMojo;
+import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
+import org.mule.tools.model.Deployment;
+import org.mule.tools.model.anypoint.AnypointDeployment;
+import org.mule.tools.model.anypoint.DeploymentConfigurator;
+import org.mule.tools.model.anypoint.MavenResolverMetadata;
+import org.mule.tools.utils.DeployerLog;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
@@ -19,22 +36,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
-import org.mule.tools.api.exception.ValidationException;
-import org.mule.tools.api.validation.deployment.ProjectDeploymentValidator;
-import org.mule.tools.client.core.exception.DeploymentException;
-import org.mule.tools.maven.mojo.AbstractGenericMojo;
-import org.mule.tools.maven.mojo.deploy.logging.MavenDeployerLog;
-import org.mule.tools.model.Deployment;
-import org.mule.tools.model.anypoint.AnypointDeployment;
-import org.mule.tools.model.anypoint.MavenResolverMetadata;
-import org.mule.tools.utils.DeployerLog;
-import org.mule.tools.model.anypoint.DeploymentConfigurator;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static com.google.common.base.Preconditions.checkState;
 
 public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
 
@@ -83,6 +84,8 @@ public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
       return;
     }
 
+    setupProxy();
+
     if (deploymentConfiguration instanceof AnypointDeployment) {
       initializeAnypointDeploymentEnvironment();
     }
@@ -129,5 +132,16 @@ public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
         new DeploymentConfigurator((AnypointDeployment) deploymentConfiguration, new MavenDeployerLog(getLog()));
     deploymentConfigurator.initializeApplication(getMetadata());
     deploymentConfigurator.initializeEnvironment(settings, decrypter);
+  }
+
+  protected void setupProxy() {
+    if (isAbleToSetupProxy(settings)) {
+      try {
+        ProxyConfiguration proxyConfiguration = new ProxyConfiguration(getLog(), settings);
+        proxyConfiguration.handleProxySettings();
+      } catch (Exception e) {
+        getLog().error("Fail to configure proxy settings.", e);
+      }
+    }
   }
 }

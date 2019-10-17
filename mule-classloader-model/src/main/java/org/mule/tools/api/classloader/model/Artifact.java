@@ -18,6 +18,8 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.commons.lang3.StringUtils;
 
 public class Artifact implements Comparable {
@@ -211,6 +213,7 @@ public class Artifact implements Comparable {
    * Introspection of this artifact, it will contain the array of Java packages for this artifact.
    * @return {@link String[]} with the packages discovered for this artifact.
    */
+  @CheckForNull
   public String[] getPackages() {
     return packages;
   }
@@ -219,6 +222,7 @@ public class Artifact implements Comparable {
    * Introspection of this artifact, it will contain the array of resources for this artifact.
    * @return {@link String[]} with the resources discovered for this artifact.
    */
+  @CheckForNull
   public String[] getResources() {
     return resources;
   }

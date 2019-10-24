@@ -9,7 +9,6 @@
  */
 package org.mule.tools.verification.cloudhub;
 
-import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.core.exception.DeploymentException;
@@ -50,13 +49,13 @@ public class CloudHubDeploymentVerification implements DeploymentVerification {
       return (deployment) -> {
         Application application = client.getApplications(deployment.getApplicationName());
         if (application != null) {
-          if (containsIgnoreCase(application.getStatus(), FAILED_STATUS)
+          if (equalsIgnoreCase(application.getDeploymentUpdateStatus(), DEPLOYMENT_IN_PROGRESS)) {
+            return false;
+          } else if (containsIgnoreCase(application.getStatus(), FAILED_STATUS)
               || containsIgnoreCase(application.getDeploymentUpdateStatus(), FAILED_STATUS)) {
             throw new IllegalStateException("Deployment failed");
-          } else if (StringUtils.equalsIgnoreCase(application.getDeploymentUpdateStatus(), DEPLOYMENT_IN_PROGRESS)) {
-            return false;
           }
-          return StringUtils.equalsIgnoreCase(STARTED_STATUS, application.getStatus());
+          return equalsIgnoreCase(STARTED_STATUS, application.getStatus());
         }
         return false;
       };

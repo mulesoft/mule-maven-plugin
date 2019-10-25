@@ -45,7 +45,8 @@ public class DefaultDeploymentVerification implements DeploymentVerification {
       retrier.retry(() -> !isDeployed.test(deployment));
     } catch (InterruptedException | TimeoutException e) {
       onTimeout.accept(deployment);
-      throw new DeploymentException("Deployment has timeouted", e);
+      throw new DeploymentException("Validation timed out waiting for application to start. " +
+          "Please consider increasing the deploymentTimeout property.", e);
     } catch (IllegalStateException e) {
       onTimeout.accept(deployment);
       throw new DeploymentException("Deployment has failed", e);

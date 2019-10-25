@@ -67,4 +67,15 @@ public class CloudHubDeploymentVerificationTest {
     application.setStatus("FAILED");
     verification.assertDeployment(deployment);
   }
+
+  @Test
+  public void assertDeploymentSucessAfterFailure() throws DeploymentException {
+    expectedException.expect(DeploymentException.class);
+    expectedException.expectMessage("Validation timed out waiting for application to start. " +
+        "Please consider increasing the deploymentTimeout property.");
+    application.setStatus("FAILED");
+    application.setDeploymentUpdateStatus("DEPLOYING");
+    deployment.setDeploymentTimeout(1000L);
+    verification.assertDeployment(deployment);
+  }
 }

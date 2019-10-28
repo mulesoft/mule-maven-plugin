@@ -193,6 +193,43 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
   }
 
   @Test
+  public void testProvidedMulePluginShouldBeExcludedFromApplicationClassLoaderModelEvenWithLowerVersions()
+          throws IOException, VerificationException, JSONException {
+    projectBaseDirectory = builder.createProjectBaseDir("provided-plugin-dependency", this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.executeGoal(PROCESS_SOURCES);
+
+    File generatedClassloaderModelFile = getFile(GENERATED_PROVIDED_CLASSLOADER_MODEL_FILE);
+    String generatedClassloaderModelFileContent = readFileToString(generatedClassloaderModelFile);
+
+    File expectedClassloaderModelFile = getFile(EXPECTED_PROVIDED_CLASSLOADER_MODEL_FILE);
+    String expectedClassloaderModelFileContent = readFileToString(expectedClassloaderModelFile);
+
+    assertEquals("The classloader-model.json file is different from the expected",
+                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+
+    File generatedMulePluginAClassloaderModelFile = getFile(GENERATED_PROVIDED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
+    String generatedMulePluginAClassloaderModelFileContent = readFileToString(generatedMulePluginAClassloaderModelFile);
+
+    File expectedMulePluginAClassloaderModelFile = getFile(EXPECTED_PROVIDED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
+    String expectedMulePluginAClassloaderModelFileContent = readFileToString(expectedMulePluginAClassloaderModelFile);
+
+    assertEquals("The classloader-model.json file of the mule-plugin-a is different from the expected",
+                 generatedMulePluginAClassloaderModelFileContent, expectedMulePluginAClassloaderModelFileContent, true);
+
+    File expectedStructure = getExpectedStructure("/expected-provided-classloader-model-project");
+    File targetStructure = new File(verifier.getBasedir() + separator + TARGET_FOLDER_NAME);
+    deleteDirectory(new File(targetStructure, "temp"));
+
+    assertThat("The directory structure is different from the expected", targetStructure,
+               hasSameTreeStructure(expectedStructure, excludes));
+
+    verifier.verifyErrorFreeLog();
+  }
+
+
+  @Test
   public void testPrettyPrintClassLoaderModel() throws IOException, VerificationException {
     doTestPrettyPrintClassLoaderModel(true);
   }

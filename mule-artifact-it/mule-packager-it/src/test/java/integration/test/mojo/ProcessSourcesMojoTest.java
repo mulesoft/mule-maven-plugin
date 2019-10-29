@@ -161,6 +161,7 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
       throws IOException, VerificationException, JSONException {
     projectBaseDirectory = builder.createProjectBaseDir("provided-mule-plugin-classloader-model-project", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
+
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.executeGoal(PROCESS_SOURCES);
 
@@ -194,36 +195,40 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
 
   @Test
   public void testProvidedMulePluginShouldBeExcludedFromApplicationClassLoaderModelEvenWithLowerVersions()
-          throws IOException, VerificationException, JSONException {
+      throws IOException, VerificationException, JSONException {
     projectBaseDirectory = builder.createProjectBaseDir("provided-plugin-dependency", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
+
+
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.executeGoal(PROCESS_SOURCES);
 
-    File generatedClassloaderModelFile = getFile(GENERATED_PROVIDED_CLASSLOADER_MODEL_FILE);
+    final String expectedProvidedPluginDependencyClassloaderModelFile =
+        "/expected-files/expected-provided-plugin-dependency-classloader-model.json";
+    final String generatedProvidedPluginDependencyClassloaderModelFile =
+        "/provided-plugin-dependency" + CLASSLOADER_MODEL_LOCATION;
+    final String expectedAPluginWithBProvidedClassLoaderModelFile =
+        "/expected-files/expected-plugin-a-with-b-provided-classloader-model.json";
+    final String generatedAPluginWithBProvidedClassLaoderModelFile =
+        "/provided-plugin-dependency/target/repository/org/mule/group/mule-plugin-a/1.0.0/classloader-model.json";
+
+    File generatedClassloaderModelFile = getFile(generatedProvidedPluginDependencyClassloaderModelFile);
     String generatedClassloaderModelFileContent = readFileToString(generatedClassloaderModelFile);
 
-    File expectedClassloaderModelFile = getFile(EXPECTED_PROVIDED_CLASSLOADER_MODEL_FILE);
+    File expectedClassloaderModelFile = getFile(expectedProvidedPluginDependencyClassloaderModelFile);
     String expectedClassloaderModelFileContent = readFileToString(expectedClassloaderModelFile);
 
     assertEquals("The classloader-model.json file is different from the expected",
                  generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
 
-    File generatedMulePluginAClassloaderModelFile = getFile(GENERATED_PROVIDED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
-    String generatedMulePluginAClassloaderModelFileContent = readFileToString(generatedMulePluginAClassloaderModelFile);
+    File generatedPluginAClassLoaderModelFile = getFile(generatedAPluginWithBProvidedClassLaoderModelFile);
+    String generatedPluginAClassLoaderModelFileContent = readFileToString(generatedPluginAClassLoaderModelFile);
 
-    File expectedMulePluginAClassloaderModelFile = getFile(EXPECTED_PROVIDED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
-    String expectedMulePluginAClassloaderModelFileContent = readFileToString(expectedMulePluginAClassloaderModelFile);
+    File expectedPluginAClassloaderModelFile = getFile(expectedAPluginWithBProvidedClassLoaderModelFile);
+    String expectedPluginAClassloaderModelFileContent = readFileToString(expectedPluginAClassloaderModelFile);
 
-    assertEquals("The classloader-model.json file of the mule-plugin-a is different from the expected",
-                 generatedMulePluginAClassloaderModelFileContent, expectedMulePluginAClassloaderModelFileContent, true);
-
-    File expectedStructure = getExpectedStructure("/expected-provided-classloader-model-project");
-    File targetStructure = new File(verifier.getBasedir() + separator + TARGET_FOLDER_NAME);
-    deleteDirectory(new File(targetStructure, "temp"));
-
-    assertThat("The directory structure is different from the expected", targetStructure,
-               hasSameTreeStructure(expectedStructure, excludes));
+    assertEquals("The classloader-model.json file is different from the expected",
+                 generatedPluginAClassLoaderModelFileContent, expectedPluginAClassloaderModelFileContent, true);
 
     verifier.verifyErrorFreeLog();
   }

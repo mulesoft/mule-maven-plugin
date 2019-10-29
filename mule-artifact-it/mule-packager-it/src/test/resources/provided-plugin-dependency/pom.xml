@@ -17,12 +17,6 @@
         </dependency>
         <dependency>
             <groupId>org.mule.group</groupId>
-            <artifactId>mule-plugin-a2</artifactId>
-            <version>1.0.0</version>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.group</groupId>
             <artifactId>mule-plugin-c</artifactId>
             <version>1.0.0</version>
             <classifier>mule-plugin</classifier>

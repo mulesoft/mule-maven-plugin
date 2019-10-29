@@ -161,7 +161,6 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
       throws IOException, VerificationException, JSONException {
     projectBaseDirectory = builder.createProjectBaseDir("provided-mule-plugin-classloader-model-project", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.executeGoal(PROCESS_SOURCES);
 
@@ -198,7 +197,6 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
       throws IOException, VerificationException, JSONException {
     projectBaseDirectory = builder.createProjectBaseDir("provided-plugin-dependency", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-
 
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.executeGoal(PROCESS_SOURCES);

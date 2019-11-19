@@ -668,6 +668,28 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     assertEquals(generatedClassloaderModelFileContent, expectedClassLoaderModelFileContent, true);
   }
 
+  @Test
+  public void noDuplicatesInPluginClassLoaderModel() throws Exception {
+    final String appName = "mule-application-depends-on-simple-plugin";
+    final String pluginClassLoaderModelLocation =
+        "/" + appName + "/target/repository/org/mule/test/simple-plugin/1.0.0/classloader-model.json";
+    final String expectedPluginClassLaoderModelFile =
+        EXPECTED_CLASSLOADER_MODEL_FILE_ROOT_FOLDER + "expected-simple-plugin-classloader-model.json";
+    processSourcesOnProject(appName);
+    String generatedClassloaderModelFileContent = getFileContent(pluginClassLoaderModelLocation);
+    String expectedClassLoaderModelFileContent = getFileContent(expectedPluginClassLaoderModelFile);
+    assertEquals(generatedClassloaderModelFileContent, expectedClassLoaderModelFileContent, true);
+  }
+
+  @Test
+  public void libWithSameDependenciesAsPluginIsResolvedOk() throws Exception {
+    final String appName = "mule-application-depends-on-simple-plugin-and-dep";
+    processSourcesOnProject(appName);
+    String generatedClassloaderModelFileContent = getGeneratedClassloaderModelContent(appName);
+    String expectedClassLoaderModelFileContent = getExpectedClassLoaderModelContent(appName);
+    assertEquals(generatedClassloaderModelFileContent, expectedClassLoaderModelFileContent, true);
+  }
+
   private String getGeneratedClassloaderModelContent(String appName) throws Exception {
     return getFileContent("/" + appName + CLASSLOADER_MODEL_LOCATION);
   }

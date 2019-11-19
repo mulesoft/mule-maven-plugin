@@ -1,0 +1,17 @@
+{
+  "name": "Application depends on simple plugin",
+  "minMuleVersion": "4.0.0",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedPackages": [],
+      "exportedResources": []
+    }
+  },
+  "requiredProduct": "MULE",
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  },
+  "configs": []
+}

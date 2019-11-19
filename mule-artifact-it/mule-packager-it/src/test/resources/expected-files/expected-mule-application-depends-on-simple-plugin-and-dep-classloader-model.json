@@ -1,0 +1,78 @@
+{
+  "version": "1.2.0",
+  "artifactCoordinates": {
+    "groupId": "org.mule.test",
+    "artifactId": "simple-plugin-and-dep-app",
+    "version": "1.0.0-SNAPSHOT",
+    "type": "jar",
+    "classifier": "mule-application"
+  },
+  "dependencies": [
+    {
+      "artifactCoordinates": {
+        "groupId": "org.mule.test",
+        "artifactId": "simple-plugin",
+        "version": "1.0.0",
+        "type": "jar",
+        "classifier": "mule-plugin"
+      },
+      "uri": "repository/org/mule/test/simple-plugin/1.0.0/simple-plugin-1.0.0-mule-plugin.jar"
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "org.mule.test",
+        "artifactId": "simple-dep",
+        "version": "1.0.0",
+        "type": "jar"
+      },
+      "uri": "repository/org/mule/test/simple-dep/1.0.0/simple-dep-1.0.0.jar",
+      "resources": [
+        "META-INF/MANIFEST.MF",
+        "META-INF/maven/org.mule.test/simple-dep/pom.properties",
+        "META-INF/maven/org.mule.test/simple-dep/pom.xml"
+      ]
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "org.mule.test",
+        "artifactId": "inner-dependency-a",
+        "version": "1.0.0",
+        "type": "jar"
+      },
+      "uri": "repository/org/mule/test/inner-dependency-a/1.0.0/inner-dependency-a-1.0.0.jar",
+      "resources": [
+        "META-INF/MANIFEST.MF",
+        "META-INF/maven/org.mule.test/inner-dependency-a/pom.properties",
+        "META-INF/maven/org.mule.test/inner-dependency-a/pom.xml"
+      ]
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "org.mule.test",
+        "artifactId": "transitive-dependency",
+        "version": "1.0.0",
+        "type": "jar"
+      },
+      "uri": "repository/org/mule/test/transitive-dependency/1.0.0/transitive-dependency-1.0.0.jar",
+      "resources": [
+        "META-INF/MANIFEST.MF",
+        "META-INF/maven/org.mule.test/transitive-dependency/pom.properties",
+        "META-INF/maven/org.mule.test/transitive-dependency/pom.xml"
+      ]
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "org.mule.test",
+        "artifactId": "inner-dependency-b",
+        "version": "1.0.0",
+        "type": "jar"
+      },
+      "uri": "repository/org/mule/test/inner-dependency-b/1.0.0/inner-dependency-b-1.0.0.jar",
+      "resources": [
+        "META-INF/MANIFEST.MF",
+        "META-INF/maven/org.mule.test/inner-dependency-b/pom.properties",
+        "META-INF/maven/org.mule.test/inner-dependency-b/pom.xml"
+      ]
+    }
+  ]
+}

@@ -45,7 +45,7 @@ import org.apache.maven.execution.MavenExecutionRequest;
 import org.eclipse.aether.repository.RemoteRepository;
 
 /**
- * Base
+ * For heavyweight or lightweight that use local repository, generates classloader-model.json and repository folder
  */
 public class SourcesProcessor {
 
@@ -65,42 +65,37 @@ public class SourcesProcessor {
     boolean isHeavyWeight = !lightweightPackage;
     boolean isLightWeightUsingLocalRepository = lightweightPackage && useLocalRepository;
     if (isLightWeightUsingLocalRepository || isHeavyWeight) {
-      try {
-        ApplicationGAVModel appGAV =
-            new ApplicationGAVModel(mavenComponents.getProject().getGroupId(), mavenComponents.getProject().getArtifactId(),
-                                    mavenComponents.getProject().getVersion());
-        RepositoryGenerator repositoryGenerator =
-            new RepositoryGenerator(mavenComponents.getSession().getCurrentProject().getFile(),
-                                    mavenComponents.getOutputDirectory(),
-                                    new ArtifactInstaller(new MavenPackagerLog(mavenComponents.getLog())),
-                                    getClassLoaderModelAssembler(), appGAV);
-        ClassLoaderModel classLoaderModel =
-            repositoryGenerator.generate(lightweightPackage, useLocalRepository, prettyPrinting, testJar);
+      ApplicationGAVModel appGAV =
+          new ApplicationGAVModel(mavenComponents.getProject().getGroupId(), mavenComponents.getProject().getArtifactId(),
+                                  mavenComponents.getProject().getVersion());
+      RepositoryGenerator repositoryGenerator =
+          new RepositoryGenerator(mavenComponents.getSession().getCurrentProject().getFile(),
+                                  mavenComponents.getOutputDirectory(),
+                                  new ArtifactInstaller(new MavenPackagerLog(mavenComponents.getLog())),
+                                  getClassLoaderModelAssembler(), appGAV);
+      ClassLoaderModel classLoaderModel =
+          repositoryGenerator.generate(lightweightPackage, useLocalRepository, prettyPrinting, testJar);
 
-        for (SharedLibraryDependency sharedLibraryDependency : mavenComponents.getSharedLibraries()) {
-          classLoaderModel.getDependencies().stream()
-              .filter(dep -> dep.getArtifactCoordinates().getArtifactId().equals(sharedLibraryDependency.getArtifactId()) &&
-                  dep.getArtifactCoordinates().getGroupId().equals(sharedLibraryDependency.getGroupId()))
-              .findFirst().ifPresent(dep -> {
-                if (!validateMuleRuntimeSharedLibrary(dep.getArtifactCoordinates().getArtifactId(),
-                                                      dep.getArtifactCoordinates().getGroupId())) {
-                  dep.setShared(true);
-                }
-              });
-        }
-
-        Project project = getProject(classLoaderModel);
-        mulePluginsCompatibilityValidator.validate(getResolver(project).resolve());
-        if (isLightWeightUsingLocalRepository) {
-          classLoaderModel = new NotParameterizedClassLoaderModel(classLoaderModel);
-        }
-        ((MuleContentGenerator) getContentGenerator(testJar, lightweightPackage))
-            .createApplicationClassLoaderModelJsonFile(classLoaderModel,
-                                                       prettyPrinting);
-      } catch (Exception e) {
-        throw new Exception(format("There was an exception while creating the repository of [%s]",
-                                   mavenComponents.getProject().toString()));
+      for (SharedLibraryDependency sharedLibraryDependency : mavenComponents.getSharedLibraries()) {
+        classLoaderModel.getDependencies().stream()
+            .filter(dep -> dep.getArtifactCoordinates().getArtifactId().equals(sharedLibraryDependency.getArtifactId()) &&
+                dep.getArtifactCoordinates().getGroupId().equals(sharedLibraryDependency.getGroupId()))
+            .findFirst().ifPresent(dep -> {
+              if (!validateMuleRuntimeSharedLibrary(dep.getArtifactCoordinates().getArtifactId(),
+                                                    dep.getArtifactCoordinates().getGroupId())) {
+                dep.setShared(true);
+              }
+            });
       }
+
+      Project project = getProject(classLoaderModel);
+      mulePluginsCompatibilityValidator.validate(getResolver(project).resolve());
+      if (isLightWeightUsingLocalRepository) {
+        classLoaderModel = new NotParameterizedClassLoaderModel(classLoaderModel);
+      }
+      ((MuleContentGenerator) getContentGenerator(testJar, lightweightPackage))
+          .createApplicationClassLoaderModelJsonFile(classLoaderModel,
+                                                     prettyPrinting);
     }
   }
 

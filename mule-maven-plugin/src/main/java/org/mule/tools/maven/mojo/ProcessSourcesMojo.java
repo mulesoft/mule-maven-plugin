@@ -10,11 +10,10 @@
 
 package org.mule.tools.maven.mojo;
 
+import static java.lang.String.format;
 import org.mule.tools.api.util.MavenComponents;
 import org.mule.tools.api.util.SourcesProcessor;
-import org.mule.tools.api.validation.MulePluginsCompatibilityValidator;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -33,7 +32,6 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
   @Deprecated
   @Parameter(defaultValue = "${skipPluginCompatibilityValidation}")
   protected boolean skipPluginCompatibilityValidation = false;
-  protected final MulePluginsCompatibilityValidator mulePluginsCompatibilityValidator = new MulePluginsCompatibilityValidator();
 
   @Parameter(defaultValue = "${prettyPrinting}")
   protected boolean prettyPrinting = false;
@@ -43,8 +41,7 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
     getLog().debug("Processing sources...");
     if (skipPluginCompatibilityValidation) {
       getLog()
-          .warn(
-                "Ignoring skipPluginCompatibilityValidation property as it is deprecated. Compatibility between mule-plugin versions is always done.");
+          .warn("Ignoring skipPluginCompatibilityValidation property as it is deprecated. Compatibility between mule-plugin versions is always done.");
     }
 
     MavenComponents mavenComponents = new MavenComponents(getLog(), project, outputDirectory,
@@ -54,12 +51,14 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
                                                           remoteArtifactRepositories, classifier, additionalPluginDependencies,
                                                           projectBaseFolder);
 
+
     SourcesProcessor sourcesProcessor = new SourcesProcessor(mavenComponents);
 
     try {
       sourcesProcessor.process(prettyPrinting, lightweightPackage, useLocalRepository, testJar);
     } catch (Exception e) {
-      throw new MojoFailureException(e.getMessage());
+      String message = format("There was an exception while creating the repository of [%s]", project.toString());
+      throw new MojoFailureException(message, e);
     }
   }
 

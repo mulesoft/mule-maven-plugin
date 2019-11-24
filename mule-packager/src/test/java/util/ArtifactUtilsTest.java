@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.utils;
+package util;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,6 +18,7 @@ import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.util.ArtifactUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;

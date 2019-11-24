@@ -7,14 +7,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.maven.utils;
+package util;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.tools.maven.utils.MavenProjectInformation.getProjectInformation;
+import static org.mule.tools.api.util.MavenProjectInformation.getProjectInformation;
+
+import org.mule.tools.api.util.MavenProjectInformation;
 
 import java.util.Properties;
 

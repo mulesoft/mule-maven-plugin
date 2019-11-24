@@ -7,13 +7,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.maven.utils;
+package org.mule.tools.api.util;
 
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.ProjectInformation;
-import org.mule.tools.api.util.Project;
 import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
 import org.mule.tools.client.authentication.model.Credentials;
 import org.mule.tools.model.Deployment;

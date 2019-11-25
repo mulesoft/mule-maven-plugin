@@ -164,7 +164,7 @@ public class SourcesProcessorTest {
   }
 
   @Test
-  public void process11() throws Exception {
+  public void prettyPrinting() throws Exception {
     sourcesProcessor.process(false, false, true, true);
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());

@@ -53,8 +53,11 @@ public class ClusterConfigurator
             writer = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(f.getAbsolutePath() + "/.mule/mule-cluster.properties"), StandardCharsets.UTF_8));
             writer.write("mule.clusterSize=" + paths.length);
+            writer.newLine();
             writer.write("mule.clusterSchema=partitioned-sync2backup");
+            writer.newLine();
             writer.write("mule.clusterId=" + mules.hashCode());
+            writer.newLine();
             writer.write("mule.clusterNodeId=" + nodeNumber);
             writer.close();
         }

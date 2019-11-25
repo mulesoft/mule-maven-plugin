@@ -41,16 +41,24 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
     getLog().debug("Processing sources...");
     if (skipPluginCompatibilityValidation) {
       getLog()
-          .warn("Ignoring skipPluginCompatibilityValidation property as it is deprecated. Compatibility between mule-plugin versions is always done.");
+          .warn(
+                "Ignoring skipPluginCompatibilityValidation property as it is deprecated. Compatibility between mule-plugin versions is always done.");
     }
 
-    MavenComponents mavenComponents = new MavenComponents(getLog(), project, outputDirectory,
-                                                          session,
-                                                          sharedLibraries, projectBuilder, repositorySystem,
-                                                          localRepository,
-                                                          remoteArtifactRepositories, classifier, additionalPluginDependencies,
-                                                          projectBaseFolder);
-
+    MavenComponents mavenComponents =
+        new MavenComponents()
+            .withLog(getLog())
+            .withProject(project)
+            .withOutputDirectory(outputDirectory)
+            .withSession(session)
+            .withSharedLibraries(sharedLibraries)
+            .withProjectBuilder(projectBuilder)
+            .withRepositorySystem(repositorySystem)
+            .withLocalRepository(localRepository)
+            .withRemoteArtifactRepositories(remoteArtifactRepositories)
+            .withClassifier(classifier)
+            .withAdditionalPluginDependencies(additionalPluginDependencies)
+            .withProjectBaseFolder(projectBaseFolder);
 
     SourcesProcessor sourcesProcessor = new SourcesProcessor(mavenComponents);
 

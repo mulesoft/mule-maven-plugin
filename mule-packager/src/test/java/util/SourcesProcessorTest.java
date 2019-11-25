@@ -63,15 +63,18 @@ public class SourcesProcessorTest {
     when(session.getSystemProperties()).thenReturn(systemProperties);
 
     MavenComponents mavenComponents =
-        new MavenComponents(mock(Log.class), project,
-                            new File(temporaryFolder.getRoot(), "target"),
-                            session, new Vector<>(),
-                            mock(ProjectBuilder.class),
-                            mock(RepositorySystem.class),
-                            mock(ArtifactRepository.class),
-                            new Vector<>(), "",
-                            new Vector<>(),
-                            temporaryFolder.getRoot());
+        new MavenComponents().withLog(mock(Log.class))
+            .withProject(project)
+            .withOutputDirectory(new File(temporaryFolder.getRoot(), "target"))
+            .withSession(session)
+            .withSharedLibraries(new Vector<>())
+            .withProjectBuilder(mock(ProjectBuilder.class))
+            .withRepositorySystem(mock(RepositorySystem.class))
+            .withLocalRepository(mock(ArtifactRepository.class))
+            .withRemoteArtifactRepositories(new Vector<>())
+            .withClassifier("")
+            .withAdditionalPluginDependencies(new Vector<>())
+            .withProjectBaseFolder(temporaryFolder.getRoot());
 
     this.sourcesProcessor = new SourcesProcessor(mavenComponents);
   }

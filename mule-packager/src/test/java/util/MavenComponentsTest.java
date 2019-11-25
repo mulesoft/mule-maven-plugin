@@ -10,93 +10,59 @@
 
 package util;
 
-import static org.mockito.Mockito.mock;
 import org.mule.tools.api.util.MavenComponents;
 
-import java.io.File;
-import java.util.List;
-
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.ProjectBuilder;
-import org.apache.maven.repository.RepositorySystem;
 import org.junit.Test;
 
 public class MavenComponentsTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void nullLog() {
-    new MavenComponents(null, mock(MavenProject.class), mock(File.class), mock(MavenSession.class), mock(List.class),
-                        mock(ProjectBuilder.class), mock(RepositorySystem.class), mock(ArtifactRepository.class),
-                        mock(List.class),
-                        null, mock(List.class), mock(File.class));
+    new MavenComponents().withLog(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void nullProject() {
-    new MavenComponents(mock(Log.class), null, mock(File.class), mock(MavenSession.class), mock(List.class),
-                        mock(ProjectBuilder.class), mock(RepositorySystem.class), mock(ArtifactRepository.class),
-                        mock(List.class), null,
-                        mock(List.class), mock(File.class));
+    new MavenComponents().withProject(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void nullOutputDirectory() {
-    new MavenComponents(mock(Log.class), mock(MavenProject.class), null, mock(MavenSession.class), mock(List.class),
-                        mock(ProjectBuilder.class), mock(RepositorySystem.class), mock(ArtifactRepository.class),
-                        mock(List.class),
-                        null, mock(List.class), mock(File.class));
+    new MavenComponents().withOutputDirectory(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void nullSession() {
-    new MavenComponents(mock(Log.class), mock(MavenProject.class), mock(File.class), null, mock(List.class),
-                        mock(ProjectBuilder.class), mock(RepositorySystem.class), mock(ArtifactRepository.class),
-                        mock(List.class), null,
-                        mock(List.class), mock(File.class));
+    new MavenComponents().withSession(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void nullSharedLibraries() {
-    new MavenComponents(mock(Log.class), mock(MavenProject.class), mock(File.class), mock(MavenSession.class), null,
-                        mock(ProjectBuilder.class), mock(RepositorySystem.class),
-                        mock(ArtifactRepository.class), mock(List.class), null, mock(List.class), mock(File.class));
+    new MavenComponents().withSharedLibraries(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void nullProjectBuilder() {
-    new MavenComponents(mock(Log.class), mock(MavenProject.class), mock(File.class), mock(MavenSession.class), mock(List.class),
-                        null, mock(RepositorySystem.class),
-                        mock(ArtifactRepository.class), mock(List.class), null, mock(List.class), mock(File.class));
+    new MavenComponents().withProjectBuilder(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void nullRepositorySystem() {
-    new MavenComponents(mock(Log.class), mock(MavenProject.class), mock(File.class), mock(MavenSession.class), mock(List.class),
-                        mock(ProjectBuilder.class), null,
-                        mock(ArtifactRepository.class), mock(List.class), null, mock(List.class), mock(File.class));
+    new MavenComponents().withRepositorySystem(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void nullLocalRepository() {
-    new MavenComponents(mock(Log.class), mock(MavenProject.class), mock(File.class), mock(MavenSession.class), mock(List.class),
-                        mock(ProjectBuilder.class), mock(RepositorySystem.class),
-                        null, mock(List.class), null, mock(List.class), mock(File.class));
+    new MavenComponents().withLocalRepository(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void nullRemoteArtifactRepository() {
-    new MavenComponents(mock(Log.class), mock(MavenProject.class), mock(File.class), mock(MavenSession.class), mock(List.class),
-                        mock(ProjectBuilder.class), mock(RepositorySystem.class),
-                        mock(ArtifactRepository.class), null, null, mock(List.class), mock(File.class));
+    new MavenComponents().withRemoteArtifactRepositories(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void nullProjectBaseFolder() {
-    new MavenComponents(mock(Log.class), mock(MavenProject.class), mock(File.class), mock(MavenSession.class), mock(List.class),
-                        mock(ProjectBuilder.class), mock(RepositorySystem.class),
-                        mock(ArtifactRepository.class), mock(List.class), null, mock(List.class), null);
+    new MavenComponents().withProjectBaseFolder(null);
   }
 }

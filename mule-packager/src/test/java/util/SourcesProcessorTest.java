@@ -179,7 +179,7 @@ public class SourcesProcessorTest {
     Build buildMock = mock(Build.class);
 
     try {
-      FileUtils.copyDirectory(get("/Users/fpoblete/Desktop/test-app").toFile(), temporaryFolder.getRoot());
+      FileUtils.copyDirectory(get("src", "test", "resources", "test-app").toFile(), temporaryFolder.getRoot());
     } catch (IOException e) {
       e.printStackTrace();
     }

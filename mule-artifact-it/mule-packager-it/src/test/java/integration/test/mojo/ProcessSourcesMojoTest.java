@@ -193,6 +193,46 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
   }
 
   @Test
+  public void testProvidedMulePluginShouldBeExcludedFromApplicationClassLoaderModelEvenWithLowerVersions()
+      throws IOException, VerificationException, JSONException {
+    projectBaseDirectory = builder.createProjectBaseDir("provided-plugin-dependency", this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.executeGoal(PROCESS_SOURCES);
+
+    final String expectedProvidedPluginDependencyClassloaderModelFile =
+        "/expected-files/expected-provided-plugin-dependency-classloader-model.json";
+    final String generatedProvidedPluginDependencyClassloaderModelFile =
+        "/provided-plugin-dependency" + CLASSLOADER_MODEL_LOCATION;
+    final String expectedAPluginWithBProvidedClassLoaderModelFile =
+        "/expected-files/expected-plugin-a-with-b-provided-classloader-model.json";
+    final String generatedAPluginWithBProvidedClassLaoderModelFile =
+        "/provided-plugin-dependency/target/repository/org/mule/group/mule-plugin-a/1.0.0/classloader-model.json";
+
+    File generatedClassloaderModelFile = getFile(generatedProvidedPluginDependencyClassloaderModelFile);
+    String generatedClassloaderModelFileContent = readFileToString(generatedClassloaderModelFile);
+
+    File expectedClassloaderModelFile = getFile(expectedProvidedPluginDependencyClassloaderModelFile);
+    String expectedClassloaderModelFileContent = readFileToString(expectedClassloaderModelFile);
+
+    assertEquals("The classloader-model.json file is different from the expected",
+                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+
+    File generatedPluginAClassLoaderModelFile = getFile(generatedAPluginWithBProvidedClassLaoderModelFile);
+    String generatedPluginAClassLoaderModelFileContent = readFileToString(generatedPluginAClassLoaderModelFile);
+
+    File expectedPluginAClassloaderModelFile = getFile(expectedAPluginWithBProvidedClassLoaderModelFile);
+    String expectedPluginAClassloaderModelFileContent = readFileToString(expectedPluginAClassloaderModelFile);
+
+    assertEquals("The classloader-model.json file is different from the expected",
+                 generatedPluginAClassLoaderModelFileContent, expectedPluginAClassloaderModelFileContent, true);
+
+    verifier.verifyErrorFreeLog();
+  }
+
+
+  @Test
   public void testPrettyPrintClassLoaderModel() throws IOException, VerificationException {
     doTestPrettyPrintClassLoaderModel(true);
   }
@@ -662,6 +702,28 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
   @Test
   public void appWithSameDependencyWithDifferentClassifierAsTransitive() throws Exception {
     final String appName = "mule-application-with-same-dep-different-classifier-as-transitive";
+    processSourcesOnProject(appName);
+    String generatedClassloaderModelFileContent = getGeneratedClassloaderModelContent(appName);
+    String expectedClassLoaderModelFileContent = getExpectedClassLoaderModelContent(appName);
+    assertEquals(generatedClassloaderModelFileContent, expectedClassLoaderModelFileContent, true);
+  }
+
+  @Test
+  public void noDuplicatesInPluginClassLoaderModel() throws Exception {
+    final String appName = "mule-application-depends-on-simple-plugin";
+    final String pluginClassLoaderModelLocation =
+        "/" + appName + "/target/repository/org/mule/test/simple-plugin/1.0.0/classloader-model.json";
+    final String expectedPluginClassLaoderModelFile =
+        EXPECTED_CLASSLOADER_MODEL_FILE_ROOT_FOLDER + "expected-simple-plugin-classloader-model.json";
+    processSourcesOnProject(appName);
+    String generatedClassloaderModelFileContent = getFileContent(pluginClassLoaderModelLocation);
+    String expectedClassLoaderModelFileContent = getFileContent(expectedPluginClassLaoderModelFile);
+    assertEquals(generatedClassloaderModelFileContent, expectedClassLoaderModelFileContent, true);
+  }
+
+  @Test
+  public void libWithSameDependenciesAsPluginIsResolvedOk() throws Exception {
+    final String appName = "mule-application-depends-on-simple-plugin-and-dep";
     processSourcesOnProject(appName);
     String generatedClassloaderModelFileContent = getGeneratedClassloaderModelContent(appName);
     String expectedClassLoaderModelFileContent = getExpectedClassLoaderModelContent(appName);

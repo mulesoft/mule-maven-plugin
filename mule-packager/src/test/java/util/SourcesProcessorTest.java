@@ -14,6 +14,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import org.mule.tools.api.util.MavenComponents;
 import org.mule.tools.api.util.SourcesProcessor;
 
@@ -86,7 +88,10 @@ public class SourcesProcessorTest {
 
   @Test
   public void lightweightTestLocalRepository() throws Exception {
-    sourcesProcessor.process(true, true, true, true);
+    sourcesProcessor
+        .process(true, true, true, true, new File(temporaryFolder.getRoot(), "target"),
+                 temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
+                     .toFile());
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft", "munit")
@@ -97,7 +102,10 @@ public class SourcesProcessorTest {
 
   @Test
   public void lightweightLocalRepository() throws Exception {
-    sourcesProcessor.process(true, true, true, false);
+    sourcesProcessor
+        .process(true, true, true, false, new File(temporaryFolder.getRoot(), "target"),
+                 temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
+                     .toFile());
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertFalse(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft",
@@ -108,7 +116,10 @@ public class SourcesProcessorTest {
 
   @Test
   public void lightweightTest() throws Exception {
-    sourcesProcessor.process(true, true, false, true);
+    sourcesProcessor
+        .process(true, true, false, true, new File(temporaryFolder.getRoot(), "target"),
+                 temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
+                     .toFile());
 
     assertFalse(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertFalse(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")
@@ -117,7 +128,10 @@ public class SourcesProcessorTest {
 
   @Test
   public void lightweight() throws Exception {
-    sourcesProcessor.process(true, true, false, false);
+    sourcesProcessor
+        .process(true, true, false, false, new File(temporaryFolder.getRoot(), "target"),
+                 temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
+                     .toFile());
 
     assertFalse(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertFalse(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")
@@ -126,7 +140,10 @@ public class SourcesProcessorTest {
 
   @Test
   public void heavyweightLocalRepositoryTest() throws Exception {
-    sourcesProcessor.process(true, false, true, true);
+    sourcesProcessor
+        .process(true, false, true, true, new File(temporaryFolder.getRoot(), "target"),
+                 temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
+                     .toFile());
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft", "munit")
@@ -139,7 +156,10 @@ public class SourcesProcessorTest {
 
   @Test
   public void heavyweightLocalRepository() throws Exception {
-    sourcesProcessor.process(true, false, true, false);
+    sourcesProcessor
+        .process(true, false, true, false, new File(temporaryFolder.getRoot(), "target"),
+                 temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
+                     .toFile());
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertFalse(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft",
@@ -150,7 +170,10 @@ public class SourcesProcessorTest {
 
   @Test
   public void heavyweightTest() throws Exception {
-    sourcesProcessor.process(true, false, false, true);
+    sourcesProcessor
+        .process(true, false, false, true, new File(temporaryFolder.getRoot(), "target"),
+                 temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
+                     .toFile());
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")
@@ -159,7 +182,10 @@ public class SourcesProcessorTest {
 
   @Test
   public void heavyweight() throws Exception {
-    sourcesProcessor.process(true, false, false, false);
+    sourcesProcessor
+        .process(true, false, false, false, new File(temporaryFolder.getRoot(), "target"),
+                 temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
+                     .toFile());
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")
@@ -168,7 +194,10 @@ public class SourcesProcessorTest {
 
   @Test
   public void prettyPrinting() throws Exception {
-    sourcesProcessor.process(false, false, true, true);
+    sourcesProcessor
+        .process(false, false, true, true, new File(temporaryFolder.getRoot(), "target"),
+                 temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
+                     .toFile());
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft", "munit")

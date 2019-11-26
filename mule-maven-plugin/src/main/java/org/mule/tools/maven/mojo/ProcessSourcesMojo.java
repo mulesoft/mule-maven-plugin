@@ -11,6 +11,8 @@
 package org.mule.tools.maven.mojo;
 
 import static java.lang.String.format;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import org.mule.tools.api.util.MavenComponents;
 import org.mule.tools.api.util.SourcesProcessor;
 
@@ -63,7 +65,9 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
     SourcesProcessor sourcesProcessor = new SourcesProcessor(mavenComponents);
 
     try {
-      sourcesProcessor.process(prettyPrinting, lightweightPackage, useLocalRepository, testJar);
+      sourcesProcessor
+          .process(prettyPrinting, lightweightPackage, useLocalRepository, testJar, outputDirectory,
+                   getProjectInformation().getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile());
     } catch (Exception e) {
       String message = format("There was an exception while creating the repository of [%s]", project.toString());
       throw new MojoFailureException(message, e);

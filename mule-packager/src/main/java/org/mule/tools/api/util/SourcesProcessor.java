@@ -11,7 +11,6 @@
 package org.mule.tools.api.util;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.internal.AetherMavenClient;
@@ -59,7 +58,8 @@ public class SourcesProcessor {
     this.mavenComponents = mavenComponents;
   }
 
-  public void process(boolean prettyPrinting, boolean lightweightPackage, boolean useLocalRepository, boolean testJar)
+  public void process(boolean prettyPrinting, boolean lightweightPackage, boolean useLocalRepository, boolean testJar,
+                      File repositoryOutputDirectory, File classloaderOutputDirectory)
       throws Exception {
 
     boolean isHeavyWeight = !lightweightPackage;
@@ -69,8 +69,8 @@ public class SourcesProcessor {
           new ApplicationGAVModel(mavenComponents.getProject().getGroupId(), mavenComponents.getProject().getArtifactId(),
                                   mavenComponents.getProject().getVersion());
       RepositoryGenerator repositoryGenerator =
-          new RepositoryGenerator(mavenComponents.getSession().getCurrentProject().getFile(),
-                                  mavenComponents.getOutputDirectory(),
+          new RepositoryGenerator(mavenComponents.getProject().getFile(),
+                                  repositoryOutputDirectory,
                                   new ArtifactInstaller(new MavenPackagerLog(mavenComponents.getLog())),
                                   getClassLoaderModelAssembler(), appGAV);
       ClassLoaderModel classLoaderModel =
@@ -95,7 +95,7 @@ public class SourcesProcessor {
       }
       ((MuleContentGenerator) getContentGenerator(testJar, lightweightPackage))
           .createApplicationClassLoaderModelJsonFile(classLoaderModel,
-                                                     prettyPrinting);
+                                                     prettyPrinting, classloaderOutputDirectory);
     }
   }
 

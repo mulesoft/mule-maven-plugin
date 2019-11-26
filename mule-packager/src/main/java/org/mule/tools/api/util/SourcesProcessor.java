@@ -58,6 +58,17 @@ public class SourcesProcessor {
     this.mavenComponents = mavenComponents;
   }
 
+
+  /**
+   *
+   * @param prettyPrinting if {@code true} the classloader-model.json will be printed with pretty print mode
+   * @param lightweightPackage if {@code true} generate a lightweight structure else generate a heavyweight structure
+   * @param useLocalRepository if {@code true} generate the repository with all the application dependencies
+   * @param testJar if {@code true} repository is going to be generated with test dependencies
+   * @param repositoryOutputDirectory destination folder where the repository folder is going to be created
+   * @param classloaderOutputDirectory destination folder where the classloader-model.json file is going to be created
+   * @throws Exception
+   */
   public void process(boolean prettyPrinting, boolean lightweightPackage, boolean useLocalRepository, boolean testJar,
                       File repositoryOutputDirectory, File classloaderOutputDirectory)
       throws Exception {

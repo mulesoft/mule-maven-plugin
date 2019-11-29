@@ -7,21 +7,19 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.maven.utils;
+package org.mule.tools.api.util;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.toList;
 
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.packager.Pom;
+import org.mule.tools.api.util.ArtifactUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Resource;

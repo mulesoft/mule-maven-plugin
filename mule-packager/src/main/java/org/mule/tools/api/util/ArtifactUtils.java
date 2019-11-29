@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.maven.utils;
+package org.mule.tools.api.util;
 
 import org.apache.maven.model.Dependency;
 import org.mule.maven.client.api.model.BundleDependency;

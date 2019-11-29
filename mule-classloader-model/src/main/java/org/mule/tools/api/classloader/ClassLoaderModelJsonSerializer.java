@@ -113,6 +113,11 @@ public class ClassLoaderModelJsonSerializer {
   public static File serializeToFile(ClassLoaderModel classLoaderModel, File destinationFolder, boolean prettyPrinting) {
     File destinationFile = new File(destinationFolder, CLASSLOADER_MODEL_FILE_NAME);
     try {
+
+      if (!destinationFolder.exists()) {
+        destinationFolder.mkdirs();
+      }
+
       destinationFile.createNewFile();
       Writer writer = new FileWriter(destinationFile.getAbsolutePath());
       writer.write(serialize(classLoaderModel, prettyPrinting));

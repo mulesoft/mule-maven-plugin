@@ -22,7 +22,7 @@ import org.mule.tools.api.packager.sources.ContentGenerator;
 import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
 import org.mule.tools.api.util.Project;
 import org.mule.tools.api.validation.resolver.MulePluginResolver;
-import org.mule.tools.maven.utils.MavenProjectBuilder;
+import org.mule.tools.api.util.MavenProjectBuilder;
 
 
 /**

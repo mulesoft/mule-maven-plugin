@@ -124,6 +124,18 @@ public class MuleContentGenerator extends ContentGenerator {
   }
 
   /**
+   * It creates classloader-model.json in destinationFolder
+   *
+   * @param classLoaderModel the classloader model of the application being packaged
+   * @param prettyPrinting
+   * @param destinationFolder
+   */
+  public void createApplicationClassLoaderModelJsonFile(ClassLoaderModel classLoaderModel, boolean prettyPrinting,
+                                                        File destinationFolder) {
+    createClassLoaderModelJsonFile(classLoaderModel, destinationFolder, prettyPrinting);
+  }
+
+  /**
    * Creates a {@link ClassLoaderModel} from the JSON representation
    *
    * @param classLoaderModelDescriptor file containing the classloader model in JSON format

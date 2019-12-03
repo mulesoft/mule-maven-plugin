@@ -210,20 +210,32 @@ public class MuleContentGenerator extends ContentGenerator {
     String destinationFileName = originPath.getFileName().toString();
     copyFile(originPath, destinationPath, destinationFileName);
 
-    AbstractDefaultValuesMuleArtifactJsonGenerator generator = MULE_POLICY.equals(projectInformation.getClassifier())
-        ? new DefaultValuesPolicyMuleArtifactJsonGenerator() : new DefaultValuesMuleArtifactJsonGenerator();
+    if (MULE_POLICY.equals(projectInformation.getClassifier())) {
+      new DefaultValuesPolicyMuleArtifactJsonGenerator().generate(getMulePolicyArtifactContentResolver());
+    } else {
+      new DefaultValuesMuleArtifactJsonGenerator().generate(getMuleArtifactContentResolver());
+    }
+  }
 
-    generator.generate(getMuleArtifactContentResolver());
+  private MuleArtifactContentResolver getMulePolicyArtifactContentResolver() {
+    if (muleArtifactContentResolver == null) {
+      muleArtifactContentResolver =
+          new MulePolicyArtifactContentResolver(getProjectStructure(), projectInformation.getEffectivePom(),
+                                                projectInformation.getProject().getBundleDependencies());
+    }
+    return muleArtifactContentResolver;
   }
 
   private MuleArtifactContentResolver getMuleArtifactContentResolver() {
     if (muleArtifactContentResolver == null) {
-      ProjectStructure projectStructure =
-          new ProjectStructure(projectInformation.getProjectBaseFolder(), projectInformation.getBuildDirectory(),
-                               projectInformation.isTestProject());
-      muleArtifactContentResolver = new MuleArtifactContentResolver(projectStructure, projectInformation.getEffectivePom(),
+      muleArtifactContentResolver = new MuleArtifactContentResolver(getProjectStructure(), projectInformation.getEffectivePom(),
                                                                     projectInformation.getProject().getBundleDependencies());
     }
     return muleArtifactContentResolver;
+  }
+
+  private ProjectStructure getProjectStructure() {
+    return new ProjectStructure(projectInformation.getProjectBaseFolder(), projectInformation.getBuildDirectory(),
+                                projectInformation.isTestProject());
   }
 }

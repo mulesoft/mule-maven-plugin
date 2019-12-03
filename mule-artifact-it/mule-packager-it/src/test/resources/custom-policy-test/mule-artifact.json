@@ -1,0 +1,19 @@
+{
+  "name": "test",
+  "minMuleVersion": "4.1.1",
+  "requiredProduct": "MULE_EE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {}
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {
+      "groupId": "org.apache.maven.plugin.my.unit",
+      "artifactId": "custom-policy-test",
+      "version": "1.0.0-SNAPSHOT",
+      "classifier": "mule-policy",
+      "type": "jar"
+    }
+  }
+}

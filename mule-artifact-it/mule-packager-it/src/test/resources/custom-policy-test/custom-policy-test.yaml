@@ -1,0 +1,103 @@
+id: http-caching
+name: HTTP Caching
+supportedPoliciesVersions: '>=v1'
+description: Provides caching service for HTTP requests.
+category: Quality of service
+type: system
+resourceLevelSupported: true
+standalone: true
+requiredCharacteristics: []
+providedCharacteristics:
+  - HTTP Caching
+configuration:
+  - propertyName: httpCachingKey
+    name: HTTP Caching Key
+    description: |
+      DataWeave Expression for extracting a key from the request.
+      For reference: https://docs.mulesoft.com/mule4-user-guide/v/4.1/dataweave-variables-context and https://docs.mulesoft.com/mule4-user-guide/v/4.1/about-mule-message
+    type: expression
+    defaultValue: "#[attributes.requestPath]"
+    optional: false
+    sensitive: false
+    allowMultiple: false
+  - propertyName: maxCacheEntries
+    name: Maximum Cache Entries
+    description: Specifies the maximum number of entries to be stored in the cache.
+    type: int
+    defaultValue: 10000
+    minimumValue: 1
+    maximumValue: 2147483647
+    optional: false
+    sensitive: false
+    allowMultiple: false
+  - propertyName: ttl
+    name: Entry Time To Live (in Seconds)
+    description: The time to live for an entry before it expires.
+    type: int
+    defaultValue: 600
+    minimumValue: 1
+    maximumValue: 2592000
+    optional: false
+    sensitive: false
+    allowMultiple: false
+  - propertyName: distributed
+    name: Distributed
+    description: |
+      Enables the underlying cache to be distributed. Select this option if deployment target is a cluster or multiple cloudhub workers.
+      To use distributed caching in Cloudhub the objectStoreV2 checkbox must be checked in runtime manager application properties.
+    type: boolean
+    defaultValue: false
+    optional: false
+    sensitive: false
+    allowMultiple: false
+  - propertyName: persistCache
+    name: Persistent Cache
+    description: |
+      Indicates if the cache will be persistent across runtime restart. To use persistent caching in Cloudhub the objectStoreV2 checkbox must be checked in runtime manager application properties.
+    type: boolean
+    defaultValue: false
+    optional: false
+    sensitive: false
+    allowMultiple: false
+  - propertyName: useHttpCacheHeaders
+    name: Follow HTTP Caching directives
+    description: |
+      Enables the usage of Cache-Control header directives.
+      Supported headers are "Cache-Control" with supported values: max-age=<seconds>, s-maxage=<seconds>, no-cache and no-store; and "Expires" whose value is <date in RFC 1123 format> (E.g. "Mon, 25 Jun 2018 19:29:52 GMT").
+      It supports comma-separated multiple values.
+    type: boolean
+    defaultValue: true
+    optional: false
+    sensitive: false
+    allowMultiple: false
+  - propertyName: invalidationHeader
+    name: Invalidation Header
+    description: |
+      Name of the header to be used for the cache invalidation.
+      To invalidate an entry send a request with this header with one of the following values: invalidate, invalidate-all.
+      Invalidate-all invalidates all the key-value pairs from the cache.
+      For security reason this header is always masked.
+    type: string
+    optional: true
+    sensitive: true
+    allowMultiple: false
+  - propertyName: requestExpression
+    name: Conditional Request Caching Expression
+    description: |
+      Only the requests for which this expression is true will interact with the cache.
+      This field is a dataweave expression, for reference of available variables check the documentation cited in the HTTP Caching key description.
+    type: expression
+    defaultValue: "#[attributes.method == 'GET' or attributes.method == 'CONNECT']"
+    optional: true
+    sensitive: false
+    allowMultiple: false
+  - propertyName: responseExpression
+    name: Conditional Response Caching Expression
+    description: |
+      Only the responses for which this expression is true will be stored in the cached.
+      This field is a dataweave expression, for reference of available variables check the documentation cited in the HTTP Caching key description.
+    type: expression
+    defaultValue: "#[attributes.statusCode < 300]"
+    optional: true
+    sensitive: false
+    allowMultiple: false

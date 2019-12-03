@@ -74,6 +74,22 @@ public class InstallMojoTest extends MojoTest {
     assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
   }
 
+  @Test
+  public void testInstallMustacheXmlPolicy() throws IOException, VerificationException {
+    String artifactId = "custom-policy-test";
+    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
+    String artifactPath = verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_POLICY_CLASSIFIER);
+    File artifactFile = new File(artifactPath);
+    assertThat("Artifact already exists", !artifactFile.exists());
+    verifier.executeGoal(INSTALL);
+
+    verifier.verifyErrorFreeLog();
+
+    assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
+  }
 
 
   @Test

@@ -20,6 +20,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.hamcrest.core.StringContains;
+
+import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
@@ -38,6 +40,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.w3c.dom.Document;
 
 public class MuleArtifactContentResolverTest {
 
@@ -64,7 +67,7 @@ public class MuleArtifactContentResolverTest {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
-  private MuleArtifactContentResolver resolver;
+  protected MuleArtifactContentResolver resolver;
   private File javaFolder;
   private File muleFolder;
   private File munitFolder;
@@ -101,8 +104,8 @@ public class MuleArtifactContentResolverTest {
   public void setUp() throws IOException {
     temporaryFolder.create();
     Pom pomMock = mock(Pom.class);
-    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), false), pomMock,
-                                               new ArrayList<>());
+    resolver = newResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), false), pomMock,
+                           new ArrayList<>());
     javaFolder = new File(temporaryFolder.getRoot(), JAVA_FOLDER_LOCATION);
     muleFolder = new File(temporaryFolder.getRoot(), MULE_FOLDER_LOCATION);
     munitFolder = new File(temporaryFolder.getRoot(), MUNIT_FOLDER_LOCATION);
@@ -125,7 +128,7 @@ public class MuleArtifactContentResolverTest {
   public void muleArtifactContentResolverNullPathArgumentInConstructorTest() {
     expectedException.expect(IllegalArgumentException.class);
     expectedException.expectMessage("Project structure should not be null");
-    new MuleArtifactContentResolver(null, null, null);
+    newResolver(null, null, null);
   }
 
   @Test
@@ -188,8 +191,8 @@ public class MuleArtifactContentResolverTest {
     jar2.createNewFile();
     jar3Folder.mkdirs();
     jar3.createNewFile();
-    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true), mock(Pom.class),
-                                               new ArrayList<>());
+    resolver = newResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true), mock(Pom.class),
+                           new ArrayList<>());
     List<String> actualExportedResources = resolver.getTestExportedResources();
 
     assertThat("Exported resources does not contain all expected elements", actualExportedResources,
@@ -266,8 +269,8 @@ public class MuleArtifactContentResolverTest {
 
     commonFile.createNewFile();
 
-    resolver = new MuleArtifactContentResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true), mock(Pom.class),
-                                               new ArrayList<>());
+    resolver = newResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true), mock(Pom.class),
+                           new ArrayList<>());
     List<String> actualConfigs = resolver.getTestConfigs();
 
     assertThat("Configs does not contain all expected elements", actualConfigs,
@@ -306,7 +309,7 @@ public class MuleArtifactContentResolverTest {
   @Test
   public void hasMuleAsRootElementWithNullName() {
     when(rootElementMock.getTagName()).thenReturn(null);
-    assertThat("Method should have returned false", !resolver.hasMuleAsRootElement(null));
+    assertThat("Method should have returned false", !resolver.hasMuleAsRootElement((Document) null));
   }
 
   @Test
@@ -317,6 +320,12 @@ public class MuleArtifactContentResolverTest {
 
   @Test
   public void hasMuleAsRootElementWithNullDocument() {
-    assertThat("Method should have returned false", !resolver.hasMuleAsRootElement(null));
+    assertThat("Method should have returned false", !resolver.hasMuleAsRootElement((Document) null));
   }
+
+  protected MuleArtifactContentResolver newResolver(ProjectStructure projectStructure, Pom pomMock,
+                                                    List<BundleDependency> objects) {
+    return new MuleArtifactContentResolver(projectStructure, pomMock, objects);
+  }
+
 }

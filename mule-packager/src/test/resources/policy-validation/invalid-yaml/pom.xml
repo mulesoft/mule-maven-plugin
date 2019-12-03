@@ -16,7 +16,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>1.8</jdk.version>
-        <mule.maven.plugin.version>3.1.0</mule.maven.plugin.version>
         <exchange.groupId>bleh</exchange.groupId>
         <exchange.repositoryUrl>bleh/bleh/maven</exchange.repositoryUrl>
     </properties>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:http-policy="http://www.mulesoft.org/schema/mule/http-policy"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+               http://www.mulesoft.org/schema/mule/http-policy http://www.mulesoft.org/schema/mule/http-policy/current/mule-http-policy.xsd
+               http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
+    <http-policy:proxy name="{{{policyId}}}-custom-policy">
+        <http-policy:source>
+            <ee:transform>
+                <ee:message>
+                    <ee:set-payload>output application/json --- {"message": "Payload Set"}</ee:set-payload>
+                    <ee:set-attributes>
+                        {
+                            statusCode: 202,
+                            headers: {
+                                'WWW-Authenticate': 'Basic realm="mule-realm"'
+                            }
+                        } as Object {class: "org.mule.extension.http.api.policy.HttpPolicyResponseAttributes"}
+
+                    {{#if distributed}}
+                    </ee:set-attributes>
+                    {{else}}
+                    </ee:set-attributes>
+                    {{/if}
+
+                </ee:message>
+            </ee:transform>
+        </http-policy:source>
+    </http-policy:proxy>
+</mule>

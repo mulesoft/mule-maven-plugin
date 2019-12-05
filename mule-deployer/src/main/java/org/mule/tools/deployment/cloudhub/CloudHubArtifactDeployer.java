@@ -187,7 +187,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       application.setMuleVersion(muleVersion);
 
       Map<String, String> resolvedProperties = resolveProperties(originalApplication.getProperties(),
-              deployment.getProperties(), deployment.overrideProperties());
+                                                                 deployment.getProperties(), deployment.overrideProperties());
       application.setProperties(resolvedProperties);
 
       if (isBlank(deployment.getRegion())) {
@@ -197,9 +197,9 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       }
 
       Integer workersAmount =
-              (deployment.getWorkers() == null) ? originalApplication.getWorkers().getAmount() : deployment.getWorkers();
+          (deployment.getWorkers() == null) ? originalApplication.getWorkers().getAmount() : deployment.getWorkers();
       String workerType =
-              isBlank(deployment.getWorkerType()) ? originalApplication.getWorkers().getType().getName() : deployment.getWorkerType();
+          isBlank(deployment.getWorkerType()) ? originalApplication.getWorkers().getType().getName() : deployment.getWorkerType();
 
       application.setWorkers(getWorkers(workersAmount, workerType));
 

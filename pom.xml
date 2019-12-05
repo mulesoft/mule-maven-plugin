@@ -63,6 +63,8 @@
         <slf4j.api.version>1.8.0-beta2</slf4j.api.version>
         <commons.logging.version>1.2</commons.logging.version>
         <jdom2.version>2.0.5</jdom2.version>
+        <javax.activation.api.version>1.2.0</javax.activation.api.version>
+        <jaxb.api.version>2.3.0</jaxb.api.version>
 
         <maven.version>3.5.0</maven.version>
         <maven.compat.version>3.5.0</maven.compat.version>
@@ -267,6 +269,16 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.activation</groupId>
+                <artifactId>javax.activation-api</artifactId>
+                <version>${javax.activation.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${jaxb.api.version}</version>
             </dependency>
 
             <!-- The Plexus annotations -->

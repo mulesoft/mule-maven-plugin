@@ -125,7 +125,7 @@ public class MuleArtifactContentResolver {
     return configs;
   }
 
-  private boolean hasMuleAsRootElement(Path path) {
+  protected boolean hasMuleAsRootElement(Path path) {
     org.w3c.dom.Document doc;
     try {
       doc = generateDocument(path);

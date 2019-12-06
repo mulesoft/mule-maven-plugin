@@ -118,9 +118,12 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
    *
    * @throws DeploymentException
    */
-  public void redeployApplication() {
+  public void redeployApplication() throws DeploymentException {
     log.info("Found " + getApplicationMetadata().toString() + ". Redeploying application...");
     client.redeployApplication(getApplicationId(), getApplicationMetadata());
+    if (!deployment.getSkipDeploymentVerification()) {
+      checkApplicationHasStarted();
+    }
   }
 
   /**

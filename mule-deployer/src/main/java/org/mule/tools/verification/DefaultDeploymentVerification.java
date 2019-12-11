@@ -40,7 +40,8 @@ public class DefaultDeploymentVerification implements DeploymentVerification {
       retrier.retry(verificationStrategy);
     } catch (InterruptedException | TimeoutException e) {
       verificationStrategy.onTimeout(deployment);
-      throw new DeploymentException("Deployment has timed out", e);
+      throw new DeploymentException("Validation timed out waiting for application to start. " +
+          "Please consider increasing the deploymentTimeout property.", e);
     }
   }
 }

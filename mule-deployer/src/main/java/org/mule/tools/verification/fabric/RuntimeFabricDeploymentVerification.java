@@ -79,7 +79,7 @@ public class RuntimeFabricDeploymentVerification implements DeploymentVerificati
 
     @Override
     public void onTimeout(Deployment deployment) {
-      client.deleteDeployment(getDeploymentId(deployment));
+      return;
     }
 
     @Override

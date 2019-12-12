@@ -1,0 +1,15 @@
+@Library('lifecycle-utils@master') _
+//Library code can be found at https://github.com/mulesoft/lifecycle-pipeline-utils
+
+properties([
+    parameters([
+        string(name: 'maven', defaultValue: "M3", description: 'Maven version to be used')
+    ]),
+])
+
+def pipelineParams = [
+  "agent": "ubuntu-14.04",
+  "maven": params.maven
+]
+
+runMMPIntegrationTestsJDK11(pipelineParams)

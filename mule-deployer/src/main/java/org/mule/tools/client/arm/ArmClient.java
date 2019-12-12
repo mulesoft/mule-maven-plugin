@@ -27,10 +27,10 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
-
 import org.mule.tools.client.AbstractMuleClient;
 import org.mule.tools.client.arm.model.Application;
 import org.mule.tools.client.arm.model.Applications;
@@ -45,6 +45,9 @@ import org.mule.tools.model.anypoint.AnypointDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.utils.DeployerLog;
 
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+
 public class ArmClient extends AbstractMuleClient {
 
   private static final String API_VERSION = "v1";
@@ -57,6 +60,10 @@ public class ArmClient extends AbstractMuleClient {
   private static final String SERVERS = HYBRID_API_V1 + "/servers";
   private static final String SERVER_GROUP = HYBRID_API_V1 + "/serverGroups";
   private static final String REGISTRATION = HYBRID_API_V1 + "/servers/registrationToken";
+
+  private static final String FAILED_STATUS = "FAILED";
+  private static final String STARTED_STATUS = "STARTED";
+  private static final String DEPLOYMENT_IN_PROGRESS = "UPDATED";
 
   private boolean armInsecure;
 
@@ -75,7 +82,15 @@ public class ArmClient extends AbstractMuleClient {
 
   public Boolean isStarted(int applicationId) {
     Application application = getApplication(applicationId);
-    return "STARTED".equals(application.data.lastReportedStatus);
+    if (application != null) {
+      if (StringUtils.equalsIgnoreCase(application.data.desiredStatus, DEPLOYMENT_IN_PROGRESS)) {
+        return false;
+      } else if (containsIgnoreCase(application.data.lastReportedStatus, FAILED_STATUS)) {
+        throw new IllegalStateException("Deployment failed");
+      }
+      return equalsIgnoreCase(STARTED_STATUS, application.data.lastReportedStatus);
+    }
+    return false;
   }
 
   public Application getApplication(int applicationId) {

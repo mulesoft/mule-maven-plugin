@@ -112,10 +112,11 @@ public class ArmArtifactDeployerTest {
   }
 
   @Test
-  public void redeployApplicationTest() {
+  public void redeployApplicationTest() throws DeploymentException {
     armArtifactDeployerSpy.redeployApplication();
 
     verify(clientMock).redeployApplication(FAKE_APPLICATION_ID, metadataMock);
+    verify(armArtifactDeployerSpy).checkApplicationHasStarted();
     verify(clientMock, never()).deployApplication(metadataMock);
     verify(clientMock, never()).undeployApplication(metadataMock);
   }

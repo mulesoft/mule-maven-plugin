@@ -45,7 +45,7 @@ public class ArmDeploymentVerification implements DeploymentVerification {
 
     @Override
     public Consumer<Deployment> onTimeout() {
-      return deployment -> client.undeployApplication(applicationId);
+      return deployment -> client.getApplication(applicationId);
     }
   }
 }

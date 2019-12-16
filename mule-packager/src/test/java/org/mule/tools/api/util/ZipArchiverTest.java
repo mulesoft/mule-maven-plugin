@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.zip.ZipFile;
@@ -31,7 +32,9 @@ public class ZipArchiverTest {
   @Before
   public void setUp() throws Exception {
     fileName = temp.getRoot().getAbsolutePath() + File.separator + "test-file.zip";
-    metaInfPath = Paths.get(getClass().getClassLoader().getResource("app-archiver/META-INF").toURI().getPath());
+    URI uri = getClass().getClassLoader().getResource("app-archiver/META-INF").toURI();
+    String mainPath = Paths.get(uri).toString();
+    metaInfPath = Paths.get(mainPath);
   }
 
   @Test

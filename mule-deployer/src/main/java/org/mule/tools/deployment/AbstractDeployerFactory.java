@@ -94,7 +94,7 @@ public abstract class AbstractDeployerFactory {
         case MULE_CLASSIFIER:
           return new ArmApplicationDeployer(deployment, log);
         default:
-          throw new RuntimeException("Deployment not supported: " + deployment.getClass().getSimpleName());
+          throw new RuntimeException("Packaging not supported: " + deployment.getPackaging());
       }
     }
   }
@@ -112,7 +112,7 @@ public abstract class AbstractDeployerFactory {
         case MULE_CLASSIFIER:
           return new AgentApplicationDeployer(deployment, log);
         default:
-          throw new RuntimeException("Deployment not supported: " + deployment.getClass().getSimpleName());
+          throw new RuntimeException("Packaging not supported: " + deployment.getPackaging());
       }
     }
   }
@@ -130,7 +130,7 @@ public abstract class AbstractDeployerFactory {
         case MULE_CLASSIFIER:
           return new StandaloneApplicationDeployer(deployment, log);
         default:
-          throw new RuntimeException("Deployment not supported: " + deployment.getClass().getSimpleName());
+          throw new RuntimeException("Packaging not supported: " + deployment.getPackaging());
       }
     }
   }
@@ -148,7 +148,7 @@ public abstract class AbstractDeployerFactory {
         case MULE_CLASSIFIER:
           return new CloudHubApplicationDeployer(deployment, log);
         default:
-          throw new RuntimeException("Deployment not supported: " + deployment.getClass().getSimpleName());
+          throw new RuntimeException("Packaging not supported: " + deployment.getPackaging());
       }
     }
   }
@@ -166,7 +166,7 @@ public abstract class AbstractDeployerFactory {
         case MULE_CLASSIFIER:
           return new RuntimeFabricApplicationDeployer(deployment, log);
         default:
-          throw new RuntimeException("Deployment not supported: " + deployment.getClass().getSimpleName());
+          throw new RuntimeException("Packaging not supported: " + deployment.getPackaging());
       }
     }
   }

@@ -235,7 +235,6 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     return originalProperties;
   }
 
-
   private Workers getWorkers(Integer amount, String type) {
     Workers workers = new Workers();
     workers.setAmount(amount);

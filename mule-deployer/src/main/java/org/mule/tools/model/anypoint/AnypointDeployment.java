@@ -29,10 +29,16 @@ public abstract class AnypointDeployment extends Deployment {
   protected String password;
 
   @Parameter
+  protected String authToken;
+
+  @Parameter
   protected String environment;
 
   @Parameter
   protected String businessGroup;
+
+  @Parameter
+  protected String businessGroupId;
 
   @Parameter
   protected String uri;
@@ -73,6 +79,19 @@ public abstract class AnypointDeployment extends Deployment {
   }
 
   /**
+   * Anypoint Platform Pre-authenticated bearer token.
+   *
+   * @since 3.3.0
+   */
+  public String getAuthToken() {
+    return this.authToken;
+  }
+
+  public void setAuthToken(String authToken) {
+    this.authToken = authToken;
+  }
+
+  /**
    * Anypoint environment name.
    *
    * @since 2.0
@@ -83,6 +102,19 @@ public abstract class AnypointDeployment extends Deployment {
 
   public void setEnvironment(String environment) {
     this.environment = environment;
+  }
+
+  /**
+   * Business group Id for deploymentConfiguration.
+   *
+   * @since 2.1
+   */
+  public String getBusinessGroupId() {
+    return businessGroupId;
+  }
+
+  public void setBusinessGroupId(String businessGroupId) {
+    this.businessGroupId = businessGroupId;
   }
 
   /**
@@ -188,6 +220,11 @@ public abstract class AnypointDeployment extends Deployment {
     String username = getProperty("anypoint.username");
     if (isNotBlank(username)) {
       setUsername(username);
+    }
+
+    String authToken = getProperty("anypoint.authToken");
+    if (isNotBlank(authToken)) {
+      setAuthToken(authToken);
     }
   }
 }

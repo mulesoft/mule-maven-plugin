@@ -15,4 +15,4 @@ def pipelineParams = [
   "projectKey": "mule-maven-plugin"
 ]
 
-build(pipelineParams)
+buildMMP(pipelineParams)

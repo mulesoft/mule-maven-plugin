@@ -131,6 +131,7 @@ public class DefaultValuesMuleArtifactJsonGenerator {
     // setBuilderWithDefaultExportedPackagesValue(builder, muleArtifactContentResolver);
     setBuilderWithDefaultExportedResourcesValue(builder, muleArtifactContentResolver);
     setBuilderWithIncludeTestDependencies(builder, muleArtifactContentResolver);
+    setBuilderWithDefaultSecureProperties(builder, originalMuleArtifact);
   }
 
   protected static void setBuilderWithIncludeTestDependencies(MuleApplicationModel.MuleApplicationModelBuilder builder,
@@ -141,6 +142,21 @@ public class DefaultValuesMuleArtifactJsonGenerator {
       Map<String, Object> attributesCopy = getUpdatedAttributes(descriptorLoader, "includeTestDependencies", "true");
       builder.withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(descriptorLoader.getId(), attributesCopy));
     }
+  }
+
+  /**
+   * Sets the builder with an empty list of secure properties if not set in originalMuleArtifact
+   *
+   * @param builder
+   * @param originalMuleArtifact
+   */
+  protected static void setBuilderWithDefaultSecureProperties(MuleApplicationModel.MuleApplicationModelBuilder builder,
+                                                              MuleApplicationModel originalMuleArtifact) {
+    List<String> secureProperties = originalMuleArtifact.getSecureProperties();
+    if (secureProperties == null) {
+      secureProperties = new ArrayList<>();
+    }
+    builder.setSecureProperties(secureProperties);
   }
 
   /**

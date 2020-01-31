@@ -25,8 +25,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.mule.tools.client.cloudhub.model.Application;
+import org.mule.tools.client.cloudhub.model.Deployment;
+import org.mule.tools.client.cloudhub.model.DeploymentLogRequest;
 import org.mule.tools.client.cloudhub.model.MuleVersion;
 import org.mule.tools.client.core.exception.ClientException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
@@ -39,7 +40,7 @@ public class CloudHubClientTestCase {
   private static final String PASSWORD = System.getProperty("password");
 
   private static final String REGION = "us-east-1";
-  private static final String MULE_VERSION = "4.0.0";
+  private static final String MULE_VERSION = "4.2.0";
   private static final String ENVIRONMENT = "Production";
 
   private static final String BASE_DOMAIN_NAME = "test-app-%s";
@@ -140,6 +141,20 @@ public class CloudHubClientTestCase {
     verifyAppExists(appName);
 
     cloudHubClient.deleteApplications(appName);
+  }
+
+  @Test
+  public void getLogsForDeployment() {
+    Application application = cloudHubClient.createApplication(baseApplication, applicationFile);
+    cloudHubClient.startApplications(appName);
+
+    Deployment deployment = cloudHubClient.getDeployments(application).stream().findAny()
+        .orElseThrow(() -> new AssertionError("No deployments found for application"));
+    DeploymentLogRequest logRequest = new DeploymentLogRequest();
+    logRequest.setDeploymentId(deployment.getDeploymentId());
+    logRequest.setStartTime(deployment.getCreateTime().getTime());
+
+    cloudHubClient.getLogs(application, logRequest);
   }
 
   private void verifyAppDoesntExist(String appName) {

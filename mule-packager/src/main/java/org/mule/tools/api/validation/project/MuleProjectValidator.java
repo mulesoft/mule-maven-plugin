@@ -63,8 +63,7 @@ public class MuleProjectValidator extends AbstractProjectValidator {
     if (projectInformation.getDeployments() == null || projectInformation.getDeployments().isEmpty()) {
       deploymentConfiguration = Optional.empty();
     } else {
-      deploymentConfiguration = Optional
-          .ofNullable(projectInformation.getDeployments().stream().filter(Objects::nonNull).findFirst().orElse(null));
+      deploymentConfiguration = projectInformation.getDeployments().stream().filter(Objects::nonNull).findFirst();
     }
     this.deploymentValidator = new ProjectDeploymentValidator(projectInformation);
 

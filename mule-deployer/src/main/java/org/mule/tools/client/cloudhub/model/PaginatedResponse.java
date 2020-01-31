@@ -15,7 +15,7 @@ import java.util.List;
  * @author Mulesoft Inc.
  * @since 3.2.0
  */
-public class PaginatedResponse<T extends SupportedVersion> {
+public class PaginatedResponse<T> {
 
   private List<T> data;
   private Integer total;

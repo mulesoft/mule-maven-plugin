@@ -101,11 +101,11 @@ public class ProxyConfiguration {
     proxy.setHost(host);
     proxy.setUsername(username);
 
-    if (port != null & password != null) {
+    if (port != null && password != null) {
       proxy.setPort(Integer.parseInt(port));
       proxy.setPassword(password);
     } else {
-      throw new NoSuchFieldException("Missing proxy configuration.");
+      log.warn("Missing proxy credentials.");
     }
     return proxy;
   }

@@ -101,12 +101,18 @@ public class ProxyConfiguration {
     proxy.setHost(host);
     proxy.setUsername(username);
 
-    if (port != null && password != null) {
-      proxy.setPort(Integer.parseInt(port));
+    if (!StringUtils.isBlank(password)) {
       proxy.setPassword(password);
     } else {
-      log.warn("Missing proxy credentials.");
+      log.warn("Proxy password was not defined.");
     }
+
+    if (!StringUtils.isBlank(port)) {
+      proxy.setPort(Integer.parseInt(port));
+    } else {
+      log.warn("Proxy port was not defined.");
+    }
+
     return proxy;
   }
 

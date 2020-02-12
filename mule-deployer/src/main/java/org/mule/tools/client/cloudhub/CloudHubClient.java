@@ -29,10 +29,12 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
-
 import org.mule.tools.client.AbstractMuleClient;
 import org.mule.tools.client.cloudhub.model.Application;
+import org.mule.tools.client.cloudhub.model.Deployment;
+import org.mule.tools.client.cloudhub.model.DeploymentLogRequest;
 import org.mule.tools.client.cloudhub.model.DomainAvailability;
+import org.mule.tools.client.cloudhub.model.LogRecord;
 import org.mule.tools.client.cloudhub.model.PaginatedResponse;
 import org.mule.tools.client.cloudhub.model.SupportedVersion;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
@@ -58,6 +60,8 @@ public class CloudHubClient extends AbstractMuleClient {
 
   public static final String APPLICATIONS_PATH = BASE_API_VERSION_PATH + "/applications";
   public static final String A_APPLICATION_PATH = APPLICATIONS_PATH + "/%s";
+  public static final String A_APPLICATION_LOGS = A_APPLICATION_PATH + "/logs";
+  public static final String DEPLOYMENTS_PATH = APPLICATIONS_PATH + "/%s/deployments";
 
   public CloudHubClient(CloudHubDeployment cloudhubDeployment, DeployerLog log) {
     super(cloudhubDeployment, log);
@@ -213,6 +217,43 @@ public class CloudHubClient extends AbstractMuleClient {
     PaginatedResponse<SupportedVersion> paginatedResponse = readJsonEntity(response, type);
 
     return paginatedResponse.getData();
+  }
+
+  /**
+   * Retrieve the list of {@link Deployment} for an {@link Application}
+   * 
+   * @param application the application
+   * @return a list of {@link Deployment}
+   */
+  public List<Deployment> getDeployments(Application application) {
+    checkArgument(application != null, "The application must not be null.");
+
+    Response response = get(baseUri, format(DEPLOYMENTS_PATH, application.getDomain()));
+
+    checkResponseStatus(response, OK);
+
+    Type type = new TypeToken<PaginatedResponse<Deployment>>() {}.getType();
+    PaginatedResponse<Deployment> paginatedResponse = readJsonEntity(response, type);
+
+    return paginatedResponse.getData();
+  }
+
+  /**
+   * Retrieves the logs records from an {@link Application} given a {@link DeploymentLogRequest}
+   *
+   * @param application the application
+   * @param deploymentLogRequest the specific request filter for the logs
+   * @return a list of {@link LogRecord}
+   */
+  public List<LogRecord> getLogs(Application application, DeploymentLogRequest deploymentLogRequest) {
+    checkArgument(deploymentLogRequest != null, "The log request must not be null.");
+    checkArgument(application != null, "The application must not be null.");
+
+    Response response = post(baseUri, format(A_APPLICATION_LOGS, application.getDomain()), deploymentLogRequest);
+
+    checkResponseStatus(response, OK);
+
+    return response.readEntity(new GenericType<List<LogRecord>>() {});
   }
 
   private Entity<MultiPart> getMultiPartEntity(Application application, File file) {

@@ -39,6 +39,9 @@ public class CloudHubDeployment extends AnypointDeployment {
   @Parameter
   protected Integer waitBeforeValidation = 6000;
 
+  @Parameter
+  protected Boolean applyLatestRuntimePatch = false;
+
   /**
    * Region to deploy the application in Cloudhub.
    *
@@ -110,6 +113,19 @@ public class CloudHubDeployment extends AnypointDeployment {
 
   public void setWaitBeforeValidation(Integer time) {
     this.waitBeforeValidation = time;
+  }
+
+  /**
+   * Apply latest runtime patch in Cloudhub.
+   *
+   * @since 3.4.0
+   */
+  public Boolean getApplyLatestRuntimePatch() {
+    return applyLatestRuntimePatch;
+  }
+
+  public void setApplyLatestRuntimePatch(Boolean applyLatestRuntimePatch) {
+    this.applyLatestRuntimePatch = applyLatestRuntimePatch;
   }
 
   public void setEnvironmentSpecificValues() throws DeploymentException {

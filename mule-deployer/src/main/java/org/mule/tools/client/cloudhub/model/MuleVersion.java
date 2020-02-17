@@ -21,6 +21,8 @@ public class MuleVersion {
   private String vpnSupported;
   private Boolean monitoringSupported;
   private Boolean persistentQueuesSupported;
+  private String updateId;
+  private String latestUpdateId;
 
   public String getState() {
     return state;
@@ -68,5 +70,21 @@ public class MuleVersion {
 
   public void setPersistentQueuesSupported(Boolean persistentQueuesSupported) {
     this.persistentQueuesSupported = persistentQueuesSupported;
+  }
+
+  public String getUpdateId() {
+    return updateId;
+  }
+
+  public void setUpdateId(String updateId) {
+    this.updateId = updateId;
+  }
+
+  public String getLatestUpdateId() {
+    return latestUpdateId;
+  }
+
+  public void setLatestUpdateId(String latestUpdateId) {
+    this.latestUpdateId = latestUpdateId;
   }
 }

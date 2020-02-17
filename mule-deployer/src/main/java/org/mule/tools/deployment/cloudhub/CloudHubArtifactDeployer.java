@@ -181,10 +181,6 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     if (originalApplication != null) {
       application.setDomain(deployment.getApplicationName());
 
-      MuleVersion muleVersion = new MuleVersion();
-      muleVersion.setVersion(deployment.getMuleVersion().get());
-      application.setMuleVersion(muleVersion);
-
       Map<String, String> resolvedProperties = resolveProperties(originalApplication.getProperties(),
                                                                  deployment.getProperties(), deployment.overrideProperties());
       application.setProperties(resolvedProperties);
@@ -201,6 +197,16 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
           isBlank(deployment.getWorkerType()) ? originalApplication.getWorkers().getType().getName() : deployment.getWorkerType();
 
       application.setWorkers(getWorkers(workersAmount, workerType));
+
+      MuleVersion muleVersion = new MuleVersion();
+      muleVersion.setVersion(deployment.getMuleVersion().get());
+
+      if (deployment.getApplyLatestRuntimePatch()
+          && originalApplication.getMuleVersion().getVersion().equals(deployment.getMuleVersion().get())) {
+        muleVersion.setUpdateId(originalApplication.getMuleVersion().getLatestUpdateId());
+      }
+
+      application.setMuleVersion(muleVersion);
 
     } else {
       application.setDomain(deployment.getApplicationName());

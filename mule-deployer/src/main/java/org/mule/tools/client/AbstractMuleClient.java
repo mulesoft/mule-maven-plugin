@@ -210,7 +210,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
 
 
   public String getOrgId() {
-    return getBusinessGroupIdByBusinessGroupPath();
+    return businessGroupId != null ? businessGroupId : getBusinessGroupIdByBusinessGroupPath();
   }
 
   // TODO use AuthenticationServiceClient

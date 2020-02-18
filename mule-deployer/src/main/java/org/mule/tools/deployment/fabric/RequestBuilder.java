@@ -33,6 +33,7 @@ public class RequestBuilder {
   private RuntimeFabricClient client;
   private static final String AGENT_INFO = "agentInfo";
   private static final String NAME = "name";
+  private static final String DOMAIN_WILDCARD = "*";
 
   protected RequestBuilder(RuntimeFabricDeployment deployment, RuntimeFabricClient client) {
     this.deployment = deployment;
@@ -86,7 +87,20 @@ public class RequestBuilder {
     } else {
       throw new DeploymentException("Could not resolve tag for this mule version");
     }
+    String url = resolveUrl(settings, targetId);
+    resolvedMuleVersionDeploymentSettings.setPublicUrl(url);
+
     return resolvedMuleVersionDeploymentSettings;
+  }
+
+  private String resolveUrl(RuntimeFabricDeploymentSettings deploymentSettings, String targetId) {
+    JsonArray domains = client.getDomainInfo(targetId);
+    if (deploymentSettings.getPublicUrl() == null && domains.size() > 0) {
+      String domain = domains.get(0).getAsString();
+      return domain.replace(DOMAIN_WILDCARD, deployment.getApplicationName());
+    } else {
+      return deploymentSettings.getPublicUrl();
+    }
   }
 
   private String resolveTag(String targetId, String muleVersion) {

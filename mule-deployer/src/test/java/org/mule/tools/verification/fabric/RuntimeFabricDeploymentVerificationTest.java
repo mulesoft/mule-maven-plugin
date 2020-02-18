@@ -69,6 +69,12 @@ public class RuntimeFabricDeploymentVerificationTest {
   }
 
   @Test
+  public void assertDeploymentStartedTrue() throws DeploymentException {
+    deploymentDetailedResponse.status = "STARTED";
+    verification.assertDeployment(deployment); // Should pass without throwing exception
+  }
+
+  @Test
   public void assertDeploymentFailed() throws DeploymentException {
     expectedException.expect(IllegalStateException.class);
     expectedException.expectMessage("Deployment failed");

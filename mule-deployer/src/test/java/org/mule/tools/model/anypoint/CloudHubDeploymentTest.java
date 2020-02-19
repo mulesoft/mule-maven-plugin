@@ -63,4 +63,10 @@ public class CloudHubDeploymentTest {
     assertThat("The default value for pepe is not zero",
                deploymentSpy.getWaitBeforeValidation(), equalTo(6000));
   }
+
+  @Test
+  public void defaultApplyLatestRuntimePatch() {
+    assertThat("The default value for apply patch property must be false",
+               deploymentSpy.getApplyLatestRuntimePatch(), equalTo(false));
+  }
 }

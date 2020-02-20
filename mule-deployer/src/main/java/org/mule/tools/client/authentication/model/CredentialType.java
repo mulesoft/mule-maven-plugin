@@ -14,5 +14,5 @@ package org.mule.tools.client.authentication.model;
  * @since 3.3.0
  */
 public enum CredentialType {
-  user, token
+  user, token, connectedApp
 }

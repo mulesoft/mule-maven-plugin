@@ -25,6 +25,7 @@ import org.mule.tools.client.arm.model.Environments;
 import org.mule.tools.client.arm.model.Organization;
 import org.mule.tools.client.arm.model.UserInfo;
 import org.mule.tools.client.authentication.model.Credentials;
+import org.mule.tools.client.authentication.model.ConnectedAppCredentials;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ public class AuthenticationServiceClient extends AbstractClient {
 
   public static final String BASE = "/accounts/api";
 
+  public static final String TOKEN = BASE + "/v2/oauth2/token";
 
   public static final String ME = BASE + "/me";
   public static final String ORGANIZATIONS = BASE + "/organizations";
@@ -82,6 +84,18 @@ public class AuthenticationServiceClient extends AbstractClient {
     return authorizationResponse.access_token;
   }
 
+  //Adding support for Connected apps
+  public String getBearerTokenForConnectedApp(ConnectedAppCredentials connectedApp) {
+    AuthorizationResponse authorizationResponse = loginWithConnectedApp(connectedApp);
+
+    if (saveState) {
+      bearerToken = authorizationResponse.access_token;
+    }
+
+    return authorizationResponse.access_token;
+  }
+
+
   public UserInfo getMe() {
     UserInfo userInfo = get(baseUri, ME, UserInfo.class);
 
@@ -114,6 +128,19 @@ public class AuthenticationServiceClient extends AbstractClient {
     Entity<String> credentialsEntity = Entity.json(new Gson().toJson(credentials));
 
     Response response = post(baseUri, LOGIN, credentialsEntity);
+
+    checkResponseStatus(response);
+
+    return response.readEntity(AuthorizationResponse.class);
+  }
+
+  /*
+  Support for Connected Apps
+  */
+  private AuthorizationResponse loginWithConnectedApp(ConnectedAppCredentials credentials) {
+    Entity<String> credentialsEntity = Entity.json(new Gson().toJson(credentials));
+
+    Response response = post(baseUri, TOKEN, credentialsEntity);
 
     checkResponseStatus(response);
 

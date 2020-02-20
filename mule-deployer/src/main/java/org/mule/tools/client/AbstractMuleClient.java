@@ -23,6 +23,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import org.mule.tools.client.authentication.model.ConnectedAppCredentials;
 import org.mule.tools.client.core.AbstractClient;
 import org.mule.tools.client.arm.model.Environment;
 import org.mule.tools.client.arm.model.Environments;
@@ -74,8 +75,13 @@ public abstract class AbstractMuleClient extends AbstractClient {
 
     if (!isEmpty(anypointDeployment.getAuthToken())) {
       this.credentials = new AnypointToken(anypointDeployment.getAuthToken());
-    } else {
+    } else if (!isEmpty(anypointDeployment.getUsername()) && !isEmpty(anypointDeployment.getPassword())) {
       this.credentials = new Credentials(anypointDeployment.getUsername(), anypointDeployment.getPassword());
+    } //Adding support for Connected apps
+    else {
+      this.credentials = new ConnectedAppCredentials(anypointDeployment.getConnectedAppClientId(),
+                                                     anypointDeployment.getConnectedAppClientSecret(),
+                                                     anypointDeployment.getConnectedAppGrantType());
     }
 
     this.authenticationServiceClient = new AuthenticationServiceClient(baseUri);
@@ -308,6 +314,10 @@ public abstract class AbstractMuleClient extends AbstractClient {
         case user:
           Credentials creds = (Credentials) credentials;
           bearerToken = authenticationServiceClient.getBearerToken(creds);
+          break;
+        case connectedApp:
+          ConnectedAppCredentials connectedApp = (ConnectedAppCredentials) credentials;
+          bearerToken = authenticationServiceClient.getBearerTokenForConnectedApp(connectedApp);
           break;
         case token:
           bearerToken = ((AnypointToken) credentials).getToken();

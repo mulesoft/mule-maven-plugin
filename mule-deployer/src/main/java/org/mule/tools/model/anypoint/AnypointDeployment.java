@@ -33,6 +33,15 @@ public abstract class AnypointDeployment extends Deployment {
   protected String password;
 
   @Parameter
+  protected String connectedAppClientId;
+
+  @Parameter
+  protected String connectedAppClientSecret;
+
+  @Parameter
+  protected String connectedAppGrantType;
+
+  @Parameter
   protected String authToken;
 
   @Parameter
@@ -81,6 +90,30 @@ public abstract class AnypointDeployment extends Deployment {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public String getConnectedAppClientId() {
+    return connectedAppClientId;
+  }
+
+  public void setConnectedAppClientId(String clientId) {
+    this.connectedAppClientId = clientId;
+  }
+
+  public String getConnectedAppClientSecret() {
+    return connectedAppClientSecret;
+  }
+
+  public void setConnectedAppClientSecret(String clientSecret) {
+    this.connectedAppClientSecret = clientSecret;
+  }
+
+  public String getConnectedAppGrantType() {
+    return connectedAppGrantType;
+  }
+
+  public void setConnectedAppGrantType(String connectedAppGrantType) {
+    this.connectedAppGrantType = connectedAppGrantType;
   }
 
   /**

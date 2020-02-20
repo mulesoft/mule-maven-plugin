@@ -11,7 +11,7 @@ package org.mule.tools.client.authentication.model;
 
 /**
  * @author Mulesoft Inc.
- * @since 3.3.0
+ * @since 3.4.0
  */
 public class ConnectedAppCredentials extends AnypointCredential {
 
@@ -20,7 +20,6 @@ public class ConnectedAppCredentials extends AnypointCredential {
   private final String grant_type;
 
 
-  /* Adding support for connected Apps */
   public ConnectedAppCredentials(String clientId, String clientSecret, String grantType) {
     this.client_id = clientId;
     this.client_secret = clientSecret;

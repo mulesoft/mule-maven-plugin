@@ -75,13 +75,12 @@ public abstract class AbstractMuleClient extends AbstractClient {
 
     if (!isEmpty(anypointDeployment.getAuthToken())) {
       this.credentials = new AnypointToken(anypointDeployment.getAuthToken());
-    } else if (!isEmpty(anypointDeployment.getUsername()) && !isEmpty(anypointDeployment.getPassword())) {
-      this.credentials = new Credentials(anypointDeployment.getUsername(), anypointDeployment.getPassword());
-    } //Adding support for Connected apps
-    else {
+    } else if (!emptyConnectedAppsCredentials(anypointDeployment)) {
       this.credentials = new ConnectedAppCredentials(anypointDeployment.getConnectedAppClientId(),
                                                      anypointDeployment.getConnectedAppClientSecret(),
                                                      anypointDeployment.getConnectedAppGrantType());
+    } else {
+      this.credentials = new Credentials(anypointDeployment.getUsername(), anypointDeployment.getPassword());
     }
 
     this.authenticationServiceClient = new AuthenticationServiceClient(baseUri);
@@ -341,5 +340,10 @@ public abstract class AbstractMuleClient extends AbstractClient {
       }
     }
     return suborganizationIds;
+  }
+
+  private Boolean emptyConnectedAppsCredentials(AnypointDeployment deployment) {
+    return isEmpty(deployment.getConnectedAppClientId()) && isEmpty(deployment.getConnectedAppClientSecret())
+        && isEmpty(deployment.getConnectedAppGrantType());
   }
 }

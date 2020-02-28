@@ -15,6 +15,8 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.StringUtils;
 
@@ -138,7 +140,12 @@ public class AuthenticationServiceClient extends AbstractClient {
   Support for Connected Apps
   */
   private AuthorizationResponse loginWithConnectedApp(ConnectedAppCredentials credentials) {
-    Entity<String> credentialsEntity = Entity.json(new Gson().toJson(credentials));
+
+    Gson gson = new GsonBuilder()
+        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+        .create();
+
+    Entity<String> credentialsEntity = Entity.json(gson.toJson(credentials));
 
     Response response = post(baseUri, TOKEN, credentialsEntity);
 

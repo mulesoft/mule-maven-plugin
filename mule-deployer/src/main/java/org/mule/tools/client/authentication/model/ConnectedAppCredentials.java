@@ -15,28 +15,28 @@ package org.mule.tools.client.authentication.model;
  */
 public class ConnectedAppCredentials extends AnypointCredential {
 
-  private final String client_id;
-  private final String client_secret;
-  private final String grant_type;
+  private final String clientId;
+  private final String clientSecret;
+  private final String grantType;
 
 
   public ConnectedAppCredentials(String clientId, String clientSecret, String grantType) {
-    this.client_id = clientId;
-    this.client_secret = clientSecret;
-    this.grant_type = grantType;
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
+    this.grantType = grantType;
   }
 
 
-  public String getClient_id() {
-    return client_id;
+  public String getClientId() {
+    return clientId;
   }
 
-  public String getClient_secret() {
-    return client_secret;
+  public String getClientSecret() {
+    return clientSecret;
   }
 
-  public String getGrant_type() {
-    return grant_type;
+  public String getGrantType() {
+    return grantType;
   }
 
   public CredentialType credentialType() {

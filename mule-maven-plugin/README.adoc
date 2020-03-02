@@ -159,6 +159,37 @@ To deploy your application to CloudHub:
 </plugin>
 ----
 
+== Connected Apps Support
+
+To use Connected Apps instead of Anypoint platform account (username/password) for deployments, simply swap username and password elements with connected app details:
+
+<connectedAppClientId>${connectedApp.clientId}</connectedAppClientId>
+<connectedAppClientSecret>${connectedApp.clientSecret}</connectedAppClientSecret>
+<connectedAppGrantType>client_credentials</connectedAppGrantType>
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools.maven</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <version>3.0.0</version>
+    <extensions>true</extensions>
+    <configuration>
+        <cloudHubDeployment>
+            <connectedAppClientId>${connectedApp.clientId}</connectedAppClientId>
+            <connectedAppClientSecret>${connectedApp.clientSecret}</connectedAppClientSecret>
+            <connectedAppGrantType>client_credentials</connectedAppGrantType>
+            <environment>Production</environment>
+            <applicationName>${cloudhub.application.name}</applicationName>
+            <muleVersion>${mule.version}</muleVersion> <!-- This is the runtime version as it appears on the CloudHub interface -->
+            <properties>
+                <key>value</key>
+            </properties>
+        </cloudHubDeployment>
+    </configuration>
+</plugin>
+----
+
 === Business group selection
 
 In both CloudHub and Anypoint Runtime Manager deployment you can select a Business Group other than your root Organization. In the example below the plugin is configured to deploy to a business group called **devops** which is under the **engineering** business group. If your business group name includes a backslash, you can escape it with backslash.
@@ -207,5 +238,3 @@ You can make the plugin deploy to an existing Mule server, using the API provide
 ----
 
 The _uri_ parameter is the endpoint of the REST API of the Agent.
-
-

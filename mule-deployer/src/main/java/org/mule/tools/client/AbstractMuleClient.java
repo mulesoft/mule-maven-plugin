@@ -23,6 +23,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import org.mule.tools.client.authentication.model.ConnectedAppCredentials;
 import org.mule.tools.client.core.AbstractClient;
 import org.mule.tools.client.arm.model.Environment;
 import org.mule.tools.client.arm.model.Environments;
@@ -74,6 +75,10 @@ public abstract class AbstractMuleClient extends AbstractClient {
 
     if (!isEmpty(anypointDeployment.getAuthToken())) {
       this.credentials = new AnypointToken(anypointDeployment.getAuthToken());
+    } else if (!emptyConnectedAppsCredentials(anypointDeployment)) {
+      this.credentials = new ConnectedAppCredentials(anypointDeployment.getConnectedAppClientId(),
+                                                     anypointDeployment.getConnectedAppClientSecret(),
+                                                     anypointDeployment.getConnectedAppGrantType());
     } else {
       this.credentials = new Credentials(anypointDeployment.getUsername(), anypointDeployment.getPassword());
     }
@@ -309,6 +314,10 @@ public abstract class AbstractMuleClient extends AbstractClient {
           Credentials creds = (Credentials) credentials;
           bearerToken = authenticationServiceClient.getBearerToken(creds);
           break;
+        case connectedApp:
+          ConnectedAppCredentials connectedApp = (ConnectedAppCredentials) credentials;
+          bearerToken = authenticationServiceClient.getBearerTokenForConnectedApp(connectedApp);
+          break;
         case token:
           bearerToken = ((AnypointToken) credentials).getToken();
           break;
@@ -331,5 +340,10 @@ public abstract class AbstractMuleClient extends AbstractClient {
       }
     }
     return suborganizationIds;
+  }
+
+  private Boolean emptyConnectedAppsCredentials(AnypointDeployment deployment) {
+    return isEmpty(deployment.getConnectedAppClientId()) && isEmpty(deployment.getConnectedAppClientSecret())
+        && isEmpty(deployment.getConnectedAppGrantType());
   }
 }

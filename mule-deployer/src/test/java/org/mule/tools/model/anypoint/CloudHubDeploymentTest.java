@@ -11,11 +11,13 @@ package org.mule.tools.model.anypoint;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mule.tools.client.cloudhub.model.Environment;
 import org.mule.tools.client.core.exception.DeploymentException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class CloudHubDeploymentTest {
 
@@ -47,9 +49,9 @@ public class CloudHubDeploymentTest {
   }
 
   @Test
-  public void defaultOsV2ValueIsFalse() {
+  public void defaultOsV2ValueIsNull() {
     assertThat("The default value for Object Store v2 property is not false",
-               deploymentSpy.getObjectStoreV2(), equalTo(false));
+               deploymentSpy.getObjectStoreV2(), equalTo(null));
   }
 
   @Test

@@ -33,6 +33,7 @@ import org.mule.tools.client.AbstractMuleClient;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.model.Deployment;
 import org.mule.tools.client.cloudhub.model.DeploymentLogRequest;
+import org.mule.tools.client.cloudhub.model.Environment;
 import org.mule.tools.client.cloudhub.model.DomainAvailability;
 import org.mule.tools.client.cloudhub.model.LogRecord;
 import org.mule.tools.client.cloudhub.model.PaginatedResponse;
@@ -62,6 +63,7 @@ public class CloudHubClient extends AbstractMuleClient {
   public static final String A_APPLICATION_PATH = APPLICATIONS_PATH + "/%s";
   public static final String A_APPLICATION_LOGS = A_APPLICATION_PATH + "/logs";
   public static final String DEPLOYMENTS_PATH = APPLICATIONS_PATH + "/%s/deployments";
+  public static final String APPLICATION_ENVIRONMENT = BASE_API_PATH + "/buildinfo/environment";
 
   public CloudHubClient(CloudHubDeployment cloudhubDeployment, DeployerLog log) {
     super(cloudhubDeployment, log);
@@ -263,5 +265,12 @@ public class CloudHubClient extends AbstractMuleClient {
 
     MultiPart multipart = new FormDataMultiPart().bodyPart(filePart).bodyPart(appInfoJsonPart);
     return Entity.entity(multipart, multipart.getMediaType());
+  }
+
+  public Environment getEnvironment() {
+    Response response = get(baseUri, APPLICATION_ENVIRONMENT);
+
+    checkResponseStatus(response, OK);
+    return response.readEntity(Environment.class);
   }
 }

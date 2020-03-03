@@ -11,6 +11,7 @@ package org.mule.tools.deployment.cloudhub;
 
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.Application;
+import org.mule.tools.client.cloudhub.model.Environment;
 import org.mule.tools.client.cloudhub.model.MuleVersion;
 import org.mule.tools.client.cloudhub.model.WorkerType;
 import org.mule.tools.client.cloudhub.model.Workers;
@@ -119,6 +120,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
    * @throws DeploymentException If the application is not available and cannot be updated
    */
   protected void createOrUpdateApplication() throws DeploymentException {
+    configureObjectStore();
     if (client.isDomainAvailable(deployment.getApplicationName())) {
       createApplication();
     } else {
@@ -248,6 +250,13 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     workerType.setName(type);
     workers.setType(workerType);
     return workers;
+  }
+
+  private void configureObjectStore() {
+    if (deployment.getObjectStoreV2() == null) {
+      Environment environment = client.getEnvironment();
+      deployment.setObjectStoreV2(!environment.getObjectStoreV1Enabled());
+    }
   }
 
 }

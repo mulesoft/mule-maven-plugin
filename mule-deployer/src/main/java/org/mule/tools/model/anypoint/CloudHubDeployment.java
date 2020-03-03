@@ -30,8 +30,9 @@ public class CloudHubDeployment extends AnypointDeployment {
   @Parameter
   protected Boolean overrideProperties;
 
+  // the default value will be handled in the Deployer depending if the environment supports OSv1 or not
   @Parameter
-  protected Boolean objectStoreV2 = false;
+  protected Boolean objectStoreV2 = null;
 
   @Parameter
   protected Boolean persistentQueues = false;

@@ -48,7 +48,7 @@ public class CloudHubDeploymentTest {
 
   @Test
   public void defaultOsV2ValueIsNull() {
-    assertThat("The default value for Object Store v2 property is not false",
+    assertThat("The default value for Object Store v2 property is not null",
                deploymentSpy.getObjectStoreV2(), equalTo(null));
   }
 

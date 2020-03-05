@@ -14,6 +14,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.mule.tools.client.arm.model.User;
+import org.mule.tools.client.arm.model.UserInfo;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.core.exception.DeploymentException;
@@ -51,6 +53,7 @@ public class CloudHubArtifactDeployerTest {
   public ExpectedException expectedException = ExpectedException.none();
 
   private File applicationFile;
+  private UserInfo userInfo;
   private DeployerLog logMock;
   private CloudHubClient clientMock;
   private Application applicationMock;
@@ -62,6 +65,7 @@ public class CloudHubArtifactDeployerTest {
   @Before
   public void setUp() throws IOException {
     applicationFile = temporaryFolder.newFile();
+    userInfo = createUserInfo();
 
     logMock = mock(DeployerLog.class);
     clientMock = mock(CloudHubClient.class);
@@ -76,6 +80,7 @@ public class CloudHubArtifactDeployerTest {
 
 
     when(clientMock.getApplications(FAKE_APPLICATION_NAME)).thenReturn(applicationMock);
+    when(clientMock.getMe()).thenReturn(userInfo);
 
     cloudHubArtifactDeployer = new CloudHubArtifactDeployer(deploymentMock, clientMock, logMock);
     cloudHubArtifactDeployerSpy = spy(cloudHubArtifactDeployer);
@@ -123,6 +128,15 @@ public class CloudHubArtifactDeployerTest {
     verify(cloudHubArtifactDeployerSpy).startApplication();
     verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
     verify(cloudHubArtifactDeployerSpy, never()).checkApplicationHasStarted();
+  }
+
+  private UserInfo createUserInfo() {
+    UserInfo userInfo = new UserInfo();
+    User user = new User();
+    user.isClient = false;
+    user.id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
+    userInfo.user = user;
+    return userInfo;
   }
 
   @Test

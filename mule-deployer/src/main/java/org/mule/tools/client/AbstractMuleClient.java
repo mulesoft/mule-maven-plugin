@@ -224,10 +224,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
   }
 
   private boolean getUserIsClient(JsonObject userInfoJson) {
-    if (userInfoJson != null && userInfoJson.has(CLIENT)) {
-      return true;
-    }
-    return false;
+    return (userInfoJson != null && userInfoJson.has(CLIENT));
   }
 
   // TODO use AuthenticationServiceClient

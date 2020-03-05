@@ -219,11 +219,11 @@ public abstract class AbstractMuleClient extends AbstractClient {
 
   private boolean getUserIsClient(JsonObject userInfoJson) {
     if (userInfoJson != null && userInfoJson.has(CLIENT)) {
-        return true;
+      return true;
     }
     return false;
   }
-  
+
   // TODO use AuthenticationServiceClient
   public Environment findEnvironmentByName(String name) {
     Environments response = getEnvironments();

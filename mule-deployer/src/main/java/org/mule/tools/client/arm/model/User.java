@@ -14,4 +14,6 @@ import org.mule.tools.client.arm.model.Organization;
 public class User {
 
   public Organization organization;
+  public String id;
+  public boolean isClient;
 }

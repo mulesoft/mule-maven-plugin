@@ -9,6 +9,7 @@
  */
 package org.mule.tools.deployment.cloudhub;
 
+import org.mule.tools.client.arm.model.User;
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.model.Environment;
@@ -138,7 +139,12 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
    */
   protected void createApplication() {
     log.info("Creating application: " + deployment.getApplicationName());
-    client.createApplication(getApplication(null), deployment.getArtifact());
+    User user = client.getMe().user;
+    Application application = getApplication(null);
+    if (user.isClient) {
+      application.setUserId(user.id);
+    }
+    client.createApplication(application, deployment.getArtifact());
   }
 
   /**

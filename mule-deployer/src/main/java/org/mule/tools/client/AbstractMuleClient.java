@@ -52,6 +52,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
   public static final String NAME = "name";
   public static final String USER = "user";
   public static final String ID = "id";
+  public static final String CLIENT = "client";
 
   public static final String UNAUTHORIZED = "unauthorized";
 
@@ -114,6 +115,8 @@ public abstract class AbstractMuleClient extends AbstractClient {
     Organization organization = buildOrganization(userInfoJson);
     User user = new User();
     user.organization = organization;
+    user.id = getUserId(userInfoJson);
+    user.isClient = getUserIsClient(userInfoJson);
     UserInfo userInfo = new UserInfo();
     userInfo.user = user;
     return userInfo;
@@ -208,6 +211,20 @@ public abstract class AbstractMuleClient extends AbstractClient {
 
   public String getEnvId() {
     return envId;
+  }
+
+  private String getUserId(JsonObject userInfoJson) {
+    if (userInfoJson != null && userInfoJson.has(USER)) {
+      JsonObject userJson = (JsonObject) userInfoJson.get(USER);
+      if (userJson != null && userJson.has(ID)) {
+        return userJson.get(ID).getAsString();
+      }
+    }
+    throw new IllegalStateException("Cannot find user id");
+  }
+
+  private boolean getUserIsClient(JsonObject userInfoJson) {
+    return (userInfoJson != null && userInfoJson.has(CLIENT));
   }
 
   // TODO use AuthenticationServiceClient

@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.ArgumentCaptor;
 import org.mule.tools.client.arm.model.User;
 import org.mule.tools.client.arm.model.UserInfo;
 import org.mule.tools.client.cloudhub.model.Application;
@@ -105,6 +106,45 @@ public class CloudHubArtifactDeployerTest {
 
     cloudHubArtifactDeployerSpy.deployApplication();
 
+    verify(clientMock).isDomainAvailable(any());
+    verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
+    verify(cloudHubArtifactDeployerSpy).createApplication();
+    verify(cloudHubArtifactDeployerSpy).startApplication();
+    verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
+    verify(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
+  }
+
+  @Test
+  public void deployApplicationNew_ForClient_adds_userid() throws DeploymentException {
+    UserInfo clientUserInfo = createUserInfo();
+    clientUserInfo.user.isClient = true;
+    when(clientMock.getMe()).thenReturn(clientUserInfo);
+    when(clientMock.isDomainAvailable(any())).thenReturn(true);
+    doNothing().when(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
+    cloudHubArtifactDeployerSpy.deployApplication();
+    ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
+    verify(clientMock).createApplication(applicationCaptor.capture(), any());
+    assertThat("application does not have userid",
+               clientUserInfo.user.id.equalsIgnoreCase(applicationCaptor.getValue().getUserId()));
+    verify(clientMock).isDomainAvailable(any());
+    verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
+    verify(cloudHubArtifactDeployerSpy).createApplication();
+    verify(cloudHubArtifactDeployerSpy).startApplication();
+    verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
+    verify(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
+  }
+
+  @Test
+  public void deployApplicationNew_ForUser_does_not_userid() throws DeploymentException {
+    UserInfo clientUserInfo = createUserInfo();
+    clientUserInfo.user.isClient = false;
+    when(clientMock.getMe()).thenReturn(clientUserInfo);
+    when(clientMock.isDomainAvailable(any())).thenReturn(true);
+    doNothing().when(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
+    cloudHubArtifactDeployerSpy.deployApplication();
+    ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
+    verify(clientMock).createApplication(applicationCaptor.capture(), any());
+    assertThat("application has userid", applicationCaptor.getValue().getUserId() == null);
     verify(clientMock).isDomainAvailable(any());
     verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
     verify(cloudHubArtifactDeployerSpy).createApplication();

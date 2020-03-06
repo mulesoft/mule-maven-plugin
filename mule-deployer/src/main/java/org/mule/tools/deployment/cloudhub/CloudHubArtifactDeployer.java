@@ -137,13 +137,12 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
    */
   protected void createApplication() {
     log.info("Creating application: " + deployment.getApplicationName());
-    Application application = null;
     User user = client.getMe().user;
+    Application application = getApplication(null);
     if (user.isClient) {
-      application = new Application();
       application.setUserId(user.id);
     }
-    client.createApplication(getApplication(application), deployment.getArtifact());
+    client.createApplication(application, deployment.getArtifact());
   }
 
   /**

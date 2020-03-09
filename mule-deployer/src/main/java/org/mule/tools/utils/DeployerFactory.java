@@ -10,6 +10,7 @@
 
 package org.mule.tools.utils;
 
+import org.apache.maven.settings.Proxy;
 import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.agent.AgentDeployer;
 import org.mule.tools.client.arm.ArmDeployer;
@@ -25,7 +26,7 @@ import org.mule.tools.model.standalone.StandaloneDeployment;
 
 public class DeployerFactory {
 
-  public AbstractDeployer createDeployer(Deployment deploymentConfiguration, DeployerLog log)
+  public AbstractDeployer createDeployer(Deployment deploymentConfiguration, Proxy proxy, DeployerLog log)
       throws DeploymentException {
     if (deploymentConfiguration instanceof StandaloneDeployment) {
       return new StandaloneDeployer((StandaloneDeployment) deploymentConfiguration, log);
@@ -35,7 +36,7 @@ public class DeployerFactory {
           + deploymentConfiguration);
     }
     if (deploymentConfiguration instanceof ArmDeployment) {
-      return new ArmDeployer((ArmDeployment) deploymentConfiguration, log);
+      return new ArmDeployer((ArmDeployment) deploymentConfiguration, proxy, log);
     }
     if (deploymentConfiguration instanceof CloudHubDeployment) {
       return new CloudhubDeployer((CloudHubDeployment) deploymentConfiguration, log);

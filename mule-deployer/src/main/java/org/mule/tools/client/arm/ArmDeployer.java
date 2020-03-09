@@ -14,6 +14,7 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.settings.Proxy;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.exception.ClientException;
@@ -31,9 +32,12 @@ public class ArmDeployer extends AbstractDeployer {
   private TargetType targetType;
   private String target;
   private ArmClient armClient;
+  private Proxy activeProxy;
 
-  public ArmDeployer(ArmDeployment armDeployment, DeployerLog log) throws DeploymentException {
+  public ArmDeployer(ArmDeployment armDeployment, Proxy proxy, DeployerLog log) throws DeploymentException {
     super(armDeployment, log);
+    activeProxy = proxy;
+    initialize();
   }
 
   @Override
@@ -58,7 +62,7 @@ public class ArmDeployer extends AbstractDeployer {
   @Override
   public void undeploy(MavenProject mavenProject) throws DeploymentException {
     ArmClient armClient =
-        new ArmClient(armDeployment, log);
+        new ArmClient(armDeployment, activeProxy, log);
     armClient.init();
     log.info("Undeploying application " + armDeployment.getApplicationName());
     try {
@@ -78,7 +82,7 @@ public class ArmDeployer extends AbstractDeployer {
     armDeployment = (ArmDeployment) deploymentConfiguration;
     targetType = armDeployment.getTargetType();
     target = armDeployment.getTarget();
-    armClient = new ArmClient(armDeployment, log);
+    armClient = new ArmClient(armDeployment, activeProxy, log);
   }
 
   @Override

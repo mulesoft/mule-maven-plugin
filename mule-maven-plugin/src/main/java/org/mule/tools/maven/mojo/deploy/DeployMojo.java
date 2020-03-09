@@ -14,6 +14,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.settings.Proxy;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.mule.tools.client.AbstractDeployer;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
@@ -48,8 +49,14 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
     }
 
     try {
+      Proxy activeProxy = settings.getActiveProxy();
+      if (activeProxy != null) {
+        log.debug("Creating deployer with proxy: " + activeProxy.getHost() + ":"
+            + activeProxy.getPort());
+      }
       AbstractDeployer deployer =
-          new DeployerFactory().createDeployer(deploymentConfiguration, new MavenDeployerLog(getLog()));
+          new DeployerFactory().createDeployer(deploymentConfiguration, activeProxy,
+                                               new MavenDeployerLog(getLog()));
       deployer.resolveDependencies(mavenProject, artifactResolver, archiverManager, artifactFactory, localRepository);
       deployer.deploy();
     } catch (DeploymentException | ScriptException e) {

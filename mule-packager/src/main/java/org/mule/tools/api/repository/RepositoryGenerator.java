@@ -11,11 +11,13 @@
 package org.mule.tools.api.repository;
 
 import static java.lang.String.format;
+import static java.util.Optional.empty;
 import static org.mule.tools.api.packager.sources.MuleContentGenerator.createClassLoaderModelJsonFile;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
 
+import org.mule.maven.client.api.MavenReactorResolver;
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
 import org.mule.tools.api.classloader.model.ApplicationGAVModel;
@@ -58,17 +60,18 @@ public class RepositoryGenerator {
   @Deprecated
   public ClassLoaderModel generate() throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
-        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory, appGAVModel, false);
+        applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory, appGAVModel, false,
+                                                                            empty());
     installArtifacts(getRepositoryFolder(), artifactInstaller, appModel, false);
     return appModel.getClassLoaderModel();
   }
 
   public ClassLoaderModel generate(boolean lightweight, boolean useLocalRepository, boolean prettyPrinting,
-                                   boolean includeTestDependencies)
+                                   boolean includeTestDependencies, Optional<MavenReactorResolver> mavenReactorResolver)
       throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
         applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory, appGAVModel,
-                                                                            includeTestDependencies);
+                                                                            includeTestDependencies, mavenReactorResolver);
     if (!lightweight) {
       installArtifacts(getRepositoryFolder(), artifactInstaller, appModel, prettyPrinting);
     }
@@ -99,7 +102,7 @@ public class RepositoryGenerator {
 
   @Deprecated
   public ClassLoaderModel generate(boolean lightweight) throws IOException, IllegalStateException {
-    return generate(lightweight, false, false, false);
+    return generate(lightweight, false, false, false, empty());
   }
 
   protected File getRepositoryFolder() {

@@ -11,7 +11,9 @@
 package org.mule.tools.api.util;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
+import org.mule.maven.client.api.MavenReactorResolver;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
@@ -38,6 +40,7 @@ import org.mule.tools.api.validation.resolver.MulePluginResolver;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.execution.MavenExecutionRequest;
@@ -58,7 +61,6 @@ public class SourcesProcessor {
     this.mavenComponents = mavenComponents;
   }
 
-
   /**
    *
    * @param prettyPrinting if {@code true} the classloader-model.json will be printed with pretty print mode
@@ -71,6 +73,25 @@ public class SourcesProcessor {
    */
   public void process(boolean prettyPrinting, boolean lightweightPackage, boolean useLocalRepository, boolean testJar,
                       File repositoryOutputDirectory, File classloaderOutputDirectory)
+      throws Exception {
+    this.process(prettyPrinting, lightweightPackage, useLocalRepository, testJar, repositoryOutputDirectory,
+                 classloaderOutputDirectory, empty());
+  }
+
+  /**
+   *
+   * @param prettyPrinting if {@code true} the classloader-model.json will be printed with pretty print mode
+   * @param lightweightPackage if {@code true} generate a lightweight structure else generate a heavyweight structure
+   * @param useLocalRepository if {@code true} generate the repository with all the application dependencies
+   * @param testJar if {@code true} repository is going to be generated with test dependencies
+   * @param repositoryOutputDirectory destination folder where the repository folder is going to be created
+   * @param classloaderOutputDirectory destination folder where the classloader-model.json file is going to be created
+   * @param mavenReactorResolver mavenReactorResolver
+   * @throws Exception
+   */
+  public void process(boolean prettyPrinting, boolean lightweightPackage, boolean useLocalRepository, boolean testJar,
+                      File repositoryOutputDirectory, File classloaderOutputDirectory,
+                      Optional<MavenReactorResolver> mavenReactorResolver)
       throws Exception {
 
     boolean isHeavyWeight = !lightweightPackage;
@@ -85,7 +106,7 @@ public class SourcesProcessor {
                                   new ArtifactInstaller(new MavenPackagerLog(mavenComponents.getLog())),
                                   getClassLoaderModelAssembler(), appGAV);
       ClassLoaderModel classLoaderModel =
-          repositoryGenerator.generate(lightweightPackage, useLocalRepository, prettyPrinting, testJar);
+          repositoryGenerator.generate(lightweightPackage, useLocalRepository, prettyPrinting, testJar, mavenReactorResolver);
 
       for (SharedLibraryDependency sharedLibraryDependency : mavenComponents.getSharedLibraries()) {
         classLoaderModel.getDependencies().stream()

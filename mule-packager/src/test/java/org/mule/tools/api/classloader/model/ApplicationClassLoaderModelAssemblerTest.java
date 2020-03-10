@@ -13,6 +13,7 @@ package org.mule.tools.api.classloader.model;
 import static java.nio.file.Paths.get;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.Optional.empty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -154,7 +155,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
     when(jarExplorer.explore(classesDirectory.toURI())).thenReturn(new JarInfo(packages, resources));
     ApplicationClassloaderModel applicationClassloaderModel =
         applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), outputDirectory,
-                                                                               mock(ApplicationGAVModel.class), true);
+                                                                               mock(ApplicationGAVModel.class), true, empty());
 
     assertThat("Application dependencies are not the expected",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
@@ -176,7 +177,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
     appDependencies.add(dependency1);
     appDependencies.add(sharedLibrary);
     ApplicationClassloaderModel applicationClassloaderModel =
-        testSharedDependencies(appDependencies, singletonList(sharedLibrary), Optional.empty());
+        testSharedDependencies(appDependencies, singletonList(sharedLibrary), empty());
 
     assertThat("Application contains both libraries",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
@@ -212,7 +213,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
     appDependencies.add(sharedLibrary);
 
     ApplicationClassloaderModel applicationClassloaderModel =
-        testSharedDependencies(appDependencies, singletonList(sharedLibrary), Optional.empty());
+        testSharedDependencies(appDependencies, singletonList(sharedLibrary), empty());
 
     assertThat("Application contains all libraries",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
@@ -256,7 +257,8 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
     try {
       return applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), temporaryFolder.newFolder(),
-                                                                                    mock(ApplicationGAVModel.class), false);
+                                                                                    mock(ApplicationGAVModel.class), false,
+                                                                                    empty());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

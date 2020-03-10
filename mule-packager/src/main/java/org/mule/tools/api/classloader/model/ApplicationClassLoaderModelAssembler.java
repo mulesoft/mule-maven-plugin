@@ -12,12 +12,14 @@ package org.mule.tools.api.classloader.model;
 
 import static java.nio.file.Paths.get;
 import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
 import static org.mule.maven.client.internal.util.MavenUtils.getPomModelFromFile;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toApplicationModelArtifacts;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.updateArtifactsSharedState;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.updatePackagesResources;
 import static org.mule.tools.api.classloader.model.util.PluginUtils.toPluginDependencies;
 
+import org.mule.maven.client.api.MavenReactorResolver;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver;
@@ -31,6 +33,7 @@ import org.mule.tools.api.util.JarInfo;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.maven.model.Model;
 
@@ -67,12 +70,20 @@ public class ApplicationClassLoaderModelAssembler {
   @Deprecated
   public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, ApplicationGAVModel appGAVModel)
       throws IllegalStateException {
-    return getApplicationClassLoaderModel(pomFile, null, appGAVModel, false);
+    return getApplicationClassLoaderModel(pomFile, null, appGAVModel, false, empty());
+  }
+
+  @Deprecated
+  public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, File outputDirectory,
+                                                                    ApplicationGAVModel appGAVModel,
+                                                                    boolean includeTestDependencies) {
+    return getApplicationClassLoaderModel(pomFile, outputDirectory, appGAVModel, includeTestDependencies, empty());
   }
 
   public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, File outputDirectory,
                                                                     ApplicationGAVModel appGAVModel,
-                                                                    boolean includeTestDependencies)
+                                                                    boolean includeTestDependencies,
+                                                                    Optional<MavenReactorResolver> mavenReactorResolver)
       throws IllegalStateException {
 
     Model pomModel = getPomFile(pomFile);
@@ -88,7 +99,7 @@ public class ApplicationClassLoaderModelAssembler {
     }
 
     List<BundleDependency> appDependencies =
-        applicationDependencyResolver.resolveApplicationDependencies(pomFile, includeTestDependencies);
+        applicationDependencyResolver.resolveApplicationDependencies(pomFile, includeTestDependencies, mavenReactorResolver);
 
     List<Artifact> dependencies =
         updateArtifactsSharedState(appDependencies, updatePackagesResources(toApplicationModelArtifacts(appDependencies)),

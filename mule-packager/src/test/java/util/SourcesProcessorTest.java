@@ -10,6 +10,7 @@
 package util;
 
 import static java.nio.file.Paths.get;
+import static java.util.Optional.empty;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -91,7 +92,8 @@ public class SourcesProcessorTest {
     sourcesProcessor
         .process(true, true, true, true, new File(temporaryFolder.getRoot(), "target"),
                  temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile());
+                     .toFile(),
+                 empty());
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft", "munit")
@@ -105,7 +107,8 @@ public class SourcesProcessorTest {
     sourcesProcessor
         .process(true, true, true, false, new File(temporaryFolder.getRoot(), "target"),
                  temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile());
+                     .toFile(),
+                 empty());
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertFalse(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft",
@@ -119,7 +122,8 @@ public class SourcesProcessorTest {
     sourcesProcessor
         .process(true, true, false, true, new File(temporaryFolder.getRoot(), "target"),
                  temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile());
+                     .toFile(),
+                 empty());
 
     assertFalse(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertFalse(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")
@@ -131,7 +135,8 @@ public class SourcesProcessorTest {
     sourcesProcessor
         .process(true, true, false, false, new File(temporaryFolder.getRoot(), "target"),
                  temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile());
+                     .toFile(),
+                 empty());
 
     assertFalse(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertFalse(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")
@@ -143,7 +148,8 @@ public class SourcesProcessorTest {
     sourcesProcessor
         .process(true, false, true, true, new File(temporaryFolder.getRoot(), "target"),
                  temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile());
+                     .toFile(),
+                 empty());
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft", "munit")
@@ -159,7 +165,8 @@ public class SourcesProcessorTest {
     sourcesProcessor
         .process(true, false, true, false, new File(temporaryFolder.getRoot(), "target"),
                  temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile());
+                     .toFile(),
+                 empty());
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertFalse(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft",
@@ -173,7 +180,8 @@ public class SourcesProcessorTest {
     sourcesProcessor
         .process(true, false, false, true, new File(temporaryFolder.getRoot(), "target"),
                  temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile());
+                     .toFile(),
+                 empty());
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")
@@ -185,7 +193,8 @@ public class SourcesProcessorTest {
     sourcesProcessor
         .process(true, false, false, false, new File(temporaryFolder.getRoot(), "target"),
                  temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile());
+                     .toFile(),
+                 empty());
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")
@@ -197,7 +206,8 @@ public class SourcesProcessorTest {
     sourcesProcessor
         .process(false, false, true, true, new File(temporaryFolder.getRoot(), "target"),
                  temporaryFolder.getRoot().toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile());
+                     .toFile(),
+                 empty());
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact").toFile().exists());
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft", "munit")

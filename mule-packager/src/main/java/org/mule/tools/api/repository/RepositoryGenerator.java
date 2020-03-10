@@ -66,6 +66,13 @@ public class RepositoryGenerator {
     return appModel.getClassLoaderModel();
   }
 
+  @Deprecated
+  public ClassLoaderModel generate(boolean lightweight, boolean useLocalRepository, boolean prettyPrinting,
+                                   boolean includeTestDependencies)
+      throws IOException, IllegalStateException {
+    return generate(lightweight, useLocalRepository, prettyPrinting, includeTestDependencies, empty());
+  }
+
   public ClassLoaderModel generate(boolean lightweight, boolean useLocalRepository, boolean prettyPrinting,
                                    boolean includeTestDependencies, Optional<MavenReactorResolver> mavenReactorResolver)
       throws IOException, IllegalStateException {

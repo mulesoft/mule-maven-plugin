@@ -71,6 +71,7 @@ public class SourcesProcessor {
    * @param classloaderOutputDirectory destination folder where the classloader-model.json file is going to be created
    * @throws Exception
    */
+  @Deprecated
   public void process(boolean prettyPrinting, boolean lightweightPackage, boolean useLocalRepository, boolean testJar,
                       File repositoryOutputDirectory, File classloaderOutputDirectory)
       throws Exception {
@@ -86,7 +87,7 @@ public class SourcesProcessor {
    * @param testJar if {@code true} repository is going to be generated with test dependencies
    * @param repositoryOutputDirectory destination folder where the repository folder is going to be created
    * @param classloaderOutputDirectory destination folder where the classloader-model.json file is going to be created
-   * @param mavenReactorResolver mavenReactorResolver
+   * @param mavenReactorResolver {@link MavenReactorResolver}
    * @throws Exception
    */
   public void process(boolean prettyPrinting, boolean lightweightPackage, boolean useLocalRepository, boolean testJar,

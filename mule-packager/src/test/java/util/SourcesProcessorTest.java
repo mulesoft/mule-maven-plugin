@@ -326,8 +326,8 @@ public class SourcesProcessorTest {
 
     @Override
     public List<String> findVersions(BundleDescriptor bundleDescriptor) {
-      findVersionsCalled = true;
       if (bundleDescriptor.getArtifactId().equals(ARTIFACTID)) {
+        findVersionsCalled = true;
         return ImmutableList.of("1.0.0");
       }
       return null;

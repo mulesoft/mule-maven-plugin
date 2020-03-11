@@ -81,6 +81,12 @@
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.mulesoft.munit.tests</groupId>
+            <artifactId>dependency-test-app</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
     </dependencies>
 
 	<repositories>

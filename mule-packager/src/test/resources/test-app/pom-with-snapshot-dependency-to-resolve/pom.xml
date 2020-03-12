@@ -82,7 +82,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.mulesoft.munit.tests</groupId>
+            <groupId>com.example</groupId>
             <artifactId>dependency-test-app</artifactId>
             <version>1.0.0-SNAPSHOT</version>
             <classifier>mule-plugin</classifier>

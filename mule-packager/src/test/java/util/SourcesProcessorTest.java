@@ -250,9 +250,10 @@ public class SourcesProcessorTest {
                    "commons-io-0.1.jar")
                        .toFile().exists());
 
-    assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "repository", "com", "example", "dependency-test-app", "1.0.0",
+    assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "repository", "com", "example", "dependency-test-app",
+                   "1.0.0",
                    "dependency-test-app-1.0.0-mule-plugin.jar")
-                   .toFile().exists());
+                       .toFile().exists());
   }
 
   @Test
@@ -281,11 +282,12 @@ public class SourcesProcessorTest {
 
     assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "repository", "commons-io", "commons-io", "0.1",
                    "commons-io-0.1.jar")
-                   .toFile().exists());
+                       .toFile().exists());
 
-    assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "repository", "com", "example", "dependency-test-app", "1.0.0-SNAPSHOT",
+    assertTrue(get(temporaryFolder.getRoot().getAbsolutePath(), "target", "repository", "com", "example", "dependency-test-app",
+                   "1.0.0-SNAPSHOT",
                    "dependency-test-app-1.0.0-SNAPSHOT-mule-plugin.jar")
-                   .toFile().exists());
+                       .toFile().exists());
   }
 
   public MavenProject buildMavenProjectMock() {

@@ -186,9 +186,12 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
   private Application getApplication(Application originalApplication) {
     Application application = new Application();
-    if (originalApplication != null) {
-      application.setDomain(deployment.getApplicationName());
+    Integer workersAmount;
+    String workerType;
+    MuleVersion muleVersion = new MuleVersion();
+    muleVersion.setVersion(deployment.getMuleVersion().get());
 
+    if (originalApplication != null) {
       Map<String, String> resolvedProperties = resolveProperties(originalApplication.getProperties(),
                                                                  deployment.getProperties(), deployment.overrideProperties());
       application.setProperties(resolvedProperties);
@@ -199,41 +202,33 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
         application.setRegion(deployment.getRegion());
       }
 
-      Integer workersAmount =
-          (deployment.getWorkers() == null) ? originalApplication.getWorkers().getAmount() : deployment.getWorkers();
-      String workerType =
-          isBlank(deployment.getWorkerType()) ? originalApplication.getWorkers().getType().getName() : deployment.getWorkerType();
-
-      application.setWorkers(getWorkers(workersAmount, workerType));
-
-      MuleVersion muleVersion = new MuleVersion();
-      muleVersion.setVersion(deployment.getMuleVersion().get());
-
       if (deployment.getApplyLatestRuntimePatch()
           && originalApplication.getMuleVersion().getVersion().equals(deployment.getMuleVersion().get())) {
         muleVersion.setUpdateId(originalApplication.getMuleVersion().getLatestUpdateId());
       }
 
-      application.setMuleVersion(muleVersion);
+      workersAmount = (deployment.getWorkers() == null) ? originalApplication.getWorkers().getAmount() : deployment.getWorkers();
+      workerType =
+          isBlank(deployment.getWorkerType()) ? originalApplication.getWorkers().getType().getName() : deployment.getWorkerType();
 
     } else {
-      application.setDomain(deployment.getApplicationName());
-
       application.setMonitoringAutoRestart(true);
-      MuleVersion muleVersion = new MuleVersion();
-      muleVersion.setVersion(deployment.getMuleVersion().get());
-      application.setMuleVersion(muleVersion);
-
       application.setProperties(deployment.getProperties());
 
       String region = isBlank(deployment.getRegion()) ? DEFAULT_CH_REGION : deployment.getRegion();
       application.setRegion(region);
 
-      Integer workersAmout = (deployment.getWorkers() == null) ? DEFAULT_CH_WORKERS : deployment.getWorkers();
-      String workerType = isBlank(deployment.getWorkerType()) ? DEFAULT_CH_WORKER_TYPE : deployment.getWorkerType();
-
-      application.setWorkers(getWorkers(workersAmout, workerType));
+      workersAmount = (deployment.getWorkers() == null) ? DEFAULT_CH_WORKERS : deployment.getWorkers();
+      workerType = isBlank(deployment.getWorkerType()) ? DEFAULT_CH_WORKER_TYPE : deployment.getWorkerType();
     }
+
+    application.setDomain(deployment.getApplicationName());
+    application.setMuleVersion(muleVersion);
+
+    application.setWorkers(getWorkers(workersAmount, workerType));
+
+    application.setObjectStoreV1(!deployment.getObjectStoreV2());
+    application.setPersistentQueues(deployment.getPersistentQueues());
 
     return application;
   }

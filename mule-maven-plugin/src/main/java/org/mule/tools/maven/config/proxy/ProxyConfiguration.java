@@ -33,8 +33,6 @@ public class ProxyConfiguration {
   public static final String PROTOCOL_HTTP = "http";
   public static final String MAVEN_PROXY_HOST = "proxyHost";
   public static final String MAVEN_PROXY_PORT = "proxyPort";
-  public static final String MAVEN_PROXY_USER = "proxyUser";
-  public static final String MAVEN_PROXY_PASSWORD = "proxyPassword";
 
   protected final Log log;
   protected Settings settings;
@@ -78,9 +76,7 @@ public class ProxyConfiguration {
     System.setProperty(MAVEN_PROXY_PORT, String.valueOf(proxy.getPort()));
 
     setPropertyIfNotBlank(HTTP_PROXY_USER, proxy.getUsername());
-    setPropertyIfNotBlank(MAVEN_PROXY_USER, proxy.getUsername());
     setPropertyIfNotBlank(HTTP_PROXY_PASSWORD, proxy.getPassword());
-    setPropertyIfNotBlank(MAVEN_PROXY_PASSWORD, proxy.getPassword());
   }
 
   private static boolean isProxyValid(final Proxy proxy) {

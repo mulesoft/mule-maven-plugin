@@ -72,9 +72,14 @@ public class ProxyConfiguration {
   }
 
   private void setupProxyProperties(final Proxy proxy) {
+    System.setProperty(HTTP_PROXY_HOST, proxy.getHost());
     System.setProperty(MAVEN_PROXY_HOST, proxy.getHost());
+    System.setProperty(HTTP_PROXY_PORT, String.valueOf(proxy.getPort()));
     System.setProperty(MAVEN_PROXY_PORT, String.valueOf(proxy.getPort()));
+
+    setPropertyIfNotBlank(HTTP_PROXY_USER, proxy.getUsername());
     setPropertyIfNotBlank(MAVEN_PROXY_USER, proxy.getUsername());
+    setPropertyIfNotBlank(HTTP_PROXY_PASSWORD, proxy.getPassword());
     setPropertyIfNotBlank(MAVEN_PROXY_PASSWORD, proxy.getPassword());
   }
 

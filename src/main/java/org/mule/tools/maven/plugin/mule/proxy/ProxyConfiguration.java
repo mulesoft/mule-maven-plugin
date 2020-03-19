@@ -29,6 +29,8 @@ public class ProxyConfiguration {
     private static final String HTTPS_PROXY_USER = "https.proxyUser";
     private static final String HTTPS_PROXY_PASSWORD = "https.proxyPassword";
     private static final String PROTOCOL_HTTP = "http";
+    private static final String MAVEN_PROXY_HOST = "proxyHost";
+    private static final String MAVEN_PROXY_PORT = "proxyPort";
 
     protected final Log log;
     protected Settings settings;
@@ -62,16 +64,16 @@ public class ProxyConfiguration {
     }
 
     private void setupNonProxyHostsProperties(final Proxy proxy) {
-        if (StringUtils.isNotBlank(proxy.getNonProxyHosts())) {
-            System.setProperty(HTTP_NO_PROXY, proxy.getNonProxyHosts());
-        }
+        setPropertyIfNotBlank(HTTP_NO_PROXY, proxy.getNonProxyHosts());
     }
 
     private void setupProxyProperties(final Proxy proxy) {
         System.setProperty(HTTP_PROXY_HOST, proxy.getHost());
+        System.setProperty(MAVEN_PROXY_HOST, proxy.getHost());
         System.setProperty(HTTP_PROXY_PORT, String.valueOf(proxy.getPort()));
-        System.setProperty(HTTP_PROXY_USER, proxy.getUsername());
-        System.setProperty(HTTP_PROXY_PASSWORD, proxy.getPassword());
+        System.setProperty(MAVEN_PROXY_PORT, String.valueOf(proxy.getPort()));
+        setPropertyIfNotBlank(HTTP_PROXY_USER, proxy.getUsername());
+        setPropertyIfNotBlank(HTTP_PROXY_PASSWORD, proxy.getPassword());
     }
 
     private static boolean isProxyValid(final Proxy proxy) {
@@ -116,5 +118,11 @@ public class ProxyConfiguration {
     public static boolean isAbleToSetupProxy(final Settings settings) {
         return (!StringUtils.isBlank(System.getProperty(HTTP_PROXY_HOST)) || !StringUtils.isBlank(System.getProperty(HTTPS_PROXY_HOST))) || ( settings != null
                 && CollectionUtils.isNotEmpty(settings.getProxies()));
+    }
+
+    private static void setPropertyIfNotBlank(String property, String value) {
+        if (StringUtils.isNotBlank(value)) {
+            System.setProperty(property, value);
+        }
     }
 }

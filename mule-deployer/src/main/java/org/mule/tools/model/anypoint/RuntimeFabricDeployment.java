@@ -52,7 +52,6 @@ public class RuntimeFabricDeployment extends AnypointDeployment {
     this.provider = provider;
   }
 
-
   public void setEnvironmentSpecificValues() throws DeploymentException {
     super.setEnvironmentSpecificValues();
     if (isEmpty(getTarget())) {

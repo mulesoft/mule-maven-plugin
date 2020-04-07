@@ -31,6 +31,7 @@ public class RuntimeFabricDeploymentSettingsTest {
   public static final String MEMORY_RESERVED = "1";
   public static final String MEMORY_MAX = "3";
   public static final String PUBLIC_URL = "www.pepe.com";
+  public static final String DEFAULT_UPDATE_STRATEGY = "rolling";
   private RuntimeFabricDeploymentSettings deploymentSettings;
 
 
@@ -86,6 +87,13 @@ public class RuntimeFabricDeploymentSettingsTest {
     deploymentSettings.setEnvironmentSpecificValues();
     assertThat("The MemoryMax value is not the same as MemoryReserved", deploymentSettings.getMemoryMax(),
                equalTo(deploymentSettings.getMemoryReserved()));
+  }
+
+  @Test
+  public void undefinedUpdateStrategy() throws DeploymentException {
+    deploymentSettings.setEnvironmentSpecificValues();
+    assertThat("The updateStrategy value is not the default value", deploymentSettings.getUpdateStrategy(),
+               equalTo(DEFAULT_UPDATE_STRATEGY));
   }
 
   @Test

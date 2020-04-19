@@ -16,8 +16,23 @@ import static javax.ws.rs.core.Response.Status.NOT_MODIFIED;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import org.mule.tools.client.AbstractMuleClient;
+import org.mule.tools.client.cloudhub.model.Application;
+import org.mule.tools.client.cloudhub.model.Deployment;
+import org.mule.tools.client.cloudhub.model.DeploymentLogRequest;
+import org.mule.tools.client.cloudhub.model.DomainAvailability;
+import org.mule.tools.client.cloudhub.model.Environment;
+import org.mule.tools.client.cloudhub.model.LogRecord;
+import org.mule.tools.client.cloudhub.model.PaginatedResponse;
+import org.mule.tools.client.cloudhub.model.SupportedVersion;
+import org.mule.tools.model.anypoint.CloudHubDeployment;
+import org.mule.tools.utils.DeployerLog;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -29,20 +44,6 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
-import org.mule.tools.client.AbstractMuleClient;
-import org.mule.tools.client.cloudhub.model.Application;
-import org.mule.tools.client.cloudhub.model.Deployment;
-import org.mule.tools.client.cloudhub.model.DeploymentLogRequest;
-import org.mule.tools.client.cloudhub.model.Environment;
-import org.mule.tools.client.cloudhub.model.DomainAvailability;
-import org.mule.tools.client.cloudhub.model.LogRecord;
-import org.mule.tools.client.cloudhub.model.PaginatedResponse;
-import org.mule.tools.client.cloudhub.model.SupportedVersion;
-import org.mule.tools.model.anypoint.CloudHubDeployment;
-import org.mule.tools.utils.DeployerLog;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * Client to hit the CloudHub API
@@ -62,6 +63,7 @@ public class CloudHubClient extends AbstractMuleClient {
   public static final String APPLICATIONS_PATH = BASE_API_VERSION_PATH + "/applications";
   public static final String A_APPLICATION_PATH = APPLICATIONS_PATH + "/%s";
   public static final String A_APPLICATION_LOGS = A_APPLICATION_PATH + "/logs";
+  public static final String A_INSTANCE_LOGS = A_APPLICATION_PATH + "/instances/%s/log-file";
   public static final String DEPLOYMENTS_PATH = APPLICATIONS_PATH + "/%s/deployments";
   public static final String APPLICATION_ENVIRONMENT = BASE_API_PATH + "/buildinfo/environment";
 
@@ -256,6 +258,24 @@ public class CloudHubClient extends AbstractMuleClient {
     checkResponseStatus(response, OK);
 
     return response.readEntity(new GenericType<List<LogRecord>>() {});
+  }
+
+  /**
+   * Retrieves the entire logs records from an {@link Application} given a the instanceId
+   *
+   * @param application the application
+   * @param instanceId the id of the instance to get the logs
+   * @return a {@link InputStream}
+   */
+  public InputStream getEntireLogs(Application application, String instanceId) {
+    checkArgument(instanceId != null, "The instanceId must not be null.");
+    checkArgument(application != null, "The application must not be null.");
+
+    Response response = get(baseUri, format(A_INSTANCE_LOGS, application.getDomain(), instanceId));
+
+    checkResponseStatus(response, OK);
+
+    return response.readEntity(InputStream.class);
   }
 
   private Entity<MultiPart> getMultiPartEntity(Application application, File file) {

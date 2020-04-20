@@ -261,7 +261,7 @@ public class CloudHubClient extends AbstractMuleClient {
   }
 
   /**
-   * Retrieves the entire logs records from an {@link Application} given a the instanceId
+   * Retrieves the entire logs records from an {@link Application} given the instanceId
    *
    * @param application the application
    * @param instanceId the id of the instance to get the logs

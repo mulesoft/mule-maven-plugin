@@ -46,6 +46,7 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
 
   private static final String ORG_APACHE_MAVEN_PLUGINS = "org.apache.maven.plugins";
   private static final String MULE_MAVEN_PLUGIN = "org.mule.tools.maven:mule-maven-plugin";
+  private static final String EXCHANGE_PLUGIN = "com.mulesoft.exchange.mavenfacade";
 
   private static final String MAVEN_RESOURCES_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-resources-plugin:3.0.2";
   private static final String MAVEN_CLEAN_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-clean-plugin:3.6.1";
@@ -54,6 +55,7 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
   private static final String MAVEN_INSTALL_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-install-plugin:2.5.2";
   private static final String MAVEN_DEPLOY_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-deploy-plugin:2.8.2";
   private static final String MAVEN_SITE_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-site-plugin:3.8.2";
+  private static final String EXCHANGE_PUBLICATION_PLUGIN = EXCHANGE_PLUGIN + ":publication-plugin:2.0.0";
 
   @Override
   public List<String> getOptionalMojos(String lifecycle) {
@@ -102,7 +104,8 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
     if (isMuleDeploy != null && isMuleDeploy.equals("true")) {
       phases.put(DEPLOY.id(), mapping.buildGoals(MULE_MAVEN_PLUGIN + ":deploy"));
     } else {
-      phases.put(DEPLOY.id(), mapping.buildGoals(MAVEN_DEPLOY_PLUGIN + ":deploy"));
+      phases.put(DEPLOY.id(),
+                 buildGoals(mapping, MAVEN_DEPLOY_PLUGIN + ":deploy", EXCHANGE_PUBLICATION_PLUGIN + ":exchange-deploy"));
     }
     return phases;
   }

@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.model.Deployment;
 import org.mule.tools.client.cloudhub.model.DeploymentLogRequest;
+import org.mule.tools.client.cloudhub.model.Instance;
 import org.mule.tools.client.cloudhub.model.MuleVersion;
 import org.mule.tools.client.core.exception.ClientException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
@@ -155,6 +156,20 @@ public class CloudHubClientTestCase {
     logRequest.setStartTime(deployment.getCreateTime().getTime());
 
     cloudHubClient.getLogs(application, logRequest);
+  }
+
+  @Test
+  public void getEntireLogsForDeployment() {
+    Application application = cloudHubClient.createApplication(baseApplication, applicationFile);
+    cloudHubClient.startApplications(appName);
+
+    Deployment deployment = cloudHubClient.getDeployments(application).stream().findAny()
+        .orElseThrow(() -> new AssertionError("No deployments found for application"));
+
+    Instance instance = deployment.getInstances().stream().findAny()
+        .orElseThrow(() -> new AssertionError("No instances found for deployment"));
+
+    cloudHubClient.getEntireLogs(application, instance.getInstanceId());
   }
 
   private void verifyAppDoesntExist(String appName) {

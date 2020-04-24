@@ -1,0 +1,18 @@
+{
+  "extends": [
+    "config:base",
+    ":masterIssue"
+  ],
+  "branchPrefix": "renovate-",
+  "prHourlyLimit": 1,
+  "prConcurrentLimit": 10,
+  "schedule": [
+    "after 8pm and before 8am on every weekday",
+    "every weekend"
+  ],
+  "timezone": "America/Argentina/Buenos_Aires",
+
+  "ignoreDeps": [
+    "org.mule.runtime:mule-core"
+  ]
+}

@@ -67,7 +67,7 @@
         <commons.logging.version>1.2</commons.logging.version>
         <jdom2.version>2.0.5</jdom2.version>
         <javax.activation.api.version>1.2.0</javax.activation.api.version>
-        <jaxb.api.version>2.3.0</jaxb.api.version>
+        <jaxb.api.version>2.3.1</jaxb.api.version>
 
         <maven.version>3.5.0</maven.version>
         <maven.compat.version>3.5.0</maven.compat.version>

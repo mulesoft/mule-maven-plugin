@@ -93,7 +93,7 @@
         <codehaus.plexus.archiver>3.6.0</codehaus.plexus.archiver>
         <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
         <jacoco.maven.plugin.version>0.8.2</jacoco.maven.plugin.version>
-        <spotbugs.maven.plugin.version>3.1.6</spotbugs.maven.plugin.version>
+        <spotbugs.maven.plugin.version>3.1.12.2</spotbugs.maven.plugin.version>
         <spotbugs.version>3.1.12</spotbugs.version>
         <formatter.maven.plugin.version>1.9.0</formatter.maven.plugin.version>
         <build.helper.maven.plugin.version>1.8</build.helper.maven.plugin.version>

@@ -22,6 +22,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
+import java.util.UUID;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.DeploymentRepository;
@@ -53,7 +55,6 @@ public class MavenProjectInformation implements ProjectInformation {
         .withProjectBaseFolder(Paths.get(projectBaseFolder.toURI()))
         .withBuildDirectory(Paths.get(project.getBuild().getDirectory()))
         .setTestProject(testJar)
-        .withDependencyProject(new DependencyProject(project))
         .isDeployment(isDeployment)
         .withResolvedPom(new ResolvedPom(project.getModel()));
 
@@ -66,10 +67,24 @@ public class MavenProjectInformation implements ProjectInformation {
         if (deployments != null && isPlatformDeployment(deployments)) {
           builder.withDeployments(deployments);
         }
+        Properties systemProperties = session.getRequest().getSystemProperties();
+        Object xRunId = systemProperties.get("X-EXCHANGE-DEPLOY-ID");
+
+        if (xRunId == null) {
+          xRunId = UUID.randomUUID();
+          systemProperties.setProperty("X-EXCHANGE-DEPLOY-ID", String.valueOf(xRunId));
+        }
+
+        project.getDistributionManagementArtifactRepository()
+            .setUrl(repository.getUrl() + "/" + xRunId);
+
       } else {
         builder.withDeployments(deployments);
       }
     }
+
+    builder.withDependencyProject(new DependencyProject(project));
+
     mavenProjectInformation.projectInformation = builder.build();
     return mavenProjectInformation;
   }

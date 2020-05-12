@@ -69,7 +69,8 @@ public class DefaultValuesPolicyMuleArtifactJsonGenerator extends AbstractDefaul
     MuleArtifactLoaderDescriptor bundleDescriptorLoader = originalMuleArtifact.getBundleDescriptorLoader();
     Map<String, Object> attributes =
         bundleDescriptorLoader != null && originalMuleArtifact.getBundleDescriptorLoader().getAttributes() != null
-            ? new HashMap<>(originalMuleArtifact.getBundleDescriptorLoader().getAttributes()) : new HashMap<>();
+            ? new HashMap<>(originalMuleArtifact.getBundleDescriptorLoader().getAttributes())
+            : new HashMap<>();
 
     attributes.putIfAbsent(GROUP_ID, artifactContentResolver.getPom().getGroupId());
     attributes.putIfAbsent(ARTIFACT_ID, artifactContentResolver.getPom().getArtifactId());

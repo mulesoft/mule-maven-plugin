@@ -121,7 +121,8 @@ public class ProxyConfiguration {
 
   public static boolean isAbleToSetupProxy(final Settings settings) {
     return (!StringUtils.isBlank(System.getProperty(HTTP_PROXY_HOST))
-        || !StringUtils.isBlank(System.getProperty(HTTPS_PROXY_HOST))) || (settings != null
+        || !StringUtils.isBlank(System.getProperty(HTTPS_PROXY_HOST)))
+        || (settings != null
             && CollectionUtils.isNotEmpty(settings.getProxies()));
   }
 

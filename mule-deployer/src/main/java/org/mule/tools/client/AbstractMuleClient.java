@@ -330,6 +330,11 @@ public abstract class AbstractMuleClient extends AbstractClient {
     return currentOrgId;
   }
 
+  public void renewToken() {
+    this.bearerToken = "";
+    this.bearerToken = getBearerToken(this.credentials);
+  }
+
   private String getBearerToken(AnypointCredential credentials) {
     if (isBlank(bearerToken)) {
       switch (credentials.credentialType()) {

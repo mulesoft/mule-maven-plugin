@@ -95,7 +95,7 @@
         <jacoco.maven.plugin.version>0.8.2</jacoco.maven.plugin.version>
         <spotbugs.maven.plugin.version>3.1.12.2</spotbugs.maven.plugin.version>
         <spotbugs.version>3.1.12</spotbugs.version>
-        <formatter.maven.plugin.version>1.9.0</formatter.maven.plugin.version>
+        <formatter.maven.plugin.version>1.9.2</formatter.maven.plugin.version>
         <build.helper.maven.plugin.version>1.8</build.helper.maven.plugin.version>
 
         <maven.plugin.plugin.version>3.5</maven.plugin.plugin.version>

@@ -73,7 +73,7 @@
         <maven.compat.version>3.5.0</maven.compat.version>
         <maven.verifier.version>1.6</maven.verifier.version>
         <maven.dependency.tree.version>1.2</maven.dependency.tree.version>
-        <plexus.container.default.version>1.6</plexus.container.default.version>
+        <plexus.container.default.version>1.7.1</plexus.container.default.version>
         <plexus.component.annotations.version>1.7.1</plexus.component.annotations.version>
         <jsonassert.version>1.5.0</jsonassert.version>
 

@@ -19,6 +19,7 @@ import org.mule.tools.client.arm.model.User;
 import org.mule.tools.client.arm.model.UserInfo;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.CloudHubClient;
+import org.mule.tools.client.cloudhub.model.Environment;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
@@ -286,5 +287,87 @@ public class CloudHubArtifactDeployerTest {
     assertThat("resolvedProperties does not have the expected size", resolvedProperties.size(), equalTo(2));
     assertThat("resolvedProperties should contains the (key,val) entry", resolvedProperties, hasEntry("key", "val"));
     assertThat("resolvedProperties should contains the (foo,bar) entry", resolvedProperties, hasEntry("foo", "bar"));
+  }
+
+  @Test
+  public void testDeployApplicationObjectStoreV1() throws DeploymentException {
+    when(deploymentMock.getObjectStoreV2()).thenReturn(false);
+    when(deploymentMock.getSkipDeploymentVerification()).thenReturn(true);
+
+    when(clientMock.isDomainAvailable(any())).thenReturn(true);
+
+    cloudHubArtifactDeployer.deployApplication();
+
+    ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
+    verify(clientMock).createApplication(applicationCaptor.capture(), any());
+    assertThat("ObjectStoreV1 must be true", applicationCaptor.getValue().getObjectStoreV1(), equalTo(true));
+  }
+
+  @Test
+  public void testDeployApplicationObjectStoreV2() throws DeploymentException {
+    when(deploymentMock.getObjectStoreV2()).thenReturn(true);
+    when(deploymentMock.getSkipDeploymentVerification()).thenReturn(true);
+
+    when(clientMock.isDomainAvailable(any())).thenReturn(true);
+
+    cloudHubArtifactDeployer.deployApplication();
+
+    ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
+    verify(clientMock).createApplication(applicationCaptor.capture(), any());
+    assertThat("ObjectStoreV1 must be false", applicationCaptor.getValue().getObjectStoreV1(), equalTo(false));
+  }
+
+  @Test
+  public void testObjectStorageV1FromEnvironment() throws DeploymentException {
+    CloudHubDeployment deployment = new CloudHubDeployment();
+
+    deployment.setSkipDeploymentVerification(true);
+    deployment.setApplicationName(FAKE_APPLICATION_NAME);
+    deployment.setMuleVersion("4.0.0");
+    deployment.setArtifact(applicationFile);
+    deployment.setWorkers(1);
+    deployment.setWorkerType("Micro");
+
+    cloudHubArtifactDeployer = new CloudHubArtifactDeployer(deployment, clientMock, logMock);
+
+    when(clientMock.isDomainAvailable(any())).thenReturn(true);
+
+    Environment mockEnvironment = mock(Environment.class);
+    when(mockEnvironment.getObjectStoreV1Enabled()).thenReturn(true);
+
+    when(clientMock.getEnvironment()).thenReturn(mockEnvironment);
+
+    cloudHubArtifactDeployer.deployApplication();
+
+    ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
+    verify(clientMock).createApplication(applicationCaptor.capture(), any());
+    assertThat("ObjectStoreV1 must be true", applicationCaptor.getValue().getObjectStoreV1(), equalTo(true));
+  }
+
+  @Test
+  public void testObjectStorageV2FromEnvironment() throws DeploymentException {
+    CloudHubDeployment deployment = new CloudHubDeployment();
+
+    deployment.setSkipDeploymentVerification(true);
+    deployment.setApplicationName(FAKE_APPLICATION_NAME);
+    deployment.setMuleVersion("4.0.0");
+    deployment.setArtifact(applicationFile);
+    deployment.setWorkers(1);
+    deployment.setWorkerType("Micro");
+
+    cloudHubArtifactDeployer = new CloudHubArtifactDeployer(deployment, clientMock, logMock);
+
+    when(clientMock.isDomainAvailable(any())).thenReturn(true);
+
+    Environment mockEnvironment = mock(Environment.class);
+    when(mockEnvironment.getObjectStoreV1Enabled()).thenReturn(false);
+
+    when(clientMock.getEnvironment()).thenReturn(mockEnvironment);
+
+    cloudHubArtifactDeployer.deployApplication();
+
+    ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
+    verify(clientMock).createApplication(applicationCaptor.capture(), any());
+    assertThat("ObjectStoreV1 must be true", applicationCaptor.getValue().getObjectStoreV1(), equalTo(false));
   }
 }

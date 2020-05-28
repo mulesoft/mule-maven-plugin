@@ -186,6 +186,11 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
   private Application getApplication(Application originalApplication) {
     Application application = new Application();
+
+    if (deployment.getObjectStoreV2() != null) {
+      application.setObjectStoreV1(!this.deployment.getObjectStoreV2());
+    }
+
     if (originalApplication != null) {
       application.setDomain(deployment.getApplicationName());
 

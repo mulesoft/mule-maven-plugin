@@ -191,6 +191,10 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     MuleVersion muleVersion = new MuleVersion();
     muleVersion.setVersion(deployment.getMuleVersion().get());
 
+    if (deployment.getObjectStoreV2() != null) {
+      application.setObjectStoreV1(!this.deployment.getObjectStoreV2());
+    }
+
     if (originalApplication != null) {
       Map<String, String> resolvedProperties = resolveProperties(originalApplication.getProperties(),
                                                                  deployment.getProperties(), deployment.overrideProperties());

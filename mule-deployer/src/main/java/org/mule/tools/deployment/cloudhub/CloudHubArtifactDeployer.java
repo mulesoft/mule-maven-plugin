@@ -186,6 +186,11 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
   private Application getApplication(Application originalApplication) {
     Application application = new Application();
+
+    if (deployment.getObjectStoreV2() != null) {
+      application.setObjectStoreV1(!this.deployment.getObjectStoreV2());
+    }
+
     if (originalApplication != null) {
       application.setDomain(deployment.getApplicationName());
 
@@ -216,10 +221,6 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
       application.setMuleVersion(muleVersion);
 
-      if (deployment.getObjectStoreV2() != null) {
-        application.setObjectStoreV1(!this.deployment.getObjectStoreV2());
-      }
-
     } else {
       application.setDomain(deployment.getApplicationName());
 
@@ -237,10 +238,6 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       String workerType = isBlank(deployment.getWorkerType()) ? DEFAULT_CH_WORKER_TYPE : deployment.getWorkerType();
 
       application.setWorkers(getWorkers(workersAmout, workerType));
-
-      if (deployment.getObjectStoreV2() != null) {
-        application.setObjectStoreV1(!this.deployment.getObjectStoreV2());
-      }
     }
 
     return application;

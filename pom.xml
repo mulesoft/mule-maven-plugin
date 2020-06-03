@@ -92,7 +92,7 @@
         <license.plugin.version>2.11</license.plugin.version>
         <codehaus.plexus.archiver>3.7.0</codehaus.plexus.archiver>
         <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
-        <jacoco.maven.plugin.version>0.8.2</jacoco.maven.plugin.version>
+        <jacoco.maven.plugin.version>0.8.5</jacoco.maven.plugin.version>
         <spotbugs.maven.plugin.version>3.1.12.2</spotbugs.maven.plugin.version>
         <spotbugs.version>3.1.12</spotbugs.version>
         <formatter.maven.plugin.version>1.9.2</formatter.maven.plugin.version>

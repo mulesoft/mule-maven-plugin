@@ -10,6 +10,7 @@
 package org.mule.tools.api.util;
 
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.ProjectInformation;
@@ -75,9 +76,16 @@ public class MavenProjectInformation implements ProjectInformation {
           systemProperties.setProperty("X-EXCHANGE-DEPLOY-ID", String.valueOf(xRunId));
         }
 
-        project.getDistributionManagementArtifactRepository()
-            .setUrl(repository.getUrl() + "/" + xRunId);
+        Optional<ArtifactRepository> exchangeRemoteArtifact =
+            project.getRemoteArtifactRepositories().stream()
+                .filter(remoteArtifact -> ExchangeRepositoryMetadata.isExchangeRepo(remoteArtifact.getUrl())).findAny();
 
+        if (exchangeRemoteArtifact.isPresent()) {
+          exchangeRemoteArtifact.get().setUrl(exchangeRemoteArtifact.get().getUrl() + "/runId/" + xRunId);
+        }
+
+        project.getDistributionManagementArtifactRepository()
+            .setUrl(repository.getUrl() + "/runId/" + xRunId);
       } else {
         builder.withDeployments(deployments);
       }

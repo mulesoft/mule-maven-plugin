@@ -23,7 +23,7 @@ import org.mule.tools.client.authentication.model.Credentials;
 public class ExchangeRepositoryMetadata {
 
   private static final Pattern exchangeRepositoryUriPattern = Pattern.compile(
-                                                                              "^https://.*anypoint\\.mulesoft\\.com/api/v1/organizations/(.*)/maven$");
+                                                                              "^https://.*anypoint\\.mulesoft\\.com/api/v./organizations/(.*)/maven$");
   private static final Pattern anypointPrefixUriPattern = Pattern.compile("^https://maven\\.(.*anypoint\\.mulesoft\\.com/)");
 
   private String baseUri;

@@ -78,10 +78,12 @@ public class MavenProjectInformation implements ProjectInformation {
 
         Optional<ArtifactRepository> exchangeRemoteArtifact =
             project.getRemoteArtifactRepositories().stream()
-                .filter(remoteArtifact -> ExchangeRepositoryMetadata.isExchangeRepo(remoteArtifact.getUrl())).findAny();
+                .filter(remoteArtifact -> ExchangeRepositoryMetadata.isExchangeV3Repo(remoteArtifact.getUrl())).findAny();
 
         if (exchangeRemoteArtifact.isPresent()) {
-          exchangeRemoteArtifact.get().setUrl(exchangeRemoteArtifact.get().getUrl() + "/runId/" + xRunId);
+          if (ExchangeRepositoryMetadata.isExchangeV3Repo(exchangeRemoteArtifact.get().getUrl())) {
+            exchangeRemoteArtifact.get().setUrl(exchangeRemoteArtifact.get().getUrl() + "/runId/" + xRunId);
+          }
         }
 
         project.getDistributionManagementArtifactRepository()

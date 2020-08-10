@@ -24,6 +24,10 @@ public class ExchangeRepositoryMetadata {
 
   private static final Pattern exchangeRepositoryUriPattern = Pattern.compile(
                                                                               "^https://.*anypoint\\.mulesoft\\.com/api/v./organizations/(.*)/maven$");
+
+  private static final Pattern exchangeV3RepositoryUriPattern = Pattern.compile(
+                                                                                "^https://.*anypoint\\.mulesoft\\.com/api/v3/organizations/(.*)/maven$");
+
   private static final Pattern anypointPrefixUriPattern = Pattern.compile("^https://maven\\.(.*anypoint\\.mulesoft\\.com/)");
 
   private String baseUri;
@@ -56,6 +60,10 @@ public class ExchangeRepositoryMetadata {
 
   public static boolean isExchangeRepo(String uri) {
     return exchangeRepositoryUriPattern.matcher(uri).matches();
+  }
+
+  public static boolean isExchangeV3Repo(String uri) {
+    return exchangeV3RepositoryUriPattern.matcher(uri).matches();
   }
 
   protected String getBaseUri(String uri) {

@@ -12,7 +12,6 @@ package org.mule.tools.api.util;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 
 import com.mulesoft.exchange.mavenfacade.utils.ExchangeRepositoryBuilder;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.ProjectInformation;
@@ -25,8 +24,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
-import java.util.UUID;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.DeploymentRepository;

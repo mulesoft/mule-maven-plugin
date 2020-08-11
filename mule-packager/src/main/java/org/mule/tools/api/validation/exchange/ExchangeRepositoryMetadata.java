@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import static org.mule.runtime.api.util.Preconditions.checkArgument;
 
+import com.mulesoft.exchange.mavenfacade.utils.ExchangeUriChecker;
 import org.mule.tools.client.authentication.model.Credentials;
 
 /**
@@ -22,8 +23,6 @@ import org.mule.tools.client.authentication.model.Credentials;
  */
 public class ExchangeRepositoryMetadata {
 
-  private static final Pattern exchangeRepositoryUriPattern = Pattern.compile(
-                                                                              "^https://.*anypoint\\.mulesoft\\.com/api/v./organizations/(.*)/maven$");
   private static final Pattern anypointPrefixUriPattern = Pattern.compile("^https://maven\\.(.*anypoint\\.mulesoft\\.com/)");
 
   private String baseUri;
@@ -55,7 +54,7 @@ public class ExchangeRepositoryMetadata {
   }
 
   public static boolean isExchangeRepo(String uri) {
-    return exchangeRepositoryUriPattern.matcher(uri).matches();
+    return ExchangeUriChecker.isExchangeRepo(uri);
   }
 
   protected String getBaseUri(String uri) {
@@ -73,11 +72,7 @@ public class ExchangeRepositoryMetadata {
 
   protected String getOrganizationId(String uri) {
     checkArgument(uri != null, "URI should not be null");
-    String organizationId = null;
-    Matcher matcher = exchangeRepositoryUriPattern.matcher(uri);
-    if (matcher.matches()) {
-      organizationId = matcher.group(1);
-    }
+    String organizationId = ExchangeUriChecker.extractOrganizationIdFromExchangeRepositoryUri(uri);
     if (organizationId == null) {
       throw new IllegalArgumentException("The URI " + uri + " is not a valid URI to Exchange");
     }

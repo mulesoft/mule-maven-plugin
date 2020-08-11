@@ -10,6 +10,8 @@
 package org.mule.tools.api.util;
 
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+
+import com.mulesoft.exchange.mavenfacade.utils.ExchangeRepositoryBuilder;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.Pom;
@@ -68,24 +70,9 @@ public class MavenProjectInformation implements ProjectInformation {
         if (deployments != null && isPlatformDeployment(deployments)) {
           builder.withDeployments(deployments);
         }
-        Properties systemProperties = session.getRequest().getSystemProperties();
-        Object xRunId = systemProperties.get("X-EXCHANGE-DEPLOY-ID");
 
-        if (xRunId == null) {
-          xRunId = UUID.randomUUID();
-          systemProperties.setProperty("X-EXCHANGE-DEPLOY-ID", String.valueOf(xRunId));
-        }
-
-        Optional<ArtifactRepository> exchangeRemoteArtifact =
-            project.getRemoteArtifactRepositories().stream()
-                .filter(remoteArtifact -> ExchangeRepositoryMetadata.isExchangeRepo(remoteArtifact.getUrl())).findAny();
-
-        if (exchangeRemoteArtifact.isPresent()) {
-          exchangeRemoteArtifact.get().setUrl(exchangeRemoteArtifact.get().getUrl() + "/runId/" + xRunId);
-        }
-
-        project.getDistributionManagementArtifactRepository()
-            .setUrl(repository.getUrl() + "/runId/" + xRunId);
+        // modifying repository uri in order to deploy to Exchange
+        ExchangeRepositoryBuilder.modifyRepositoryUri(project, session.getRequest().getSystemProperties());
       } else {
         builder.withDeployments(deployments);
       }

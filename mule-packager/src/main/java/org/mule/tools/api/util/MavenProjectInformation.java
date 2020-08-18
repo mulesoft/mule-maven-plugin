@@ -68,8 +68,8 @@ public class MavenProjectInformation implements ProjectInformation {
           builder.withDeployments(deployments);
         }
 
-        // modifying repository uri in order to deploy to Exchange
-        ExchangeRepositoryBuilder.modifyRepositoryUri(project, session.getRequest().getSystemProperties());
+        // updating repository uri in order to deploy to Exchange
+        ExchangeRepositoryBuilder.updateRepositoryUri(project, session.getRequest().getSystemProperties());
       } else {
         builder.withDeployments(deployments);
       }

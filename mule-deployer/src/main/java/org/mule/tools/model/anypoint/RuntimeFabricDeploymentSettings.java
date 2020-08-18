@@ -31,6 +31,7 @@ public class RuntimeFabricDeploymentSettings {
     publicUrl = settings.publicUrl;
     lastMileSecurity = settings.lastMileSecurity;
     clusteringEnabled = settings.clusteringEnabled;
+    updateStrategy = settings.updateStrategy;
   }
 
   protected String runtimeVersion;
@@ -58,6 +59,9 @@ public class RuntimeFabricDeploymentSettings {
 
   @Parameter
   protected boolean clusteringEnabled;
+
+  @Parameter
+  protected String updateStrategy;
 
   public String getRuntimeVersion() {
     return runtimeVersion;
@@ -131,6 +135,14 @@ public class RuntimeFabricDeploymentSettings {
     this.clusteringEnabled = clusteringEnabled;
   }
 
+  public String getUpdateStrategy() {
+    return updateStrategy;
+  }
+
+  public void setUpdateStrategy(String updateStrategy) {
+    this.updateStrategy = updateStrategy;
+  }
+
   public void setEnvironmentSpecificValues() throws DeploymentException {
 
     if (getReplicationFactor() == null) {
@@ -155,6 +167,10 @@ public class RuntimeFabricDeploymentSettings {
 
     if (isEmpty(getCpuMax())) {
       setCpuMax(getCpuReserved());
+    }
+
+    if (isEmpty(getUpdateStrategy())) {
+      setUpdateStrategy("rolling");
     }
   }
 }

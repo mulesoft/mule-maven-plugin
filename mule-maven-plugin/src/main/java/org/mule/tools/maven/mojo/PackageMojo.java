@@ -11,9 +11,11 @@
 package org.mule.tools.maven.mojo;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.String.format;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_EXAMPLE;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_TEMPLATE;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_POLICY;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BUNDLE;
 import org.mule.tools.api.packager.builder.PackageBuilder;
 import org.mule.tools.api.packager.builder.PackageBuilderFactory;
@@ -69,6 +71,13 @@ public class PackageMojo extends AbstractMuleMojo {
     helper.attachArtifact(this.project, getType(),
                           getPackagingType().resolveClassifier(classifier, lightweightPackage, testJar),
                           destinationFile);
+
+    if (project.getPackaging().equals(MULE_POLICY.toString())) {
+      File policyYaml = new File(projectBaseFolder, format("%s.yaml", project.getArtifactId()));
+      helper.attachArtifact(this.project, "yaml",
+                            "policy-definition",
+                            policyYaml);
+    }
   }
 
   /**

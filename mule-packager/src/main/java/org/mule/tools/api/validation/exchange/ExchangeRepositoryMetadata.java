@@ -23,8 +23,6 @@ import org.mule.tools.client.authentication.model.Credentials;
  */
 public class ExchangeRepositoryMetadata {
 
-  private static final Pattern anypointPrefixUriPattern = Pattern.compile("^https://maven\\.(.*anypoint\\.mulesoft\\.com/)");
-
   private String baseUri;
   private String organizationId;
   private Credentials credentials;
@@ -59,11 +57,7 @@ public class ExchangeRepositoryMetadata {
 
   protected String getBaseUri(String uri) {
     checkArgument(uri != null, "URI should not be null");
-    String baseUri = null;
-    Matcher matcher = anypointPrefixUriPattern.matcher(uri);
-    if (matcher.find()) {
-      baseUri = "https://" + matcher.group(1);
-    }
+    String baseUri = ExchangeUriChecker.extractBaseAnypointUriFromMavenRepositoryUri(uri);
     if (baseUri == null) {
       throw new IllegalArgumentException("The URI " + uri + " is not a valid URI to Exchange");
     }

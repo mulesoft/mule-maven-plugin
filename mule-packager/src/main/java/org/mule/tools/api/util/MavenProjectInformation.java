@@ -10,7 +10,8 @@
 package org.mule.tools.api.util;
 
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
-import org.apache.maven.artifact.repository.ArtifactRepository;
+
+import com.mulesoft.exchange.mavenfacade.utils.ExchangeRepositoryBuilder;
 import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.ProjectInformation;
@@ -23,8 +24,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
-import java.util.UUID;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.DeploymentRepository;
@@ -68,26 +67,9 @@ public class MavenProjectInformation implements ProjectInformation {
         if (deployments != null && isPlatformDeployment(deployments)) {
           builder.withDeployments(deployments);
         }
-        Properties systemProperties = session.getRequest().getSystemProperties();
-        Object xRunId = systemProperties.get("X-EXCHANGE-DEPLOY-ID");
 
-        if (xRunId == null) {
-          xRunId = UUID.randomUUID();
-          systemProperties.setProperty("X-EXCHANGE-DEPLOY-ID", String.valueOf(xRunId));
-        }
-
-        Optional<ArtifactRepository> exchangeRemoteArtifact =
-            project.getRemoteArtifactRepositories().stream()
-                .filter(remoteArtifact -> ExchangeRepositoryMetadata.isExchangeV3Repo(remoteArtifact.getUrl())).findAny();
-
-        if (exchangeRemoteArtifact.isPresent()) {
-          if (ExchangeRepositoryMetadata.isExchangeV3Repo(exchangeRemoteArtifact.get().getUrl())) {
-            exchangeRemoteArtifact.get().setUrl(exchangeRemoteArtifact.get().getUrl() + "/runId/" + xRunId);
-          }
-        }
-
-        project.getDistributionManagementArtifactRepository()
-            .setUrl(repository.getUrl() + "/runId/" + xRunId);
+        // updating repository uri in order to deploy to Exchange
+        ExchangeRepositoryBuilder.updateRepositoryUri(project, session.getRequest().getSystemProperties());
       } else {
         builder.withDeployments(deployments);
       }

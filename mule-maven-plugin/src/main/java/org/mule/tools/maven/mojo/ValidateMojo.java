@@ -44,7 +44,8 @@ public class ValidateMojo extends AbstractMuleMojo {
                                                                                                                      new TestScopeDependencyValidator.Dependency("com.mulesoft.munit",
                                                                                                                                                                  "munit-runner"),
                                                                                                                      new TestScopeDependencyValidator.Dependency("com.mulesoft.munit",
-                                                                                                                                                                 "munit-tools")));
+                                                                                                                                                                 "munit-tools")),
+                                                                                                              asList("com.mulesoft.munit"));
 
   @Override
   public void doExecute() throws MojoExecutionException {

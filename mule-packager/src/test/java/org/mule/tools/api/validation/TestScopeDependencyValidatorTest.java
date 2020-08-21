@@ -17,6 +17,7 @@ import static org.junit.rules.ExpectedException.none;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -34,7 +35,8 @@ public class TestScopeDependencyValidatorTest {
   @Before
   public void setUp() {
     this.testScopeDependencyValidator =
-        new TestScopeDependencyValidator(singletonList(new TestScopeDependencyValidator.Dependency(GROUP_ID, ARTIFACT_ID)));
+        new TestScopeDependencyValidator(singletonList(new TestScopeDependencyValidator.Dependency(GROUP_ID, ARTIFACT_ID)),
+                                         new ArrayList());
   }
 
   @Rule

@@ -28,6 +28,7 @@ import org.junit.rules.ExpectedException;
 public class TestScopeDependencyValidatorTest {
 
   private static final String GROUP_ID = "org.mule.test";
+  private static final String SECOND_GROUP_ID = "org.mule.testgroup";
   private static final String ARTIFACT_ID = "artifact";
 
   private DependencyValidator testScopeDependencyValidator;
@@ -36,7 +37,7 @@ public class TestScopeDependencyValidatorTest {
   public void setUp() {
     this.testScopeDependencyValidator =
         new TestScopeDependencyValidator(singletonList(new TestScopeDependencyValidator.Dependency(GROUP_ID, ARTIFACT_ID)),
-                                         new ArrayList());
+                                         singletonList(SECOND_GROUP_ID));
   }
 
   @Rule
@@ -45,6 +46,13 @@ public class TestScopeDependencyValidatorTest {
   @Test
   public void testExceptionWhenInvalidDependencyValidatingMultiple() throws Exception {
     List<ArtifactCoordinates> dependencies = singletonList(createCoordinates(GROUP_ID, ARTIFACT_ID, "compile"));
+    expectedException.expect(ValidationException.class);
+    testScopeDependencyValidator.areDependenciesValid(dependencies);
+  }
+
+  @Test
+  public void testExceptionWhenInvalidGroupValidatingMultiple() throws Exception {
+    List<ArtifactCoordinates> dependencies = singletonList(createCoordinates(SECOND_GROUP_ID, ARTIFACT_ID, "compile"));
     expectedException.expect(ValidationException.class);
     testScopeDependencyValidator.areDependenciesValid(dependencies);
   }

@@ -40,11 +40,9 @@ public class ValidateMojo extends AbstractMuleMojo {
 
   private static final String MIN_MAVEN_VERSION = "3.3.3";
   private static final DependencyValidator TEST_SCOPE_DEPENDENCY_VALIDATOR = new TestScopeDependencyValidator(
-                                                                                                              asList(
-                                                                                                                     new TestScopeDependencyValidator.Dependency("com.mulesoft.munit",
-                                                                                                                                                                 "munit-runner"),
-                                                                                                                     new TestScopeDependencyValidator.Dependency("com.mulesoft.munit",
-                                                                                                                                                                 "munit-tools")));
+                                                                                                              asList(),
+                                                                                                              asList("com.mulesoft.munit",
+                                                                                                                     "com.mulesoft.munit.utils"));
 
   @Override
   public void doExecute() throws MojoExecutionException {

@@ -105,7 +105,8 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
       phases.put(DEPLOY.id(), mapping.buildGoals(MULE_MAVEN_PLUGIN + ":deploy"));
     } else {
       phases.put(DEPLOY.id(),
-                 buildGoals(mapping,EXCHANGE_PUBLICATION_PLUGIN + ":exchange-pre-deploy", MAVEN_DEPLOY_PLUGIN + ":deploy", EXCHANGE_PUBLICATION_PLUGIN + ":exchange-deploy"));
+                 buildGoals(mapping, EXCHANGE_PUBLICATION_PLUGIN + ":exchange-pre-deploy", MAVEN_DEPLOY_PLUGIN + ":deploy",
+                            EXCHANGE_PUBLICATION_PLUGIN + ":exchange-deploy"));
     }
     return phases;
   }

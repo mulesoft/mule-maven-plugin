@@ -94,23 +94,18 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
                buildGoals(mapping, MAVEN_COMPILER_PLUGIN + ":testCompile", MULE_MAVEN_PLUGIN + ":test-compile"));
     phases.put(TEST.id(), buildGoals(mapping, MAVEN_SUREFIRE_PLUGIN + ":test"));
     phases.put(PACKAGE.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":package"));
-    String isMuleDeploy = System.getProperty(MULE_DEPLOY);
-    if (isMuleDeploy != null && isMuleDeploy.equals("true")) {
-      phases.put(VERIFY.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":verify"));
-    } else {
-      phases.put(VERIFY.id(),
-                 buildGoals(mapping, MULE_MAVEN_PLUGIN + ":verify", EXCHANGE_PUBLICATION_PLUGIN + ":exchange-validation"));
-    }
+    phases.put(VERIFY.id(), buildGoals(mapping, MULE_MAVEN_PLUGIN + ":verify"));
 
     phases.put(INSTALL.id(), buildGoals(mapping, MAVEN_INSTALL_PLUGIN + ":install"));
 
     phases.put(SITE.id(), buildGoals(mapping, MAVEN_SITE_PLUGIN + ":site", MULE_MAVEN_PLUGIN + ":site"));
 
+    String isMuleDeploy = System.getProperty(MULE_DEPLOY);
     if (isMuleDeploy != null && isMuleDeploy.equals("true")) {
       phases.put(DEPLOY.id(), mapping.buildGoals(MULE_MAVEN_PLUGIN + ":deploy"));
     } else {
       phases.put(DEPLOY.id(),
-                 buildGoals(mapping, MAVEN_DEPLOY_PLUGIN + ":deploy", EXCHANGE_PUBLICATION_PLUGIN + ":exchange-deploy"));
+                 buildGoals(mapping,EXCHANGE_PUBLICATION_PLUGIN + ":exchange-pre-deploy", MAVEN_DEPLOY_PLUGIN + ":deploy", EXCHANGE_PUBLICATION_PLUGIN + ":exchange-deploy"));
     }
     return phases;
   }

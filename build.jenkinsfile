@@ -12,7 +12,8 @@ def pipelineParams = [
   "agent": "ubuntu-14.04",
   "jdk": params.JDK,
   "maven": params.maven,
-  "projectKey": "mule-maven-plugin"
+  "projectKey": "mule-maven-plugin",
+  "protectedBranches" : ["master", "develop", "3.x", "3.4.x", "3.3.x", "2.x"]
 ]
 
 build(pipelineParams)

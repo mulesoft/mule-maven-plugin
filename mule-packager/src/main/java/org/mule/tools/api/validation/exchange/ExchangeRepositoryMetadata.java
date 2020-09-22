@@ -9,6 +9,7 @@
  */
 package org.mule.tools.api.validation.exchange;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,11 +27,15 @@ public class ExchangeRepositoryMetadata {
   private String baseUri;
   private String organizationId;
   private Credentials credentials;
+  private ExchangeUriChecker exchangeUriChecker;
 
-  public ExchangeRepositoryMetadata() {}
+  public ExchangeRepositoryMetadata() {
+    this.exchangeUriChecker = new ExchangeUriChecker();
+  }
 
-  public ExchangeRepositoryMetadata(Credentials credentials, String uri) {
+  public ExchangeRepositoryMetadata(Credentials credentials, String uri, List<String> customDomains) {
     this.credentials = credentials;
+    this.exchangeUriChecker = new ExchangeUriChecker(customDomains);
     parseUri(uri);
   }
 
@@ -51,13 +56,9 @@ public class ExchangeRepositoryMetadata {
     return organizationId;
   }
 
-  public static boolean isExchangeRepo(String uri) {
-    return ExchangeUriChecker.isExchangeRepo(uri);
-  }
-
   protected String getBaseUri(String uri) {
     checkArgument(uri != null, "URI should not be null");
-    String baseUri = ExchangeUriChecker.extractBaseAnypointUriFromMavenRepositoryUri(uri);
+    String baseUri = exchangeUriChecker.extractBaseAnypointUriFromMavenRepositoryUri(uri);
     if (baseUri == null) {
       throw new IllegalArgumentException("The URI " + uri + " is not a valid URI to Exchange");
     }
@@ -66,7 +67,7 @@ public class ExchangeRepositoryMetadata {
 
   protected String getOrganizationId(String uri) {
     checkArgument(uri != null, "URI should not be null");
-    String organizationId = ExchangeUriChecker.extractOrganizationIdFromExchangeRepositoryUri(uri);
+    String organizationId = exchangeUriChecker.extractOrganizationIdFromExchangeRepositoryUri(uri);
     if (organizationId == null) {
       throw new IllegalArgumentException("The URI " + uri + " is not a valid URI to Exchange");
     }

@@ -50,6 +50,12 @@
             <artifactId>plexus-archiver</artifactId>
         </dependency>
 
+        <!-- Exchange -->
+        <dependency>
+            <groupId>org.mule.tools.maven</groupId>
+            <artifactId>exchange-mule-plugin-utils</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>

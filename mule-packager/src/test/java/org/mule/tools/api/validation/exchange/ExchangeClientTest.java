@@ -18,6 +18,8 @@ import org.mule.tools.client.arm.model.AuthorizationResponse;
 
 import javax.ws.rs.core.Response;
 
+import java.util.ArrayList;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.*;
@@ -35,7 +37,8 @@ public class ExchangeClientTest {
 
   private static final String BEARER_TOKEN = "aaaaa-bbbbb";
   private static final Credentials CREDENTIALS = new Credentials(USERNAME, PASSWORD);
-  private static final ExchangeRepositoryMetadata METADATA = new ExchangeRepositoryMetadata(CREDENTIALS, EXCHANGE_REPO_URI);
+  private static final ExchangeRepositoryMetadata METADATA =
+      new ExchangeRepositoryMetadata(CREDENTIALS, EXCHANGE_REPO_URI, new ArrayList<>());
 
   private ExchangeClient client;
   private ExchangeClient clientSpy;

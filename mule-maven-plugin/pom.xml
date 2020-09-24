@@ -50,6 +50,12 @@
             <artifactId>plexus-archiver</artifactId>
         </dependency>
 
+        <!-- Exchange -->
+        <dependency>
+            <groupId>org.mule.tools.maven</groupId>
+            <artifactId>exchange-mule-plugin-utils</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -79,6 +85,14 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>mule-releases</id>
+            <name>Mule Release Repository</name>
+            <url>https://repository-master.mulesoft.org/nexus/content/repositories/releases</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>

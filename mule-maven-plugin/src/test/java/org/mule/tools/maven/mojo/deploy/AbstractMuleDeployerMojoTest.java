@@ -10,6 +10,8 @@
 
 package org.mule.tools.maven.mojo.deploy;
 
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.DeploymentRepository;
@@ -33,6 +35,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
+import java.util.Properties;
 
 public class AbstractMuleDeployerMojoTest {
 
@@ -60,6 +63,7 @@ public class AbstractMuleDeployerMojoTest {
     when(projectMock.getModel()).thenReturn(mock(Model.class));
     when(projectMock.getGroupId()).thenReturn("groupId");
     when(projectMock.getArtifactId()).thenReturn("artifactId");
+    when(projectMock.getDistributionManagementArtifactRepository()).thenReturn(mock(ArtifactRepository.class));
     when(projectMock.getVersion()).thenReturn("1.0.0");
     mojoSpy.setProject(projectMock);
 
@@ -106,6 +110,10 @@ public class AbstractMuleDeployerMojoTest {
     when(distributionManagementMock.getRepository()).thenReturn(deploymentRepositoryMock);
     when(settingsMock.getServer(any())).thenReturn(mock(Server.class));
     when(projectMock.getDistributionManagement()).thenReturn(distributionManagementMock);
+    Properties systemProperties = new Properties();
+    MavenExecutionRequest mavenExecutionRequestMock = mock(MavenExecutionRequest.class);
+    when(mavenExecutionRequestMock.getSystemProperties()).thenReturn(systemProperties);
+    when(sessionMock.getRequest()).thenReturn(mavenExecutionRequestMock);
     when(sessionMock.getSettings()).thenReturn(settingsMock);
 
     assertThat("The resolved deployment is not the expected", mojoSpy.getDeploymentConfiguration(),

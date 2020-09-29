@@ -10,6 +10,8 @@
 package org.mule.tools.api.util;
 
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+
+import com.mulesoft.exchange.mavenfacade.utils.ExchangeUriChecker;
 import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.ProjectInformation;
@@ -20,6 +22,7 @@ import org.mule.tools.model.Deployment;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +46,12 @@ public class MavenProjectInformation implements ProjectInformation {
 
   public static MavenProjectInformation getProjectInformation(MavenSession session, MavenProject project, File projectBaseFolder,
                                                               boolean testJar, List<Deployment> deployments, String classifier) {
+    return getProjectInformation(session, project, projectBaseFolder, testJar, deployments, classifier, new ArrayList<>());
+  }
+
+  public static MavenProjectInformation getProjectInformation(MavenSession session, MavenProject project, File projectBaseFolder,
+                                                              boolean testJar, List<Deployment> deployments, String classifier,
+                                                              List<String> customDomains) {
     DefaultProjectInformation.Builder builder = new DefaultProjectInformation.Builder();
     boolean isDeployment = isDeploymentGoal(session);
     builder.withGroupId(project.getGroupId())
@@ -53,7 +62,6 @@ public class MavenProjectInformation implements ProjectInformation {
         .withProjectBaseFolder(Paths.get(projectBaseFolder.toURI()))
         .withBuildDirectory(Paths.get(project.getBuild().getDirectory()))
         .setTestProject(testJar)
-        .withDependencyProject(new DependencyProject(project))
         .isDeployment(isDeployment)
         .withResolvedPom(new ResolvedPom(project.getModel()));
 
@@ -61,7 +69,7 @@ public class MavenProjectInformation implements ProjectInformation {
       DistributionManagement management = project.getDistributionManagement();
       DeploymentRepository repository = management != null ? management.getRepository() : null;
       Settings settings = session.getSettings();
-      Optional<ExchangeRepositoryMetadata> metadata = getExchangeRepositoryMetadata(repository, settings);
+      Optional<ExchangeRepositoryMetadata> metadata = getExchangeRepositoryMetadata(repository, settings, customDomains);
       if (metadata.isPresent()) {
         if (deployments != null && isPlatformDeployment(deployments)) {
           builder.withDeployments(deployments);
@@ -70,6 +78,9 @@ public class MavenProjectInformation implements ProjectInformation {
         builder.withDeployments(deployments);
       }
     }
+
+    builder.withDependencyProject(new DependencyProject(project));
+
     mavenProjectInformation.projectInformation = builder.build();
     return mavenProjectInformation;
   }
@@ -149,15 +160,16 @@ public class MavenProjectInformation implements ProjectInformation {
   }
 
   private static Optional<ExchangeRepositoryMetadata> getExchangeRepositoryMetadata(DeploymentRepository repository,
-                                                                                    Settings settings) {
+                                                                                    Settings settings,
+                                                                                    List<String> customDomains) {
     ExchangeRepositoryMetadata metadata = null;
-    if (repository != null && ExchangeRepositoryMetadata.isExchangeRepo(repository.getUrl())) {
+    ExchangeUriChecker exchangeUriChecker = new ExchangeUriChecker(customDomains);
+    if (repository != null && exchangeUriChecker.isExchangeRepo(repository.getUrl())) {
       Server server = settings.getServer(repository.getId());
       if (server != null) {
         Credentials credentials = new Credentials(server.getUsername(), server.getPassword());
-        metadata = new ExchangeRepositoryMetadata(credentials, repository.getUrl());
+        metadata = new ExchangeRepositoryMetadata(credentials, repository.getUrl(), customDomains);
       }
-
     }
     return Optional.ofNullable(metadata);
   }

@@ -9,6 +9,7 @@
  */
 package org.mule.tools.maven.mojo;
 
+import com.mulesoft.exchange.mavenfacade.utils.ExchangeHelper;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
@@ -34,6 +35,7 @@ import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +115,9 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   @Parameter(defaultValue = "${useLocalRepository}")
   protected boolean useLocalRepository = false;
 
+  @Parameter
+  protected List<String> customDomains = new ArrayList<>();
+
   protected AbstractProjectValidator validator;
 
   protected ProjectVerifier verifier;
@@ -130,6 +135,10 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
     if (!lightweightPackage && useLocalRepository) {
       getLog().info("'useLocalRepository' would be ignored, it can only be used when 'lightweightPackage' is enabled");
       useLocalRepository = false;
+    }
+
+    if (customDomains.size() > 0) {
+      new ExchangeHelper(customDomains).saveCustomDomains(session.getRequest().getSystemProperties());
     }
   }
 
@@ -211,7 +220,7 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
 
   protected ProjectInformation getProjectInformation() {
     return MavenProjectInformation.getProjectInformation(session, project, projectBaseFolder, testJar, getDeployments(),
-                                                         getClassifier());
+                                                         getClassifier(), customDomains);
   }
 
   /**

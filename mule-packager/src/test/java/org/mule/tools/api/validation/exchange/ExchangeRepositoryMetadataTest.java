@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,7 +91,7 @@ public class ExchangeRepositoryMetadataTest {
   public void createNewExchangeRepositoryMetadataTest() {
     String organizationId = "38594819-c30d-4e23-8d65-b1234d7e1eee";
     String uri = "https://maven.anypoint.mulesoft.com/api/v1/organizations/" + organizationId + "/maven";
-    metadata = new ExchangeRepositoryMetadata(CREDENTIALS, uri);
+    metadata = new ExchangeRepositoryMetadata(CREDENTIALS, uri, new ArrayList<>());
     assertThat("Wrong username: metadata was not correctly created", metadata.getCredentials().getUsername(), equalTo(USERNAME));
     assertThat("Wrong password: metadata was not correctly created", metadata.getCredentials().getPassword(), equalTo(PASSWORD));
     assertThat("Wrong base baseUri: metadata was not correctly created", metadata.getBaseUri(),

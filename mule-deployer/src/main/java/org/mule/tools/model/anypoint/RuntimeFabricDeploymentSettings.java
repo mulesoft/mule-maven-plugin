@@ -16,36 +16,31 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  */
 public class RuntimeFabricDeploymentSettings {
 
-  public RuntimeFabricDeploymentSettings() {}
+  public RuntimeFabricDeploymentSettings() {
+
+  }
+
 
   public RuntimeFabricDeploymentSettings(RuntimeFabricDeploymentSettings settings) {
     runtimeVersion = settings.runtimeVersion;
     replicationFactor = settings.replicationFactor;
-    memoryReserved = settings.memoryReserved;
-    memoryMax = settings.memoryMax;
-    cpuReserved = settings.cpuReserved;
-    cpuMax = settings.cpuMax;
+    resources = settings.getResources();
     publicUrl = settings.publicUrl;
     lastMileSecurity = settings.lastMileSecurity;
-    clusteringEnabled = settings.clusteringEnabled;
+
+    clustered = settings.clustered;
+    updateStrategy = settings.updateStrategy;
+
   }
 
+  @Parameter
   protected String runtimeVersion;
 
   @Parameter
   protected Integer replicationFactor;
 
   @Parameter
-  protected String memoryReserved;
-
-  @Parameter
-  protected String memoryMax;
-
-  @Parameter
-  protected String cpuReserved;
-
-  @Parameter
-  protected String cpuMax;
+  protected Resources resources;
 
   @Parameter
   protected String publicUrl;
@@ -54,7 +49,24 @@ public class RuntimeFabricDeploymentSettings {
   protected boolean lastMileSecurity;
 
   @Parameter
-  protected boolean clusteringEnabled;
+  protected boolean clustered;
+
+  @Parameter
+  protected String updateStrategy;
+
+  @Parameter
+  protected boolean enforceDeployingReplicasAcrossNodes;
+
+  @Parameter
+  protected Http http;
+
+  @Parameter
+  protected boolean forwardSslSession;
+
+  @Parameter
+  protected boolean disableAmLogForwarding;
+
+
 
   public String getRuntimeVersion() {
     return runtimeVersion;
@@ -72,36 +84,15 @@ public class RuntimeFabricDeploymentSettings {
     this.replicationFactor = replicationFactor;
   }
 
-  public String getMemoryReserved() {
-    return memoryReserved;
+
+
+  public Resources getResources() {
+    return resources;
   }
 
-  public void setMemoryReserved(String memoryReserved) {
-    this.memoryReserved = memoryReserved;
-  }
 
-  public String getMemoryMax() {
-    return memoryMax;
-  }
-
-  public void setMemoryMax(String memoryMax) {
-    this.memoryMax = memoryMax;
-  }
-
-  public String getCpuReserved() {
-    return cpuReserved;
-  }
-
-  public void setCpuReserved(String cpuReserved) {
-    this.cpuReserved = cpuReserved;
-  }
-
-  public String getCpuMax() {
-    return cpuMax;
-  }
-
-  public void setCpuMax(String cpuMax) {
-    this.cpuMax = cpuMax;
+  public void setResources(Resources resources) {
+    this.resources = resources;
   }
 
   public String getPublicUrl() {
@@ -120,12 +111,12 @@ public class RuntimeFabricDeploymentSettings {
     this.lastMileSecurity = lastMileSecurity;
   }
 
-  public boolean isClusteringEnabled() {
-    return clusteringEnabled;
+  public boolean isClustered() {
+    return clustered;
   }
 
-  public void setClusteringEnabled(boolean clusteringEnabled) {
-    this.clusteringEnabled = clusteringEnabled;
+  public void setClustered(boolean clustered) {
+    this.clustered = clustered;
   }
 
   public void setEnvironmentSpecificValues() throws DeploymentException {
@@ -134,24 +125,32 @@ public class RuntimeFabricDeploymentSettings {
       setReplicationFactor(1);
     }
 
-    if (isClusteringEnabled() && getReplicationFactor().equals(1)) {
+    if (isClustered() && getReplicationFactor().equals(1)) {
       throw new DeploymentException("Invalid deployment configuration, replicas must be bigger than 1 to enable Runtime Cluster Mode. Please either set enableRuntimeClusterMode to false or increase the number of replicas");
     }
 
-    if (isEmpty(getMemoryReserved())) {
-      setMemoryReserved("700Mi");
+
+    if (isEmpty(getResources().getMemory().getReserved())) {
+      getResources().getMemory().setReserved("700Mi");;
     }
 
-    if (isEmpty(getMemoryMax())) {
-      setMemoryMax(getMemoryReserved());
+    if (isEmpty(getResources().getMemory().getLimit())) {
+      getResources().getMemory().setLimit(getResources().getMemory().getReserved());
     }
 
-    if (isEmpty(getCpuReserved())) {
-      setCpuReserved("500m");
+    if (isEmpty(getResources().getCpu().getReserved())) {
+      getResources().getCpu().setReserved("500m");;
     }
 
-    if (isEmpty(getCpuMax())) {
-      setCpuMax(getCpuReserved());
+    if (isEmpty(getResources().getCpu().getLimit())) {
+      getResources().getCpu().setLimit(getResources().getMemory().getReserved());
+    }
+
+    if (isEmpty(getResources().getCpu().getLimit())) {
+      getResources().getCpu().setLimit(getResources().getMemory().getReserved());
     }
   }
+
+
+
 }

@@ -26,25 +26,25 @@ public class RuntimeFabricDeploymentSettings {
 
   public RuntimeFabricDeploymentSettings(RuntimeFabricDeploymentSettings settings) {
     runtimeVersion = settings.runtimeVersion;
-    replicationFactor = settings.replicationFactor;
-    resources = settings.getResources();
-    publicUrl = settings.publicUrl;
+    resources = settings.resources;
     lastMileSecurity = settings.lastMileSecurity;
     clustered = settings.clustered;
     updateStrategy = settings.updateStrategy;
+
+    enforceDeployingReplicasAcrossNodes = settings.enforceDeployingReplicasAcrossNodes;
+    http = settings.http;
+    forwardSslSession = settings.forwardSslSession;
+    disableAmLogForwarding = settings.disableAmLogForwarding;
   }
 
   @Parameter
   protected String runtimeVersion;
 
-  @Parameter
-  protected Integer replicationFactor;
+
 
   @Parameter
   protected Resources resources;
 
-  @Parameter
-  protected String publicUrl;
 
   @Parameter
   protected boolean lastMileSecurity;
@@ -80,14 +80,6 @@ public class RuntimeFabricDeploymentSettings {
     this.runtimeVersion = runtimeVersion;
   }
 
-  public Integer getReplicationFactor() {
-    return replicationFactor;
-  }
-
-  public void setReplicationFactor(Integer replicationFactor) {
-    this.replicationFactor = replicationFactor;
-  }
-
 
 
   public Resources getResources() {
@@ -99,13 +91,6 @@ public class RuntimeFabricDeploymentSettings {
     this.resources = resources;
   }
 
-  public String getPublicUrl() {
-    return publicUrl;
-  }
-
-  public void setPublicUrl(String publicUrl) {
-    this.publicUrl = publicUrl;
-  }
 
   public boolean getLastMileSecurity() {
     return lastMileSecurity;
@@ -123,6 +108,7 @@ public class RuntimeFabricDeploymentSettings {
     this.clustered = clustered;
   }
 
+<<<<<<< fix/SE-17613-2
   public String getUpdateStrategy() {
     return updateStrategy;
   }
@@ -131,15 +117,70 @@ public class RuntimeFabricDeploymentSettings {
     this.updateStrategy = updateStrategy;
   }
 
+=======
+<<<<<<< 2.x
+=======
+  public String getUpdateStrategy() {
+    return updateStrategy;
+  }
+
+  public void setUpdateStrategy(String updateStrategy) {
+    this.updateStrategy = updateStrategy;
+  }
+
+
+
+  public boolean isEnforceDeployingReplicasAcrossNodes() {
+    return enforceDeployingReplicasAcrossNodes;
+  }
+
+
+
+  public void setEnforceDeployingReplicasAcrossNodes(boolean enforceDeployingReplicasAcrossNodes) {
+    this.enforceDeployingReplicasAcrossNodes = enforceDeployingReplicasAcrossNodes;
+  }
+
+
+
+  public Http getHttp() {
+    return http;
+  }
+
+
+
+  public void setHttp(Http http) {
+    this.http = http;
+  }
+
+
+
+  public boolean isForwardSslSession() {
+    return forwardSslSession;
+  }
+
+
+
+  public void setForwardSslSession(boolean forwardSslSession) {
+    this.forwardSslSession = forwardSslSession;
+  }
+
+
+
+  public boolean isDisableAmLogForwarding() {
+    return disableAmLogForwarding;
+  }
+
+
+
+  public void setDisableAmLogForwarding(boolean disableAmLogForwarding) {
+    this.disableAmLogForwarding = disableAmLogForwarding;
+  }
+
+
+>>>>>>> 754a588 corrections in properties and public url
+>>>>>>> f2ae952 corrections in properties and public url
   public void setEnvironmentSpecificValues() throws DeploymentException {
 
-    if (getReplicationFactor() == null) {
-      setReplicationFactor(1);
-    }
-
-    if (isClustered() && getReplicationFactor().equals(1)) {
-      throw new DeploymentException("Invalid deployment configuration, replicas must be bigger than 1 to enable Runtime Cluster Mode. Please either set enableRuntimeClusterMode to false or increase the number of replicas");
-    }
 
 
     if (isEmpty(getResources().getMemory().getReserved())) {
@@ -157,9 +198,8 @@ public class RuntimeFabricDeploymentSettings {
     if (isEmpty(getResources().getCpu().getLimit())) {
       getResources().getCpu().setLimit(getResources().getMemory().getReserved());
     }
-
-    if (isEmpty(getResources().getCpu().getLimit())) {
-      getResources().getCpu().setLimit(getResources().getMemory().getReserved());
+    if (getHttp() == null || getHttp().getInbound() == null) {
+      http = new Http();
     }
 
     if (isEmpty(getUpdateStrategy())) {

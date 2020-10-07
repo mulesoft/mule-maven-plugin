@@ -55,16 +55,15 @@ public class RequestBuilder {
     deploymentRequest.setApplication(applicationRequest);
     deploymentRequest.setTarget(target);
 
-    if (deployment.getProperties() != null) {
 
-      Map<String, Object> applicationPropertiesService = new HashMap<>();
-      Map<String, Object> properties = new HashMap<>();
-      properties.put("properties", deployment.getProperties());
-      properties.put("applicationName", deployment.getApplicationName());
-      applicationPropertiesService.put("mule.agent.application.properties.service", properties);
+    Map<String, Object> applicationPropertiesService = new HashMap<>();
+    Map<String, Object> properties = new HashMap<>();
+    properties.put("properties", deployment.getProperties());
+    properties.put("secureproperties", new HashMap<String, String>());
+    properties.put("applicationName", deployment.getApplicationName());
+    applicationPropertiesService.put("mule.agent.application.properties.service", properties);
 
-      applicationRequest.setConfiguration(applicationPropertiesService);
-    }
+    applicationRequest.setConfiguration(applicationPropertiesService);
 
     return deploymentRequest;
   }
@@ -92,18 +91,19 @@ public class RequestBuilder {
       throw new DeploymentException("Could not resolve tag for this mule version");
     }
     String url = resolveUrl(settings, targetId);
-    resolvedDeploymentSettings.setPublicUrl(url);
+
+    resolvedDeploymentSettings.getHttp().getInbound().setPublicUrl(url);
 
     return resolvedDeploymentSettings;
   }
 
   private String resolveUrl(RuntimeFabricDeploymentSettings deploymentSettings, String targetId) {
     JsonArray domains = client.getDomainInfo(targetId);
-    if (deploymentSettings.getPublicUrl() == null && domains.size() > 0) {
+    if (deploymentSettings.getHttp().getInbound().getPublicUrl() == null && domains.size() > 0) {
       String domain = domains.get(0).getAsString();
       return domain.replace(DOMAIN_WILDCARD, deployment.getApplicationName());
     } else {
-      return deploymentSettings.getPublicUrl();
+      return deploymentSettings.getHttp().getInbound().getPublicUrl();
     }
   }
 

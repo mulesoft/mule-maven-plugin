@@ -54,6 +54,15 @@ public class RuntimeFabricDeployment extends AnypointDeployment {
 
 
 
+  public String getReplicas() {
+    return replicas;
+  }
+
+
+  public void setReplicas(String replicas) {
+    this.replicas = replicas;
+  }
+
   public void setEnvironmentSpecificValues() throws DeploymentException {
     super.setEnvironmentSpecificValues();
     if (isEmpty(getTarget())) {

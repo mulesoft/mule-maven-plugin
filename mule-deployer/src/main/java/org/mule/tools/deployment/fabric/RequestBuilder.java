@@ -68,7 +68,7 @@ public class RequestBuilder {
     Target target = new Target();
     target.setProvider(deployment.getProvider());
     target.setTargetId(resolveTargetId());
-
+    target.setReplicas(deployment.getReplicas());
     RuntimeFabricDeploymentSettings resolvedMuleVersionDeploymentSettings =
         resolveMuleVersionDeploymentSettings(deployment.getDeploymentSettings());
     target.setDeploymentSettings(resolvedMuleVersionDeploymentSettings);

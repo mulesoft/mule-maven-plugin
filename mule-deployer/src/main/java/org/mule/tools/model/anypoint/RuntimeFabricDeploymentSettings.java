@@ -20,7 +20,8 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 public class RuntimeFabricDeploymentSettings {
 
   public RuntimeFabricDeploymentSettings() {
-
+    http = new Http();
+    resources = new Resources();
   }
 
 
@@ -69,9 +70,6 @@ public class RuntimeFabricDeploymentSettings {
 
 
 
-  @Parameter
-  protected String updateStrategy;
-
   public String getRuntimeVersion() {
     return runtimeVersion;
   }
@@ -108,18 +106,6 @@ public class RuntimeFabricDeploymentSettings {
     this.clustered = clustered;
   }
 
-<<<<<<< fix/SE-17613-2
-  public String getUpdateStrategy() {
-    return updateStrategy;
-  }
-
-  public void setUpdateStrategy(String updateStrategy) {
-    this.updateStrategy = updateStrategy;
-  }
-
-=======
-<<<<<<< 2.x
-=======
   public String getUpdateStrategy() {
     return updateStrategy;
   }
@@ -177,8 +163,6 @@ public class RuntimeFabricDeploymentSettings {
   }
 
 
->>>>>>> 754a588 corrections in properties and public url
->>>>>>> f2ae952 corrections in properties and public url
   public void setEnvironmentSpecificValues() throws DeploymentException {
 
 
@@ -196,7 +180,7 @@ public class RuntimeFabricDeploymentSettings {
     }
 
     if (isEmpty(getResources().getCpu().getLimit())) {
-      getResources().getCpu().setLimit(getResources().getMemory().getReserved());
+      getResources().getCpu().setLimit(getResources().getCpu().getReserved());
     }
     if (getHttp() == null || getHttp().getInbound() == null) {
       http = new Http();

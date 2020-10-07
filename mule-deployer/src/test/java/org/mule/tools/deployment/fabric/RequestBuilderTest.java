@@ -11,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.fabric.RuntimeFabricClient;
 import org.mule.tools.client.fabric.model.Target;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,12 +60,13 @@ public class RequestBuilderTest {
   private RuntimeFabricDeployment runtimeFabricDeployment;
 
   @Before
-  public void setUp() {
+  public void setUp() throws DeploymentException {
     runtimeFabricClientMock = mock(RuntimeFabricClient.class);
     runtimeFabricDeployment = new RuntimeFabricDeployment();
     runtimeFabricDeployment.setMuleVersion("4.2.0");
     runtimeFabricDeployment.setApplicationName("test-app");
     runtimeFabricDeployment.setTarget("fabric1");
+    runtimeFabricDeployment.setProvider("MC");
     runtimeFabricDeployment.setDeploymentSettings(new RuntimeFabricDeploymentSettings());
     requestBuilder = new RequestBuilder(runtimeFabricDeployment, runtimeFabricClientMock);
 
@@ -81,17 +82,19 @@ public class RequestBuilderTest {
     Target target = requestBuilder.buildTarget();
     String finalUrl = DOMAIN_TEST.replace("*", runtimeFabricDeployment.getApplicationName());
 
-    assertThat("publicUrl is not the expected", target.deploymentSettings.getPublicUrl(), equalTo(finalUrl));
+    assertThat("publicUrl is not the expected", target.deploymentSettings.getHttp().getInbound().getPublicUrl(),
+               equalTo(finalUrl));
   }
 
   @Test
   public void useDefinedUrl() throws Exception {
     String definedUrl = "myapp.test.com";
     RuntimeFabricDeploymentSettings deploymentSettings = new RuntimeFabricDeploymentSettings();
-    deploymentSettings.setPublicUrl(definedUrl);
+    deploymentSettings.getHttp().getInbound().setPublicUrl(definedUrl);
     runtimeFabricDeployment.setDeploymentSettings(deploymentSettings);
     Target target = requestBuilder.buildTarget();
 
-    assertThat("publicUrl is not the expected", target.deploymentSettings.getPublicUrl(), equalTo(definedUrl));
+    assertThat("publicUrl is not the expected", target.deploymentSettings.getHttp().getInbound().getPublicUrl(),
+               equalTo(definedUrl));
   }
 }

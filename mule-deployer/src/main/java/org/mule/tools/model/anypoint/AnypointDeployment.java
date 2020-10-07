@@ -48,7 +48,7 @@ public abstract class AnypointDeployment extends Deployment {
   protected String server;
 
   @Parameter
-  protected Map<String, String> properties = new HashMap<String, String>();
+  protected Map<String, String> properties;
 
   @Parameter
   protected boolean skipDeploymentVerification = false;

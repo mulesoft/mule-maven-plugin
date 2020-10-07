@@ -41,7 +41,6 @@ public class RequestBuilder {
   protected RequestBuilder(RuntimeFabricDeployment deployment, RuntimeFabricClient client) {
     this.deployment = deployment;
     this.client = client;
-    //    this.deployment.getDeploymentSettings().setRuntimeVersion(client.);
   }
 
   public DeploymentRequest buildDeploymentRequest() throws DeploymentException {
@@ -72,7 +71,7 @@ public class RequestBuilder {
     Target target = new Target();
     target.setProvider(deployment.getProvider());
     target.setTargetId(resolveTargetId());
-
+    target.setReplicas(deployment.getReplicas());
     RuntimeFabricDeploymentSettings resolvedDeploymentSettings =
         resolveDeploymentSettings(deployment.getDeploymentSettings());
     target.setDeploymentSettings(resolvedDeploymentSettings);

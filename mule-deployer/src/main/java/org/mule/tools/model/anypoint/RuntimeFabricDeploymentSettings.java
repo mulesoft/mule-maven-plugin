@@ -182,9 +182,6 @@ public class RuntimeFabricDeploymentSettings {
     if (isEmpty(getResources().getCpu().getLimit())) {
       getResources().getCpu().setLimit(getResources().getCpu().getReserved());
     }
-    if (getHttp() == null || getHttp().getInbound() == null) {
-      http = new Http();
-    }
 
     if (isEmpty(getUpdateStrategy())) {
       setUpdateStrategy("rolling");

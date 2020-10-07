@@ -31,6 +31,16 @@ public class RuntimeFabricDeployment extends AnypointDeployment {
   @Parameter
   protected String replicas;
 
+
+  public String getReplicas() {
+    return replicas;
+  }
+
+
+  public void setReplicas(String replicas) {
+    this.replicas = replicas;
+  }
+
   public String getTarget() {
     return target;
   }

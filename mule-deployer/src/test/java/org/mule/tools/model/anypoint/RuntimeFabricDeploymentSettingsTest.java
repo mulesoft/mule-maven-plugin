@@ -58,7 +58,6 @@ public class RuntimeFabricDeploymentSettingsTest {
 
 
 
-
   @Test
   public void undefinedCPUMaxUseCPUReservedValue() throws DeploymentException {
 

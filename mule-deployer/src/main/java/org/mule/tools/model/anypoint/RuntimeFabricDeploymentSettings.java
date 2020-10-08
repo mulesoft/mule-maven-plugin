@@ -16,45 +16,57 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  */
 public class RuntimeFabricDeploymentSettings {
 
-  public RuntimeFabricDeploymentSettings() {}
+  public RuntimeFabricDeploymentSettings() {
+    http = new Http();
+    resources = new Resources();
+  }
+
 
   public RuntimeFabricDeploymentSettings(RuntimeFabricDeploymentSettings settings) {
     runtimeVersion = settings.runtimeVersion;
-    replicationFactor = settings.replicationFactor;
-    memoryReserved = settings.memoryReserved;
-    memoryMax = settings.memoryMax;
-    cpuReserved = settings.cpuReserved;
-    cpuMax = settings.cpuMax;
-    publicUrl = settings.publicUrl;
+    resources = settings.resources;
     lastMileSecurity = settings.lastMileSecurity;
-    clusteringEnabled = settings.clusteringEnabled;
+
+    clustered = settings.clustered;
+    updateStrategy = settings.updateStrategy;
+
+    enforceDeployingReplicasAcrossNodes = settings.enforceDeployingReplicasAcrossNodes;
+    http = settings.http;
+    forwardSslSession = settings.forwardSslSession;
+    disableAmLogForwarding = settings.disableAmLogForwarding;
   }
 
+  @Parameter
   protected String runtimeVersion;
 
-  @Parameter
-  protected Integer replicationFactor;
+
 
   @Parameter
-  protected String memoryReserved;
+  protected Resources resources;
 
-  @Parameter
-  protected String memoryMax;
-
-  @Parameter
-  protected String cpuReserved;
-
-  @Parameter
-  protected String cpuMax;
-
-  @Parameter
-  protected String publicUrl;
 
   @Parameter
   protected boolean lastMileSecurity;
 
   @Parameter
-  protected boolean clusteringEnabled;
+  protected boolean clustered;
+
+  @Parameter
+  protected String updateStrategy;
+
+  @Parameter
+  protected boolean enforceDeployingReplicasAcrossNodes;
+
+  @Parameter
+  protected Http http;
+
+  @Parameter
+  protected boolean forwardSslSession;
+
+  @Parameter
+  protected boolean disableAmLogForwarding;
+
+
 
   public String getRuntimeVersion() {
     return runtimeVersion;
@@ -64,53 +76,17 @@ public class RuntimeFabricDeploymentSettings {
     this.runtimeVersion = runtimeVersion;
   }
 
-  public Integer getReplicationFactor() {
-    return replicationFactor;
+
+
+  public Resources getResources() {
+    return resources;
   }
 
-  public void setReplicationFactor(Integer replicationFactor) {
-    this.replicationFactor = replicationFactor;
+
+  public void setResources(Resources resources) {
+    this.resources = resources;
   }
 
-  public String getMemoryReserved() {
-    return memoryReserved;
-  }
-
-  public void setMemoryReserved(String memoryReserved) {
-    this.memoryReserved = memoryReserved;
-  }
-
-  public String getMemoryMax() {
-    return memoryMax;
-  }
-
-  public void setMemoryMax(String memoryMax) {
-    this.memoryMax = memoryMax;
-  }
-
-  public String getCpuReserved() {
-    return cpuReserved;
-  }
-
-  public void setCpuReserved(String cpuReserved) {
-    this.cpuReserved = cpuReserved;
-  }
-
-  public String getCpuMax() {
-    return cpuMax;
-  }
-
-  public void setCpuMax(String cpuMax) {
-    this.cpuMax = cpuMax;
-  }
-
-  public String getPublicUrl() {
-    return publicUrl;
-  }
-
-  public void setPublicUrl(String publicUrl) {
-    this.publicUrl = publicUrl;
-  }
 
   public boolean getLastMileSecurity() {
     return lastMileSecurity;
@@ -120,38 +96,96 @@ public class RuntimeFabricDeploymentSettings {
     this.lastMileSecurity = lastMileSecurity;
   }
 
-  public boolean isClusteringEnabled() {
-    return clusteringEnabled;
+  public boolean isClustered() {
+    return clustered;
   }
 
-  public void setClusteringEnabled(boolean clusteringEnabled) {
-    this.clusteringEnabled = clusteringEnabled;
+  public void setClustered(boolean clustered) {
+    this.clustered = clustered;
   }
+
+  public String getUpdateStrategy() {
+    return updateStrategy;
+  }
+
+  public void setUpdateStrategy(String updateStrategy) {
+    this.updateStrategy = updateStrategy;
+  }
+
+
+
+  public boolean isEnforceDeployingReplicasAcrossNodes() {
+    return enforceDeployingReplicasAcrossNodes;
+  }
+
+
+
+  public void setEnforceDeployingReplicasAcrossNodes(boolean enforceDeployingReplicasAcrossNodes) {
+    this.enforceDeployingReplicasAcrossNodes = enforceDeployingReplicasAcrossNodes;
+  }
+
+
+
+  public Http getHttp() {
+    return http;
+  }
+
+
+
+  public void setHttp(Http http) {
+    this.http = http;
+  }
+
+
+
+  public boolean isForwardSslSession() {
+    return forwardSslSession;
+  }
+
+
+
+  public void setForwardSslSession(boolean forwardSslSession) {
+    this.forwardSslSession = forwardSslSession;
+  }
+
+
+
+  public boolean isDisableAmLogForwarding() {
+    return disableAmLogForwarding;
+  }
+
+
+
+  public void setDisableAmLogForwarding(boolean disableAmLogForwarding) {
+    this.disableAmLogForwarding = disableAmLogForwarding;
+  }
+
+
 
   public void setEnvironmentSpecificValues() throws DeploymentException {
 
-    if (getReplicationFactor() == null) {
-      setReplicationFactor(1);
+
+
+    if (isEmpty(getResources().getMemory().getReserved())) {
+      getResources().getMemory().setReserved("700Mi");;
     }
 
-    if (isClusteringEnabled() && getReplicationFactor().equals(1)) {
-      throw new DeploymentException("Invalid deployment configuration, replicas must be bigger than 1 to enable Runtime Cluster Mode. Please either set enableRuntimeClusterMode to false or increase the number of replicas");
+    if (isEmpty(getResources().getMemory().getLimit())) {
+      getResources().getMemory().setLimit(getResources().getMemory().getReserved());
     }
 
-    if (isEmpty(getMemoryReserved())) {
-      setMemoryReserved("700Mi");
+    if (isEmpty(getResources().getCpu().getReserved())) {
+      getResources().getCpu().setReserved("500m");;
     }
 
-    if (isEmpty(getMemoryMax())) {
-      setMemoryMax(getMemoryReserved());
+    if (isEmpty(getResources().getCpu().getLimit())) {
+      getResources().getCpu().setLimit(getResources().getCpu().getReserved());
     }
-
-    if (isEmpty(getCpuReserved())) {
-      setCpuReserved("500m");
-    }
-
-    if (isEmpty(getCpuMax())) {
-      setCpuMax(getCpuReserved());
+    if (getHttp() == null || getHttp().getInbound() == null) {
+      http = new Http();
     }
   }
+
+
+
 }

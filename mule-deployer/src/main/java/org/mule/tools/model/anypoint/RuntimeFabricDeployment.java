@@ -25,6 +25,9 @@ public class RuntimeFabricDeployment extends AnypointDeployment {
   @Parameter
   protected String provider;
 
+  @Parameter
+  protected String replicas;
+
   public String getTarget() {
     return target;
   }
@@ -49,6 +52,16 @@ public class RuntimeFabricDeployment extends AnypointDeployment {
     this.provider = provider;
   }
 
+
+
+  public String getReplicas() {
+    return replicas;
+  }
+
+
+  public void setReplicas(String replicas) {
+    this.replicas = replicas;
+  }
 
   public void setEnvironmentSpecificValues() throws DeploymentException {
     super.setEnvironmentSpecificValues();

@@ -13,6 +13,17 @@ public class Target {
   public String targetId;
   public String provider;
   public RuntimeFabricDeploymentSettings deploymentSettings;
+  public String replicas;
+
+
+  public String getReplicas() {
+    return replicas;
+  }
+
+
+  public void setReplicas(String replicas) {
+    this.replicas = replicas;
+  }
 
   public void setTargetId(String targetId) {
     this.targetId = targetId;

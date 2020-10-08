@@ -26,10 +26,8 @@ import org.mule.tools.client.fabric.model.Target;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
 import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
 
-import java.util.Optional;
-
-import static java.util.Optional.empty;
-import static java.util.Optional.ofNullable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RequestBuilder {
 
@@ -43,7 +41,6 @@ public class RequestBuilder {
   protected RequestBuilder(RuntimeFabricDeployment deployment, RuntimeFabricClient client) {
     this.deployment = deployment;
     this.client = client;
-    //    this.deployment.getDeploymentSettings().setRuntimeVersion(client.);
   }
 
   public DeploymentRequest buildDeploymentRequest() throws DeploymentException {
@@ -57,6 +54,16 @@ public class RequestBuilder {
     deploymentRequest.setApplication(applicationRequest);
     deploymentRequest.setTarget(target);
 
+
+    Map<String, Object> applicationPropertiesService = new HashMap<>();
+    Map<String, Object> properties = new HashMap<>();
+    properties.put("properties", deployment.getProperties());
+    properties.put("secureproperties", new HashMap<String, String>());
+    properties.put("applicationName", deployment.getApplicationName());
+    applicationPropertiesService.put("mule.agent.application.properties.service", properties);
+
+    applicationRequest.setConfiguration(applicationPropertiesService);
+
     return deploymentRequest;
   }
 
@@ -64,7 +71,7 @@ public class RequestBuilder {
     Target target = new Target();
     target.setProvider(deployment.getProvider());
     target.setTargetId(resolveTargetId());
-
+    target.setReplicas(deployment.getReplicas());
     RuntimeFabricDeploymentSettings resolvedDeploymentSettings =
         resolveDeploymentSettings(deployment.getDeploymentSettings());
     target.setDeploymentSettings(resolvedDeploymentSettings);
@@ -83,18 +90,19 @@ public class RequestBuilder {
       throw new DeploymentException("Could not resolve tag for this mule version");
     }
     String url = resolveUrl(settings, targetId);
-    resolvedDeploymentSettings.setPublicUrl(url);
+
+    resolvedDeploymentSettings.getHttp().getInbound().setPublicUrl(url);
 
     return resolvedDeploymentSettings;
   }
 
   private String resolveUrl(RuntimeFabricDeploymentSettings deploymentSettings, String targetId) {
     JsonArray domains = client.getDomainInfo(targetId);
-    if (deploymentSettings.getPublicUrl() == null && domains.size() > 0) {
+    if (deploymentSettings.getHttp().getInbound().getPublicUrl() == null && domains.size() > 0) {
       String domain = domains.get(0).getAsString();
       return domain.replace(DOMAIN_WILDCARD, deployment.getApplicationName());
     } else {
-      return deploymentSettings.getPublicUrl();
+      return deploymentSettings.getHttp().getInbound().getPublicUrl();
     }
   }
 
@@ -113,7 +121,7 @@ public class RequestBuilder {
       if (runtime.has("versions")) {
         JsonArray versions = runtime.getAsJsonArray("versions");
         for (int j = 0; j < versions.size(); j++) {
-          JsonObject version = versions.get(i).getAsJsonObject();
+          JsonObject version = versions.get(j).getAsJsonObject();
           if (version.has("baseVersion") && version.has("tag")) {
             if (StringUtils.equals(version.get("baseVersion").getAsString(), muleVersion)) {
               return version.get("tag").getAsString();
@@ -197,6 +205,17 @@ public class RequestBuilder {
     AssetReference assetReference = buildAssetReference();
     ApplicationModify applicationModify = new ApplicationModify();
     applicationModify.setRef(assetReference);
+
+    if (deployment.getProperties() != null) {
+      Map<String, Object> applicationPropertiesService = new HashMap<>();
+      Map<String, Object> properties = new HashMap<>();
+      properties.put("properties", deployment.getProperties());
+      properties.put("applicationName", deployment.getApplicationName());
+      applicationPropertiesService.put("mule.agent.application.properties.service", properties);
+
+      applicationModify.setConfiguration(applicationPropertiesService);
+    }
+
     return applicationModify;
   }
 }

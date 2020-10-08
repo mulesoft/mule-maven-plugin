@@ -15,6 +15,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.System.getProperty;
@@ -59,12 +60,12 @@ public abstract class AnypointDeployment extends Deployment {
   @Parameter
   protected String server;
 
-
   @Parameter
   protected Map<String, String> properties;
 
   @Parameter
   protected boolean skipDeploymentVerification = false;
+
 
   /**
    * Anypoint Platform username.

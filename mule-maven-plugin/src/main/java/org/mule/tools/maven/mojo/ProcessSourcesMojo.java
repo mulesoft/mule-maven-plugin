@@ -68,8 +68,9 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
     try {
       sourcesProcessor
           .process(prettyPrinting, lightweightPackage, useLocalRepository, testJar, outputDirectory,
-                   getProjectInformation().getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile(),
-                   empty());
+
+                   getProjectInformation().getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile());
+
     } catch (Exception e) {
       String message = format("There was an exception while creating the repository of [%s]", project.toString());
       throw new MojoFailureException(message, e);

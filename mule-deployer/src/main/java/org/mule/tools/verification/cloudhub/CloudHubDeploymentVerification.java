@@ -63,7 +63,8 @@ public class CloudHubDeploymentVerification implements DeploymentVerification {
 
     @Override
     public Consumer<Deployment> onTimeout() {
-      return deployment -> client.stopApplications(deployment.getApplicationName());
+      return deployment -> {
+      };
     }
   }
 }

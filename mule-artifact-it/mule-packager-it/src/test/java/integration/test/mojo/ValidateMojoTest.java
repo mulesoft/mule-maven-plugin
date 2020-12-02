@@ -9,9 +9,17 @@
  */
 package integration.test.mojo;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
 import org.apache.maven.it.VerificationException;
+import org.eclipse.aether.spi.log.LoggerFactory;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 public class ValidateMojoTest extends MojoTest {
 
@@ -74,11 +82,18 @@ public class ValidateMojoTest extends MojoTest {
     executeGoalAndVerifyText(VALIDATE, textInLog);
   }
 
-  private void executeGoalAndVerifyText(String goal, String text) throws VerificationException {
+  private void executeGoalAndVerifyText(String goal, String text) throws VerificationException, IOException {
     try {
       verifier.executeGoal(goal);
     } catch (VerificationException e) {
       if (StringUtils.isNotBlank(text)) {
+        List<String> stringArray = verifier.loadLines(verifier.getLogFileName(), null);
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < stringArray.size(); i++) {
+          sb.append(stringArray.get(i));
+        }
+        String str = sb.toString();
+        assertEquals("", str);
         verifier.verifyTextInLog(text);
       } else {
         throw e;

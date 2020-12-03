@@ -58,11 +58,11 @@ public class RequestBuilder {
     Map<String, Object> applicationPropertiesService = new HashMap<>();
     Map<String, Object> properties = new HashMap<>();
     properties.put("properties", deployment.getProperties());
+    properties.put("secureproperties", new HashMap<String, String>());
     properties.put("applicationName", deployment.getApplicationName());
     applicationPropertiesService.put("mule.agent.application.properties.service", properties);
 
     applicationRequest.setConfiguration(applicationPropertiesService);
-
 
     return deploymentRequest;
   }
@@ -186,7 +186,7 @@ public class RequestBuilder {
         return deployment.id;
       }
     }
-    throw new IllegalStateException("Could not find deployment ID. Please check if there is an application with the same name under a different environment.");
+    throw new IllegalStateException("Could not find deployment ID.");
   }
 
   public DeploymentModify buildDeploymentModify() throws DeploymentException {

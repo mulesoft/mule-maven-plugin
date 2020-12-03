@@ -55,13 +55,13 @@ public class RequestBuilder {
     deploymentRequest.setTarget(target);
 
 
-      Map<String, Object> applicationPropertiesService = new HashMap<>();
-      Map<String, Object> properties = new HashMap<>();
-      properties.put("properties", deployment.getProperties());
-      properties.put("applicationName", deployment.getApplicationName());
-      applicationPropertiesService.put("mule.agent.application.properties.service", properties);
+    Map<String, Object> applicationPropertiesService = new HashMap<>();
+    Map<String, Object> properties = new HashMap<>();
+    properties.put("properties", deployment.getProperties());
+    properties.put("applicationName", deployment.getApplicationName());
+    applicationPropertiesService.put("mule.agent.application.properties.service", properties);
 
-      applicationRequest.setConfiguration(applicationPropertiesService);
+    applicationRequest.setConfiguration(applicationPropertiesService);
 
 
     return deploymentRequest;

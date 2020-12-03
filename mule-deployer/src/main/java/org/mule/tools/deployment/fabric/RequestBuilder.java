@@ -41,7 +41,6 @@ public class RequestBuilder {
   protected RequestBuilder(RuntimeFabricDeployment deployment, RuntimeFabricClient client) {
     this.deployment = deployment;
     this.client = client;
-    //    this.deployment.getDeploymentSettings().setRuntimeVersion(client.);
   }
 
   public DeploymentRequest buildDeploymentRequest() throws DeploymentException {
@@ -55,16 +54,15 @@ public class RequestBuilder {
     deploymentRequest.setApplication(applicationRequest);
     deploymentRequest.setTarget(target);
 
-    if (deployment.getProperties() != null) {
 
-      Map<String, Object> applicationPropertiesService = new HashMap<>();
-      Map<String, Object> properties = new HashMap<>();
-      properties.put("properties", deployment.getProperties());
-      properties.put("applicationName", deployment.getApplicationName());
-      applicationPropertiesService.put("mule.agent.application.properties.service", properties);
+    Map<String, Object> applicationPropertiesService = new HashMap<>();
+    Map<String, Object> properties = new HashMap<>();
+    properties.put("properties", deployment.getProperties());
+    properties.put("secureproperties", new HashMap<String, String>());
+    properties.put("applicationName", deployment.getApplicationName());
+    applicationPropertiesService.put("mule.agent.application.properties.service", properties);
 
-      applicationRequest.setConfiguration(applicationPropertiesService);
-    }
+    applicationRequest.setConfiguration(applicationPropertiesService);
 
     return deploymentRequest;
   }
@@ -73,7 +71,7 @@ public class RequestBuilder {
     Target target = new Target();
     target.setProvider(deployment.getProvider());
     target.setTargetId(resolveTargetId());
-
+    target.setReplicas(deployment.getReplicas());
     RuntimeFabricDeploymentSettings resolvedDeploymentSettings =
         resolveDeploymentSettings(deployment.getDeploymentSettings());
     target.setDeploymentSettings(resolvedDeploymentSettings);
@@ -92,18 +90,19 @@ public class RequestBuilder {
       throw new DeploymentException("Could not resolve tag for this mule version");
     }
     String url = resolveUrl(settings, targetId);
-    resolvedDeploymentSettings.setPublicUrl(url);
+
+    resolvedDeploymentSettings.getHttp().getInbound().setPublicUrl(url);
 
     return resolvedDeploymentSettings;
   }
 
   private String resolveUrl(RuntimeFabricDeploymentSettings deploymentSettings, String targetId) {
     JsonArray domains = client.getDomainInfo(targetId);
-    if (deploymentSettings.getPublicUrl() == null && domains.size() > 0) {
+    if (deploymentSettings.getHttp().getInbound().getPublicUrl() == null && domains.size() > 0) {
       String domain = domains.get(0).getAsString();
       return domain.replace(DOMAIN_WILDCARD, deployment.getApplicationName());
     } else {
-      return deploymentSettings.getPublicUrl();
+      return deploymentSettings.getHttp().getInbound().getPublicUrl();
     }
   }
 
@@ -187,7 +186,7 @@ public class RequestBuilder {
         return deployment.id;
       }
     }
-    throw new IllegalStateException("Could not find deployment ID. Please check if there is an application with the same name under a different environment.");
+    throw new IllegalStateException("Could not find deployment ID.");
   }
 
   public DeploymentModify buildDeploymentModify() throws DeploymentException {

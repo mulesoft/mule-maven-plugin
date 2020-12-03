@@ -20,9 +20,11 @@ import java.util.List;
 public class TestScopeDependencyValidator implements DependencyValidator {
 
   private List<Dependency> expectedDependencies;
+  private List<String> expectedGroupIds;
 
-  public TestScopeDependencyValidator(List<Dependency> expectedDependencies) {
+  public TestScopeDependencyValidator(List<Dependency> expectedDependencies, List<String> expectedGroupIds) {
     this.expectedDependencies = expectedDependencies;
+    this.expectedGroupIds = expectedGroupIds;
   }
 
   @Override
@@ -46,10 +48,10 @@ public class TestScopeDependencyValidator implements DependencyValidator {
   }
 
   private boolean isValid(ArtifactCoordinates dependency) throws ValidationException {
-    boolean isDependencyPresent =
+    boolean isGroupOrDependencyPresent = expectedGroupIds.contains(dependency.getGroupId()) ||
         expectedDependencies.stream().anyMatch(d -> d.artifactId.equals(dependency.getArtifactId())
             && d.groupId.equals(dependency.getGroupId()));
-    if (isDependencyPresent) {
+    if (isGroupOrDependencyPresent) {
       if (!TEST.equals(dependency.getScope())) {
         throw new ValidationException("Dependency: " + dependency + " should have scope \'test\', found \'"
             + dependency.getScope() + "\'");

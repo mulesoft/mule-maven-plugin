@@ -16,6 +16,8 @@ public class Target {
   public String targetId;
   public String provider;
   public RuntimeFabricDeploymentSettings deploymentSettings;
+  public String replicas;
+
 
   public void setTargetId(String targetId) {
     this.targetId = targetId;
@@ -28,4 +30,15 @@ public class Target {
   public void setDeploymentSettings(RuntimeFabricDeploymentSettings deploymentSettings) {
     this.deploymentSettings = deploymentSettings;
   }
+
+
+  public String getReplicas() {
+    return replicas;
+  }
+
+
+  public void setReplicas(String replicas) {
+    this.replicas = replicas;
+  }
+
 }

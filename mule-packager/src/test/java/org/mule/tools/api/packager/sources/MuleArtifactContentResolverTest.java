@@ -143,7 +143,7 @@ public class MuleArtifactContentResolverTest {
     jar3.createNewFile();
 
     List<String> actualExportedPackages = resolver.getExportedPackages();
-
+    actualExportedPackages.forEach(resource->{resource = resource.replace("/", File.separator);});
     assertThat("Exported packages does not contain all expected elements", actualExportedPackages,
                containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + separator + JAR_3));
     assertThat("Exported packages contains more elements than expected", actualExportedPackages.size(), equalTo(3));
@@ -172,6 +172,7 @@ public class MuleArtifactContentResolverTest {
     hiddenFile.createNewFile();
 
     List<String> actualExportedResources = resolver.getExportedResources();
+    actualExportedResources.forEach(resource->{resource = resource.replace("/", File.separator);});
 
     assertThat("Exported resources does not contain all expected elements", actualExportedResources,
                containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + separator + JAR_3, configFileName));
@@ -222,6 +223,7 @@ public class MuleArtifactContentResolverTest {
 
 
     List<String> actualConfigs = resolver.getConfigs();
+    actualConfigs.forEach(config->{config = config.replace("/", File.separator);});
 
     assertThat("Configs does not contain all expected elements", actualConfigs,
                containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + separator + CONFIG_3));

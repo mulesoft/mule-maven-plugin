@@ -20,12 +20,12 @@ pipeline {
     stages {
         stage('Prepare release') {
             steps {
-              sh "mvn org.apache.maven.plugins:maven-release-plugin:2.5.3:prepare -X --batch-mode -Dtag=$tag_name -PfullIntegration -DreleaseVersion=$version_to -DdevelopmentVersion=$devVersion_to \\\"-Darguments=-DskipTests -Dmaven.javadoc.failOnError=false -PfullIntegration\\\""
+              sh "mvn org.codehaus.mojo:versions-maven-plugin:2.7:set -DnewVersion=$version_to -DgenerateBackupPoms=false -PfullIntegration\\\""
             }
         }
         stage('Perform release') {
             steps {
-              sh "mvn org.apache.maven.plugins:maven-release-plugin:2.5.3:perform -PfullIntegration \\\"-Darguments=-DskipTests -Dmaven.javadoc.failOnError=false -PfullIntegration\\\""
+              sh "mvn deploy -PfullIntegration -DskipTests\\\""
             }
         }
     }

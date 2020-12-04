@@ -144,7 +144,7 @@ public class MuleArtifactContentResolverTest {
 
     List<String> actualExportedPackages = resolver.getExportedPackages();
     actualExportedPackages.forEach(resource -> {
-      resource = resource.replace("/", File.separator).replace("\"", File.separator);
+      resource = resource.replace("/", separator).replace("\"", separator);
     });
     assertThat("Exported packages does not contain all expected elements", actualExportedPackages,
                containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + separator + JAR_3));
@@ -175,7 +175,7 @@ public class MuleArtifactContentResolverTest {
 
     List<String> actualExportedResources = resolver.getExportedResources();
     actualExportedResources.forEach(resource -> {
-      resource = resource.replace("/", File.separator).replace("\"", File.separator);
+      resource = resource.replace("/", separator).replace("\"", separator);
     });
 
     assertThat("Exported resources does not contain all expected elements", actualExportedResources,

@@ -108,10 +108,12 @@ public abstract class AbstractMuleDeployerMojo extends AbstractGenericMojo {
   }
 
   private void validateUniqueDeploymentConfiguration() throws ValidationException {
-    List<Deployment> deployments = getProjectInformation().getDeployments().stream()
-        .filter(Objects::nonNull).collect(Collectors.toList());
-
-    if (deployments.isEmpty()) {
+    List<Deployment> deployments = null;
+    if (getProjectInformation().getDeployments() != null) {
+      deployments = getProjectInformation().getDeployments().stream()
+          .filter(Objects::nonNull).collect(Collectors.toList());
+    }
+    if (deployments == null || deployments.isEmpty()) {
       throw new ValidationException("No deployment configuration was defined. Aborting.");
     }
     if (deployments.size() > 1) {

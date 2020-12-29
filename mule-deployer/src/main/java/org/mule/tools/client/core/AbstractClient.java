@@ -16,6 +16,9 @@ import static javax.ws.rs.core.Response.Status.Family.SUCCESSFUL;
 import static javax.ws.rs.core.Response.Status.Family.familyOf;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.glassfish.jersey.client.ClientProperties.CHUNKED_ENCODING_SIZE;
+import static org.glassfish.jersey.client.ClientProperties.DEFAULT_CHUNK_SIZE;
+import static org.glassfish.jersey.client.ClientProperties.REQUEST_ENTITY_PROCESSING;
 import static org.glassfish.jersey.client.HttpUrlConnectorProvider.SET_METHOD_WORKAROUND;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.LOGIN;
 
@@ -129,6 +132,7 @@ public abstract class AbstractClient {
   private Invocation.Builder builder(String uri, String path) {
     WebTarget target = getTarget(uri, path);
     Invocation.Builder builder = target.request(APPLICATION_JSON_TYPE).header(USER_AGENT, getUserAgent());
+    setBuilderProperties(builder);
     configureRequest(builder);
     return builder;
   }
@@ -197,6 +201,16 @@ public abstract class AbstractClient {
 
   public void setUserAgent(String userAgent) {
     this.userAgent = userAgent;
+  }
+
+  /**
+   * Method to configure properties needed to stream Entities. Default chunk size is 4096.
+   *
+   * @param builder The invocation builder for the request.
+   */
+  private void setBuilderProperties(Invocation.Builder builder) {
+    builder.property(REQUEST_ENTITY_PROCESSING, "CHUNKED");
+    builder.property(CHUNKED_ENCODING_SIZE, DEFAULT_CHUNK_SIZE);
   }
 
 }

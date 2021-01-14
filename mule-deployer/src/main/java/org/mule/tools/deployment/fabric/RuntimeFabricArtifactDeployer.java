@@ -9,6 +9,7 @@
  */
 package org.mule.tools.deployment.fabric;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.client.core.exception.ClientException;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.fabric.RuntimeFabricClient;
@@ -27,6 +28,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
 
   private static final Long DEFAULT_RUNTIME_FABRIC_DEPLOYMENT_TIMEOUT = 1200000L;
+  private static final String RTF_DEPLOY_ERROR_MESSAGE =
+      "This target has an application with the same name already deployed. Please delete it in order to create a new deployment.";
   public static final int BAD_REQUEST = 400;
   private DeploymentVerification deploymentVerification;
   private RequestBuilder requestBuilder;
@@ -58,7 +61,7 @@ public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
       DeploymentRequest request = requestBuilder.buildDeploymentRequest();
       client.deploy(request);
     } catch (ClientException e) {
-      if (e.getStatusCode() == BAD_REQUEST) {
+      if (e.getStatusCode() == BAD_REQUEST && StringUtils.containsIgnoreCase(e.getMessage(), RTF_DEPLOY_ERROR_MESSAGE)) {
         redeployApplication();
       } else {
         throw new DeploymentException("Could not deploy application.", e);

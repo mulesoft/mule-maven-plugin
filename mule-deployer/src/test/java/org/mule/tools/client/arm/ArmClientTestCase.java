@@ -12,7 +12,6 @@ package org.mule.tools.client.arm;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-
 import java.util.concurrent.Callable;
 
 import org.junit.Before;
@@ -77,5 +76,4 @@ public class ArmClientTestCase {
   private Callable<Boolean> appIsStarted(final int applicationId) {
     return () -> armClient.isStarted(applicationId);
   }
-
 }

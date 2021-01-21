@@ -16,6 +16,7 @@ import static java.util.stream.Collectors.toList;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
+import org.mule.tools.api.util.XmlFactoryUtils;
 
 import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 
@@ -144,7 +145,7 @@ public class MuleArtifactContentResolver {
   }
 
   private org.w3c.dom.Document generateDocument(Path filePath) throws IOException, ParserConfigurationException, SAXException {
-    javax.xml.parsers.DocumentBuilderFactory factory = new DocumentBuilderFactoryImpl();
+    javax.xml.parsers.DocumentBuilderFactory factory = XmlFactoryUtils.createSecureDocumentBuilderFactory();
     return factory.newDocumentBuilder().parse(filePath.toFile());
   }
 

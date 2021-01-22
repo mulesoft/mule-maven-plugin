@@ -21,6 +21,7 @@ import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptorBuilder;
 import org.mule.runtime.api.deployment.meta.Product;
+import org.mule.tools.api.util.XmlFactoryUtils;
 
 import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 
@@ -135,7 +136,7 @@ public class DefaultValuesMuleArtifactJsonGenerator extends AbstractDefaultValue
   }
 
   private org.w3c.dom.Document toDocument(Path filePath) {
-    javax.xml.parsers.DocumentBuilderFactory factory = new DocumentBuilderFactoryImpl();
+    javax.xml.parsers.DocumentBuilderFactory factory = XmlFactoryUtils.createSecureDocumentBuilderFactory();
     try {
       return factory.newDocumentBuilder().parse(filePath.toFile());
     } catch (SAXException | IOException | ParserConfigurationException e) {

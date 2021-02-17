@@ -201,7 +201,9 @@ public class MuleArtifactContentResolverTest {
     resolver = newResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true), mock(Pom.class),
                            new ArrayList<>());
     List<String> actualExportedResources = resolver.getTestExportedResources();
-
+    for (int i = 0; i < actualExportedResources.size(); i++) {
+      actualExportedResources.set(i, actualExportedResources.get(i).replace("/", separator).replace("\"", separator));
+    }
     assertThat("Exported resources does not contain all expected elements", actualExportedResources,
                containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + separator + JAR_3));
     assertThat("Exported resources contains more elements than expected", actualExportedResources.size(), equalTo(3));
@@ -285,7 +287,9 @@ public class MuleArtifactContentResolverTest {
     resolver = newResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true), mock(Pom.class),
                            new ArrayList<>());
     List<String> actualConfigs = resolver.getTestConfigs();
-
+    for (int i = 0; i < actualConfigs.size(); i++) {
+      actualConfigs.set(i, actualConfigs.get(i).replace("/", separator).replace("\"", separator));
+    }
     assertThat("Configs does not contain all expected elements", actualConfigs,
                containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + separator + CONFIG_3));
 

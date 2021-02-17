@@ -10,6 +10,7 @@
 
 package org.mule.tools.api.classloader.model.util;
 
+import static java.io.File.separator;
 import static java.nio.file.Paths.get;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -142,8 +143,9 @@ public class ArtifactUtilsTest {
     File jarFile = FileUtils.toFile(bundleDependency.getBundleUri().toURL());
     jarFile.delete();
     compress(jarFile,
-             get(this.getClass().getClassLoader().getResource("org/mule/tools/api/classloader/model/util/testpackages").toURI())
-                 .toFile());
+             get(this.getClass().getClassLoader()
+                 .getResource("org/mule/tools/api/classloader/model/util/testpackages".replace("/", separator)).toURI())
+                     .toFile());
 
     Artifact actualArtifact = ArtifactUtils.updatePackagesResources(ArtifactUtils.toArtifact(bundleDependency));
 

@@ -10,7 +10,6 @@
 
 package org.mule.tools.api.classloader.model.util;
 
-import static java.io.File.separator;
 import static java.nio.file.Paths.get;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;

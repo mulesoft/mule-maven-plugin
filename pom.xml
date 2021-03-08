@@ -554,9 +554,10 @@
             			</goals>
             		<configuration>
               			<rules>
-                			<requireReleaseVersion>
+                			<requireReleaseDeps>
                   				<message>No Snapshots Allowed!</message>
-                			</requireReleaseVersion>
+                  				<onlyWhenRelease>true</onlyWhenRelease>
+                  			</requireReleaseDeps>
               			</rules>
               			<fail>true</fail>
             		</configuration>

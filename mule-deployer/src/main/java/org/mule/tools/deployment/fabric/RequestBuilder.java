@@ -139,7 +139,7 @@ public class RequestBuilder {
     return getTargetId(targets, targetName);
   }
 
-  private String getTargetId(JsonArray targets, String targetName) throws DeploymentException {
+  public static String getTargetId(JsonArray targets, String targetName) throws DeploymentException {
     for (JsonElement targetElement : targets) {
       JsonObject target = targetElement.getAsJsonObject();
       if (target != null) {
@@ -156,7 +156,7 @@ public class RequestBuilder {
         }
       }
     }
-    throw new DeploymentException("Could not find target " + deployment.getTarget());
+    throw new DeploymentException("Could not find target " + targetName);
   }
 
   private ApplicationRequest buildApplicationRequest() {

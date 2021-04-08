@@ -15,11 +15,14 @@ import org.mule.tools.client.fabric.RuntimeFabricClient;
 import org.mule.tools.client.fabric.model.DeploymentDetailedResponse;
 import org.mule.tools.client.fabric.model.DeploymentGenericResponse;
 import org.mule.tools.client.fabric.model.Deployments;
+import org.mule.tools.deployment.fabric.RequestBuilder;
 import org.mule.tools.model.Deployment;
+import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
 import org.mule.tools.verification.DefaultDeploymentVerification;
 import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.DeploymentVerificationStrategy;
 
+import com.google.gson.JsonArray;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -55,28 +58,44 @@ public class RuntimeFabricDeploymentVerification implements DeploymentVerificati
 
     public Predicate<Deployment> isDeployed() {
       return (deployment) -> {
-        String deploymentId = getDeploymentId(deployment);
-        if (deploymentId == null) {
-          return false;
-        }
-        DeploymentDetailedResponse response = client.getDeployment(deploymentId);
-        if (response != null) {
-          if (StringUtils.equals(response.status, FAILED_STATUS)) {
-            throw new IllegalStateException("Deployment failed");
-          } else if (StringUtils.equals(response.status, APPLIED_STATUS)
-              || StringUtils.equals(response.status, STARTED_STATUS)) {
-            return true;
+        try {
+          String deploymentId;
+
+          deploymentId = getDeploymentId(deployment);
+
+          if (deploymentId == null) {
+            return false;
           }
+          DeploymentDetailedResponse response = client.getDeployment(deploymentId);
+          if (response != null) {
+            if (StringUtils.equals(response.status, FAILED_STATUS)) {
+              throw new IllegalStateException("Deployment failed");
+            } else if (StringUtils.equals(response.status, APPLIED_STATUS)
+                || StringUtils.equals(response.status, STARTED_STATUS)) {
+              return true;
+            }
+          }
+        } catch (DeploymentException e) {
+          e.printStackTrace();
+          return false;
         }
         return false;
       };
     }
 
-    private String getDeploymentId(Deployment deployment) {
+    private String getDeploymentId(Deployment deployment) throws DeploymentException {
+      RuntimeFabricDeployment deploymentRTF = (RuntimeFabricDeployment) deployment;
+      String targetName = deploymentRTF.getTarget();
+      JsonArray targets = client.getTargets();
+      String targetID = null;
+      if (targets != null) {
+        targetID = RequestBuilder.getTargetId(targets, targetName);
+      }
       if (deploymentId == null) {
         deployments = client.getDeployments();
         for (DeploymentGenericResponse dep : deployments) {
-          if (StringUtils.equals(dep.name, deployment.getApplicationName())) {
+          if (StringUtils.equals(dep.name, deploymentRTF.getApplicationName()) && (targets == null ||
+              StringUtils.equals(targetID, dep.target.targetId))) {
             deploymentId = dep.id;
             return deploymentId;
           }
@@ -87,7 +106,13 @@ public class RuntimeFabricDeploymentVerification implements DeploymentVerificati
 
     @Override
     public Consumer<Deployment> onTimeout() {
-      return deployment -> client.getDeployment(getDeploymentId(deployment));
+      return deployment -> {
+        try {
+          client.getDeployment(getDeploymentId(deployment));
+        } catch (DeploymentException e) {
+          e.printStackTrace();
+        }
+      };
     }
   }
 }

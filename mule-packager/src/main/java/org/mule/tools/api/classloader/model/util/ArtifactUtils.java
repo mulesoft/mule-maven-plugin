@@ -35,12 +35,13 @@ import org.mule.tools.api.util.JarInfo;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.model.Build;
+import org.apache.maven.model.BuildBase;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
@@ -159,11 +160,19 @@ public class ArtifactUtils {
   }
 
   public static List<Artifact> updateArtifactsSharedState(List<BundleDependency> appDependencies, List<Artifact> artifacts,
-                                                          Model pomModel) {
-    Build build = pomModel.getBuild();
-    if (build != null) {
-      List<Plugin> plugins = build.getPlugins();
-      if (plugins != null) {
+                                                          Model pomModel, List<String> activeProfiles) {
+    List<BuildBase> builds = new ArrayList<BuildBase>();
+    if (pomModel.getBuild() != null) {
+      builds.add(pomModel.getBuild());
+    }
+    pomModel.getProfiles().forEach(p -> {
+      if (activeProfiles.contains(p.getId()))
+        builds.add(p.getBuild());
+    });
+    if (!builds.isEmpty()) {
+      List<Plugin> plugins = new ArrayList<Plugin>();
+      builds.forEach(b -> plugins.addAll(b.getPlugins()));
+      if (!plugins.isEmpty()) {
         Optional<Plugin> muleMavenPluginOptional = plugins.stream()
             .filter(plugin -> plugin.getGroupId().equalsIgnoreCase(MULE_MAVEN_PLUGIN_GROUP_ID) &&
                 plugin.getArtifactId().equalsIgnoreCase(MULE_MAVEN_PLUGIN_ARTIFACT_ID))

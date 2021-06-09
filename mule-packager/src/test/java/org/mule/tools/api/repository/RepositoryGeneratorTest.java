@@ -71,7 +71,7 @@ public class RepositoryGeneratorTest {
     appGAVModel = new ApplicationGAVModel(GROUP_ID, ARTIFACT_ID, VERSION);
     repositoryGenerator = new RepositoryGenerator(temporaryFolder.newFile("pom.xml"),
                                                   temporaryFolder.getRoot(), artifactInstallerMock,
-                                                  applicationClassloaderModelAssemblerMock, appGAVModel);
+                                                  applicationClassloaderModelAssemblerMock, appGAVModel, new ArrayList<String>());
     repositoryGeneratorSpy = spy(repositoryGenerator);
     appModelMock = mock(ApplicationClassloaderModel.class);
   }

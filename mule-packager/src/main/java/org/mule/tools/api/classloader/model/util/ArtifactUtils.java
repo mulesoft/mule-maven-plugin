@@ -171,7 +171,11 @@ public class ArtifactUtils {
     });
     if (!builds.isEmpty()) {
       List<Plugin> plugins = new ArrayList<Plugin>();
-      builds.forEach(b -> plugins.addAll(b.getPlugins()));
+      builds.forEach(b -> {
+        if (b != null) {
+          plugins.addAll(b.getPlugins());
+        }
+      });
       if (!plugins.isEmpty()) {
         Optional<Plugin> muleMavenPluginOptional = plugins.stream()
             .filter(plugin -> plugin.getGroupId().equalsIgnoreCase(MULE_MAVEN_PLUGIN_GROUP_ID) &&

@@ -31,6 +31,7 @@ import org.mule.tools.api.util.JarExplorer;
 import org.mule.tools.api.util.JarInfo;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -70,20 +71,22 @@ public class ApplicationClassLoaderModelAssembler {
   @Deprecated
   public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, ApplicationGAVModel appGAVModel)
       throws IllegalStateException {
-    return getApplicationClassLoaderModel(pomFile, null, appGAVModel, false, empty());
+    return getApplicationClassLoaderModel(pomFile, null, appGAVModel, false, empty(), new ArrayList<String>());
   }
 
   @Deprecated
   public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, File outputDirectory,
                                                                     ApplicationGAVModel appGAVModel,
                                                                     boolean includeTestDependencies) {
-    return getApplicationClassLoaderModel(pomFile, outputDirectory, appGAVModel, includeTestDependencies, empty());
+    return getApplicationClassLoaderModel(pomFile, outputDirectory, appGAVModel, includeTestDependencies, empty(),
+                                          new ArrayList<String>());
   }
 
   public ApplicationClassloaderModel getApplicationClassLoaderModel(File pomFile, File outputDirectory,
                                                                     ApplicationGAVModel appGAVModel,
                                                                     boolean includeTestDependencies,
-                                                                    Optional<MavenReactorResolver> mavenReactorResolver)
+                                                                    Optional<MavenReactorResolver> mavenReactorResolver,
+                                                                    List<String> activeProfiles)
       throws IllegalStateException {
 
     Model pomModel = getPomFile(pomFile);
@@ -103,7 +106,7 @@ public class ApplicationClassLoaderModelAssembler {
 
     List<Artifact> dependencies =
         updateArtifactsSharedState(appDependencies, updatePackagesResources(toApplicationModelArtifacts(appDependencies)),
-                                   pomModel);
+                                   pomModel, activeProfiles);
     appModel.setDependencies(dependencies);
 
     applicationClassLoaderModel = new ApplicationClassloaderModel(appModel);

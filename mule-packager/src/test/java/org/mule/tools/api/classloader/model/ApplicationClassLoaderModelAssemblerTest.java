@@ -62,6 +62,7 @@ import com.google.common.collect.Lists;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
+import org.apache.maven.model.Profile;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.junit.Before;
 import org.junit.Rule;
@@ -155,7 +156,8 @@ public class ApplicationClassLoaderModelAssemblerTest {
     when(jarExplorer.explore(classesDirectory.toURI())).thenReturn(new JarInfo(packages, resources));
     ApplicationClassloaderModel applicationClassloaderModel =
         applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), outputDirectory,
-                                                                               mock(ApplicationGAVModel.class), true, empty());
+                                                                               mock(ApplicationGAVModel.class), true, empty(),
+                                                                               new ArrayList<String>());
 
     assertThat("Application dependencies are not the expected",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
@@ -177,7 +179,32 @@ public class ApplicationClassLoaderModelAssemblerTest {
     appDependencies.add(dependency1);
     appDependencies.add(sharedLibrary);
     ApplicationClassloaderModel applicationClassloaderModel =
-        testSharedDependencies(appDependencies, singletonList(sharedLibrary), empty());
+        testSharedDependencies(appDependencies, singletonList(sharedLibrary), empty(), empty());
+
+    assertThat("Application contains both libraries",
+               applicationClassloaderModel.getClassLoaderModel().getDependencies(),
+               containsInAnyOrder(toArtifact(dependency1), toArtifact(sharedLibrary)));
+
+    assertThat("Application shared library is marked as shared",
+               applicationClassloaderModel.getClassLoaderModel().getDependencies().stream().anyMatch(artifact -> artifact
+                   .getArtifactCoordinates().getArtifactId().equals(sharedLibrary.getDescriptor().getArtifactId()) &&
+                   artifact.getArtifactCoordinates().getGroupId().equals(sharedLibrary.getDescriptor().getGroupId()) &&
+                   artifact.isShared()),
+               is(true));
+  }
+
+  @Test
+  public void getClassLoaderModelWithSharedDependenciesAndProfiles() throws URISyntaxException {
+    List<BundleDependency> appDependencies = new ArrayList<>();
+    BundleDependency dependency1 = buildBundleDependency(1, 1,
+                                                         EMPTY);
+
+    BundleDependency sharedLibrary = buildBundleDependency(2, 2,
+                                                           EMPTY);
+    appDependencies.add(dependency1);
+    appDependencies.add(sharedLibrary);
+    ApplicationClassloaderModel applicationClassloaderModel =
+        testSharedDependencies(appDependencies, singletonList(sharedLibrary), empty(), Optional.of("Local"));
 
     assertThat("Application contains both libraries",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
@@ -213,7 +240,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
     appDependencies.add(sharedLibrary);
 
     ApplicationClassloaderModel applicationClassloaderModel =
-        testSharedDependencies(appDependencies, singletonList(sharedLibrary), empty());
+        testSharedDependencies(appDependencies, singletonList(sharedLibrary), empty(), empty());
 
     assertThat("Application contains all libraries",
                applicationClassloaderModel.getClassLoaderModel().getDependencies(),
@@ -238,7 +265,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
   private ApplicationClassloaderModel testSharedDependencies(List<BundleDependency> appDependencies,
                                                              List<BundleDependency> sharedLibraries,
-                                                             Optional<Model> providedModel) {
+                                                             Optional<Model> providedModel, Optional<String> profile) {
 
 
     List<BundleDependency> appMulePluginDependencies = new ArrayList<>();
@@ -251,14 +278,18 @@ public class ApplicationClassLoaderModelAssemblerTest {
     ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
         getClassLoaderModelAssemblySpy(aetherMavenClientMock);
 
-    Model artifactPomModel = providedModel.orElse(createArtifactModel(sharedLibraries));
+    Model artifactPomModel = providedModel.orElse(createArtifactModel(sharedLibraries, profile));
 
     doReturn(artifactPomModel).when(applicationClassLoaderModelAssemblerSpy).getPomFile(any());
+    List<String> profiles = new ArrayList<String>();
+    if (profile.isPresent()) {
+      profiles.add(profile.get());
+    }
 
     try {
       return applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), temporaryFolder.newFolder(),
                                                                                     mock(ApplicationGAVModel.class), false,
-                                                                                    empty());
+                                                                                    empty(), profiles);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -266,14 +297,14 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
   @Test
   public void noBuildInModelDoesNotFail() {
-    testSharedDependencies(emptyList(), emptyList(), Optional.of(new Model()));
+    testSharedDependencies(emptyList(), emptyList(), Optional.of(new Model()), empty());
   }
 
   @Test
   public void noMavenPluginInModelDoesNotFail() {
     Model model = new Model();
     model.setBuild(new Build());
-    testSharedDependencies(emptyList(), emptyList(), Optional.of(model));
+    testSharedDependencies(emptyList(), emptyList(), Optional.of(model), empty());
   }
 
   @Test
@@ -285,10 +316,10 @@ public class ApplicationClassLoaderModelAssemblerTest {
     plugin.setArtifactId(MULE_MAVEN_PLUGIN_ARTIFACT_ID);
     build.addPlugin(plugin);
     model.setBuild(build);
-    testSharedDependencies(emptyList(), emptyList(), Optional.of(model));
+    testSharedDependencies(emptyList(), emptyList(), Optional.of(model), empty());
   }
 
-  private Model createArtifactModel(List<BundleDependency> sharedLibraries) {
+  private Model createArtifactModel(List<BundleDependency> sharedLibraries, Optional<String> profile) {
     Model artifactPomModel = new Model();
     Plugin plugin = new Plugin();
     plugin.setArtifactId(MULE_MAVEN_PLUGIN_ARTIFACT_ID);
@@ -308,9 +339,17 @@ public class ApplicationClassLoaderModelAssemblerTest {
           artifactIdDom.setValue(sharedLibraryToAdd.getDescriptor().getArtifactId());
           sharedLibraryDom.addChild(artifactIdDom);
         });
-
-    artifactPomModel.setBuild(new Build());
-    artifactPomModel.getBuild().addPlugin(plugin);
+    Build b = new Build();
+    b.addPlugin(plugin);
+    if (profile.isPresent()) {
+      Profile p = new Profile();
+      p.setId(profile.get());
+      p.setBuild(b);
+      artifactPomModel.addProfile(p);
+    } else {
+      artifactPomModel.setBuild(b);
+    }
+    System.out.println(artifactPomModel);
     return artifactPomModel;
   }
 

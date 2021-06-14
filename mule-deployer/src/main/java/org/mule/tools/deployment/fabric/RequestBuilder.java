@@ -210,6 +210,7 @@ public class RequestBuilder {
       Map<String, Object> applicationPropertiesService = new HashMap<>();
       Map<String, Object> properties = new HashMap<>();
       properties.put("properties", deployment.getProperties());
+      properties.put("secureProperties", deployment.getSecureProperties());
       properties.put("applicationName", deployment.getApplicationName());
       applicationPropertiesService.put("mule.agent.application.properties.service", properties);
 

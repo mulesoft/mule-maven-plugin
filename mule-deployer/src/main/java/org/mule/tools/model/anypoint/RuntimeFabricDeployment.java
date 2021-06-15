@@ -30,10 +30,10 @@ public class RuntimeFabricDeployment extends AnypointDeployment {
 
   @Parameter
   protected String replicas;
-  
+
   @Parameter
   protected Map<String, String> secureProperties;
-  
+
 
 
   public String getReplicas() {

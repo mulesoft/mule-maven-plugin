@@ -117,7 +117,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
   @Test
   public void testCloudHubDeploy() throws VerificationException, InterruptedException, TimeoutException, DeploymentException {
-    String version = muleVersion.replace(SNAPSHOT_SUFFIX, "");
+    String version = muleVersion;
 
     assumeTrue("Version not supported by CloudHub", cloudHubClient.getSupportedMuleVersions().stream().map(sv -> sv.getVersion())
         .collect(Collectors.toSet()).contains(version));

@@ -88,7 +88,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
   @Parameterized.Parameters
   public static Iterable<? extends Object> data() {
-    return Arrays.asList("4.0.0", "4.1.0", "4.2.2");
+    return Arrays.asList("4.3.0-SNAPSHOT");
   }
 
   private String muleVersion;
@@ -117,7 +117,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
   @Test
   public void testCloudHubDeploy() throws VerificationException, InterruptedException, TimeoutException, DeploymentException {
-    String version = muleVersion;
+    String version = muleVersion.replace(SNAPSHOT_SUFFIX, "");;
 
     assumeTrue("Version not supported by CloudHub", cloudHubClient.getSupportedMuleVersions().stream().map(sv -> sv.getVersion())
         .collect(Collectors.toSet()).contains(version));

@@ -1,6 +1,6 @@
 {
   "name": "new-package",
-  "minMuleVersion": "4.0.0-SNAPSHOT",
+  "minMuleVersion": "4.3.0-SNAPSHOT",
   "classLoaderModelLoaderDescriptor": {
     "id": "mule",
     "attributes": {

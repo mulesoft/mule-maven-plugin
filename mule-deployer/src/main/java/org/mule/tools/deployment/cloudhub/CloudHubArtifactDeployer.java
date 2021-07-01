@@ -151,7 +151,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
    * Updates the application in CloudHub.
    *
    * @throws DeploymentException In case the application is not available for the current user or some other internal in CloudHub
-   *                             happens
+   *         happens
    */
   protected void updateApplication() throws DeploymentException {
     Application currentApplication = client.getApplications(deployment.getApplicationName());
@@ -189,9 +189,9 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     Integer workersAmount;
     String workerType;
     MuleVersion muleVersion = new MuleVersion();
-    muleVersion.setVersion(deployment.getMuleVersion().get());
 
     if (originalApplication != null) {
+      muleVersion.setVersion(deployment.getMuleVersion().get());
       Map<String, String> resolvedProperties = resolveProperties(originalApplication.getProperties(),
                                                                  deployment.getProperties(), deployment.overrideProperties());
       application.setProperties(resolvedProperties);
@@ -212,6 +212,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
           isBlank(deployment.getWorkerType()) ? originalApplication.getWorkers().getType().getName() : deployment.getWorkerType();
 
     } else {
+      muleVersion.setVersion(deployment.getMuleVersion().get().split("-")[0]);
       application.setMonitoringAutoRestart(true);
       application.setProperties(deployment.getProperties());
 

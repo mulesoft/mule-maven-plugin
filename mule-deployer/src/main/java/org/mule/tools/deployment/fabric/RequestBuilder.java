@@ -143,15 +143,11 @@ public class RequestBuilder {
     for (JsonElement targetElement : targets) {
       JsonObject target = targetElement.getAsJsonObject();
       if (target != null) {
-        JsonElement agentInfoElement = target.get(AGENT_INFO);
-        if (agentInfoElement != null) {
-          JsonObject agentInfo = agentInfoElement.getAsJsonObject();
-          JsonElement nameElement = agentInfo.get(NAME);
-          if (nameElement != null) {
-            String currentTargetName = nameElement.getAsString();
-            if (StringUtils.equals(targetName, currentTargetName)) {
-              return target.get(ID).getAsString();
-            }
+        JsonElement nameElement = target.get(NAME);
+        if (nameElement != null) {
+          String currentTargetName = nameElement.getAsString();
+          if (StringUtils.equals(targetName, currentTargetName)) {
+            return target.get(ID).getAsString();
           }
         }
       }

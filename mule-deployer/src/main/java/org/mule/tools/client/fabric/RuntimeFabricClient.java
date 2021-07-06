@@ -38,7 +38,7 @@ public class RuntimeFabricClient extends AbstractMuleClient {
   public static final String HYBRID_API = BASE_HYBRID_API_PATH + API_VERSION;
   public static final String RESOURCES_PATH = HYBRID_API + "/organizations/%s/environments/%s";
   public static final String DEPLOYMENTS_PATH = RESOURCES_PATH + "/deployments";
-  public static final String WORKERCLOUD_API_V1_AGENTS = "workercloud/api/organizations/%s/agents";
+  public static final String RUNTIME_FABRIC_TARGETS = "runtimefabric/api/organizations/%s/targets";
   public static final String RUNTIME_FABRIC_TARGET_INFO = "runtimefabric/api/organizations/%s/targets/%s";
   public static final String RUNTIME_FABRIC_DOMAIN_INFO = RUNTIME_FABRIC_TARGET_INFO + "/environments/%s/domains";
 
@@ -114,7 +114,7 @@ public class RuntimeFabricClient extends AbstractMuleClient {
   }
 
   public Supplier<String> getAgentsPathSupplier() {
-    return () -> format(WORKERCLOUD_API_V1_AGENTS, getOrgId());
+    return () -> format(RUNTIME_FABRIC_TARGETS, getOrgId());
   }
 
   public JsonArray getTargets() {

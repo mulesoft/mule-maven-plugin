@@ -36,11 +36,9 @@ public class RequestBuilderTest {
   private static final String TARGETS_RESPONSE = "[\n" +
       "   {\n" +
       "      \"id\":\"sampleId\",      \n" +
-      "      \"agentInfo\":{\n" +
       "         \"name\":\"fabric1\",\n" +
       "         \"organizationId\":\"orgId\",\n" +
       "         \"status\":\"Connected\"         \n" +
-      "      }\n" +
       "   }   \n" +
       "]";
   private static final String TARGET_RESPONSE = "{\n" +

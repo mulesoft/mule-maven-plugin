@@ -31,6 +31,10 @@ public class RuntimeFabricDeployment extends AnypointDeployment {
   @Parameter
   protected String replicas;
 
+  @Parameter
+  protected Map<String, String> secureProperties;
+
+
 
   public String getReplicas() {
     return replicas;
@@ -63,6 +67,14 @@ public class RuntimeFabricDeployment extends AnypointDeployment {
 
   public void setProvider(String provider) {
     this.provider = provider;
+  }
+
+  public Map<String, String> getSecureProperties() {
+    return secureProperties;
+  }
+
+  public void setSecureProperties(Map<String, String> secureProperties) {
+    this.secureProperties = secureProperties;
   }
 
 

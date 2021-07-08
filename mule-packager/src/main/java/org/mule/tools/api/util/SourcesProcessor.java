@@ -105,7 +105,8 @@ public class SourcesProcessor {
           new RepositoryGenerator(mavenComponents.getProject().getFile(),
                                   repositoryOutputDirectory,
                                   new ArtifactInstaller(new MavenPackagerLog(mavenComponents.getLog())),
-                                  getClassLoaderModelAssembler(), appGAV);
+                                  getClassLoaderModelAssembler(), appGAV,
+                                  mavenComponents.getSession().getRequest().getActiveProfiles());
       ClassLoaderModel classLoaderModel =
           repositoryGenerator.generate(lightweightPackage, useLocalRepository, prettyPrinting, testJar, mavenReactorResolver);
 

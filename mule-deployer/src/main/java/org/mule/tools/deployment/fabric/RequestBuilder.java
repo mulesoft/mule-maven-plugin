@@ -58,7 +58,7 @@ public class RequestBuilder {
     Map<String, Object> applicationPropertiesService = new HashMap<>();
     Map<String, Object> properties = new HashMap<>();
     properties.put("properties", deployment.getProperties());
-    properties.put("secureproperties", new HashMap<String, String>());
+    properties.put("secureProperties", deployment.getSecureProperties());
     properties.put("applicationName", deployment.getApplicationName());
     applicationPropertiesService.put("mule.agent.application.properties.service", properties);
 
@@ -143,15 +143,11 @@ public class RequestBuilder {
     for (JsonElement targetElement : targets) {
       JsonObject target = targetElement.getAsJsonObject();
       if (target != null) {
-        JsonElement agentInfoElement = target.get(AGENT_INFO);
-        if (agentInfoElement != null) {
-          JsonObject agentInfo = agentInfoElement.getAsJsonObject();
-          JsonElement nameElement = agentInfo.get(NAME);
-          if (nameElement != null) {
-            String currentTargetName = nameElement.getAsString();
-            if (StringUtils.equals(targetName, currentTargetName)) {
-              return target.get(ID).getAsString();
-            }
+        JsonElement nameElement = target.get(NAME);
+        if (nameElement != null) {
+          String currentTargetName = nameElement.getAsString();
+          if (StringUtils.equals(targetName, currentTargetName)) {
+            return target.get(ID).getAsString();
           }
         }
       }
@@ -210,6 +206,7 @@ public class RequestBuilder {
       Map<String, Object> applicationPropertiesService = new HashMap<>();
       Map<String, Object> properties = new HashMap<>();
       properties.put("properties", deployment.getProperties());
+      properties.put("secureProperties", deployment.getSecureProperties());
       properties.put("applicationName", deployment.getApplicationName());
       applicationPropertiesService.put("mule.agent.application.properties.service", properties);
 

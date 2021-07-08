@@ -29,6 +29,8 @@ import org.mule.tools.api.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -46,22 +48,24 @@ public class RepositoryGenerator {
   protected File outputDirectory;
   private File projectPomFile;
   private ApplicationGAVModel appGAVModel;
+  private List<String> activeProfiles;
 
   public RepositoryGenerator(File projectPomFile, File outputDirectory, ArtifactInstaller artifactInstaller,
                              ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssembler,
-                             ApplicationGAVModel appGAVModel) {
+                             ApplicationGAVModel appGAVModel, List<String> activeProfiles) {
     this.projectPomFile = projectPomFile;
     this.outputDirectory = outputDirectory;
     this.artifactInstaller = artifactInstaller;
     this.applicationClassLoaderModelAssembler = applicationClassLoaderModelAssembler;
     this.appGAVModel = appGAVModel;
+    this.activeProfiles = activeProfiles;
   }
 
   @Deprecated
   public ClassLoaderModel generate() throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
         applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory, appGAVModel, false,
-                                                                            empty());
+                                                                            empty(), new ArrayList<String>());
     installArtifacts(getRepositoryFolder(), artifactInstaller, appModel, false);
     return appModel.getClassLoaderModel();
   }
@@ -78,7 +82,8 @@ public class RepositoryGenerator {
       throws IOException, IllegalStateException {
     ApplicationClassloaderModel appModel =
         applicationClassLoaderModelAssembler.getApplicationClassLoaderModel(projectPomFile, outputDirectory, appGAVModel,
-                                                                            includeTestDependencies, mavenReactorResolver);
+                                                                            includeTestDependencies, mavenReactorResolver,
+                                                                            activeProfiles);
     if (!lightweight) {
       installArtifacts(getRepositoryFolder(), artifactInstaller, appModel, prettyPrinting);
     }

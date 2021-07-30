@@ -74,6 +74,7 @@ public class ApplicationClassLoaderFactory {
           .forEach(builder::addArtifactPluginDescriptors);
 
       builder.setArtifactDescriptor(applicationDescriptor);
+
       return builder.build();
     } catch (Exception e) {
       throw new ToolingException("Error while creating application class loader", e);

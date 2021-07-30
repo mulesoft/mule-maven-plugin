@@ -25,10 +25,12 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast-xml-parser</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-runtime-extension-model</artifactId>
+        	<version>${mule.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
@@ -38,7 +40,7 @@
         <dependency>
             <groupId>org.mule.tooling</groupId>
             <artifactId>mule-runtime-tooling-client</artifactId>
-            <version>${mule.core.version}</version>
+            <version>${mule.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

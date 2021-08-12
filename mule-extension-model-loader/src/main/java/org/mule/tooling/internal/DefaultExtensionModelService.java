@@ -1,7 +1,6 @@
 package org.mule.tooling.internal;
 
 import static com.google.common.collect.ImmutableSet.copyOf;
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static java.lang.Boolean.TRUE;
 import static java.lang.Boolean.valueOf;
 import static java.lang.String.format;
@@ -33,7 +32,6 @@ import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.exception.MuleRuntimeException;
-import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.util.Pair;
 import org.mule.runtime.deployment.model.api.application.ApplicationDescriptor;
@@ -358,7 +356,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
           new MuleExtensionModelLoaderManager(muleArtifactResourcesRegistry.getContainerArtifactClassLoader());
       extensionModelLoaderRepository.start();
       final Optional<LoadedExtensionInformation> loadedExtensionInformation =
-          getLoadedExtensionInformation(artifactPluginDescriptor, toolingArtifactClassLoader.getArtifactPluginClassLoaders(), extensionModelLoaderRepository,
+          getLoadedExtensionInformation(artifactPluginDescriptor, toolingArtifactClassLoader, extensionModelLoaderRepository,
                                         properties);
       return loadedExtensionInformation;
     } catch (Exception e) {
@@ -371,11 +369,11 @@ public class DefaultExtensionModelService implements ExtensionModelService {
   }
 
   private Optional<LoadedExtensionInformation> getLoadedExtensionInformation(ArtifactPluginDescriptor pluginDescriptor,
-                                                                             List<ArtifactClassLoader> artifactPluginClassLoaders,
+                                                                             ToolingArtifactClassLoader toolingArtifactCL,
                                                                              MuleExtensionModelLoaderManager loaderRepository,
                                                                              Map<String, String> properties) {
     Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> descriptorsWithExtensions =
-        discoverPluginsExtensionModel(artifactPluginClassLoaders, loaderRepository, properties).stream()
+        discoverPluginsExtensionModel(toolingArtifactCL, loaderRepository, properties).stream()
             .map(pair -> withContextClassLoader(this.getClass().getClassLoader(), () -> {
               ExtensionModelJsonSerializer extensionModelJsonSerializer = new ExtensionModelJsonSerializer();
               Pair<ArtifactPluginDescriptor, ExtensionModel> result = new Pair<>(pair.getFirst(), extensionModelJsonSerializer
@@ -400,10 +398,10 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     return descriptorsWithExtensions.stream().filter(e -> e.getFirst().equals(descriptor)).map(Pair::getSecond).findFirst();
   }
 
-  private Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> discoverPluginsExtensionModel(List<ArtifactClassLoader> artifactPluginClassLoaders,
+  private Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> discoverPluginsExtensionModel(ToolingArtifactClassLoader toolingArtifactCL,
                                                                                             MuleExtensionModelLoaderManager extensionModelLoaderRepository,
                                                                                             Map<String, String> properties) {
-    List<Pair<ArtifactPluginDescriptor, ArtifactClassLoader>> artifacts = artifactPluginClassLoaders
+    List<Pair<ArtifactPluginDescriptor, ArtifactClassLoader>> artifacts = toolingArtifactCL.getArtifactPluginClassLoaders()
         .stream()
         .map(a -> new Pair<>(effectiveModel(properties, a.getArtifactDescriptor()), a))
         .collect(toList());
@@ -421,43 +419,6 @@ public class DefaultExtensionModelService implements ExtensionModelService {
               .addAttributes(ImmutableMap.of(DISABLE_COMPONENT_IGNORE, TRUE)));
     }
     return artifactDescriptor;
-  }
-  
-
-  @Override
-  public Optional<LoadedExtensionInformation> loadExtensionData(ArtifactClassLoader artifactClassLoader,
-                                                                List<ArtifactClassLoader> artifactPluginClassLoaders) {
-    List<ArtifactPluginDescriptor> artifactPluginDescriptors = new ArrayList<>();
-    artifactPluginDescriptors.add(artifactClassLoader.getArtifactDescriptor());
-    List<ArtifactClassLoader> resolvedArtifactPluginClassLoaders = muleArtifactResourcesRegistry.getPluginDependenciesResolver()
-        .resolve(emptySet(), artifactPluginDescriptors, false)
-        .stream()
-        .map(dependentArtifactPluginDescriptor -> artifactPluginClassLoaders.stream()
-            .filter(classloader -> classloader.getArtifactDescriptor().getBundleDescriptor()
-                .equals(dependentArtifactPluginDescriptor.getBundleDescriptor()))
-            .findAny()
-            .orElseThrow(() -> new MuleRuntimeException(createStaticMessage("Couldn't find a matching class loader provided by the context for plugin descriptor: "
-                + dependentArtifactPluginDescriptor.getBundleDescriptor()))))
-        .collect(toList());
-
-    return loadExtensionData(artifactClassLoader.getArtifactDescriptor(), resolvedArtifactPluginClassLoaders, emptyMap());
-  }
-  
-  private Optional<LoadedExtensionInformation> loadExtensionData(ArtifactPluginDescriptor artifactPluginDescriptor,
-                                                                 List<ArtifactClassLoader> artifactPluginClassLoaders,
-                                                                 Map<String, String> properties) {
-    try {
-      MuleExtensionModelLoaderManager extensionModelLoaderRepository =
-          new MuleExtensionModelLoaderManager(muleArtifactResourcesRegistry.getContainerArtifactClassLoader());
-      extensionModelLoaderRepository.start();
-      final Optional<LoadedExtensionInformation> loadedExtensionInformation =
-          getLoadedExtensionInformation(artifactPluginDescriptor, artifactPluginClassLoaders,
-                                        extensionModelLoaderRepository,
-                                        properties);
-      return loadedExtensionInformation;
-    } catch (Exception e) {
-      throw new ToolingException(e);
-    }
   }
 
 }

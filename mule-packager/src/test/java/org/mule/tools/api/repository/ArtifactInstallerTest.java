@@ -119,5 +119,14 @@ public class ArtifactInstallerTest {
 
     assertThat("Pom file should have been created", generatedPomFile.exists(), is(true));
   }
+  
+  @Test
+  public void generatePomFileWhenPomFileDoesNotExistTest() throws IOException {
+    File generatedPomFile = new File(outputFolder.getRoot(), POM_FILE_NAME);
+
+    assertThat("Pom file should not exist", generatedPomFile.exists(), is(false));
+
+    installer.generatePomFile(artifact, outputFolder.getRoot());
+  }
 
 }

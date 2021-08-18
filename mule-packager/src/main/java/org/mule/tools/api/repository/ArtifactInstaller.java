@@ -98,7 +98,9 @@ public class ArtifactInstaller {
     if (!srcPomFile.exists()) {
       srcPomFile = new File(srcPomFolder, POM_FILE_NAME);
     }
-    copyFile(srcPomFile, destinationPomFile);
+    if (srcPomFile.exists()) {
+      copyFile(srcPomFile, destinationPomFile);
+    }
   }
 
   @Deprecated

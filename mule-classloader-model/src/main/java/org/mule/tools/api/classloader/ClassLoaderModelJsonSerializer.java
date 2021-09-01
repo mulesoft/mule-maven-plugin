@@ -18,6 +18,7 @@ import org.mule.tools.api.classloader.model.AppClassLoaderModel;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -47,7 +48,7 @@ public class ClassLoaderModelJsonSerializer {
           .enableComplexMapKeySerialization()
           .create();
 
-      Reader reader = new FileReader(classLoaderModelDescriptor);
+      Reader reader = new BufferedReader(new FileReader(classLoaderModelDescriptor));
       ClassLoaderModel classLoaderModel = gson.fromJson(reader, ClassLoaderModel.class);
       reader.close();
 

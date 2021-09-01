@@ -10,13 +10,19 @@
 package org.mule.tools.api.classloader;
 
 import static org.mule.tools.api.classloader.Constants.ADDITIONAL_PLUGIN_DEPENDENCIES_FIELD;
-import static org.mule.tools.api.classloader.Constants.ARTIFACT_PACKAGES_FIELD;
-import static org.mule.tools.api.classloader.Constants.ARTIFACT_RESOURCES_FIELD;
 import static org.mule.tools.api.classloader.Constants.PACKAGES_FIELD;
 import static org.mule.tools.api.classloader.Constants.RESOURCES_FIELD;
 
 import org.mule.tools.api.classloader.model.AppClassLoaderModel;
 import org.mule.tools.api.classloader.model.Artifact;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.Type;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,13 +30,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.lang.reflect.Type;
-import java.util.List;
 
 /**
  * Deserializer for an AppClassLoaderModel
@@ -46,7 +45,7 @@ public class AppClassLoaderModelJsonSerializer extends ClassLoaderModelJsonSeria
           .setPrettyPrinting()
           .create();
 
-      Reader reader = new FileReader(classLoaderModelDescriptor);
+      Reader reader = new BufferedReader(new FileReader(classLoaderModelDescriptor));
       AppClassLoaderModel classLoaderModel = gson.fromJson(reader, AppClassLoaderModel.class);
       reader.close();
       return classLoaderModel;

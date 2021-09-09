@@ -63,6 +63,6 @@ public class DefaultExtensionModelLoader implements ExtensionModelLoader {
         new MuleArtifactResourcesRegistry(toolingVersion, Optional.ofNullable(muleVersion), mavenClient,
                                           moduleRepository, containerClassLoaderFactory, workingDir.toFile());
     DefaultExtensionModelService service = new DefaultExtensionModelService(resourcesRegistry);
-    return service.loadExtensionData(artifactDescriptor);
+    return service.loadExtensionData(artifactDescriptor, muleVersion);
   }
 }

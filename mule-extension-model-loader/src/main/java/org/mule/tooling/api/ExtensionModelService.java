@@ -1,6 +1,7 @@
 package org.mule.tooling.api;
 
 import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 
 import java.io.File;
@@ -15,5 +16,5 @@ public interface ExtensionModelService {
 
   BundleDescriptor readBundleDescriptor(File pluginFile);
 
-  Optional<LoadedExtensionInformation> loadExtensionData(BundleDescriptor pluginDescriptor);
+  Optional<LoadedExtensionInformation> loadExtensionData(BundleDescriptor pluginDescriptor, MuleVersion muleVersion);
 }

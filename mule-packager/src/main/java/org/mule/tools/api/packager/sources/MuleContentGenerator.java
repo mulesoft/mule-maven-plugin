@@ -21,6 +21,8 @@ import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
 import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 
+import org.mule.runtime.ast.api.ArtifactAst;
+import org.mule.runtime.ast.internal.serialization.json.JsonArtifactAstSerializer;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
@@ -30,11 +32,15 @@ import org.mule.tools.api.util.exclude.MuleExclusionMatcher;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.apache.commons.io.FileUtils;
+
 
 /**
  * Generates the required content for each of the mandatory folders of a mule application package
@@ -69,6 +75,15 @@ public class MuleContentGenerator extends ContentGenerator {
     Path destinationPath = projectInformation.getBuildDirectory().resolve(CLASSES.value());
 
     copyContent(originPath, destinationPath, Optional.empty(), true, false);
+  }
+
+  public void createAstFile(ArtifactAst artifactAst) throws IOException {
+    JsonArtifactAstSerializer jsonArtifactAstSerializer = new JsonArtifactAstSerializer();
+    InputStream inputStream = jsonArtifactAstSerializer.serialize(artifactAst);
+
+    File targetFile = projectInformation.getBuildDirectory().resolve(META_INF.value()).resolve("artifact.ast").toFile();
+
+    FileUtils.copyInputStreamToFile(inputStream, targetFile);
   }
 
   /**

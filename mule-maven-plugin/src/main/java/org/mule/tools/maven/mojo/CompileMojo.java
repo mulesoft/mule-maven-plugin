@@ -37,7 +37,7 @@ public class CompileMojo extends AbstractMuleMojo {
     try {
       ((MuleContentGenerator) getContentGenerator()).createMuleSrcFolderContent();
       ArtifactAst artifact = getArtifactAst();
-
+      ((MuleContentGenerator) getContentGenerator()).createAstFile(artifact);
     } catch (IllegalArgumentException | IOException e) {
       throw new MojoFailureException("Fail to generate sources", e);
     }
@@ -51,7 +51,7 @@ public class CompileMojo extends AbstractMuleMojo {
   public ArtifactAst getArtifactAst() {
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(),
                                                  project.getProperties().getProperty("app.runtime"),
-                                                 project.getDependencies(), projectBaseFolder.toPath());
+                                                 project.getDependencies(), projectBaseFolder.toPath().resolve("target"));
     return astGenerator.generateAST(projectBaseFolder.toPath());
   }
 }

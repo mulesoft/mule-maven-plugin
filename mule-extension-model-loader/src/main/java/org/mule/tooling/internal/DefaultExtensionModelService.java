@@ -21,7 +21,6 @@ import static org.mule.runtime.core.api.config.MuleManifest.getProductVersion;
 import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.core.api.util.UUID.getUUID;
 import static org.mule.runtime.deployment.model.api.artifact.ArtifactDescriptorConstants.MULE_LOADER_ID;
-import static org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor.MULE_PLUGIN_CLASSIFIER;
 import static org.mule.runtime.module.deployment.impl.internal.maven.AbstractMavenClassLoaderModelLoader.CLASSLOADER_MODEL_MAVEN_REACTOR_RESOLVER;
 import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.createDeployablePomFile;
 import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.createDeployablePomProperties;
@@ -32,6 +31,7 @@ import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.util.Pair;
 import org.mule.runtime.deployment.model.api.application.ApplicationDescriptor;
@@ -126,7 +126,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
                                   toolingArtifactClassLoader,
                                   properties) -> loadExtensionData(artifactPluginDescriptor,
                                                                    toolingArtifactClassLoader,
-                                                                   properties));
+                                                                   properties), null);
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("Extension model for {} loaded in {}ms", pluginJarFile, NANOSECONDS.toMillis(nanoTime() - startTime));
     }
@@ -226,14 +226,14 @@ public class DefaultExtensionModelService implements ExtensionModelService {
 
 
   @Override
-  public Optional<LoadedExtensionInformation> loadExtensionData(BundleDescriptor pluginDescriptor) {
+  public Optional<LoadedExtensionInformation> loadExtensionData(BundleDescriptor pluginDescriptor, MuleVersion muleVersion) {
     long startTime = nanoTime();
     Optional<LoadedExtensionInformation> extensionInformationOptional = withTemporaryApplication(pluginDescriptor, emptyMap(),
                                                                                                  (artifactPluginDescriptor,
                                                                                                   toolingArtifactClassLoader,
                                                                                                   properties) -> loadExtensionData(artifactPluginDescriptor,
                                                                                                                                    toolingArtifactClassLoader,
-                                                                                                                                   properties));
+                                                                                                                                   properties), muleVersion);
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("Extension model for {} loaded in {}ms", pluginDescriptor, NANOSECONDS.toMillis(nanoTime() - startTime));
     }
@@ -243,15 +243,14 @@ public class DefaultExtensionModelService implements ExtensionModelService {
 
   private Optional<LoadedExtensionInformation> withTemporaryApplication(BundleDescriptor pluginDescriptor,
                                                                         Map<String, Object> classLoaderModelLoaderAttributes,
-                                                                        TemporaryApplicationFunction action) {
+                                                                        TemporaryApplicationFunction action, MuleVersion muleVersion) {
     String uuid = getUUID();
     String applicationName = uuid + "-extension-model-temp-app";
     File applicationFolder = new File(muleArtifactResourcesRegistry.getWorkingDirectory(), applicationName);
     try {
       createPomFile(pluginDescriptor, uuid, applicationFolder);
-
       MuleApplicationModel muleApplicationModel = new MuleApplicationModel.MuleApplicationModelBuilder()
-          .setMinMuleVersion(getProductVersion())
+          .setMinMuleVersion(muleVersion!=null ? muleVersion.toString() : getProductVersion())
           .setName(applicationName)
           .setRequiredProduct(MULE)
           .withBundleDescriptorLoader(new MuleArtifactLoaderDescriptor(MULE_LOADER_ID, emptyMap()))
@@ -314,8 +313,9 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     dependency.setGroupId(pluginDescriptor.getGroupId());
     dependency.setArtifactId(pluginDescriptor.getArtifactId());
     dependency.setVersion(pluginDescriptor.getVersion());
-    dependency.setClassifier(MULE_PLUGIN_CLASSIFIER);
-    dependency.setType(JAR);
+    dependency.setClassifier(pluginDescriptor.getClassifier().get());
+    dependency.setType(pluginDescriptor.getType());
+
     model.getDependencies().add(dependency);
 
     createDeployablePomFile(applicationFolder, model);
@@ -420,5 +420,6 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     }
     return artifactDescriptor;
   }
+
 
 }

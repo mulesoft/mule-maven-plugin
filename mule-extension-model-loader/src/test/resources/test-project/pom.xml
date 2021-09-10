@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.mulesoft.muleesb.it</groupId>
+    <artifactId>empty-mule-deploy-application-agent-project</artifactId>
+    <version>1.0.0</version>
+    <packaging>mule-application</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.mule.tools.maven</groupId>
+                <artifactId>mule-maven-plugin</artifactId>
+                <version>${muleMavenPluginVersion}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <agentDeployment>
+                        <uri>http://localhost:9999/</uri>
+                        <muleVersion>${mule.version}</muleVersion>
+                    </agentDeployment>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

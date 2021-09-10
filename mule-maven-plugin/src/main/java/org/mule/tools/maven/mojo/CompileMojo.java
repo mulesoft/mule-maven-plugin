@@ -11,12 +11,16 @@
 package org.mule.tools.maven.mojo;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.mule.runtime.ast.api.ArtifactAst;
+import org.mule.runtime.ast.api.ComponentAst;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
+import org.mule.tooling.api.AstGenerator;
 
 /**
  * @author Mulesoft Inc.
@@ -32,6 +36,8 @@ public class CompileMojo extends AbstractMuleMojo {
     getLog().debug("Generating mule source code...");
     try {
       ((MuleContentGenerator) getContentGenerator()).createMuleSrcFolderContent();
+      ArtifactAst artifact = getArtifactAst();
+
     } catch (IllegalArgumentException | IOException e) {
       throw new MojoFailureException("Fail to generate sources", e);
     }
@@ -40,5 +46,12 @@ public class CompileMojo extends AbstractMuleMojo {
   @Override
   public String getPreviousRunPlaceholder() {
     return "MULE_MAVEN_PLUGIN_COMPILE_PREVIOUS_RUN_PLACEHOLDER";
+  }
+
+  public ArtifactAst getArtifactAst() {
+    AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(),
+                                                 project.getProperties().getProperty("app.runtime"),
+                                                 project.getDependencies(), projectBaseFolder.toPath());
+    return astGenerator.generateAST(projectBaseFolder.toPath());
   }
 }

@@ -19,7 +19,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
-
+import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
 import static org.mockito.Mockito.*;
@@ -49,7 +49,8 @@ public class CompileMojoTest extends AbstractMuleMojoTest {
   public void execute() throws MojoFailureException, MojoExecutionException, IOException {
     MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
-
+    ArtifactAst artifactAst = mock(ArtifactAst.class);
+    doReturn(artifactAst).when(mojoMock).getArtifactAst();
     doCallRealMethod().when(mojoMock).execute();
     doCallRealMethod().when(mojoMock).doExecute();
     mojoMock.execute();

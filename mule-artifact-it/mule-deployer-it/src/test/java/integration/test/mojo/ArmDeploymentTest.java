@@ -68,6 +68,11 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
     log.info("Initializing context...");
 
     armClient = getArmClient();
+    for (Target t : armClient.getServers()) {
+      if (t.name.startsWith(APPLICATION)) {
+        armClient.deleteServer(Integer.valueOf(t.id));
+      }
+    }
     standaloneEnvironment = new StandaloneEnvironment(environmentWorkingDir.getRoot(), getMuleVersion());
 
     standaloneEnvironment.register(armClient.getRegistrationToken(), ARM_INSTANCE_NAME);

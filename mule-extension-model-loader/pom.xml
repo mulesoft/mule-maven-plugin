@@ -27,6 +27,21 @@
             <artifactId>mule-artifact-ast-xml-parser</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.mulesoft.anypoint</groupId>
+            <artifactId>api-gateway-api</artifactId>
+            <version>1.3.0</version>
+        </dependency>
+         <dependency>
+            <groupId>com.mulesoft.mule.runtime</groupId>
+            <artifactId>mule-core-ee</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+         <dependency>
+                <groupId>com.mulesoft.anypoint</groupId>
+                <artifactId>mule-module-autodiscovery</artifactId>
+	            <version>${mule.version}</version>
+	        </dependency>
 		<dependency>
         	<groupId>com.mulesoft.mule.runtime.modules</groupId>
             <artifactId>mule-runtime-ee-extension-model</artifactId>

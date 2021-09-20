@@ -11,6 +11,8 @@
 package org.mule.tooling.api;
 
 import org.mule.runtime.ast.api.xml.AstXmlParser;
+import org.mule.runtime.container.internal.ModuleDiscoverer;
+
 import static org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor.MULE_PLUGIN_CLASSIFIER;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,12 +39,14 @@ public class AstGenerator {
 
   public AstGenerator(MavenClient mavenClient, String toolingVersion,
                       List<Dependency> dependencies, Path workingDir) {
+    ClassLoader classloader = AstGenerator.class.getClassLoader();
+
     ExtensionModelLoader loader = ExtensionModelLoaderFactory
-        .createLoader(mavenClient, workingDir, this.getClass().getClassLoader(), toolingVersion);
+        .createLoader(mavenClient, workingDir, classloader, toolingVersion);
     Set<ExtensionModel> extensionModels = new HashSet<ExtensionModel>();
     for (Dependency d : dependencies) {
-      if(d.getClassifier()!=null && d.getClassifier().equals(MULE_PLUGIN_CLASSIFIER)) {
-        Optional<LoadedExtensionInformation> extensionInformation = loader.load(toBundleDescriptor(d),new MuleVersion(toolingVersion));
+      if (d.getClassifier() != null && d.getClassifier().equals(MULE_PLUGIN_CLASSIFIER)) {
+        Optional<LoadedExtensionInformation> extensionInformation = loader.load(toBundleDescriptor(d));
         if (extensionInformation.isPresent()) {
           extensionModels.add(extensionInformation.get().getExtensionModel());
         }
@@ -53,7 +57,7 @@ public class AstGenerator {
     AstXmlParser.Builder builder = new AstXmlParser.Builder();
     builder.withExtensionModels(extensionModels);
     xmlParser = builder.build();
-    
+
   }
 
   public ArtifactAst generateAST(Path workingDir) {
@@ -66,15 +70,15 @@ public class AstGenerator {
       for (File file : files) {
         appXmlConfigInputStreams.add(new Pair(file.getName(), new FileInputStream(file)));
       }
-      return xmlParser.parse(appXmlConfigInputStreams);
-      
+      return appXmlConfigInputStreams.isEmpty() ? null : xmlParser.parse(appXmlConfigInputStreams);
     } catch (Exception e) {
+      e.printStackTrace();
       return null;
     }
 
 
   }
-  
+
   public static BundleDescriptor toBundleDescriptor(Dependency dependency) {
     return new BundleDescriptor.Builder()
         .setGroupId(dependency.getGroupId())

@@ -13,6 +13,5 @@ public interface ExtensionModelLoader {
 
   Optional<LoadedExtensionInformation> load(BundleDescriptor artifactDescriptor);
 
-  Optional<LoadedExtensionInformation> load(BundleDescriptor artifactDescriptor, MuleVersion muleVersion);
 
 }

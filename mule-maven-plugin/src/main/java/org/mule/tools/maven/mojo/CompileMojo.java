@@ -20,6 +20,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.ComponentAst;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
+import org.mule.tools.api.validation.MuleArtifactJsonValidator;
 import org.mule.tooling.api.AstGenerator;
 
 /**
@@ -37,7 +38,9 @@ public class CompileMojo extends AbstractMuleMojo {
     try {
       ((MuleContentGenerator) getContentGenerator()).createMuleSrcFolderContent();
       ArtifactAst artifact = getArtifactAst();
-      ((MuleContentGenerator) getContentGenerator()).createAstFile(artifact);
+      if (artifact != null) {
+        ((MuleContentGenerator) getContentGenerator()).createAstFile(artifact);
+      }
     } catch (IllegalArgumentException | IOException e) {
       throw new MojoFailureException("Fail to generate sources", e);
     }
@@ -49,9 +52,17 @@ public class CompileMojo extends AbstractMuleMojo {
   }
 
   public ArtifactAst getArtifactAst() {
-    AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(),
-                                                 project.getProperties().getProperty("app.runtime"),
+    AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), getRuntimeVersion(),
                                                  project.getDependencies(), projectBaseFolder.toPath().resolve("target"));
     return astGenerator.generateAST(projectBaseFolder.toPath());
+  }
+
+  private String getRuntimeVersion() {
+    String version = "4.4.0-SNAPSHOT";
+    if (project.getProperties().getProperty("app.runtime") != null) {
+      version = project.getProperties().getProperty("app.runtime");
+    } ;
+    // else obtain runtime from json artifact (see MuleArtifactJsonValidator and its uses
+    return version;
   }
 }

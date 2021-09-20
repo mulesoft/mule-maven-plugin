@@ -55,8 +55,9 @@ public class CompileMojoTest extends AbstractMuleMojoTest {
     doCallRealMethod().when(mojoMock).doExecute();
     mojoMock.execute();
 
-    verify(mojoMock, times(1)).getContentGenerator();
+    verify(mojoMock, times(2)).getContentGenerator();
     verify(contentGeneratorMock, times(1)).createMuleSrcFolderContent();
+    verify(contentGeneratorMock, times(1)).createAstFile(artifactAst);
   }
 
   @Test(expected = MojoFailureException.class)

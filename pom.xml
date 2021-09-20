@@ -46,7 +46,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <mule.version>4.4.0-SNAPSHOT</mule.version>
-        <mule.api.version>1.4.0-SNAPSHOT</mule.api.version>
+        <mule.api.version>1.5.0-SNAPSHOT</mule.api.version>
         <mule.core.version>4.4.0-SNAPSHOT</mule.core.version>
         <mule.extensions.api.version>1.4.0-SNAPSHOT</mule.extensions.api.version>
         <mule.maven.client.impl.version>1.6.1-SNAPSHOT</mule.maven.client.impl.version>

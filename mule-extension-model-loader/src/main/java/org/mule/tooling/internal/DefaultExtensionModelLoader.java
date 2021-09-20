@@ -24,33 +24,16 @@ import java.util.Set;
 
 public class DefaultExtensionModelLoader implements ExtensionModelLoader {
 
-  private final MavenClient mavenClient;
   private final ExtensionModelDiscoverer extensionModelDiscoverer;
-  private final ClassLoader parentClassloader;
-  private final Path workingDir;
-  private final String toolingVersion;
+  private DefaultExtensionModelService service;
+  private MuleVersion muleVersion;
 
   public DefaultExtensionModelLoader(MavenClient mavenClient, Path workingDir, ClassLoader parentClassloader,
                                      String toolingVersion) {
-    this.mavenClient = mavenClient;
+
     this.extensionModelDiscoverer = new ExtensionModelDiscoverer();
-    this.parentClassloader = parentClassloader;
-    this.workingDir = workingDir;
-    this.toolingVersion = toolingVersion;
-  }
-
-  @Override
-  public Set<ExtensionModel> getRuntimeExtensionModels() {
-    return extensionModelDiscoverer.discoverRuntimeExtensionModels();
-  }
-
-  @Override
-  public Optional<LoadedExtensionInformation> load(BundleDescriptor artifactDescriptor) {
-    return this.load(artifactDescriptor, null);
-  }
-
-  @Override
-  public Optional<LoadedExtensionInformation> load(BundleDescriptor artifactDescriptor, MuleVersion muleVersion) {
+    this.muleVersion = new MuleVersion(toolingVersion);
+    
     List<ModuleDiscoverer> result = new ArrayList();
     result.add(new JreModuleDiscoverer());
     result.add(new ClasspathModuleDiscoverer(parentClassloader, workingDir.toFile()));
@@ -62,7 +45,16 @@ public class DefaultExtensionModelLoader implements ExtensionModelLoader {
     MuleArtifactResourcesRegistry resourcesRegistry =
         new MuleArtifactResourcesRegistry(toolingVersion, Optional.ofNullable(muleVersion), mavenClient,
                                           moduleRepository, containerClassLoaderFactory, workingDir.toFile());
-    DefaultExtensionModelService service = new DefaultExtensionModelService(resourcesRegistry);
+    service = new DefaultExtensionModelService(resourcesRegistry);
+  }
+
+  @Override
+  public Set<ExtensionModel> getRuntimeExtensionModels() {
+    return extensionModelDiscoverer.discoverRuntimeExtensionModels();
+  }
+
+  @Override
+  public Optional<LoadedExtensionInformation> load(BundleDescriptor artifactDescriptor) {
     return service.loadExtensionData(artifactDescriptor, muleVersion);
   }
 }

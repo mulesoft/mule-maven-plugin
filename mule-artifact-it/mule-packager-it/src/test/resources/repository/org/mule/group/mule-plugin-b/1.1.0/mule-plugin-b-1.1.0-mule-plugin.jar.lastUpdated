@@ -1,0 +1,16 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Sep 16 16:50:04 ART 2021
+https\://repository-master.mulesoft.org/nexus/content/repositories/releases-ee/.error=
+https\://repository-master.mulesoft.org/nexus/content/repositories/releases-ee/.lastUpdated=1631821803470
+https\://repository-master.mulesoft.org/nexus/content/repositories/snapshots/.lastUpdated=1631821801565
+https\://repository.mulesoft.org/nexus/content/groups/studio/.lastUpdated=1631821799676
+https\://repository.mulesoft.org/nexus/content/groups/private/.lastUpdated=1631821800666
+https\://repository-master.mulesoft.org/nexus/content/repositories/ci-snapshots/.lastUpdated=1631821802399
+https\://repository.mulesoft.org/nexus/content/groups/private/.error=
+https\://repository-master.mulesoft.org/nexus/content/repositories/releases/.error=
+https\://repository.mulesoft.org/nexus/content/groups/studio/.error=
+https\://repo.maven.apache.org/maven2/.lastUpdated=1631821804373
+https\://repository-master.mulesoft.org/nexus/content/repositories/snapshots/.error=
+https\://repo.maven.apache.org/maven2/.error=
+https\://repository-master.mulesoft.org/nexus/content/repositories/releases/.lastUpdated=1631821802689
+https\://repository-master.mulesoft.org/nexus/content/repositories/ci-snapshots/.error=

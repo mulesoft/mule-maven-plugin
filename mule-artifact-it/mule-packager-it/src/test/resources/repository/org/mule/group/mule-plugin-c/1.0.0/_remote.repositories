@@ -1,4 +1,5 @@
-#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
-#Fri Sep 22 19:06:44 ART 2017
-mule-plugin-c-1.0.0-mule-plugin.jar>=
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Fri Sep 17 09:44:05 ART 2021
+mule-plugin-c-1.0.0-extension-model-4.1.1.json>=
 mule-plugin-c-1.0.0.pom>=
+mule-plugin-c-1.0.0-mule-plugin.jar>=

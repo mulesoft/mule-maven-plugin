@@ -32,6 +32,8 @@ import org.mule.tooling.api.AstGenerator;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class CompileMojo extends AbstractMuleMojo {
 
+  public static final String RUNTIME_AST_VERSION = "4.4.0";
+
   @Override
   public void doExecute() throws MojoFailureException {
     getLog().debug("Generating mule source code...");
@@ -52,17 +54,9 @@ public class CompileMojo extends AbstractMuleMojo {
   }
 
   public ArtifactAst getArtifactAst() {
-    AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), getRuntimeVersion(),
+    AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
                                                  project.getDependencies(), projectBaseFolder.toPath().resolve("target"));
     return astGenerator.generateAST(projectBaseFolder.toPath());
   }
 
-  private String getRuntimeVersion() {
-    String version = "4.4.0-SNAPSHOT";
-    if (project.getProperties().getProperty("app.runtime") != null) {
-      version = project.getProperties().getProperty("app.runtime");
-    } ;
-    // else obtain runtime from json artifact (see MuleArtifactJsonValidator and its uses
-    return version;
-  }
 }

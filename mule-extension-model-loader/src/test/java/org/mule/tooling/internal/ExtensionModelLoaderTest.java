@@ -12,6 +12,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -23,7 +25,10 @@ import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.api.model.MavenConfiguration;
 import org.mule.maven.client.api.model.RemoteRepository;
 import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.api.util.Pair;
 import org.mule.runtime.container.internal.ModuleDiscoverer;
+import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 import org.mule.runtime.module.deployment.impl.internal.artifact.ExtensionModelDiscoverer;
 import org.mule.tooling.api.ExtensionModelLoader;
 import org.mule.tooling.api.ExtensionModelLoaderFactory;
@@ -45,17 +50,17 @@ public class ExtensionModelLoaderTest extends MavenClientTest {
                                                                       Optional.ofNullable(getSettingsSecurity(m2Repo))));
 
     ExtensionModelLoader extensionModelLoader =
-        ExtensionModelLoaderFactory.createLoader(client, temp, ModuleDiscoverer.class.getClassLoader(), "4.4.0-20210427");
+        ExtensionModelLoaderFactory.createLoader(client, temp, ModuleDiscoverer.class.getClassLoader(), "4.4.0");
 
-    final Optional<LoadedExtensionInformation> http = extensionModelLoader.load(
+    Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> http = extensionModelLoader.load(
                                                                                 new BundleDescriptor.Builder()
                                                                                     .setGroupId("org.mule.connectors")
                                                                                     .setArtifactId("mule-http-connector")
                                                                                     .setClassifier("mule-plugin")
                                                                                     .setVersion("1.5.25").build());
-    assertEquals("Loaded a different amount of extension models than expected", 9,
+    assertEquals("Loaded a different amount of runtime extension models than expected", 10,
             extensionModelLoader.getRuntimeExtensionModels().size());
-    assertTrue(http.isPresent());
+    assertEquals("Loaded a different amount of plugin extension models than expected",2,http.size());
 
   }
 

@@ -11,7 +11,7 @@
 package org.mule.tooling.api;
 
 import org.mule.runtime.ast.api.xml.AstXmlParser;
-import org.mule.runtime.container.internal.ModuleDiscoverer;
+import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 
 import static org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor.MULE_PLUGIN_CLASSIFIER;
 import java.io.File;
@@ -24,11 +24,12 @@ import java.util.Optional;
 import org.apache.maven.model.Dependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.api.MavenClient;
-import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.util.Pair;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.module.deployment.impl.internal.artifact.ExtensionModelDiscoverer;
+
+
 
 import java.util.HashSet;
 import java.util.Set;
@@ -46,10 +47,9 @@ public class AstGenerator {
     Set<ExtensionModel> extensionModels = new HashSet<ExtensionModel>();
     for (Dependency d : dependencies) {
       if (d.getClassifier() != null && d.getClassifier().equals(MULE_PLUGIN_CLASSIFIER)) {
-        Optional<LoadedExtensionInformation> extensionInformation = loader.load(toBundleDescriptor(d));
-        if (extensionInformation.isPresent()) {
-          extensionModels.add(extensionInformation.get().getExtensionModel());
-        }
+        Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> extensionInformation = loader.load(toBundleDescriptor(d));
+        extensionInformation.forEach((item) -> extensionModels.add(item.getSecond()));
+
       }
     }
     Set<ExtensionModel> runtimeExtensionModels = new ExtensionModelDiscoverer().discoverRuntimeExtensionModels();

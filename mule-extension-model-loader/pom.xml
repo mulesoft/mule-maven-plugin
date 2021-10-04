@@ -20,6 +20,11 @@
     <dependencies>
 
         <dependency>
+            <groupId> org.mule.runtime</groupId>
+            <artifactId>mule-module-logging</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast-xml-parser</artifactId>
             <version>1.1.0-SNAPSHOT</version>
@@ -39,8 +44,14 @@
                 <artifactId>mule-module-autodiscovery</artifactId>
 	            <version>${mule.version}</version>
 	        </dependency>
-		<dependency>
-        	<groupId>com.mulesoft.mule.runtime.modules</groupId>
+
+         <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-javaee</artifactId>
+			<version>${mule.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mulesoft.mule.runtime.modules</groupId>
             <artifactId>mule-runtime-ee-extension-model</artifactId>
             <version>${mule.version}</version>
         </dependency>
@@ -60,7 +71,6 @@
             <artifactId>mule-maven-client-impl</artifactId>
             <version>1.6.0-20210427</version>
         </dependency>
-
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.mockito</groupId>

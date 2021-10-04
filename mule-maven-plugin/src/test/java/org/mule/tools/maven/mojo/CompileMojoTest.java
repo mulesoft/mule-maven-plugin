@@ -36,7 +36,7 @@ public class CompileMojoTest extends AbstractMuleMojoTest {
     when(buildMock.getDirectory()).thenReturn(projectBaseFolder.getRoot().getAbsolutePath());
 
     projectMock = mock(MavenProject.class);
-
+    when(projectMock.getPackaging()).thenReturn("mule-application");
     mojoMock = mock(CompileMojo.class);
     mojoMock.project = projectMock;
     mojoMock.projectBaseFolder = projectBaseFolder.getRoot();

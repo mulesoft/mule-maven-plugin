@@ -11,10 +11,18 @@ import org.mule.runtime.container.internal.ContainerClassLoaderFactory;
 import org.mule.runtime.container.internal.DefaultModuleRepository;
 import org.mule.runtime.container.internal.JreModuleDiscoverer;
 import org.mule.runtime.container.internal.ModuleDiscoverer;
+import org.mule.runtime.deployment.model.api.artifact.extension.ExtensionModelDiscoverer;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 import org.mule.runtime.module.artifact.api.classloader.ArtifactClassLoader;
-import org.mule.runtime.module.deployment.impl.internal.artifact.ExtensionModelDiscoverer;
 import org.mule.tooling.api.ExtensionModelLoader;
+
+import com.mulesoft.mule.runtime.bti.api.extension.BtiExtensionModelProvider;
+import com.mulesoft.mule.runtime.core.api.extension.MuleEeExtensionModelProvider;
+import com.mulesoft.mule.runtime.http.policy.api.extension.HttpPolicyEeExtensionModelProvider;
+import com.mulesoft.mule.runtime.module.batch.api.extension.BatchExtensionModelProvider;
+import com.mulesoft.mule.runtime.module.serialization.kryo.api.extension.KryoSerializerEeExtensionModelProvider;
+import com.mulesoft.mule.runtime.tracking.api.extension.TrackingEeExtensionModelProvider;
+
 import org.mule.runtime.api.util.Pair;
 
 import java.nio.file.Path;
@@ -51,7 +59,14 @@ public class DefaultExtensionModelLoader implements ExtensionModelLoader {
 
   @Override
   public Set<ExtensionModel> getRuntimeExtensionModels() {
-    return extensionModelDiscoverer.discoverRuntimeExtensionModels();
+    Set<ExtensionModel> runtimeExtensionModels = extensionModelDiscoverer.discoverRuntimeExtensionModels();
+    runtimeExtensionModels.add(MuleEeExtensionModelProvider.getExtensionModel());
+    runtimeExtensionModels.add(BatchExtensionModelProvider.getExtensionModel());
+    runtimeExtensionModels.add(BtiExtensionModelProvider.getExtensionModel());
+    runtimeExtensionModels.add(HttpPolicyEeExtensionModelProvider.getExtensionModel());
+    runtimeExtensionModels.add(KryoSerializerEeExtensionModelProvider.getExtensionModel());
+    runtimeExtensionModels.add(TrackingEeExtensionModelProvider.getExtensionModel());
+    return runtimeExtensionModels;
   }
 
   @Override

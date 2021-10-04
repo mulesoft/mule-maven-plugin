@@ -13,21 +13,23 @@ package org.mule.tooling.api;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 
+
 import static org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor.MULE_PLUGIN_CLASSIFIER;
+
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.apache.maven.model.Dependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.api.MavenClient;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.util.Pair;
 import org.mule.runtime.ast.api.ArtifactAst;
-import org.mule.runtime.module.deployment.impl.internal.artifact.ExtensionModelDiscoverer;
 
 
 
@@ -52,7 +54,7 @@ public class AstGenerator {
 
       }
     }
-    Set<ExtensionModel> runtimeExtensionModels = new ExtensionModelDiscoverer().discoverRuntimeExtensionModels();
+    Set<ExtensionModel> runtimeExtensionModels = loader.getRuntimeExtensionModels();
     extensionModels.addAll(runtimeExtensionModels);
     AstXmlParser.Builder builder = new AstXmlParser.Builder();
     builder.withExtensionModels(extensionModels);
@@ -60,24 +62,6 @@ public class AstGenerator {
 
   }
 
-  public ArtifactAst generateAST(Path workingDir) {
-
-    List<Pair<String, InputStream>> appXmlConfigInputStreams = new ArrayList<Pair<String, InputStream>>();
-    try {
-      File[] files =
-          (workingDir.resolve("src").resolve("main").resolve("mule").toFile()).listFiles(file -> file.getName().endsWith(".xml"));
-
-      for (File file : files) {
-        appXmlConfigInputStreams.add(new Pair(file.getName(), new FileInputStream(file)));
-      }
-      return appXmlConfigInputStreams.isEmpty() ? null : xmlParser.parse(appXmlConfigInputStreams);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-
-
-  }
 
   public static BundleDescriptor toBundleDescriptor(Dependency dependency) {
     return new BundleDescriptor.Builder()
@@ -87,6 +71,14 @@ public class AstGenerator {
         .setBaseVersion(dependency.getVersion())
         .setClassifier(dependency.getClassifier())
         .setType(dependency.getType()).build();
+  }
+
+  public ArtifactAst generateAST(List<String> configs, Path configsPath) throws FileNotFoundException {
+    List<Pair<String, InputStream>> appXmlConfigInputStreams = new ArrayList<Pair<String, InputStream>>();
+    for (String config : configs) {
+      appXmlConfigInputStreams.add(new Pair(config, new FileInputStream(configsPath.resolve(config).toFile())));
+    }
+    return appXmlConfigInputStreams.isEmpty() ? null : xmlParser.parse(appXmlConfigInputStreams);
   }
 
 }

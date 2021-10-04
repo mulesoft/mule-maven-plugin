@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import org.mule.maven.client.api.MavenClient;
 import org.mule.runtime.core.api.config.bootstrap.ArtifactType;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
@@ -26,7 +28,7 @@ public class ToolingDescriptorLoaderRepository implements DescriptorLoaderReposi
   public ToolingDescriptorLoaderRepository(MavenClient mavenClient) {
     ToolingClassLoaderModelLoader toolingClassLoaderModelLoader =
         new ToolingClassLoaderModelLoader(Lists.newArrayList(new ClassLoaderModelLoader[] {
-            new DeployableMavenClassLoaderModelLoader(mavenClient), new PluginMavenClassLoaderModelLoader(mavenClient)}));
+            new DeployableMavenClassLoaderModelLoader(Optional.of(mavenClient)), new PluginMavenClassLoaderModelLoader(Optional.of(mavenClient))}));
     this.descriptorLoaders.put(BundleDescriptorLoader.class,
                                this.findBundleDescriptorLoaders(BundleDescriptorLoader.class, new SpiServiceRegistry()));
     this.descriptorLoaders.put(ClassLoaderModelLoader.class,

@@ -35,17 +35,17 @@ import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.util.Pair;
 import org.mule.runtime.deployment.model.api.application.ApplicationDescriptor;
+import org.mule.runtime.deployment.model.api.artifact.extension.ExtensionModelDiscoverer;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
+import org.mule.runtime.deployment.model.internal.artifact.extension.MuleExtensionModelLoaderManager;
 import org.mule.runtime.deployment.model.internal.tooling.ToolingApplicationClassLoaderBuilder;
 import org.mule.runtime.deployment.model.internal.tooling.ToolingArtifactClassLoader;
-import org.mule.runtime.extension.api.dsl.syntax.resources.spi.ExtensionSchemaGenerator;
 import org.mule.runtime.extension.api.persistence.ExtensionModelJsonSerializer;
 import org.mule.runtime.module.artifact.api.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.classloader.DeployableArtifactClassLoaderFactory;
 import org.mule.runtime.module.artifact.api.classloader.MuleDeployableArtifactClassLoader;
-import org.mule.runtime.module.deployment.impl.internal.artifact.ExtensionModelDiscoverer;
-import org.mule.runtime.module.deployment.impl.internal.plugin.MuleExtensionModelLoaderManager;
-import org.mule.runtime.module.extension.internal.capability.xml.schema.DefaultExtensionSchemaGenerator;
+
+
 import org.mule.tooling.api.ExtensionModelService;
 import org.mule.tooling.api.ToolingException;
 
@@ -76,13 +76,11 @@ public class DefaultExtensionModelService implements ExtensionModelService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExtensionModelService.class);
 
-  private static final String JAR = "jar";
   private static final String MULE_APPLICATION = "mule-application";
   private static final String MAVEN_MODEL_VERSION = "4.0.0";
 
   private ExtensionModelDiscoverer extensionModelDiscoverer = new ExtensionModelDiscoverer();
   private MuleArtifactResourcesRegistry muleArtifactResourcesRegistry;
-  private ExtensionSchemaGenerator schemaGenerator = new DefaultExtensionSchemaGenerator();
 
   private List<ExtensionModel> runtimeExtensionModels = new ArrayList<>();
 
@@ -261,17 +259,17 @@ public class DefaultExtensionModelService implements ExtensionModelService {
           .withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(MULE_LOADER_ID,
                                                                                  classLoaderModelLoaderAttributes))
           .build();
-      ApplicationDescriptor artifactDescriptor = muleArtifactResourcesRegistry.getApplicationDescriptorFactory()
+      ApplicationDescriptor applicationDescriptor = muleArtifactResourcesRegistry.getApplicationDescriptorFactory()
           .createArtifact(applicationFolder, empty(), muleApplicationModel);
 
       ToolingApplicationClassLoaderBuilder builder =
           new ToolingApplicationClassLoaderBuilder(newTemporaryArtifactClassLoaderFactory(),
                                                    muleArtifactResourcesRegistry.getRegionPluginClassLoadersFactory());
-      builder.setArtifactDescriptor(artifactDescriptor);
+      builder.setArtifactDescriptor(applicationDescriptor);
       builder.setParentClassLoader(muleArtifactResourcesRegistry.getContainerArtifactClassLoader());
 
       muleArtifactResourcesRegistry.getPluginDependenciesResolver()
-          .resolve(emptySet(), new ArrayList<>(artifactDescriptor.getPlugins()), false)
+          .resolve(emptySet(), new ArrayList<>(applicationDescriptor.getPlugins()), false)
           .stream()
           .forEach(builder::addArtifactPluginDescriptors);
 

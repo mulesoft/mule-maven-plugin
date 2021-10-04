@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.nio.file.Paths;
@@ -46,7 +47,9 @@ public class AstGeneratorTest extends MavenClientTest {
     Path workingPath = Paths.get("src", "test", "resources", "test-project");
     List<Dependency> dependencies = new ArrayList<Dependency>();
     AstGenerator generator = new AstGenerator(client, "4.3.0", dependencies, workingPath);
-    ArtifactAst artifact = generator.generateAST(workingPath);
+    Path configsBasePath = workingPath.resolve("src/main/mule");
+    ArtifactAst artifact =
+        generator.generateAST(Arrays.asList(configsBasePath.toFile().list((file,name) -> name.endsWith(".xml"))), configsBasePath);
     String absolutePath = workingPath.toFile().getAbsolutePath();
     assertThat(artifact.topLevelComponents().get(0).getModel(ParameterizedModel.class).isPresent(), is(true));
     assertThat(artifact.topLevelComponents().get(0).getModel(ParameterizedModel.class).get().getClass(),

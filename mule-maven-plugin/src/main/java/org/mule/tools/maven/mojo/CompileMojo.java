@@ -10,17 +10,17 @@
 
 package org.mule.tools.maven.mojo;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.runtime.ast.api.ArtifactAst;
-import org.mule.runtime.ast.api.ComponentAst;
+import org.mule.tools.api.packager.sources.MuleArtifactContentResolver;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
-import org.mule.tools.api.validation.MuleArtifactJsonValidator;
+import org.mule.tools.api.packager.structure.ProjectStructure;
 import org.mule.tooling.api.AstGenerator;
 
 /**
@@ -32,19 +32,24 @@ import org.mule.tooling.api.AstGenerator;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class CompileMojo extends AbstractMuleMojo {
 
-  public static final String RUNTIME_AST_VERSION = "4.4.0";
+  private static final String RUNTIME_AST_VERSION = "4.4.0";
+  private static final String MULE_POLICY = "mule-policy";
+  private static final String SKIP_AST = "skipAST";
 
   @Override
   public void doExecute() throws MojoFailureException {
     getLog().debug("Generating mule source code...");
     try {
       ((MuleContentGenerator) getContentGenerator()).createMuleSrcFolderContent();
-      ArtifactAst artifact = getArtifactAst();
-      if (artifact != null) {
-        ((MuleContentGenerator) getContentGenerator()).createAstFile(artifact);
+      String skipAST = System.getProperty(SKIP_AST);
+      if ((skipAST == null || skipAST.equals("false")) && !project.getPackaging().equals(MULE_POLICY)) {
+        ArtifactAst artifact = getArtifactAst();
+        if (artifact != null) {
+          ((MuleContentGenerator) getContentGenerator()).createAstFile(artifact);
+        }
       }
     } catch (IllegalArgumentException | IOException e) {
-      throw new MojoFailureException("Fail to generate sources", e);
+      throw new MojoFailureException("Fail to compile", e);
     }
   }
 
@@ -53,10 +58,16 @@ public class CompileMojo extends AbstractMuleMojo {
     return "MULE_MAVEN_PLUGIN_COMPILE_PREVIOUS_RUN_PLACEHOLDER";
   }
 
-  public ArtifactAst getArtifactAst() {
+  public ArtifactAst getArtifactAst() throws FileNotFoundException, IOException {
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
                                                  project.getDependencies(), projectBaseFolder.toPath().resolve("target"));
-    return astGenerator.generateAST(projectBaseFolder.toPath());
+    ProjectStructure projectStructure = new ProjectStructure(projectBaseFolder.toPath(), false);
+    MuleArtifactContentResolver contentResolver =
+        new MuleArtifactContentResolver(new ProjectStructure(projectBaseFolder.toPath(), false),
+                                        getProjectInformation().getEffectivePom(),
+                                        getProjectInformation().getProject().getBundleDependencies());
+
+    return astGenerator.generateAST(contentResolver.getConfigs(), projectStructure.getConfigsPath());
   }
 
 }

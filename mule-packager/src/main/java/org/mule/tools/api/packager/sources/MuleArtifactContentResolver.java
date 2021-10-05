@@ -139,7 +139,7 @@ public class MuleArtifactContentResolver {
   protected boolean hasMuleAsRootElement(org.w3c.dom.Document doc) {
     if (doc != null && doc.getDocumentElement() != null) {
       String rootElementName = doc.getDocumentElement().getTagName();
-      return StringUtils.equals(rootElementName, "mule") || StringUtils.equals(rootElementName, "mule-domain");
+      return StringUtils.equals(rootElementName, "mule") || StringUtils.equals(rootElementName, "domain:mule-domain");
     }
     return false;
   }

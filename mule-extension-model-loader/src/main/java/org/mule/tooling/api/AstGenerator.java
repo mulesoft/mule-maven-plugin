@@ -18,7 +18,6 @@ import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 import static org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor.MULE_PLUGIN_CLASSIFIER;
 
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;

@@ -12,6 +12,7 @@ package org.mule.tools.maven.mojo;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -45,12 +46,16 @@ public class CompileMojo extends AbstractMuleMojo {
       if ((skipAST == null || skipAST.equals("false")) && !project.getPackaging().equals(MULE_POLICY)) {
         ArtifactAst artifact = getArtifactAst();
         if (artifact != null) {
-          ((MuleContentGenerator) getContentGenerator()).createAstFile(AstGenerator.serialize(artifact));
+          ((MuleContentGenerator) getContentGenerator()).createAstFile(serialize(artifact));
         }
       }
     } catch (IllegalArgumentException | IOException e) {
       throw new MojoFailureException("Fail to compile", e);
     }
+  }
+
+  public InputStream serialize(ArtifactAst artifact) {
+    return AstGenerator.serialize(artifact);
   }
 
   @Override

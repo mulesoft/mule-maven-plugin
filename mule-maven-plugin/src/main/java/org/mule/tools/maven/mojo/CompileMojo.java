@@ -45,7 +45,7 @@ public class CompileMojo extends AbstractMuleMojo {
       if ((skipAST == null || skipAST.equals("false")) && !project.getPackaging().equals(MULE_POLICY)) {
         ArtifactAst artifact = getArtifactAst();
         if (artifact != null) {
-          ((MuleContentGenerator) getContentGenerator()).createAstFile(artifact);
+          ((MuleContentGenerator) getContentGenerator()).createAstFile(AstGenerator.serialize(artifact));
         }
       }
     } catch (IllegalArgumentException | IOException e) {

@@ -42,20 +42,10 @@
             <artifactId>mule-deployer</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+		<dependency>
             <groupId>org.mule.tools.maven</groupId>
             <artifactId>mule-extension-model-loader</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-artifact-ast-xml-parser</artifactId>
-            <version>1.1.0-SNAPSHOT </version>
-        </dependency>
-        <dependency>
-        	<groupId>org.mule.runtime</groupId>
-            <artifactId>mule-artifact-ast-serialization</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
         </dependency>
         
         <dependency>

@@ -11,6 +11,7 @@
 package org.mule.tooling.api;
 
 import org.mule.runtime.ast.api.xml.AstXmlParser;
+import org.mule.runtime.ast.internal.serialization.json.JsonArtifactAstSerializer;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 
 
@@ -81,4 +82,7 @@ public class AstGenerator {
     return appXmlConfigInputStreams.isEmpty() ? null : xmlParser.parse(appXmlConfigInputStreams);
   }
 
+  public static InputStream serialize(ArtifactAst artifactAst) {
+    return new JsonArtifactAstSerializer().serialize(artifactAst);
+  }
 }

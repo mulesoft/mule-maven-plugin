@@ -22,8 +22,6 @@ import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 import static org.mule.tools.api.packager.structure.PackagerFiles.ARTIFACT_AST;
 
-import org.mule.runtime.ast.api.ArtifactAst;
-import org.mule.runtime.ast.internal.serialization.json.JsonArtifactAstSerializer;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
@@ -78,10 +76,7 @@ public class MuleContentGenerator extends ContentGenerator {
     copyContent(originPath, destinationPath, Optional.empty(), true, false);
   }
 
-  public void createAstFile(ArtifactAst artifactAst) throws IOException {
-    JsonArtifactAstSerializer jsonArtifactAstSerializer = new JsonArtifactAstSerializer();
-    InputStream inputStream = jsonArtifactAstSerializer.serialize(artifactAst);
-
+  public void createAstFile(InputStream inputStream) throws IOException {
     File targetFile = projectInformation.getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
         .resolve(ARTIFACT_AST).toFile();
 

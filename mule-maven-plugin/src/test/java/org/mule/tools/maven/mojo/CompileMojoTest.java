@@ -20,6 +20,7 @@ import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.runtime.ast.api.ArtifactAst;
+import org.mule.tooling.api.AstGenerator;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
 import static org.mockito.Mockito.*;
@@ -57,7 +58,7 @@ public class CompileMojoTest extends AbstractMuleMojoTest {
 
     verify(mojoMock, times(2)).getContentGenerator();
     verify(contentGeneratorMock, times(1)).createMuleSrcFolderContent();
-    verify(contentGeneratorMock, times(1)).createAstFile(artifactAst);
+    verify(contentGeneratorMock, times(1)).createAstFile(AstGenerator.serialize(artifactAst));
   }
 
   @Test(expected = MojoFailureException.class)

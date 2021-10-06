@@ -32,7 +32,6 @@ import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 
 import org.mule.tooling.api.ExtensionModelLoader;
 import org.mule.tooling.api.ExtensionModelLoaderFactory;
-import org.mule.tooling.api.LoadedExtensionInformation;
 
 public class ExtensionModelLoaderTest extends MavenClientTest {
 

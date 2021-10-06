@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -35,6 +36,7 @@ public class CompileMojo extends AbstractMuleMojo {
 
   private static final String RUNTIME_AST_VERSION = "4.4.0";
   private static final String MULE_POLICY = "mule-policy";
+  private static final String MULE_DOMAIN = "mule-domain";
   private static final String SKIP_AST = "skipAST";
 
   @Override
@@ -43,7 +45,8 @@ public class CompileMojo extends AbstractMuleMojo {
     try {
       ((MuleContentGenerator) getContentGenerator()).createMuleSrcFolderContent();
       String skipAST = System.getProperty(SKIP_AST);
-      if ((skipAST == null || skipAST.equals("false")) && !project.getPackaging().equals(MULE_POLICY)) {
+      // apps in domains are not currently supported MMP-588
+      if ((skipAST == null || skipAST.equals("false")) && !project.getPackaging().equals(MULE_POLICY) && !hasDomain()) {
         ArtifactAst artifact = getArtifactAst();
         if (artifact != null) {
           ((MuleContentGenerator) getContentGenerator()).createAstFile(serialize(artifact));
@@ -52,6 +55,17 @@ public class CompileMojo extends AbstractMuleMojo {
     } catch (IllegalArgumentException | IOException e) {
       throw new MojoFailureException("Fail to compile", e);
     }
+  }
+
+  private boolean hasDomain() {
+    if (project.getDependencies() != null) {
+      for (Dependency dependency : project.getDependencies()) {
+        if (dependency.getClassifier() != null && dependency.getClassifier().equals(MULE_DOMAIN)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   public InputStream serialize(ArtifactAst artifact) {

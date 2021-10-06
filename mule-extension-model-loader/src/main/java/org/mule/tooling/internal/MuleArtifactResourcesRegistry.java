@@ -21,8 +21,6 @@ import org.mule.runtime.module.deployment.impl.internal.domain.DomainDescriptorF
 import org.mule.runtime.module.deployment.impl.internal.plugin.ArtifactPluginDescriptorFactory;
 import org.mule.runtime.module.deployment.impl.internal.plugin.ArtifactPluginDescriptorLoader;
 import org.mule.runtime.module.deployment.impl.internal.plugin.BundlePluginDependenciesResolver;
-import org.mule.tooling.internal.application.ApplicationClassLoaderFactory;
-import org.mule.tooling.internal.domain.DomainClassLoaderFactory;
 
 public class MuleArtifactResourcesRegistry {
 
@@ -38,8 +36,6 @@ public class MuleArtifactResourcesRegistry {
   private ApplicationDescriptorFactory applicationDescriptorFactory;
   private DomainDescriptorFactory domainDescriptorFactory;
   private RegionPluginClassLoadersFactory regionPluginClassLoadersFactory;
-  private DomainClassLoaderFactory domainClassLoaderFactory;
-  private ApplicationClassLoaderFactory applicationClassLoaderFactory;
   private DescriptorLoaderRepository descriptorLoaderRepository;
 
   public MuleArtifactResourcesRegistry(String toolingVersion, Optional<MuleVersion> targetMuleVersion, MavenClient mavenClient,
@@ -76,12 +72,6 @@ public class MuleArtifactResourcesRegistry {
     this.regionPluginClassLoadersFactory =
         new DefaultRegionPluginClassLoadersFactory(new ArtifactPluginClassLoaderFactory(), this.moduleRepository);
     this.pluginDependenciesResolver = new BundlePluginDependenciesResolver(this.artifactPluginDescriptorFactory);
-    this.domainClassLoaderFactory =
-        new DomainClassLoaderFactory(this.containerArtifactClassLoader, this.regionPluginClassLoadersFactory,
-                                     this.pluginDependenciesResolver);
-    this.applicationClassLoaderFactory =
-        new ApplicationClassLoaderFactory(this.containerArtifactClassLoader, this.regionPluginClassLoadersFactory,
-                                          this.pluginDependenciesResolver);
   }
 
   public Optional<MuleVersion> getTargetMuleVersion() {
@@ -120,13 +110,6 @@ public class MuleArtifactResourcesRegistry {
     return this.artifactPluginDescriptorLoader;
   }
 
-  public DomainClassLoaderFactory getDomainClassLoaderFactory() {
-    return this.domainClassLoaderFactory;
-  }
-
-  public ApplicationClassLoaderFactory getApplicationClassLoaderFactory() {
-    return this.applicationClassLoaderFactory;
-  }
 
   private class TemporaryArtifactClassLoaderFactory implements DeployableArtifactClassLoaderFactory<ArtifactDescriptor> {
 

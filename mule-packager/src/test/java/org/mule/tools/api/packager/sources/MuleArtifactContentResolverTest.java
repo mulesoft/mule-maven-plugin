@@ -313,7 +313,7 @@ public class MuleArtifactContentResolverTest {
 
   @Test
   public void hasMuleAsRootElementMuleDomainRoot() {
-    when(rootElementMock.getTagName()).thenReturn("mule-domain");
+    when(rootElementMock.getTagName()).thenReturn("domain:mule-domain");
     assertThat("Method should have returned true", resolver.hasMuleAsRootElement(documentMock));
   }
 

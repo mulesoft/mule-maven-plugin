@@ -385,14 +385,6 @@ public class DefaultExtensionModelService implements ExtensionModelService {
 
   }
 
-  private Optional<ExtensionModel> getExtensionModel(ArtifactPluginDescriptor descriptor,
-                                                     Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> descriptorsWithExtensions) {
-    if (descriptorsWithExtensions.isEmpty()) {
-      return empty();
-    }
-    return descriptorsWithExtensions.stream().filter(e -> e.getFirst().equals(descriptor)).map(Pair::getSecond).findFirst();
-  }
-
   private Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> discoverPluginsExtensionModel(ToolingArtifactClassLoader toolingArtifactCL,
                                                                                             MuleExtensionModelLoaderManager extensionModelLoaderRepository,
                                                                                             Map<String, String> properties) {

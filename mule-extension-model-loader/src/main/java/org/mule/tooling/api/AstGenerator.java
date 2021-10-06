@@ -11,12 +11,11 @@
 package org.mule.tooling.api;
 
 import org.mule.runtime.ast.api.xml.AstXmlParser;
-import org.mule.runtime.ast.internal.serialization.json.JsonArtifactAstSerializer;
+import org.mule.runtime.ast.internal.serialization.ArtifactAstSerializerFactory;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 
 
 import static org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor.MULE_PLUGIN_CLASSIFIER;
-
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,8 +29,7 @@ import org.mule.maven.client.api.MavenClient;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.util.Pair;
 import org.mule.runtime.ast.api.ArtifactAst;
-
-
+import org.mule.runtime.ast.api.serialization.ArtifactAstSerializerProvider;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -40,12 +38,12 @@ public class AstGenerator {
 
   AstXmlParser xmlParser;
 
-  public AstGenerator(MavenClient mavenClient, String toolingVersion,
+  public AstGenerator(MavenClient mavenClient, String runtimeVersion,
                       List<Dependency> dependencies, Path workingDir) {
     ClassLoader classloader = AstGenerator.class.getClassLoader();
 
     ExtensionModelLoader loader = ExtensionModelLoaderFactory
-        .createLoader(mavenClient, workingDir, classloader, toolingVersion);
+        .createLoader(mavenClient, workingDir, classloader, runtimeVersion);
     Set<ExtensionModel> extensionModels = new HashSet<ExtensionModel>();
     for (Dependency d : dependencies) {
       if (d.getClassifier() != null && d.getClassifier().equals(MULE_PLUGIN_CLASSIFIER)) {
@@ -82,6 +80,6 @@ public class AstGenerator {
   }
 
   public static InputStream serialize(ArtifactAst artifactAst) {
-    return new JsonArtifactAstSerializer().serialize(artifactAst);
+    return new ArtifactAstSerializerProvider().getSerializer(ArtifactAstSerializerFactory.JSON, "1.0") .serialize(artifactAst);
   }
 }

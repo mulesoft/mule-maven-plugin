@@ -38,10 +38,10 @@ public class DefaultExtensionModelLoader implements ExtensionModelLoader {
   private MuleVersion muleVersion;
 
   public DefaultExtensionModelLoader(MavenClient mavenClient, Path workingDir, ClassLoader parentClassloader,
-                                     String toolingVersion) {
+                                     String runtimeVersion) {
 
     this.extensionModelDiscoverer = new ExtensionModelDiscoverer();
-    this.muleVersion = new MuleVersion(toolingVersion);
+    this.muleVersion = new MuleVersion(runtimeVersion);
     
     List<ModuleDiscoverer> result = new ArrayList();
     result.add(new JreModuleDiscoverer());
@@ -52,7 +52,7 @@ public class DefaultExtensionModelLoader implements ExtensionModelLoader {
     ArtifactClassLoader containerClassLoaderFactory =
         (new ContainerClassLoaderFactory(moduleRepository)).createContainerClassLoader(parentClassloader);
     MuleArtifactResourcesRegistry resourcesRegistry =
-        new MuleArtifactResourcesRegistry(toolingVersion, Optional.ofNullable(muleVersion), mavenClient,
+        new MuleArtifactResourcesRegistry(runtimeVersion, Optional.ofNullable(muleVersion), mavenClient,
                                           moduleRepository, containerClassLoaderFactory, workingDir.toFile());
     service = new DefaultExtensionModelService(resourcesRegistry);
   }

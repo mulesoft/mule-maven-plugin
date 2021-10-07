@@ -22,9 +22,6 @@ import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptorBuilder;
 import org.mule.runtime.api.deployment.meta.Product;
 import org.mule.tools.api.util.XmlFactoryUtils;
-
-import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -163,7 +160,7 @@ public class DefaultValuesMuleArtifactJsonGenerator extends AbstractDefaultValue
       throws IOException {
     MuleArtifactLoaderDescriptor classLoaderModelLoaderDescriptor;
     if (originalMuleArtifact.getClassLoaderModelLoaderDescriptor() != null) {
-      //if classLoaderModelLoaderDescriptor is defined by the user, we will take it :)
+      // if classLoaderModelLoaderDescriptor is defined by the user, we will take it :)
       // classLoaderModelLoaderDescriptor = originalMuleArtifact.getClassLoaderModelLoaderDescriptor();
 
       Map<String, Object> originalAttributes = originalMuleArtifact.getClassLoaderModelLoaderDescriptor().getAttributes();
@@ -185,24 +182,25 @@ public class DefaultValuesMuleArtifactJsonGenerator extends AbstractDefaultValue
 
     } else {
       Path outputDirectory = muleArtifactContentResolver.getProjectStructure().getOutputDirectory();
-      //look for all the sources under the output directory
+      // look for all the sources under the output directory
       List<Path> allOutputFiles = Files.walk(outputDirectory)
           .filter(path -> Files.isRegularFile(path))
           .collect(toList());
       Predicate<Path> isJavaClass = path -> FilenameUtils.getExtension(path.toString()).endsWith(COMPILED_JAVA_EXTENSION);
-      //look for the java compiled classes, to then gather just the parent folders of them
+      // look for the java compiled classes, to then gather just the parent folders of them
       List<String> packagesFolders = allOutputFiles.stream()
           .filter(isJavaClass)
           .map(path -> {
             Path parent = outputDirectory.relativize(path).getParent();
-            //if parent is null, it implies "default package" in java, which means we need an empty string for the exportedPackages
+            // if parent is null, it implies "default package" in java, which means we need an empty string for the
+            // exportedPackages
             return parent != null ? parent.toString() : DEFAULT_PACKAGE_EXPORT;
           })
           .map(MuleArtifactContentResolver::escapeSlashes)
           .map(s -> s.replace(CLASS_PATH_SEPARATOR, PACKAGE_SEPARATOR))
           .distinct()
           .collect(Collectors.toList());
-      //look for all the resources (files that are not java compiled classes)
+      // look for all the resources (files that are not java compiled classes)
       List<String> muleConfigs = muleArtifactContentResolver.getConfigs();
       List<String> resources = allOutputFiles.stream()
           .filter(isJavaClass.negate())
@@ -210,9 +208,9 @@ public class DefaultValuesMuleArtifactJsonGenerator extends AbstractDefaultValue
           .map(Path::toString)
           .map(MuleArtifactContentResolver::escapeSlashes)
           .collect(toList());
-      //being consistent with old behaviour, check this later
+      // being consistent with old behaviour, check this later
       resources.addAll(muleArtifactContentResolver.getTestExportedResources());
-      //assembly the classLoaderModelDescriptor
+      // assembly the classLoaderModelDescriptor
       classLoaderModelLoaderDescriptor = new MuleArtifactLoaderDescriptorBuilder()
           .setId(MULE_ID)
           .addProperty(EXPORTED_PACKAGES, packagesFolders)

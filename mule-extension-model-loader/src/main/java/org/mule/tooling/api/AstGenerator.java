@@ -80,6 +80,6 @@ public class AstGenerator {
   }
 
   public static InputStream serialize(ArtifactAst artifactAst) {
-    return new ArtifactAstSerializerProvider().getSerializer(ArtifactAstSerializerFactory.JSON, "1.0") .serialize(artifactAst);
+    return new ArtifactAstSerializerProvider().getSerializer(ArtifactAstSerializerFactory.JSON, "1.0").serialize(artifactAst);
   }
 }

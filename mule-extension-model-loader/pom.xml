@@ -63,6 +63,7 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-deployment-model-impl</artifactId>
+            <version>${mule.version}</version>
         </dependency>
         <!-- For now adding TC in order to get all extension models providers -->
         <dependency>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>mule-artifact-tools</artifactId>
+        <groupId>org.mule.tools.maven</groupId>
+        <version>3.6.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>mule-extension-model-loader</artifactId>
+    <name>Mule Extension Model Loader</name>
+
+    <properties>
+        <licensePath>../LICENSE_HEADER.txt</licensePath>
+        <formatterConfigPath>../formatter.xml</formatterConfigPath>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId> org.mule.runtime</groupId>
+            <artifactId>mule-module-logging</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-artifact-ast-xml-parser</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
+        </dependency>
+         <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-artifact-ast-serialization</artifactId>
+             <version>1.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mulesoft.anypoint</groupId>
+            <artifactId>api-gateway-api</artifactId>
+            <version>1.3.0</version>
+        </dependency>
+         <dependency>
+            <groupId>com.mulesoft.mule.runtime</groupId>
+            <artifactId>mule-core-ee</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+         <dependency>
+                <groupId>com.mulesoft.anypoint</groupId>
+                <artifactId>mule-module-autodiscovery</artifactId>
+	            <version>${mule.version}</version>
+	        </dependency>
+
+         <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-javaee</artifactId>
+			<version>${mule.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mulesoft.mule.runtime.modules</groupId>
+            <artifactId>mule-runtime-ee-extension-model</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-deployment-model-impl</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+        <!-- For now adding TC in order to get all extension models providers -->
+        <dependency>
+            <groupId>org.mule.tooling</groupId>
+            <artifactId>mule-runtime-tooling-client</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule</groupId>
+            <artifactId>mule-maven-client-impl</artifactId>
+            <version>1.6.0-20210427</version>
+        </dependency>
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

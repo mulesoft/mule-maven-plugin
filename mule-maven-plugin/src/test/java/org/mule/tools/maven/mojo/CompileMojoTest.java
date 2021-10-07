@@ -11,15 +11,18 @@
 package org.mule.tools.maven.mojo;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.StringInputStream;
 import org.junit.Before;
 import org.junit.Test;
-
+import org.mule.runtime.ast.api.ArtifactAst;
+import org.mule.tooling.api.AstGenerator;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
 import static org.mockito.Mockito.*;
@@ -36,7 +39,7 @@ public class CompileMojoTest extends AbstractMuleMojoTest {
     when(buildMock.getDirectory()).thenReturn(projectBaseFolder.getRoot().getAbsolutePath());
 
     projectMock = mock(MavenProject.class);
-
+    when(projectMock.getPackaging()).thenReturn("mule-application");
     mojoMock = mock(CompileMojo.class);
     mojoMock.project = projectMock;
     mojoMock.projectBaseFolder = projectBaseFolder.getRoot();
@@ -48,14 +51,18 @@ public class CompileMojoTest extends AbstractMuleMojoTest {
   @Test
   public void execute() throws MojoFailureException, MojoExecutionException, IOException {
     MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
+    InputStream stream = new StringInputStream("");
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
-
+    ArtifactAst artifactAst = mock(ArtifactAst.class);
+    doReturn(artifactAst).when(mojoMock).getArtifactAst();
+    doReturn(stream).when(mojoMock).serialize(artifactAst);
     doCallRealMethod().when(mojoMock).execute();
     doCallRealMethod().when(mojoMock).doExecute();
     mojoMock.execute();
 
-    verify(mojoMock, times(1)).getContentGenerator();
+    verify(mojoMock, times(2)).getContentGenerator();
     verify(contentGeneratorMock, times(1)).createMuleSrcFolderContent();
+    verify(contentGeneratorMock, times(1)).createAstFile(stream);
   }
 
   @Test(expected = MojoFailureException.class)

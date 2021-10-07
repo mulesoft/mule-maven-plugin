@@ -37,9 +37,13 @@
       ]
     }
   ],
+  "packages": [
+    "main.internal"
+  ],
   "resources": [
-    "META-INF/MANIFEST.MF",
-    "META-INF/maven/org.mule.group/mule-plugin-b/pom.properties",
-    "META-INF/maven/org.mule.group/mule-plugin-b/pom.xml"
+    "META-INF/maven/org.mule.group/mule-plugin-b/pom.xml",
+    "META-INF/mule-artifact/icon.svg",
+    "META-INF/mule-artifact/mule-artifact.json",
+    "META-INF/mule-plugin-b-extension-descriptions.xml"
   ]
 }

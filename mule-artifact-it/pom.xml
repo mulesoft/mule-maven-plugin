@@ -104,5 +104,10 @@
             </build>
         </profile>
     </profiles>
-
+    <dependencies>
+        <dependency>
+                <groupId>org.mule.runtime</groupId>
+                <artifactId>mule-api</artifactId>
+        </dependency>
+    </dependencies>
 </project>

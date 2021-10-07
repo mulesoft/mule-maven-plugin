@@ -42,6 +42,12 @@
             <artifactId>mule-deployer</artifactId>
             <version>${project.version}</version>
         </dependency>
+		<dependency>
+            <groupId>org.mule.tools.maven</groupId>
+            <artifactId>mule-extension-model-loader</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-api</artifactId>

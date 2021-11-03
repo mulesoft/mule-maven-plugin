@@ -73,7 +73,7 @@ public class CompileMojo extends AbstractMuleMojo {
     } catch (IllegalArgumentException | IOException e) {
       throw new MojoFailureException("Fail to compile", e);
     }
- }
+  }
 
   private void addJarsToClasspath() throws ZipException, IOException {
     Path targetDirPath = getProjectInformation().getBuildDirectory().resolve(EXT_MODEL_LOADER_DEPENDENCIES_TARGET);

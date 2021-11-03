@@ -152,7 +152,6 @@ public class InstallMojoTest extends MojoTest {
     projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-DattachMuleSources=true");
-    verifier.addCliOption("-DskipAST");
 
     verifier.deleteArtifacts(GROUP_ID, appSubModule, VERSION);
     String artifactPath = verifier.getArtifactPath(GROUP_ID, appSubModule, VERSION, EXT, MULE_APPLICATION_CLASSIFIER);

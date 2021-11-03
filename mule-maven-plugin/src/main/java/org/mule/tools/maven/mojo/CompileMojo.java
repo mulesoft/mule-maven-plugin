@@ -54,7 +54,7 @@ public class CompileMojo extends AbstractMuleMojo {
   private static final String MULE_POLICY = "mule-policy";
   private static final String MULE_DOMAIN = "mule-domain";
   private static final String SKIP_AST = "skipAST";
-  private static final String EXT_MODEL_LOADER_DEPENDENCIES_TARGET = "jars";
+  public static final String EXT_MODEL_LOADER_DEPENDENCIES_TARGET = "jars";
   private static final String EXT_MODEL_LOADER_DEPENDENCIES_FOLDER = "alternateLocation";
 
   @Override
@@ -69,30 +69,11 @@ public class CompileMojo extends AbstractMuleMojo {
         if (artifact != null) {
           ((MuleContentGenerator) getContentGenerator()).createAstFile(serialize(artifact));
         }
-        deleteDepsFolder();
       }
     } catch (IllegalArgumentException | IOException e) {
       throw new MojoFailureException("Fail to compile", e);
     }
-  }
-
-  private void deleteDepsFolder() throws IOException {
-    if ((getProjectInformation() != null) && (getProjectInformation().getBuildDirectory() != null)
-        && (getProjectInformation().getBuildDirectory().resolve(EXT_MODEL_LOADER_DEPENDENCIES_TARGET).toFile().exists())) {
-      Path dependenciesDir = getProjectInformation().getBuildDirectory().resolve(EXT_MODEL_LOADER_DEPENDENCIES_TARGET);
-      Files.walk(dependenciesDir.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER))
-          .map(Path::toFile)
-          .forEach(File::delete);
-      dependenciesDir.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).toFile().delete();
-
-      Files.walk(dependenciesDir.resolve("META-INF"))
-          .sorted(Comparator.reverseOrder())
-          .map(Path::toFile)
-          .forEach(File::delete);
-      dependenciesDir.toFile().delete();
-    }
-
-  }
+ }
 
   private void addJarsToClasspath() throws ZipException, IOException {
     Path targetDirPath = getProjectInformation().getBuildDirectory().resolve(EXT_MODEL_LOADER_DEPENDENCIES_TARGET);
@@ -100,12 +81,8 @@ public class CompileMojo extends AbstractMuleMojo {
     File dependenciesDir = targetDirPath.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).toFile();
     extractDependencies(targetDirPath);
     File[] jarDeps = dependenciesDir.listFiles(file -> file.getAbsolutePath().endsWith("jar"));
-    URL[] urls = new URL[jarDeps.length];
-    int i = 0;
     for (File file : jarDeps) {
-      urls[i] = (file.toURI().toURL());
       descriptor.getClassRealm().addURL(file.toURI().toURL());
-      i++;
     }
   }
 

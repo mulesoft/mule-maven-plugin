@@ -13,6 +13,7 @@ import static integration.ProjectFactory.createProjectBaseDir;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import org.mule.tools.api.util.FileUtils;
+import org.mule.tools.maven.mojo.CompileMojo;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,8 @@ import org.junit.Before;
 
 public class MojoTest implements SettingsConfigurator {
 
-  protected static final String[] excludes = new String[] {".placeholder", "log.txt"};
+  protected static final String[] excludes =
+      new String[] {".placeholder", "log.txt", CompileMojo.EXT_MODEL_LOADER_DEPENDENCIES_TARGET};
   protected static final String[] excludesCompile = ArrayUtils.addAll(excludes, "maven-status");
 
   protected static final String TARGET_FOLDER_NAME = "target";

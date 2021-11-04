@@ -13,7 +13,7 @@ package org.mule.tooling.api;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.ast.internal.serialization.ArtifactAstSerializerFactory;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
-
+import org.mule.runtime.module.artifact.api.classloader.RegionClassLoader;
 
 import static org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor.MULE_PLUGIN_CLASSIFIER;
 
@@ -30,6 +30,8 @@ import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.util.Pair;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.serialization.ArtifactAstSerializerProvider;
+import org.mule.runtime.ast.api.util.MuleAstUtils;
+import org.mule.runtime.ast.api.validation.ValidationResult;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -77,6 +79,11 @@ public class AstGenerator {
       appXmlConfigInputStreams.add(new Pair(config, new FileInputStream(configsPath.resolve(config).toFile())));
     }
     return appXmlConfigInputStreams.isEmpty() ? null : xmlParser.parse(appXmlConfigInputStreams);
+  }
+
+  public void validateAST(ArtifactAst artifactAst) {
+    ValidationResult result = MuleAstUtils.validate(artifactAst);
+    result.getItems();
   }
 
   public static InputStream serialize(ArtifactAst artifactAst) {

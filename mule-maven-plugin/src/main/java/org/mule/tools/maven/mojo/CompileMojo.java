@@ -10,12 +10,25 @@
 
 package org.mule.tools.maven.mojo;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
@@ -34,10 +47,15 @@ import org.mule.tooling.api.AstGenerator;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class CompileMojo extends AbstractMuleMojo {
 
+  @Component
+  private PluginDescriptor descriptor;
+
   private static final String RUNTIME_AST_VERSION = "4.4.0";
   private static final String MULE_POLICY = "mule-policy";
   private static final String MULE_DOMAIN = "mule-domain";
   private static final String SKIP_AST = "skipAST";
+  public static final String EXT_MODEL_LOADER_DEPENDENCIES_TARGET = "jars";
+  private static final String EXT_MODEL_LOADER_DEPENDENCIES_FOLDER = "alternateLocation";
 
   @Override
   public void doExecute() throws MojoFailureException {
@@ -54,6 +72,39 @@ public class CompileMojo extends AbstractMuleMojo {
       }
     } catch (IllegalArgumentException | IOException e) {
       throw new MojoFailureException("Fail to compile", e);
+    }
+  }
+
+  private void addJarsToClasspath() throws ZipException, IOException {
+    Path targetDirPath = getProjectInformation().getBuildDirectory().resolve(EXT_MODEL_LOADER_DEPENDENCIES_TARGET);
+    (new File(targetDirPath.toString())).mkdir();
+    File dependenciesDir = targetDirPath.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).toFile();
+    extractDependencies(targetDirPath);
+    File[] jarDeps = dependenciesDir.listFiles(file -> file.getAbsolutePath().endsWith("jar"));
+    for (File file : jarDeps) {
+      descriptor.getClassRealm().addURL(file.toURI().toURL());
+    }
+  }
+
+  private void extractDependencies(Path targetDirPath) throws ZipException, IOException {
+    org.apache.maven.artifact.Artifact mmmp = project.getPluginArtifactMap().get("org.mule.tools.maven:mule-maven-plugin");
+    Path extensionModelLoaderDepsPath =
+        Paths.get((session.getLocalRepository().getBasedir())).resolve("org").resolve("mule").resolve("tools")
+            .resolve("maven")
+            .resolve("mule-extension-model-loader")
+            .resolve(mmmp.getVersion())
+            .resolve("mule-extension-model-loader-" + mmmp.getVersion() + "-dependencies.jar");
+    ZipFile dependenciesJar = new ZipFile(extensionModelLoaderDepsPath.toFile());
+    List<? extends ZipEntry> entries = dependenciesJar.stream()
+        .sorted(Comparator.comparing(ZipEntry::getName))
+        .collect(Collectors.toList());
+    for (ZipEntry entry : entries) {
+      Path entryDest = targetDirPath.resolve(entry.getName());
+      if (entry.isDirectory()) {
+        Files.createDirectory(entryDest);
+        continue;
+      }
+      Files.copy(dependenciesJar.getInputStream(entry), entryDest);
     }
   }
 
@@ -78,6 +129,7 @@ public class CompileMojo extends AbstractMuleMojo {
   }
 
   public ArtifactAst getArtifactAst() throws FileNotFoundException, IOException {
+    addJarsToClasspath();
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
                                                  project.getDependencies(), projectBaseFolder.toPath().resolve("target"));
     ProjectStructure projectStructure = new ProjectStructure(projectBaseFolder.toPath(), false);
@@ -86,7 +138,8 @@ public class CompileMojo extends AbstractMuleMojo {
                                         getProjectInformation().getEffectivePom(),
                                         getProjectInformation().getProject().getBundleDependencies());
 
-    return astGenerator.generateAST(contentResolver.getConfigs(), projectStructure.getConfigsPath());
+    ArtifactAst artifactAST = astGenerator.generateAST(contentResolver.getConfigs(), projectStructure.getConfigsPath());
+    return artifactAST;
   }
 
 }

@@ -139,6 +139,7 @@ public class CompileMojo extends AbstractMuleMojo {
                                         getProjectInformation().getProject().getBundleDependencies());
 
     ArtifactAst artifactAST = astGenerator.generateAST(contentResolver.getConfigs(), projectStructure.getConfigsPath());
+    astGenerator.validateAST(artifactAST);
     return artifactAST;
   }
 

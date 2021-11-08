@@ -49,7 +49,7 @@ public class CompileMojoTest extends AbstractMuleMojoTest {
   }
 
   @Test
-  public void execute() throws MojoFailureException, MojoExecutionException, IOException {
+  public void execute() throws Exception {
     MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
     InputStream stream = new StringInputStream("");
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();

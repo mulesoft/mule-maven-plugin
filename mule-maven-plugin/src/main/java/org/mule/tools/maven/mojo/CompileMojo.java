@@ -18,6 +18,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.runtime.ast.api.ArtifactAst;
+import org.mule.runtime.ast.api.validation.ValidationResultItem;
 import org.mule.tools.api.packager.sources.MuleArtifactContentResolver;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.packager.structure.ProjectStructure;
@@ -70,7 +72,7 @@ public class CompileMojo extends AbstractMuleMojo {
           ((MuleContentGenerator) getContentGenerator()).createAstFile(serialize(artifact));
         }
       }
-    } catch (IllegalArgumentException | IOException e) {
+    } catch (Exception e) {
       throw new MojoFailureException("Fail to compile", e);
     }
   }
@@ -128,7 +130,7 @@ public class CompileMojo extends AbstractMuleMojo {
     return "MULE_MAVEN_PLUGIN_COMPILE_PREVIOUS_RUN_PLACEHOLDER";
   }
 
-  public ArtifactAst getArtifactAst() throws FileNotFoundException, IOException {
+  public ArtifactAst getArtifactAst() throws Exception {
     addJarsToClasspath();
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
                                                  project.getDependencies(), projectBaseFolder.toPath().resolve("target"));
@@ -139,7 +141,10 @@ public class CompileMojo extends AbstractMuleMojo {
                                         getProjectInformation().getProject().getBundleDependencies());
 
     ArtifactAst artifactAST = astGenerator.generateAST(contentResolver.getConfigs(), projectStructure.getConfigsPath());
-    astGenerator.validateAST(artifactAST);
+    ArrayList<ValidationResultItem> warnings = astGenerator.validateAST(artifactAST);
+    for (ValidationResultItem warning : warnings) {
+      getLog().warn(warning.getMessage());
+    }
     return artifactAST;
   }
 

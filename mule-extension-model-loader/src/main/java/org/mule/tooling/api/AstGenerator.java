@@ -31,7 +31,9 @@ import org.mule.runtime.api.util.Pair;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.serialization.ArtifactAstSerializerProvider;
 import org.mule.runtime.ast.api.util.MuleAstUtils;
+import org.mule.runtime.ast.api.validation.Validation.Level;
 import org.mule.runtime.ast.api.validation.ValidationResult;
+import org.mule.runtime.ast.api.validation.ValidationResultItem;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -81,9 +83,15 @@ public class AstGenerator {
     return appXmlConfigInputStreams.isEmpty() ? null : xmlParser.parse(appXmlConfigInputStreams);
   }
 
-  public void validateAST(ArtifactAst artifactAst) {
+  public ArrayList<ValidationResultItem> validateAST(ArtifactAst artifactAst) throws Exception {
     ValidationResult result = MuleAstUtils.validate(artifactAst);
-    result.getItems();
+    ArrayList<ValidationResultItem> errors = new ArrayList<ValidationResultItem>();
+    ArrayList<ValidationResultItem> warnings = new ArrayList<ValidationResultItem>();
+    result.getItems().forEach(v ->{if(v.getValidation().getLevel().equals(Level.ERROR)){errors.add(v);}else {warnings.add(v);}});
+    if(errors.size()>0) {
+      throw new Exception(errors.get(0).getMessage());
+    }
+    return warnings;
   }
 
   public static InputStream serialize(ArtifactAst artifactAst) {

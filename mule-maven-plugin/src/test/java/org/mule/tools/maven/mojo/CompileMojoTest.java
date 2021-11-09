@@ -10,6 +10,7 @@
 
 package org.mule.tools.maven.mojo;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -23,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.tooling.api.AstGenerator;
+import org.mule.tooling.api.ConfigurationException;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
 import static org.mockito.Mockito.*;
@@ -49,7 +51,8 @@ public class CompileMojoTest extends AbstractMuleMojoTest {
   }
 
   @Test
-  public void execute() throws Exception {
+  public void execute()
+      throws FileNotFoundException, ConfigurationException, IOException, MojoExecutionException, MojoFailureException {
     MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
     InputStream stream = new StringInputStream("");
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();

@@ -39,6 +39,7 @@ import org.mule.tools.api.packager.sources.MuleArtifactContentResolver;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 import org.mule.tooling.api.AstGenerator;
+import org.mule.tooling.api.ConfigurationException;
 
 /**
  * @author Mulesoft Inc.
@@ -130,7 +131,7 @@ public class CompileMojo extends AbstractMuleMojo {
     return "MULE_MAVEN_PLUGIN_COMPILE_PREVIOUS_RUN_PLACEHOLDER";
   }
 
-  public ArtifactAst getArtifactAst() throws Exception {
+  public ArtifactAst getArtifactAst() throws ConfigurationException, FileNotFoundException, IOException {
     addJarsToClasspath();
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
                                                  project.getDependencies(), projectBaseFolder.toPath().resolve("target"));
@@ -141,9 +142,11 @@ public class CompileMojo extends AbstractMuleMojo {
                                         getProjectInformation().getProject().getBundleDependencies());
 
     ArtifactAst artifactAST = astGenerator.generateAST(contentResolver.getConfigs(), projectStructure.getConfigsPath());
-    ArrayList<ValidationResultItem> warnings = astGenerator.validateAST(artifactAST);
-    for (ValidationResultItem warning : warnings) {
-      getLog().warn(warning.getMessage());
+    if (artifactAST != null) {
+      ArrayList<ValidationResultItem> warnings = astGenerator.validateAST(artifactAST);
+      for (ValidationResultItem warning : warnings) {
+        getLog().warn(warning.getMessage());
+      }
     }
     return artifactAST;
   }

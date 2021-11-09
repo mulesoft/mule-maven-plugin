@@ -83,13 +83,13 @@ public class AstGenerator {
     return appXmlConfigInputStreams.isEmpty() ? null : xmlParser.parse(appXmlConfigInputStreams);
   }
 
-  public ArrayList<ValidationResultItem> validateAST(ArtifactAst artifactAst) throws Exception {
+  public ArrayList<ValidationResultItem> validateAST(ArtifactAst artifactAst) throws ConfigurationException {
     ValidationResult result = MuleAstUtils.validate(artifactAst);
     ArrayList<ValidationResultItem> errors = new ArrayList<ValidationResultItem>();
     ArrayList<ValidationResultItem> warnings = new ArrayList<ValidationResultItem>();
     result.getItems().forEach(v ->{if(v.getValidation().getLevel().equals(Level.ERROR)){errors.add(v);}else {warnings.add(v);}});
     if(errors.size()>0) {
-      throw new Exception(errors.get(0).getMessage());
+      throw new ConfigurationException(errors.get(0).getMessage());
     }
     return warnings;
   }

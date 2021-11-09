@@ -13,7 +13,7 @@ package org.mule.tooling.api;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.ast.internal.serialization.ArtifactAstSerializerFactory;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
-
+import org.mule.runtime.module.artifact.api.classloader.RegionClassLoader;
 
 import static org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor.MULE_PLUGIN_CLASSIFIER;
 
@@ -30,6 +30,10 @@ import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.util.Pair;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.serialization.ArtifactAstSerializerProvider;
+import org.mule.runtime.ast.api.util.MuleAstUtils;
+import org.mule.runtime.ast.api.validation.Validation.Level;
+import org.mule.runtime.ast.api.validation.ValidationResult;
+import org.mule.runtime.ast.api.validation.ValidationResultItem;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -77,6 +81,17 @@ public class AstGenerator {
       appXmlConfigInputStreams.add(new Pair(config, new FileInputStream(configsPath.resolve(config).toFile())));
     }
     return appXmlConfigInputStreams.isEmpty() ? null : xmlParser.parse(appXmlConfigInputStreams);
+  }
+
+  public ArrayList<ValidationResultItem> validateAST(ArtifactAst artifactAst) throws ConfigurationException {
+    ValidationResult result = MuleAstUtils.validate(artifactAst);
+    ArrayList<ValidationResultItem> errors = new ArrayList<ValidationResultItem>();
+    ArrayList<ValidationResultItem> warnings = new ArrayList<ValidationResultItem>();
+    result.getItems().forEach(v ->{if(v.getValidation().getLevel().equals(Level.ERROR)){errors.add(v);}else {warnings.add(v);}});
+    if(errors.size()>0) {
+      throw new ConfigurationException(errors.get(0).getMessage());
+    }
+    return warnings;
   }
 
   public static InputStream serialize(ArtifactAst artifactAst) {

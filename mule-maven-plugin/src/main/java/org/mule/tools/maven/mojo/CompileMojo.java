@@ -103,11 +103,13 @@ public class CompileMojo extends AbstractMuleMojo {
         .collect(Collectors.toList());
     for (ZipEntry entry : entries) {
       Path entryDest = targetDirPath.resolve(entry.getName());
-      if (entry.isDirectory()) {
-        Files.createDirectory(entryDest);
-        continue;
+      if (!Files.exists(entryDest)) {
+        if (entry.isDirectory()) {
+          Files.createDirectory(entryDest);
+          continue;
+        }
+        Files.copy(dependenciesJar.getInputStream(entry), entryDest);
       }
-      Files.copy(dependenciesJar.getInputStream(entry), entryDest);
     }
   }
 

@@ -18,6 +18,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,10 +34,12 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.runtime.ast.api.ArtifactAst;
+import org.mule.runtime.ast.api.validation.ValidationResultItem;
 import org.mule.tools.api.packager.sources.MuleArtifactContentResolver;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 import org.mule.tooling.api.AstGenerator;
+import org.mule.tooling.api.ConfigurationException;
 
 /**
  * @author Mulesoft Inc.
@@ -70,12 +73,12 @@ public class CompileMojo extends AbstractMuleMojo {
           ((MuleContentGenerator) getContentGenerator()).createAstFile(serialize(artifact));
         }
       }
-    } catch (IllegalArgumentException | IOException e) {
+    } catch (IllegalArgumentException | IOException | ConfigurationException e) {
       throw new MojoFailureException("Fail to compile", e);
     }
   }
 
-  private void addJarsToClasspath() throws ZipException, IOException {
+  private void addJarsToClasspath() throws IOException {
     Path targetDirPath = getProjectInformation().getBuildDirectory().resolve(EXT_MODEL_LOADER_DEPENDENCIES_TARGET);
     (new File(targetDirPath.toString())).mkdir();
     File dependenciesDir = targetDirPath.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).toFile();
@@ -86,7 +89,7 @@ public class CompileMojo extends AbstractMuleMojo {
     }
   }
 
-  private void extractDependencies(Path targetDirPath) throws ZipException, IOException {
+  private void extractDependencies(Path targetDirPath) throws IOException {
     org.apache.maven.artifact.Artifact mmmp = project.getPluginArtifactMap().get("org.mule.tools.maven:mule-maven-plugin");
     Path extensionModelLoaderDepsPath =
         Paths.get((session.getLocalRepository().getBasedir())).resolve("org").resolve("mule").resolve("tools")
@@ -100,11 +103,13 @@ public class CompileMojo extends AbstractMuleMojo {
         .collect(Collectors.toList());
     for (ZipEntry entry : entries) {
       Path entryDest = targetDirPath.resolve(entry.getName());
-      if (entry.isDirectory()) {
-        Files.createDirectory(entryDest);
-        continue;
+      if (!Files.exists(entryDest)) {
+        if (entry.isDirectory()) {
+          Files.createDirectory(entryDest);
+          continue;
+        }
+        Files.copy(dependenciesJar.getInputStream(entry), entryDest);
       }
-      Files.copy(dependenciesJar.getInputStream(entry), entryDest);
     }
   }
 
@@ -128,7 +133,7 @@ public class CompileMojo extends AbstractMuleMojo {
     return "MULE_MAVEN_PLUGIN_COMPILE_PREVIOUS_RUN_PLACEHOLDER";
   }
 
-  public ArtifactAst getArtifactAst() throws FileNotFoundException, IOException {
+  public ArtifactAst getArtifactAst() throws IOException, ConfigurationException {
     addJarsToClasspath();
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
                                                  project.getDependencies(), projectBaseFolder.toPath().resolve("target"));
@@ -139,6 +144,12 @@ public class CompileMojo extends AbstractMuleMojo {
                                         getProjectInformation().getProject().getBundleDependencies());
 
     ArtifactAst artifactAST = astGenerator.generateAST(contentResolver.getConfigs(), projectStructure.getConfigsPath());
+    if (artifactAST != null) {
+      ArrayList<ValidationResultItem> warnings = astGenerator.validateAST(artifactAST);
+      for (ValidationResultItem warning : warnings) {
+        getLog().warn(warning.getMessage());
+      }
+    }
     return artifactAST;
   }
 

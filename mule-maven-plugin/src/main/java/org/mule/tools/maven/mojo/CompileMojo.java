@@ -73,12 +73,12 @@ public class CompileMojo extends AbstractMuleMojo {
           ((MuleContentGenerator) getContentGenerator()).createAstFile(serialize(artifact));
         }
       }
-    } catch (Exception e) {
+    } catch (IllegalArgumentException | IOException | ConfigurationException e) {
       throw new MojoFailureException("Fail to compile", e);
     }
   }
 
-  private void addJarsToClasspath() throws ZipException, IOException {
+  private void addJarsToClasspath() throws IOException {
     Path targetDirPath = getProjectInformation().getBuildDirectory().resolve(EXT_MODEL_LOADER_DEPENDENCIES_TARGET);
     (new File(targetDirPath.toString())).mkdir();
     File dependenciesDir = targetDirPath.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).toFile();
@@ -89,7 +89,7 @@ public class CompileMojo extends AbstractMuleMojo {
     }
   }
 
-  private void extractDependencies(Path targetDirPath) throws ZipException, IOException {
+  private void extractDependencies(Path targetDirPath) throws IOException {
     org.apache.maven.artifact.Artifact mmmp = project.getPluginArtifactMap().get("org.mule.tools.maven:mule-maven-plugin");
     Path extensionModelLoaderDepsPath =
         Paths.get((session.getLocalRepository().getBasedir())).resolve("org").resolve("mule").resolve("tools")
@@ -133,7 +133,7 @@ public class CompileMojo extends AbstractMuleMojo {
     return "MULE_MAVEN_PLUGIN_COMPILE_PREVIOUS_RUN_PLACEHOLDER";
   }
 
-  public ArtifactAst getArtifactAst() throws ConfigurationException, FileNotFoundException, IOException {
+  public ArtifactAst getArtifactAst() throws IOException, ConfigurationException {
     addJarsToClasspath();
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
                                                  project.getDependencies(), projectBaseFolder.toPath().resolve("target"));

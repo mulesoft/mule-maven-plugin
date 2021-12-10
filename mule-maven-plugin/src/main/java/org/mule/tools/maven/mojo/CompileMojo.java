@@ -135,8 +135,9 @@ public class CompileMojo extends AbstractMuleMojo {
 
   public ArtifactAst getArtifactAst() throws IOException, ConfigurationException {
     addJarsToClasspath();
+
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
-                                                 project.getDependencies(), projectBaseFolder.toPath().resolve("target"));
+                                                 project.getDependencies(), Paths.get(project.getBuild().getDirectory()));
     ProjectStructure projectStructure = new ProjectStructure(projectBaseFolder.toPath(), false);
     MuleArtifactContentResolver contentResolver =
         new MuleArtifactContentResolver(new ProjectStructure(projectBaseFolder.toPath(), false),
@@ -152,5 +153,4 @@ public class CompileMojo extends AbstractMuleMojo {
     }
     return artifactAST;
   }
-
 }

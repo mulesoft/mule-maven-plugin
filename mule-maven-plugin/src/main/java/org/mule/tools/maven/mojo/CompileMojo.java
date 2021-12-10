@@ -153,13 +153,4 @@ public class CompileMojo extends AbstractMuleMojo {
     }
     return artifactAST;
   }
-
-  private Path getWorkingDir() {
-    if (projectBuildDirectory != null) {
-      return Paths.get(projectBuildDirectory);
-    } else {
-      return projectBaseFolder.toPath().resolve("target");
-    }
-  }
-
 }

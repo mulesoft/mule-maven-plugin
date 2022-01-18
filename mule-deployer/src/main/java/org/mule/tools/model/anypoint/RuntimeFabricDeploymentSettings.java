@@ -31,7 +31,9 @@ public class RuntimeFabricDeploymentSettings {
     lastMileSecurity = settings.lastMileSecurity;
     clustered = settings.clustered;
     updateStrategy = settings.updateStrategy;
-
+    if (settings.jvm != null) {
+      jvm = settings.jvm;
+    }
     enforceDeployingReplicasAcrossNodes = settings.enforceDeployingReplicasAcrossNodes;
     http = settings.http;
     forwardSslSession = settings.forwardSslSession;
@@ -61,6 +63,9 @@ public class RuntimeFabricDeploymentSettings {
 
   @Parameter
   protected Http http;
+
+  @Parameter
+  protected Jvm jvm;
 
   @Parameter
   protected boolean forwardSslSession;
@@ -138,6 +143,15 @@ public class RuntimeFabricDeploymentSettings {
     this.http = http;
   }
 
+
+  public Jvm getJvm() {
+    return jvm;
+  }
+
+
+  public void setJvm(Jvm jvm) {
+    this.jvm = jvm;
+  }
 
 
   public boolean isForwardSslSession() {

@@ -73,12 +73,12 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast-xml-parser</artifactId>
-            <version>1.1.0-20211201</version>
+            <version>1.1.0-20220103</version>
         </dependency>
          <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast-serialization</artifactId>
-             <version>1.1.0-20211201</version>
+             <version>1.1.0-20220103</version>
         </dependency>
         <dependency>
             <groupId>com.mulesoft.anypoint</groupId>
@@ -115,13 +115,13 @@
         <dependency>
             <groupId>org.mule.tooling</groupId>
             <artifactId>mule-runtime-tooling-client</artifactId>
-            <version>${mule.version}</version>
+            <version>4.5.0-20211201</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.mule</groupId>
             <artifactId>mule-maven-client-impl</artifactId>
-            <version>1.6.0-20210427</version>
+            <version>1.6.0</version>
         </dependency>
         <!-- Test dependencies -->
         <dependency>

@@ -148,16 +148,6 @@ public class RuntimeFabricDeploymentSettings {
   }
 
 
-  public Jvm getJvm() {
-    return jvm;
-  }
-
-
-  public void setJvm(Jvm jvm) {
-    this.jvm = jvm;
-  }
-
-
   public boolean isForwardSslSession() {
     return forwardSslSession;
   }

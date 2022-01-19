@@ -29,9 +29,12 @@ public class RuntimeFabricDeploymentSettings {
     runtimeVersion = settings.runtimeVersion;
     resources = settings.resources;
     lastMileSecurity = settings.lastMileSecurity;
+    persistentObjectStore = settings.persistentObjectStore;
     clustered = settings.clustered;
     updateStrategy = settings.updateStrategy;
-
+    if (settings.jvm != null) {
+      jvm = settings.jvm;
+    }
     enforceDeployingReplicasAcrossNodes = settings.enforceDeployingReplicasAcrossNodes;
     http = settings.http;
     forwardSslSession = settings.forwardSslSession;
@@ -51,6 +54,9 @@ public class RuntimeFabricDeploymentSettings {
   protected boolean lastMileSecurity;
 
   @Parameter
+  protected boolean persistentObjectStore;
+
+  @Parameter
   protected boolean clustered;
 
   @Parameter
@@ -61,6 +67,9 @@ public class RuntimeFabricDeploymentSettings {
 
   @Parameter
   protected Http http;
+
+  @Parameter
+  protected Jvm jvm;
 
   @Parameter
   protected boolean forwardSslSession;
@@ -139,7 +148,6 @@ public class RuntimeFabricDeploymentSettings {
   }
 
 
-
   public boolean isForwardSslSession() {
     return forwardSslSession;
   }
@@ -149,7 +157,6 @@ public class RuntimeFabricDeploymentSettings {
   public void setForwardSslSession(boolean forwardSslSession) {
     this.forwardSslSession = forwardSslSession;
   }
-
 
 
   public boolean isDisableAmLogForwarding() {

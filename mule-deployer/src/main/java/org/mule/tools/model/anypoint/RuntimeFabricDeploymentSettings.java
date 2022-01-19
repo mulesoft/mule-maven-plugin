@@ -29,6 +29,7 @@ public class RuntimeFabricDeploymentSettings {
     runtimeVersion = settings.runtimeVersion;
     resources = settings.resources;
     lastMileSecurity = settings.lastMileSecurity;
+    persistentObjectStore = settings.persistentObjectStore;
     clustered = settings.clustered;
     updateStrategy = settings.updateStrategy;
     if (settings.jvm != null) {
@@ -51,6 +52,9 @@ public class RuntimeFabricDeploymentSettings {
 
   @Parameter
   protected boolean lastMileSecurity;
+
+  @Parameter
+  protected boolean persistentObjectStore;
 
   @Parameter
   protected boolean clustered;
@@ -163,7 +167,6 @@ public class RuntimeFabricDeploymentSettings {
   public void setForwardSslSession(boolean forwardSslSession) {
     this.forwardSslSession = forwardSslSession;
   }
-
 
 
   public boolean isDisableAmLogForwarding() {

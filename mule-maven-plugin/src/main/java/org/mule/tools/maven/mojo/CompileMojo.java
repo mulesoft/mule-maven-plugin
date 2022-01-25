@@ -111,6 +111,7 @@ public class CompileMojo extends AbstractMuleMojo {
         Files.copy(dependenciesJar.getInputStream(entry), entryDest);
       }
     }
+    dependenciesJar.close();
   }
 
   private boolean hasDomain() {

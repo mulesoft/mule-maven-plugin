@@ -79,8 +79,11 @@ public class CompileMojo extends AbstractMuleMojo {
   }
 
   private void addJarsToClasspath() throws IOException {
-    Path targetDirPath = getProjectInformation().getBuildDirectory().resolve(EXT_MODEL_LOADER_DEPENDENCIES_TARGET);
-    (new File(targetDirPath.toString())).mkdir();
+    Path targetDirPath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("mmp-3.6.0-ast-deps");
+    File targetFile = targetDirPath.toFile();
+    if (!targetFile.exists()) {
+      targetFile.mkdir();
+    }
     File dependenciesDir = targetDirPath.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).toFile();
     extractDependencies(targetDirPath);
     File[] jarDeps = dependenciesDir.listFiles(file -> file.getAbsolutePath().endsWith("jar"));

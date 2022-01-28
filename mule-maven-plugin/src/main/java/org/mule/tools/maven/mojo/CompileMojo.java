@@ -58,8 +58,7 @@ public class CompileMojo extends AbstractMuleMojo {
   private static final String MULE_DOMAIN = "mule-domain";
   private static final String SKIP_AST = "skipAST";
   public static final String EXT_MODEL_LOADER_DEPENDENCIES_TARGET = "jars";
-  private static final String EXT_MODEL_LOADER_DEPENDENCIES_SUBFOLDER = "alternateLocation";
-  private static final String EXT_MODEL_LOADER_DEPENDENCIES_FOLDER = "dependencies";
+  private static final String EXT_MODEL_LOADER_DEPENDENCIES_FOLDER = "alternateLocation";
 
   @Override
   public void doExecute() throws MojoFailureException {
@@ -80,41 +79,30 @@ public class CompileMojo extends AbstractMuleMojo {
   }
 
   private void addJarsToClasspath() throws IOException {
-    Path dependenciesDir = Paths.get((session.getLocalRepository().getBasedir())).resolve("org").resolve("mule").resolve("tools")
-        .resolve("maven")
-        .resolve("mule-extension-model-loader")
-        .resolve(project.getPluginArtifactMap().get("org.mule.tools.maven:mule-maven-plugin").getVersion());
-    if (dependenciesDir.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).toFile().exists()) {
-      try {
-        dependenciesDir.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).toFile().delete();
-      } catch (SecurityException e) {
-
-      }
-    }
-    if (!dependenciesDir.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).toFile().exists()) {
-      dependenciesDir.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).toFile().mkdir();
-    }
-    extractDependencies(dependenciesDir);
-    File[] jarDeps =
-        dependenciesDir.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).resolve(EXT_MODEL_LOADER_DEPENDENCIES_SUBFOLDER).toFile()
-            .listFiles(file -> file.getAbsolutePath().endsWith("jar"));
+    Path targetDirPath = getProjectInformation().getBuildDirectory().resolve(EXT_MODEL_LOADER_DEPENDENCIES_TARGET);
+    (new File(targetDirPath.toString())).mkdir();
+    File dependenciesDir = targetDirPath.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).toFile();
+    extractDependencies(targetDirPath);
+    File[] jarDeps = dependenciesDir.listFiles(file -> file.getAbsolutePath().endsWith("jar"));
     for (File file : jarDeps) {
       descriptor.getClassRealm().addURL(file.toURI().toURL());
     }
   }
 
-
-  private void extractDependencies(Path dependenciesDir) throws IOException {
+  private void extractDependencies(Path targetDirPath) throws IOException {
     org.apache.maven.artifact.Artifact mmmp = project.getPluginArtifactMap().get("org.mule.tools.maven:mule-maven-plugin");
     Path extensionModelLoaderDepsPath =
-        dependenciesDir
+        Paths.get((session.getLocalRepository().getBasedir())).resolve("org").resolve("mule").resolve("tools")
+            .resolve("maven")
+            .resolve("mule-extension-model-loader")
+            .resolve(mmmp.getVersion())
             .resolve("mule-extension-model-loader-" + mmmp.getVersion() + "-dependencies.jar");
     ZipFile dependenciesJar = new ZipFile(extensionModelLoaderDepsPath.toFile());
     List<? extends ZipEntry> entries = dependenciesJar.stream()
         .sorted(Comparator.comparing(ZipEntry::getName))
         .collect(Collectors.toList());
     for (ZipEntry entry : entries) {
-      Path entryDest = dependenciesDir.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).resolve(entry.getName());
+      Path entryDest = targetDirPath.resolve(entry.getName());
       if (!Files.exists(entryDest)) {
         if (entry.isDirectory()) {
           Files.createDirectory(entryDest);

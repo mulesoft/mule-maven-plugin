@@ -79,7 +79,8 @@ public class CompileMojo extends AbstractMuleMojo {
   }
 
   private void addJarsToClasspath() throws IOException {
-    Path targetDirPath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("mmp-3.6.0-ast-deps");
+    Path targetDirPath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("mmp-"
+        + project.getPluginArtifactMap().get("org.mule.tools.maven:mule-maven-plugin").getVersion() + "-ast-deps");
     File targetFile = targetDirPath.toFile();
     if (!targetFile.exists()) {
       targetFile.mkdir();

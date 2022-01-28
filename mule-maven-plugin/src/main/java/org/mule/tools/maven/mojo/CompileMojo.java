@@ -58,7 +58,7 @@ public class CompileMojo extends AbstractMuleMojo {
   private static final String MULE_DOMAIN = "mule-domain";
   private static final String SKIP_AST = "skipAST";
   public static final String EXT_MODEL_LOADER_DEPENDENCIES_TARGET = "jars";
-  private static final String EXT_MODEL_LOADER_DEPENDENCIES_FOLDER = "alternateLocation";
+  public static final String EXT_MODEL_LOADER_DEPENDENCIES_FOLDER = "alternateLocation";
 
   @Override
   public void doExecute() throws MojoFailureException {

@@ -57,8 +57,6 @@ public class CompileMojo extends AbstractMuleMojo {
   private static final String MULE_POLICY = "mule-policy";
   private static final String MULE_DOMAIN = "mule-domain";
   private static final String SKIP_AST = "skipAST";
-  public static final String EXT_MODEL_LOADER_DEPENDENCIES_TARGET = "jars";
-  private static final String EXT_MODEL_LOADER_DEPENDENCIES_FOLDER = "alternateLocation";
 
   @Override
   public void doExecute() throws MojoFailureException {
@@ -79,8 +77,11 @@ public class CompileMojo extends AbstractMuleMojo {
   }
 
   private void addJarsToClasspath() throws IOException {
-    Path targetDirPath = getProjectInformation().getBuildDirectory().resolve(EXT_MODEL_LOADER_DEPENDENCIES_TARGET);
-    (new File(targetDirPath.toString())).mkdir();
+    Path targetDirPath = getAstDepsFolder();
+    File targetFile = targetDirPath.toFile();
+    if (!targetFile.exists()) {
+      targetFile.mkdir();
+    }
     File dependenciesDir = targetDirPath.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).toFile();
     extractDependencies(targetDirPath);
     File[] jarDeps = dependenciesDir.listFiles(file -> file.getAbsolutePath().endsWith("jar"));

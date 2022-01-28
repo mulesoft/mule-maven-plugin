@@ -77,7 +77,6 @@ public abstract class AbstractMuleMojo extends AbstractGenericMojo {
 
   protected Path getAstDepsFolder() {
     return Paths.get(System.getProperty("java.io.tmpdir")).resolve("mmp-"
-        + project.getPluginArtifactMap().get("org.mule.tools.maven:mule-maven-plugin").getVersion() + "-ast-deps")
-        .resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER);
+        + project.getPluginArtifactMap().get("org.mule.tools.maven:mule-maven-plugin").getVersion() + "-ast-deps");
   }
 }

@@ -29,7 +29,7 @@ public class CleanMojo extends AbstractMuleMojo {
 
   @Override
   public void doExecute() {
-    Path targetDirPath = getAstDepsFolder();
+    Path targetDirPath = getAstDepsFolder().resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER);;
     File targetFolder = targetDirPath.toFile();
     if (targetFolder.exists()) {
       File[] jarDeps = targetFolder.listFiles();

@@ -57,8 +57,6 @@ public class CompileMojo extends AbstractMuleMojo {
   private static final String MULE_POLICY = "mule-policy";
   private static final String MULE_DOMAIN = "mule-domain";
   private static final String SKIP_AST = "skipAST";
-  public static final String EXT_MODEL_LOADER_DEPENDENCIES_TARGET = "jars";
-  public static final String EXT_MODEL_LOADER_DEPENDENCIES_FOLDER = "alternateLocation";
 
   @Override
   public void doExecute() throws MojoFailureException {
@@ -79,8 +77,7 @@ public class CompileMojo extends AbstractMuleMojo {
   }
 
   private void addJarsToClasspath() throws IOException {
-    Path targetDirPath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("mmp-"
-        + project.getPluginArtifactMap().get("org.mule.tools.maven:mule-maven-plugin").getVersion() + "-ast-deps");
+    Path targetDirPath = getAstDepsFolder();
     File targetFile = targetDirPath.toFile();
     if (!targetFile.exists()) {
       targetFile.mkdir();

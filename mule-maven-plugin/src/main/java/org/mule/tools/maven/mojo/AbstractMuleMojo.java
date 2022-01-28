@@ -11,6 +11,9 @@
 package org.mule.tools.maven.mojo;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
@@ -46,6 +49,10 @@ public abstract class AbstractMuleMojo extends AbstractGenericMojo {
 
   protected static ResourcesContent resourcesContent;
 
+  public static final String EXT_MODEL_LOADER_DEPENDENCIES_TARGET = "jars";
+  public static final String EXT_MODEL_LOADER_DEPENDENCIES_FOLDER = "alternateLocation";
+
+
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (!hasExecutedBefore()) {
       initMojo();
@@ -66,5 +73,11 @@ public abstract class AbstractMuleMojo extends AbstractGenericMojo {
     MavenProjectBuilder builder = new MavenProjectBuilder(getLog(), session, projectBuilder, repositorySystem, localRepository,
                                                           remoteArtifactRepositories);
     return new MulePluginResolver(builder, project);
+  }
+
+  protected Path getAstDepsFolder() {
+    return Paths.get(System.getProperty("java.io.tmpdir")).resolve("mmp-"
+        + project.getPluginArtifactMap().get("org.mule.tools.maven:mule-maven-plugin").getVersion() + "-ast-deps")
+        .resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER);
   }
 }

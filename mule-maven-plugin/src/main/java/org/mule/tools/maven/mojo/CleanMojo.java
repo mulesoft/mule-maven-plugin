@@ -29,9 +29,7 @@ public class CleanMojo extends AbstractMuleMojo {
 
   @Override
   public void doExecute() {
-    Path targetDirPath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("mmp-"
-        + project.getPluginArtifactMap().get("org.mule.tools.maven:mule-maven-plugin").getVersion() + "-ast-deps")
-        .resolve(CompileMojo.EXT_MODEL_LOADER_DEPENDENCIES_FOLDER);
+    Path targetDirPath = getAstDepsFolder();
     File targetFolder = targetDirPath.toFile();
     if (targetFolder.exists()) {
       File[] jarDeps = targetFolder.listFiles();

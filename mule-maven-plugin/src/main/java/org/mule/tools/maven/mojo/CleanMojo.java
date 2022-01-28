@@ -28,23 +28,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 public class CleanMojo extends AbstractMuleMojo {
 
   @Override
-  public void doExecute() {
-    Path targetDirPath = getAstDepsFolder().resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER);;
-    File targetFolder = targetDirPath.toFile();
-    if (targetFolder.exists()) {
-      File[] jarDeps = targetFolder.listFiles();
-      try {
-        for (File file : jarDeps) {
-          file.delete();
-        }
-        targetFolder.delete();
-      } catch (Exception e) {
-        getLog().warn(e.getMessage());
-      }
-
-
-    }
-  }
+  public void doExecute() {}
 
   @Override
   public String getPreviousRunPlaceholder() {

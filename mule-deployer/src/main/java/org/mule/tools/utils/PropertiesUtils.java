@@ -31,7 +31,7 @@ public abstract class PropertiesUtils {
                                                       Map<String, String> properties,
                                                       Boolean overrideProperties) {
     if (properties != null) {
-      if (!overrideProperties) {
+      if (!overrideProperties && originalProperties != null) {
         properties.putAll(originalProperties);
       }
       return properties;

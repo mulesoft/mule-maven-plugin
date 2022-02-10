@@ -6,6 +6,22 @@
  */
 package org.mule.tools.deployment.cloudhub;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.IOException;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,25 +33,6 @@ import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class CloudHubArtifactDeployerTest {
 
@@ -52,7 +49,6 @@ public class CloudHubArtifactDeployerTest {
   private Application applicationMock;
   private CloudHubDeployment deploymentMock;
   private CloudHubArtifactDeployer cloudHubArtifactDeployerSpy;
-  private Map<String, String> originalProperties;
 
   private CloudHubArtifactDeployer cloudHubArtifactDeployer;
 
@@ -76,9 +72,6 @@ public class CloudHubArtifactDeployerTest {
 
     cloudHubArtifactDeployer = new CloudHubArtifactDeployer(deploymentMock, clientMock, logMock);
     cloudHubArtifactDeployerSpy = spy(cloudHubArtifactDeployer);
-
-    originalProperties = new HashMap<>();
-    originalProperties.put("foo", "bar");
   }
 
   @Test(expected = DeploymentException.class)
@@ -172,54 +165,5 @@ public class CloudHubArtifactDeployerTest {
   public void getApplicationNameTest() {
     assertThat("Application name is not the expected", cloudHubArtifactDeployer.getApplicationName(),
                equalTo(FAKE_APPLICATION_NAME));
-  }
-
-  private Application createApplication(String name) {
-    Application app = new Application();
-    app.setDomain("app" + name);
-    return app;
-  }
-
-  @Test
-  public void resolvePropertiesNotSetAndOverrideTrue() {
-    Map<String, String> resolvedProperties = cloudHubArtifactDeployer.resolveProperties(originalProperties, null, true);
-    assertThat("originalProperties should have the same size", resolvedProperties.size(), equalTo(1));
-    assertThat("resolvedProperties should contains the (foo,bar) entry", resolvedProperties, hasEntry("foo", "bar"));
-  }
-
-  @Test
-  public void resolvePropertiesNotSetAndOverrideFalse() {
-    Map<String, String> resolvedProperties = cloudHubArtifactDeployer.resolveProperties(originalProperties, null, false);
-    assertThat("originalProperties should have the same size", resolvedProperties.size(), equalTo(1));
-    assertThat("resolvedProperties should contains the (foo,bar) entry", resolvedProperties, hasEntry("foo", "bar"));
-  }
-
-  @Test
-  public void resolvePropertiesSetAndOverrideTrue() {
-    Map<String, String> properties = new HashMap<>();
-    properties.put("key", "val");
-    properties.put("foo", "lala");
-    Map<String, String> resolvedProperties = cloudHubArtifactDeployer.resolveProperties(originalProperties, properties, true);
-    assertThat("resolvedProperties does not have the expected size", resolvedProperties.size(), equalTo(2));
-    assertThat("resolvedProperties should contains the (key,val) entry", resolvedProperties, hasEntry("key", "val"));
-    assertThat("resolvedProperties should contains the (foo,lala) entry", resolvedProperties, hasEntry("foo", "lala"));
-  }
-
-  @Test
-  public void resolvePropertiesEmptyAndOverride() {
-    Map<String, String> properties = new HashMap<>();
-    Map<String, String> resolvedProperties = cloudHubArtifactDeployer.resolveProperties(originalProperties, properties, true);
-    assertThat("resolvedProperties does not have the expected size", resolvedProperties.size(), equalTo(0));
-  }
-
-  @Test
-  public void resolvePropertiesSetAndOverrideFalse() {
-    Map<String, String> properties = new HashMap<>();
-    properties.put("key", "val");
-    properties.put("foo", "lala");
-    Map<String, String> resolvedProperties = cloudHubArtifactDeployer.resolveProperties(originalProperties, properties, false);
-    assertThat("resolvedProperties does not have the expected size", resolvedProperties.size(), equalTo(2));
-    assertThat("resolvedProperties should contains the (key,val) entry", resolvedProperties, hasEntry("key", "val"));
-    assertThat("resolvedProperties should contains the (foo,bar) entry", resolvedProperties, hasEntry("foo", "bar"));
   }
 }

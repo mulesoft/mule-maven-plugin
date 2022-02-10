@@ -12,6 +12,7 @@ import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 
 import java.util.HashMap;
+import java.io.File;
 import java.util.Map;
 
 import static java.lang.System.getProperty;
@@ -49,6 +50,9 @@ public abstract class AnypointDeployment extends Deployment {
 
   @Parameter
   protected Map<String, String> properties;
+
+  @Parameter(readonly = true)
+  private File propertiesFile;
 
   @Parameter
   protected boolean skipDeploymentVerification = false;
@@ -169,6 +173,19 @@ public abstract class AnypointDeployment extends Deployment {
 
   public void setProperties(Map<String, String> properties) {
     this.properties = properties;
+  }
+
+  /**
+   * Properties file.
+   * 
+   * @return file with properties
+   */
+  public File getPropertiesFile() {
+    return propertiesFile;
+  }
+
+  public void setPropertiesFile(File propertiesFile) {
+    this.propertiesFile = propertiesFile;
   }
 
   /**

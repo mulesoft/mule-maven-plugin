@@ -6,6 +6,8 @@
  */
 package org.mule.tools.deployment.fabric;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import org.mule.tools.client.core.exception.ClientException;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.fabric.RuntimeFabricClient;
@@ -19,13 +21,10 @@ import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.fabric.RuntimeFabricDeploymentVerification;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
 
   private static final Long DEFAULT_RUNTIME_FABRIC_DEPLOYMENT_TIMEOUT = 1200000L;
   public static final int BAD_REQUEST = 400;
-  private DeploymentVerification deploymentVerification;
   private RequestBuilder requestBuilder;
   private RuntimeFabricClient client;
   private final DeployerLog log;
@@ -41,7 +40,6 @@ public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
     this.log = log;
     this.client = client;
     this.deployment = (RuntimeFabricDeployment) deployment;
-    this.deploymentVerification = new RuntimeFabricDeploymentVerification(client);
     this.requestBuilder = new RequestBuilder(this.deployment, this.client);
     if (this.deployment.getDeploymentTimeout() == null) {
       this.deployment.setDeploymentTimeout(DEFAULT_RUNTIME_FABRIC_DEPLOYMENT_TIMEOUT);
@@ -62,8 +60,23 @@ public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
       }
     }
     if (!deployment.getSkipDeploymentVerification()) {
-      checkApplicationHasStarted();
+      checkApplicationHasStarted(getDepoymentId());
     }
+  }
+
+  /**
+   * Retrieves the deployment id through the {@link RequestBuilder}.
+   * 
+   * @return The deployment id or null if it cannot find the application.
+   */
+  public String getDepoymentId() {
+    String deploymentId;
+    try {
+      deploymentId = requestBuilder.getDeploymentId(requestBuilder.buildTarget());
+    } catch (Exception e) {
+      deploymentId = null;
+    }
+    return deploymentId;
   }
 
   private void redeployApplication() throws DeploymentException {
@@ -100,22 +113,19 @@ public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
   }
 
 
-  public void setDeploymentVerification(DeploymentVerification deploymentVerification) {
-    checkArgument(deploymentVerification != null, "The verificator must not be null.");
-    this.deploymentVerification = deploymentVerification;
-  }
-
   public void setRequestBuilder(RequestBuilder requestBuilder) {
     this.requestBuilder = requestBuilder;
   }
 
   /**
-   * Checks if an application in CloudHub has the {@code STARTED_STATUS} status.
+   * Checks if an application in Runtime Fabric has the {@code APPLIED_STATUS} status.
    *
+   * @param deploymentId Id of the deployment to check.
    * @throws DeploymentException In case it timeouts while checking for the status
    */
-  protected void checkApplicationHasStarted() throws DeploymentException {
+  protected void checkApplicationHasStarted(String deploymentId) throws DeploymentException {
     log.info("Checking if application: " + deployment.getApplicationName() + " has started");
-    deploymentVerification.assertDeployment(deployment);
+    DeploymentVerification verification = new RuntimeFabricDeploymentVerification(client, deploymentId);
+    verification.assertDeployment(deployment);
   }
 }

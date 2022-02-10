@@ -6,6 +6,10 @@
  */
 package org.mule.tools.verification.fabric;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,14 +18,8 @@ import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.fabric.RuntimeFabricClient;
 import org.mule.tools.client.fabric.model.DeploymentDetailedResponse;
 import org.mule.tools.client.fabric.model.DeploymentGenericResponse;
-import org.mule.tools.client.fabric.model.Deployments;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class RuntimeFabricDeploymentVerificationTest {
 
@@ -29,7 +27,6 @@ public class RuntimeFabricDeploymentVerificationTest {
   private RuntimeFabricClient clientMock;
   private RuntimeFabricDeploymentVerification verification;
   private Deployment deployment;
-  private Deployments deployments;
   private DeploymentGenericResponse deploymentGenericResponse;
   private DeploymentDetailedResponse deploymentDetailedResponse;
 
@@ -45,11 +42,8 @@ public class RuntimeFabricDeploymentVerificationTest {
     deploymentGenericResponse = new DeploymentGenericResponse();
     deploymentGenericResponse.name = APP_NAME;
     deploymentGenericResponse.id = "1";
-    deployments = new Deployments();
-    deployments.items = newArrayList(deploymentGenericResponse);
-    verification = new RuntimeFabricDeploymentVerification(clientMock);
+    verification = new RuntimeFabricDeploymentVerification(clientMock, deploymentGenericResponse.id);
     when(clientMock.getDeployment(anyString())).thenReturn(deploymentDetailedResponse);
-    when(clientMock.getDeployments()).thenReturn(deployments);
   }
 
   @Test

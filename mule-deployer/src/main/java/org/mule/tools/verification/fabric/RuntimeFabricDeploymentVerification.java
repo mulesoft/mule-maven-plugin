@@ -10,8 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.fabric.RuntimeFabricClient;
 import org.mule.tools.client.fabric.model.DeploymentDetailedResponse;
-import org.mule.tools.client.fabric.model.DeploymentGenericResponse;
-import org.mule.tools.client.fabric.model.Deployments;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.verification.DefaultDeploymentVerification;
 import org.mule.tools.verification.DeploymentVerification;
@@ -21,36 +19,36 @@ import org.mule.tools.verification.DeploymentVerificationStrategy;
 public class RuntimeFabricDeploymentVerification implements DeploymentVerification {
 
   private final RuntimeFabricClient client;
+  private final String deploymentId;
 
   private static final String FAILED_STATUS = "FAILED";
   private static final String APPLIED_STATUS = "APPLIED";
   private static final String STARTED_STATUS = "STARTED";
 
-  public RuntimeFabricDeploymentVerification(RuntimeFabricClient client) {
+  public RuntimeFabricDeploymentVerification(RuntimeFabricClient client, String deploymentId) {
     this.client = client;
+    this.deploymentId = deploymentId;
   }
 
   @Override
   public void assertDeployment(Deployment deployment) throws DeploymentException {
     DefaultDeploymentVerification verification =
-        new DefaultDeploymentVerification(new RuntimeFabricDeploymentVerificationStrategy(deployment));
+        new DefaultDeploymentVerification(new RuntimeFabricDeploymentVerificationStrategy(deployment, deploymentId));
     verification.assertDeployment(deployment);
   }
 
   private class RuntimeFabricDeploymentVerificationStrategy implements DeploymentVerificationStrategy {
 
     private final Deployment deployment;
-    private Deployments deployments;
     private String deploymentId;
 
-    private RuntimeFabricDeploymentVerificationStrategy(Deployment deployment) {
+    private RuntimeFabricDeploymentVerificationStrategy(Deployment deployment, String deploymentId) {
       this.deployment = deployment;
-      deployments = client.getDeployments();
+      this.deploymentId = deploymentId;
     }
 
     @Override
     public Boolean isDeployed(Deployment deployment) {
-      String deploymentId = getDeploymentId(deployment);
       if (deploymentId == null) {
         return false;
       }
@@ -64,19 +62,6 @@ public class RuntimeFabricDeploymentVerification implements DeploymentVerificati
         }
       }
       return false;
-    }
-
-    private String getDeploymentId(Deployment deployment) {
-      if (deploymentId == null) {
-        deployments = client.getDeployments();
-        for (DeploymentGenericResponse dep : deployments) {
-          if (StringUtils.equals(dep.name, deployment.getApplicationName())) {
-            deploymentId = dep.id;
-            return deploymentId;
-          }
-        }
-      }
-      return deploymentId;
     }
 
     @Override

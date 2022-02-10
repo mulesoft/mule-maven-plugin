@@ -29,14 +29,16 @@ import java.util.function.Predicate;
 public class RuntimeFabricDeploymentVerification implements DeploymentVerification {
 
   private final RuntimeFabricClient client;
+  private final String deploymentId;
   private DefaultDeploymentVerification verification;
 
   private static final String FAILED_STATUS = "FAILED";
   private static final String APPLIED_STATUS = "APPLIED";
   private static final String STARTED_STATUS = "STARTED";
 
-  public RuntimeFabricDeploymentVerification(RuntimeFabricClient client) {
+  public RuntimeFabricDeploymentVerification(RuntimeFabricClient client, String deploymentId) {
     this.client = client;
+    this.deploymentId = deploymentId;
     this.verification = new DefaultDeploymentVerification(new RuntimeFabricDeploymentVerificationStrategy());
   }
 
@@ -47,71 +49,32 @@ public class RuntimeFabricDeploymentVerification implements DeploymentVerificati
 
   private class RuntimeFabricDeploymentVerificationStrategy implements DeploymentVerificationStrategy {
 
-    private Deployments deployments;
-    private String deploymentId;
-
-    private RuntimeFabricDeploymentVerificationStrategy() {
-      deployments = client.getDeployments();
-    }
+    private RuntimeFabricDeploymentVerificationStrategy() {}
 
     @Override
 
     public Predicate<Deployment> isDeployed() {
       return (deployment) -> {
-        try {
-          String deploymentId;
-
-          deploymentId = getDeploymentId(deployment);
-
-          if (deploymentId == null) {
-            return false;
-          }
-          DeploymentDetailedResponse response = client.getDeployment(deploymentId);
-          if (response != null) {
-            if (StringUtils.equals(response.status, FAILED_STATUS)) {
-              throw new IllegalStateException("Deployment failed");
-            } else if (StringUtils.equals(response.status, APPLIED_STATUS)
-                || StringUtils.equals(response.status, STARTED_STATUS)) {
-              return true;
-            }
-          }
-        } catch (DeploymentException e) {
-          e.printStackTrace();
+        if (deploymentId == null) {
           return false;
+        }
+        DeploymentDetailedResponse response = client.getDeployment(deploymentId);
+        if (response != null) {
+          if (StringUtils.equals(response.status, FAILED_STATUS)) {
+            throw new IllegalStateException("Deployment failed");
+          } else if (StringUtils.equals(response.status, APPLIED_STATUS)
+              || StringUtils.equals(response.status, STARTED_STATUS)) {
+            return true;
+          }
         }
         return false;
       };
     }
 
-    private String getDeploymentId(Deployment deployment) throws DeploymentException {
-      RuntimeFabricDeployment deploymentRTF = (RuntimeFabricDeployment) deployment;
-      String targetName = deploymentRTF.getTarget();
-      JsonArray targets = client.getTargets();
-      String targetID = null;
-      if (targets != null) {
-        targetID = RequestBuilder.getTargetId(targets, targetName);
-      }
-      if (deploymentId == null) {
-        deployments = client.getDeployments();
-        for (DeploymentGenericResponse dep : deployments) {
-          if (StringUtils.equals(dep.name, deploymentRTF.getApplicationName()) && (targets == null ||
-              StringUtils.equals(targetID, dep.target.targetId))) {
-            deploymentId = dep.id;
-            return deploymentId;
-          }
-        }
-      }
-      return deploymentId;
-    }
-
     @Override
     public Consumer<Deployment> onTimeout() {
       return deployment -> {
-        try {
-          client.getDeployment(getDeploymentId(deployment));
-        } catch (DeploymentException e) {
-          e.printStackTrace();
-        }
+        client.getDeployment(deploymentId);
       };
     }
   }

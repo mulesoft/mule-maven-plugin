@@ -37,7 +37,6 @@ public class RuntimeFabricDeploymentVerificationTest {
   private RuntimeFabricClient clientMock;
   private RuntimeFabricDeploymentVerification verification;
   private RuntimeFabricDeployment deployment;
-  private Deployments deployments;
   private DeploymentGenericResponse deploymentGenericResponse;
   private DeploymentDetailedResponse deploymentDetailedResponse;
 
@@ -56,11 +55,8 @@ public class RuntimeFabricDeploymentVerificationTest {
     deploymentGenericResponse.id = "1";
     deploymentGenericResponse.target = new Target();
     deploymentGenericResponse.target.setTargetId("8d7959fc-5405-43e9-9339-6df8d1c8c1d7");
-    deployments = new Deployments();
-    deployments.items = newArrayList(deploymentGenericResponse);
-    verification = new RuntimeFabricDeploymentVerification(clientMock);
+    verification = new RuntimeFabricDeploymentVerification(clientMock, deploymentGenericResponse.id);
     when(clientMock.getDeployment(anyString())).thenReturn(deploymentDetailedResponse);
-    when(clientMock.getDeployments()).thenReturn(deployments);
   }
 
   @Test

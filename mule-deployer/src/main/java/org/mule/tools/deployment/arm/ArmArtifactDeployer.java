@@ -11,6 +11,8 @@ package org.mule.tools.deployment.arm;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.io.IOException;
+
 import org.mule.tools.client.arm.ApplicationMetadata;
 import org.mule.tools.client.arm.ArmClient;
 import org.mule.tools.client.core.exception.DeploymentException;
@@ -18,9 +20,9 @@ import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.deployment.artifact.ArtifactDeployer;
 import org.mule.tools.utils.DeployerLog;
+import org.mule.tools.utils.PropertiesUtils;
 import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.arm.ArmDeploymentVerification;
-
 
 /**
  * Deploys mule artifacts to ARM, using the {@link ArmClient}.
@@ -53,16 +55,26 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
    * Retrieves the application metadata based on the deployment configuration.
    * 
    * @return The application metadata
+   * @throws DeploymentException
    */
-  public ApplicationMetadata getApplicationMetadata() {
-    return new ApplicationMetadata(deployment.getArtifact(), deployment.getApplicationName(), deployment.getTargetType(),
-                                   deployment.getTarget(), deployment.getProperties());
+  public ApplicationMetadata getApplicationMetadata() throws DeploymentException {
+    try {
+      return new ApplicationMetadata(deployment.getArtifact(), deployment.getApplicationName(),
+                                     deployment.getTargetType(),
+                                     deployment.getTarget(),
+                                     PropertiesUtils.resolvePropertiesFromFile(deployment.getProperties(),
+                                                                               deployment.getPropertiesFile(),
+                                                                               false));
+    } catch (IOException e) {
+      throw new DeploymentException(e.getMessage(), e);
+    }
   }
 
   /**
    * Returns the value of the property failIfNotExists. The default value is true.
    * 
-   * @return If set in the deployment configuration, the failIfNotExists property value. Otherwise, it returns true.
+   * @return If set in the deployment configuration, the failIfNotExists property
+   *         value. Otherwise, it returns true.
    */
   public boolean isFailIfNotExists() {
     return deployment.isFailIfNotExists().orElse(true);
@@ -79,7 +91,8 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
   }
 
   /**
-   * Deploys the application specified in the {@link Deployment} to ARM through the {@link ArmClient}.
+   * Deploys the application specified in the {@link Deployment} to ARM through
+   * the {@link ArmClient}.
    *
    * @throws DeploymentException
    */
@@ -102,9 +115,9 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
     verification.assertDeployment(deployment);
   }
 
-
   /**
-   * Undeploys the application specified in the {@link Deployment} to ARM through the {@link ArmClient}.
+   * Undeploys the application specified in the {@link Deployment} to ARM through
+   * the {@link ArmClient}.
    *
    * @throws DeploymentException
    */
@@ -114,7 +127,8 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
   }
 
   /**
-   * Redeploys the application specified in the {@link Deployment} to ARM through the {@link ArmClient}.
+   * Redeploys the application specified in the {@link Deployment} to ARM through
+   * the {@link ArmClient}.
    *
    * @throws DeploymentException
    */
@@ -130,8 +144,9 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
    * Retrieves the application id through the {@link ArmClient}.
    * 
    * @return The application id or null if it cannot find the application.
+   * @throws DeploymentException
    */
-  public Integer getApplicationId() {
+  public Integer getApplicationId() throws DeploymentException {
     if (applicationId == null) {
       applicationId = client.findApplicationId(getApplicationMetadata());
     }
@@ -147,7 +162,7 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
     return deployment.getApplicationName();
   }
 
-  public DeploymentVerification getDeploymentVerification() {
+  public DeploymentVerification getDeploymentVerification() throws DeploymentException {
     return new ArmDeploymentVerification(client, getApplicationId());
   }
 }

@@ -30,7 +30,7 @@ import org.junit.Before;
 public class MojoTest implements SettingsConfigurator {
 
   protected static final String[] excludes =
-      new String[] {".placeholder", "log.txt", CompileMojo.EXT_MODEL_LOADER_DEPENDENCIES_TARGET};
+      new String[] {".placeholder", "log.txt"};
   protected static final String[] excludesCompile = ArrayUtils.addAll(excludes, "maven-status");
 
   protected static final String TARGET_FOLDER_NAME = "target";

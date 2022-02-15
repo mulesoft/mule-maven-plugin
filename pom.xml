@@ -33,6 +33,7 @@
     </organization>
 
     <modules>
+    	<module>mule-extension-model-loader</module>
         <module>mule-packager</module>
         <module>mule-classloader-model</module>
         <module>mule-deployer</module>

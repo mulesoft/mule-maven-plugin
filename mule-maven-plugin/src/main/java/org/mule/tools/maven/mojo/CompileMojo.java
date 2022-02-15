@@ -76,44 +76,44 @@ public class CompileMojo extends AbstractMuleMojo {
     }
   }
 
-  private void addJarsToClasspath() throws IOException {
-    Path targetDirPath = getAstDepsFolder();
-    File targetFile = targetDirPath.toFile();
-    if (!targetFile.exists()) {
-      targetFile.mkdir();
-    }
-    File dependenciesDir = targetDirPath.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).toFile();
-    extractDependencies(targetDirPath);
-    File[] jarDeps = dependenciesDir.listFiles(file -> file.getAbsolutePath().endsWith("jar"));
-    for (File file : jarDeps) {
-      descriptor.getClassRealm().addURL(file.toURI().toURL());
-    }
-  }
+  // private void addJarsToClasspath() throws IOException {
+  // Path targetDirPath = getAstDepsFolder();
+  // File targetFile = targetDirPath.toFile();
+  // if (!targetFile.exists()) {
+  // targetFile.mkdir();
+  // }
+  // File dependenciesDir = targetDirPath.resolve(EXT_MODEL_LOADER_DEPENDENCIES_FOLDER).toFile();
+  // extractDependencies(targetDirPath);
+  // File[] jarDeps = dependenciesDir.listFiles(file -> file.getAbsolutePath().endsWith("jar"));
+  // for (File file : jarDeps) {
+  // descriptor.getClassRealm().addURL(file.toURI().toURL());
+  // }
+  // }
 
-  private void extractDependencies(Path targetDirPath) throws IOException {
-    org.apache.maven.artifact.Artifact mmmp = project.getPluginArtifactMap().get("org.mule.tools.maven:mule-maven-plugin");
-    Path extensionModelLoaderDepsPath =
-        Paths.get((session.getLocalRepository().getBasedir())).resolve("org").resolve("mule").resolve("tools")
-            .resolve("maven")
-            .resolve("mule-extension-model-loader")
-            .resolve(mmmp.getVersion())
-            .resolve("mule-extension-model-loader-" + mmmp.getVersion() + "-dependencies.jar");
-    ZipFile dependenciesJar = new ZipFile(extensionModelLoaderDepsPath.toFile());
-    List<? extends ZipEntry> entries = dependenciesJar.stream()
-        .sorted(Comparator.comparing(ZipEntry::getName))
-        .collect(Collectors.toList());
-    for (ZipEntry entry : entries) {
-      Path entryDest = targetDirPath.resolve(entry.getName());
-      if (!Files.exists(entryDest)) {
-        if (entry.isDirectory()) {
-          Files.createDirectory(entryDest);
-          continue;
-        }
-        Files.copy(dependenciesJar.getInputStream(entry), entryDest);
-      }
-    }
-    dependenciesJar.close();
-  }
+  // private void extractDependencies(Path targetDirPath) throws IOException {
+  // org.apache.maven.artifact.Artifact mmmp = project.getPluginArtifactMap().get("org.mule.tools.maven:mule-maven-plugin");
+  // Path extensionModelLoaderDepsPath =
+  // Paths.get((session.getLocalRepository().getBasedir())).resolve("org").resolve("mule").resolve("tools")
+  // .resolve("maven")
+  // .resolve("mule-extension-model-loader")
+  // .resolve(mmmp.getVersion())
+  // .resolve("mule-extension-model-loader-" + mmmp.getVersion() + "-dependencies.jar");
+  // ZipFile dependenciesJar = new ZipFile(extensionModelLoaderDepsPath.toFile());
+  // List<? extends ZipEntry> entries = dependenciesJar.stream()
+  // .sorted(Comparator.comparing(ZipEntry::getName))
+  // .collect(Collectors.toList());
+  // for (ZipEntry entry : entries) {
+  // Path entryDest = targetDirPath.resolve(entry.getName());
+  // if (!Files.exists(entryDest)) {
+  // if (entry.isDirectory()) {
+  // Files.createDirectory(entryDest);
+  // continue;
+  // }
+  // Files.copy(dependenciesJar.getInputStream(entry), entryDest);
+  // }
+  // }
+  // dependenciesJar.close();
+  // }
 
   private boolean hasDomain() {
     if (project.getDependencies() != null) {
@@ -136,7 +136,7 @@ public class CompileMojo extends AbstractMuleMojo {
   }
 
   public ArtifactAst getArtifactAst() throws IOException, ConfigurationException {
-    addJarsToClasspath();
+    // addJarsToClasspath();
 
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
                                                  project.getDependencies(), Paths.get(project.getBuild().getDirectory()));

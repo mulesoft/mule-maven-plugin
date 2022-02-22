@@ -16,14 +16,13 @@ import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.api.model.BundleScope;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.util.Project;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class DependencyProject implements Project {
 
-  private MavenProject mavenProject;
+  private final MavenProject mavenProject;
 
   public DependencyProject(MavenProject mavenProject) {
     this.mavenProject = mavenProject;
@@ -31,7 +30,7 @@ public class DependencyProject implements Project {
 
   @Override
   public List<ArtifactCoordinates> getDependencies() {
-    return mavenProject.getDependencies().stream().map(ArtifactUtils::toArtifactCoordinates).collect(Collectors.toList());
+    return mavenProject.getArtifacts().stream().map(ArtifactUtils::toArtifactCoordinates).collect(Collectors.toList());
   }
 
   @Override

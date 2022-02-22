@@ -50,13 +50,13 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
   @Override
   protected void additionalValidation() throws ValidationException {
     Set<ArtifactCoordinates> domains =
-        projectInformation.getProject().getDependencies().stream().filter(d -> MULE_DOMAIN.equals(d.getClassifier()))
+        projectInformation.getProject().getDirectDependencies().stream().filter(d -> MULE_DOMAIN.equals(d.getClassifier()))
             .collect(Collectors.toSet());
 
     validateDomain(domains);
 
     List<ArtifactCoordinates> applications =
-        projectInformation.getProject().getDependencies().stream().filter(d -> !MULE_DOMAIN.equals(d.getClassifier()))
+        projectInformation.getProject().getDirectDependencies().stream().filter(d -> !MULE_DOMAIN.equals(d.getClassifier()))
             .collect(Collectors.toList());
 
     validateApplications(domains.iterator().next(), applications);

@@ -76,6 +76,17 @@ public class ArtifactUtils {
   }
 
   /**
+   * Converts a {@link org.apache.maven.artifact.Artifact} instance to a {@link ArtifactCoordinates} instance.
+   *
+   * @param artifact the dependency to be converted.
+   * @return the corresponding {@link ArtifactCoordinates} instance.
+   */
+  public static ArtifactCoordinates toArtifactCoordinates(org.apache.maven.artifact.Artifact artifact) {
+    return new ArtifactCoordinates(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
+                                   artifact.getType(), artifact.getClassifier(), artifact.getScope());
+  }
+
+  /**
    * Converts a {@link ArtifactCoordinates} instance to a {@link org.mule.maven.client.api.model.BundleDescriptor} instance.
    *
    * @param artifactCoordinates the artifact coordinates to be converted.

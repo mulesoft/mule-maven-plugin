@@ -42,7 +42,7 @@ public class DependenciesFilterTest {
     projectMock = mock(Project.class);
     nodeMock = new ProjectDependencyNode(projectMock, mock(ProjectBuilder.class));
     projectMockDependencies = newArrayList(artifactCoordinates_a, artifactCoordinates_b);
-    when(projectMock.getDependencies()).thenReturn(projectMockDependencies);
+    when(projectMock.getDirectDependencies()).thenReturn(projectMockDependencies);
   }
 
   @Test

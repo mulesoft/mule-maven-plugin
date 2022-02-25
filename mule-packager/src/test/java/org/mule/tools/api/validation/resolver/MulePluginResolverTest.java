@@ -49,7 +49,7 @@ public class MulePluginResolverTest {
     dependency = createDependencyWithClassifierAndScope(MULE_PLUGIN_CLASSIFIER, COMPILE_SCOPE);
     Map<ArtifactCoordinates, List<ArtifactCoordinates>> projectStructure = createMainResolvableProjectDependencyTree(dependency);
     setUpProjectBuilderMock(projectStructure, projectBuilderMock);
-    when(projectMock.getDependencies()).thenReturn(projectStructure.entrySet().stream().filter(entry -> {
+    when(projectMock.getDirectDependencies()).thenReturn(projectStructure.entrySet().stream().filter(entry -> {
       ArtifactCoordinates coordinates = entry.getKey();
       return coordinates.getGroupId().equals(dependency.getGroupId()) && coordinates.getArtifactId()
           .equals(dependency.getArtifactId());

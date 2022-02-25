@@ -18,7 +18,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.maven.client.api.model.BundleScope;
 import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.util.ArtifactUtils;
@@ -26,7 +25,6 @@ import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.util.Project;
-import org.mule.tools.api.validation.resolver.MulePluginResolver;
 
 import java.io.File;
 import java.io.IOException;
@@ -306,7 +304,7 @@ public class DomainBundleProjectValidatorTest {
 
     List<ArtifactCoordinates> applicationDependencies = buildApplicationDependenciesWithDomain(applicationDomain);
 
-    when(dependencyProjectMock.getDependencies()).thenReturn(applicationDependencies);
+    when(dependencyProjectMock.getDirectDependencies()).thenReturn(applicationDependencies);
 
     DomainBundleProjectValidator validatorSpy =
         spy(new DomainBundleProjectValidator(defaultProjectInformation, aetherMavenClientMock));

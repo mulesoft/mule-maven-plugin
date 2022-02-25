@@ -204,7 +204,7 @@ public class ResolverTestHelper {
       throws ProjectBuildingException {
     for (Map.Entry entry : projectStructure.entrySet()) {
       Project projectMock = mock(Project.class);
-      when(projectMock.getDependencies()).thenReturn((List<ArtifactCoordinates>) entry.getValue());
+      when(projectMock.getDirectDependencies()).thenReturn((List<ArtifactCoordinates>) entry.getValue());
       when(projectBuilderMock.buildProject((ArtifactCoordinates) entry.getKey())).thenReturn(projectMock);
     }
   }

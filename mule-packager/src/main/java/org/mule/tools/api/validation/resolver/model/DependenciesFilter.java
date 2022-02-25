@@ -38,7 +38,7 @@ public class DependenciesFilter {
    * @return The filtered list of artifacts
    */
   public Set<ArtifactCoordinates> filter(ProjectDependencyNode node) {
-    return node.getProject().getDependencies().stream()
+    return node.getProject().getDirectDependencies().stream()
         .filter(satisfies(classifier, scope, DEFAULT_TYPE))
         .collect(Collectors.toSet());
   }

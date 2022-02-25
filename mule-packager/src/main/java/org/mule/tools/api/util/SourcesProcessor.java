@@ -165,7 +165,7 @@ public class SourcesProcessor {
     return new Project() {
 
       @Override
-      public List<ArtifactCoordinates> getDependencies() {
+      public List<ArtifactCoordinates> getDirectDependencies() {
         return classLoaderModel.getDependencies()
             .stream()
             .map(Artifact::getArtifactCoordinates)

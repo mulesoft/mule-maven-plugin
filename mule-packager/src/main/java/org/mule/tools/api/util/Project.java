@@ -17,7 +17,11 @@ import java.util.List;
 
 public interface Project {
 
-  List<ArtifactCoordinates> getDependencies();
+  List<ArtifactCoordinates> getDirectDependencies();
+
+  default List<ArtifactCoordinates> getDependencies() {
+    return getDirectDependencies();
+  }
 
   List<BundleDependency> getBundleDependencies();
 }

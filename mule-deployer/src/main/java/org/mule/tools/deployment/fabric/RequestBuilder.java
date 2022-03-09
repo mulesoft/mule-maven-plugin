@@ -25,7 +25,9 @@ import org.mule.tools.client.fabric.model.Deployments;
 import org.mule.tools.client.fabric.model.Target;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
 import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
+import org.mule.tools.utils.PropertiesUtils;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,10 +56,16 @@ public class RequestBuilder {
     deploymentRequest.setApplication(applicationRequest);
     deploymentRequest.setTarget(target);
 
-
     Map<String, Object> applicationPropertiesService = new HashMap<>();
     Map<String, Object> properties = new HashMap<>();
-    properties.put("properties", deployment.getProperties());
+    try {
+      properties.put("properties",
+                     PropertiesUtils.resolvePropertiesFromFile(deployment.getProperties(),
+                                                               deployment.getPropertiesFile(), false));
+    } catch (IOException e) {
+      throw new DeploymentException(e.getMessage(), e);
+    }
+
     properties.put("secureProperties", deployment.getSecureProperties());
     properties.put("applicationName", deployment.getApplicationName());
     applicationPropertiesService.put("mule.agent.application.properties.service", properties);
@@ -72,8 +80,8 @@ public class RequestBuilder {
     target.setProvider(deployment.getProvider());
     target.setTargetId(resolveTargetId());
     target.setReplicas(deployment.getReplicas());
-    RuntimeFabricDeploymentSettings resolvedDeploymentSettings =
-        resolveDeploymentSettings(deployment.getDeploymentSettings());
+    RuntimeFabricDeploymentSettings resolvedDeploymentSettings = resolveDeploymentSettings(
+                                                                                           deployment.getDeploymentSettings());
     target.setDeploymentSettings(resolvedDeploymentSettings);
     return target;
   }
@@ -182,7 +190,8 @@ public class RequestBuilder {
         return deployment.id;
       }
     }
-    throw new IllegalStateException("Could not find deployment ID. Please check if there is an application with the same name under a different environment.");
+    throw new IllegalStateException(
+                                    "Could not find deployment ID. Please check if there is an application with the same name under a different environment.");
   }
 
   public DeploymentModify buildDeploymentModify() throws DeploymentException {
@@ -197,15 +206,22 @@ public class RequestBuilder {
     return deploymentModify;
   }
 
-  private ApplicationModify buildApplicationModify() {
+  private ApplicationModify buildApplicationModify() throws DeploymentException {
     AssetReference assetReference = buildAssetReference();
     ApplicationModify applicationModify = new ApplicationModify();
     applicationModify.setRef(assetReference);
 
-    if (deployment.getProperties() != null) {
+    if (deployment.getProperties() != null || deployment.getPropertiesFile() != null) {
       Map<String, Object> applicationPropertiesService = new HashMap<>();
       Map<String, Object> properties = new HashMap<>();
-      properties.put("properties", deployment.getProperties());
+      try {
+        properties.put("properties",
+                       PropertiesUtils.resolvePropertiesFromFile(deployment.getProperties(), deployment.getPropertiesFile(),
+                                                                 false));
+      } catch (IOException e) {
+        throw new DeploymentException(e.getMessage(), e);
+      }
+
       properties.put("secureProperties", deployment.getSecureProperties());
       properties.put("applicationName", deployment.getApplicationName());
       applicationPropertiesService.put("mule.agent.application.properties.service", properties);

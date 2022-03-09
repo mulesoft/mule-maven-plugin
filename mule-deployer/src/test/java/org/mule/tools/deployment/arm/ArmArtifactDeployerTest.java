@@ -122,7 +122,7 @@ public class ArmArtifactDeployerTest {
   }
 
   @Test
-  public void getApplicationIdTest() {
+  public void getApplicationIdTest() throws DeploymentException {
     assertThat("Application id is not the expected", armArtifactDeployer.getApplicationId(), equalTo(FAKE_APPLICATION_ID));
   }
 
@@ -132,7 +132,7 @@ public class ArmArtifactDeployerTest {
   }
 
   @Test
-  public void getApplicationMetadataTest() throws IOException {
+  public void getApplicationMetadataTest() throws IOException, DeploymentException {
     File artifactFile = temporaryFolder.newFile();
     when(deploymentMock.getArtifact()).thenReturn(artifactFile);
 

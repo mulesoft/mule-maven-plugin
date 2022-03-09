@@ -21,9 +21,12 @@ import org.mule.tools.deployment.artifact.ArtifactDeployer;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
+import org.mule.tools.utils.PropertiesUtils;
 import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -78,7 +81,8 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   }
 
   /**
-   * Deploys an application to CloudHub. It creates the application in CloudHub, uploads its contents and triggers its start.
+   * Deploys an application to CloudHub. It creates the application in CloudHub,
+   * uploads its contents and triggers its start.
    *
    * @throws DeploymentException
    */
@@ -94,7 +98,8 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   /**
    * Deploys an application to CloudHub, stopping it.
    *
-   * @throws DeploymentException If the application does not exist or some internal error in CloudHub happens
+   * @throws DeploymentException If the application does not exist or some
+   *                             internal error in CloudHub happens
    */
   @Override
   public void undeployApplication() throws DeploymentException {
@@ -116,9 +121,11 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   /**
    * Creates or update an application in CloudHub.
    * <p>
-   * If the domain name is available it gets created. Otherwise, it tries to update the existent application.
+   * If the domain name is available it gets created. Otherwise, it tries to
+   * update the existent application.
    *
-   * @throws DeploymentException If the application is not available and cannot be updated
+   * @throws DeploymentException If the application is not available and cannot be
+   *                             updated
    */
   protected void createOrUpdateApplication() throws DeploymentException {
     configureObjectStore();
@@ -136,8 +143,10 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
   /**
    * Creates the application in CloudHub.
+   * 
+   * @throws DeploymentException
    */
-  protected void createApplication() {
+  protected void createApplication() throws DeploymentException {
     log.info("Creating application: " + deployment.getApplicationName());
     User user = client.getMe().user;
     Application application = getApplication(null);
@@ -150,8 +159,12 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   /**
    * Updates the application in CloudHub.
    *
-   * @throws DeploymentException In case the application is not available for the current user or some other internal in CloudHub
-   *         happens
+   * @throws DeploymentException   In case the application is not available for
+   *                               the current user or some other internal in
+   *                               CloudHub
+   *                               happens
+   * @throws IOException
+   * @throws FileNotFoundException
    */
   protected void updateApplication() throws DeploymentException {
     Application currentApplication = client.getApplications(deployment.getApplicationName());
@@ -165,7 +178,8 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   }
 
   /**
-   * Starts an application in CloudHub. The application is supposed to be already created and its contents should have already
+   * Starts an application in CloudHub. The application is supposed to be already
+   * created and its contents should have already
    * been uploaded.
    */
   protected void startApplication() {
@@ -183,8 +197,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     deploymentVerification.assertDeployment(deployment);
   }
 
-
-  private Application getApplication(Application originalApplication) {
+  private Application getApplication(Application originalApplication) throws DeploymentException {
     Application application = new Application();
     Integer workersAmount;
     String workerType;
@@ -192,10 +205,17 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
     if (originalApplication != null) {
       muleVersion.setVersion(deployment.getMuleVersion().get());
-      Map<String, String> resolvedProperties = resolveProperties(originalApplication.getProperties(),
-                                                                 deployment.getProperties(), deployment.overrideProperties());
-      application.setProperties(resolvedProperties);
-
+      try {
+        Map<String, String> resolvedProperties = PropertiesUtils.resolveProperties(originalApplication.getProperties(),
+                                                                                   PropertiesUtils
+                                                                                       .resolvePropertiesFromFile(deployment
+                                                                                           .getProperties(), deployment.getPropertiesFile(),
+                                                                                                                  false),
+                                                                                   deployment.overrideProperties());
+        application.setProperties(resolvedProperties);
+      } catch (IOException e) {
+        throw new DeploymentException(e.getMessage(), e);
+      }
       if (isBlank(deployment.getRegion())) {
         application.setRegion(originalApplication.getRegion());
       } else {
@@ -207,9 +227,10 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
         muleVersion.setUpdateId(originalApplication.getMuleVersion().getLatestUpdateId());
       }
 
-      workersAmount = (deployment.getWorkers() == null) ? originalApplication.getWorkers().getAmount() : deployment.getWorkers();
-      workerType =
-          isBlank(deployment.getWorkerType()) ? originalApplication.getWorkers().getType().getName() : deployment.getWorkerType();
+      workersAmount = (deployment.getWorkers() == null) ? originalApplication.getWorkers().getAmount()
+          : deployment.getWorkers();
+      workerType = isBlank(deployment.getWorkerType()) ? originalApplication.getWorkers().getType().getName()
+          : deployment.getWorkerType();
 
     } else {
       muleVersion.setVersion(deployment.getMuleVersion().get().split("-")[0]);
@@ -232,17 +253,6 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     application.setPersistentQueues(deployment.getPersistentQueues());
 
     return application;
-  }
-
-  protected Map<String, String> resolveProperties(Map<String, String> originalProperties, Map<String, String> properties,
-                                                  boolean overrideProperties) {
-    if (properties != null) {
-      if (!overrideProperties) {
-        properties.putAll(originalProperties);
-      }
-      originalProperties = properties;
-    }
-    return originalProperties;
   }
 
   private Workers getWorkers(Integer amount, String type) {

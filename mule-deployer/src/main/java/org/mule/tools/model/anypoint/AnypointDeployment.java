@@ -15,6 +15,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,9 +64,11 @@ public abstract class AnypointDeployment extends Deployment {
   @Parameter
   protected Map<String, String> properties;
 
+  @Parameter(readonly = true)
+  private File propertiesFile;
+
   @Parameter
   protected boolean skipDeploymentVerification = false;
-
 
   /**
    * Anypoint Platform username.
@@ -157,7 +160,8 @@ public abstract class AnypointDeployment extends Deployment {
   }
 
   /**
-   * Business group for deploymentConfiguration, if it is a nested one its format should be first.second.
+   * Business group for deploymentConfiguration, if it is a nested one its format
+   * should be first.second.
    *
    * @since 2.1
    */
@@ -183,7 +187,8 @@ public abstract class AnypointDeployment extends Deployment {
   }
 
   /**
-   * Maven server with Anypoint Platform credentials. This is only needed if you want to use your credentials stored in your Maven
+   * Maven server with Anypoint Platform credentials. This is only needed if you
+   * want to use your credentials stored in your Maven
    * settings.xml file. This is NOT your Mule server name.
    *
    * @since 2.2
@@ -207,6 +212,20 @@ public abstract class AnypointDeployment extends Deployment {
 
   public void setProperties(Map<String, String> properties) {
     this.properties = properties;
+  }
+
+  /**
+   * Properties file.
+   * 
+   * @return file with properties
+   */
+
+  public File getPropertiesFile() {
+    return propertiesFile;
+  }
+
+  public void setPropertiesFile(File propertiesFile) {
+    this.propertiesFile = propertiesFile;
   }
 
   /**

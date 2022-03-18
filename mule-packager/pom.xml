@@ -46,18 +46,6 @@
             <groupId>org.mule.tools.maven</groupId>
             <artifactId>mule-extension-model-loader</artifactId>
             <version>${project.version}</version>
-            <classifier>dependencies</classifier>
-            <exclusions>
-        		<exclusion>
-            		<groupId>*</groupId>
-            		<artifactId>*</artifactId>
-        		</exclusion>
-        	</exclusions>
-        </dependency>
-		<dependency>
-            <groupId>org.mule.tools.maven</groupId>
-            <artifactId>mule-extension-model-loader</artifactId>
-            <version>${project.version}</version>
         </dependency>
         
         <dependency>

@@ -49,9 +49,6 @@ public abstract class AbstractMuleMojo extends AbstractGenericMojo {
 
   protected static ResourcesContent resourcesContent;
 
-  public static final String EXT_MODEL_LOADER_DEPENDENCIES_TARGET = "jars";
-  public static final String EXT_MODEL_LOADER_DEPENDENCIES_FOLDER = "alternateLocation";
-
 
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (!hasExecutedBefore()) {
@@ -75,8 +72,4 @@ public abstract class AbstractMuleMojo extends AbstractGenericMojo {
     return new MulePluginResolver(builder, project);
   }
 
-  protected Path getAstDepsFolder() {
-    return Paths.get(System.getProperty("java.io.tmpdir")).resolve("mmp-"
-        + project.getPluginArtifactMap().get("org.mule.tools.maven:mule-maven-plugin").getVersion() + "-ast-deps");
-  }
 }

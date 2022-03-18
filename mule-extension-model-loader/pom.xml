@@ -17,53 +17,6 @@
         <coverageLineLimit>0.61</coverageLineLimit>
         <coverageBranchLimit>0.41</coverageBranchLimit>
     </properties>
- <build>
-
-<plugins>
-	<plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.2.0</version>
-        <executions>
-          <execution>
-            <id>copy-dependencies</id>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>false</overWriteSnapshots>
-              <overWriteIfNewer>true</overWriteIfNewer>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.2.0</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <configuration>
-            <classesDirectory>${project.build.directory}</classesDirectory>
-              <classifier>dependencies</classifier>
-          <includes>
-            <include>/alternateLocation/</include>
-          </includes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-</plugins>   
-
-
- 
- </build>
     <dependencies>
         <dependency>
             <groupId> org.mule.runtime</groupId>

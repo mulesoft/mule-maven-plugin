@@ -11,8 +11,10 @@ import org.mule.runtime.container.internal.ContainerClassLoaderFactory;
 import org.mule.runtime.container.internal.DefaultModuleRepository;
 import org.mule.runtime.container.internal.JreModuleDiscoverer;
 import org.mule.runtime.container.internal.ModuleDiscoverer;
+import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 import org.mule.runtime.deployment.model.api.artifact.extension.ExtensionModelDiscoverer;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
+import org.mule.runtime.extension.api.extension.XmlSdk1ExtensionModelProvider;
 import org.mule.runtime.module.artifact.api.classloader.ArtifactClassLoader;
 import org.mule.tooling.api.ExtensionModelLoader;
 
@@ -60,6 +62,9 @@ public class DefaultExtensionModelLoader implements ExtensionModelLoader {
   @Override
   public Set<ExtensionModel> getRuntimeExtensionModels() {
     Set<ExtensionModel> runtimeExtensionModels = extensionModelDiscoverer.discoverRuntimeExtensionModels();
+    runtimeExtensionModels.add(MuleExtensionModelProvider.getExtensionModel());
+    runtimeExtensionModels.add(XmlSdk1ExtensionModelProvider.getExtensionModel());
+    runtimeExtensionModels.add(MuleExtensionModelProvider.getTlsExtensionModel());
     runtimeExtensionModels.add(MuleEeExtensionModelProvider.getExtensionModel());
     runtimeExtensionModels.add(BatchExtensionModelProvider.getExtensionModel());
     runtimeExtensionModels.add(BtiExtensionModelProvider.getExtensionModel());

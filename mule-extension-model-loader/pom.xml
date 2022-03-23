@@ -21,7 +21,7 @@
         <dependency>
             <groupId> org.mule.runtime</groupId>
             <artifactId>mule-module-logging</artifactId>
-            <version>${mule.version}</version>
+            <version>4.5.0-20220221</version>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>

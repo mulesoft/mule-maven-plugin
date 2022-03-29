@@ -50,6 +50,7 @@ import org.mule.tooling.api.ToolingException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,7 +98,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
   }
 
   @Override
-  public Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> loadExtensionData(File pluginJarFile) {
+  public PluginResources loadExtensionData(File pluginJarFile) {
     long startTime = nanoTime();
     org.mule.runtime.module.artifact.api.descriptor.BundleDescriptor bundleDescriptor =
         readArtifactPluginDescriptor(pluginJarFile).getBundleDescriptor();
@@ -114,7 +115,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
         .setVersion(bundleDescriptor.getVersion())
         .setClassifier(bundleDescriptor.getClassifier().orElse(null))
         .build();
-    Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> extensionInformationOptional =
+    PluginResources extensionInformationOptional =
         withTemporaryApplication(pluginDescriptor, classLoaderModelAttributes,
                                  (artifactPluginDescriptor,
                                   toolingArtifactClassLoader,
@@ -221,10 +222,10 @@ public class DefaultExtensionModelService implements ExtensionModelService {
 
 
   @Override
-  public Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> loadExtensionData(BundleDescriptor pluginDescriptor,
+  public PluginResources loadExtensionData(BundleDescriptor pluginDescriptor,
                                                                                MuleVersion muleVersion) {
     long startTime = nanoTime();
-    Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> extensionInformationOptional =
+    PluginResources extensionInformationOptional =
         withTemporaryApplication(pluginDescriptor, emptyMap(),
                                  (artifactPluginDescriptor,
                                   toolingArtifactClassLoader,
@@ -239,7 +240,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     return extensionInformationOptional;
   }
 
-  private Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> withTemporaryApplication(BundleDescriptor pluginDescriptor,
+  private PluginResources withTemporaryApplication(BundleDescriptor pluginDescriptor,
                                                                                        Map<String, Object> classLoaderModelLoaderAttributes,
                                                                                        TemporaryApplicationFunction action,
                                                                                        MuleVersion muleVersion) {
@@ -324,7 +325,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
   @FunctionalInterface
   interface TemporaryApplicationFunction {
 
-    Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> call(ArtifactPluginDescriptor artifactPluginDescriptor,
+    PluginResources call(ArtifactPluginDescriptor artifactPluginDescriptor,
                                                              ToolingArtifactClassLoader toolingArtifactClassLoader,
                                                              Map<String, String> properties);
   }
@@ -335,16 +336,19 @@ public class DefaultExtensionModelService implements ExtensionModelService {
                                                  parent.getClassLoaderLookupPolicy(), artifactPluginClassLoaders);
   }
 
-  private Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> loadExtensionData(ArtifactPluginDescriptor artifactPluginDescriptor,
+  private PluginResources loadExtensionData(ArtifactPluginDescriptor artifactPluginDescriptor,
                                                                                 ToolingArtifactClassLoader toolingArtifactClassLoader,
                                                                                 Map<String, String> properties) {
     try {
+      ArrayList<URL> resources = new ArrayList<URL>();
+      artifactPluginDescriptor.getClassLoaderModel().getExportedResources().forEach(resource->
+      resources.add(toolingArtifactClassLoader.getRegionClassLoader().getResource(resource)));
       MuleExtensionModelLoaderManager extensionModelLoaderRepository =
           new MuleExtensionModelLoaderManager(muleArtifactResourcesRegistry.getContainerArtifactClassLoader());
       extensionModelLoaderRepository.start();
       final Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> loadedExtensionInformation =
           discoverPluginsExtensionModel(toolingArtifactClassLoader, extensionModelLoaderRepository, properties);
-      return loadedExtensionInformation;
+      return new PluginResources(loadedExtensionInformation,resources);
     } catch (Exception e) {
       throw new ToolingException(e);
     } finally {

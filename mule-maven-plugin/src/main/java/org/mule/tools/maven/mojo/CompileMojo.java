@@ -18,6 +18,8 @@ import java.util.ArrayList;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
@@ -37,6 +39,9 @@ import org.mule.tooling.api.ConfigurationException;
     defaultPhase = LifecyclePhase.COMPILE,
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class CompileMojo extends AbstractMuleMojo {
+
+  @Component
+  private PluginDescriptor descriptor;
 
 
   private static final String RUNTIME_AST_VERSION = "4.4.0";
@@ -86,7 +91,8 @@ public class CompileMojo extends AbstractMuleMojo {
   public ArtifactAst getArtifactAst() throws IOException, ConfigurationException {
 
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
-                                                 project.getDependencies(), Paths.get(project.getBuild().getDirectory()));
+                                                 project.getDependencies(), Paths.get(project.getBuild().getDirectory()),
+                                                 descriptor.getClassRealm());
     ProjectStructure projectStructure = new ProjectStructure(projectBaseFolder.toPath(), false);
     MuleArtifactContentResolver contentResolver =
         new MuleArtifactContentResolver(new ProjectStructure(projectBaseFolder.toPath(), false),

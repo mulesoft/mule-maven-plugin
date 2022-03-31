@@ -348,7 +348,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
       extensionModelLoaderRepository.start();
       final Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> loadedExtensionInformation =
           discoverPluginsExtensionModel(toolingArtifactClassLoader, extensionModelLoaderRepository, properties);
-      return new PluginResources(loadedExtensionInformation,resources);
+      return new PluginResources(loadedExtensionInformation, resources);
     } catch (Exception e) {
       throw new ToolingException(e);
     } finally {

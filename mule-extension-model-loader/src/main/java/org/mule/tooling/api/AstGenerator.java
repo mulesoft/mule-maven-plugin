@@ -75,7 +75,7 @@ public class AstGenerator {
 
 
   private boolean resourceInJar(URL resource) {
-    return (resource.toExternalForm().startsWith( "jar:" ) && resource.toExternalForm().contains("!/"))? true : false;
+    return (resource.toExternalForm().startsWith( "jar:" ) && resource.toExternalForm().contains("!/"));
   }
 
 

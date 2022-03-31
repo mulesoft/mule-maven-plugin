@@ -10,8 +10,8 @@ import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 
 public class PluginResources {
 
-  Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> extensionModels;
-  List<URL> exportedResources;
+  private Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> extensionModels;
+  private List<URL> exportedResources;
 
   public PluginResources(Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> extensionModels, List<URL> exportedResources) {
     super();

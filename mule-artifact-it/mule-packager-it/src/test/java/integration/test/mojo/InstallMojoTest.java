@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.maven.it.VerificationException;
+import org.apache.maven.it.Verifier;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,6 +34,8 @@ public class InstallMojoTest extends MojoTest {
   private static final String MULE_APPLICATION_EXAMPLE_CLASSIFIER = "mule-application-example";
   private static final String MULE_APPLICATION_TEMPLATE_CLASSIFIER = "mule-application-template";
   private static final String MULE_APPLICATION_CLASSIFIER_LIGHT_PACKAGE = "mule-application-light-package";
+  private static final String MULE_APPLICATION_WITH_PLUGIN_DEP = "simple-app-with-lib";
+  private static final String MULE_PLUGIN = "simple-lib";
 
   public InstallMojoTest() {
     this.goal = INSTALL;
@@ -223,6 +226,22 @@ public class InstallMojoTest extends MojoTest {
 
     verifier.verifyErrorFreeLog();
     assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
+  }
+
+  @Test
+  public void testInstallAppWithPluginDep() throws IOException, VerificationException {
+    File pluginBaseDirectory = builder.createProjectBaseDir(MULE_PLUGIN, this.getClass());
+    projectBaseDirectory = builder.createProjectBaseDir(MULE_APPLICATION_WITH_PLUGIN_DEP, this.getClass());
+
+    Verifier verifierPlugin = buildVerifier(pluginBaseDirectory);
+    verifier = buildVerifier(projectBaseDirectory);
+
+    verifier.deleteArtifacts(GROUP_ID, MULE_APPLICATION_WITH_PLUGIN_DEP, VERSION);
+    verifierPlugin.deleteArtifacts(GROUP_ID, MULE_PLUGIN, VERSION);
+
+    verifierPlugin.executeGoal(INSTALL);
+    verifier.executeGoal(INSTALL);
+    verifier.verifyErrorFreeLog();
   }
 
   @Test

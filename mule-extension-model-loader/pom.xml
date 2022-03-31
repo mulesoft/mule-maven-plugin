@@ -15,9 +15,13 @@
         <licensePath>../LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <coverageLineLimit>0.61</coverageLineLimit>
-        <coverageBranchLimit>0.41</coverageBranchLimit>
+        <coverageBranchLimit>0.39</coverageBranchLimit>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+        </dependency>
         <dependency>
             <groupId> org.mule.runtime</groupId>
             <artifactId>mule-module-logging</artifactId>

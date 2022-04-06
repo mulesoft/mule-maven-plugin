@@ -96,7 +96,6 @@ public class CompileMojo extends AbstractMuleMojo {
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
                                                  project.getDependencies(), Paths.get(project.getBuild().getDirectory()),
                                                  descriptor.getClassRealm());
-
     ProjectStructure projectStructure = new ProjectStructure(projectBaseFolder.toPath(), false);
     MuleArtifactContentResolver contentResolver =
         new MuleArtifactContentResolver(new ProjectStructure(projectBaseFolder.toPath(), false),

@@ -48,6 +48,7 @@ public class CompileMojo extends AbstractMuleMojo {
   private static final String MULE_POLICY = "mule-policy";
   private static final String MULE_DOMAIN = "mule-domain";
   private static final String SKIP_AST = "skipAST";
+  private static final String SKIP_AST_VALIDATION = "skipASTValidation";
 
   @Override
   public void doExecute() throws MojoFailureException {
@@ -90,9 +91,12 @@ public class CompileMojo extends AbstractMuleMojo {
 
   public ArtifactAst getArtifactAst() throws IOException, ConfigurationException {
 
+    descriptor.getClassRealm()
+        .addURL(project.getBasedir().toPath().resolve("src").resolve("main").resolve("resources").toUri().toURL());
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
                                                  project.getDependencies(), Paths.get(project.getBuild().getDirectory()),
                                                  descriptor.getClassRealm());
+
     ProjectStructure projectStructure = new ProjectStructure(projectBaseFolder.toPath(), false);
     MuleArtifactContentResolver contentResolver =
         new MuleArtifactContentResolver(new ProjectStructure(projectBaseFolder.toPath(), false),
@@ -100,7 +104,8 @@ public class CompileMojo extends AbstractMuleMojo {
                                         getProjectInformation().getProject().getBundleDependencies());
 
     ArtifactAst artifactAST = astGenerator.generateAST(contentResolver.getConfigs(), projectStructure.getConfigsPath());
-    if (artifactAST != null) {
+    String skipASTValidation = System.getProperty(SKIP_AST_VALIDATION);
+    if (artifactAST != null && (skipASTValidation == null || skipASTValidation.equals("false"))) {
       ArrayList<ValidationResultItem> warnings = astGenerator.validateAST(artifactAST);
       for (ValidationResultItem warning : warnings) {
         getLog().warn(warning.getMessage());

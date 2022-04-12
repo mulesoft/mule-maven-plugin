@@ -72,7 +72,7 @@ public enum MavenLifecyclePhase {
 
   private final String id;
 
-  private MavenLifecyclePhase(String id) {
+  MavenLifecyclePhase(String id) {
     this.id = id;
   }
 

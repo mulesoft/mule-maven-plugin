@@ -10,11 +10,11 @@
 
 package org.mule.tools.maven.mojo.model.lifecycle.mapping.project;
 
-import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenVersionless;
+import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMaven;
 
 import java.util.Map;
 
 public interface ProjectLifecycleMapping {
 
-  <V> Map<String, V> getLifecyclePhases(LifecycleMappingMavenVersionless mapping);
+  <V> Map<String, V> getLifecyclePhases(LifecycleMappingMaven mapping);
 }

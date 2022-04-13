@@ -11,6 +11,7 @@
 package org.mule.tools.maven.mojo.model.lifecycle.mapping.project;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.maven.lifecycle.mapping.LifecyclePhase;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMaven;
 
 import java.util.Map;
@@ -28,8 +29,8 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VERI
 public class DomainBundleLifecycleMapping extends AbstractLifecycleMapping {
 
   @Override
-  public <V> Map<String, V> getLifecyclePhases(LifecycleMappingMaven mapping) {
-    ImmutableMap.Builder<String, V> phases = ImmutableMap.builder();
+  public Map<String, LifecyclePhase> getLifecyclePhases(LifecycleMappingMaven mapping) {
+    ImmutableMap.Builder<String, LifecyclePhase> phases = ImmutableMap.builder();
     phases.put(VALIDATE.id(), mapping.buildGoals(muleGoal("validate")));
     phases.put(INITIALIZE.id(), mapping.buildGoals(muleGoal("initialize")));
     phases.put(GENERATE_RESOURCES.id(), mapping.buildGoals(muleGoal("generate-resources")));

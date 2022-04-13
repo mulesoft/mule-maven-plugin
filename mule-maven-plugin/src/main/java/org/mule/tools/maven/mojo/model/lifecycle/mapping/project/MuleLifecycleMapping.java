@@ -12,6 +12,7 @@ package org.mule.tools.maven.mojo.model.lifecycle.mapping.project;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.lifecycle.mapping.LifecyclePhase;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMaven;
 
 import java.util.Map;
@@ -37,8 +38,8 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VERI
 public class MuleLifecycleMapping extends AbstractLifecycleMapping {
 
   @Override
-  public <V> Map<String, V> getLifecyclePhases(LifecycleMappingMaven mapping) {
-    ImmutableMap.Builder<String, V> phases = ImmutableMap.builder();
+  public Map<String, LifecyclePhase> getLifecyclePhases(LifecycleMappingMaven mapping) {
+    ImmutableMap.Builder<String, LifecyclePhase> phases = ImmutableMap.builder();
     phases.put(CLEAN.id(), buildGoals(mapping, cleanGoal(), muleGoal("clean")));
     phases.put(VALIDATE.id(), buildGoals(mapping, muleGoal("validate")));
     phases.put(INITIALIZE.id(), buildGoals(mapping, muleGoal("initialize")));
@@ -67,7 +68,7 @@ public class MuleLifecycleMapping extends AbstractLifecycleMapping {
     return phases.build();
   }
 
-  private <V> V buildGoals(LifecycleMappingMaven mapping, String... goals) {
+  private LifecyclePhase buildGoals(LifecycleMappingMaven mapping, String... goals) {
     return mapping.buildGoals(StringUtils.join(goals, ","));
   }
 }

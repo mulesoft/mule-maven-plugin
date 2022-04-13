@@ -9,7 +9,6 @@
  */
 package org.mule.tools.maven.mojo.model.lifecycle.mapping.project;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.maven.lifecycle.mapping.Lifecycle;
 import org.apache.maven.lifecycle.mapping.LifecycleMapping;
 import org.apache.maven.lifecycle.mapping.LifecyclePhase;
@@ -18,16 +17,11 @@ import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappin
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class AbstractLifecycleMapping implements LifecycleMapping, ProjectLifecycleMapping {
-
-  private static final Map<Class<?>, Function<Object, String>> TO_STRING = ImmutableMap
-      .of(
-          String.class, value -> (String) value,
-          LifecyclePhase.class, Object::toString);
 
   protected static final String MULE_DEPLOY = "muleDeploy";
 
@@ -53,9 +47,9 @@ public abstract class AbstractLifecycleMapping implements LifecycleMapping, Proj
   public Map<String, String> getPhases(String lifecycle) {
     return getLifecyclePhases(new LifecycleMappingMaven(this)).entrySet().stream()
         .collect(Collectors.toMap(
-                                  Map.Entry::getKey,
+                                  Map.Entry<String, LifecyclePhase>::getKey,
                                   entry -> Optional.ofNullable(entry.getValue())
-                                      .map(value -> TO_STRING.getOrDefault(value.getClass(), String::valueOf).apply(value))
+                                      .map(Objects::toString)
                                       .orElse("")));
   }
 

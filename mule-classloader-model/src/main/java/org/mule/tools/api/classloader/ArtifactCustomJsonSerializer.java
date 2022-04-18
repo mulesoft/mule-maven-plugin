@@ -13,6 +13,7 @@ import static org.mule.tools.api.classloader.Constants.ARTIFACT_IS_SHARED_FIELD;
 import static org.mule.tools.api.classloader.Constants.ARTIFACT_PACKAGES_FIELD;
 import static org.mule.tools.api.classloader.Constants.ARTIFACT_RESOURCES_FIELD;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.mule.tools.api.classloader.model.Artifact;
 
 import java.lang.reflect.Type;
@@ -33,15 +34,19 @@ public class ArtifactCustomJsonSerializer implements JsonSerializer<Artifact> {
   public JsonElement serialize(Artifact artifact, Type type, JsonSerializationContext jsonSerializationContext) {
     Gson gson = new GsonBuilder().create();
     JsonObject jsonObject = (JsonObject) gson.toJsonTree(artifact);
-    if (!artifact.isShared()) {
+
+    if (Boolean.FALSE.equals(artifact.isShared())) {
       jsonObject.remove(ARTIFACT_IS_SHARED_FIELD);
     }
-    if (artifact.getPackages() == null || artifact.getPackages().length == 0) {
+
+    if (ArrayUtils.isEmpty(artifact.getPackages())) {
       jsonObject.remove(ARTIFACT_PACKAGES_FIELD);
     }
-    if (artifact.getResources() == null || artifact.getResources().length == 0) {
+
+    if (ArrayUtils.isEmpty(artifact.getResources())) {
       jsonObject.remove(ARTIFACT_RESOURCES_FIELD);
     }
+
     return jsonObject;
   }
 }

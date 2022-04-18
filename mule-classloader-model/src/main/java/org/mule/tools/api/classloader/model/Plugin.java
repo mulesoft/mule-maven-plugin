@@ -9,53 +9,75 @@
  */
 package org.mule.tools.api.classloader.model;
 
+import com.google.common.collect.ImmutableList;
+import lombok.Builder;
+import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 /**
- * POJO to modelate a plugin that will declare additional dependencies.
+ * POJO to model a plugin that will declare additional dependencies.
  *
  * @since 3.2.0
  */
+@Getter
+@Builder
 public class Plugin {
 
-  private String groupId;
+  private final String groupId;
+  private final String artifactId;
+  private final List<Artifact> additionalDependencies;
 
-  private String artifactId;
-
-  private List<Artifact> additionalDependencies;
-
-  public String getGroupId() {
-    return groupId;
+  public Plugin() {
+    this(StringUtils.EMPTY, StringUtils.EMPTY, Collections.emptyList());
   }
 
-  public void setGroupId(String groupId) {
+  public Plugin(String groupId, String artifactId, List<Artifact> additionalDependencies) {
     this.groupId = groupId;
-  }
-
-  public String getArtifactId() {
-    return artifactId;
-  }
-
-  public void setArtifactId(String artifactId) {
     this.artifactId = artifactId;
+    this.additionalDependencies = additionalDependencies;
   }
 
-  public List<Artifact> getAdditionalDependencies() {
-    return additionalDependencies;
+  public Plugin setGroupId(String groupId) {
+    checkArgument(groupId != null, "groupId cannot be null");
+    return getCopyBuilder()
+        .groupId(groupId)
+        .build();
   }
 
-  public void setAdditionalDependencies(List<Artifact> dependencies) {
-    this.additionalDependencies = dependencies;
+  public Plugin setArtifactId(String artifactId) {
+    checkArgument(artifactId != null, "artifactId cannot be null");
+    return getCopyBuilder()
+        .artifactId(artifactId)
+        .build();
+  }
+
+  public Plugin setAdditionalDependencies(List<Artifact> dependencies) {
+    checkArgument(dependencies != null, "artifactId cannot be null");
+    return getCopyBuilder()
+        .additionalDependencies(ImmutableList.copyOf(dependencies))
+        .build();
   }
 
   public Plugin copyWithParameterizedDependenciesUri() {
-    Plugin copy = new Plugin();
-    copy.setGroupId(this.groupId);
-    copy.setArtifactId(this.artifactId);
-    List<Artifact> dependenciesCopy =
-        additionalDependencies.stream().map(Artifact::copyWithParameterizedUri).collect(Collectors.toList());
-    copy.setAdditionalDependencies(dependenciesCopy);
-    return copy;
+    ImmutableList<Artifact> dependencies = additionalDependencies.stream()
+        .map(Artifact::copyWithParameterizedUri)
+        .collect(collectingAndThen(toList(), ImmutableList::copyOf));
+    return getCopyBuilder()
+        .additionalDependencies(dependencies)
+        .build();
+  }
+
+  private PluginBuilder getCopyBuilder() {
+    return Plugin.builder()
+        .groupId(groupId)
+        .artifactId(artifactId)
+        .additionalDependencies(additionalDependencies);
   }
 }

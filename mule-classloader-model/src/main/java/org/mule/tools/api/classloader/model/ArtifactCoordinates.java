@@ -12,104 +12,76 @@ package org.mule.tools.api.classloader.model;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Getter
+@Builder
+@AllArgsConstructor
 public class ArtifactCoordinates {
 
   public static final String DEFAULT_ARTIFACT_TYPE = "jar";
 
-  private String groupId;
-  private String artifactId;
-  private String version;
-  private String type;
-  private String classifier;
-  private String scope;
+  private final String groupId;
+  private final String artifactId;
+  private final String version;
+  private final String type;
+  private final String classifier;
+  private final String scope;
 
-  /**
-   * Constructor added so that child classes can be instantiated by reflection.
-   */
-  protected ArtifactCoordinates() {
-    setType(DEFAULT_ARTIFACT_TYPE);
+  public ArtifactCoordinates() {
+    this(StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY);
   }
 
   public ArtifactCoordinates(String groupId, String artifactId, String version) {
     this(groupId, artifactId, version, DEFAULT_ARTIFACT_TYPE, null);
   }
 
-  public ArtifactCoordinates(String groupId, String artifactId, String version, String type,
-                             String classifier) {
-    setGroupId(groupId);
-    setArtifactId(artifactId);
-    setVersion(version);
-    setType(type);
-    setClassifier(classifier);
+  public ArtifactCoordinates(String groupId, String artifactId, String version, String type, String classifier) {
+    this(groupId, artifactId, version, type, classifier, null);
   }
 
-  public ArtifactCoordinates(String groupId, String artifactId, String version, String type,
-                             String classifier, String scope) {
-    setGroupId(groupId);
-    setArtifactId(artifactId);
-    setVersion(version);
-    setType(type);
-    setClassifier(classifier);
-    setScope(scope);
-  }
-
-  public String getGroupId() {
-    return groupId;
-  }
-
-  public void setGroupId(String groupId) {
+  public ArtifactCoordinates setGroupId(String groupId) {
     checkArgument(StringUtils.isNotBlank(groupId), "Group id cannot be null nor blank");
-    this.groupId = groupId;
+    return getCopyBuilder().groupId(groupId).build();
   }
 
-  public String getArtifactId() {
-    return artifactId;
-  }
-
-  public void setArtifactId(String artifactId) {
+  public ArtifactCoordinates setArtifactId(String artifactId) {
     checkArgument(StringUtils.isNotBlank(artifactId), "Artifact id can not be null nor blank");
-    this.artifactId = artifactId;
+    return getCopyBuilder().artifactId(artifactId).build();
   }
 
-  public String getVersion() {
-    return version;
-  }
-
-  public void setVersion(String version) {
+  public ArtifactCoordinates setVersion(String version) {
     checkArgument(StringUtils.isNotBlank(version), "Version can not be null nor blank");
-    this.version = version;
+    return getCopyBuilder().version(version).build();
   }
 
-  public String getType() {
-    return type;
-  }
-
-  public void setType(String type) {
+  public ArtifactCoordinates setType(String type) {
     checkArgument(StringUtils.isNotBlank(type), "Type can not be null nor blank");
-    this.type = type;
+    return getCopyBuilder().type(type).build();
   }
 
-  public String getClassifier() {
-    return classifier;
+  public ArtifactCoordinates setClassifier(String classifier) {
+    return getCopyBuilder().classifier(classifier).build();
   }
 
-  public void setClassifier(String classifier) {
-    this.classifier = classifier;
-  }
-
-  public String getScope() {
-    return scope;
-  }
-
-  public void setScope(String scope) {
-    this.scope = scope;
+  public ArtifactCoordinates setScope(String scope) {
+    return getCopyBuilder().scope(scope).build();
   }
 
   @Override
   public String toString() {
-    return groupId + ':' + artifactId + ':' + version + ':' + type + (StringUtils.isNotBlank(classifier) ? ':' + classifier : "");
+    return Stream.of(groupId, artifactId, version, type, StringUtils.isNotBlank(classifier) ? classifier : null)
+        .filter(Objects::nonNull)
+        .collect(Collectors.joining(":"));
   }
 
   @Override
@@ -117,32 +89,35 @@ public class ArtifactCoordinates {
     if (this == o) {
       return true;
     }
-    if (o == null || getClass() != o.getClass()) {
+
+    if (Optional.ofNullable(o).map(value -> getClass() != value.getClass()).orElse(true)) {
       return false;
     }
 
     ArtifactCoordinates that = (ArtifactCoordinates) o;
-
-    if (!getArtifactId().equals(that.getArtifactId())) {
-      return false;
-    }
-    if (!getGroupId().equals(that.getGroupId())) {
-      return false;
-    }
-    if (!StringUtils.equals(getClassifier(), that.getClassifier())) {
-      return false;
-    }
-    return getVersion().equals(that.getVersion());
+    return Stream.<Function<ArtifactCoordinates, String>>of(
+                                                            ArtifactCoordinates::getArtifactId,
+                                                            ArtifactCoordinates::getGroupId,
+                                                            ArtifactCoordinates::getClassifier,
+                                                            ArtifactCoordinates::getVersion)
+        .allMatch(function -> StringUtils.equals(function.apply(ArtifactCoordinates.this), function.apply(that)));
   }
 
   @Override
   public int hashCode() {
-    int result = getArtifactId().hashCode();
-    result = 31 * result + getGroupId().hashCode();
-    result = 31 * result + getVersion().hashCode();
-    if (getClassifier() != null) {
-      result = 31 * result + getClassifier().hashCode();
-    }
-    return result;
+    return Stream.of(getArtifactId(), getGroupId(), getVersion(), getClassifier())
+        .filter(Objects::nonNull)
+        .map(Objects::hashCode)
+        .reduce(1, (result, hashCode) -> 31 * result + hashCode);
+  }
+
+  private ArtifactCoordinates.ArtifactCoordinatesBuilder getCopyBuilder() {
+    return ArtifactCoordinates.builder()
+        .groupId(groupId)
+        .artifactId(artifactId)
+        .version(version)
+        .type(type)
+        .classifier(classifier)
+        .scope(scope);
   }
 }

@@ -14,8 +14,9 @@
     <properties>
         <licensePath>../LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-        <coverageLineLimit>0.61</coverageLineLimit>
-        <coverageBranchLimit>0.39</coverageBranchLimit>
+		<!-- The extension model loader is tested with integration tests mostly. It has no sense to track the coverage here -->
+        <coverageLineLimit>0</coverageLineLimit>
+        <coverageBranchLimit>0</coverageBranchLimit>
     </properties>
     <dependencies>
         <dependency>

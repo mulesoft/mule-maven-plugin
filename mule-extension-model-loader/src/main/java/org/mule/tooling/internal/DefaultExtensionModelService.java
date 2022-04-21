@@ -223,7 +223,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
 
   @Override
   public PluginResources loadExtensionData(BundleDescriptor pluginDescriptor,
-                                                                               MuleVersion muleVersion) {
+                                           MuleVersion muleVersion) {
     long startTime = nanoTime();
     PluginResources extensionInformationOptional =
         withTemporaryApplication(pluginDescriptor, emptyMap(),
@@ -241,9 +241,9 @@ public class DefaultExtensionModelService implements ExtensionModelService {
   }
 
   private PluginResources withTemporaryApplication(BundleDescriptor pluginDescriptor,
-                                                                                       Map<String, Object> classLoaderModelLoaderAttributes,
-                                                                                       TemporaryApplicationFunction action,
-                                                                                       MuleVersion muleVersion) {
+                                                   Map<String, Object> classLoaderModelLoaderAttributes,
+                                                   TemporaryApplicationFunction action,
+                                                   MuleVersion muleVersion) {
     String uuid = getUUID();
     String applicationName = uuid + "-extension-model-temp-app";
     File applicationFolder = new File(muleArtifactResourcesRegistry.getWorkingDirectory(), applicationName);
@@ -326,23 +326,29 @@ public class DefaultExtensionModelService implements ExtensionModelService {
   interface TemporaryApplicationFunction {
 
     PluginResources call(ArtifactPluginDescriptor artifactPluginDescriptor,
-                                                             ToolingArtifactClassLoader toolingArtifactClassLoader,
-                                                             Map<String, String> properties);
+                         ToolingArtifactClassLoader toolingArtifactClassLoader,
+                         Map<String, String> properties);
   }
 
   private DeployableArtifactClassLoaderFactory<ApplicationDescriptor> newTemporaryArtifactClassLoaderFactory() {
-    return (artifactId, parent, descriptor, artifactPluginClassLoaders) -> new MuleDeployableArtifactClassLoader(artifactId, descriptor, descriptor.getClassLoaderModel().getUrls(),
-                                                 parent.getClassLoader(),
-                                                 parent.getClassLoaderLookupPolicy(), artifactPluginClassLoaders);
+    return (artifactId, parent, descriptor,
+            artifactPluginClassLoaders) -> new MuleDeployableArtifactClassLoader(artifactId, descriptor,
+                                                                                 descriptor.getClassLoaderModel().getUrls(),
+                                                                                 parent.getClassLoader(),
+                                                                                 parent.getClassLoaderLookupPolicy(),
+                                                                                 artifactPluginClassLoaders);
   }
 
   private PluginResources loadExtensionData(ArtifactPluginDescriptor artifactPluginDescriptor,
-                                                                                ToolingArtifactClassLoader toolingArtifactClassLoader,
-                                                                                Map<String, String> properties) {
+                                            ToolingArtifactClassLoader toolingArtifactClassLoader,
+                                            Map<String, String> properties) {
     try {
       ArrayList<URL> resources = new ArrayList<URL>();
-      artifactPluginDescriptor.getClassLoaderModel().getExportedResources().forEach(resource->
-      resources.add(toolingArtifactClassLoader.getRegionClassLoader().getResource(resource)));
+      artifactPluginDescriptor.getClassLoaderModel().getExportedResources().forEach(resource -> {
+        if (toolingArtifactClassLoader.getRegionClassLoader().getResource(resource) != null) {
+          resources.add(toolingArtifactClassLoader.getRegionClassLoader().getResource(resource));
+        }
+      });
       MuleExtensionModelLoaderManager extensionModelLoaderRepository =
           new MuleExtensionModelLoaderManager(muleArtifactResourcesRegistry.getContainerArtifactClassLoader());
       extensionModelLoaderRepository.start();

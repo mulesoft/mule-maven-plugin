@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
+  <import file="simple-lib.xml"/>
+
+  <flow name="test-lib">
+    <flow-ref name="common-flow"/>
+  </flow>
+    <flow name="testing-transform-set-payload-validationFlow" doc:id="ccea05d4-3e8e-4e8a-9f43-f245158282e7" >
+		<ee:transform doc:name="Transform Message" doc:id="232cf3e8-ab0e-4363-8869-3c518a43e11e" >
+			<ee:message >
+				<ee:set-payload resource="dataweave/set-empty-payload.dwl" />
+			</ee:message>
+		</ee:transform>
+	</flow>
+
+</mule>

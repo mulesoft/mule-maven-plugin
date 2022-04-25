@@ -18,6 +18,8 @@ import java.util.ArrayList;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
@@ -38,11 +40,15 @@ import org.mule.tooling.api.ConfigurationException;
     requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class CompileMojo extends AbstractMuleMojo {
 
+  @Component
+  private PluginDescriptor descriptor;
+
 
   private static final String RUNTIME_AST_VERSION = "4.4.0";
   private static final String MULE_POLICY = "mule-policy";
   private static final String MULE_DOMAIN = "mule-domain";
   private static final String SKIP_AST = "skipAST";
+  private static final String SKIP_AST_VALIDATION = "skipASTValidation";
 
   @Override
   public void doExecute() throws MojoFailureException {
@@ -85,8 +91,12 @@ public class CompileMojo extends AbstractMuleMojo {
 
   public ArtifactAst getArtifactAst() throws IOException, ConfigurationException {
 
+    descriptor.getClassRealm()
+        .addURL(project.getBasedir().toPath().resolve("src").resolve("main").resolve("resources").toUri().toURL());
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
-                                                 project.getDependencies(), Paths.get(project.getBuild().getDirectory()));
+                                                 project.getDependencies(), Paths.get(project.getBuild().getDirectory()),
+                                                 descriptor.getClassRealm());
+
     ProjectStructure projectStructure = new ProjectStructure(projectBaseFolder.toPath(), false);
     MuleArtifactContentResolver contentResolver =
         new MuleArtifactContentResolver(new ProjectStructure(projectBaseFolder.toPath(), false),
@@ -94,7 +104,8 @@ public class CompileMojo extends AbstractMuleMojo {
                                         getProjectInformation().getProject().getBundleDependencies());
 
     ArtifactAst artifactAST = astGenerator.generateAST(contentResolver.getConfigs(), projectStructure.getConfigsPath());
-    if (artifactAST != null) {
+    String skipASTValidation = System.getProperty(SKIP_AST_VALIDATION);
+    if (artifactAST != null && (skipASTValidation == null || skipASTValidation.equals("false"))) {
       ArrayList<ValidationResultItem> warnings = astGenerator.validateAST(artifactAST);
       for (ValidationResultItem warning : warnings) {
         getLog().warn(warning.getMessage());

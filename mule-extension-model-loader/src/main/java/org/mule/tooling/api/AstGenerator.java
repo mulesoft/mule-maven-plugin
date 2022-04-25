@@ -12,18 +12,20 @@ package org.mule.tooling.api;
 
 import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.ast.internal.serialization.ArtifactAstSerializerFactory;
-import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
-import org.mule.runtime.module.artifact.api.classloader.RegionClassLoader;
+import org.mule.tooling.internal.PluginResources;
 
 import static org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor.MULE_PLUGIN_CLASSIFIER;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.maven.model.Dependency;
+import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.api.MavenClient;
 import org.mule.runtime.api.meta.model.ExtensionModel;
@@ -43,17 +45,24 @@ public class AstGenerator {
   AstXmlParser xmlParser;
 
   public AstGenerator(MavenClient mavenClient, String runtimeVersion,
-                      List<Dependency> dependencies, Path workingDir) {
+                      List<Dependency> dependencies, Path workingDir, ClassRealm classRealm) {
     ClassLoader classloader = AstGenerator.class.getClassLoader();
-
     ExtensionModelLoader loader = ExtensionModelLoaderFactory
         .createLoader(mavenClient, workingDir, classloader, runtimeVersion);
     Set<ExtensionModel> extensionModels = new HashSet<ExtensionModel>();
     for (Dependency d : dependencies) {
       if (d.getClassifier() != null && d.getClassifier().equals(MULE_PLUGIN_CLASSIFIER)) {
-        Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> extensionInformation = loader.load(toBundleDescriptor(d));
-        extensionInformation.forEach((item) -> extensionModels.add(item.getSecond()));
-
+        PluginResources extensionInformation = loader.load(toBundleDescriptor(d));
+        extensionInformation.getExtensionModels().forEach((item) -> extensionModels.add(item.getSecond()));
+        extensionInformation.getExportedResources().forEach(resource -> {
+          try {
+            if(resourceInJar(resource)) {
+              classRealm.addURL(new URL(resource.toExternalForm().split("!/")[0]+"!/"));
+            }
+          } catch (MalformedURLException e) {
+            e.printStackTrace();
+          }
+        });
       }
     }
     Set<ExtensionModel> runtimeExtensionModels = loader.getRuntimeExtensionModels();
@@ -62,6 +71,11 @@ public class AstGenerator {
     builder.withExtensionModels(extensionModels);
     xmlParser = builder.build();
 
+  }
+
+
+  private boolean resourceInJar(URL resource) {
+    return (resource.toExternalForm().startsWith( "jar:" ) && resource.toExternalForm().contains("!/"));
   }
 
 
@@ -84,7 +98,7 @@ public class AstGenerator {
   }
 
   public ArrayList<ValidationResultItem> validateAST(ArtifactAst artifactAst) throws ConfigurationException {
-    ValidationResult result = MuleAstUtils.validate(artifactAst);
+    ValidationResult result = MuleAstUtils.validatorBuilder().build().validate(artifactAst);
     ArrayList<ValidationResultItem> errors = new ArrayList<ValidationResultItem>();
     ArrayList<ValidationResultItem> warnings = new ArrayList<ValidationResultItem>();
     result.getItems().forEach(v ->{if(v.getValidation().getLevel().equals(Level.ERROR)){errors.add(v);}else {warnings.add(v);}});

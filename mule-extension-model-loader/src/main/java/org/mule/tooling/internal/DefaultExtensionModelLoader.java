@@ -13,7 +13,6 @@ import org.mule.runtime.container.internal.JreModuleDiscoverer;
 import org.mule.runtime.container.internal.ModuleDiscoverer;
 import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 import org.mule.runtime.deployment.model.api.artifact.extension.ExtensionModelDiscoverer;
-import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 import org.mule.runtime.extension.api.extension.XmlSdk1ExtensionModelProvider;
 import org.mule.runtime.module.artifact.api.classloader.ArtifactClassLoader;
 import org.mule.tooling.api.ExtensionModelLoader;
@@ -24,8 +23,6 @@ import com.mulesoft.mule.runtime.http.policy.api.extension.HttpPolicyEeExtension
 import com.mulesoft.mule.runtime.module.batch.api.extension.BatchExtensionModelProvider;
 import com.mulesoft.mule.runtime.module.serialization.kryo.api.extension.KryoSerializerEeExtensionModelProvider;
 import com.mulesoft.mule.runtime.tracking.api.extension.TrackingEeExtensionModelProvider;
-
-import org.mule.runtime.api.util.Pair;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -75,7 +72,7 @@ public class DefaultExtensionModelLoader implements ExtensionModelLoader {
   }
 
   @Override
-  public Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> load(BundleDescriptor artifactDescriptor) {
+  public PluginResources load(BundleDescriptor artifactDescriptor) {
     return service.loadExtensionData(artifactDescriptor, muleVersion);
   }
 }

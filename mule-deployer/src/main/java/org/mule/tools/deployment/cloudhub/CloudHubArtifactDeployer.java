@@ -39,7 +39,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   private static final String DEFAULT_CH_WORKER_TYPE = "Micro";
   private static final Integer DEFAULT_CH_WORKERS = 1;
   private static final Long DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT = 600000L;
-  private static final String OBJECT_STOREV1="objectStoreV1";
+  private static final String OBJECT_STOREV1 = "objectStoreV1";
 
   private final DeployerLog log;
   private final CloudHubDeployment deployment;

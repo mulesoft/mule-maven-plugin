@@ -20,6 +20,8 @@ import org.mule.tools.client.arm.model.UserInfo;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.Environment;
+import org.mule.tools.client.cloudhub.model.LatestUpdate;
+import org.mule.tools.client.cloudhub.model.SupportedVersion;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
@@ -27,7 +29,9 @@ import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -333,7 +337,7 @@ public class CloudHubArtifactDeployerTest {
     when(clientMock.isDomainAvailable(any())).thenReturn(true);
 
     Environment mockEnvironment = mock(Environment.class);
-    when(mockEnvironment.getObjectStoreV1Enabled()).thenReturn(true);
+    when(clientMock.getSupportedMuleVersions()).thenReturn(getObjectStoreV1Enabled(true, "4.0.0"));
 
     when(clientMock.getEnvironment()).thenReturn(mockEnvironment);
 
@@ -360,14 +364,27 @@ public class CloudHubArtifactDeployerTest {
     when(clientMock.isDomainAvailable(any())).thenReturn(true);
 
     Environment mockEnvironment = mock(Environment.class);
-    when(mockEnvironment.getObjectStoreV1Enabled()).thenReturn(false);
 
     when(clientMock.getEnvironment()).thenReturn(mockEnvironment);
+    when(clientMock.getSupportedMuleVersions()).thenReturn(getObjectStoreV1Enabled(false, "4.0.0"));
 
     cloudHubArtifactDeployer.deployApplication();
 
     ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
     verify(clientMock).createApplication(applicationCaptor.capture(), any());
     assertThat("ObjectStoreV1 must be true", applicationCaptor.getValue().getObjectStoreV1(), equalTo(false));
+  }
+
+  private List<SupportedVersion> getObjectStoreV1Enabled(boolean enabled, String muleVersion) {
+    List<SupportedVersion> supportedVersions = new ArrayList<SupportedVersion>();
+    SupportedVersion version = new SupportedVersion();
+    LatestUpdate update = new LatestUpdate();
+    HashMap<String, Boolean> flags = new HashMap<String, Boolean>();
+    flags.put(CloudHubArtifactDeployer.OBJECT_STOREV1, enabled);
+    update.setFlags(flags);
+    version.setLatestUpdate(update);
+    version.setVersion(muleVersion);
+    supportedVersions.add(version);
+    return supportedVersions;
   }
 }

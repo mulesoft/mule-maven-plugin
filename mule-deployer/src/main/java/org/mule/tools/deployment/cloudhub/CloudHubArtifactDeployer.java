@@ -14,6 +14,7 @@ import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.model.Environment;
 import org.mule.tools.client.cloudhub.model.MuleVersion;
+import org.mule.tools.client.cloudhub.model.SupportedVersion;
 import org.mule.tools.client.cloudhub.model.WorkerType;
 import org.mule.tools.client.cloudhub.model.Workers;
 import org.mule.tools.client.core.exception.DeploymentException;
@@ -38,6 +39,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   private static final String DEFAULT_CH_WORKER_TYPE = "Micro";
   private static final Integer DEFAULT_CH_WORKERS = 1;
   private static final Long DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT = 600000L;
+  public static final String OBJECT_STOREV1 = "objectStoreV1";
 
   private final DeployerLog log;
   private final CloudHubDeployment deployment;
@@ -256,8 +258,9 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
   private void configureObjectStore() {
     if (deployment.getObjectStoreV2() == null) {
-      Environment environment = client.getEnvironment();
-      deployment.setObjectStoreV2(!environment.getObjectStoreV1Enabled());
+      deployment.setObjectStoreV2(!(client.getSupportedMuleVersions().stream()
+          .anyMatch(version -> version.getVersion().equals(deployment.getMuleVersion().get())
+              && version.getLatestUpdate().getFlags().get(OBJECT_STOREV1))));
     }
   }
 

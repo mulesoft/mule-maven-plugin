@@ -46,7 +46,7 @@ public class ArtifactTest {
   private static final String GROUP_ID = PREFIX_GROUP_ID + "." + SUFFIX_GROUP_ID;
   private static final String OUTPUT_DIRECTORY = join(File.separator, PREFIX_GROUP_ID, SUFFIX_GROUP_ID, ARTIFACT_ID, VERSION);
 
-  public static Stream<Arguments> getFormattedArtifactFileNameTestDataProvider() {
+  private static Stream<Arguments> getFormattedArtifactFileNameTestDataProvider() {
     return Stream.of(
                      Arguments.of("Formatted filename.", CLASSIFIER, ARTIFACT_ID + "-" + VERSION + "-" + CLASSIFIER + "." + TYPE),
                      Arguments.of("Formatted filename without classifier.", StringUtils.EMPTY,
@@ -60,8 +60,8 @@ public class ArtifactTest {
     Artifact artifact01 = new Artifact(artifactCoordinates, EXPECTED_URI);
     Artifact artifact02 = new Artifact(artifactCoordinates, EXPECTED_URI, true, new String[] {}, new String[] {});
     Artifact artifact03 = new Artifact(artifactCoordinates, EXPECTED_URI, true, new String[] {"a", "b"}, new String[] {"a"});
-    Throwable thrown01 =  assertThrows(NullPointerException.class, () -> new Artifact(null, EXPECTED_URI));
-    Throwable thrown02 =  assertThrows(NullPointerException.class, () -> new Artifact(artifactCoordinates, null));
+    Throwable thrown01 = assertThrows(NullPointerException.class, () -> new Artifact(null, EXPECTED_URI));
+    Throwable thrown02 = assertThrows(NullPointerException.class, () -> new Artifact(artifactCoordinates, null));
 
     // artifact01
     assertThat(artifact01.getArtifactCoordinates(), equalTo(artifactCoordinates));

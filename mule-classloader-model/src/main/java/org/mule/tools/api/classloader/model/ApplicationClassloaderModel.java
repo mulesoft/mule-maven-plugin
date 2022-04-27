@@ -9,49 +9,63 @@
  */
 package org.mule.tools.api.classloader.model;
 
-import java.util.*;
+import com.google.common.collect.ImmutableList;
+import lombok.Getter;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class ApplicationClassloaderModel {
+@Getter
+public class ApplicationClassloaderModel extends ClassLoaderModelDecorator<ApplicationClassloaderModel> {
 
-  private ClassLoaderModel classLoaderModel;
-  private List<ClassLoaderModel> mulePluginsClassloaderModels = new ArrayList<>();
+  private final List<ClassLoaderModel<?>> mulePluginsClassloaderModels;
 
-  public ApplicationClassloaderModel(ClassLoaderModel classLoaderModel) {
-    this.classLoaderModel = classLoaderModel;
+  public ApplicationClassloaderModel(ClassLoaderModel<?> classLoaderModel) {
+    this(classLoaderModel, null);
   }
 
-  public ClassLoaderModel getClassLoaderModel() {
+  public ApplicationClassloaderModel(ClassLoaderModel<?> classLoaderModel,
+                                     List<ClassLoaderModel<?>> mulePluginsClassloaderModels) {
+    super(classLoaderModel);
+    this.mulePluginsClassloaderModels = Optional.ofNullable(mulePluginsClassloaderModels)
+        .map(list -> (List<ClassLoaderModel<?>>) ImmutableList.copyOf(list))
+        .orElseGet(Collections::emptyList);
+  }
+
+  @Override
+  protected ApplicationClassloaderModel instance(ClassLoaderModel<?> classLoaderModel) {
+    return new ApplicationClassloaderModel(classLoaderModel);
+  }
+
+  public ClassLoaderModel<?> getClassLoaderModel() {
     return classLoaderModel;
   }
 
-  public void addMulePluginClassloaderModel(ClassLoaderModel mulePluginClassloaderModel) {
-    this.mulePluginsClassloaderModels.add(mulePluginClassloaderModel);
+  public <T extends ClassLoaderModel<T>> ApplicationClassloaderModel addMulePluginClassloaderModel(T mulePluginClassloaderModel) {
+    if (Objects.isNull(mulePluginClassloaderModel)) {
+      return this;
+    }
+    return addAllMulePluginClassloaderModels(Collections.singletonList(mulePluginClassloaderModel));
   }
 
-  public void addAllMulePluginClassloaderModels(Collection<ClassLoaderModel> mulePluginClassloaderModels) {
-    this.mulePluginsClassloaderModels.addAll(mulePluginClassloaderModels);
+  public <T extends ClassLoaderModel<T>> ApplicationClassloaderModel addAllMulePluginClassloaderModels(Collection<T> mulePluginClassloaderModels) {
+    if (Optional.ofNullable(mulePluginClassloaderModels).map(Collection::isEmpty).orElse(true)) {
+      return this;
+    }
+    return new ApplicationClassloaderModel(classLoaderModel, Stream
+        .concat(mulePluginClassloaderModels.stream(), this.mulePluginsClassloaderModels.stream()).collect(Collectors.toList()));
   }
 
   public Set<Artifact> getArtifacts() {
-    Set<Artifact> artifacts = new HashSet<>();
-    artifacts.addAll(classLoaderModel.getArtifacts());
-    artifacts.addAll(mulePluginsClassloaderModels.stream()
-        .map(ClassLoaderModel::getArtifacts)
-        .flatMap(Collection::stream)
-        .collect(Collectors.toList()));
-    return artifacts;
-  }
-
-  public List<ClassLoaderModel> getMulePluginsClassloaderModels() {
-    return mulePluginsClassloaderModels;
-  }
-
-  public String[] getPackages() {
-    return classLoaderModel.getPackages();
-  }
-
-  public String[] getResources() {
-    return classLoaderModel.getResources();
+    return Stream.concat(classLoaderModel.getArtifacts()
+        .stream(), mulePluginsClassloaderModels.stream().map(ClassLoaderModel::getArtifacts)
+            .flatMap(Collection::stream))
+        .collect(Collectors.toSet());
   }
 }

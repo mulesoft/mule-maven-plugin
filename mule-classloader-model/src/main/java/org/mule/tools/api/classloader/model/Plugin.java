@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.collectingAndThen;
@@ -41,7 +42,9 @@ public class Plugin {
   public Plugin(String groupId, String artifactId, List<Artifact> additionalDependencies) {
     this.groupId = groupId;
     this.artifactId = artifactId;
-    this.additionalDependencies = additionalDependencies;
+    this.additionalDependencies =
+        Optional.ofNullable(additionalDependencies).map(list -> (List<Artifact>) ImmutableList.copyOf(list))
+            .orElseGet(Collections::emptyList);
   }
 
   public Plugin setGroupId(String groupId) {

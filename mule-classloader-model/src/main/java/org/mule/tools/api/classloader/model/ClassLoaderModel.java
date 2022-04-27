@@ -10,116 +10,36 @@
 
 package org.mule.tools.api.classloader.model;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
-public class ClassLoaderModel {
+public interface ClassLoaderModel<T extends ClassLoaderModel<T>> {
 
-  private String version;
-  private ArtifactCoordinates artifactCoordinates;
-  private List<Artifact> dependencies = new ArrayList<>();
+  String getVersion();
 
-  private String[] packages;
-  private String[] resources;
+  T setVersion(String version);
 
-  public ClassLoaderModel(String version, ArtifactCoordinates artifactCoordinates) {
-    setArtifactCoordinates(artifactCoordinates);
-    setVersion(version);
-  }
+  ArtifactCoordinates getArtifactCoordinates();
 
-  public String getVersion() {
-    return version;
-  }
+  T setArtifactCoordinates(ArtifactCoordinates artifactCoordinates);
 
-  public void setVersion(String version) {
-    checkArgument(version != null, "Version cannot be null");
-    this.version = version;
-  }
+  List<Artifact> getDependencies();
 
-  public ArtifactCoordinates getArtifactCoordinates() {
-    return artifactCoordinates;
-  }
+  T setDependencies(List<Artifact> dependencies);
 
-  public void setArtifactCoordinates(ArtifactCoordinates artifactCoordinates) {
-    checkArgument(artifactCoordinates != null, "Artifact coordinates cannot be null");
-    this.artifactCoordinates = artifactCoordinates;
-  }
+  String[] getPackages();
 
-  public List<Artifact> getDependencies() {
-    return this.dependencies;
-  }
+  T setPackages(String[] packages);
 
-  public void setDependencies(List<Artifact> dependencies) {
-    this.dependencies = dependencies;
-  }
+  String[] getResources();
 
-  public Set<Artifact> getArtifacts() {
-    Set<Artifact> allDependencies = new TreeSet<>();
-    allDependencies.addAll(dependencies);
-    return allDependencies.stream().collect(toSet());
-  }
+  T setResources(String[] resources);
 
-  public ClassLoaderModel getParametrizedUriModel() {
-    ClassLoaderModel copy = doGetParameterizedUriModel();
-    List<Artifact> dependenciesCopy = dependencies.stream().map(Artifact::copyWithParameterizedUri).collect(toList());
-    copy.setDependencies(dependenciesCopy);
-    copy.setPackages(getPackages());
-    copy.setResources(getResources());
-    return copy;
-  }
+  List<Plugin> getAdditionalPluginDependencies();
 
-  protected ClassLoaderModel doGetParameterizedUriModel() {
-    ClassLoaderModel copy = new ClassLoaderModel(version, artifactCoordinates);
-    return copy;
-  }
+  T setAdditionalPluginDependencies(List<Plugin> additionalPluginDependencies);
 
+  ClassLoaderModel<T> getParametrizedUriModel();
 
-  /**
-   * Introspection of this artifact, it will contain the array of Java packages for this artifact.
-   * @return {@link String[]} with the packages discovered for this artifact.
-   */
-  public String[] getPackages() {
-    return packages;
-  }
-
-  public void setPackages(String[] packages) {
-    this.packages = packages;
-  }
-
-  /**
-   * Introspection of this artifact, it will contain the array of resources for this artifact.
-   * @return {@link String[]} with the resources discovered for this artifact.
-   */
-  public String[] getResources() {
-    return resources;
-  }
-
-  public void setResources(String[] resources) {
-    this.resources = resources;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || !(o instanceof ClassLoaderModel)) {
-      return false;
-    }
-
-    ClassLoaderModel that = (ClassLoaderModel) o;
-
-    return getArtifactCoordinates().equals(that.getArtifactCoordinates());
-  }
-
-  @Override
-  public int hashCode() {
-    return getArtifactCoordinates().hashCode();
-  }
+  Set<Artifact> getArtifacts();
 }

@@ -10,24 +10,31 @@
 
 package org.mule.tools.api.classloader.model;
 
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
+@Builder
 public class SharedLibraryDependency {
 
-  private String groupId;
-  private String artifactId;
+  private final String groupId;
+  private final String artifactId;
 
-  public String getGroupId() {
-    return groupId;
+  public SharedLibraryDependency setGroupId(String groupId) {
+    return getCopyBuilder()
+        .groupId(groupId)
+        .build();
   }
 
-  public void setGroupId(String groupId) {
-    this.groupId = groupId;
+  public SharedLibraryDependency setArtifactId(String artifactId) {
+    return getCopyBuilder()
+        .artifactId(artifactId)
+        .build();
   }
 
-  public String getArtifactId() {
-    return artifactId;
-  }
-
-  public void setArtifactId(String artifactId) {
-    this.artifactId = artifactId;
+  private SharedLibraryDependency.SharedLibraryDependencyBuilder getCopyBuilder() {
+    return SharedLibraryDependency.builder()
+        .groupId(groupId)
+        .artifactId(artifactId);
   }
 }

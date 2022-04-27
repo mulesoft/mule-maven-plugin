@@ -9,104 +9,104 @@
  */
 package org.mule.tools.api.classloader.model;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
 public class ApplicationClassloaderModelTest {
-  /*
+
   public static final String VERSION = "1.0.0";
-  private ClassLoaderModel classloaderModelMock;
-  private ApplicationClassloaderModel appClassloaderModel;
-  private List<ClassLoaderModel> mulePluginClassloaderModels;
-  private List<ClassLoaderModel> appDependenciesClassloaderModels;
-  private List<ClassLoaderModel> ramlClassloaderModels;
-  
-  @Before
+  @Mock
+  private DefaultClassLoaderModel classloaderModelMock;
+  private List<DefaultClassLoaderModel> mulePluginClassloaderModels;
+  private List<DefaultClassLoaderModel> appDependenciesClassloaderModels;
+
+  @BeforeEach
   public void setUp() {
+    initMocks(this);
     mulePluginClassloaderModels = buildMulePluginClassloaderModelListMock();
-    ramlClassloaderModels = buildRamlClassloaderModelListMock();
     appDependenciesClassloaderModels = new ArrayList<>(mulePluginClassloaderModels.subList(0, 2));
-    appDependenciesClassloaderModels.addAll(ramlClassloaderModels);
-    classloaderModelMock = mock(ClassLoaderModel.class);
-  
+    appDependenciesClassloaderModels.addAll(buildRamlClassloaderModelListMock());
+
     when(classloaderModelMock.getArtifacts())
         .thenReturn(appDependenciesClassloaderModels.stream()
-            .map(ClassLoaderModel::getArtifacts)
+            .map(DefaultClassLoaderModel::getArtifacts)
             .flatMap(Collection::stream)
             .collect(Collectors.toSet()));
-  
-    appClassloaderModel = new ApplicationClassloaderModel(classloaderModelMock);
-    appClassloaderModel.addAllMulePluginClassloaderModels(mulePluginClassloaderModels);
   }
-  
+
+  @DisplayName("Get artifacts method")
   @Test
   public void getArtifacts() {
-    Set<Artifact> expectedArtifacts = new HashSet<>();
-  
-    for (ClassLoaderModel cl : appDependenciesClassloaderModels) {
-      expectedArtifacts.addAll(cl.getArtifacts());
-    }
-    for (ClassLoaderModel cl : mulePluginClassloaderModels) {
-      expectedArtifacts.addAll(cl.getArtifacts());
-    }
-  
+    ApplicationClassloaderModel appClassloaderModel = new ApplicationClassloaderModel(classloaderModelMock)
+        .addAllMulePluginClassloaderModels(mulePluginClassloaderModels);
+
+    Set<Artifact> expectedArtifacts = Stream.concat(
+                                                    appDependenciesClassloaderModels.stream()
+                                                        .map(DefaultClassLoaderModel::getArtifacts).flatMap(Set::stream),
+                                                    mulePluginClassloaderModels.stream()
+                                                        .map(DefaultClassLoaderModel::getArtifacts).flatMap(Set::stream))
+        .collect(Collectors.toSet());
+
     assertThat("Should be the same set", appClassloaderModel.getArtifacts(), equalTo(expectedArtifacts));
   }
-  
-  private List<ClassLoaderModel> buildMulePluginClassloaderModelListMock() {
-    ClassLoaderModel cl1 = buildMulePluginClassloaderModel(1);
-    ClassLoaderModel cl2 = buildMulePluginClassloaderModel(2);
-    ClassLoaderModel cl3 = buildMulePluginClassloaderModel(3);
-    ClassLoaderModel cl4 = buildMulePluginClassloaderModel(4);
-    return newArrayList(cl1, cl2, cl3, cl4);
+
+  private List<DefaultClassLoaderModel> buildMulePluginClassloaderModelListMock() {
+    return IntStream.rangeClosed(1, 4)
+        .mapToObj(this::buildMulePluginClassloaderModel)
+        .collect(Collectors.toList());
   }
-  
-  private ClassLoaderModel buildMulePluginClassloaderModel(int i) {
-    ClassLoaderModel cl = new ClassLoaderModel(VERSION, buildMulePluginArtifactCoordinates(i, "1.0.0"));
-    cl.setDependencies(buildMulePluginArtifacts(i));
-    return cl;
+
+  private DefaultClassLoaderModel buildMulePluginClassloaderModel(int i) {
+    return new DefaultClassLoaderModel(VERSION, buildMulePluginArtifactCoordinates(i, "1.0.0"))
+        .setDependencies(buildMulePluginArtifacts(i));
   }
-  
+
   private List<Artifact> buildMulePluginArtifacts(int i) {
     int prefix = i * 10;
-    Artifact a1 = new Artifact(buildMulePluginArtifactCoordinates(prefix + 1, "1.0.0"), URI.create("fake" + (prefix + 1)));
-    Artifact a2 = new Artifact(buildMulePluginArtifactCoordinates(prefix + 2, "1.0.0"), URI.create("fake" + (prefix + 2)));
-    Artifact a3 = new Artifact(buildMulePluginArtifactCoordinates(prefix + 3, "1.0.0"), URI.create("fake" + (prefix + 3)));
-    Artifact a4 = new Artifact(buildMulePluginArtifactCoordinates(prefix + 4, "1.0.0"), URI.create("fake" + (prefix + 4)));
-    Artifact a5 = new Artifact(buildMulePluginArtifactCoordinates(prefix + 5, "1.0.0"), URI.create("fake" + (prefix + 5)));
-    return newArrayList(a1, a2, a3, a4, a5);
-  
+    return IntStream.rangeClosed(prefix + 1, prefix + 5)
+        .mapToObj(index -> new Artifact(buildMulePluginArtifactCoordinates(index, "1.0.0"), URI.create("fake" + index)))
+        .collect(Collectors.toList());
   }
-  
+
   private ArtifactCoordinates buildMulePluginArtifactCoordinates(int n, String version) {
     return new ArtifactCoordinates("org.mule.connectors", "connector-" + n, version, "jar", "mule-plugin");
   }
-  
-  
-  private List<ClassLoaderModel> buildRamlClassloaderModelListMock() {
-    ClassLoaderModel cl1 = buildRamlClassloaderModel(1);
-    ClassLoaderModel cl2 = buildRamlClassloaderModel(2);
-    ClassLoaderModel cl3 = buildRamlClassloaderModel(3);
-    ClassLoaderModel cl4 = buildRamlClassloaderModel(4);
-    return newArrayList(cl1, cl2, cl3, cl4);
+
+  private List<DefaultClassLoaderModel> buildRamlClassloaderModelListMock() {
+    return IntStream.rangeClosed(1, 4)
+        .mapToObj(this::buildRamlClassloaderModel)
+        .collect(Collectors.toList());
   }
-  
-  private ClassLoaderModel buildRamlClassloaderModel(int i) {
-    ClassLoaderModel cl = new ClassLoaderModel(VERSION, buildRamlArtifactCoordinates(i, "1.0.0", ""));
-    cl.setDependencies(buildRamlArtifacts(i));
-    return cl;
+
+  private DefaultClassLoaderModel buildRamlClassloaderModel(int i) {
+    return new DefaultClassLoaderModel(VERSION, buildRamlArtifactCoordinates(i, "1.0.0", ""))
+        .setDependencies(buildRamlArtifacts(i));
   }
-  
+
   private List<Artifact> buildRamlArtifacts(int i) {
     int prefix = i * 10;
-    Artifact a1 = new Artifact(buildRamlArtifactCoordinates(prefix + 1, "1.0.0", "-fragment"), URI.create("fake" + (prefix + 1)));
-    Artifact a2 = new Artifact(buildRamlArtifactCoordinates(prefix + 2, "1.0.0", "-fragment"), URI.create("fake" + (prefix + 2)));
-    Artifact a3 = new Artifact(buildRamlArtifactCoordinates(prefix + 3, "1.0.0", "-fragment"), URI.create("fake" + (prefix + 3)));
-    Artifact a4 = new Artifact(buildRamlArtifactCoordinates(prefix + 4, "1.0.0", "-fragment"), URI.create("fake" + (prefix + 4)));
-    Artifact a5 = new Artifact(buildRamlArtifactCoordinates(prefix + 5, "1.0.0", "-fragment"), URI.create("fake" + (prefix + 5)));
-    return newArrayList(a1, a2, a3, a4, a5);
-  
+    return IntStream.rangeClosed(prefix + 1, prefix + 5)
+        .mapToObj(index -> new Artifact(buildRamlArtifactCoordinates(index, "1.0.0", "-fragment"), URI.create("fake" + index)))
+        .collect(Collectors.toList());
   }
-  
+
   private ArtifactCoordinates buildRamlArtifactCoordinates(int n, String version, String packagingSuffix) {
     return new ArtifactCoordinates("org.mycompany", "raml-" + n, version, "zip", "raml" + packagingSuffix);
   }
-  */
 }

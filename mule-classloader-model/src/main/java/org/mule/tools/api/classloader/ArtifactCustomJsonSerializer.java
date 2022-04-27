@@ -9,42 +9,30 @@
  */
 package org.mule.tools.api.classloader;
 
-import static org.mule.tools.api.classloader.Constants.ARTIFACT_IS_SHARED_FIELD;
-import static org.mule.tools.api.classloader.Constants.ARTIFACT_PACKAGES_FIELD;
-import static org.mule.tools.api.classloader.Constants.ARTIFACT_RESOURCES_FIELD;
-
-import org.apache.commons.lang3.ArrayUtils;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
 import org.mule.tools.api.classloader.model.Artifact;
 
 import java.lang.reflect.Type;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import static org.mule.tools.api.classloader.Constants.ARTIFACT_IS_SHARED_FIELD;
 
 /**
  * Handles {@link Artifact} serialization.
  */
-public class ArtifactCustomJsonSerializer implements JsonSerializer<Artifact> {
+public class ArtifactCustomJsonSerializer extends JsonSerializer<Artifact> {
+
+  public ArtifactCustomJsonSerializer() {
+    super(Artifact.class);
+  }
 
   @Override
   public JsonElement serialize(Artifact artifact, Type type, JsonSerializationContext jsonSerializationContext) {
-    Gson gson = new GsonBuilder().create();
-    JsonObject jsonObject = (JsonObject) gson.toJsonTree(artifact);
+    JsonObject jsonObject = (JsonObject) super.serialize(artifact, type, jsonSerializationContext);
 
     if (Boolean.FALSE.equals(artifact.isShared())) {
       jsonObject.remove(ARTIFACT_IS_SHARED_FIELD);
-    }
-
-    if (ArrayUtils.isEmpty(artifact.getPackages())) {
-      jsonObject.remove(ARTIFACT_PACKAGES_FIELD);
-    }
-
-    if (ArrayUtils.isEmpty(artifact.getResources())) {
-      jsonObject.remove(ARTIFACT_RESOURCES_FIELD);
     }
 
     return jsonObject;

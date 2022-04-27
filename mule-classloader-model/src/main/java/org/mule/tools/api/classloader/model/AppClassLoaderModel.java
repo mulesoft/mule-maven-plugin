@@ -9,44 +9,40 @@
  */
 package org.mule.tools.api.classloader.model;
 
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
+import com.google.common.collect.ImmutableSet;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class AppClassLoaderModel extends ClassLoaderModel {
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
-  private List<Plugin> additionalPluginDependencies = new ArrayList<>();
+public class AppClassLoaderModel extends ClassLoaderModelDecorator<AppClassLoaderModel> {
 
-  public AppClassLoaderModel(String version, ArtifactCoordinates artifactCoordinates) {
-    super(version, artifactCoordinates);
+  public AppClassLoaderModel(ClassLoaderModel<?> classLoaderModel) {
+    super(classLoaderModel);
   }
 
   @Override
-  protected ClassLoaderModel doGetParameterizedUriModel() {
-    AppClassLoaderModel copy = new AppClassLoaderModel(getVersion(), getArtifactCoordinates());
-    List<Plugin> pluginsCopy =
-        additionalPluginDependencies.stream().map(Plugin::copyWithParameterizedDependenciesUri).collect(toList());
-    copy.setAdditionalPluginDependencies(pluginsCopy);
-    return copy;
+  protected AppClassLoaderModel instance(ClassLoaderModel<?> classLoaderModel) {
+    return new AppClassLoaderModel(classLoaderModel);
+  }
+
+  @Override
+  public AppClassLoaderModel getParametrizedUriModel() {
+    DefaultClassLoaderModel classLoaderModel = new DefaultClassLoaderModel(getVersion(), getArtifactCoordinates());
+    List<Plugin> plugins =
+        getAdditionalPluginDependencies().stream().map(Plugin::copyWithParameterizedDependenciesUri).collect(toList());
+    return instance(classLoaderModel.setAdditionalPluginDependencies(plugins));
   }
 
   @Override
   public Set<Artifact> getArtifacts() {
-    Set<Artifact> artifacts = super.getArtifacts();
-    additionalPluginDependencies.forEach(
-                                         plugin -> artifacts.addAll(plugin.getAdditionalDependencies()));
-    return artifacts;
-  }
-
-  public Optional<List<Plugin>> getAdditionalPluginDependencies() {
-    return ofNullable(additionalPluginDependencies);
-  }
-
-  public void setAdditionalPluginDependencies(List<Plugin> additionalPluginDependencies) {
-    this.additionalPluginDependencies = additionalPluginDependencies;
+    return Stream.concat(
+                         super.getArtifacts().stream(),
+                         getAdditionalPluginDependencies().stream().map(Plugin::getAdditionalDependencies).flatMap(List::stream))
+        .collect(Collectors.collectingAndThen(toSet(), ImmutableSet::copyOf));
   }
 }

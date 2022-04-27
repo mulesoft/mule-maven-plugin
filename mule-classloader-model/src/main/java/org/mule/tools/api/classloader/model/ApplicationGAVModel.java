@@ -9,8 +9,11 @@
  */
 package org.mule.tools.api.classloader.model;
 
+import lombok.Getter;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@Getter
 public class ApplicationGAVModel {
 
   private final String groupId;
@@ -21,21 +24,9 @@ public class ApplicationGAVModel {
     checkNotNull(groupId, "groupId cannot be null");
     checkNotNull(artifactId, "artifactId cannot be null");
     checkNotNull(version, "version cannot be null");
+
     this.groupId = groupId;
     this.artifactId = artifactId;
     this.version = version;
   }
-
-  public String getGroupId() {
-    return groupId;
-  }
-
-  public String getArtifactId() {
-    return artifactId;
-  }
-
-  public String getVersion() {
-    return version;
-  }
-
 }

@@ -337,7 +337,7 @@ public class CloudHubArtifactDeployerTest {
     when(clientMock.isDomainAvailable(any())).thenReturn(true);
 
     Environment mockEnvironment = mock(Environment.class);
-    when(clientMock.getSupportedMuleVersions()).thenReturn(getObjectStoreV1Enabled(true));
+    when(clientMock.getSupportedMuleVersions()).thenReturn(getObjectStoreV1Enabled(true, "4.0.0"));
 
     when(clientMock.getEnvironment()).thenReturn(mockEnvironment);
 
@@ -366,7 +366,7 @@ public class CloudHubArtifactDeployerTest {
     Environment mockEnvironment = mock(Environment.class);
 
     when(clientMock.getEnvironment()).thenReturn(mockEnvironment);
-    when(clientMock.getSupportedMuleVersions()).thenReturn(getObjectStoreV1Enabled(false));
+    when(clientMock.getSupportedMuleVersions()).thenReturn(getObjectStoreV1Enabled(false, "4.0.0"));
 
     cloudHubArtifactDeployer.deployApplication();
 
@@ -375,7 +375,7 @@ public class CloudHubArtifactDeployerTest {
     assertThat("ObjectStoreV1 must be true", applicationCaptor.getValue().getObjectStoreV1(), equalTo(false));
   }
 
-  private List<SupportedVersion> getObjectStoreV1Enabled(boolean enabled) {
+  private List<SupportedVersion> getObjectStoreV1Enabled(boolean enabled, String muleVersion) {
     List<SupportedVersion> supportedVersions = new ArrayList<SupportedVersion>();
     SupportedVersion version = new SupportedVersion();
     LatestUpdate update = new LatestUpdate();
@@ -383,6 +383,7 @@ public class CloudHubArtifactDeployerTest {
     flags.put(CloudHubArtifactDeployer.OBJECT_STOREV1, enabled);
     update.setFlags(flags);
     version.setLatestUpdate(update);
+    version.setVersion(muleVersion);
     supportedVersions.add(version);
     return supportedVersions;
   }

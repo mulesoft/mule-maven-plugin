@@ -258,9 +258,9 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
   private void configureObjectStore() {
     if (deployment.getObjectStoreV2() == null) {
-      for (SupportedVersion version : client.getSupportedMuleVersions()) {
-        deployment.setObjectStoreV2(!version.getLatestUpdate().getFlags().get(OBJECT_STOREV1));
-      }
+      deployment.setObjectStoreV2(!(client.getSupportedMuleVersions().stream()
+          .anyMatch(version -> version.getVersion().equals(deployment.getMuleVersion().get())
+              && version.getLatestUpdate().getFlags().get(OBJECT_STOREV1))));
     }
   }
 

@@ -19,9 +19,7 @@ import org.mule.tools.api.classloader.model.DefaultClassLoaderModel;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;

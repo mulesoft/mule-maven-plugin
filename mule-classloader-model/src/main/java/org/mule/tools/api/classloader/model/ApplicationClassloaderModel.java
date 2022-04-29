@@ -39,7 +39,7 @@ public class ApplicationClassloaderModel extends ClassLoaderModelDecorator<Appli
   }
 
   @Override
-  protected ApplicationClassloaderModel instance(ClassLoaderModel<?> classLoaderModel) {
+  protected ApplicationClassloaderModel createInstance(ClassLoaderModel<?> classLoaderModel) {
     return new ApplicationClassloaderModel(classLoaderModel);
   }
 

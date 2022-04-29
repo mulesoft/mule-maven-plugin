@@ -26,7 +26,7 @@ public class AppClassLoaderModel extends ClassLoaderModelDecorator<AppClassLoade
   }
 
   @Override
-  protected AppClassLoaderModel instance(ClassLoaderModel<?> classLoaderModel) {
+  protected AppClassLoaderModel createInstance(ClassLoaderModel<?> classLoaderModel) {
     return new AppClassLoaderModel(classLoaderModel);
   }
 
@@ -35,7 +35,7 @@ public class AppClassLoaderModel extends ClassLoaderModelDecorator<AppClassLoade
     DefaultClassLoaderModel classLoaderModel = new DefaultClassLoaderModel(getVersion(), getArtifactCoordinates());
     List<Plugin> plugins =
         getAdditionalPluginDependencies().stream().map(Plugin::copyWithParameterizedDependenciesUri).collect(toList());
-    return instance(classLoaderModel.setAdditionalPluginDependencies(plugins));
+    return createInstance(classLoaderModel.setAdditionalPluginDependencies(plugins));
   }
 
   @Override

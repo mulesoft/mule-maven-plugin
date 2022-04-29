@@ -20,7 +20,7 @@ public abstract class ClassLoaderModelDecorator<T extends ClassLoaderModelDecora
   protected final ClassLoaderModel<?> classLoaderModel;
 
   public ClassLoaderModelDecorator(ClassLoaderModel<?> classLoaderModel) {
-    checkArgument(classLoaderModel != null, "classLoaderModel cannot be null");
+    checkArgument(classLoaderModel != null, "ClassLoaderModel cannot be null");
     this.classLoaderModel = classLoaderModel;
   }
 
@@ -31,7 +31,7 @@ public abstract class ClassLoaderModelDecorator<T extends ClassLoaderModelDecora
 
   @Override
   public T setVersion(String version) {
-    return instance(classLoaderModel.setVersion(version));
+    return createInstance(classLoaderModel.setVersion(version));
   }
 
   @Override
@@ -41,7 +41,7 @@ public abstract class ClassLoaderModelDecorator<T extends ClassLoaderModelDecora
 
   @Override
   public T setArtifactCoordinates(ArtifactCoordinates artifactCoordinates) {
-    return instance(classLoaderModel.setArtifactCoordinates(artifactCoordinates));
+    return createInstance(classLoaderModel.setArtifactCoordinates(artifactCoordinates));
   }
 
   @Override
@@ -51,7 +51,7 @@ public abstract class ClassLoaderModelDecorator<T extends ClassLoaderModelDecora
 
   @Override
   public T setDependencies(List<Artifact> dependencies) {
-    return instance(classLoaderModel.setDependencies(dependencies));
+    return createInstance(classLoaderModel.setDependencies(dependencies));
   }
 
   @Override
@@ -61,7 +61,7 @@ public abstract class ClassLoaderModelDecorator<T extends ClassLoaderModelDecora
 
   @Override
   public T setPackages(String[] packages) {
-    return instance(classLoaderModel.setPackages(packages));
+    return createInstance(classLoaderModel.setPackages(packages));
   }
 
   @Override
@@ -71,7 +71,7 @@ public abstract class ClassLoaderModelDecorator<T extends ClassLoaderModelDecora
 
   @Override
   public T setResources(String[] resources) {
-    return instance(classLoaderModel.setResources(resources));
+    return createInstance(classLoaderModel.setResources(resources));
   }
 
   @Override
@@ -81,15 +81,15 @@ public abstract class ClassLoaderModelDecorator<T extends ClassLoaderModelDecora
 
   @Override
   public T setAdditionalPluginDependencies(List<Plugin> additionalPluginDependencies) {
-    return instance(classLoaderModel.setAdditionalPluginDependencies(additionalPluginDependencies));
+    return createInstance(classLoaderModel.setAdditionalPluginDependencies(additionalPluginDependencies));
   }
 
   @Override
   public ClassLoaderModel<T> getParametrizedUriModel() {
-    return instance(classLoaderModel);
+    return createInstance(classLoaderModel);
   }
 
-  protected abstract T instance(ClassLoaderModel<?> classLoaderModel);
+  protected abstract T createInstance(ClassLoaderModel<?> classLoaderModel);
 
   @Override
   public boolean equals(Object o) {
@@ -97,11 +97,13 @@ public abstract class ClassLoaderModelDecorator<T extends ClassLoaderModelDecora
       return true;
     }
 
-    if (!(o instanceof ClassLoaderModel)) {
-      return false;
+    if (o instanceof ClassLoaderModelDecorator) {
+      return classLoaderModel.equals(((ClassLoaderModelDecorator<?>) o).classLoaderModel);
+    } else if (o instanceof ClassLoaderModel) {
+      return classLoaderModel.equals(o);
     }
 
-    return classLoaderModel.equals(o);
+    return false;
   }
 
   @Override

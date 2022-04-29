@@ -11,6 +11,7 @@
 package org.mule.tools.api.classloader.model;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.io.File.separator;
 import static java.io.File.separatorChar;
 import static org.apache.commons.io.FilenameUtils.normalize;
 
@@ -42,14 +43,11 @@ public class Artifact implements Comparable<Object> {
    * @return the formatted artifact path.
    */
   public static File getFormattedMavenDirectory(File outputDirectory, ArtifactCoordinates artifactCoordinates) {
-    String path = new StringBuilder()
-        .append(artifactCoordinates.getGroupId().replace('.', separatorChar))
-        .append(separatorChar)
-        .append(artifactCoordinates.getArtifactId())
-        .append(separatorChar)
-        .append(artifactCoordinates.getVersion())
-        .append(separatorChar)
-        .toString();
+    String path = String.join(
+                              separator,
+                              artifactCoordinates.getGroupId().replace('.', separatorChar),
+                              artifactCoordinates.getArtifactId(),
+                              artifactCoordinates.getVersion());
     return new File(outputDirectory, path);
   }
 
@@ -131,7 +129,7 @@ public class Artifact implements Comparable<Object> {
         .build();
   }
 
-  private Artifact setArtifactCoordinates(ArtifactCoordinates artifactCoordinates) {
+  public Artifact setArtifactCoordinates(ArtifactCoordinates artifactCoordinates) {
     checkNotNull(artifactCoordinates, "Artifact coordinates cannot be null");
     return getCopyBuilder()
         .artifactCoordinates(artifactCoordinates)

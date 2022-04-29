@@ -23,7 +23,7 @@ public class NotParameterizedClassLoaderModel extends ClassLoaderModelDecorator<
   }
 
   @Override
-  protected NotParameterizedClassLoaderModel instance(ClassLoaderModel<?> classLoaderModel) {
+  protected NotParameterizedClassLoaderModel createInstance(ClassLoaderModel<?> classLoaderModel) {
     return new NotParameterizedClassLoaderModel(classLoaderModel);
   }
 }

@@ -12,7 +12,6 @@ package org.mule.tools.api.classloader.model;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +24,6 @@ import java.util.stream.Stream;
 
 @Getter
 @Builder
-@AllArgsConstructor
 public class ArtifactCoordinates {
 
   public static final String DEFAULT_ARTIFACT_TYPE = "jar";
@@ -37,16 +35,26 @@ public class ArtifactCoordinates {
   private final String classifier;
   private final String scope;
 
-  public ArtifactCoordinates() {
-    this(StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY);
-  }
-
   public ArtifactCoordinates(String groupId, String artifactId, String version) {
     this(groupId, artifactId, version, DEFAULT_ARTIFACT_TYPE, null);
   }
 
   public ArtifactCoordinates(String groupId, String artifactId, String version, String type, String classifier) {
     this(groupId, artifactId, version, type, classifier, null);
+  }
+
+  public ArtifactCoordinates(String groupId, String artifactId, String version, String type, String classifier, String scope) {
+    checkArgument(StringUtils.isNotBlank(groupId), "Group id cannot be null nor blank");
+    checkArgument(StringUtils.isNotBlank(artifactId), "Artifact id can not be null nor blank");
+    checkArgument(StringUtils.isNotBlank(version), "Version can not be null nor blank");
+    checkArgument(StringUtils.isNotBlank(type), "Type can not be null nor blank");
+
+    this.groupId = groupId;
+    this.artifactId = artifactId;
+    this.version = version;
+    this.type = type;
+    this.classifier = classifier;
+    this.scope = scope;
   }
 
   public ArtifactCoordinates setGroupId(String groupId) {
@@ -105,7 +113,7 @@ public class ArtifactCoordinates {
 
   @Override
   public int hashCode() {
-    return Stream.of(getArtifactId(), getGroupId(), getVersion(), getClassifier())
+    return Stream.of(artifactId, groupId, version, classifier)
         .filter(Objects::nonNull)
         .map(Objects::hashCode)
         .reduce(1, (result, hashCode) -> 31 * result + hashCode);

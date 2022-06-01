@@ -30,6 +30,7 @@ import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 import org.mule.tooling.api.AstGenerator;
 import org.mule.tooling.api.ConfigurationException;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
 
 /**
  * @author Mulesoft Inc.
@@ -105,7 +106,8 @@ public class CompileMojo extends AbstractMuleMojo {
 
     ArtifactAst artifactAST = astGenerator.generateAST(contentResolver.getConfigs(), projectStructure.getConfigsPath());
     String skipASTValidation = System.getProperty(SKIP_AST_VALIDATION);
-    if (artifactAST != null && (skipASTValidation == null || skipASTValidation.equals("false"))) {
+    if (artifactAST != null && !this.getClassifier().equalsIgnoreCase(MULE_PLUGIN.toString())
+        && (skipASTValidation == null || skipASTValidation.equals("false"))) {
       ArrayList<ValidationResultItem> warnings = astGenerator.validateAST(artifactAST);
       for (ValidationResultItem warning : warnings) {
         getLog().warn(warning.getMessage());

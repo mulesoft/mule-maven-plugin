@@ -16,10 +16,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.nio.file.Paths;
-
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.junit.Test;
 import org.mule.maven.client.api.MavenClient;
@@ -47,7 +49,7 @@ public class AstGeneratorTest extends MavenClientTest {
                                                 getMavenConfiguration(m2Repo, Optional.ofNullable(getUserSettings(m2Repo)),
                                                                       Optional.ofNullable(getSettingsSecurity(m2Repo))));
     Path workingPath = Paths.get("src", "test", "resources", "test-project");
-    List<Dependency> dependencies = new ArrayList<Dependency>();
+    Set<Artifact> dependencies = new HashSet<Artifact>();
     AstGenerator generator = new AstGenerator(client, "4.3.0", dependencies, workingPath, null);
     Path configsBasePath = workingPath.resolve("src/main/mule");
     ArtifactAst artifact =
@@ -67,7 +69,7 @@ public class AstGeneratorTest extends MavenClientTest {
                                                 getMavenConfiguration(m2Repo, Optional.ofNullable(getUserSettings(m2Repo)),
                                                                       Optional.ofNullable(getSettingsSecurity(m2Repo))));
     Path workingPath = Paths.get("src", "test", "resources", "test-project");
-    List<Dependency> dependencies = new ArrayList<Dependency>();
+    Set<Artifact> dependencies = new HashSet<Artifact>();
     AstGenerator generator = new AstGenerator(client, "4.3.0", dependencies, workingPath, null);
     Path configsBasePath = workingPath.resolve("src/main/mule");
     ArtifactAst artifact =

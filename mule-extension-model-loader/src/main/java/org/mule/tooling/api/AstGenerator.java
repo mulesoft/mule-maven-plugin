@@ -90,9 +90,10 @@ public class AstGenerator {
   private Dependency createDependency(Artifact artifact) {
     Dependency dependency = new Dependency();
     dependency.setArtifactId(artifact.getArtifactId());
-    dependency.setClassifier(artifact.getClassifier());
     dependency.setGroupId(artifact.getGroupId());
     dependency.setVersion(artifact.getVersion());
+    if(artifact.getClassifier()!=null) {dependency.setClassifier(artifact.getClassifier());};
+    if(artifact.getType()!=null) {dependency.setType(artifact.getType());};
     return dependency;
   }
 

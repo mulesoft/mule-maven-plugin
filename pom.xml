@@ -46,6 +46,7 @@
         <java.target>1.8</java.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <!--TODO: W-11267617 change to the monthly version -->
         <mule.version>4.5.0-SNAPSHOT</mule.version>
         <mule.api.version>1.5.0-20220523</mule.api.version>
         <mule.maven.client.impl.version>1.6.0</mule.maven.client.impl.version>

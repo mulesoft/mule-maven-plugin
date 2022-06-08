@@ -38,8 +38,6 @@ import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.meta.model.ExtensionModel;
-import org.mule.runtime.container.internal.ContainerModuleDiscoverer;
-import org.mule.runtime.container.internal.DefaultModuleRepository;
 import org.mule.runtime.module.artifact.activation.api.classloader.ArtifactClassLoaderResolver;
 import org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionDiscoveryRequest;
 import org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer;

@@ -1,6 +1,7 @@
 package org.mule.tooling.internal;
 
 import static org.mule.runtime.api.deployment.meta.Product.MULE;
+import static org.mule.runtime.container.api.ModuleRepository.createModuleRepository;
 import static org.mule.runtime.core.api.config.MuleManifest.getProductVersion;
 import static org.mule.runtime.core.api.util.UUID.getUUID;
 import static org.mule.runtime.deployment.model.api.artifact.ArtifactDescriptorConstants.MULE_LOADER_ID;
@@ -16,6 +17,7 @@ import static java.lang.Boolean.TRUE;
 import static java.lang.Boolean.valueOf;
 import static java.lang.String.format;
 import static java.lang.System.nanoTime;
+import static java.nio.file.Files.createTempDirectory;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
@@ -264,8 +266,8 @@ public class DefaultExtensionModelService implements ExtensionModelService {
 
 
       ArtifactClassLoaderResolver artifactClassLoaderResolver = ArtifactClassLoaderResolver
-          .classLoaderResolver(new DefaultModuleRepository(new ContainerModuleDiscoverer(ArtifactClassLoaderResolver.class
-              .getClassLoader())), (empty) -> applicationFolder);
+          .classLoaderResolver(createModuleRepository(ArtifactClassLoaderResolver.class
+              .getClassLoader(), createTempDir()), (empty) -> applicationFolder);
 
       muleArtifactResourcesRegistry.getPluginDependenciesResolver()
           .resolve(emptySet(), new ArrayList<>(applicationDescriptor.getPlugins()), false);
@@ -300,6 +302,16 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     } finally {
       deleteQuietly(applicationFolder);
     }
+  }
+
+  private File createTempDir() throws IOException {
+    File tempFolder = createTempDirectory(null).toFile();
+    File moduleDiscovererTemporaryFolder = new File(tempFolder, ".moduleDiscoverer");
+    if (!moduleDiscovererTemporaryFolder.mkdir()) {
+      throw new IOException("Error while generating class loaders, cannot create directory "
+          + moduleDiscovererTemporaryFolder.getAbsolutePath());
+    }
+    return moduleDiscovererTemporaryFolder;
   }
 
   private void createPomFile(BundleDescriptor pluginDescriptor, String uuid, File applicationFolder) {

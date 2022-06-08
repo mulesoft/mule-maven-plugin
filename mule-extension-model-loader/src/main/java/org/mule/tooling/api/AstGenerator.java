@@ -53,11 +53,11 @@ public class AstGenerator {
     for (Dependency d : dependencies) {
       if (d.getClassifier() != null && d.getClassifier().equals(MULE_PLUGIN_CLASSIFIER)) {
         PluginResources extensionInformation = loader.load(toBundleDescriptor(d));
-        extensionInformation.getExtensionModels().forEach((item) -> extensionModels.add(item.getSecond()));
+        extensionModels.addAll(extensionInformation.getExtensionModels());
         extensionInformation.getExportedResources().forEach(resource -> {
           try {
-            if(resourceInJar(resource)) {
-              classRealm.addURL(new URL(resource.toExternalForm().split("!/")[0]+"!/"));
+            if (resourceInJar(resource)) {
+              classRealm.addURL(new URL(resource.toExternalForm().split("!/")[0] + "!/"));
             }
           } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -75,7 +75,7 @@ public class AstGenerator {
 
 
   private boolean resourceInJar(URL resource) {
-    return (resource.toExternalForm().startsWith( "jar:" ) && resource.toExternalForm().contains("!/"));
+    return (resource.toExternalForm().startsWith("jar:") && resource.toExternalForm().contains("!/"));
   }
 
 
@@ -101,8 +101,14 @@ public class AstGenerator {
     ValidationResult result = MuleAstUtils.validatorBuilder().build().validate(artifactAst);
     ArrayList<ValidationResultItem> errors = new ArrayList<ValidationResultItem>();
     ArrayList<ValidationResultItem> warnings = new ArrayList<ValidationResultItem>();
-    result.getItems().forEach(v ->{if(v.getValidation().getLevel().equals(Level.ERROR)){errors.add(v);}else {warnings.add(v);}});
-    if(errors.size()>0) {
+    result.getItems().forEach(v -> {
+      if (v.getValidation().getLevel().equals(Level.ERROR)) {
+        errors.add(v);
+      } else {
+        warnings.add(v);
+      }
+    });
+    if (errors.size() > 0) {
       throw new ConfigurationException(errors.get(0).getMessage());
     }
     return warnings;

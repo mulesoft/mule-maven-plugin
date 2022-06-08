@@ -15,14 +15,14 @@ import org.mule.maven.client.api.model.RemoteRepository;
 import org.mule.maven.client.internal.AetherMavenClient;
 
 public abstract class MavenClientTest {
-  
+
   public static final String USER_HOME_PROP = "user.home";
   public static final String M2_DIR = ".m2";
   public static final String M2_HOME = "M2_HOME";
   public static final String M2_REPO = "M2_REPO";
   public static final String USER_SETTINGS = "maven.settings";
   public static final String SETTINGS_SECURITY = "maven.settingsSecurity";
-  
+
   public File getM2Home() throws IOException {
     String mavenHome = System.getenv(M2_HOME);
     if (StringUtils.isBlank(mavenHome)) {

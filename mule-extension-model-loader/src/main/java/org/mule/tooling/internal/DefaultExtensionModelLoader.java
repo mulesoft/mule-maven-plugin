@@ -1,5 +1,7 @@
 package org.mule.tooling.internal;
 
+import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.discoverRuntimeExtensionModels;
+
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.runtime.api.meta.MuleVersion;
@@ -12,7 +14,6 @@ import org.mule.runtime.container.internal.DefaultModuleRepository;
 import org.mule.runtime.container.internal.JreModuleDiscoverer;
 import org.mule.runtime.container.internal.ModuleDiscoverer;
 import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
-import org.mule.runtime.deployment.model.api.artifact.extension.ExtensionModelDiscoverer;
 import org.mule.runtime.extension.api.extension.XmlSdk1ExtensionModelProvider;
 import org.mule.runtime.module.artifact.api.classloader.ArtifactClassLoader;
 import org.mule.tooling.api.ExtensionModelLoader;
@@ -26,22 +27,21 @@ import com.mulesoft.mule.runtime.tracking.api.extension.TrackingEeExtensionModel
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 public class DefaultExtensionModelLoader implements ExtensionModelLoader {
 
-  private final ExtensionModelDiscoverer extensionModelDiscoverer;
   private DefaultExtensionModelService service;
   private MuleVersion muleVersion;
 
   public DefaultExtensionModelLoader(MavenClient mavenClient, Path workingDir, ClassLoader parentClassloader,
                                      String runtimeVersion) {
 
-    this.extensionModelDiscoverer = new ExtensionModelDiscoverer();
     this.muleVersion = new MuleVersion(runtimeVersion);
-    
+
     List<ModuleDiscoverer> result = new ArrayList();
     result.add(new JreModuleDiscoverer());
     result.add(new ClasspathModuleDiscoverer(parentClassloader, workingDir.toFile()));
@@ -58,7 +58,7 @@ public class DefaultExtensionModelLoader implements ExtensionModelLoader {
 
   @Override
   public Set<ExtensionModel> getRuntimeExtensionModels() {
-    Set<ExtensionModel> runtimeExtensionModels = extensionModelDiscoverer.discoverRuntimeExtensionModels();
+    Set<ExtensionModel> runtimeExtensionModels = new HashSet<>(discoverRuntimeExtensionModels());
     runtimeExtensionModels.add(MuleExtensionModelProvider.getExtensionModel());
     runtimeExtensionModels.add(XmlSdk1ExtensionModelProvider.getExtensionModel());
     runtimeExtensionModels.add(MuleExtensionModelProvider.getTlsExtensionModel());

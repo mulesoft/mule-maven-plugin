@@ -17,5 +17,5 @@ public interface ExtensionModelService {
   BundleDescriptor readBundleDescriptor(File pluginFile);
 
   PluginResources loadExtensionData(BundleDescriptor pluginDescriptor,
-                                                                        MuleVersion muleVersion);
+                                    MuleVersion muleVersion);
 }

@@ -24,6 +24,8 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.mule.maven.client.api.model.BundleDescriptor;
@@ -45,24 +47,35 @@ public class AstGenerator {
   AstXmlParser xmlParser;
 
   public AstGenerator(MavenClient mavenClient, String runtimeVersion,
-                      List<Dependency> dependencies, Path workingDir, ClassRealm classRealm) {
+                      Set<Artifact> set, Path workingDir, ClassRealm classRealm) {
     ClassLoader classloader = AstGenerator.class.getClassLoader();
     ExtensionModelLoader loader = ExtensionModelLoaderFactory
         .createLoader(mavenClient, workingDir, classloader, runtimeVersion);
     Set<ExtensionModel> extensionModels = new HashSet<ExtensionModel>();
-    for (Dependency d : dependencies) {
-      if (d.getClassifier() != null && d.getClassifier().equals(MULE_PLUGIN_CLASSIFIER)) {
-        PluginResources extensionInformation = loader.load(toBundleDescriptor(d));
+    for (Artifact artifact : set) {
+      Dependency dependency = createDependency(artifact);
+      if (dependency.getClassifier() != null && dependency.getClassifier().equals(MULE_PLUGIN_CLASSIFIER)) {
+
+        PluginResources extensionInformation = loader.load(toBundleDescriptor(dependency));
         extensionInformation.getExtensionModels().forEach((item) -> extensionModels.add(item.getSecond()));
         extensionInformation.getExportedResources().forEach(resource -> {
           try {
-            if(resourceInJar(resource)) {
-              classRealm.addURL(new URL(resource.toExternalForm().split("!/")[0]+"!/"));
+            if (resourceInJar(resource)) {
+              classRealm.addURL(new URL(resource.toExternalForm().split("!/")[0] + "!/"));
             }
           } catch (MalformedURLException e) {
             e.printStackTrace();
           }
         });
+      } else {
+        if (artifact.getType().equals("jar")) {
+          mavenClient.resolveBundleDescriptor(toBundleDescriptor(dependency));
+          try {
+            classRealm.addURL(mavenClient.resolveBundleDescriptor(toBundleDescriptor(dependency)).getBundleUri().toURL());
+          } catch (MalformedURLException e1) {
+            e1.printStackTrace();
+          }
+        }
       }
     }
     Set<ExtensionModel> runtimeExtensionModels = loader.getRuntimeExtensionModels();
@@ -74,8 +87,19 @@ public class AstGenerator {
   }
 
 
+  private Dependency createDependency(Artifact artifact) {
+    Dependency dependency = new Dependency();
+    dependency.setArtifactId(artifact.getArtifactId());
+    dependency.setGroupId(artifact.getGroupId());
+    dependency.setVersion(artifact.getVersion());
+    if(artifact.getClassifier()!=null) {dependency.setClassifier(artifact.getClassifier());};
+    if(artifact.getType()!=null) {dependency.setType(artifact.getType());};
+    return dependency;
+  }
+
+
   private boolean resourceInJar(URL resource) {
-    return (resource.toExternalForm().startsWith( "jar:" ) && resource.toExternalForm().contains("!/"));
+    return (resource.toExternalForm().startsWith("jar:") && resource.toExternalForm().contains("!/"));
   }
 
 
@@ -101,8 +125,14 @@ public class AstGenerator {
     ValidationResult result = MuleAstUtils.validatorBuilder().build().validate(artifactAst);
     ArrayList<ValidationResultItem> errors = new ArrayList<ValidationResultItem>();
     ArrayList<ValidationResultItem> warnings = new ArrayList<ValidationResultItem>();
-    result.getItems().forEach(v ->{if(v.getValidation().getLevel().equals(Level.ERROR)){errors.add(v);}else {warnings.add(v);}});
-    if(errors.size()>0) {
+    result.getItems().forEach(v -> {
+      if (v.getValidation().getLevel().equals(Level.ERROR)) {
+        errors.add(v);
+      } else {
+        warnings.add(v);
+      }
+    });
+    if (errors.size() > 0) {
       throw new ConfigurationException(errors.get(0).getMessage());
     }
     return warnings;

@@ -91,11 +91,10 @@ public class CompileMojo extends AbstractMuleMojo {
   }
 
   public ArtifactAst getArtifactAst() throws IOException, ConfigurationException {
-
     descriptor.getClassRealm()
         .addURL(project.getBasedir().toPath().resolve("src").resolve("main").resolve("resources").toUri().toURL());
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
-                                                 project.getDependencies(), Paths.get(project.getBuild().getDirectory()),
+                                                 project.getArtifacts(), Paths.get(project.getBuild().getDirectory()),
                                                  descriptor.getClassRealm());
 
     ProjectStructure projectStructure = new ProjectStructure(projectBaseFolder.toPath(), false);

@@ -1,5 +1,7 @@
 package org.mule.tooling.internal;
 
+import static org.mule.runtime.module.artifact.activation.api.classloader.ArtifactClassLoaderResolver.defaultClassLoaderResolver;
+
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
@@ -70,7 +72,7 @@ public class MuleArtifactResourcesRegistry {
         new DomainDescriptorFactory(this.artifactPluginDescriptorLoader, this.descriptorLoaderRepository,
                                     artifactDescriptorValidatorBuilder);
     this.regionPluginClassLoadersFactory =
-        new DefaultRegionPluginClassLoadersFactory(new ArtifactPluginClassLoaderFactory(), this.moduleRepository);
+        new DefaultRegionPluginClassLoadersFactory(defaultClassLoaderResolver());
     this.pluginDependenciesResolver = new BundlePluginDependenciesResolver(this.artifactPluginDescriptorFactory);
   }
 

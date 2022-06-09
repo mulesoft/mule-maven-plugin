@@ -1,9 +1,12 @@
 package org.mule.tooling.internal;
 
 import static org.mule.runtime.api.deployment.meta.Product.MULE;
+import static org.mule.runtime.container.api.ModuleRepository.createModuleRepository;
 import static org.mule.runtime.core.api.config.MuleManifest.getProductVersion;
 import static org.mule.runtime.core.api.util.UUID.getUUID;
 import static org.mule.runtime.deployment.model.api.artifact.ArtifactDescriptorConstants.MULE_LOADER_ID;
+import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.defaultExtensionModelDiscoverer;
+import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.discoverRuntimeExtensionModels;
 import static org.mule.runtime.module.deployment.impl.internal.maven.AbstractMavenClassLoaderModelLoader.CLASSLOADER_MODEL_MAVEN_REACTOR_RESOLVER;
 import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.createDeployablePomFile;
 import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.createDeployablePomProperties;
@@ -14,6 +17,7 @@ import static java.lang.Boolean.TRUE;
 import static java.lang.Boolean.valueOf;
 import static java.lang.String.format;
 import static java.lang.System.nanoTime;
+import static java.nio.file.Files.createTempDirectory;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
@@ -21,7 +25,7 @@ import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 import static com.google.common.collect.ImmutableSet.copyOf;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
@@ -34,16 +38,14 @@ import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.meta.model.ExtensionModel;
-import org.mule.runtime.api.util.Pair;
-import org.mule.runtime.deployment.model.api.application.ApplicationDescriptor;
-import org.mule.runtime.deployment.model.api.artifact.extension.ExtensionModelDiscoverer;
-import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
-import org.mule.runtime.deployment.model.internal.artifact.extension.MuleExtensionModelLoaderManager;
-import org.mule.runtime.deployment.model.internal.tooling.ToolingApplicationClassLoaderBuilder;
-import org.mule.runtime.deployment.model.internal.tooling.ToolingArtifactClassLoader;
-import org.mule.runtime.module.artifact.api.classloader.ArtifactClassLoader;
-import org.mule.runtime.module.artifact.api.classloader.DeployableArtifactClassLoaderFactory;
+import org.mule.runtime.module.artifact.activation.api.classloader.ArtifactClassLoaderResolver;
+import org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionDiscoveryRequest;
+import org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer;
+import org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelLoaderRepository;
+import org.mule.runtime.module.artifact.activation.internal.extension.discovery.DefaultExtensionModelLoaderRepository;
 import org.mule.runtime.module.artifact.api.classloader.MuleDeployableArtifactClassLoader;
+import org.mule.runtime.module.artifact.api.descriptor.ApplicationDescriptor;
+import org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor;
 import org.mule.tooling.api.ExtensionModelService;
 import org.mule.tooling.api.ToolingException;
 
@@ -77,7 +79,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
   private static final String MULE_APPLICATION = "mule-application";
   private static final String MAVEN_MODEL_VERSION = "4.0.0";
 
-  private final ExtensionModelDiscoverer extensionModelDiscoverer = new ExtensionModelDiscoverer();
+  private ExtensionModelDiscoverer extensionModelDiscoverer;
   private final MuleArtifactResourcesRegistry muleArtifactResourcesRegistry;
 
   private final List<ExtensionModel> runtimeExtensionModels = new ArrayList<>();
@@ -86,7 +88,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     requireNonNull(muleArtifactResourcesRegistry, "muleArtifactResourcesRegistry cannot be null");
 
     this.muleArtifactResourcesRegistry = muleArtifactResourcesRegistry;
-    this.runtimeExtensionModels.addAll(new ArrayList<>(extensionModelDiscoverer.discoverRuntimeExtensionModels()));
+    this.runtimeExtensionModels.addAll(new ArrayList<>(discoverRuntimeExtensionModels()));
   }
 
   /**
@@ -118,9 +120,9 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     PluginResources extensionInformationOptional =
         withTemporaryApplication(pluginDescriptor, classLoaderModelAttributes,
                                  (artifactPluginDescriptor,
-                                  toolingArtifactClassLoader,
+                                  artifactClassLoader,
                                   properties) -> loadExtensionData(artifactPluginDescriptor,
-                                                                   toolingArtifactClassLoader,
+                                                                   artifactClassLoader,
                                                                    properties),
                                  null);
     if (LOGGER.isDebugEnabled()) {
@@ -228,9 +230,9 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     PluginResources extensionInformationOptional =
         withTemporaryApplication(pluginDescriptor, emptyMap(),
                                  (artifactPluginDescriptor,
-                                  toolingArtifactClassLoader,
+                                  artifactClassLoader,
                                   properties) -> loadExtensionData(artifactPluginDescriptor,
-                                                                   toolingArtifactClassLoader,
+                                                                   artifactClassLoader,
                                                                    properties),
                                  muleVersion);
     if (LOGGER.isDebugEnabled()) {
@@ -260,21 +262,20 @@ public class DefaultExtensionModelService implements ExtensionModelService {
       ApplicationDescriptor applicationDescriptor = muleArtifactResourcesRegistry.getApplicationDescriptorFactory()
           .createArtifact(applicationFolder, empty(), muleApplicationModel);
 
-      ToolingApplicationClassLoaderBuilder builder =
-          new ToolingApplicationClassLoaderBuilder(newTemporaryArtifactClassLoaderFactory(),
-                                                   muleArtifactResourcesRegistry.getRegionPluginClassLoadersFactory());
-      builder.setArtifactDescriptor(applicationDescriptor);
-      builder.setParentClassLoader(muleArtifactResourcesRegistry.getContainerArtifactClassLoader());
+
+      ArtifactClassLoaderResolver artifactClassLoaderResolver = ArtifactClassLoaderResolver
+          .classLoaderResolver(createModuleRepository(ArtifactClassLoaderResolver.class
+              .getClassLoader(), createTempDir()), (empty) -> applicationFolder);
 
       muleArtifactResourcesRegistry.getPluginDependenciesResolver()
-          .resolve(emptySet(), new ArrayList<>(applicationDescriptor.getPlugins()), false)
-          .stream()
-          .forEach(builder::addArtifactPluginDescriptors);
+          .resolve(emptySet(), new ArrayList<>(applicationDescriptor.getPlugins()), false);
 
-      ToolingArtifactClassLoader toolingArtifactClassLoader = builder.build();
+      MuleDeployableArtifactClassLoader artifactClassLoader =
+          artifactClassLoaderResolver.createApplicationClassLoader(applicationDescriptor,
+                                                                   muleArtifactResourcesRegistry::getContainerArtifactClassLoader);
 
       try {
-        ArtifactPluginDescriptor artifactPluginDescriptor = toolingArtifactClassLoader.getArtifactPluginClassLoaders().stream()
+        ArtifactPluginDescriptor artifactPluginDescriptor = artifactClassLoader.getArtifactPluginClassLoaders().stream()
             .filter(artifactPluginClassLoader -> artifactPluginClassLoader.getArtifactDescriptor().getBundleDescriptor()
                 .getGroupId()
                 .equals(pluginDescriptor.getGroupId())
@@ -284,12 +285,12 @@ public class DefaultExtensionModelService implements ExtensionModelService {
                                                                             pluginDescriptor)))
             .getArtifactDescriptor();
 
-        return action.call(artifactPluginDescriptor, toolingArtifactClassLoader, pluginDescriptor.getProperties());
+        return action.call(artifactPluginDescriptor, artifactClassLoader, pluginDescriptor.getProperties());
       } catch (Exception e) {
         throw new ToolingException(e);
       } finally {
-        if (toolingArtifactClassLoader != null) {
-          toolingArtifactClassLoader.dispose();
+        if (artifactClassLoader != null) {
+          artifactClassLoader.dispose();
         }
       }
     } catch (ToolingException e) {
@@ -299,6 +300,16 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     } finally {
       deleteQuietly(applicationFolder);
     }
+  }
+
+  private File createTempDir() throws IOException {
+    File tempFolder = createTempDirectory(null).toFile();
+    File moduleDiscovererTemporaryFolder = new File(tempFolder, ".moduleDiscoverer");
+    if (!moduleDiscovererTemporaryFolder.mkdir()) {
+      throw new IOException("Error while generating class loaders, cannot create directory "
+          + moduleDiscovererTemporaryFolder.getAbsolutePath());
+    }
+    return moduleDiscovererTemporaryFolder;
   }
 
   private void createPomFile(BundleDescriptor pluginDescriptor, String uuid, File applicationFolder) {
@@ -326,53 +337,48 @@ public class DefaultExtensionModelService implements ExtensionModelService {
   interface TemporaryApplicationFunction {
 
     PluginResources call(ArtifactPluginDescriptor artifactPluginDescriptor,
-                         ToolingArtifactClassLoader toolingArtifactClassLoader,
+                         MuleDeployableArtifactClassLoader artifactClassLoader,
                          Map<String, String> properties);
   }
 
-  private DeployableArtifactClassLoaderFactory<ApplicationDescriptor> newTemporaryArtifactClassLoaderFactory() {
-    return (artifactId, parent, descriptor,
-            artifactPluginClassLoaders) -> new MuleDeployableArtifactClassLoader(artifactId, descriptor,
-                                                                                 descriptor.getClassLoaderModel().getUrls(),
-                                                                                 parent.getClassLoader(),
-                                                                                 parent.getClassLoaderLookupPolicy(),
-                                                                                 artifactPluginClassLoaders);
-  }
-
   private PluginResources loadExtensionData(ArtifactPluginDescriptor artifactPluginDescriptor,
-                                            ToolingArtifactClassLoader toolingArtifactClassLoader,
+                                            MuleDeployableArtifactClassLoader artifactClassLoader,
                                             Map<String, String> properties) {
     try {
       ArrayList<URL> resources = new ArrayList<URL>();
       artifactPluginDescriptor.getClassLoaderModel().getExportedResources().forEach(resource -> {
-        if (toolingArtifactClassLoader.getRegionClassLoader().getResource(resource) != null) {
-          resources.add(toolingArtifactClassLoader.getRegionClassLoader().getResource(resource));
+        if (artifactClassLoader.getParent().getResource(resource) != null) {
+          resources.add(artifactClassLoader.getParent().getResource(resource));
         }
       });
-      MuleExtensionModelLoaderManager extensionModelLoaderRepository =
-          new MuleExtensionModelLoaderManager(muleArtifactResourcesRegistry.getContainerArtifactClassLoader());
-      extensionModelLoaderRepository.start();
-      final Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> loadedExtensionInformation =
-          discoverPluginsExtensionModel(toolingArtifactClassLoader, extensionModelLoaderRepository, properties);
+      ExtensionModelLoaderRepository extensionModelLoaderRepository =
+          ExtensionModelLoaderRepository
+              .getExtensionModelLoaderManager(muleArtifactResourcesRegistry.getContainerArtifactClassLoader().getClassLoader());
+      ((DefaultExtensionModelLoaderRepository) extensionModelLoaderRepository).start();
+      final Set<ExtensionModel> loadedExtensionInformation =
+          discoverPluginsExtensionModel(artifactClassLoader, extensionModelLoaderRepository, properties);
       return new PluginResources(loadedExtensionInformation, resources);
     } catch (Exception e) {
       throw new ToolingException(e);
     } finally {
-      if (toolingArtifactClassLoader != null) {
-        toolingArtifactClassLoader.dispose();
+      if (artifactClassLoader != null) {
+        artifactClassLoader.dispose();
       }
     }
   }
 
-  private Set<Pair<ArtifactPluginDescriptor, ExtensionModel>> discoverPluginsExtensionModel(ToolingArtifactClassLoader toolingArtifactCL,
-                                                                                            MuleExtensionModelLoaderManager extensionModelLoaderRepository,
-                                                                                            Map<String, String> properties) {
-    List<Pair<ArtifactPluginDescriptor, ArtifactClassLoader>> artifacts = toolingArtifactCL.getArtifactPluginClassLoaders()
-        .stream()
-        .map(a -> new Pair<>(effectiveModel(properties, a.getArtifactDescriptor()), a))
-        .collect(toList());
-    return extensionModelDiscoverer.discoverPluginsExtensionModels(extensionModelLoaderRepository, artifacts,
-                                                                   copyOf(loadRuntimeExtensionModels()));
+  private Set<ExtensionModel> discoverPluginsExtensionModel(MuleDeployableArtifactClassLoader artifactClassLoader,
+                                                            ExtensionModelLoaderRepository extensionModelLoaderRepository,
+                                                            Map<String, String> properties) {
+    Set<ArtifactPluginDescriptor> artifactPluginDescriptors =
+        artifactClassLoader.getArtifactPluginClassLoaders().stream()
+            .map(a -> effectiveModel(properties, a.getArtifactDescriptor())).collect(toSet());
+    extensionModelDiscoverer = defaultExtensionModelDiscoverer(artifactClassLoader, extensionModelLoaderRepository);
+    ExtensionDiscoveryRequest request = ExtensionDiscoveryRequest.builder()
+        .setArtifactPlugins(artifactPluginDescriptors)
+        .setParentArtifactExtensions(copyOf(loadRuntimeExtensionModels()))
+        .build();
+    return extensionModelDiscoverer.discoverPluginsExtensionModels(request);
   }
 
   private ArtifactPluginDescriptor effectiveModel(Map<String, String> properties, ArtifactPluginDescriptor artifactDescriptor) {

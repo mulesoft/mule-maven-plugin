@@ -3,6 +3,7 @@ package org.mule.tooling.internal;
 import static org.mule.runtime.api.deployment.meta.Product.MULE;
 import static org.mule.runtime.container.api.ModuleRepository.createModuleRepository;
 import static org.mule.runtime.core.api.config.MuleManifest.getProductVersion;
+import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.startIfNeeded;
 import static org.mule.runtime.core.api.util.UUID.getUUID;
 import static org.mule.runtime.deployment.model.api.artifact.ArtifactDescriptorConstants.MULE_LOADER_ID;
 import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.defaultExtensionModelDiscoverer;
@@ -354,7 +355,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
       ExtensionModelLoaderRepository extensionModelLoaderRepository =
           ExtensionModelLoaderRepository
               .getExtensionModelLoaderManager(muleArtifactResourcesRegistry.getContainerArtifactClassLoader().getClassLoader());
-      ((DefaultExtensionModelLoaderRepository) extensionModelLoaderRepository).start();
+      startIfNeeded(extensionModelLoaderRepository);
       final Set<ExtensionModel> loadedExtensionInformation =
           discoverPluginsExtensionModel(artifactClassLoader, extensionModelLoaderRepository, properties);
       return new PluginResources(loadedExtensionInformation, resources);

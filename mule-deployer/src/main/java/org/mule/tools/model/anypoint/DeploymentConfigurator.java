@@ -46,7 +46,7 @@ public class DeploymentConfigurator {
 
   private final DeployerLog log;
   private AnypointDeployment anypointConfiguration;
-  private final String DEFUALT_GRANT_TYPE = "client_credentials";
+  private final String DEFAULT_GRANT_TYPE = "client_credentials";
   private final String CONNECTED_APPS_USER = "~~~Client~~~";
 
   public DeploymentConfigurator(AnypointDeployment anypointConfiguration, DeployerLog log) {
@@ -132,7 +132,6 @@ public class DeploymentConfigurator {
 
       if (StringUtils.isNotEmpty(anypointConfiguration.getUsername())
           || StringUtils.isNotEmpty(anypointConfiguration.getPassword())
-          || StringUtils.isNotEmpty(anypointConfiguration.getPassword())
           || StringUtils.isNotEmpty(anypointConfiguration.getConnectedAppClientId())
           || StringUtils.isNotEmpty(anypointConfiguration.getConnectedAppClientSecret())) {
         log.warn("Both server and credentials are configured. Using plugin configuration credentials.");
@@ -141,7 +140,7 @@ public class DeploymentConfigurator {
         anypointConfiguration.setConnectedAppClientId(clientApplicationCredentials[0]);
         anypointConfiguration.setConnectedAppClientSecret(clientApplicationCredentials[1]);
         if (StringUtils.isEmpty(anypointConfiguration.getConnectedAppGrantType())) {
-          anypointConfiguration.setConnectedAppGrantType(DEFUALT_GRANT_TYPE);
+          anypointConfiguration.setConnectedAppGrantType(DEFAULT_GRANT_TYPE);
         }
       } else {
         anypointConfiguration.setUsername(serverObject.getUsername());

@@ -51,7 +51,6 @@ public class CompileMojoTest extends AbstractMuleMojoTest {
   public void execute()
       throws FileNotFoundException, ConfigurationException, IOException, MojoExecutionException, MojoFailureException {
     MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
-    InputStream stream = new StringInputStream("");
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
     doCallRealMethod().when(mojoMock).execute();
     doCallRealMethod().when(mojoMock).doExecute();

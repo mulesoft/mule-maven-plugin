@@ -69,7 +69,6 @@ public class AstGenerator {
         });
       } else {
         if (artifact.getType().equals("jar")) {
-          mavenClient.resolveBundleDescriptor(toBundleDescriptor(dependency));
           try {
             classRealm.addURL(mavenClient.resolveBundleDescriptor(toBundleDescriptor(dependency)).getBundleUri().toURL());
           } catch (MalformedURLException e1) {

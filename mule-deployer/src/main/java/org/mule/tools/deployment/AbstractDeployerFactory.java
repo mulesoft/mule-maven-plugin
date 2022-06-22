@@ -22,6 +22,7 @@ import org.mule.tools.deployment.arm.ArmApplicationDeployer;
 import org.mule.tools.deployment.arm.ArmDomainDeployer;
 import org.mule.tools.deployment.cloudhub.CloudHubApplicationDeployer;
 import org.mule.tools.deployment.cloudhub.CloudHubDomainDeployer;
+import org.mule.tools.deployment.cloudhub2.Cloudhub2ApplicationDeployer;
 import org.mule.tools.deployment.standalone.StandaloneApplicationDeployer;
 import org.mule.tools.deployment.standalone.StandaloneDomainDeployer;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
@@ -168,6 +169,21 @@ public abstract class AbstractDeployerFactory {
           return new RuntimeFabricDomainDeployer(deployment, log);
         case MULE_APPLICATION_CLASSIFIER:
           return new RuntimeFabricApplicationDeployer(deployment, log);
+        default:
+          throw new RuntimeException("Deployment not supported: " + deployment.getClass().getSimpleName());
+      }
+    }
+  }
+
+  protected static class Cloudub2DeployerFactory extends AbstractDeployerFactory {
+
+    @Override
+    public Deployer createArtifactDeployer(Deployment deployment, DeployerLog log) {
+      switch (deployment.getPackaging()) {
+        case MULE_DOMAIN_CLASSIFIER:
+          return new Cloudhub2ApplicationDeployer(deployment, log);
+        case MULE_APPLICATION_CLASSIFIER:
+          return new Cloudhub2ApplicationDeployer(deployment, log);
         default:
           throw new RuntimeException("Deployment not supported: " + deployment.getClass().getSimpleName());
       }

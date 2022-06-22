@@ -32,7 +32,7 @@ public class RuntimeFabricDeploymentSettingsTest {
   public static final String MEMORY_LIMIT = "700Mi";
   public static final String PUBLIC_URL = "www.pepe.com";
   public static final String DEFAULT_UPDATE_STRATEGY = "rolling";
-  private RuntimeFabricDeploymentSettings deploymentSettings;
+  private RuntimeFabricOnPremiseDeploymentSettings deploymentSettings;
 
 
   @Rule
@@ -40,7 +40,7 @@ public class RuntimeFabricDeploymentSettingsTest {
 
   @Before
   public void setUp() {
-    deploymentSettings = new RuntimeFabricDeploymentSettings();
+    deploymentSettings = new RuntimeFabricOnPremiseDeploymentSettings();
     deploymentSettings.setRuntimeVersion("4.1.3");
     deploymentSettings.getHttp().getInbound().setPublicUrl(PUBLIC_URL);
     deploymentSettings.setLastMileSecurity(true);

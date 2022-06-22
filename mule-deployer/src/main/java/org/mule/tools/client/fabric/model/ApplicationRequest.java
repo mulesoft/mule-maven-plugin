@@ -12,12 +12,17 @@ package org.mule.tools.client.fabric.model;
 import java.util.List;
 import java.util.Map;
 
+import org.mule.tools.model.anypoint.Integration;
+import org.mule.tools.model.anypoint.Service;
+
 public class ApplicationRequest {
 
   public AssetReference ref;
   public String desiredState;
   public Map<String, Object> configuration;
   public List<AssetReference> assets;
+  public String vCores;
+  public Integration integrations;
 
   public void setRef(AssetReference ref) {
     this.ref = ref;
@@ -34,4 +39,25 @@ public class ApplicationRequest {
   public void setAssets(List<AssetReference> assets) {
     this.assets = assets;
   }
+
+
+  public String getvCores() {
+    return vCores;
+  }
+
+  public void setvCores(String vCores) {
+    this.vCores = vCores;
+  }
+
+
+  public Integration getIntegrations() {
+    return integrations;
+  }
+
+
+  public void setIntegrations(Integration integrations) {
+    this.integrations = integrations;
+  }
+
+
 }

@@ -21,20 +21,15 @@ public class RuntimeFabricDeploymentSettings {
 
   public RuntimeFabricDeploymentSettings() {
     http = new Http();
-    resources = new Resources();
   }
 
 
   public RuntimeFabricDeploymentSettings(RuntimeFabricDeploymentSettings settings) {
     runtimeVersion = settings.runtimeVersion;
-    resources = settings.resources;
     lastMileSecurity = settings.lastMileSecurity;
     persistentObjectStore = settings.persistentObjectStore;
     clustered = settings.clustered;
     updateStrategy = settings.updateStrategy;
-    if (settings.jvm != null) {
-      jvm = settings.jvm;
-    }
     enforceDeployingReplicasAcrossNodes = settings.enforceDeployingReplicasAcrossNodes;
     http = settings.http;
     forwardSslSession = settings.forwardSslSession;
@@ -43,12 +38,6 @@ public class RuntimeFabricDeploymentSettings {
 
   @Parameter
   protected String runtimeVersion;
-
-
-
-  @Parameter
-  protected Resources resources;
-
 
   @Parameter
   protected boolean lastMileSecurity;
@@ -69,9 +58,6 @@ public class RuntimeFabricDeploymentSettings {
   protected Http http;
 
   @Parameter
-  protected Jvm jvm;
-
-  @Parameter
   protected boolean forwardSslSession;
 
   @Parameter
@@ -85,17 +71,6 @@ public class RuntimeFabricDeploymentSettings {
 
   public void setRuntimeVersion(String runtimeVersion) {
     this.runtimeVersion = runtimeVersion;
-  }
-
-
-
-  public Resources getResources() {
-    return resources;
-  }
-
-
-  public void setResources(Resources resources) {
-    this.resources = resources;
   }
 
 
@@ -169,27 +144,7 @@ public class RuntimeFabricDeploymentSettings {
     this.disableAmLogForwarding = disableAmLogForwarding;
   }
 
-
   public void setEnvironmentSpecificValues() throws DeploymentException {
-
-
-
-    if (isEmpty(getResources().getMemory().getReserved())) {
-      getResources().getMemory().setReserved("700Mi");;
-    }
-
-    if (isEmpty(getResources().getMemory().getLimit())) {
-      getResources().getMemory().setLimit(getResources().getMemory().getReserved());
-    }
-
-    if (isEmpty(getResources().getCpu().getReserved())) {
-      getResources().getCpu().setReserved("500m");;
-    }
-
-    if (isEmpty(getResources().getCpu().getLimit())) {
-      getResources().getCpu().setLimit(getResources().getCpu().getReserved());
-    }
-
     if (isEmpty(getUpdateStrategy())) {
       setUpdateStrategy("rolling");
     }

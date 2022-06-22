@@ -63,8 +63,7 @@ public class AstGenerator {
             if (resourceInJar(resource)) {
               classRealm.addURL(new URL(resource.toExternalForm().split("!/")[0] + "!/"));
             }
-            // this seldom can throw ArtifactResolutionException and we should not stop the build for that
-          } catch (Exception e) {
+          } catch (MalformedURLException e) {
             e.printStackTrace();
           }
         });
@@ -72,6 +71,7 @@ public class AstGenerator {
         if (artifact.getType().equals("jar")) {
           try {
             classRealm.addURL(mavenClient.resolveBundleDescriptor(toBundleDescriptor(dependency)).getBundleUri().toURL());
+            // this seldom can throw ArtifactResolutionException and we should not stop the build for that
           } catch (Exception e1) {
             e1.printStackTrace();
           }

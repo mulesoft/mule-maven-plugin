@@ -53,7 +53,7 @@ public class AstGeneratorTest extends MavenClientTest {
     AstGenerator generator = new AstGenerator(client, "4.3.0", dependencies, workingPath, null);
     Path configsBasePath = workingPath.resolve("src/main/mule");
     ArtifactAst artifact =
-        generator.generateAST(Arrays.asList("/" + configsBasePath.resolve("mule-config.xml").toFile().getAbsolutePath()),
+        generator.generateAST(Arrays.asList(configsBasePath.resolve("mule-config.xml").toFile().getAbsolutePath()),
                               configsBasePath);
     generator.validateAST(artifact);
     String absolutePath = workingPath.toFile().getAbsolutePath();
@@ -73,7 +73,7 @@ public class AstGeneratorTest extends MavenClientTest {
     AstGenerator generator = new AstGenerator(client, "4.3.0", dependencies, workingPath, null);
     Path configsBasePath = workingPath.resolve("src/main/mule");
     ArtifactAst artifact =
-        generator.generateAST(Arrays.asList("/" + configsBasePath.resolve("mule-config2.xml").toFile().getAbsolutePath()),
+        generator.generateAST(Arrays.asList(configsBasePath.resolve("mule-config2.xml").toFile().getAbsolutePath()),
                               configsBasePath);
     generator.validateAST(artifact);
   }

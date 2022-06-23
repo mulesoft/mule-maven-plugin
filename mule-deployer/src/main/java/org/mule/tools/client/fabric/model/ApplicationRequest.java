@@ -19,7 +19,7 @@ public class ApplicationRequest {
 
   public AssetReference ref;
   public String desiredState;
-  public Map<String, Object> configuration;
+  public Object configuration;
   public List<AssetReference> assets;
   public String vCores;
   public Integration integrations;
@@ -32,7 +32,7 @@ public class ApplicationRequest {
     this.desiredState = desiredState;
   }
 
-  public void setConfiguration(Map<String, Object> configuration) {
+  public void setConfiguration(Object configuration) {
     this.configuration = configuration;
   }
 

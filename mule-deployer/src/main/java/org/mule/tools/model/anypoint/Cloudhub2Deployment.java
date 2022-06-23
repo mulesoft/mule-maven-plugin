@@ -9,6 +9,9 @@
  */
 package org.mule.tools.model.anypoint;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.maven.plugins.annotations.Parameter;
 
 public class Cloudhub2Deployment extends RuntimeFabricDeployment {
@@ -18,6 +21,12 @@ public class Cloudhub2Deployment extends RuntimeFabricDeployment {
 
   @Parameter
   protected Integration integrations;
+
+  @Parameter
+  protected String artifactName;
+
+  @Parameter
+  protected List<ScopeLoggingConfiguration> scopeLoggingConfigurations;
 
   public String getvCores() {
     return vCores;
@@ -35,6 +44,18 @@ public class Cloudhub2Deployment extends RuntimeFabricDeployment {
 
   public void setIntegrations(Integration integrations) {
     this.integrations = integrations;
+  }
+
+  public String getArtifactName() {
+    return artifactName;
+  }
+
+  public List<ScopeLoggingConfiguration> getScopeLoggingConfigurations() {
+    return scopeLoggingConfigurations;
+  }
+
+  public void setScopeLoggingConfigurations(List<ScopeLoggingConfiguration> scopeLoggingConfigurations) {
+    this.scopeLoggingConfigurations = scopeLoggingConfigurations;
   }
 
 

@@ -11,27 +11,27 @@ package org.mule.tools.model.anypoint;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
-public class Inbound {
+public class ScopeLoggingConfiguration {
 
   @Parameter
-  protected String publicUrl;
-
+  protected String scope;
   @Parameter
-  protected String pathRewrite;
+  protected LogLevel logLevel;
 
-  @Parameter
-  protected String lastMileSecurity;
-
-  @Parameter
-  protected String forwardSslSession;
-
-  public String getPublicUrl() {
-    return publicUrl;
+  public String getScope() {
+    return scope;
   }
 
+  public void setScope(String scope) {
+    this.scope = scope;
+  }
 
-  public void setPublicUrl(String publicUrl) {
-    this.publicUrl = publicUrl;
+  public LogLevel getLogLevel() {
+    return logLevel;
+  }
+
+  public void setLogLevel(LogLevel logLevel) {
+    this.logLevel = logLevel;
   }
 
 

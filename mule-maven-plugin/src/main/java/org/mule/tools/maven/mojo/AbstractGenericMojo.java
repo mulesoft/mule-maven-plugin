@@ -252,6 +252,6 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
 
   public List<Deployment> getDeployments() {
     return Arrays.asList(cloudHubDeployment, clusterDeployment, agentDeployment, armDeployment, standaloneDeployment,
-                         runtimeFabricDeployment);
+                         runtimeFabricDeployment, cloudhub2Deployment);
   }
 }

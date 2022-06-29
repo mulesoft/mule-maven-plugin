@@ -14,19 +14,19 @@ import org.mule.tools.deployment.Deployer;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.utils.DeployerLog;
 
-public class Cloudhub2ApplicationDeployer implements Deployer {
+public class Cloudhub2DomainDeployer implements Deployer {
 
   /**
-   * The application deployer.
+   * The artifact deployer.
    */
-  private final Cloudhub2ArtifactDeployer applicationDeployer;
+  private final Cloudhub2ArtifactDeployer domainDeployer;
 
-  public Cloudhub2ApplicationDeployer(Deployment deployment, DeployerLog log) {
+  public Cloudhub2DomainDeployer(Deployment deployment, DeployerLog log) {
     this(new Cloudhub2ArtifactDeployer(deployment, log));
   }
 
-  protected Cloudhub2ApplicationDeployer(Cloudhub2ArtifactDeployer deployer) {
-    applicationDeployer = deployer;
+  protected Cloudhub2DomainDeployer(Cloudhub2ArtifactDeployer deployer) {
+    domainDeployer = deployer;
   }
 
   /**
@@ -36,7 +36,7 @@ public class Cloudhub2ApplicationDeployer implements Deployer {
    */
   @Override
   public void deploy() throws DeploymentException {
-    applicationDeployer.deployApplication();
+    domainDeployer.deployDomain();
   }
 
   /**
@@ -46,6 +46,7 @@ public class Cloudhub2ApplicationDeployer implements Deployer {
    */
   @Override
   public void undeploy() throws DeploymentException {
-    applicationDeployer.undeployApplication();
+    domainDeployer.undeployDomain();
+
   }
 }

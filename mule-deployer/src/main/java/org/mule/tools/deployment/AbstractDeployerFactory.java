@@ -16,6 +16,7 @@ import org.mule.tools.model.Deployment;
 import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
+import org.mule.tools.model.anypoint.Cloudhub2Deployment;
 import org.mule.tools.deployment.agent.AgentApplicationDeployer;
 import org.mule.tools.deployment.agent.AgentDomainDeployer;
 import org.mule.tools.deployment.arm.ArmApplicationDeployer;
@@ -23,6 +24,8 @@ import org.mule.tools.deployment.arm.ArmDomainDeployer;
 import org.mule.tools.deployment.cloudhub.CloudHubApplicationDeployer;
 import org.mule.tools.deployment.cloudhub.CloudHubDomainDeployer;
 import org.mule.tools.deployment.cloudhub2.Cloudhub2ApplicationDeployer;
+import org.mule.tools.deployment.cloudhub2.Cloudhub2ArtifactDeployer;
+import org.mule.tools.deployment.cloudhub2.Cloudhub2DomainDeployer;
 import org.mule.tools.deployment.standalone.StandaloneApplicationDeployer;
 import org.mule.tools.deployment.standalone.StandaloneDomainDeployer;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
@@ -42,6 +45,7 @@ public abstract class AbstractDeployerFactory {
   public static final CloudHubDeployerFactory CLOUDHUB_DEPLOYER_FACTORY = new CloudHubDeployerFactory();
   public static final StandaloneDeployerFactory STANDALONE_DEPLOYER_FACTORY = new StandaloneDeployerFactory();
   public static final RuntimeFabricDeployerFactory RUNTIME_FABRIC_DEPLOYER_FACTORY = new RuntimeFabricDeployerFactory();
+  public static final Cloudub2DeployerFactory CLOUDHUB2_DEPLOYER_FACTORY = new Cloudub2DeployerFactory();
 
   /**
    * Retrieves an implementation of the {@link AbstractDeployerFactory}. For instance, if {@link AgentDeployment} is passed as as
@@ -67,7 +71,9 @@ public abstract class AbstractDeployerFactory {
     if (deployment instanceof StandaloneDeployment) {
       return STANDALONE_DEPLOYER_FACTORY;
     }
-    if (deployment instanceof RuntimeFabricDeployment) {
+    if (deployment instanceof Cloudhub2Deployment) {
+      return CLOUDHUB2_DEPLOYER_FACTORY;
+    } else if (deployment instanceof RuntimeFabricDeployment) {
       return RUNTIME_FABRIC_DEPLOYER_FACTORY;
     }
     throw new RuntimeException("Deployment not supported: " + deployment.getClass().getSimpleName());
@@ -181,7 +187,7 @@ public abstract class AbstractDeployerFactory {
     public Deployer createArtifactDeployer(Deployment deployment, DeployerLog log) {
       switch (deployment.getPackaging()) {
         case MULE_DOMAIN_CLASSIFIER:
-          return new Cloudhub2ApplicationDeployer(deployment, log);
+          return new Cloudhub2DomainDeployer(deployment, log);
         case MULE_APPLICATION_CLASSIFIER:
           return new Cloudhub2ApplicationDeployer(deployment, log);
         default:

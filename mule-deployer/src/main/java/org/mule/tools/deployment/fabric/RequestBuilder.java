@@ -32,7 +32,7 @@ import java.util.Map;
 public class RequestBuilder {
 
   public static final String ID = "id";
-  private RuntimeFabricDeployment deployment;
+  protected RuntimeFabricDeployment deployment;
   protected RuntimeFabricClient client;
   private static final String AGENT_INFO = "agentInfo";
   private static final String NAME = "name";
@@ -163,7 +163,7 @@ public class RequestBuilder {
     return applicationRequest;
   }
 
-  private AssetReference buildAssetReference() {
+  protected AssetReference buildAssetReference() {
     AssetReference assetReference = new AssetReference();
 
     assetReference.setArtifactId(deployment.getArtifactId());
@@ -197,7 +197,7 @@ public class RequestBuilder {
     return deploymentModify;
   }
 
-  private ApplicationModify buildApplicationModify() {
+  protected ApplicationModify buildApplicationModify() {
     AssetReference assetReference = buildAssetReference();
     ApplicationModify applicationModify = new ApplicationModify();
     applicationModify.setRef(assetReference);

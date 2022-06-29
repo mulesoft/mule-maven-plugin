@@ -11,5 +11,5 @@ package org.mule.tools.model.anypoint;
 
 
 public enum LogLevel {
-  INFO, DEBUG, WARNING, ERROR, FATAL
+  INFO, DEBUG, WARN, ERROR, FATAL
 }

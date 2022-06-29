@@ -65,7 +65,7 @@ public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
       DeploymentRequest request = requestBuilder.buildDeploymentRequest();
       client.deploy(request);
     } catch (ClientException e) {
-      if (e.getStatusCode() == BAD_REQUEST && StringUtils.containsIgnoreCase(e.getMessage(), RTF_DEPLOY_ERROR_MESSAGE)) {
+      if (isAlreadyDeployed(e)) {
         redeployApplication();
       } else {
         throw new DeploymentException("Could not deploy application.", e);
@@ -74,6 +74,10 @@ public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
     if (!deployment.getSkipDeploymentVerification()) {
       checkApplicationHasStarted();
     }
+  }
+
+  protected boolean isAlreadyDeployed(ClientException e) {
+    return e.getStatusCode() == BAD_REQUEST && StringUtils.containsIgnoreCase(e.getMessage(), RTF_DEPLOY_ERROR_MESSAGE);
   }
 
   private void redeployApplication() throws DeploymentException {

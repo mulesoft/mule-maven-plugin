@@ -19,11 +19,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.util.StringInputStream;
 import org.junit.Before;
 import org.junit.Test;
-import org.mule.runtime.ast.api.ArtifactAst;
-import org.mule.tooling.api.AstGenerator;
 import org.mule.tooling.api.ConfigurationException;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
@@ -54,18 +51,13 @@ public class CompileMojoTest extends AbstractMuleMojoTest {
   public void execute()
       throws FileNotFoundException, ConfigurationException, IOException, MojoExecutionException, MojoFailureException {
     MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
-    InputStream stream = new StringInputStream("");
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
-    ArtifactAst artifactAst = mock(ArtifactAst.class);
-    doReturn(artifactAst).when(mojoMock).getArtifactAst();
-    doReturn(stream).when(mojoMock).serialize(artifactAst);
     doCallRealMethod().when(mojoMock).execute();
     doCallRealMethod().when(mojoMock).doExecute();
     mojoMock.execute();
 
-    verify(mojoMock, times(2)).getContentGenerator();
+    verify(mojoMock, times(1)).getContentGenerator();
     verify(contentGeneratorMock, times(1)).createMuleSrcFolderContent();
-    verify(contentGeneratorMock, times(1)).createAstFile(stream);
   }
 
   @Test(expected = MojoFailureException.class)

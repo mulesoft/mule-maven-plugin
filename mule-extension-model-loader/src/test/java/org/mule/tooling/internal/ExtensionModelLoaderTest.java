@@ -52,14 +52,14 @@ public class ExtensionModelLoaderTest extends MavenClientTest {
         ExtensionModelLoaderFactory.createLoader(client, temp, ModuleDiscoverer.class.getClassLoader(), "4.4.0");
 
     PluginResources http = extensionModelLoader.load(
-                                                                                new BundleDescriptor.Builder()
-                                                                                    .setGroupId("org.mule.connectors")
-                                                                                    .setArtifactId("mule-http-connector")
-                                                                                    .setClassifier("mule-plugin")
-                                                                                    .setVersion("1.5.25").build());
-    assertEquals("Loaded a different amount of runtime extension models than expected", 10,
-            extensionModelLoader.getRuntimeExtensionModels().size());
-    assertEquals("Loaded a different amount of plugin extension models than expected",2,http.getExtensionModels().size());
+                                                     new BundleDescriptor.Builder()
+                                                         .setGroupId("org.mule.connectors")
+                                                         .setArtifactId("mule-http-connector")
+                                                         .setClassifier("mule-plugin")
+                                                         .setVersion("1.5.25").build());
+    assertEquals("Loaded a different amount of runtime extension models than expected", 11,
+                 extensionModelLoader.getRuntimeExtensionModels().size());
+    assertEquals("Loaded a different amount of plugin extension models than expected", 2, http.getExtensionModels().size());
 
   }
 

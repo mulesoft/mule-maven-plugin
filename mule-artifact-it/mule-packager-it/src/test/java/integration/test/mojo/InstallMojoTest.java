@@ -36,6 +36,7 @@ public class InstallMojoTest extends MojoTest {
   private static final String MULE_APPLICATION_CLASSIFIER_LIGHT_PACKAGE = "mule-application-light-package";
   private static final String MULE_APPLICATION_WITH_PLUGIN_DEP = "simple-app-with-lib";
   private static final String MULE_PLUGIN = "simple-lib";
+  private static final String INCOMPLETE_PLUGIN = "incomplete-mule-plugin";
 
   public InstallMojoTest() {
     this.goal = INSTALL;
@@ -238,6 +239,17 @@ public class InstallMojoTest extends MojoTest {
 
     verifier.deleteArtifacts(GROUP_ID, MULE_APPLICATION_WITH_PLUGIN_DEP, VERSION);
     verifierPlugin.deleteArtifacts(GROUP_ID, MULE_PLUGIN, VERSION);
+
+    verifierPlugin.executeGoal(INSTALL);
+    verifier.executeGoal(INSTALL);
+    verifier.verifyErrorFreeLog();
+  }
+
+  @Test
+  public void testInstallIncompletePlugin() throws IOException, VerificationException {
+    File pluginBaseDirectory = builder.createProjectBaseDir(INCOMPLETE_PLUGIN, this.getClass());
+
+    Verifier verifierPlugin = buildVerifier(pluginBaseDirectory);
 
     verifierPlugin.executeGoal(INSTALL);
     verifier.executeGoal(INSTALL);

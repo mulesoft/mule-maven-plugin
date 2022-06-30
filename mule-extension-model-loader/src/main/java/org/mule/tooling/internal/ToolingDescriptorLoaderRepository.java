@@ -28,7 +28,8 @@ public class ToolingDescriptorLoaderRepository implements DescriptorLoaderReposi
   public ToolingDescriptorLoaderRepository(MavenClient mavenClient) {
     ToolingClassLoaderModelLoader toolingClassLoaderModelLoader =
         new ToolingClassLoaderModelLoader(Lists.newArrayList(new ClassLoaderModelLoader[] {
-            new DeployableMavenClassLoaderModelLoader(Optional.of(mavenClient)), new PluginMavenClassLoaderModelLoader(Optional.of(mavenClient))}));
+            new DeployableMavenClassLoaderModelLoader(Optional.of(mavenClient)),
+            new PluginMavenClassLoaderModelLoader(Optional.of(mavenClient))}));
     this.descriptorLoaders.put(BundleDescriptorLoader.class,
                                this.findBundleDescriptorLoaders(BundleDescriptorLoader.class, new SpiServiceRegistry()));
     this.descriptorLoaders.put(ClassLoaderModelLoader.class,

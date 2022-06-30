@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+  xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+
+  
+  <flow name="common-flow">
+   <http:listener doc:name="Listener" doc:id="a872dae1-a43d-4f88-ab24-6d12569fc746" config-ref="commonListenerConfig" path="/"/>
+    <http:request method="GET" url="#[vars.livenessEndpoint]" followRedirects="true"  doc:name="HTTP GET to dependency" responseTimeout="#[${deps.alive.timeoutMillis}]">
+      <http:response-validator>
+        <http:success-status-code-validator values="200..299"/>
+      </http:response-validator>
+    </http:request>
+  </flow>
+
+
+
+</mule>

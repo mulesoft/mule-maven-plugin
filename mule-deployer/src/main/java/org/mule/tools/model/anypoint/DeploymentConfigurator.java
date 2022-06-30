@@ -46,6 +46,8 @@ public class DeploymentConfigurator {
 
   private final DeployerLog log;
   private AnypointDeployment anypointConfiguration;
+  private final String DEFAULT_GRANT_TYPE = "client_credentials";
+  private final String CONNECTED_APPS_USER = "~~~Client~~~";
 
   public DeploymentConfigurator(AnypointDeployment anypointConfiguration, DeployerLog log) {
     this.anypointConfiguration = anypointConfiguration;
@@ -127,9 +129,19 @@ public class DeploymentConfigurator {
       }
       // Decrypting Maven server, in case of plain text passwords returns the same
       serverObject = decrypter.decrypt(new DefaultSettingsDecryptionRequest(serverObject)).getServer();
+
       if (StringUtils.isNotEmpty(anypointConfiguration.getUsername())
-          || StringUtils.isNotEmpty(anypointConfiguration.getPassword())) {
+          || StringUtils.isNotEmpty(anypointConfiguration.getPassword())
+          || StringUtils.isNotEmpty(anypointConfiguration.getConnectedAppClientId())
+          || StringUtils.isNotEmpty(anypointConfiguration.getConnectedAppClientSecret())) {
         log.warn("Both server and credentials are configured. Using plugin configuration credentials.");
+      } else if (serverObject.getUsername().equals(CONNECTED_APPS_USER)) {
+        String[] clientApplicationCredentials = StringUtils.split(serverObject.getPassword(), "~?~");
+        anypointConfiguration.setConnectedAppClientId(clientApplicationCredentials[0]);
+        anypointConfiguration.setConnectedAppClientSecret(clientApplicationCredentials[1]);
+        if (StringUtils.isEmpty(anypointConfiguration.getConnectedAppGrantType())) {
+          anypointConfiguration.setConnectedAppGrantType(DEFAULT_GRANT_TYPE);
+        }
       } else {
         anypointConfiguration.setUsername(serverObject.getUsername());
         anypointConfiguration.setPassword(serverObject.getPassword());

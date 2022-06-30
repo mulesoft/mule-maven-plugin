@@ -32,13 +32,15 @@ import java.util.Map;
 public class RequestBuilder {
 
   public static final String ID = "id";
-  private RuntimeFabricDeployment deployment;
-  private RuntimeFabricClient client;
+  protected RuntimeFabricDeployment deployment;
+  protected RuntimeFabricClient client;
   private static final String AGENT_INFO = "agentInfo";
   private static final String NAME = "name";
   private static final String DOMAIN_WILDCARD = "*";
 
-  protected RequestBuilder(RuntimeFabricDeployment deployment, RuntimeFabricClient client) {
+  public RequestBuilder() {}
+
+  public RequestBuilder(RuntimeFabricDeployment deployment, RuntimeFabricClient client) {
     this.deployment = deployment;
     this.client = client;
   }
@@ -54,14 +56,12 @@ public class RequestBuilder {
     deploymentRequest.setApplication(applicationRequest);
     deploymentRequest.setTarget(target);
 
-
     Map<String, Object> applicationPropertiesService = new HashMap<>();
     Map<String, Object> properties = new HashMap<>();
     properties.put("properties", deployment.getProperties());
     properties.put("secureProperties", deployment.getSecureProperties());
     properties.put("applicationName", deployment.getApplicationName());
     applicationPropertiesService.put("mule.agent.application.properties.service", properties);
-
     applicationRequest.setConfiguration(applicationPropertiesService);
 
     return deploymentRequest;
@@ -155,7 +155,7 @@ public class RequestBuilder {
     throw new DeploymentException("Could not find target " + targetName);
   }
 
-  private ApplicationRequest buildApplicationRequest() {
+  protected ApplicationRequest buildApplicationRequest() {
     AssetReference assetReference = buildAssetReference();
     ApplicationRequest applicationRequest = new ApplicationRequest();
     applicationRequest.setRef(assetReference);
@@ -163,7 +163,7 @@ public class RequestBuilder {
     return applicationRequest;
   }
 
-  private AssetReference buildAssetReference() {
+  protected AssetReference buildAssetReference() {
     AssetReference assetReference = new AssetReference();
 
     assetReference.setArtifactId(deployment.getArtifactId());
@@ -197,7 +197,7 @@ public class RequestBuilder {
     return deploymentModify;
   }
 
-  private ApplicationModify buildApplicationModify() {
+  protected ApplicationModify buildApplicationModify() {
     AssetReference assetReference = buildAssetReference();
     ApplicationModify applicationModify = new ApplicationModify();
     applicationModify.setRef(assetReference);

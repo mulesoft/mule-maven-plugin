@@ -11,27 +11,22 @@ package org.mule.tools.model.anypoint;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
-public class Inbound {
+public class Integration {
 
   @Parameter
-  protected String publicUrl;
+  private Service services;
 
-  @Parameter
-  protected String pathRewrite;
 
-  @Parameter
-  protected String lastMileSecurity;
+  public Integration() {}
 
-  @Parameter
-  protected String forwardSslSession;
 
-  public String getPublicUrl() {
-    return publicUrl;
+  public Service getServices() {
+    return services;
   }
 
 
-  public void setPublicUrl(String publicUrl) {
-    this.publicUrl = publicUrl;
+  public void setServices(Service services) {
+    this.services = services;
   }
 
 

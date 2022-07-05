@@ -33,9 +33,9 @@ public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
   public static final int BAD_REQUEST = 400;
   private DeploymentVerification deploymentVerification;
   private RequestBuilder requestBuilder;
-  private RuntimeFabricClient client;
+  protected RuntimeFabricClient client;
   private final DeployerLog log;
-  private final RuntimeFabricDeployment deployment;
+  protected final RuntimeFabricDeployment deployment;
 
   public RuntimeFabricArtifactDeployer(Deployment deployment, DeployerLog log) {
     this(deployment, new RuntimeFabricClient((RuntimeFabricDeployment) deployment, log), log);
@@ -48,10 +48,14 @@ public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
     this.client = client;
     this.deployment = (RuntimeFabricDeployment) deployment;
     this.deploymentVerification = new RuntimeFabricDeploymentVerification(client);
-    this.requestBuilder = new RequestBuilder(this.deployment, this.client);
+    this.requestBuilder = createRequestBuilder();
     if (!this.deployment.getDeploymentTimeout().isPresent()) {
       this.deployment.setDeploymentTimeout(DEFAULT_RUNTIME_FABRIC_DEPLOYMENT_TIMEOUT);
     }
+  }
+
+  public RequestBuilder createRequestBuilder() {
+    return new RequestBuilder(this.deployment, this.client);
   }
 
   @Override
@@ -61,7 +65,7 @@ public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
       DeploymentRequest request = requestBuilder.buildDeploymentRequest();
       client.deploy(request);
     } catch (ClientException e) {
-      if (e.getStatusCode() == BAD_REQUEST && StringUtils.containsIgnoreCase(e.getMessage(), RTF_DEPLOY_ERROR_MESSAGE)) {
+      if (isAlreadyDeployed(e)) {
         redeployApplication();
       } else {
         throw new DeploymentException("Could not deploy application.", e);
@@ -70,6 +74,10 @@ public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
     if (!deployment.getSkipDeploymentVerification()) {
       checkApplicationHasStarted();
     }
+  }
+
+  protected boolean isAlreadyDeployed(ClientException e) {
+    return e.getStatusCode() == BAD_REQUEST && StringUtils.containsIgnoreCase(e.getMessage(), RTF_DEPLOY_ERROR_MESSAGE);
   }
 
   private void redeployApplication() throws DeploymentException {

@@ -11,27 +11,23 @@ package org.mule.tools.model.anypoint;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
-public class Inbound {
+public class ObjectStoreV2 {
 
   @Parameter
-  protected String publicUrl;
+  protected boolean enabled;
 
-  @Parameter
-  protected String pathRewrite;
 
-  @Parameter
-  protected String lastMileSecurity;
 
-  @Parameter
-  protected String forwardSslSession;
+  public ObjectStoreV2() {}
 
-  public String getPublicUrl() {
-    return publicUrl;
+
+  public boolean isEnabled() {
+    return enabled;
   }
 
 
-  public void setPublicUrl(String publicUrl) {
-    this.publicUrl = publicUrl;
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
   }
 
 

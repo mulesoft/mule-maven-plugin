@@ -78,9 +78,9 @@ public abstract class ContentGenerator {
           for (int i = 0; i < parentNodes.getLength(); i++) {
             if (parentNodes.item(i).getNodeName().equals("version")) {
               parentNodes.item(i).getFirstChild().setNodeValue(parent.getVersion());
-            } ;
+            }
           }
-        } ;
+        }
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
         DOMSource source = new DOMSource(pomFile);

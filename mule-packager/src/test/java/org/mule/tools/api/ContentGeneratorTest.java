@@ -66,7 +66,7 @@ public class ContentGeneratorTest {
         .withDependencyProject(mock(Project.class))
         .withResolvedPom(mock(Pom.class))
         .build();
-    contentGenerator = new MuleContentGenerator(info);
+    contentGenerator = new MuleContentGenerator(info, null);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -79,8 +79,9 @@ public class ContentGeneratorTest {
         .withProjectBaseFolder(Paths.get("/fake/project/base/folder"))
         .setTestProject(false)
         .withBuildDirectory(projectTargetFolder.toPath()).build();
-    new MuleContentGenerator(info);
+    new MuleContentGenerator(info, null);
   }
+
 
   @Test(expected = IllegalArgumentException.class)
   public void failCreationProjectTargetFolderNonExistent() {
@@ -92,7 +93,7 @@ public class ContentGeneratorTest {
         .withProjectBaseFolder(projectBaseFolder.getRoot().toPath())
         .setTestProject(false)
         .withBuildDirectory(Paths.get("/fake/project/base/folder")).build();
-    new MuleContentGenerator(info);
+    new MuleContentGenerator(info, null);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -282,7 +283,7 @@ public class ContentGeneratorTest {
         .withDependencyProject(mock(Project.class))
         .withResolvedPom(mock(Pom.class))
         .withBuildDirectory(projectTargetFolder.toPath()).build();
-    contentGenerator = new MuleContentGenerator(info);
+    contentGenerator = new MuleContentGenerator(info, null);
 
     String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
@@ -323,7 +324,7 @@ public class ContentGeneratorTest {
         .withDependencyProject(mock(Project.class))
         .withResolvedPom(mock(Pom.class))
         .withBuildDirectory(projectTargetFolder.toPath()).build();
-    contentGenerator = new MuleContentGenerator(info);
+    contentGenerator = new MuleContentGenerator(info, null);
 
     String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 

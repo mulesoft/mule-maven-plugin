@@ -12,7 +12,6 @@ import static javax.ws.rs.core.Response.Status.Family.familyOf;
 import org.mule.tools.maven.plugin.mule.arm.AuthorizationResponse;
 import org.mule.tools.maven.plugin.mule.arm.Environment;
 import org.mule.tools.maven.plugin.mule.arm.Environments;
-import org.mule.tools.maven.plugin.mule.arm.UserInfo;
 
 import java.util.ArrayList;
 
@@ -113,10 +112,10 @@ public abstract class AbstractMuleApi extends AbstractApi
         }
     }
 
-    private JSONObject getHierarchy()
-    {
-        UserInfo response = get(uri, ME, UserInfo.class);
-        String rootOrgId = response.user.organization.id;
+    private JSONObject getHierarchy() {
+        String stringResponse = get(uri, ME, String.class);
+        JSONObject jsonObject = new JSONObject(stringResponse);      
+        String rootOrgId = jsonObject.getJSONObject("user").getJSONObject("organization").getString("id");
         return new JSONObject(get(uri, "accounts/api/organizations/" + rootOrgId + "/hierarchy", String.class));
     }
 

@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 
   <flow name="common-flow">
     <logger/>
   </flow>
-
+	<http:request-config name="HTTP_Request_Config" doc:name="HTTP Request configuration" doc:id="dc70223b-8f49-443e-a1e6-41f6f0279300" 
+		basePath="${ship.basePath}">
+        <http:request-connection host="${ship.host}" port="${ship.port}" protocol="HTTP"/>
+    </http:request-config>
+	<sub-flow name="send.shipping.notification" doc:id="c2965ee1-9a46-48b0-9fa2-a4331003de46" >
+		<try doc:name="Try" doc:id="e7c711a4-c1b4-49f3-b310-ad7527e70ed3" >
+			<http:request method="POST" doc:name="send shipping notification" doc:id="56344d84-2c12-4c6b-a3d1-b1fe8bb9eff4" config-ref="HTTP_Request_Config" path="${ship.endpoints.ordershipped}">
+				<http:query-params><![CDATA[#[vars.queryParams]]]></http:query-params>
+			</http:request>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7f7d75a4-a84f-4406-b14d-76abf5f169de" type="HTTP:BAD_GATEWAY" when="(error.errorMessage.payload.^mediaType contains 'application/json') and (error.errorMessage.payload.detail != null)">
+					<set-variable value="409" doc:name="Set HTTP Status 409" doc:id="845ca4a1-096f-48e7-b9d5-62ffb2a3c7fb" variableName="httpStatus"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+	</sub-flow>
 </mule>

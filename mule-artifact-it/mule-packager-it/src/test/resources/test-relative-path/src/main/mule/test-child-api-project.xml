@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<import doc:name="Import" doc:id="e12d0096-4ab4-4ee9-bac1-340707f88cc8" file="test-lib-project.xml" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="27ab09f4-36bd-4b27-b9c4-2dc0309ccca2" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="test-child-api-projectFlow" doc:id="008b89b0-24b5-4a7f-9c71-599e0cf6de93" >
+		<http:listener doc:name="Listener" doc:id="23f716cf-6b2c-4d1f-9c8f-12bce6d292fb" config-ref="HTTP_Listener_config" path="/test-api"/>
+		<flow-ref doc:name="Flow Reference" doc:id="450ddf95-bb30-4fb4-a5d1-822631125ef0" name="test-child-api-projectFlow"/>
+	</flow>
+</mule>

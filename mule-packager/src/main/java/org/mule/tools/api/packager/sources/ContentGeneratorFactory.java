@@ -10,6 +10,7 @@
 
 package org.mule.tools.api.packager.sources;
 
+import org.apache.maven.model.Parent;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 
@@ -20,8 +21,12 @@ import org.mule.tools.api.packager.packaging.PackagingType;
 public class ContentGeneratorFactory {
 
   public static ContentGenerator create(ProjectInformation projectInformation) {
+    return create(projectInformation, null);
+  }
+
+  public static ContentGenerator create(ProjectInformation projectInformation, Parent parent) {
     PackagingType packaging = PackagingType.fromString(projectInformation.getPackaging());
     return packaging == PackagingType.MULE_DOMAIN_BUNDLE ? new DomainBundleContentGenerator(projectInformation)
-        : new MuleContentGenerator(projectInformation);
+        : new MuleContentGenerator(projectInformation, parent);
   }
 }

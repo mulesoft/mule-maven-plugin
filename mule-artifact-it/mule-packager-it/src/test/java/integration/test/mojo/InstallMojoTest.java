@@ -35,6 +35,9 @@ public class InstallMojoTest extends MojoTest {
   private static final String MULE_APPLICATION_TEMPLATE_CLASSIFIER = "mule-application-template";
   private static final String MULE_APPLICATION_CLASSIFIER_LIGHT_PACKAGE = "mule-application-light-package";
   private static final String MULE_APPLICATION_WITH_PLUGIN_DEP = "simple-app-with-lib";
+  private static final String MULE_PARENT = "test-parent-pom";
+  private static final String MULE_CHILD = "test-child";
+  private static final String MULE_RELATIVE_PATH = "test-relative-path";
   private static final String MULE_PLUGIN = "simple-lib";
   private static final String INCOMPLETE_PLUGIN = "incomplete-mule-plugin";
 
@@ -241,6 +244,29 @@ public class InstallMojoTest extends MojoTest {
     verifierPlugin.deleteArtifacts(GROUP_ID, MULE_PLUGIN, VERSION);
 
     verifierPlugin.executeGoal(INSTALL);
+    verifier.executeGoal(INSTALL);
+    verifier.verifyErrorFreeLog();
+  }
+
+  @Test
+  public void testInstallAppWithParentWithRelativePath() throws IOException, VerificationException {
+    File parentBaseDirectory = builder.createProjectBaseDir(MULE_PARENT, this.getClass());
+    File libWithRelativeParentBaseDirectory = builder.createProjectBaseDir(MULE_CHILD, this.getClass());
+    projectBaseDirectory = builder.createProjectBaseDir(MULE_RELATIVE_PATH, this.getClass());
+
+
+
+    Verifier verifierParent = buildVerifier(parentBaseDirectory);
+    Verifier verifierChild = buildVerifier(libWithRelativeParentBaseDirectory);
+    verifier = buildVerifier(projectBaseDirectory);
+
+    verifierParent.deleteArtifacts(GROUP_ID, MULE_PARENT, VERSION);
+    verifierChild.deleteArtifacts(GROUP_ID, MULE_CHILD, VERSION);
+    verifier.deleteArtifacts(GROUP_ID, MULE_RELATIVE_PATH, VERSION);
+
+
+    verifierParent.executeGoal(INSTALL);
+    verifierChild.executeGoal(INSTALL);
     verifier.executeGoal(INSTALL);
     verifier.verifyErrorFreeLog();
   }

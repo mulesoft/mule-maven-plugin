@@ -38,7 +38,7 @@ public class CloudHubDeployment extends AnypointDeployment {
   protected Boolean persistentQueues = false;
 
   @Parameter
-  protected Boolean LoggingCustomLog4JEnabled = false;
+  protected Boolean customLog4J = false;
 
   @Parameter
   protected Integer waitBeforeValidation = 6000;
@@ -111,12 +111,12 @@ public class CloudHubDeployment extends AnypointDeployment {
     this.persistentQueues = persistentQueues;
   }
 
-  public Boolean getLoggingCustomLog4JEnabled() {
-    return LoggingCustomLog4JEnabled;
+  public Boolean getCustomLog4J() {
+    return customLog4J;
   }
 
-  public void setLoggingCustomLog4JEnabled(Boolean LoggingCustomLog4JEnabled) {
-    this.LoggingCustomLog4JEnabled = LoggingCustomLog4JEnabled;
+  public void setCustomLog4J(Boolean customLog4J) {
+    this.customLog4J = customLog4J;
   }
 
   public Integer getWaitBeforeValidation() {

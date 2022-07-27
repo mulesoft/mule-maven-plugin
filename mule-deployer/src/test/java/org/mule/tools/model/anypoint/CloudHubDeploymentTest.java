@@ -59,9 +59,9 @@ public class CloudHubDeploymentTest {
   }
 
   @Test
-  public void defaultLoggingCustomLog4JEnabledValueIsFalse() {
+  public void defaultCustomLog4JValueIsFalse() {
     assertThat("The default value for Custom Log4J property is not false",
-               deploymentSpy.getLoggingCustomLog4JEnabled(), equalTo(false));
+               deploymentSpy.getCustomLog4J(), equalTo(false));
   }
 
   @Test

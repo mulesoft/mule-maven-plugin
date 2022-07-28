@@ -52,6 +52,8 @@ public class AstGenerator {
     ExtensionModelLoader loader = ExtensionModelLoaderFactory
         .createLoader(mavenClient, workingDir, classloader, runtimeVersion);
     Set<ExtensionModel> extensionModels = new HashSet<ExtensionModel>();
+
+    ArrayList<URL> dependenciesURL = new ArrayList<URL>();
     for (Artifact artifact : set) {
       Dependency dependency = createDependency(artifact);
       if (dependency.getClassifier() != null && dependency.getClassifier().equals(MULE_PLUGIN_CLASSIFIER)) {
@@ -61,7 +63,7 @@ public class AstGenerator {
         extensionInformation.getExportedResources().forEach(resource -> {
           try {
             if (resourceInJar(resource)) {
-              classRealm.addURL(new URL(resource.toExternalForm().split("!/")[0] + "!/"));
+              dependenciesURL.add(new URL(resource.toExternalForm().split("!/")[0] + "!/"));
             }
           } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -70,7 +72,7 @@ public class AstGenerator {
       } else {
         if (artifact.getType().equals("jar")) {
           try {
-            classRealm.addURL(mavenClient.resolveBundleDescriptor(toBundleDescriptor(dependency)).getBundleUri().toURL());
+            dependenciesURL.add(mavenClient.resolveBundleDescriptor(toBundleDescriptor(dependency)).getBundleUri().toURL());
             // this seldom can throw ArtifactResolutionException and we should not stop the build for that
           } catch (Exception e1) {
             e1.printStackTrace();
@@ -78,6 +80,14 @@ public class AstGenerator {
         }
       }
     }
+    dependenciesURL.forEach(url -> {
+      try {
+        classRealm.addURL(url);
+        // this seldom can throw ArtifactResolutionException and we should not stop the build for that
+      } catch (Exception e1) {
+        e1.printStackTrace();
+      }
+    });
     Set<ExtensionModel> runtimeExtensionModels = loader.getRuntimeExtensionModels();
     extensionModels.addAll(runtimeExtensionModels);
     AstXmlParser.Builder builder = new AstXmlParser.Builder();

@@ -20,7 +20,7 @@ import java.io.IOException;
 public class DomainBundleContentGenerator extends ContentGenerator {
 
   public DomainBundleContentGenerator(ProjectInformation projectInformation) {
-    super(projectInformation);
+    super(projectInformation, null);
   }
 
   @Override

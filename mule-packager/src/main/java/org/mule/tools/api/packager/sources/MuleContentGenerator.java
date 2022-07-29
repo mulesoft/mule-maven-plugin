@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.model.Parent;
 
 
 /**
@@ -48,8 +49,8 @@ public class MuleContentGenerator extends ContentGenerator {
 
   private MuleArtifactContentResolver muleArtifactContentResolver;
 
-  public MuleContentGenerator(ProjectInformation projectInformation) {
-    super(projectInformation);
+  public MuleContentGenerator(ProjectInformation projectInformation, Parent parent) {
+    super(projectInformation, parent);
   }
 
   /**

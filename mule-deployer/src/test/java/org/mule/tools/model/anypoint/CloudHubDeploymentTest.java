@@ -59,6 +59,12 @@ public class CloudHubDeploymentTest {
   }
 
   @Test
+  public void defaultLoggingCustomLog4JEnabledValueIsFalse() {
+    assertThat("The default value for Custom Log4J property is not false",
+               deploymentSpy.getLoggingCustomLog4JEnabled(), equalTo(false));
+  }
+
+  @Test
   public void defaultWaitBeforeValidationIsZero() {
     assertThat("The default value for pepe is not zero",
                deploymentSpy.getWaitBeforeValidation(), equalTo(6000));

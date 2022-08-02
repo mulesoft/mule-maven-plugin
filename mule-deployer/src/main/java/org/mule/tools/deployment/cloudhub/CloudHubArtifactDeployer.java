@@ -232,7 +232,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
     application.setObjectStoreV1(!deployment.getObjectStoreV2());
     application.setPersistentQueues(deployment.getPersistentQueues());
-    application.setLoggingCustomLog4JEnabled(deployment.getLoggingCustomLog4JEnabled());
+    application.setLoggingCustomLog4JEnabled(deployment.getDisableCloudHubLogs());
 
     return application;
   }

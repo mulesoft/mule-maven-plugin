@@ -110,7 +110,7 @@ public class RuntimeFabricClient extends AbstractMuleClient {
   }
 
   public Supplier<String> getPathSupplier() {
-    return () -> format(DEPLOYMENTS_PATH, getOrgId(), getEnvId());
+    return () -> format(getDeploymentsPath(), getOrgId(), getEnvId());
   }
 
   public Supplier<String> getAgentsPathSupplier() {
@@ -134,5 +134,9 @@ public class RuntimeFabricClient extends AbstractMuleClient {
     Response response = get(baseUri, format(RUNTIME_FABRIC_DOMAIN_INFO, getOrgId(), targetId, getEnvId()));
     checkResponseStatus(response, OK);
     return new Gson().fromJson(response.readEntity(String.class), JsonArray.class).getAsJsonArray();
+  }
+
+  protected String getDeploymentsPath() {
+    return DEPLOYMENTS_PATH;
   }
 }

@@ -16,7 +16,7 @@ import org.mule.tools.utils.DeployerLog;
 
 public class Cloudhub2RuntimeFabricClient extends RuntimeFabricClient {
 
-  private static final String AMC_API = "amc/application-manager/v2";
+  private static final String AMC_API = "amc/application-manager/api/v2";
   private static final String AMC_RESOURCES_PATH = AMC_API + "/organizations/%s/environments/%s";
   private static final String AMC_DEPLOYMENTS_PATH = AMC_RESOURCES_PATH + "/deployments";
 

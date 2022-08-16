@@ -53,6 +53,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     applicationModify.setRef(assetReference);
     applicationModify.setConfiguration(createConfiguration());
     applicationModify.setvCores(((Cloudhub2Deployment) deployment).getvCores());
+    applicationModify.setIntegrations(((Cloudhub2Deployment) deployment).getIntegrations());
     return applicationModify;
   }
 

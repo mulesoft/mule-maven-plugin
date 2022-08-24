@@ -17,10 +17,10 @@ import org.junit.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.fabric.RuntimeFabricClient;
 import org.mule.tools.model.anypoint.Cloudhub2Deployment;
+import org.mule.tools.model.anypoint.Cloudhub2DeploymentSettings;
 import org.mule.tools.model.anypoint.Integration;
 import org.mule.tools.model.anypoint.LogLevel;
 import org.mule.tools.model.anypoint.ObjectStoreV2;
-import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
 import org.mule.tools.model.anypoint.ScopeLoggingConfiguration;
 import org.mule.tools.model.anypoint.Service;
 
@@ -83,7 +83,7 @@ public class RequestBuilderTest {
     service.setObjectStoreV2(os2);
     integrations.setServices(service);
     cloudhub2Deployment.setIntegrations(integrations);
-    cloudhub2Deployment.setDeploymentSettings(new RuntimeFabricDeploymentSettings());
+    cloudhub2Deployment.setDeploymentSettings(new Cloudhub2DeploymentSettings());
     cloudhub2Deployment.setvCores("0.5");
     List<ScopeLoggingConfiguration> ScopeLoggingConfigs = new ArrayList<ScopeLoggingConfiguration>();
     ScopeLoggingConfiguration configuration = new ScopeLoggingConfiguration();

@@ -111,6 +111,10 @@
             <artifactId>hamcrest-all</artifactId>
             <scope>test</scope>
         </dependency>
+		<dependency>
+    		<groupId>org.sonatype.plexus</groupId>
+    		<artifactId>plexus-sec-dispatcher</artifactId>
+		</dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

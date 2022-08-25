@@ -148,14 +148,29 @@
                         <groupId>org.eclipse.sisu</groupId>
                         <artifactId>org.eclipse.sisu.plexus</artifactId>
                     </exclusion>
-                </exclusions>
+            <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-sec-dispatcher</artifactId>
+            </exclusion>
+            </exclusions>
             </dependency>
+            <dependency>
+    <groupId>org.sonatype.plexus</groupId>
+    <artifactId>plexus-sec-dispatcher</artifactId>
+<version>1.4</version>
+</dependency>
 
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-core</artifactId>
                 <version>${maven.version}</version>
                 <scope>provided</scope>
+                    <exclusions>
+            <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-sec-dispatcher</artifactId>
+            </exclusion>
+            </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.plugin-tools</groupId>
@@ -174,6 +189,11 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+    <groupId>org.sonatype.plexus</groupId>
+    <artifactId>plexus-sec-dispatcher</artifactId>
+    <version>1.4</version>
+</dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
@@ -307,6 +327,12 @@
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-compat</artifactId>
                 <version>${maven.compat.version}</version>
+                <exclusions>
+                <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-sec-dispatcher</artifactId>
+            </exclusion>
+            </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>

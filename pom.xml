@@ -61,7 +61,7 @@
         <commons.lang.version>3.10</commons.lang.version>
         <commons.collections.version>4.4</commons.collections.version>
         <commons.cli.version>1.4</commons.cli.version>
-        <commons.compress.version>1.20</commons.compress.version>
+        <commons.compress.version>1.21</commons.compress.version>
         <slf4j.api.version>1.8.0-beta2</slf4j.api.version>
         <commons.logging.version>1.2</commons.logging.version>
         <jdom2.version>2.0.6</jdom2.version>

@@ -62,9 +62,11 @@ public class SourcesProcessorTest {
 
     MavenSession session = mock(MavenSession.class);
     this.project = buildMavenProjectMock();
+    ProjectBuildingRequest projectBuildingRequest = mock(ProjectBuildingRequest.class);
 
+    when(projectBuildingRequest.getRepositoryMerging()).thenReturn(ProjectBuildingRequest.RepositoryMerging.REQUEST_DOMINANT);
     when(session.getRequest()).thenReturn(mock(MavenExecutionRequest.class));
-    when(session.getProjectBuildingRequest()).thenReturn(mock(ProjectBuildingRequest.class));
+    when(session.getProjectBuildingRequest()).thenReturn(projectBuildingRequest);
     when(session.getCurrentProject()).thenReturn(project);
     when(session.getGoals()).thenReturn(Lists.newArrayList());
 

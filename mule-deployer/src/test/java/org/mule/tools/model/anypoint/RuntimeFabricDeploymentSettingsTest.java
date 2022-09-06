@@ -44,6 +44,7 @@ public class RuntimeFabricDeploymentSettingsTest {
     deploymentSettings.setRuntimeVersion("4.1.3");
     deploymentSettings.getHttp().getInbound().setPublicUrl(PUBLIC_URL);
     deploymentSettings.setLastMileSecurity(true);
+    deploymentSettings.setGenerateDefaultPublicUrl(true);
     // These values are injected by Maven
     deploymentSettings.setClustered(ENABLE_RUNTIME_CLUSTER_MODE);
   }

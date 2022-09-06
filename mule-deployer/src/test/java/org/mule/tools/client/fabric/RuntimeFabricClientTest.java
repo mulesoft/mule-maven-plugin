@@ -17,6 +17,7 @@ import org.mockserver.integration.ClientAndServer;
 import org.mule.tools.client.fabric.model.DeploymentGenericResponse;
 import org.mule.tools.client.fabric.model.Deployments;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
+import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeployment;
 import org.mule.tools.utils.DeployerLog;
 
 import java.io.File;
@@ -97,7 +98,7 @@ public class RuntimeFabricClientTest {
   }
 
   private RuntimeFabricDeployment buildDeployment() {
-    RuntimeFabricDeployment deployment = new RuntimeFabricDeployment();
+    RuntimeFabricDeployment deployment = new RuntimeFabricOnPremiseDeployment();
     deployment.setEnvironment(FAKE_ENV);
     deployment.setUsername(FAKE_USER);
     deployment.setPassword(FAKE_PASSWORD);

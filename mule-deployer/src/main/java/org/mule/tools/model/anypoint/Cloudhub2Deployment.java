@@ -32,7 +32,7 @@ public class Cloudhub2Deployment extends RuntimeFabricDeployment {
   protected List<ScopeLoggingConfiguration> scopeLoggingConfigurations;
 
   @Parameter
-  protected Cloudhub2DeploymentSettings cloudhub2DeploymentSettings;
+  protected Cloudhub2DeploymentSettings deploymentSettings;
 
   public String getvCores() {
     return vCores;
@@ -65,11 +65,11 @@ public class Cloudhub2Deployment extends RuntimeFabricDeployment {
   }
 
   public RuntimeFabricDeploymentSettings getDeploymentSettings() {
-    return cloudhub2DeploymentSettings;
+    return deploymentSettings;
   }
 
   public void setDeploymentSettings(RuntimeFabricDeploymentSettings settings) {
-    this.cloudhub2DeploymentSettings = (Cloudhub2DeploymentSettings) settings;
+    this.deploymentSettings = (Cloudhub2DeploymentSettings) settings;
   }
 
   public void setEnvironmentSpecificValues() throws DeploymentException {

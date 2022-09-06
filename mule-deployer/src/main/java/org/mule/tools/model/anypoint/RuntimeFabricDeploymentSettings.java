@@ -34,6 +34,7 @@ public class RuntimeFabricDeploymentSettings {
     http = settings.http;
     forwardSslSession = settings.forwardSslSession;
     disableAmLogForwarding = settings.disableAmLogForwarding;
+    generateDefaultPublicUrl = settings.generateDefaultPublicUrl;
   }
 
   @Parameter
@@ -63,6 +64,17 @@ public class RuntimeFabricDeploymentSettings {
   @Parameter
   protected boolean disableAmLogForwarding;
 
+  @Parameter
+  protected boolean generateDefaultPublicUrl;
+
+
+  public boolean getGenerateDefaultPublicUrl() {
+    return generateDefaultPublicUrl;
+  }
+
+  public void setGenerateDefaultPublicUrl(boolean generateDefaultPublicUrl) {
+    this.generateDefaultPublicUrl = generateDefaultPublicUrl;
+  }
 
 
   public String getRuntimeVersion() {

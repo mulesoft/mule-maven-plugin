@@ -17,6 +17,8 @@ import org.mule.tools.client.fabric.model.AssetReference;
 import org.mule.tools.client.fabric.model.DeploymentRequest;
 import org.mule.tools.client.fabric.model.Target;
 import org.mule.tools.model.anypoint.Cloudhub2Deployment;
+import org.mule.tools.model.anypoint.Cloudhub2DeploymentSettings;
+import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +59,25 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     return applicationModify;
   }
 
+  protected RuntimeFabricDeploymentSettings resolveDeploymentSettings(RuntimeFabricDeploymentSettings settings)
+      throws DeploymentException {
+    RuntimeFabricDeploymentSettings resolvedDeploymentSettings =
+        new Cloudhub2DeploymentSettings((Cloudhub2DeploymentSettings) settings);
+    String targetId = super.resolveTargetId();
+    String muleVersion = deployment.getMuleVersion().get();
+    String tag = resolveTag(targetId, muleVersion);
+    if (tag != null) {
+      resolvedDeploymentSettings.setRuntimeVersion(muleVersion + ":" + tag);
+    } else {
+      throw new DeploymentException("Could not resolve tag for this mule version");
+    }
+    String url = resolveUrl(settings, targetId);
+
+    resolvedDeploymentSettings.getHttp().getInbound().setPublicUrl(url);
+
+    return resolvedDeploymentSettings;
+  }
+
   public Object createConfiguration() {
     Map<String, Object> properties = new HashMap<>();
     if (deployment.getProperties() != null) {
@@ -76,5 +97,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     return new Cloudhub2Configuration(properties, loggingServiceProperties);
 
   }
+
+
 
 }

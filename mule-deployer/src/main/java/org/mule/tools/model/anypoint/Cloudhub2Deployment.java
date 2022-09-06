@@ -74,13 +74,6 @@ public class Cloudhub2Deployment extends RuntimeFabricDeployment {
 
   public void setEnvironmentSpecificValues() throws DeploymentException {
     super.setEnvironmentSpecificValues();
-    if (isEmpty(getTarget())) {
-      throw new DeploymentException("Invalid deployment configuration, missing target value. Please set it in the plugin configuration");
-    }
-
-    if (isEmpty(getProvider())) {
-      throw new DeploymentException("Invalid deployment configuration, missing provider value. Please set the provider as MC, CLUSTER or SERVER");
-    }
     if (getDeploymentSettings() == null) {
       setDeploymentSettings(new Cloudhub2DeploymentSettings());
     }

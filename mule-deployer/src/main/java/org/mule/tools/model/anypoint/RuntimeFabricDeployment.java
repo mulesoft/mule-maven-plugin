@@ -19,6 +19,12 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 public abstract class RuntimeFabricDeployment extends AnypointDeployment {
 
+  public static String MISSING_TARGET_EXCEPTION =
+      "Invalid deployment configuration, missing target value. Please set it in the plugin configuration";
+
+  public static String MISSING_PROVIDER_EXCEPTION =
+      "Invalid deployment configuration, missing provider value. Please set the provider as MC, CLUSTER or SERVER";
+
   @Parameter
   protected String target;
 
@@ -67,4 +73,15 @@ public abstract class RuntimeFabricDeployment extends AnypointDeployment {
   public abstract RuntimeFabricDeploymentSettings getDeploymentSettings();
 
   public abstract void setDeploymentSettings(RuntimeFabricDeploymentSettings settings);
+
+  public void setEnvironmentSpecificValues() throws DeploymentException {
+    super.setEnvironmentSpecificValues();
+    if (isEmpty(getTarget())) {
+      throw new DeploymentException(MISSING_TARGET_EXCEPTION);
+    }
+
+    if (isEmpty(getProvider())) {
+      throw new DeploymentException(MISSING_PROVIDER_EXCEPTION);
+    }
+  }
 }

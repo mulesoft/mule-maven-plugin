@@ -26,6 +26,7 @@ import java.util.Map;
 public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestBuilder {
 
   public static final String ID = "id";
+  private static final String TAG_EXCEPTION = "Could not resolve tag for this mule version";
 
   protected RequestBuilderCh2(Cloudhub2Deployment deployment, RuntimeFabricClient client) {
     super(deployment, client);
@@ -67,7 +68,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     String muleVersion = deployment.getMuleVersion().get();
     String tag = resolveTag(targetId, muleVersion);
     if (tag == null) {
-      throw new DeploymentException("Could not resolve tag for this mule version");
+      throw new DeploymentException(TAG_EXCEPTION);
     }
     resolvedDeploymentSettings.setRuntimeVersion(muleVersion + ":" + tag);
     String url = resolveUrl(settings, targetId);

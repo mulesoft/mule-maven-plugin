@@ -32,6 +32,7 @@ import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.model.anypoint.Cloudhub2Deployment;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
+import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeployment;
 import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
 
@@ -69,7 +70,7 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
   protected AgentDeployment agentDeployment;
 
   @Parameter
-  protected RuntimeFabricDeployment runtimeFabricDeployment;
+  protected RuntimeFabricOnPremiseDeployment runtimeFabricDeployment;
 
   @Parameter
   protected Cloudhub2Deployment cloudhub2Deployment;
@@ -166,7 +167,7 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
     this.clusterDeployment = clusterDeployment;
   }
 
-  public void setRuntimeFabricDeployment(RuntimeFabricDeployment runtimeFabricDeployment) {
+  public void setRuntimeFabricDeployment(RuntimeFabricOnPremiseDeployment runtimeFabricDeployment) {
     this.runtimeFabricDeployment = runtimeFabricDeployment;
   }
 

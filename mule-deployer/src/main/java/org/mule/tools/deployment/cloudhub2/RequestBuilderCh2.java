@@ -66,11 +66,10 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     String targetId = super.resolveTargetId();
     String muleVersion = deployment.getMuleVersion().get();
     String tag = resolveTag(targetId, muleVersion);
-    if (tag != null) {
-      resolvedDeploymentSettings.setRuntimeVersion(muleVersion + ":" + tag);
-    } else {
+    if (tag == null) {
       throw new DeploymentException("Could not resolve tag for this mule version");
     }
+    resolvedDeploymentSettings.setRuntimeVersion(muleVersion + ":" + tag);
     String url = resolveUrl(settings, targetId);
 
     resolvedDeploymentSettings.getHttp().getInbound().setPublicUrl(url);

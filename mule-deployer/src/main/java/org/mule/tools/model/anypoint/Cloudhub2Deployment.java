@@ -9,10 +9,13 @@
  */
 package org.mule.tools.model.anypoint;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.plugins.annotations.Parameter;
+import org.mule.tools.client.core.exception.DeploymentException;
 
 public class Cloudhub2Deployment extends RuntimeFabricDeployment {
 
@@ -27,6 +30,9 @@ public class Cloudhub2Deployment extends RuntimeFabricDeployment {
 
   @Parameter
   protected List<ScopeLoggingConfiguration> scopeLoggingConfigurations;
+
+  @Parameter
+  protected Cloudhub2DeploymentSettings deploymentSettings;
 
   public String getvCores() {
     return vCores;
@@ -58,6 +64,22 @@ public class Cloudhub2Deployment extends RuntimeFabricDeployment {
     this.scopeLoggingConfigurations = scopeLoggingConfigurations;
   }
 
+  public RuntimeFabricDeploymentSettings getDeploymentSettings() {
+    return deploymentSettings;
+  }
+
+  public void setDeploymentSettings(RuntimeFabricDeploymentSettings settings) {
+    this.deploymentSettings = (Cloudhub2DeploymentSettings) settings;
+  }
+
+  public void setEnvironmentSpecificValues() throws DeploymentException {
+    super.setEnvironmentSpecificValues();
+    if (getDeploymentSettings() == null) {
+      setDeploymentSettings(new Cloudhub2DeploymentSettings());
+    }
+    getDeploymentSettings().setRuntimeVersion(muleVersion);
+    getDeploymentSettings().setEnvironmentSpecificValues();
+  }
 
 
 }

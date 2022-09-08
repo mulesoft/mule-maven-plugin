@@ -17,8 +17,8 @@ import org.junit.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.fabric.RuntimeFabricClient;
 import org.mule.tools.client.fabric.model.Target;
-import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
-import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
+import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeployment;
+import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeploymentSettings;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,17 +59,17 @@ public class RequestBuilderTest {
 
   private RequestBuilder requestBuilder;
   private RuntimeFabricClient runtimeFabricClientMock;
-  private RuntimeFabricDeployment runtimeFabricDeployment;
+  private RuntimeFabricOnPremiseDeployment runtimeFabricDeployment;
 
   @Before
   public void setUp() throws DeploymentException {
     runtimeFabricClientMock = mock(RuntimeFabricClient.class);
-    runtimeFabricDeployment = new RuntimeFabricDeployment();
+    runtimeFabricDeployment = new RuntimeFabricOnPremiseDeployment();
     runtimeFabricDeployment.setMuleVersion("4.2.0");
     runtimeFabricDeployment.setApplicationName("test-app");
     runtimeFabricDeployment.setTarget("fabric1");
     runtimeFabricDeployment.setProvider("MC");
-    runtimeFabricDeployment.setDeploymentSettings(new RuntimeFabricDeploymentSettings());
+    runtimeFabricDeployment.setDeploymentSettings(new RuntimeFabricOnPremiseDeploymentSettings());
     requestBuilder = new RequestBuilder(runtimeFabricDeployment, runtimeFabricClientMock);
 
     ArrayList<String> domains = newArrayList(DOMAIN_TEST);
@@ -91,7 +91,7 @@ public class RequestBuilderTest {
   @Test
   public void useDefinedUrl() throws Exception {
     String definedUrl = "myapp.test.com";
-    RuntimeFabricDeploymentSettings deploymentSettings = new RuntimeFabricDeploymentSettings();
+    RuntimeFabricOnPremiseDeploymentSettings deploymentSettings = new RuntimeFabricOnPremiseDeploymentSettings();
     deploymentSettings.getHttp().getInbound().setPublicUrl(definedUrl);
     runtimeFabricDeployment.setDeploymentSettings(deploymentSettings);
     Target target = requestBuilder.buildTarget();

@@ -17,13 +17,16 @@ import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
-public class RuntimeFabricDeployment extends AnypointDeployment {
+public abstract class RuntimeFabricDeployment extends AnypointDeployment {
+
+  public static String MISSING_TARGET_EXCEPTION =
+      "Invalid deployment configuration, missing target value. Please set it in the plugin configuration";
+
+  public static String MISSING_PROVIDER_EXCEPTION =
+      "Invalid deployment configuration, missing provider value. Please set the provider as MC, CLUSTER or SERVER";
 
   @Parameter
   protected String target;
-
-  @Parameter
-  protected RuntimeFabricDeploymentSettings deploymentSettings;
 
   @Parameter
   protected String provider;
@@ -51,14 +54,6 @@ public class RuntimeFabricDeployment extends AnypointDeployment {
     this.target = targetId;
   }
 
-  public RuntimeFabricDeploymentSettings getDeploymentSettings() {
-    return deploymentSettings;
-  }
-
-  public void setDeploymentSettings(RuntimeFabricDeploymentSettings settings) {
-    this.deploymentSettings = settings;
-  }
-
   public String getProvider() {
     return provider;
   }
@@ -75,20 +70,18 @@ public class RuntimeFabricDeployment extends AnypointDeployment {
     this.secureProperties = secureProperties;
   }
 
+  public abstract RuntimeFabricDeploymentSettings getDeploymentSettings();
+
+  public abstract void setDeploymentSettings(RuntimeFabricDeploymentSettings settings);
 
   public void setEnvironmentSpecificValues() throws DeploymentException {
     super.setEnvironmentSpecificValues();
     if (isEmpty(getTarget())) {
-      throw new DeploymentException("Invalid deployment configuration, missing target value. Please set it in the plugin configuration");
+      throw new DeploymentException(MISSING_TARGET_EXCEPTION);
     }
 
     if (isEmpty(getProvider())) {
-      throw new DeploymentException("Invalid deployment configuration, missing provider value. Please set the provider as MC, CLUSTER or SERVER");
+      throw new DeploymentException(MISSING_PROVIDER_EXCEPTION);
     }
-    if (getDeploymentSettings() == null) {
-      setDeploymentSettings(new RuntimeFabricDeploymentSettings());
-    }
-    getDeploymentSettings().setRuntimeVersion(muleVersion);
-    getDeploymentSettings().setEnvironmentSpecificValues();
   }
 }

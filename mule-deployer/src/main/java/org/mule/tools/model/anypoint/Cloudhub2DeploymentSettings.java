@@ -26,21 +26,6 @@ public class Cloudhub2DeploymentSettings extends RuntimeFabricDeploymentSettings
 
   public Cloudhub2DeploymentSettings(Cloudhub2DeploymentSettings settings) {
     super();
-    this.generateDefaultPublicUrl = settings.getGenerateDefaultPublicUrl();
-  }
-
-  @Parameter
-  protected String generateDefaultPublicUrl;
-
-
-  public String getGenerateDefaultPublicUrl() {
-    return generateDefaultPublicUrl;
-  }
-
-
-
-  public void setGenerateDefaultPublicUrl(String generateDefaultPublicUrl) {
-    this.generateDefaultPublicUrl = generateDefaultPublicUrl;
   }
 
 

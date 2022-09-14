@@ -68,9 +68,9 @@
         <javax.activation.api.version>1.2.0</javax.activation.api.version>
         <jaxb.api.version>2.3.1</jaxb.api.version>
 
-        <maven.version>3.5.0</maven.version>
-        <maven.compat.version>3.5.0</maven.compat.version>
-        <maven.verifier.version>1.7.2</maven.verifier.version>
+        <maven.version>3.8.6</maven.version>
+        <maven.compat.version>3.8.6</maven.compat.version>
+        <maven.verifier.version>1.8.0</maven.verifier.version>
         <maven.dependency.tree.version>1.2</maven.dependency.tree.version>
         <plexus.container.default.version>1.7.1</plexus.container.default.version>
         <plexus.component.annotations.version>1.7.1</plexus.component.annotations.version>
@@ -167,6 +167,12 @@
                 <groupId>org.mule</groupId>
                 <artifactId>mule-maven-client-impl</artifactId>
                 <version>${mule.maven.client.impl.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.maven</groupId>
+                        <artifactId>maven-model</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>

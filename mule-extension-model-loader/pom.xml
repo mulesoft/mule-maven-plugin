@@ -26,17 +26,17 @@
         <dependency>
             <groupId> org.mule.runtime</groupId>
             <artifactId>mule-module-logging</artifactId>
-            <version>4.5.0-20220221</version>
+            <version>${mule.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast-xml-parser</artifactId>
-            <version>1.1.0-20220523</version>
+            <version>1.1.0-20220622</version>
         </dependency>
          <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast-serialization</artifactId>
-             <version>1.1.0-20220523</version>
+             <version>1.1.0-20220622</version>
         </dependency>
         <dependency>
             <groupId>com.mulesoft.anypoint</groupId>
@@ -98,7 +98,7 @@
         <dependency>
             <groupId>org.mule</groupId>
             <artifactId>mule-maven-client-impl</artifactId>
-            <version>1.6.0</version>
+            <version>${mule.maven.client.impl.version}</version>
         </dependency>
         <!-- Test dependencies -->
         <dependency>
@@ -111,6 +111,10 @@
             <artifactId>hamcrest-all</artifactId>
             <scope>test</scope>
         </dependency>
+		<dependency>
+    		<groupId>org.sonatype.plexus</groupId>
+    		<artifactId>plexus-sec-dispatcher</artifactId>
+		</dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -21,19 +21,19 @@ public class RuntimeFabricDeploymentTest {
 
   private static final String TARGET_NAME = "target";
   public static final String PROVIDER = "SERVER";
-  private RuntimeFabricDeployment fabricDeployment;
+  private RuntimeFabricOnPremiseDeployment fabricDeployment;
 
 
   @Rule
   public ExpectedException expectedException = none();
-  private RuntimeFabricDeploymentSettings deploymentSettingsMock;
+  private RuntimeFabricOnPremiseDeploymentSettings deploymentSettingsMock;
 
   @Before
   public void setUp() {
-    fabricDeployment = new RuntimeFabricDeployment();
+    fabricDeployment = new RuntimeFabricOnPremiseDeployment();
     fabricDeployment.setTarget(TARGET_NAME);
     fabricDeployment.setProvider(PROVIDER);
-    deploymentSettingsMock = mock(RuntimeFabricDeploymentSettings.class);
+    deploymentSettingsMock = mock(RuntimeFabricOnPremiseDeploymentSettings.class);
     fabricDeployment.setDeploymentSettings(deploymentSettingsMock);
   }
 

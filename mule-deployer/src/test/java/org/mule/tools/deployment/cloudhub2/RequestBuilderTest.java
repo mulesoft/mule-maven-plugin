@@ -17,10 +17,10 @@ import org.junit.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.fabric.RuntimeFabricClient;
 import org.mule.tools.model.anypoint.Cloudhub2Deployment;
+import org.mule.tools.model.anypoint.Cloudhub2DeploymentSettings;
 import org.mule.tools.model.anypoint.Integration;
 import org.mule.tools.model.anypoint.LogLevel;
 import org.mule.tools.model.anypoint.ObjectStoreV2;
-import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
 import org.mule.tools.model.anypoint.ScopeLoggingConfiguration;
 import org.mule.tools.model.anypoint.Service;
 
@@ -60,7 +60,7 @@ public class RequestBuilderTest {
       "   ]\n" +
       "}";
   private static final String DEPLOY_REQUEST =
-      "{\"name\":\"test-app\",\"application\":{\"ref\":{\"packaging\":\"jar\"},\"desiredState\":\"STARTED\",\"configuration\":{\"mule.agent.application.properties.service\":{\"applicationName\":\"test-app\"},\"mule.agent.logging.service\":{\"artifactName\":\"test-app\",\"scopeLoggingConfigurations\":[{\"scope\":\"com.pkg.debug\",\"logLevel\":\"INFO\"}]}},\"vCores\":\"0.5\",\"integrations\":{\"services\":{\"objectStoreV2\":{\"enabled\":true}}}},\"target\":{\"targetId\":\"sampleId\",\"provider\":\"MC\",\"deploymentSettings\":{\"runtimeVersion\":\"4.2.0:v1.2.28\",\"lastMileSecurity\":false,\"persistentObjectStore\":false,\"clustered\":false,\"enforceDeployingReplicasAcrossNodes\":false,\"http\":{\"inbound\":{\"publicUrl\":\"test-app.mydomain.com\"}},\"forwardSslSession\":false,\"disableAmLogForwarding\":false}}}";
+      "{\"name\":\"test-app\",\"application\":{\"ref\":{\"packaging\":\"jar\"},\"desiredState\":\"STARTED\",\"configuration\":{\"mule.agent.application.properties.service\":{\"applicationName\":\"test-app\"},\"mule.agent.logging.service\":{\"artifactName\":\"test-app\",\"scopeLoggingConfigurations\":[{\"scope\":\"com.pkg.debug\",\"logLevel\":\"INFO\"}]}},\"vCores\":\"0.5\",\"integrations\":{\"services\":{\"objectStoreV2\":{\"enabled\":true}}}},\"target\":{\"targetId\":\"sampleId\",\"provider\":\"MC\",\"deploymentSettings\":{\"runtimeVersion\":\"4.2.0:v1.2.28\",\"lastMileSecurity\":false,\"persistentObjectStore\":false,\"clustered\":false,\"enforceDeployingReplicasAcrossNodes\":false,\"http\":{\"inbound\":{\"publicUrl\":\"test-app.mydomain.com\"}},\"forwardSslSession\":false,\"disableAmLogForwarding\":false,\"generateDefaultPublicUrl\":false}}}";
 
   private RequestBuilderCh2 requestBuilder;
   private RuntimeFabricClient runtimeFabricClientMock;
@@ -83,7 +83,7 @@ public class RequestBuilderTest {
     service.setObjectStoreV2(os2);
     integrations.setServices(service);
     cloudhub2Deployment.setIntegrations(integrations);
-    cloudhub2Deployment.setDeploymentSettings(new RuntimeFabricDeploymentSettings());
+    cloudhub2Deployment.setDeploymentSettings(new Cloudhub2DeploymentSettings());
     cloudhub2Deployment.setvCores("0.5");
     List<ScopeLoggingConfiguration> ScopeLoggingConfigs = new ArrayList<ScopeLoggingConfiguration>();
     ScopeLoggingConfiguration configuration = new ScopeLoggingConfiguration();

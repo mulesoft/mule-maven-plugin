@@ -47,7 +47,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <mule.version>4.5.0-20220622</mule.version>
-        <mule.api.version>1.5.0-20220523</mule.api.version>
+        <mule.api.version>1.5.0-20220622</mule.api.version>
         <mule.maven.client.impl.version>1.6.0</mule.maven.client.impl.version>
         <mule.distribution.standalone.version>4.4.0</mule.distribution.standalone.version>
         <gson.version>2.8.6</gson.version>
@@ -61,7 +61,7 @@
         <commons.lang.version>3.10</commons.lang.version>
         <commons.collections.version>4.4</commons.collections.version>
         <commons.cli.version>1.4</commons.cli.version>
-        <commons.compress.version>1.20</commons.compress.version>
+        <commons.compress.version>1.21</commons.compress.version>
         <slf4j.api.version>1.8.0-beta2</slf4j.api.version>
         <commons.logging.version>1.2</commons.logging.version>
         <jdom2.version>2.0.6</jdom2.version>
@@ -148,14 +148,29 @@
                         <groupId>org.eclipse.sisu</groupId>
                         <artifactId>org.eclipse.sisu.plexus</artifactId>
                     </exclusion>
-                </exclusions>
+            <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-sec-dispatcher</artifactId>
+            </exclusion>
+            </exclusions>
             </dependency>
+            <dependency>
+    <groupId>org.sonatype.plexus</groupId>
+    <artifactId>plexus-sec-dispatcher</artifactId>
+<version>1.4</version>
+</dependency>
 
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-core</artifactId>
                 <version>${maven.version}</version>
                 <scope>provided</scope>
+                    <exclusions>
+            <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-sec-dispatcher</artifactId>
+            </exclusion>
+            </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.plugin-tools</groupId>
@@ -307,6 +322,12 @@
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-compat</artifactId>
                 <version>${maven.compat.version}</version>
+                <exclusions>
+                <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-sec-dispatcher</artifactId>
+            </exclusion>
+            </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>

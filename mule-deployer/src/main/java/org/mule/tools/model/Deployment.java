@@ -152,10 +152,10 @@ public abstract class Deployment {
       setArtifact(new File(applicationPath));
     }
     if (getArtifact() == null) {
-      if (project.getAttachedArtifacts().isEmpty()) {
+      if (project.getArtifact() == null) {
         throw new DeploymentException("Artifact to be deployed could not be found. Please set its location setting -Dmule.artifact=path/to/jar or in the deployment configuration pom element");
       }
-      setArtifact(project.getAttachedArtifacts().get(0).getFile());
+      setArtifact(project.getArtifact().getFile());
     }
 
     String packaging = project.getPackaging();

@@ -96,7 +96,7 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
         .addURL(project.getBasedir().toPath().resolve("src").resolve("main").resolve("resources").toUri().toURL());
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
                                                  project.getArtifacts(), Paths.get(project.getBuild().getDirectory()),
-                                                 descriptor.getClassRealm());
+                                                 descriptor.getClassRealm(), project.getDependencies());
     ProjectStructure projectStructure = new ProjectStructure(projectBaseFolder.toPath(), false);
     MuleArtifactContentResolver contentResolver =
         new MuleArtifactContentResolver(new ProjectStructure(projectBaseFolder.toPath(), false),

@@ -17,6 +17,10 @@ import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_POLICY;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN_BUNDLE;
+
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.mule.tools.api.packager.builder.PackageBuilder;
 import org.mule.tools.api.packager.builder.PackageBuilderFactory;
 import org.mule.tools.api.packager.packaging.PackagingOptions;
@@ -50,6 +54,9 @@ public class PackageMojo extends AbstractMuleMojo {
   @Component
   protected MavenProjectHelper helper;
 
+  @Component
+  private ArtifactHandlerManager artifactHandlerManager;
+
   @Parameter(defaultValue = "${onlyMuleSources}")
   protected boolean onlyMuleSources = false;
 
@@ -68,9 +75,18 @@ public class PackageMojo extends AbstractMuleMojo {
     } catch (ArchiverException | IOException e) {
       throw new MojoExecutionException("Exception creating the Mule App", e);
     }
-    helper.attachArtifact(this.project, getType(),
-                          getPackagingType().resolveClassifier(classifier, lightweightPackage, testJar),
-                          destinationFile);
+
+    Artifact artifact = new DefaultArtifact(this.project.getGroupId(),
+                                            this.project.getArtifactId(),
+                                            this.project.getVersion(),
+                                            Artifact.SCOPE_COMPILE,
+                                            getType(),
+                                            getPackagingType().resolveClassifier(classifier, lightweightPackage, testJar),
+                                            artifactHandlerManager.getArtifactHandler(getType()));
+    artifact.setFile(destinationFile);
+
+    // Set the project main file otherwise maven-install-plugin fails while executing install goal.
+    this.project.setArtifact(artifact);
 
     if (project.getPackaging().equals(MULE_POLICY.toString())) {
       File policyYaml = new File(projectBaseFolder, format("%s.yaml", project.getArtifactId()));

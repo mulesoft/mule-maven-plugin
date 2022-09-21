@@ -13,7 +13,7 @@ def pipelineParams = [
   "jdk": params.JDK,
   "maven": params.maven,
   "projectKey": "mule-maven-plugin",
-  "protectedBranches" : ["support/3.x", "support/3.4.x", "support/3.3.x", "support/2.x"]
+  "protectedBranches" : ["support/3.x", "support/3.4.x", "support/3.3.x", "support/2.x", "support/3.8.x"]
 ]
 
 build(pipelineParams)

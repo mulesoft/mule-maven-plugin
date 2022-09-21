@@ -28,6 +28,15 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VERIFY;
 
+import static org.mule.tools.maven.mojo.model.lifecycle.mapping.project.LifecyclePluginsGAVs.MAVEN_RESOURCES_PLUGIN;
+import static org.mule.tools.maven.mojo.model.lifecycle.mapping.project.LifecyclePluginsGAVs.MAVEN_CLEAN_PLUGIN;
+import static org.mule.tools.maven.mojo.model.lifecycle.mapping.project.LifecyclePluginsGAVs.MAVEN_COMPILER_PLUGIN;
+import static org.mule.tools.maven.mojo.model.lifecycle.mapping.project.LifecyclePluginsGAVs.MAVEN_SUREFIRE_PLUGIN;
+import static org.mule.tools.maven.mojo.model.lifecycle.mapping.project.LifecyclePluginsGAVs.MAVEN_INSTALL_PLUGIN;
+import static org.mule.tools.maven.mojo.model.lifecycle.mapping.project.LifecyclePluginsGAVs.MAVEN_DEPLOY_PLUGIN;
+import static org.mule.tools.maven.mojo.model.lifecycle.mapping.project.LifecyclePluginsGAVs.MAVEN_SITE_PLUGIN;
+import static org.mule.tools.maven.mojo.model.lifecycle.mapping.project.LifecyclePluginsGAVs.EXCHANGE_PUBLICATION_PLUGIN;
+
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMaven333;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenFactory;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenVersionless;
@@ -44,18 +53,7 @@ public class MuleLifecycleMapping implements LifecycleMapping, ProjectLifecycleM
 
   private static final String MULE_DEPLOY = "muleDeploy";
 
-  private static final String ORG_APACHE_MAVEN_PLUGINS = "org.apache.maven.plugins";
   private static final String MULE_MAVEN_PLUGIN = "org.mule.tools.maven:mule-maven-plugin";
-  private static final String EXCHANGE_PLUGIN = "org.mule.tools.maven";
-
-  private static final String MAVEN_RESOURCES_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-resources-plugin:3.0.2";
-  private static final String MAVEN_CLEAN_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-clean-plugin:3.1.0";
-  private static final String MAVEN_COMPILER_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-compiler-plugin:3.8.1";
-  private static final String MAVEN_SUREFIRE_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-surefire-plugin:2.19.1";
-  private static final String MAVEN_INSTALL_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-install-plugin:2.5.2";
-  private static final String MAVEN_DEPLOY_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-deploy-plugin:2.8.2";
-  private static final String MAVEN_SITE_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-site-plugin:3.8.2";
-  private static final String EXCHANGE_PUBLICATION_PLUGIN = EXCHANGE_PLUGIN + ":exchange-mule-maven-plugin:0.0.17";
 
   @Override
   public List<String> getOptionalMojos(String lifecycle) {

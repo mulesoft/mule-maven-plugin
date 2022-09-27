@@ -50,7 +50,7 @@ public class AstGeneratorTest extends MavenClientTest {
                                                                       Optional.ofNullable(getSettingsSecurity(m2Repo))));
     Path workingPath = Paths.get("src", "test", "resources", "test-project");
     Set<Artifact> dependencies = new HashSet<Artifact>();
-    AstGenerator generator = new AstGenerator(client, "4.3.0", dependencies, workingPath, null);
+    AstGenerator generator = new AstGenerator(client, "4.3.0", dependencies, workingPath, null, new ArrayList<Dependency>());
     Path configsBasePath = workingPath.resolve("src/main/mule");
     ArtifactAst artifact =
         generator.generateAST(Arrays.asList(configsBasePath.resolve("mule-config.xml").toFile().getAbsolutePath()),
@@ -70,7 +70,7 @@ public class AstGeneratorTest extends MavenClientTest {
                                                                       Optional.ofNullable(getSettingsSecurity(m2Repo))));
     Path workingPath = Paths.get("src", "test", "resources", "test-project");
     Set<Artifact> dependencies = new HashSet<Artifact>();
-    AstGenerator generator = new AstGenerator(client, "4.3.0", dependencies, workingPath, null);
+    AstGenerator generator = new AstGenerator(client, "4.3.0", dependencies, workingPath, null, new ArrayList<Dependency>());
     Path configsBasePath = workingPath.resolve("src/main/mule");
     ArtifactAst artifact =
         generator.generateAST(Arrays.asList(configsBasePath.resolve("mule-config2.xml").toFile().getAbsolutePath()),

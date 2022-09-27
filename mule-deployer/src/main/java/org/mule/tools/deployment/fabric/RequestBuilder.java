@@ -25,6 +25,7 @@ import org.mule.tools.client.fabric.model.Deployments;
 import org.mule.tools.client.fabric.model.Target;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
 import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
+import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeploymentSettings;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -78,9 +79,10 @@ public class RequestBuilder {
     return target;
   }
 
-  private RuntimeFabricDeploymentSettings resolveDeploymentSettings(RuntimeFabricDeploymentSettings settings)
+  protected RuntimeFabricDeploymentSettings resolveDeploymentSettings(RuntimeFabricDeploymentSettings settings)
       throws DeploymentException {
-    RuntimeFabricDeploymentSettings resolvedDeploymentSettings = new RuntimeFabricDeploymentSettings(settings);
+    RuntimeFabricDeploymentSettings resolvedDeploymentSettings =
+        new RuntimeFabricOnPremiseDeploymentSettings((RuntimeFabricOnPremiseDeploymentSettings) settings);
     String targetId = resolveTargetId();
     String muleVersion = deployment.getMuleVersion().get();
     String tag = resolveTag(targetId, muleVersion);
@@ -96,7 +98,7 @@ public class RequestBuilder {
     return resolvedDeploymentSettings;
   }
 
-  private String resolveUrl(RuntimeFabricDeploymentSettings deploymentSettings, String targetId) {
+  protected String resolveUrl(RuntimeFabricDeploymentSettings deploymentSettings, String targetId) {
     JsonArray domains = client.getDomainInfo(targetId);
     if (deploymentSettings.getHttp().getInbound().getPublicUrl() == null && domains.size() > 0) {
       String domain = domains.get(0).getAsString();
@@ -106,7 +108,7 @@ public class RequestBuilder {
     }
   }
 
-  private String resolveTag(String targetId, String muleVersion) {
+  protected String resolveTag(String targetId, String muleVersion) {
     JsonObject targetInfo = client.getTargetInfo(targetId);
     if (targetInfo.has("runtimes")) {
       JsonArray runtimes = targetInfo.getAsJsonArray("runtimes");
@@ -133,7 +135,7 @@ public class RequestBuilder {
     return null;
   }
 
-  private String resolveTargetId() throws DeploymentException {
+  protected String resolveTargetId() throws DeploymentException {
     String targetName = deployment.getTarget();
     JsonArray targets = client.getTargets();
     return getTargetId(targets, targetName);

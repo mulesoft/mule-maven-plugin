@@ -20,6 +20,7 @@ import org.mule.tools.client.fabric.model.DeploymentGenericResponse;
 import org.mule.tools.client.fabric.model.Deployments;
 import org.mule.tools.client.fabric.model.Target;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
+import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeployment;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -48,7 +49,7 @@ public class RuntimeFabricDeploymentVerificationTest {
   public void setUp() {
     clientMock = mock(RuntimeFabricClient.class);
     deploymentDetailedResponse = new DeploymentDetailedResponse();
-    deployment = new RuntimeFabricDeployment();
+    deployment = new RuntimeFabricOnPremiseDeployment();
     deployment.setApplicationName(APP_NAME);
     deployment.setTarget("rtf-local-4");
     deploymentGenericResponse = new DeploymentGenericResponse();

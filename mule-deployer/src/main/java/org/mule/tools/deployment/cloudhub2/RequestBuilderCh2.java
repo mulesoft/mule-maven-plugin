@@ -17,6 +17,8 @@ import org.mule.tools.client.fabric.model.AssetReference;
 import org.mule.tools.client.fabric.model.DeploymentRequest;
 import org.mule.tools.client.fabric.model.Target;
 import org.mule.tools.model.anypoint.Cloudhub2Deployment;
+import org.mule.tools.model.anypoint.Cloudhub2DeploymentSettings;
+import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +26,7 @@ import java.util.Map;
 public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestBuilder {
 
   public static final String ID = "id";
+  private static final String TAG_EXCEPTION = "Could not resolve tag for this mule version";
 
   protected RequestBuilderCh2(Cloudhub2Deployment deployment, RuntimeFabricClient client) {
     super(deployment, client);
@@ -53,7 +56,26 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     applicationModify.setRef(assetReference);
     applicationModify.setConfiguration(createConfiguration());
     applicationModify.setvCores(((Cloudhub2Deployment) deployment).getvCores());
+    applicationModify.setIntegrations(((Cloudhub2Deployment) deployment).getIntegrations());
     return applicationModify;
+  }
+
+  protected RuntimeFabricDeploymentSettings resolveDeploymentSettings(RuntimeFabricDeploymentSettings settings)
+      throws DeploymentException {
+    RuntimeFabricDeploymentSettings resolvedDeploymentSettings =
+        new Cloudhub2DeploymentSettings((Cloudhub2DeploymentSettings) settings);
+    String targetId = super.resolveTargetId();
+    String muleVersion = deployment.getMuleVersion().get();
+    String tag = resolveTag(targetId, muleVersion);
+    if (tag == null) {
+      throw new DeploymentException(TAG_EXCEPTION);
+    }
+    resolvedDeploymentSettings.setRuntimeVersion(muleVersion + ":" + tag);
+    String url = resolveUrl(settings, targetId);
+
+    resolvedDeploymentSettings.getHttp().getInbound().setPublicUrl(url);
+
+    return resolvedDeploymentSettings;
   }
 
   public Object createConfiguration() {
@@ -75,5 +97,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     return new Cloudhub2Configuration(properties, loggingServiceProperties);
 
   }
+
+
 
 }

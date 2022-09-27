@@ -62,12 +62,13 @@ public class RequestBuilderTest {
   private static final String DEPLOY_REQUEST =
       "{\"name\":\"test-app\",\"application\":{\"ref\":{\"packaging\":\"jar\"},\"desiredState\":\"STARTED\",\"configuration\":{\"mule.agent.application.properties.service\":{\"applicationName\":\"test-app\"},\"mule.agent.logging.service\":{\"artifactName\":\"test-app\",\"scopeLoggingConfigurations\":[{\"scope\":\"com.pkg.debug\",\"logLevel\":\"INFO\"}]}},\"vCores\":\"0.5\",\"integrations\":{\"services\":{\"objectStoreV2\":{\"enabled\":true}}}},\"target\":{\"targetId\":\"sampleId\",\"provider\":\"MC\",\"deploymentSettings\":{\"runtimeVersion\":\"4.2.0:v1.2.28\",\"lastMileSecurity\":false,\"persistentObjectStore\":false,\"clustered\":false,\"enforceDeployingReplicasAcrossNodes\":false,\"http\":{\"inbound\":{\"publicUrl\":\"test-app.mydomain.com\"}},\"forwardSslSession\":false,\"disableAmLogForwarding\":false,\"generateDefaultPublicUrl\":false}}}";
 
+  private static final String DEPLOY_REQUEST_WITH_PUBLIC_URL =
+      "{\"name\":\"test-app\",\"application\":{\"ref\":{\"packaging\":\"jar\"},\"desiredState\":\"STARTED\",\"configuration\":{\"mule.agent.application.properties.service\":{\"applicationName\":\"test-app\"},\"mule.agent.logging.service\":{\"artifactName\":\"test-app\",\"scopeLoggingConfigurations\":[{\"scope\":\"com.pkg.debug\",\"logLevel\":\"INFO\"}]}},\"vCores\":\"0.5\",\"integrations\":{\"services\":{\"objectStoreV2\":{\"enabled\":true}}}},\"target\":{\"targetId\":\"sampleId\",\"provider\":\"MC\",\"deploymentSettings\":{\"runtimeVersion\":\"4.2.0:v1.2.28\",\"lastMileSecurity\":false,\"persistentObjectStore\":false,\"clustered\":false,\"enforceDeployingReplicasAcrossNodes\":false,\"http\":{\"inbound\":{\"publicUrl\":\"test-app.mydomain.com\"}},\"forwardSslSession\":false,\"disableAmLogForwarding\":false,\"generateDefaultPublicUrl\":true}}}";
   private RequestBuilderCh2 requestBuilder;
   private RuntimeFabricClient runtimeFabricClientMock;
   private Cloudhub2Deployment cloudhub2Deployment;
 
-  @Before
-  public void setUp() throws DeploymentException {
+  public void setUp(Cloudhub2DeploymentSettings settings) throws DeploymentException {
     runtimeFabricClientMock = mock(RuntimeFabricClient.class);
     cloudhub2Deployment = new Cloudhub2Deployment();
     cloudhub2Deployment.setArtifact(null);
@@ -83,7 +84,11 @@ public class RequestBuilderTest {
     service.setObjectStoreV2(os2);
     integrations.setServices(service);
     cloudhub2Deployment.setIntegrations(integrations);
-    cloudhub2Deployment.setDeploymentSettings(new Cloudhub2DeploymentSettings());
+    if(settings!=null) {
+      cloudhub2Deployment.setDeploymentSettings(new Cloudhub2DeploymentSettings(settings));
+    }else {
+      cloudhub2Deployment.setDeploymentSettings(new Cloudhub2DeploymentSettings());
+    }
     cloudhub2Deployment.setvCores("0.5");
     List<ScopeLoggingConfiguration> ScopeLoggingConfigs = new ArrayList<ScopeLoggingConfiguration>();
     ScopeLoggingConfiguration configuration = new ScopeLoggingConfiguration();
@@ -102,7 +107,17 @@ public class RequestBuilderTest {
 
   @Test
   public void requestBuildTest() throws Exception {
+    setUp(null);
     String request = new Gson().toJson(requestBuilder.buildDeploymentRequest());
     assertThat("request is not the expected", DEPLOY_REQUEST.equals(request));
+  }
+  
+  @Test
+  public void requestBuildTestWthPublicURL() throws Exception {
+    Cloudhub2DeploymentSettings settings = new Cloudhub2DeploymentSettings();
+    settings.setGenerateDefaultPublicUrl(true);
+    setUp(settings);
+    String request = new Gson().toJson(requestBuilder.buildDeploymentRequest());
+    assertThat("request is not the expected", DEPLOY_REQUEST_WITH_PUBLIC_URL.equals(request));
   }
 }

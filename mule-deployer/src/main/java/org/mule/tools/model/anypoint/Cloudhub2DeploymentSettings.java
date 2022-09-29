@@ -25,7 +25,7 @@ public class Cloudhub2DeploymentSettings extends RuntimeFabricDeploymentSettings
 
 
   public Cloudhub2DeploymentSettings(Cloudhub2DeploymentSettings settings) {
-    super();
+    super(settings);
   }
 
 

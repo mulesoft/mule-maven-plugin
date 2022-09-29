@@ -84,9 +84,9 @@ public class RequestBuilderTest {
     service.setObjectStoreV2(os2);
     integrations.setServices(service);
     cloudhub2Deployment.setIntegrations(integrations);
-    if(settings!=null) {
+    if (settings != null) {
       cloudhub2Deployment.setDeploymentSettings(new Cloudhub2DeploymentSettings(settings));
-    }else {
+    } else {
       cloudhub2Deployment.setDeploymentSettings(new Cloudhub2DeploymentSettings());
     }
     cloudhub2Deployment.setvCores("0.5");
@@ -111,7 +111,7 @@ public class RequestBuilderTest {
     String request = new Gson().toJson(requestBuilder.buildDeploymentRequest());
     assertThat("request is not the expected", DEPLOY_REQUEST.equals(request));
   }
-  
+
   @Test
   public void requestBuildTestWthPublicURL() throws Exception {
     Cloudhub2DeploymentSettings settings = new Cloudhub2DeploymentSettings();

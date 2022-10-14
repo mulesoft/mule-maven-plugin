@@ -31,17 +31,17 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast-xml-parser</artifactId>
-            <version>1.1.0-20220622</version>
+            <version>1.1.0-20220922</version>
         </dependency>
          <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast-serialization</artifactId>
-             <version>1.1.0-20220622</version>
+             <version>1.1.0-20220922</version>
         </dependency>
         <dependency>
             <groupId>com.mulesoft.anypoint</groupId>
             <artifactId>api-gateway-api</artifactId>
-            <version>1.5.0-20220125</version>
+            <version>1.5.0-20220922</version>
         </dependency>
          <dependency>
             <groupId>com.mulesoft.mule.runtime</groupId>

@@ -75,4 +75,10 @@ public class CloudHubDeploymentTest {
     assertThat("The default value for apply patch property must be false",
                deploymentSpy.getApplyLatestRuntimePatch(), equalTo(false));
   }
+
+  @Test
+  public void defaulLogLevelInfosValueIsNull() {
+    assertThat("The default value for Log Level Infos property is not null",
+               deploymentSpy.getLogLevelInfos(), equalTo(null));
+  }
 }

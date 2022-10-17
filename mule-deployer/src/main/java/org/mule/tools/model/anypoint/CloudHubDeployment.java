@@ -11,7 +11,10 @@
 package org.mule.tools.model.anypoint;
 
 import org.apache.maven.plugins.annotations.Parameter;
+import org.mule.tools.client.cloudhub.model.LogLevelInfo;
 import org.mule.tools.client.core.exception.DeploymentException;
+
+import java.util.List;
 
 import static java.lang.System.getProperty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -45,6 +48,9 @@ public class CloudHubDeployment extends AnypointDeployment {
 
   @Parameter
   protected Boolean applyLatestRuntimePatch = false;
+
+  @Parameter
+  protected List<LogLevelInfo> logLevelInfos;
 
   /**
    * Region to deploy the application in Cloudhub.
@@ -138,6 +144,17 @@ public class CloudHubDeployment extends AnypointDeployment {
 
   public void setApplyLatestRuntimePatch(Boolean applyLatestRuntimePatch) {
     this.applyLatestRuntimePatch = applyLatestRuntimePatch;
+  }
+
+  /**
+   * Logging configuration to set in Cloudhub.
+   */
+  public List<LogLevelInfo> getLogLevelInfos() {
+    return logLevelInfos;
+  }
+
+  public void setLogLevelInfos(List<LogLevelInfo> logLevelInfos) {
+    this.logLevelInfos = logLevelInfos;
   }
 
   public void setEnvironmentSpecificValues() throws DeploymentException {

@@ -95,7 +95,7 @@ public class MuleArtifactJsonValidatorTest {
   @Test
   public void isMuleArtifactJsonValidArbitraryIOExceptionTest() throws IOException, ValidationException {
     expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("java.io.IOException");
+    expectedException.expectMessage("java.io.FileNotFoundException");
     muleArtifactJsonFile.delete();
     muleArtifactJsonFile = projectBaseFolder.newFolder(MULE_ARTIFACT_JSON);
     isMuleArtifactJsonValid(projectBaseFolder.getRoot().toPath(), Optional.empty());

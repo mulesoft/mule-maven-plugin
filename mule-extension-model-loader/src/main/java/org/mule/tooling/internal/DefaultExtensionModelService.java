@@ -13,6 +13,7 @@ import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.
 import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.createDeployablePomProperties;
 import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.getPomModelFromJar;
 import static org.mule.runtime.module.extension.internal.ExtensionProperties.DISABLE_COMPONENT_IGNORE;
+import static org.mule.runtime.container.api.ContainerClassLoaderProvider.createContainerClassLoader;
 
 import static java.lang.Boolean.TRUE;
 import static java.lang.Boolean.valueOf;
@@ -39,6 +40,7 @@ import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.container.api.ModuleRepository;
 import org.mule.runtime.module.artifact.activation.api.classloader.ArtifactClassLoaderResolver;
 import org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionDiscoveryRequest;
 import org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer;
@@ -262,11 +264,13 @@ public class DefaultExtensionModelService implements ExtensionModelService {
           .build();
       ApplicationDescriptor applicationDescriptor = muleArtifactResourcesRegistry.getApplicationDescriptorFactory()
           .createArtifact(applicationFolder, empty(), muleApplicationModel);
-
-
+      ModuleRepository moduleRepository = createModuleRepository(ArtifactClassLoaderResolver.class
+                                          .getClassLoader(), createTempDir());
+      
       ArtifactClassLoaderResolver artifactClassLoaderResolver = ArtifactClassLoaderResolver
-          .classLoaderResolver(createModuleRepository(ArtifactClassLoaderResolver.class
+          .classLoaderResolver(createContainerClassLoader(moduleRepository),createModuleRepository(ArtifactClassLoaderResolver.class
               .getClassLoader(), createTempDir()), (empty) -> applicationFolder);
+
 
       muleArtifactResourcesRegistry.getPluginDependenciesResolver()
           .resolve(emptySet(), new ArrayList<>(applicationDescriptor.getPlugins()), false);

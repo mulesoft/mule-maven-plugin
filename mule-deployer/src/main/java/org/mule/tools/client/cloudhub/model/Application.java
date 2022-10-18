@@ -34,6 +34,7 @@ public class Application {
   private Boolean persistentQueues;
   private Boolean persistentQueuesEncryptionEnabled;
   private Boolean persistentQueuesEncrypted;
+  private Boolean loggingCustomLog4JEnabled;
   private Boolean monitoringEnabled;
   private Boolean monitoringAutoRestart;
   private Boolean staticIPsEnabled;
@@ -189,6 +190,14 @@ public class Application {
 
   public void setPersistentQueuesEncrypted(Boolean persistentQueuesEncrypted) {
     this.persistentQueuesEncrypted = persistentQueuesEncrypted;
+  }
+
+  public Boolean getLoggingCustomLog4JEnabled() {
+    return loggingCustomLog4JEnabled;
+  }
+
+  public void setLoggingCustomLog4JEnabled(Boolean loggingCustomLog4JEnabled) {
+    this.loggingCustomLog4JEnabled = loggingCustomLog4JEnabled;
   }
 
   public Boolean getMonitoringEnabled() {

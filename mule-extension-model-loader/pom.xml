@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.mulesoft.anypoint</groupId>
             <artifactId>api-gateway-api</artifactId>
-            <version>1.5.0-20220125</version>
+            <version>1.5.0-20221024</version>
         </dependency>
          <dependency>
             <groupId>com.mulesoft.mule.runtime</groupId>

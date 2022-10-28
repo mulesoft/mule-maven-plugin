@@ -7,8 +7,8 @@ import static org.mule.runtime.deployment.model.api.artifact.ArtifactDescriptorC
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.runtime.core.api.config.bootstrap.ArtifactType;
-import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderModel;
-import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderModelLoader;
+import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderConfiguration;
+import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderConfigurationLoader;
 import org.mule.runtime.module.artifact.api.descriptor.InvalidDescriptorLoaderException;
 
 import java.io.File;
@@ -18,16 +18,16 @@ import java.util.Map;
 import org.slf4j.Logger;
 
 /**
- * Mimic for {@link org.mule.runtime.module.deployment.impl.internal.artifact.MavenClassLoaderModelLoader} that allows to use
+ * Mimic for {@link org.mule.runtime.module.deployment.impl.internal.artifact.MavenClassLoaderConfigurationLoader} that allows to use
  * injected instances of deployable, plugin and lib class loader model loaders.
  */
-public class ToolingClassLoaderModelLoader implements ClassLoaderModelLoader {
+public class ToolingClassLoaderConfigurationLoader implements ClassLoaderConfigurationLoader {
 
-  private static final Logger LOGGER = getLogger(ToolingClassLoaderModelLoader.class);
+  private static final Logger LOGGER = getLogger(ToolingClassLoaderConfigurationLoader.class);
 
-  private List<ClassLoaderModelLoader> classLoaderModelLoaders;
+  private List<ClassLoaderConfigurationLoader> classLoaderModelLoaders;
 
-  public ToolingClassLoaderModelLoader(List<ClassLoaderModelLoader> classLoaderModelLoaders) {
+  public ToolingClassLoaderConfigurationLoader(List<ClassLoaderConfigurationLoader> classLoaderModelLoaders) {
     this.classLoaderModelLoaders = classLoaderModelLoaders;
   }
 
@@ -37,14 +37,14 @@ public class ToolingClassLoaderModelLoader implements ClassLoaderModelLoader {
   }
 
   @Override
-  public ClassLoaderModel load(File artifactFile, Map<String, Object> attributes, ArtifactType artifactType)
+  public ClassLoaderConfiguration load(File artifactFile, Map<String, Object> attributes, ArtifactType artifactType)
       throws InvalidDescriptorLoaderException {
     long startTime = nanoTime();
-    for (ClassLoaderModelLoader classLoaderModelLoader : classLoaderModelLoaders) {
+    for (ClassLoaderConfigurationLoader classLoaderModelLoader : classLoaderModelLoaders) {
       if (classLoaderModelLoader.supportsArtifactType(artifactType)) {
-        ClassLoaderModel classLoaderModel = classLoaderModelLoader.load(artifactFile, attributes, artifactType);
+        ClassLoaderConfiguration classLoaderModel = classLoaderModelLoader.load(artifactFile, attributes, artifactType);
         if (LOGGER.isTraceEnabled()) {
-          LOGGER.trace("ClassLoaderModel for {} loaded in {}ms", artifactFile.getName(),
+          LOGGER.trace("ClassLoaderConfiguration for {} loaded in {}ms", artifactFile.getName(),
                        NANOSECONDS.toMillis(nanoTime() - startTime));
         }
         return classLoaderModel;

@@ -25,10 +25,10 @@ public class ToolingClassLoaderConfigurationLoader implements ClassLoaderConfigu
 
   private static final Logger LOGGER = getLogger(ToolingClassLoaderConfigurationLoader.class);
 
-  private List<ClassLoaderConfigurationLoader> classLoaderModelLoaders;
+  private List<ClassLoaderConfigurationLoader> classLoaderConfigurationLoaders;
 
-  public ToolingClassLoaderConfigurationLoader(List<ClassLoaderConfigurationLoader> classLoaderModelLoaders) {
-    this.classLoaderModelLoaders = classLoaderModelLoaders;
+  public ToolingClassLoaderConfigurationLoader(List<ClassLoaderConfigurationLoader> classLoaderConfigurationLoaders) {
+    this.classLoaderConfigurationLoaders = classLoaderConfigurationLoaders;
   }
 
   @Override
@@ -40,14 +40,14 @@ public class ToolingClassLoaderConfigurationLoader implements ClassLoaderConfigu
   public ClassLoaderConfiguration load(File artifactFile, Map<String, Object> attributes, ArtifactType artifactType)
       throws InvalidDescriptorLoaderException {
     long startTime = nanoTime();
-    for (ClassLoaderConfigurationLoader classLoaderModelLoader : classLoaderModelLoaders) {
-      if (classLoaderModelLoader.supportsArtifactType(artifactType)) {
-        ClassLoaderConfiguration classLoaderModel = classLoaderModelLoader.load(artifactFile, attributes, artifactType);
+    for (ClassLoaderConfigurationLoader classLoaderConfigurationLoader : classLoaderConfigurationLoaders) {
+      if (classLoaderConfigurationLoader.supportsArtifactType(artifactType)) {
+        ClassLoaderConfiguration classLoaderConfiguration = classLoaderConfigurationLoader.load(artifactFile, attributes, artifactType);
         if (LOGGER.isTraceEnabled()) {
           LOGGER.trace("ClassLoaderConfiguration for {} loaded in {}ms", artifactFile.getName(),
                        NANOSECONDS.toMillis(nanoTime() - startTime));
         }
-        return classLoaderModel;
+        return classLoaderConfiguration;
       }
     }
     throw new IllegalStateException(format("Artifact type %s not supported", artifactType));
@@ -55,7 +55,7 @@ public class ToolingClassLoaderConfigurationLoader implements ClassLoaderConfigu
 
   @Override
   public boolean supportsArtifactType(ArtifactType artifactType) {
-    return classLoaderModelLoaders.stream()
-        .filter(classLoaderModelLoader -> classLoaderModelLoader.supportsArtifactType(artifactType)).findFirst().isPresent();
+    return classLoaderConfigurationLoaders.stream()
+        .filter(classLoaderConfigurationLoader -> classLoaderConfigurationLoader.supportsArtifactType(artifactType)).findFirst().isPresent();
   }
 }

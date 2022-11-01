@@ -18,7 +18,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 
 /**
- * Mimic for {@link org.mule.runtime.module.deployment.impl.internal.artifact.MavenClassLoaderModelLoader} that allows to use
+ * Mimic for {@link org.mule.runtime.module.deployment.impl.internal.artifact.MavenClassLoaderConfigurationLoader} that allows to use
  * injected instances of deployable, plugin and lib class loader model loaders.
  */
 public class ToolingClassLoaderModelLoader implements ClassLoaderModelLoader {
@@ -42,7 +42,8 @@ public class ToolingClassLoaderModelLoader implements ClassLoaderModelLoader {
     long startTime = nanoTime();
     for (ClassLoaderModelLoader classLoaderModelLoader : classLoaderModelLoaders) {
       if (classLoaderModelLoader.supportsArtifactType(artifactType)) {
-        ClassLoaderModel classLoaderModel = classLoaderModelLoader.load(artifactFile, attributes, artifactType);
+        ClassLoaderModel classLoaderModel =
+            (ClassLoaderModel) classLoaderModelLoader.load(artifactFile, attributes, artifactType);
         if (LOGGER.isTraceEnabled()) {
           LOGGER.trace("ClassLoaderModel for {} loaded in {}ms", artifactFile.getName(),
                        NANOSECONDS.toMillis(nanoTime() - startTime));

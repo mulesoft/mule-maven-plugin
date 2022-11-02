@@ -1,6 +1,7 @@
 package org.mule.tooling.internal;
 
 import static org.mule.runtime.api.deployment.meta.Product.MULE;
+import static org.mule.runtime.container.api.ContainerClassLoaderProvider.createContainerClassLoader;
 import static org.mule.runtime.container.api.ModuleRepository.createModuleRepository;
 import static org.mule.runtime.core.api.config.MuleManifest.getProductVersion;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.startIfNeeded;
@@ -8,7 +9,7 @@ import static org.mule.runtime.core.api.util.UUID.getUUID;
 import static org.mule.runtime.deployment.model.api.artifact.ArtifactDescriptorConstants.MULE_LOADER_ID;
 import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.defaultExtensionModelDiscoverer;
 import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.discoverRuntimeExtensionModels;
-import static org.mule.runtime.module.deployment.impl.internal.maven.AbstractMavenClassLoaderModelLoader.CLASSLOADER_MODEL_MAVEN_REACTOR_RESOLVER;
+import static org.mule.runtime.module.deployment.impl.internal.maven.AbstractMavenClassLoaderConfigurationLoader.CLASSLOADER_MODEL_MAVEN_REACTOR_RESOLVER;
 import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.createDeployablePomFile;
 import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.createDeployablePomProperties;
 import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.getPomModelFromJar;
@@ -45,7 +46,6 @@ import org.mule.runtime.module.artifact.activation.api.classloader.ArtifactClass
 import org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionDiscoveryRequest;
 import org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer;
 import org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelLoaderRepository;
-import org.mule.runtime.module.artifact.activation.internal.extension.discovery.DefaultExtensionModelLoaderRepository;
 import org.mule.runtime.module.artifact.api.classloader.MuleDeployableArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.descriptor.ApplicationDescriptor;
 import org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor;
@@ -264,13 +264,11 @@ public class DefaultExtensionModelService implements ExtensionModelService {
           .build();
       ApplicationDescriptor applicationDescriptor = muleArtifactResourcesRegistry.getApplicationDescriptorFactory()
           .createArtifact(applicationFolder, empty(), muleApplicationModel);
-      ModuleRepository moduleRepository = createModuleRepository(ArtifactClassLoaderResolver.class
-                                          .getClassLoader(), createTempDir());
-      
-      ArtifactClassLoaderResolver artifactClassLoaderResolver = ArtifactClassLoaderResolver
-          .classLoaderResolver(createContainerClassLoader(moduleRepository),createModuleRepository(ArtifactClassLoaderResolver.class
-              .getClassLoader(), createTempDir()), (empty) -> applicationFolder);
 
+      ModuleRepository moduleRepository = createModuleRepository(ArtifactClassLoaderResolver.class
+          .getClassLoader(), createTempDir());
+      ArtifactClassLoaderResolver artifactClassLoaderResolver = ArtifactClassLoaderResolver
+          .classLoaderResolver(createContainerClassLoader(moduleRepository), moduleRepository, (empty) -> applicationFolder);
 
       muleArtifactResourcesRegistry.getPluginDependenciesResolver()
           .resolve(emptySet(), new ArrayList<>(applicationDescriptor.getPlugins()), false);
@@ -350,8 +348,8 @@ public class DefaultExtensionModelService implements ExtensionModelService {
                                             MuleDeployableArtifactClassLoader artifactClassLoader,
                                             Map<String, String> properties) {
     try {
-      ArrayList<URL> resources = new ArrayList<URL>();
-      artifactPluginDescriptor.getClassLoaderModel().getExportedResources().forEach(resource -> {
+      ArrayList<URL> resources = new ArrayList<>();
+      artifactPluginDescriptor.getClassLoaderConfiguration().getExportedResources().forEach(resource -> {
         if (artifactClassLoader.getParent().getResource(resource) != null) {
           resources.add(artifactClassLoader.getParent().getResource(resource));
         }

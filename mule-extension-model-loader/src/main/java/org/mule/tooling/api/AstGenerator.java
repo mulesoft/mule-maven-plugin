@@ -47,16 +47,21 @@ public class AstGenerator {
   AstXmlParser xmlParser;
 
   public AstGenerator(MavenClient mavenClient, String runtimeVersion,
-                      Set<Artifact> allDependencies, Path workingDir, ClassRealm classRealm, List<Dependency> directDependencies) {
+                      Set<Artifact> allDependencies, Path workingDir, ClassRealm classRealm,
+                      List<Dependency> directDependencies) {
     ClassLoader classloader = AstGenerator.class.getClassLoader();
     ExtensionModelLoader loader = ExtensionModelLoaderFactory.createLoader(mavenClient, workingDir, classloader, runtimeVersion);
     Set<ExtensionModel> extensionModels = new HashSet<ExtensionModel>();
     ArrayList<URL> dependenciesURL = new ArrayList<URL>();
-    for(Dependency dependency:directDependencies) {
+    for (Dependency dependency : directDependencies) {
       removeExtModelIfExists(extensionModels, dependency);
-      processDependency(dependency, classloader, mavenClient, runtimeVersion, workingDir, extensionModels, dependenciesURL, loader);
+      processDependency(dependency, classloader, mavenClient, runtimeVersion, workingDir, extensionModels, dependenciesURL,
+                        loader);
     }
-    allDependencies.stream().map(extension -> createDependency(extension)).filter(dependency -> !directDependencies.contains(dependency)).forEach(dependency -> processDependency(dependency, classloader, mavenClient, runtimeVersion, workingDir, extensionModels, dependenciesURL, loader)); 
+    allDependencies.stream().map(extension -> createDependency(extension))
+        .filter(dependency -> !directDependencies.contains(dependency))
+        .forEach(dependency -> processDependency(dependency, classloader, mavenClient, runtimeVersion, workingDir,
+                                                 extensionModels, dependenciesURL, loader));
     dependenciesURL.forEach(url -> {
       try {
         classRealm.addURL(url);
@@ -65,7 +70,7 @@ public class AstGenerator {
         e1.printStackTrace();
       }
     });
-    Set<ExtensionModel> runtimeExtensionModels =loader.getRuntimeExtensionModels();
+    Set<ExtensionModel> runtimeExtensionModels = loader.getRuntimeExtensionModels();
     extensionModels.addAll(runtimeExtensionModels);
     AstXmlParser.Builder builder = new AstXmlParser.Builder();
     builder.withExtensionModels(extensionModels);
@@ -75,7 +80,12 @@ public class AstGenerator {
 
 
   private void removeExtModelIfExists(Set<ExtensionModel> extensionModels, Dependency dependency) {
-    extensionModels.removeIf(extension-> {return extension.getArtifactCoordinates().isPresent() ? ((dependency.getArtifactId().equals(extension.getArtifactCoordinates().get().getArtifactId()) && dependency.getGroupId().equals(extension.getArtifactCoordinates().get().getGroupId()))) : false;});
+    extensionModels.removeIf(extension -> {
+      return extension.getArtifactCoordinates().isPresent()
+          ? ((dependency.getArtifactId().equals(extension.getArtifactCoordinates().get().getArtifactId())
+              && dependency.getGroupId().equals(extension.getArtifactCoordinates().get().getGroupId())))
+          : false;
+    });
   }
 
 
@@ -84,8 +94,12 @@ public class AstGenerator {
     dependency.setArtifactId(artifact.getArtifactId());
     dependency.setGroupId(artifact.getGroupId());
     dependency.setVersion(artifact.getVersion());
-    if(artifact.getClassifier()!=null) {dependency.setClassifier(artifact.getClassifier());};
-    if(artifact.getType()!=null) {dependency.setType(artifact.getType());};
+    if (artifact.getClassifier() != null) {
+      dependency.setClassifier(artifact.getClassifier());
+    } ;
+    if (artifact.getType() != null) {
+      dependency.setType(artifact.getType());
+    } ;
     return dependency;
   }
 
@@ -112,9 +126,10 @@ public class AstGenerator {
     }
     return appXmlConfigInputStreams.isEmpty() ? null : xmlParser.parse(appXmlConfigInputStreams);
   }
-  
-  public void processDependency(Dependency dependency,ClassLoader classloader, MavenClient mavenClient, String runtimeVersion,
-                                Path workingDir, Set<ExtensionModel> extensionModels, ArrayList<URL> dependenciesURL, ExtensionModelLoader loader) {
+
+  public void processDependency(Dependency dependency, ClassLoader classloader, MavenClient mavenClient, String runtimeVersion,
+                                Path workingDir, Set<ExtensionModel> extensionModels, ArrayList<URL> dependenciesURL,
+                                ExtensionModelLoader loader) {
     if (dependency.getClassifier() != null && dependency.getClassifier().equals(MULE_PLUGIN_CLASSIFIER)) {
       PluginResources extensionInformation = loader.load(toBundleDescriptor(dependency));
       extensionModels.addAll(extensionInformation.getExtensionModels());
@@ -127,8 +142,7 @@ public class AstGenerator {
           e.printStackTrace();
         }
       });
-    }
-    else {
+    } else {
       if (("jar").equals(dependency.getType())) {
         try {
           dependenciesURL.add(mavenClient.resolveBundleDescriptor(toBundleDescriptor(dependency)).getBundleUri().toURL());

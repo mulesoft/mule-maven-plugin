@@ -13,36 +13,36 @@ import org.mule.maven.client.api.MavenClient;
 import org.mule.runtime.core.api.config.bootstrap.ArtifactType;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
 import org.mule.runtime.module.artifact.api.descriptor.BundleDescriptorLoader;
-import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderModelLoader;
+import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderConfigurationLoader;
 import org.mule.runtime.module.artifact.api.descriptor.DescriptorLoader;
 import org.mule.runtime.module.artifact.api.descriptor.DescriptorLoaderRepository;
 import org.mule.runtime.module.artifact.api.descriptor.LoaderNotFoundException;
-import org.mule.runtime.module.deployment.impl.internal.application.DeployableMavenClassLoaderModelLoader;
-import org.mule.runtime.module.deployment.impl.internal.plugin.PluginMavenClassLoaderModelLoader;
-import org.mule.runtime.module.service.internal.artifact.LibFolderClassLoaderModelLoader;
+import org.mule.runtime.module.deployment.impl.internal.application.DeployableMavenClassLoaderConfigurationLoader;
+import org.mule.runtime.module.deployment.impl.internal.plugin.PluginMavenClassLoaderConfigurationLoader;
+import org.mule.runtime.module.service.internal.artifact.LibFolderClassLoaderConfigurationLoader;
 
 public class ToolingDescriptorLoaderRepository implements DescriptorLoaderRepository {
 
   private Map<Class, List<DescriptorLoader>> descriptorLoaders = Maps.newHashMap();
 
   public ToolingDescriptorLoaderRepository(MavenClient mavenClient) {
-    ToolingClassLoaderModelLoader toolingClassLoaderModelLoader =
-        new ToolingClassLoaderModelLoader(Lists.newArrayList(new ClassLoaderModelLoader[] {
-            new DeployableMavenClassLoaderModelLoader(Optional.of(mavenClient)),
-            new PluginMavenClassLoaderModelLoader(Optional.of(mavenClient))}));
+    ToolingClassLoaderConfigurationLoader toolingClassLoaderConfigurationLoader =
+        new ToolingClassLoaderConfigurationLoader(Lists.newArrayList(new ClassLoaderConfigurationLoader[] {
+            new DeployableMavenClassLoaderConfigurationLoader(Optional.of(mavenClient)),
+            new PluginMavenClassLoaderConfigurationLoader(Optional.of(mavenClient))}));
     this.descriptorLoaders.put(BundleDescriptorLoader.class,
                                this.findBundleDescriptorLoaders(BundleDescriptorLoader.class, new SpiServiceRegistry()));
-    this.descriptorLoaders.put(ClassLoaderModelLoader.class,
-                               Lists.newArrayList(new DescriptorLoader[] {toolingClassLoaderModelLoader}));
+    this.descriptorLoaders.put(ClassLoaderConfigurationLoader.class,
+                               Lists.newArrayList(new DescriptorLoader[] {toolingClassLoaderConfigurationLoader}));
   }
 
   public ToolingDescriptorLoaderRepository() {
-    ToolingClassLoaderModelLoader toolingClassLoaderModelLoader = new ToolingClassLoaderModelLoader(Lists
-        .newArrayList(new ClassLoaderModelLoader[] {new LibFolderClassLoaderModelLoader()}));
+    ToolingClassLoaderConfigurationLoader toolingClassLoaderConfigurationLoader = new ToolingClassLoaderConfigurationLoader(Lists
+        .newArrayList(new ClassLoaderConfigurationLoader[] {new LibFolderClassLoaderConfigurationLoader()}));
     this.descriptorLoaders.put(BundleDescriptorLoader.class,
                                this.findBundleDescriptorLoaders(BundleDescriptorLoader.class, new SpiServiceRegistry()));
-    this.descriptorLoaders.put(ClassLoaderModelLoader.class,
-                               Lists.newArrayList(new DescriptorLoader[] {toolingClassLoaderModelLoader}));
+    this.descriptorLoaders.put(ClassLoaderConfigurationLoader.class,
+                               Lists.newArrayList(new DescriptorLoader[] {toolingClassLoaderConfigurationLoader}));
   }
 
   private List<DescriptorLoader> findBundleDescriptorLoaders(Class<? extends DescriptorLoader> descriptorLoaderClass,

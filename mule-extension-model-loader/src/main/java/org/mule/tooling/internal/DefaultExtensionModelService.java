@@ -266,7 +266,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
 
 
       ModuleRepository moduleRepository = createModuleRepository(ArtifactClassLoaderResolver.class
-              .getClassLoader(), createTempDir());
+          .getClassLoader(), createTempDir());
       ArtifactClassLoaderResolver artifactClassLoaderResolver = ArtifactClassLoaderResolver
           .classLoaderResolver(createContainerClassLoader(moduleRepository), moduleRepository, (empty) -> applicationFolder);
 

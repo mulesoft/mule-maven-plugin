@@ -10,6 +10,7 @@ import org.mule.runtime.core.api.config.bootstrap.ArtifactType;
 import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderConfiguration;
 import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderConfigurationLoader;
 import org.mule.runtime.module.artifact.api.descriptor.InvalidDescriptorLoaderException;
+import org.mule.runtime.module.deployment.impl.internal.artifact.MavenClassLoaderConfigurationLoader;
 
 import java.io.File;
 import java.util.List;
@@ -18,8 +19,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 
 /**
- * Mimic for {@link org.mule.runtime.module.deployment.impl.internal.artifact.MavenClassLoaderConfigurationLoader} that allows to use
- * injected instances of deployable, plugin and lib class loader model loaders.
+ * Mimic for {@link MavenClassLoaderConfigurationLoader} that allows to use injected instances of deployable, plugin
+ * and lib class loader configuration loaders.
  */
 public class ToolingClassLoaderConfigurationLoader implements ClassLoaderConfigurationLoader {
 
@@ -42,7 +43,8 @@ public class ToolingClassLoaderConfigurationLoader implements ClassLoaderConfigu
     long startTime = nanoTime();
     for (ClassLoaderConfigurationLoader classLoaderConfigurationLoader : classLoaderConfigurationLoaders) {
       if (classLoaderConfigurationLoader.supportsArtifactType(artifactType)) {
-        ClassLoaderConfiguration classLoaderConfiguration = classLoaderConfigurationLoader.load(artifactFile, attributes, artifactType);
+        ClassLoaderConfiguration classLoaderConfiguration =
+            classLoaderConfigurationLoader.load(artifactFile, attributes, artifactType);
         if (LOGGER.isTraceEnabled()) {
           LOGGER.trace("ClassLoaderConfiguration for {} loaded in {}ms", artifactFile.getName(),
                        NANOSECONDS.toMillis(nanoTime() - startTime));
@@ -56,6 +58,7 @@ public class ToolingClassLoaderConfigurationLoader implements ClassLoaderConfigu
   @Override
   public boolean supportsArtifactType(ArtifactType artifactType) {
     return classLoaderConfigurationLoaders.stream()
-        .filter(classLoaderConfigurationLoader -> classLoaderConfigurationLoader.supportsArtifactType(artifactType)).findFirst().isPresent();
+        .filter(classLoaderConfigurationLoader -> classLoaderConfigurationLoader.supportsArtifactType(artifactType)).findFirst()
+        .isPresent();
   }
 }

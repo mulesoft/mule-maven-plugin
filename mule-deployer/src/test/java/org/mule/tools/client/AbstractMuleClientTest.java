@@ -88,7 +88,7 @@ public class AbstractMuleClientTest {
   public void buildOrganization() {
     Organization o = client.buildOrganization((JsonObject) new JsonParser().parse(userInfoJson));
     System.out.println(o.toString());
-    assertThat("Master organization should be MuleSoft", o.name, equalTo("MuleSoft"));
+    assertThat("Main organization should be MuleSoft", o.name, equalTo("MuleSoft"));
     Organization test1 = o.subOrganizations.get(0);
     assertThat("Suborganization should be test1", test1.name, equalTo("test1"));
     assertThat("Suborganization should be max-the-mule-broker", o.subOrganizations.get(1).name, equalTo("max-the-mule-broker"));

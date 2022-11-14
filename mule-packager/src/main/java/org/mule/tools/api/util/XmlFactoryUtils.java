@@ -44,7 +44,7 @@ public class XmlFactoryUtils {
     try {
       String feature = null;
       // Configuration based on
-      // https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.md#xpathexpression
+      // https://github.com/OWASP/CheatSheetSeries/blob/fbdced15d2571c093d7b64ea2358de60c31d04d6/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.md#xpathexpression
 
       // This is the PRIMARY defense. If DTDs (doctypes) are disallowed, almost all
       // XML entity attacks are prevented

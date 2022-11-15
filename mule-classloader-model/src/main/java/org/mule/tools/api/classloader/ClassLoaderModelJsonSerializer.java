@@ -14,8 +14,11 @@ import static org.mule.tools.api.classloader.Constants.CLASSLOADER_MODEL_FILE_NA
 import static org.mule.tools.api.classloader.Constants.PACKAGES_FIELD;
 import static org.mule.tools.api.classloader.Constants.RESOURCES_FIELD;
 
+import static java.lang.String.format;
+
 import org.mule.tools.api.classloader.model.AppClassLoaderModel;
 import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 import java.io.BufferedReader;
@@ -43,18 +46,59 @@ public class ClassLoaderModelJsonSerializer {
    * @return a non null {@link ClassLoaderModel} matching the provided JSON content
    */
   public static ClassLoaderModel deserialize(File classLoaderModelDescriptor) {
-    try {
+    try (Reader reader = new BufferedReader(new FileReader(classLoaderModelDescriptor))) {
       Gson gson = new GsonBuilder()
           .enableComplexMapKeySerialization()
           .create();
 
-      Reader reader = new BufferedReader(new FileReader(classLoaderModelDescriptor));
       ClassLoaderModel classLoaderModel = gson.fromJson(reader, ClassLoaderModel.class);
-      reader.close();
-
+      validate(classLoaderModel, classLoaderModelDescriptor);
       return classLoaderModel;
     } catch (IOException e) {
       throw new RuntimeException("Could not create classloader-model.json", e);
+    }
+  }
+
+  protected static void validate(ClassLoaderModel classLoaderModel, File classLoaderModelDescriptor) {
+    if (classLoaderModel.getVersion() == null) {
+      throw new IllegalStateException(format("Error deserializing %s. \"version\" not specified.",
+                                             classLoaderModelDescriptor.getName()));
+    }
+    validateArtifactCoordinates(classLoaderModelDescriptor, classLoaderModel.getArtifactCoordinates());
+
+    classLoaderModel.getDependencies()
+        .forEach(dep -> {
+          validateArtifactCoordinates(classLoaderModelDescriptor, dep.getArtifactCoordinates());
+          if (dep.getUri() == null) {
+            throw new IllegalStateException(format("Error deserializing %s. \"uri\" not specified for dependency %s",
+                                                   classLoaderModelDescriptor.getName(),
+                                                   dep.getArtifactCoordinates().getGroupId() + ":"
+                                                       + dep.getArtifactCoordinates().getArtifactId()));
+          }
+
+        });
+  }
+
+  private static void validateArtifactCoordinates(File classLoaderModelDescriptor, ArtifactCoordinates artifactCoordinates) {
+    if (artifactCoordinates == null) {
+      throw new IllegalStateException(format("Error deserializing %s. \"artifactCoordinates\" not specified.",
+                                             classLoaderModelDescriptor.getName()));
+    }
+    if (artifactCoordinates.getGroupId() == null) {
+      throw new IllegalStateException(format("Error deserializing %s. \"groupId\" not specified.",
+                                             classLoaderModelDescriptor.getName()));
+    }
+    if (artifactCoordinates.getArtifactId() == null) {
+      throw new IllegalStateException(format("Error deserializing %s. \"artifactId\" not specified.",
+                                             classLoaderModelDescriptor.getName()));
+    }
+    if (artifactCoordinates.getVersion() == null) {
+      throw new IllegalStateException(format("Error deserializing %s. \"version\" not specified.",
+                                             classLoaderModelDescriptor.getName()));
+    }
+    if (artifactCoordinates.getType() == null) {
+      throw new IllegalStateException(format("Error deserializing %s. \"type\" not specified.",
+                                             classLoaderModelDescriptor.getName()));
     }
   }
 
@@ -73,7 +117,7 @@ public class ClassLoaderModelJsonSerializer {
    * Serializes the classloader model to a string
    *
    * @param classLoaderModel the classloader model of the application being packaged
-   * @param prettyPrinting if {@code true} the json will be printed with pretty print mode
+   * @param prettyPrinting   if {@code true} the json will be printed with pretty print mode
    * @return string containing the classloader model's JSON representation
    */
   public static String serialize(ClassLoaderModel classLoaderModel, boolean prettyPrinting) {
@@ -95,7 +139,7 @@ public class ClassLoaderModelJsonSerializer {
   /**
    * Serializes the classloader model to the classloader-model.json file in the destination folder
    *
-   * @param classLoaderModel the classloader model of the application being packaged
+   * @param classLoaderModel  the classloader model of the application being packaged
    * @param destinationFolder the directory model where the file is going to be written
    * @return the created File containing the classloader model's JSON representation
    */
@@ -106,21 +150,23 @@ public class ClassLoaderModelJsonSerializer {
   /**
    * Serializes the classloader model to the classloader-model.json file in the destination folder
    *
-   * @param classLoaderModel the classloader model of the application being packaged
+   * @param classLoaderModel  the classloader model of the application being packaged
    * @param destinationFolder the directory model where the file is going to be written
-   * @param prettyPrinting if {@code true} the json will be printed with pretty print mode
+   * @param prettyPrinting    if {@code true} the json will be printed with pretty print mode
    * @return the created File containing the classloader model's JSON representation
    */
   public static File serializeToFile(ClassLoaderModel classLoaderModel, File destinationFolder, boolean prettyPrinting) {
     File destinationFile = new File(destinationFolder, CLASSLOADER_MODEL_FILE_NAME);
     try {
-
       if (!destinationFolder.exists()) {
         destinationFolder.mkdirs();
       }
 
       destinationFile.createNewFile();
-      Writer writer = new FileWriter(destinationFile.getAbsolutePath());
+    } catch (IOException e) {
+      throw new RuntimeException("Could not create classloader-model.json", e);
+    }
+    try (Writer writer = new FileWriter(destinationFile.getAbsolutePath())) {
       writer.write(serialize(classLoaderModel, prettyPrinting));
       writer.close();
       return destinationFile;

@@ -39,21 +39,19 @@ import com.google.gson.JsonSerializer;
 public class AppClassLoaderModelJsonSerializer extends ClassLoaderModelJsonSerializer {
 
   public static AppClassLoaderModel deserialize(File classLoaderModelDescriptor) {
-    try {
+    try (Reader reader = new BufferedReader(new FileReader(classLoaderModelDescriptor))) {
       Gson gson = new GsonBuilder()
           .enableComplexMapKeySerialization()
           .setPrettyPrinting()
           .create();
 
-      Reader reader = new BufferedReader(new FileReader(classLoaderModelDescriptor));
       AppClassLoaderModel classLoaderModel = gson.fromJson(reader, AppClassLoaderModel.class);
-      reader.close();
+      validate(classLoaderModel, classLoaderModelDescriptor);
       return classLoaderModel;
     } catch (IOException e) {
       throw new RuntimeException("Could not create classloader-model.json", e);
     }
   }
-
 
   /**
    * Custom JsonSerializer for {@link AppClassLoaderModel}

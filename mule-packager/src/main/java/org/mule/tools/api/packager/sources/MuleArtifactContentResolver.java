@@ -18,8 +18,6 @@ import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 import org.mule.tools.api.util.XmlFactoryUtils;
 
-import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;

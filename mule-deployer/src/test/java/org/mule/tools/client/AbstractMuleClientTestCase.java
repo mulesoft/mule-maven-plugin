@@ -142,7 +142,7 @@ public class AbstractMuleClientTestCase {
   }
 
   @Test
-  public void findEnvironmentByNameNoBusinessGroupAndNotPartOfMaster() {
+  public void findEnvironmentByNameNoBusinessGroupAndNotPartOfTheMain() {
     expectedException.expect(RuntimeException.class);
     expectedException
         .expectMessage("Please set the businessGroup in the plugin configuration in case your user have access only within a business unit.");

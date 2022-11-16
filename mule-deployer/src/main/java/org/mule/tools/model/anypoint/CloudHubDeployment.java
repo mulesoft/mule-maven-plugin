@@ -38,6 +38,9 @@ public class CloudHubDeployment extends AnypointDeployment {
   protected Boolean persistentQueues = false;
 
   @Parameter
+  protected Boolean disableCloudHubLogs = false;
+
+  @Parameter
   protected Integer waitBeforeValidation = 6000;
 
   @Parameter
@@ -106,6 +109,14 @@ public class CloudHubDeployment extends AnypointDeployment {
 
   public void setPersistentQueues(Boolean persistentQueues) {
     this.persistentQueues = persistentQueues;
+  }
+
+  public Boolean getDisableCloudHubLogs() {
+    return disableCloudHubLogs;
+  }
+
+  public void setDisableCloudHubLogs(Boolean disableCloudHubLogs) {
+    this.disableCloudHubLogs = disableCloudHubLogs;
   }
 
   public Integer getWaitBeforeValidation() {

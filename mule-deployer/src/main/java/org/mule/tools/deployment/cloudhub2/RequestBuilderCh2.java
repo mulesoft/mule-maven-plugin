@@ -27,6 +27,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
 
   public static final String ID = "id";
   private static final String TAG_EXCEPTION = "Could not resolve tag for this mule version";
+  public static final String RESOURCES_EXCEPTION = "instanceType and vCores can't be used in the same deployment";
 
   protected RequestBuilderCh2(Cloudhub2Deployment deployment, RuntimeFabricClient client) {
     super(deployment, client);
@@ -42,7 +43,10 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     deploymentRequest.setName(deployment.getApplicationName());
     deploymentRequest.setApplication(applicationRequest);
     deploymentRequest.setTarget(target);
-
+    if (((Cloudhub2Deployment) deployment).getvCores() != null
+        && ((Cloudhub2DeploymentSettings) target.deploymentSettings).getInstanceType() != null) {
+      throw new DeploymentException(RESOURCES_EXCEPTION);
+    }
     applicationRequest.setConfiguration(createConfiguration());
     applicationRequest.setvCores(((Cloudhub2Deployment) deployment).getvCores());
     applicationRequest.setIntegrations(((Cloudhub2Deployment) deployment).getIntegrations());

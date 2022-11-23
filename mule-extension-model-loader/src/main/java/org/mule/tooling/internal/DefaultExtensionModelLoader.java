@@ -48,12 +48,12 @@ public class DefaultExtensionModelLoader implements ExtensionModelLoader {
     final ModuleRepository moduleRepository =
         new DefaultModuleRepository(new CompositeModuleDiscoverer(result.toArray(new ModuleDiscoverer[0])));
 
-    ArtifactClassLoader containerClassLoaderFactory =
+    ArtifactClassLoader containerClassLoader =
         (new ContainerClassLoaderFactory(moduleRepository)).createContainerClassLoader(parentClassloader);
     MuleArtifactResourcesRegistry resourcesRegistry =
         new MuleArtifactResourcesRegistry(runtimeVersion, Optional.ofNullable(muleVersion), mavenClient,
-                                          moduleRepository, containerClassLoaderFactory, workingDir.toFile());
-    service = new DefaultExtensionModelService(resourcesRegistry);
+                                          moduleRepository, containerClassLoader, workingDir.toFile());
+    service = new DefaultExtensionModelService(resourcesRegistry, runtimeVersion, containerClassLoader);
   }
 
   @Override

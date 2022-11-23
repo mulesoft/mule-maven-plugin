@@ -6,9 +6,14 @@ import static org.mule.runtime.core.api.config.MuleManifest.getProductVersion;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.startIfNeeded;
 import static org.mule.runtime.core.api.util.UUID.getUUID;
 import static org.mule.runtime.deployment.model.api.artifact.ArtifactDescriptorConstants.MULE_LOADER_ID;
+import static org.mule.runtime.module.artifact.activation.api.descriptor.DeployableArtifactDescriptorCreator.applicationDescriptorCreator;
+import static org.mule.runtime.module.artifact.activation.api.descriptor.DomainDescriptorResolver.noDomainDescriptorResolver;
 import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.defaultExtensionModelDiscoverer;
 import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.discoverRuntimeExtensionModels;
-import static org.mule.runtime.module.deployment.impl.internal.maven.AbstractMavenClassLoaderModelLoader.CLASSLOADER_MODEL_MAVEN_REACTOR_RESOLVER;
+import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelLoaderRepository.getExtensionModelLoaderManager;
+import static org.mule.runtime.module.artifact.activation.api.plugin.PluginDescriptorResolver.pluginDescriptorResolver;
+import static org.mule.runtime.module.artifact.activation.api.plugin.PluginModelResolver.pluginModelResolver;
+import static org.mule.runtime.module.deployment.impl.internal.maven.AbstractMavenClassLoaderConfigurationLoader.CLASSLOADER_MODEL_MAVEN_REACTOR_RESOLVER;
 import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.createDeployablePomFile;
 import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.createDeployablePomProperties;
 import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.getPomModelFromJar;
@@ -21,10 +26,8 @@ import static java.lang.System.nanoTime;
 import static java.nio.file.Files.createTempDirectory;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
-import static java.util.Optional.empty;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.stream.Collectors.toSet;
 
@@ -40,12 +43,16 @@ import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.module.artifact.activation.api.classloader.ArtifactClassLoaderResolver;
+import org.mule.runtime.module.artifact.activation.api.deployable.DeployableProjectModel;
 import org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionDiscoveryRequest;
 import org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer;
 import org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelLoaderRepository;
-import org.mule.runtime.module.artifact.activation.internal.extension.discovery.DefaultExtensionModelLoaderRepository;
+import org.mule.runtime.module.artifact.activation.internal.application.ApplicationDescriptorFactory;
+import org.mule.runtime.module.artifact.activation.internal.maven.LightweightDeployableProjectModelBuilder;
+import org.mule.runtime.module.artifact.api.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.classloader.MuleDeployableArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.descriptor.ApplicationDescriptor;
+import org.mule.runtime.module.artifact.api.descriptor.ArtifactDescriptorValidatorBuilder;
 import org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor;
 import org.mule.tooling.api.ExtensionModelService;
 import org.mule.tooling.api.ToolingException;
@@ -58,10 +65,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableMap;
-
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
@@ -84,12 +91,18 @@ public class DefaultExtensionModelService implements ExtensionModelService {
   private final MuleArtifactResourcesRegistry muleArtifactResourcesRegistry;
 
   private final List<ExtensionModel> runtimeExtensionModels = new ArrayList<>();
+  private final String runtimeVersion;
+  private final ArtifactClassLoader containerClassLoader;
 
-  public DefaultExtensionModelService(MuleArtifactResourcesRegistry muleArtifactResourcesRegistry) {
+  public DefaultExtensionModelService(MuleArtifactResourcesRegistry muleArtifactResourcesRegistry,
+                                      String runtimeVersion,
+                                      ArtifactClassLoader containerClassLoader) {
     requireNonNull(muleArtifactResourcesRegistry, "muleArtifactResourcesRegistry cannot be null");
 
     this.muleArtifactResourcesRegistry = muleArtifactResourcesRegistry;
     this.runtimeExtensionModels.addAll(new ArrayList<>(discoverRuntimeExtensionModels()));
+    this.runtimeVersion = runtimeVersion;
+    this.containerClassLoader = containerClassLoader;
   }
 
   /**
@@ -260,20 +273,26 @@ public class DefaultExtensionModelService implements ExtensionModelService {
           .withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(MULE_LOADER_ID,
                                                                                  classLoaderModelLoaderAttributes))
           .build();
-      ApplicationDescriptor applicationDescriptor = muleArtifactResourcesRegistry.getApplicationDescriptorFactory()
-          .createArtifact(applicationFolder, empty(), muleApplicationModel);
 
+      ArtifactDescriptorValidatorBuilder artifactDescriptorValidatorBuilder =
+          ArtifactDescriptorValidatorBuilder.builder().validateMinMuleVersion()
+              .validateMinMuleVersion(() -> this.runtimeVersion).validateMinMuleVersionUsingSemanticVersion();
+
+      DeployableProjectModel model =
+          new LightweightDeployableProjectModelBuilder(applicationFolder, Optional.of(muleApplicationModel), false).build();
+
+      ApplicationDescriptor applicationDescriptor =
+          new ApplicationDescriptorFactory(model, emptyMap(), pluginModelResolver(),
+                                           pluginDescriptorResolver(),
+                                           artifactDescriptorValidatorBuilder, noDomainDescriptorResolver(),
+                                           applicationDescriptorCreator()).create();
 
       ArtifactClassLoaderResolver artifactClassLoaderResolver = ArtifactClassLoaderResolver
-          .classLoaderResolver(createModuleRepository(ArtifactClassLoaderResolver.class
+          .classLoaderResolver(containerClassLoader, createModuleRepository(ArtifactClassLoaderResolver.class
               .getClassLoader(), createTempDir()), (empty) -> applicationFolder);
 
-      muleArtifactResourcesRegistry.getPluginDependenciesResolver()
-          .resolve(emptySet(), new ArrayList<>(applicationDescriptor.getPlugins()), false);
-
       MuleDeployableArtifactClassLoader artifactClassLoader =
-          artifactClassLoaderResolver.createApplicationClassLoader(applicationDescriptor,
-                                                                   muleArtifactResourcesRegistry::getContainerArtifactClassLoader);
+          artifactClassLoaderResolver.createApplicationClassLoader(applicationDescriptor);
 
       try {
         ArtifactPluginDescriptor artifactPluginDescriptor = artifactClassLoader.getArtifactPluginClassLoaders().stream()
@@ -347,14 +366,13 @@ public class DefaultExtensionModelService implements ExtensionModelService {
                                             Map<String, String> properties) {
     try {
       ArrayList<URL> resources = new ArrayList<URL>();
-      artifactPluginDescriptor.getClassLoaderModel().getExportedResources().forEach(resource -> {
+      artifactPluginDescriptor.getClassLoaderConfiguration().getExportedResources().forEach(resource -> {
         if (artifactClassLoader.getParent().getResource(resource) != null) {
           resources.add(artifactClassLoader.getParent().getResource(resource));
         }
       });
       ExtensionModelLoaderRepository extensionModelLoaderRepository =
-          ExtensionModelLoaderRepository
-              .getExtensionModelLoaderManager(muleArtifactResourcesRegistry.getContainerArtifactClassLoader().getClassLoader());
+          getExtensionModelLoaderManager(containerClassLoader.getClassLoader());
       startIfNeeded(extensionModelLoaderRepository);
       final Set<ExtensionModel> loadedExtensionInformation =
           discoverPluginsExtensionModel(artifactClassLoader, extensionModelLoaderRepository, properties);

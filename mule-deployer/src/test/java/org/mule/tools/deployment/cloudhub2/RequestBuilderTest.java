@@ -12,8 +12,9 @@ package org.mule.tools.deployment.cloudhub2;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.fabric.RuntimeFabricClient;
 import org.mule.tools.model.anypoint.Cloudhub2Deployment;
@@ -35,6 +36,8 @@ import static org.mockito.Mockito.when;
 
 public class RequestBuilderTest {
 
+  @Rule
+  public ExpectedException exceptionRule = ExpectedException.none();
   private static final String DOMAIN_TEST = "*.mydomain.com";
   private static final String TARGETS_RESPONSE = "[\n" +
       "   {\n" +
@@ -61,7 +64,8 @@ public class RequestBuilderTest {
       "}";
   private static final String DEPLOY_REQUEST =
       "{\"name\":\"test-app\",\"application\":{\"ref\":{\"packaging\":\"jar\"},\"desiredState\":\"STARTED\",\"configuration\":{\"mule.agent.application.properties.service\":{\"applicationName\":\"test-app\"},\"mule.agent.logging.service\":{\"artifactName\":\"test-app\",\"scopeLoggingConfigurations\":[{\"scope\":\"com.pkg.debug\",\"logLevel\":\"INFO\"}]}},\"vCores\":\"0.5\",\"integrations\":{\"services\":{\"objectStoreV2\":{\"enabled\":true}}}},\"target\":{\"targetId\":\"sampleId\",\"provider\":\"MC\",\"deploymentSettings\":{\"runtimeVersion\":\"4.2.0:v1.2.28\",\"lastMileSecurity\":false,\"persistentObjectStore\":false,\"clustered\":false,\"enforceDeployingReplicasAcrossNodes\":false,\"http\":{\"inbound\":{\"publicUrl\":\"test-app.mydomain.com\"}},\"forwardSslSession\":false,\"disableAmLogForwarding\":false,\"generateDefaultPublicUrl\":false}}}";
-
+  private static final String DEPLOY_REQUEST_WITH_INSTANCE_TYPE =
+      "{\"name\":\"test-app\",\"application\":{\"ref\":{\"packaging\":\"jar\"},\"desiredState\":\"STARTED\",\"configuration\":{\"mule.agent.application.properties.service\":{\"applicationName\":\"test-app\"},\"mule.agent.logging.service\":{\"artifactName\":\"test-app\",\"scopeLoggingConfigurations\":[{\"scope\":\"com.pkg.debug\",\"logLevel\":\"INFO\"}]}},\"integrations\":{\"services\":{\"objectStoreV2\":{\"enabled\":true}}}},\"target\":{\"targetId\":\"sampleId\",\"provider\":\"MC\",\"deploymentSettings\":{\"instanceType\":\"instanceValue\",\"runtimeVersion\":\"4.2.0:v1.2.28\",\"lastMileSecurity\":false,\"persistentObjectStore\":false,\"clustered\":false,\"enforceDeployingReplicasAcrossNodes\":false,\"http\":{\"inbound\":{\"publicUrl\":\"test-app.mydomain.com\"}},\"forwardSslSession\":false,\"disableAmLogForwarding\":false,\"generateDefaultPublicUrl\":false}}}";
   private static final String DEPLOY_REQUEST_WITH_PUBLIC_URL =
       "{\"name\":\"test-app\",\"application\":{\"ref\":{\"packaging\":\"jar\"},\"desiredState\":\"STARTED\",\"configuration\":{\"mule.agent.application.properties.service\":{\"applicationName\":\"test-app\"},\"mule.agent.logging.service\":{\"artifactName\":\"test-app\",\"scopeLoggingConfigurations\":[{\"scope\":\"com.pkg.debug\",\"logLevel\":\"INFO\"}]}},\"vCores\":\"0.5\",\"integrations\":{\"services\":{\"objectStoreV2\":{\"enabled\":true}}}},\"target\":{\"targetId\":\"sampleId\",\"provider\":\"MC\",\"deploymentSettings\":{\"runtimeVersion\":\"4.2.0:v1.2.28\",\"lastMileSecurity\":false,\"persistentObjectStore\":false,\"clustered\":false,\"enforceDeployingReplicasAcrossNodes\":false,\"http\":{\"inbound\":{\"publicUrl\":\"test-app.mydomain.com\"}},\"forwardSslSession\":false,\"disableAmLogForwarding\":false,\"generateDefaultPublicUrl\":true}}}";
   private RequestBuilderCh2 requestBuilder;
@@ -119,5 +123,23 @@ public class RequestBuilderTest {
     setUp(settings);
     String request = new Gson().toJson(requestBuilder.buildDeploymentRequest());
     assertThat("request is not the expected", DEPLOY_REQUEST_WITH_PUBLIC_URL.equals(request));
+  }
+
+  @Test
+  public void requestBuildWithResourcesAndVCoresTest() throws Exception {
+    setUp(null);
+    exceptionRule.expect(DeploymentException.class);
+    exceptionRule.expectMessage(RequestBuilderCh2.RESOURCES_EXCEPTION);
+    ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setInstanceType("instanceValue");
+    requestBuilder.buildDeploymentRequest();
+  }
+
+  @Test
+  public void requestBuildWithInstanceTypeTest() throws Exception {
+    setUp(null);
+    cloudhub2Deployment.setvCores(null);
+    ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setInstanceType("instanceValue");
+    String request = new Gson().toJson(requestBuilder.buildDeploymentRequest());
+    assertThat("request is not the expected", DEPLOY_REQUEST_WITH_INSTANCE_TYPE.equals(request));
   }
 }

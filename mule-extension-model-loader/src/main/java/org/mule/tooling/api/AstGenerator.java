@@ -12,8 +12,20 @@ package org.mule.tooling.api;
 
 import static org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor.MULE_PLUGIN_CLASSIFIER;
 
+import org.mule.maven.client.api.MavenClient;
+import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.api.util.Pair;
+import org.mule.runtime.ast.api.ArtifactAst;
+import org.mule.runtime.ast.api.serialization.ArtifactAstSerializerProvider;
+import org.mule.runtime.ast.api.util.MuleAstUtils;
+import org.mule.runtime.ast.api.validation.Validation.Level;
+import org.mule.runtime.ast.api.validation.ValidationResult;
+import org.mule.runtime.ast.api.validation.ValidationResultItem;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.ast.internal.serialization.ArtifactAstSerializerFactory;
+import org.mule.runtime.config.api.properties.ConfigurationPropertiesHierarchyBuilder;
+import org.mule.runtime.config.api.properties.ConfigurationPropertiesResolver;
 import org.mule.tooling.internal.PluginResources;
 
 import java.io.FileInputStream;
@@ -23,24 +35,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
-import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.maven.client.api.MavenClient;
-import org.mule.runtime.api.meta.model.ExtensionModel;
-import org.mule.runtime.api.util.Pair;
-import org.mule.runtime.ast.api.ArtifactAst;
-import org.mule.runtime.ast.api.serialization.ArtifactAstSerializerProvider;
-import org.mule.runtime.ast.api.util.MuleAstUtils;
-import org.mule.runtime.ast.api.validation.Validation.Level;
-import org.mule.runtime.ast.api.validation.ValidationResult;
-import org.mule.runtime.ast.api.validation.ValidationResultItem;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class AstGenerator {
 
@@ -51,8 +52,8 @@ public class AstGenerator {
                       List<Dependency> directDependencies) {
     ClassLoader classloader = AstGenerator.class.getClassLoader();
     ExtensionModelLoader loader = ExtensionModelLoaderFactory.createLoader(mavenClient, workingDir, classloader, runtimeVersion);
-    Set<ExtensionModel> extensionModels = new HashSet<ExtensionModel>();
-    ArrayList<URL> dependenciesURL = new ArrayList<URL>();
+    Set<ExtensionModel> extensionModels = new HashSet<>();
+    ArrayList<URL> dependenciesURL = new ArrayList<>();
     for (Dependency dependency : directDependencies) {
       removeExtModelIfExists(extensionModels, dependency);
       processDependency(dependency, classloader, mavenClient, runtimeVersion, workingDir, extensionModels, dependenciesURL,
@@ -74,8 +75,13 @@ public class AstGenerator {
     extensionModels.addAll(runtimeExtensionModels);
     AstXmlParser.Builder builder = new AstXmlParser.Builder();
     builder.withExtensionModels(extensionModels);
-    xmlParser = builder.build();
 
+    // Get a more specific error so we can discriminate unresolved imports because the importFile has a property of because the
+    // file does not exist.
+    ConfigurationPropertiesResolver emptyPropertyResolver = new ConfigurationPropertiesHierarchyBuilder().build();
+    builder.withPropertyResolver(propertyKey -> (String) emptyPropertyResolver.resolveValue(propertyKey));
+
+    xmlParser = builder.build();
   }
 
 
@@ -120,7 +126,7 @@ public class AstGenerator {
   }
 
   public ArtifactAst generateAST(List<String> configs, Path configsPath) throws FileNotFoundException {
-    List<Pair<String, InputStream>> appXmlConfigInputStreams = new ArrayList<Pair<String, InputStream>>();
+    List<Pair<String, InputStream>> appXmlConfigInputStreams = new ArrayList<>();
     for (String config : configs) {
       appXmlConfigInputStreams.add(new Pair(config, new FileInputStream(configsPath.resolve(config).toFile())));
     }
@@ -154,13 +160,23 @@ public class AstGenerator {
     }
   }
 
-  public ArrayList<ValidationResultItem> validateAST(ArtifactAst artifactAst) throws ConfigurationException {
-    ValidationResult result = MuleAstUtils.validatorBuilder().build().validate(artifactAst);
-    ArrayList<ValidationResultItem> errors = new ArrayList<ValidationResultItem>();
-    ArrayList<ValidationResultItem> warnings = new ArrayList<ValidationResultItem>();
+  public AstValidatonResult validateAST(ArtifactAst artifactAst) throws ConfigurationException {
+    // Do not fail for unresolvable properties, since those are expected at deployment time, not packaging time.
+    artifactAst.updatePropertiesResolver(propertyKey -> propertyKey);
+
+    ValidationResult result = MuleAstUtils.validatorBuilder()
+        .ignoreParamsWithProperties(true)
+        .build().validate(artifactAst);
+    List<ValidationResultItem> dynamicStructureErrors = new ArrayList<>();
+    List<ValidationResultItem> errors = new ArrayList<>();
+    List<ValidationResultItem> warnings = new ArrayList<>();
     result.getItems().forEach(v -> {
       if (v.getValidation().getLevel().equals(Level.ERROR)) {
-        errors.add(v);
+        if (v.causedByDynamicArtifact()) {
+          dynamicStructureErrors.add(v);
+        } else {
+          errors.add(v);
+        }
       } else {
         warnings.add(v);
       }
@@ -168,7 +184,7 @@ public class AstGenerator {
     if (errors.size() > 0) {
       throw new ConfigurationException(errors.get(0).getMessage());
     }
-    return warnings;
+    return new AstValidatonResult(errors, warnings, dynamicStructureErrors);
   }
 
   public static InputStream serialize(ArtifactAst artifactAst) {

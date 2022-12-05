@@ -9,15 +9,22 @@
  */
 package integration.test.mojo;
 
-import static integration.FileTreeMatcher.hasSameTreeStructure;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.mule.tools.api.packager.sources.DefaultValuesMuleArtifactJsonGenerator.DEFAULT_PACKAGE_EXPORT;
 import static org.mule.tools.api.packager.sources.DefaultValuesMuleArtifactJsonGenerator.EXPORTED_PACKAGES;
 import static org.mule.tools.api.packager.sources.DefaultValuesMuleArtifactJsonGenerator.EXPORTED_RESOURCES;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.structure.PackagerFiles.ARTIFACT_AST;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
+
+import static java.nio.file.Files.readAllBytes;
+
+import static integration.FileTreeMatcher.hasSameTreeStructure;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
 
@@ -27,6 +34,7 @@ import java.nio.file.Files;
 import java.util.List;
 
 import org.apache.maven.it.VerificationException;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -90,5 +98,47 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
     verifier = buildVerifier(projectBaseDirectory);
 
     verifier.executeGoal(GOAL);
+  }
+
+  @Test
+  // W-12021994
+  public void noAstGenerationOnDynamicStructure() throws Exception {
+    projectBaseDirectory = builder.createProjectBaseDir("mule-application-structure-dependant-on-properties", this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+
+    verifier.executeGoal(GOAL);
+
+    verifier
+        .verifyTextInLog("Could not resolve imported resource '${env.dependant}': Couldn't find configuration property value for key ${env.dependant}");
+    verifier
+        .verifyTextInLog("The application has a dynamic structure based on properties available only at design time, so an artifact AST for it cannot be generated at this time. See previous WARN messages for where that dynamic structure is being detected.");
+
+    File artifactAstTargetFile =
+        projectBaseDirectory.toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
+            .resolve(ARTIFACT_AST).toFile();
+    assertThat(artifactAstTargetFile.exists(), is(false));
+  }
+
+  @Test
+  // W-11831692, W-11802232
+  public void astGenerationWithPropertiesOnValidableParameters() throws Exception {
+    projectBaseDirectory = builder.createProjectBaseDir("mule-application-with-unresolved-properties", this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+
+    verifier.executeGoal(GOAL);
+
+    verifier
+        .verifyTextInLog("'http:listener' has 'config-ref' '${config.property}' which is resolved with a property and may cause the artifact to have different behavior on different environments.");
+    verifier
+        .verifyTextInLog("'raise-error' has 'type' '${errorType.property}' which is resolved with a property and may cause the artifact to have different behavior on different environments.");
+
+    File artifactAstTargetFile =
+        projectBaseDirectory.toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
+            .resolve(ARTIFACT_AST).toFile();
+    assertThat(artifactAstTargetFile.exists(), is(true));
+
+    final String serializedAst = new String(readAllBytes(artifactAstTargetFile.toPath()));
+    assertThat(serializedAst, containsString("config.property"));
+    assertThat(serializedAst, containsString("errorType.property"));
   }
 }

@@ -16,7 +16,9 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALI
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.validation.ValidationResultItem;
 import org.mule.tooling.api.AstGenerator;
+import org.mule.tooling.api.AstValidatonResult;
 import org.mule.tooling.api.ConfigurationException;
+import org.mule.tooling.api.DynamicStructureException;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.sources.MuleArtifactContentResolver;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
@@ -25,11 +27,7 @@ import org.mule.tools.api.packager.structure.ProjectStructure;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -65,10 +63,7 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
       String skipAST = System.getProperty(SKIP_AST);
       // apps in domains are not currently supported MMP-588
       if ((skipAST == null || skipAST.equals("false")) && !project.getPackaging().equals(MULE_POLICY) && !hasDomain()) {
-        ArtifactAst artifact = getArtifactAst();
-        if (artifact != null) {
-          ((MuleContentGenerator) getContentGenerator()).createAstFile(serialize(artifact));
-        }
+        processAst();
       }
     } catch (IllegalArgumentException | IOException | ConfigurationException e) {
       throw new MojoFailureException("Fail to compile", e);
@@ -86,12 +81,28 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
     }
   }
 
+  private void processAst() throws IOException, ConfigurationException {
+    ArtifactAst artifact;
+    try {
+      artifact = getArtifactAst();
+    } catch (DynamicStructureException e) {
+      getLog().warn("The application has a dynamic structure based on properties available only at design time,"
+          + " so an artifact AST for it cannot be generated at this time."
+          + " See previous WARN messages for where that dynamic structure is being detected.");
+      return;
+    }
+
+    if (artifact != null) {
+      ((MuleContentGenerator) getContentGenerator()).createAstFile(serialize(artifact));
+    }
+  }
+
   @Override
   public String getPreviousRunPlaceholder() {
     return "MULE_MAVEN_PLUGIN_PROCESS_CLASSES_PREVIOUS_RUN_PLACEHOLDER";
   }
 
-  public ArtifactAst getArtifactAst() throws IOException, ConfigurationException {
+  public ArtifactAst getArtifactAst() throws IOException, ConfigurationException, DynamicStructureException {
     descriptor.getClassRealm()
         .addURL(project.getBasedir().toPath().resolve("src").resolve("main").resolve("resources").toUri().toURL());
     AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
@@ -107,9 +118,15 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
     String skipASTValidation = System.getProperty(SKIP_AST_VALIDATION);
     if (artifactAST != null && !this.getClassifier().equalsIgnoreCase(MULE_PLUGIN.toString())
         && (skipASTValidation == null || skipASTValidation.equals("false"))) {
-      ArrayList<ValidationResultItem> warnings = astGenerator.validateAST(artifactAST);
-      for (ValidationResultItem warning : warnings) {
+      AstValidatonResult validationResult = astGenerator.validateAST(artifactAST);
+      for (ValidationResultItem warning : validationResult.getWarnings()) {
         getLog().warn(warning.getMessage());
+      }
+      if (!validationResult.getDynamicStructureErrors().isEmpty()) {
+        for (ValidationResultItem dynamicStructureError : validationResult.getDynamicStructureErrors()) {
+          getLog().warn(dynamicStructureError.getMessage());
+        }
+        throw new DynamicStructureException();
       }
     }
     return artifactAST;

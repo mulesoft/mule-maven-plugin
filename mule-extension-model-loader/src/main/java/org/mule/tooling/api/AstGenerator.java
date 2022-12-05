@@ -10,11 +10,11 @@
 
 package org.mule.tooling.api;
 
+import static org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor.MULE_PLUGIN_CLASSIFIER;
+
 import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.ast.internal.serialization.ArtifactAstSerializerFactory;
 import org.mule.tooling.internal.PluginResources;
-
-import static org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor.MULE_PLUGIN_CLASSIFIER;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

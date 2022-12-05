@@ -28,7 +28,6 @@ import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.util.Pair;
 import org.mule.runtime.container.internal.ModuleDiscoverer;
-import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 
 import org.mule.tooling.api.ExtensionModelLoader;
 import org.mule.tooling.api.ExtensionModelLoaderFactory;

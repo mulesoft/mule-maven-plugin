@@ -119,7 +119,7 @@ public class MuleArtifactResourcesRegistry {
 
     public ArtifactClassLoader create(String artifactId, ArtifactClassLoader parent, ArtifactDescriptor descriptor,
                                       List<ArtifactClassLoader> artifactPluginClassLoaders) {
-      return new MuleDeployableArtifactClassLoader(artifactId, descriptor, descriptor.getClassLoaderModel().getUrls(),
+      return new MuleDeployableArtifactClassLoader(artifactId, descriptor, descriptor.getClassLoaderConfiguration().getUrls(),
                                                    parent.getClassLoader(), parent.getClassLoaderLookupPolicy(),
                                                    artifactPluginClassLoaders);
     }

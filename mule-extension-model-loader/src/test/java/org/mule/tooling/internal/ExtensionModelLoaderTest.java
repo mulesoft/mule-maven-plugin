@@ -56,9 +56,9 @@ public class ExtensionModelLoaderTest extends MavenClientTest {
                                                          .setArtifactId("mule-http-connector")
                                                          .setClassifier("mule-plugin")
                                                          .setVersion("1.5.25").build());
-    assertEquals("Loaded a different amount of runtime extension models than expected", 11,
+    assertEquals("Loaded a different amount of runtime extension models than expected", 10,
                  extensionModelLoader.getRuntimeExtensionModels().size());
-    assertEquals("Loaded a different amount of plugin extension models than expected", 8, http.getExtensionModels().size());
+    assertEquals("Loaded a different amount of plugin extension models than expected", 7, http.getExtensionModels().size());
 
   }
 

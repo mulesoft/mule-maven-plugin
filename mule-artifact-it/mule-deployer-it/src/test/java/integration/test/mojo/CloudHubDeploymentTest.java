@@ -26,6 +26,7 @@ import org.junit.AssumptionViolatedException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TestRule;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -52,6 +53,9 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
   private static final String DEPLOYMENT_TIMEOUT = "1000000";
 
   private static final String STARTED_STATUS = "STARTED";
+
+  @Rule
+  public ExpectedException exceptionRule = ExpectedException.none();
 
   private Verifier verifier;
   private CloudHubClient cloudHubClient;
@@ -112,11 +116,11 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     verifier.setEnvironmentVariable("mule.version", muleVersion);
     verifier.setEnvironmentVariable("cloudhub.application.name", APPLICATION_NAME);
     verifier.setEnvironmentVariable("cloudhub.deployment.timeout", DEPLOYMENT_TIMEOUT);
-    cloudHubClient = getCloudHubClient();
   }
 
   @Test
   public void testCloudHubDeploy() throws VerificationException, InterruptedException, TimeoutException, DeploymentException {
+    cloudHubClient = new CloudHubClient(getCloudhubDeployment(), null);
     String version = muleVersion.replace(SNAPSHOT_SUFFIX, "");;
 
     assumeTrue("Version not supported by CloudHub", cloudHubClient.getSupportedMuleVersions().stream().map(sv -> sv.getVersion())
@@ -133,20 +137,30 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     verifier.verifyErrorFreeLog();
   }
 
+  @Test
+  public void testCloudHubDeployWithInvalidOrg()
+      throws VerificationException, InterruptedException, TimeoutException, DeploymentException {
+    CloudHubDeployment cloudHubDeployment = getCloudhubDeployment();
+    cloudHubDeployment.setBusinessGroupId("notValidOrg");
+    cloudHubClient = new CloudHubClient(cloudHubDeployment, null);
+    String version = muleVersion.replace(SNAPSHOT_SUFFIX, "");;
+    exceptionRule.expect(java.lang.IllegalStateException.class);
+    exceptionRule.expectMessage("Cannot get the environment, the business group is not valid");
 
-  private CloudHubClient getCloudHubClient() {
+    log.info("Executing mule:deploy goal...");
+    verifier.addCliOption("-DmuleDeploy");
+
+    verifier.executeGoal(DEPLOY_GOAL);
+  }
+
+
+  private CloudHubDeployment getCloudhubDeployment() {
     CloudHubDeployment cloudHubDeployment = new CloudHubDeployment();
     cloudHubDeployment.setUsername(username);
     cloudHubDeployment.setPassword(password);
-
     cloudHubDeployment.setUri(DEFAULT_BASE_URL);
     cloudHubDeployment.setEnvironment(PRODUCTION_ENVIRONMENT);
-    cloudHubDeployment.setBusinessGroup("");
-
-    CloudHubClient cloudHubClient = new CloudHubClient(cloudHubDeployment, null);
-
-
-    return cloudHubClient;
+    return cloudHubDeployment;
   }
 
   private String validateApplicationIsInStatus(String applicationName, String status)

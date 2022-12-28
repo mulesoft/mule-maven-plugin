@@ -17,6 +17,7 @@ import static org.mule.tools.client.authentication.AuthenticationServiceClient.A
 import java.util.*;
 
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.Response;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -356,7 +357,11 @@ public abstract class AbstractMuleClient extends AbstractClient {
   }
 
   public Environments getEnvironments() {
-    return get(baseUri, String.format(ENVIRONMENTS, orgId), Environments.class);
+    Response response = get(baseUri, String.format(ENVIRONMENTS, orgId));
+    if (response.getStatus() != 200) {
+      throw new IllegalStateException("Cannot get the environment, the business group is not valid");
+    }
+    return response.readEntity(Environments.class);
   }
 
   public Set<String> getSuborganizationIds(JsonObject organizationJson) {

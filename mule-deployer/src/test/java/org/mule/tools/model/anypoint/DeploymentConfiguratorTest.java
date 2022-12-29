@@ -12,7 +12,12 @@ package org.mule.tools.model.anypoint;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.anyString;
+import org.apache.maven.artifact.DefaultArtifact;
+import org.apache.maven.artifact.factory.DefaultArtifactFactory;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
@@ -28,6 +33,9 @@ public class DeploymentConfiguratorTest {
   private static final String CLIENT_ID = "clientId";
   private static final String CLIENT_SECRET = "clientSecret";
   private static final String CLOUDHUB_SERVER = "cloudhubServer";
+  private static final String GROUP_ID = "group-id";
+  private static final String ARTIFACT_ID = "artifact-id";
+  private static final String VERSION = "1.0.0";
   Server server = new Server();
 
   @Test
@@ -55,8 +63,25 @@ public class DeploymentConfiguratorTest {
     configurator.initializeEnvironment(settings, decrypter);
     assertTrue(deployment.getConnectedAppClientId().equals(CLIENT_ID));
     assertTrue(deployment.getConnectedAppClientSecret().equals(CLIENT_SECRET));
+  }
 
-
+  @Test
+  public void configuratorForCh2ShouldNotNeedARealArtifact() throws MojoFailureException {
+    AnypointDeployment deployment = new Cloudhub2Deployment();
+    DeployerLog log = mock(DeployerLog.class);
+    MavenProject mavenProject = mock(MavenProject.class);
+    when(mavenProject.getGroupId()).thenReturn(GROUP_ID);
+    when(mavenProject.getArtifactId()).thenReturn(ARTIFACT_ID);
+    when(mavenProject.getVersion()).thenReturn(VERSION);
+    when(mavenProject.getPackaging()).thenReturn("");
+    DeploymentConfigurator configurator = new DeploymentConfigurator(deployment, log);
+    MavenResolverMetadata metadata = new MavenResolverMetadata();
+    metadata.setProject(mavenProject);
+    DefaultArtifactFactory factory = mock(DefaultArtifactFactory.class);
+    when(factory.createArtifactWithClassifier(anyString(), anyString(), anyString(), anyString(), anyString()))
+        .thenReturn(new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, "", "", "", null));
+    metadata.setFactory(factory);
+    configurator.initializeApplication(metadata);
   }
 
 }

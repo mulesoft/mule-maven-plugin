@@ -85,10 +85,12 @@ public class DeploymentConfigurator {
                                                                            project.getVersion(),
                                                                            "jar",
                                                                            project.getPackaging());
-    try {
-      metadata.getResolver().resolve(artifact, new ArrayList<>(), metadata.getLocalRepository());
-    } catch (ArtifactResolutionException | ArtifactNotFoundException e) {
-      throw new MojoFailureException("Couldn't resolve artifact [" + artifact + "]");
+    if (!(anypointConfiguration instanceof RuntimeFabricDeployment)) {
+      try {
+        metadata.getResolver().resolve(artifact, new ArrayList<>(), metadata.getLocalRepository());
+      } catch (ArtifactResolutionException | ArtifactNotFoundException e) {
+        throw new MojoFailureException("Couldn't resolve artifact [" + artifact + "]");
+      }
     }
 
     return artifact;

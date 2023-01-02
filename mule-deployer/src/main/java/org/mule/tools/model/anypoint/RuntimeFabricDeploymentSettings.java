@@ -27,7 +27,6 @@ public class RuntimeFabricDeploymentSettings {
   public RuntimeFabricDeploymentSettings(RuntimeFabricDeploymentSettings settings) {
     runtimeVersion = settings.runtimeVersion;
     lastMileSecurity = settings.lastMileSecurity;
-    persistentObjectStore = settings.persistentObjectStore;
     clustered = settings.clustered;
     updateStrategy = settings.updateStrategy;
     enforceDeployingReplicasAcrossNodes = settings.enforceDeployingReplicasAcrossNodes;
@@ -42,9 +41,6 @@ public class RuntimeFabricDeploymentSettings {
 
   @Parameter
   protected boolean lastMileSecurity;
-
-  @Parameter
-  protected boolean persistentObjectStore;
 
   @Parameter
   protected boolean clustered;

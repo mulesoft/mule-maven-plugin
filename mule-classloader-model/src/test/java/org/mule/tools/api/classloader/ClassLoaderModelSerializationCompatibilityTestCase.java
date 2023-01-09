@@ -14,6 +14,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.deserialize;
 import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.serializeToFile;
+import static org.mule.tools.api.classloader.model.ArtifactCoordinates.DEFAULT_ARTIFACT_TYPE;
+
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
@@ -36,13 +38,15 @@ public class ClassLoaderModelSerializationCompatibilityTestCase {
 
   private static final String GROUP_ID = "group.id";
   private static final String APP_ARTIFACT_ID = "artifact-id";
+  private static final String APP_CLASSIFIER = "mule-application";
   private static final String VERSION = "1.0.0";
 
   private static final String PLUGIN_ARTIFACT_ID = "plugin-id";
 
   private static final URI TEST_URI = URI.create("test.com");
 
-  private static final ArtifactCoordinates appArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, APP_ARTIFACT_ID, VERSION);
+  private static final ArtifactCoordinates appArtifactCoordinates =
+      new ArtifactCoordinates(GROUP_ID, APP_ARTIFACT_ID, VERSION, DEFAULT_ARTIFACT_TYPE, APP_CLASSIFIER);
   private static final ArtifactCoordinates pluginArtifactCoordinates =
       new ArtifactCoordinates(GROUP_ID, PLUGIN_ARTIFACT_ID, VERSION);
 

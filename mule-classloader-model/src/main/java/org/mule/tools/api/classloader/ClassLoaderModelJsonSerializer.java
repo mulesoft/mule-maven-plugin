@@ -61,16 +61,17 @@ public class ClassLoaderModelJsonSerializer {
 
   protected static void validate(ClassLoaderModel classLoaderModel, File classLoaderModelDescriptor) {
     if (classLoaderModel.getVersion() == null) {
-      throw new IllegalStateException(format("Error deserializing %s. \"version\" not specified.",
+      throw new IllegalStateException(format("Error deserializing '%s'. \"version\" not specified.",
                                              classLoaderModelDescriptor.getName()));
     }
-    validateArtifactCoordinates(classLoaderModelDescriptor, classLoaderModel.getArtifactCoordinates());
+
+    validateRootArtifactCoordinates(classLoaderModelDescriptor, classLoaderModel.getArtifactCoordinates());
 
     classLoaderModel.getDependencies()
         .forEach(dep -> {
           validateArtifactCoordinates(classLoaderModelDescriptor, dep.getArtifactCoordinates());
           if (dep.getUri() == null) {
-            throw new IllegalStateException(format("Error deserializing %s. \"uri\" not specified for dependency %s",
+            throw new IllegalStateException(format("Error deserializing '%s'. \"uri\" not specified for dependency '%s'",
                                                    classLoaderModelDescriptor.getName(),
                                                    dep.getArtifactCoordinates().getGroupId() + ":"
                                                        + dep.getArtifactCoordinates().getArtifactId()));
@@ -79,26 +80,41 @@ public class ClassLoaderModelJsonSerializer {
         });
   }
 
+  private static void validateRootArtifactCoordinates(File classLoaderModelDescriptor, ArtifactCoordinates artifactCoordinates) {
+    validateArtifactCoordinates(classLoaderModelDescriptor, artifactCoordinates);
+
+    if (artifactCoordinates.getClassifier() == null) {
+      throw new IllegalStateException(format("Error deserializing '%s'. \"classifier\" not specified for '%s'.",
+                                             classLoaderModelDescriptor.getName(),
+                                             artifactCoordinates.getGroupId() + ":"
+                                                 + artifactCoordinates.getArtifactId()));
+    }
+  }
+
   private static void validateArtifactCoordinates(File classLoaderModelDescriptor, ArtifactCoordinates artifactCoordinates) {
     if (artifactCoordinates == null) {
-      throw new IllegalStateException(format("Error deserializing %s. \"artifactCoordinates\" not specified.",
+      throw new IllegalStateException(format("Error deserializing '%s'. \"artifactCoordinates\" not specified.",
                                              classLoaderModelDescriptor.getName()));
     }
     if (artifactCoordinates.getGroupId() == null) {
-      throw new IllegalStateException(format("Error deserializing %s. \"groupId\" not specified.",
+      throw new IllegalStateException(format("Error deserializing '%s'. \"groupId\" not specified.",
                                              classLoaderModelDescriptor.getName()));
     }
     if (artifactCoordinates.getArtifactId() == null) {
-      throw new IllegalStateException(format("Error deserializing %s. \"artifactId\" not specified.",
+      throw new IllegalStateException(format("Error deserializing '%s'. \"artifactId\" not specified.",
                                              classLoaderModelDescriptor.getName()));
     }
     if (artifactCoordinates.getVersion() == null) {
-      throw new IllegalStateException(format("Error deserializing %s. \"version\" not specified.",
-                                             classLoaderModelDescriptor.getName()));
+      throw new IllegalStateException(format("Error deserializing '%s'. \"version\" not specified for '%s'.",
+                                             classLoaderModelDescriptor.getName(),
+                                             artifactCoordinates.getGroupId() + ":"
+                                                 + artifactCoordinates.getArtifactId()));
     }
     if (artifactCoordinates.getType() == null) {
-      throw new IllegalStateException(format("Error deserializing %s. \"type\" not specified.",
-                                             classLoaderModelDescriptor.getName()));
+      throw new IllegalStateException(format("Error deserializing '%s'. \"type\" not specified for '%s'.",
+                                             classLoaderModelDescriptor.getName(),
+                                             artifactCoordinates.getGroupId() + ":"
+                                                 + artifactCoordinates.getArtifactId()));
     }
   }
 

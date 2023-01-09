@@ -7,8 +7,6 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
-
 package org.mule.tools.api.classloader;
 
 import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.deserialize;
@@ -22,108 +20,119 @@ import static org.junit.Assert.assertThrows;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 import java.io.File;
-import java.net.URISyntaxException;
 
 import org.junit.Test;
 
 public class ClassLoaderModelJsonDeserializerValidationsTest {
 
+  protected ClassLoaderModel deserializeClassLoaderModel(File classloaderModelJsonFile) {
+    return deserialize(classloaderModelJsonFile);
+  }
+
   @Test
-  public void classLoaderModelNoVersion() throws URISyntaxException {
+  public void classLoaderModelNoVersion() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-version.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserialize(classloaderModelJsonFile));
+    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
   }
 
   @Test
-  public void classLoaderModelNoArtifactCoordinates() throws URISyntaxException {
+  public void classLoaderModelNoArtifactCoordinates() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-artifact-coordinates.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserialize(classloaderModelJsonFile));
+    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
   }
 
   @Test
-  public void classLoaderModelNoArtifactCoordinatesGroupId() throws URISyntaxException {
+  public void classLoaderModelNoArtifactCoordinatesGroupId() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-artifact-coordinates-group-id.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserialize(classloaderModelJsonFile));
+    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
   }
 
   @Test
-  public void classLoaderModelNoArtifactCoordinatesArtifactId() throws URISyntaxException {
+  public void classLoaderModelNoArtifactCoordinatesArtifactId() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-artifact-coordinates-artifact-id.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserialize(classloaderModelJsonFile));
+    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
   }
 
   @Test
-  public void classLoaderModelNoArtifactCoordinatesVersion() throws URISyntaxException {
+  public void classLoaderModelNoArtifactCoordinatesVersion() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-artifact-coordinates-version.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserialize(classloaderModelJsonFile));
+    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
   }
 
   @Test
-  public void classLoaderModelNoArtifactCoordinatesType() throws URISyntaxException {
+  public void classLoaderModelNoArtifactCoordinatesType() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-artifact-coordinates-type.json"));
 
-    ClassLoaderModel deserialized = deserialize(classloaderModelJsonFile);
+    ClassLoaderModel deserialized = deserializeClassLoaderModel(classloaderModelJsonFile);
     assertThat(deserialized.getArtifactCoordinates().getType(), is(DEFAULT_ARTIFACT_TYPE));
   }
 
   @Test
-  public void classLoaderModelNoDepArtifactCoordinates() throws URISyntaxException {
+  public void classLoaderModelNoArtifactCoordinatesClassifier() {
+    File classloaderModelJsonFile =
+        toFile(this.getClass().getClassLoader().getResource("classloader-model-no-artifact-coordinates-classifier.json"));
+
+    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
+  }
+
+  @Test
+  public void classLoaderModelNoDepArtifactCoordinates() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-dep-artifact-coordinates.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserialize(classloaderModelJsonFile));
+    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
   }
 
   @Test
-  public void classLoaderModelNoDepArtifactCoordinatesGroupId() throws URISyntaxException {
+  public void classLoaderModelNoDepArtifactCoordinatesGroupId() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-dep-artifact-coordinates-group-id.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserialize(classloaderModelJsonFile));
+    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
   }
 
   @Test
-  public void classLoaderModelNoDepArtifactCoordinatesArtifactId() throws URISyntaxException {
+  public void classLoaderModelNoDepArtifactCoordinatesArtifactId() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-dep-artifact-coordinates-artifact-id.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserialize(classloaderModelJsonFile));
+    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
   }
 
   @Test
-  public void classLoaderModelNoDepArtifactCoordinatesVersion() throws URISyntaxException {
+  public void classLoaderModelNoDepArtifactCoordinatesVersion() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-dep-artifact-coordinates-version.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserialize(classloaderModelJsonFile));
+    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
   }
 
   @Test
-  public void classLoaderModelNoDepArtifactCoordinatesType() throws URISyntaxException {
+  public void classLoaderModelNoDepArtifactCoordinatesType() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-dep-artifact-coordinates-type.json"));
 
-    ClassLoaderModel deserialized = deserialize(classloaderModelJsonFile);
+    ClassLoaderModel deserialized = deserializeClassLoaderModel(classloaderModelJsonFile);
     assertThat(deserialized.getDependencies().get(0).getArtifactCoordinates().getType(), is(DEFAULT_ARTIFACT_TYPE));
   }
 
   @Test
-  public void classLoaderModelNoDepUri() throws URISyntaxException {
+  public void classLoaderModelNoDepUri() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-dep-uri.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserialize(classloaderModelJsonFile));
+    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
   }
 
 }

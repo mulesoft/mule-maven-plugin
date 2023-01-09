@@ -45,7 +45,8 @@ public class ClassLoaderModelSerializationCompatibilityTestCase {
 
   private static final URI TEST_URI = URI.create("test.com");
 
-  private static final ArtifactCoordinates appArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, APP_ARTIFACT_ID, VERSION, DEFAULT_ARTIFACT_TYPE, APP_CLASSIFIER);
+  private static final ArtifactCoordinates appArtifactCoordinates =
+      new ArtifactCoordinates(GROUP_ID, APP_ARTIFACT_ID, VERSION, DEFAULT_ARTIFACT_TYPE, APP_CLASSIFIER);
   private static final ArtifactCoordinates pluginArtifactCoordinates =
       new ArtifactCoordinates(GROUP_ID, PLUGIN_ARTIFACT_ID, VERSION);
 

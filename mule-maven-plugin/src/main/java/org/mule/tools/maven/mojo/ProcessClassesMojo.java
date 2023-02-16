@@ -105,14 +105,15 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
   public ArtifactAst getArtifactAst() throws IOException, ConfigurationException, DynamicStructureException {
     descriptor.getClassRealm()
         .addURL(project.getBasedir().toPath().resolve("src").resolve("main").resolve("resources").toUri().toURL());
-    AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
-                                                 project.getArtifacts(), Paths.get(project.getBuild().getDirectory()),
-                                                 descriptor.getClassRealm(), project.getDependencies());
-    ProjectStructure projectStructure = new ProjectStructure(projectBaseFolder.toPath(), false);
     MuleArtifactContentResolver contentResolver =
         new MuleArtifactContentResolver(new ProjectStructure(projectBaseFolder.toPath(), false),
                                         getProjectInformation().getEffectivePom(),
                                         getProjectInformation().getProject().getBundleDependencies());
+    AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
+                                                 project.getArtifacts(), Paths.get(project.getBuild().getDirectory()),
+                                                 descriptor.getClassRealm(), project.getDependencies(),
+                                                 contentResolver.isApplication());
+    ProjectStructure projectStructure = new ProjectStructure(projectBaseFolder.toPath(), false);
 
     ArtifactAst artifactAST = astGenerator.generateAST(contentResolver.getConfigs(), projectStructure.getConfigsPath());
     String skipASTValidation = System.getProperty(SKIP_AST_VALIDATION);

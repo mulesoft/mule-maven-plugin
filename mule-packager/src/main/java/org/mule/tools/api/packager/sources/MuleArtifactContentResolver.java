@@ -13,6 +13,8 @@ package org.mule.tools.api.packager.sources;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.nio.file.Paths.get;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
@@ -25,8 +27,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
@@ -34,6 +39,8 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 /**
@@ -41,6 +48,7 @@ import org.xml.sax.SAXException;
  */
 public class MuleArtifactContentResolver {
 
+  private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = XmlFactoryUtils.createSecureDocumentBuilderFactory();
   private static final String CONFIG_FILE_EXTENSION = ".xml";
   public static final String CLASS_PATH_SEPARATOR = "/";
 
@@ -51,8 +59,9 @@ public class MuleArtifactContentResolver {
   private List<String> exportedPackages;
   private List<String> exportedResources;
   private List<String> testExportedResources;
-  private Pom pom;
-  private List<BundleDependency> bundleDependencies;
+  private Boolean isApplication;
+  private final Pom pom;
+  private final List<BundleDependency> bundleDependencies;
 
   public MuleArtifactContentResolver(ProjectStructure projectStructure, Pom pom, List<BundleDependency> bundleDependencies) {
     checkArgument(projectStructure != null, "Project structure should not be null");
@@ -90,9 +99,9 @@ public class MuleArtifactContentResolver {
         exportedResources.addAll(getResources(resourcePath));
       }
       // process mule directory if not included since by default is not.
-      if (!pom.getResourcesLocation()
+      if (pom.getResourcesLocation()
           .stream()
-          .anyMatch(path -> path.endsWith(get("src", "main", "mule")))) {
+          .noneMatch(path -> path.endsWith(get("src", "main", "mule")))) {
         exportedResources.addAll(getResources(projectStructure.getConfigsPath()));
       }
     }
@@ -116,56 +125,85 @@ public class MuleArtifactContentResolver {
    */
   public List<String> getConfigs() throws IOException {
     if (configs == null) {
-      List<String> candidateConfigs =
-          getResources(projectStructure.getConfigsPath(), new SuffixFileFilter(CONFIG_FILE_EXTENSION));
-      configs = candidateConfigs.stream()
-          .filter(config -> hasMuleAsRootElement(projectStructure.getConfigsPath().resolve(config))).collect(toList());
+      configs = getMuleResources(projectStructure.getConfigsPath());
     }
     return configs;
   }
 
+  public boolean isApplication() throws IOException {
+    if (isApplication == null) {
+      isApplication = getResourcesWithDocument(projectStructure.getConfigsPath(), getConfigs()).entrySet().stream()
+          .noneMatch(entry -> hasMuleDomainAsRootElement(entry.getValue()));
+    }
+    return isApplication;
+  }
+
   protected boolean hasMuleAsRootElement(Path path) {
-    org.w3c.dom.Document doc;
     try {
-      doc = generateDocument(path);
+      return hasMuleAsRootElement(DOCUMENT_BUILDER_FACTORY.newDocumentBuilder().parse(path.toFile()));
     } catch (IOException | ParserConfigurationException | SAXException e) {
       throw new RuntimeException(e);
     }
-    return hasMuleAsRootElement(doc);
   }
 
-  protected boolean hasMuleAsRootElement(org.w3c.dom.Document doc) {
-    if (doc != null && doc.getDocumentElement() != null) {
-      String rootElementName = doc.getDocumentElement().getTagName();
-      return StringUtils.equals(rootElementName, "mule") || StringUtils.equals(rootElementName, "domain:mule-domain");
+  protected boolean hasMuleAsRootElement(Document doc) {
+    return hasMuleAppAsRootElement(doc) || hasMuleDomainAsRootElement(doc);
+  }
+
+  protected boolean hasMuleAppAsRootElement(Document doc) {
+    return hasTagNameAsRootElement(doc, "mule");
+  }
+
+  protected boolean hasMuleDomainAsRootElement(Document doc) {
+    return hasTagNameAsRootElement(doc, "domain:mule-domain");
+  }
+
+  protected boolean hasTagNameAsRootElement(Document doc, String tagName) {
+    return Optional.ofNullable(doc)
+        .map(Document::getDocumentElement)
+        .map(Element::getTagName)
+        .map(tag -> StringUtils.equals(tag, tagName))
+        .orElse(false);
+  }
+
+  private List<String> getMuleResources(Path path) {
+    try {
+      return getResourcesWithDocument(path, getResources(path, new SuffixFileFilter(CONFIG_FILE_EXTENSION)))
+          .entrySet()
+          .stream()
+          .filter(entry -> hasMuleAsRootElement(entry.getValue()))
+          .map(Map.Entry::getKey)
+          .collect(toList());
+    } catch (Exception exception) {
+      throw new RuntimeException(exception);
     }
-    return false;
-  }
-
-  private org.w3c.dom.Document generateDocument(Path filePath) throws IOException, ParserConfigurationException, SAXException {
-    javax.xml.parsers.DocumentBuilderFactory factory = XmlFactoryUtils.createSecureDocumentBuilderFactory();
-    return factory.newDocumentBuilder().parse(filePath.toFile());
   }
 
   /**
    * Returns the resolved list of test configs paths.
    */
-  public List<String> getTestConfigs() throws IOException {
+  public List<String> getTestConfigs() {
     if (testConfigs == null) {
-      Optional<Path> testConfigsPath = projectStructure.getTestConfigsPath();
-      testConfigs = Collections.emptyList();
-      if (testConfigsPath.isPresent()) {
-        List<String> candidateTestConfigs = getResources(testConfigsPath.get(), new SuffixFileFilter(CONFIG_FILE_EXTENSION));
-        testConfigs = candidateTestConfigs.stream()
-            .filter(testConfig -> hasMuleAsRootElement(projectStructure.getTestConfigsPath().get().resolve(testConfig)))
-            .collect(toList());
-      }
+      testConfigs = projectStructure.getTestConfigsPath()
+          .map(this::getMuleResources)
+          .orElseGet(Collections::emptyList);
     }
     return testConfigs;
   }
 
   private List<String> getResources(Path resourcesFolderPath) throws IOException {
     return getResources(resourcesFolderPath, TrueFileFilter.INSTANCE);
+  }
+
+  private Map<String, Document> getResourcesWithDocument(Path path, Collection<String> resources) {
+    return resources.stream()
+        .collect(toMap(Function.identity(), resource -> {
+          try {
+            return DOCUMENT_BUILDER_FACTORY.newDocumentBuilder().parse(path.resolve(resource).toFile());
+          } catch (Exception exception) {
+            throw new RuntimeException(exception);
+          }
+        }));
   }
 
   /**

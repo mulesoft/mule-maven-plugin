@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.mule.tools.maven</groupId>
         <artifactId>mule-artifact-tools</artifactId>
-        <version>3.8.4-SNAPSHOT</version>
+        <version>3.8.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

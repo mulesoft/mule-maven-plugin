@@ -14,7 +14,7 @@
     <properties>
         <licensePath>../LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-		<!-- The extension model loader is tested with integration tests mostly. It has no sense to track the coverage here -->
+        <!-- The extension model loader is tested with integration tests mostly. It has no sense to track the coverage here -->
         <coverageLineLimit>0</coverageLineLimit>
         <coverageBranchLimit>0</coverageBranchLimit>
     </properties>
@@ -33,48 +33,47 @@
             <artifactId>mule-artifact-ast-xml-parser</artifactId>
             <version>1.1.0-rc1</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast-serialization</artifactId>
-             <version>1.1.0-rc1</version>
+            <version>1.1.0-rc1</version>
         </dependency>
         <dependency>
             <groupId>com.mulesoft.anypoint</groupId>
             <artifactId>api-gateway-api</artifactId>
             <version>1.5.0-20220922</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>com.mulesoft.mule.runtime</groupId>
             <artifactId>mule-core-ee</artifactId>
             <version>${mule.version}</version>
             <exclusions>
-            	<exclusion>
-            		<groupId>com.mulesoft.licm</groupId>
-            		<artifactId>licm</artifactId>
-            	</exclusion>
+                <exclusion>
+                    <groupId>com.mulesoft.licm</groupId>
+                    <artifactId>licm</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
-         <dependency>
-                <groupId>com.mulesoft.anypoint</groupId>
-                <artifactId>mule-module-autodiscovery</artifactId>
-	            <version>${mule.version}</version>
-	        </dependency>
-
-            <dependency>
-                <groupId>org.mule.runtime</groupId>
-                <artifactId>mule-module-extensions-xml-support</artifactId>
-                <version>${mule.version}</version>
-            </dependency>
-         <dependency>
+        <dependency>
+            <groupId>com.mulesoft.anypoint</groupId>
+            <artifactId>mule-module-autodiscovery</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-extensions-xml-support</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-javaee</artifactId>
-			<version>${mule.version}</version>
+            <version>${mule.version}</version>
         </dependency>
-                    <dependency>
-                <groupId>org.mule.runtime</groupId>
-                <artifactId>mule-module-tls</artifactId>
-                <version>${mule.version}</version>
-            </dependency>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-tls</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.mulesoft.mule.runtime.modules</groupId>
             <artifactId>mule-runtime-ee-extension-model</artifactId>
@@ -100,6 +99,11 @@
             <artifactId>mule-maven-client-impl</artifactId>
             <version>${mule.maven.client.impl.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mule.mvel</groupId>
+            <artifactId>mule-mvel2</artifactId>
+            <version>${mule.mvel2.version}</version>
+        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -111,10 +115,10 @@
             <artifactId>hamcrest-all</artifactId>
             <scope>test</scope>
         </dependency>
-		<dependency>
-    		<groupId>org.sonatype.plexus</groupId>
-    		<artifactId>plexus-sec-dispatcher</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.sonatype.plexus</groupId>
+            <artifactId>plexus-sec-dispatcher</artifactId>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

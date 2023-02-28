@@ -17,6 +17,7 @@ import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.util.Pair;
 import org.mule.runtime.ast.api.ArtifactAst;
+import org.mule.runtime.ast.api.ArtifactType;
 import org.mule.runtime.ast.api.serialization.ArtifactAstSerializerProvider;
 import org.mule.runtime.ast.api.util.MuleAstUtils;
 import org.mule.runtime.ast.api.validation.Validation.Level;
@@ -50,6 +51,12 @@ public class AstGenerator {
   public AstGenerator(MavenClient mavenClient, String runtimeVersion,
                       Set<Artifact> allDependencies, Path workingDir, ClassRealm classRealm,
                       List<Dependency> directDependencies) {
+    this(mavenClient, runtimeVersion, allDependencies, workingDir, classRealm, directDependencies, true);
+  }
+
+  public AstGenerator(MavenClient mavenClient, String runtimeVersion,
+                      Set<Artifact> allDependencies, Path workingDir, ClassRealm classRealm,
+                      List<Dependency> directDependencies, Boolean asApplication) {
     ClassLoader classloader = AstGenerator.class.getClassLoader();
     ExtensionModelLoader loader = ExtensionModelLoaderFactory.createLoader(mavenClient, workingDir, classloader, runtimeVersion);
     Set<ExtensionModel> extensionModels = new HashSet<>();
@@ -59,7 +66,7 @@ public class AstGenerator {
       processDependency(dependency, classloader, mavenClient, runtimeVersion, workingDir, extensionModels, dependenciesURL,
                         loader);
     }
-    allDependencies.stream().map(extension -> createDependency(extension))
+    allDependencies.stream().map(this::createDependency)
         .filter(dependency -> !directDependencies.contains(dependency))
         .forEach(dependency -> processDependency(dependency, classloader, mavenClient, runtimeVersion, workingDir,
                                                  extensionModels, dependenciesURL, loader));
@@ -74,9 +81,12 @@ public class AstGenerator {
     Set<ExtensionModel> runtimeExtensionModels = loader.getRuntimeExtensionModels();
     extensionModels.addAll(runtimeExtensionModels);
     AstXmlParser.Builder builder = new AstXmlParser.Builder();
+    if (!asApplication) {
+      builder.withArtifactType(ArtifactType.DOMAIN);
+    }
     builder.withExtensionModels(extensionModels);
 
-    // Get a more specific error so we can discriminate unresolved imports because the importFile has a property of because the
+    // Get a more specific error, so we can discriminate unresolved imports because the importFile has a property of because the
     // file does not exist.
     ConfigurationPropertiesResolver emptyPropertyResolver = new ConfigurationPropertiesHierarchyBuilder().build();
     builder.withPropertyResolver(propertyKey -> (String) emptyPropertyResolver.resolveValue(propertyKey));
@@ -86,14 +96,11 @@ public class AstGenerator {
 
 
   private void removeExtModelIfExists(Set<ExtensionModel> extensionModels, Dependency dependency) {
-    extensionModels.removeIf(extension -> {
-      return extension.getArtifactCoordinates().isPresent()
-          ? ((dependency.getArtifactId().equals(extension.getArtifactCoordinates().get().getArtifactId())
-              && dependency.getGroupId().equals(extension.getArtifactCoordinates().get().getGroupId())))
-          : false;
-    });
+    extensionModels.removeIf(extension -> extension.getArtifactCoordinates()
+      .map(coordinates -> dependency.getArtifactId().equals(coordinates.getArtifactId()) && dependency.getGroupId().equals(coordinates.getGroupId()))
+      .orElse(false)
+    );
   }
-
 
   private Dependency createDependency(Artifact artifact) {
     Dependency dependency = new Dependency();
@@ -102,10 +109,10 @@ public class AstGenerator {
     dependency.setVersion(artifact.getVersion());
     if (artifact.getClassifier() != null) {
       dependency.setClassifier(artifact.getClassifier());
-    } ;
+    }
     if (artifact.getType() != null) {
       dependency.setType(artifact.getType());
-    } ;
+    }
     return dependency;
   }
 

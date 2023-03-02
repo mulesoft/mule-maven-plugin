@@ -97,9 +97,9 @@ public class AstGenerator {
 
   private void removeExtModelIfExists(Set<ExtensionModel> extensionModels, Dependency dependency) {
     extensionModels.removeIf(extension -> extension.getArtifactCoordinates()
-      .map(coordinates -> dependency.getArtifactId().equals(coordinates.getArtifactId()) && dependency.getGroupId().equals(coordinates.getGroupId()))
-      .orElse(false)
-    );
+        .map(coordinates -> dependency.getArtifactId().equals(coordinates.getArtifactId())
+            && dependency.getGroupId().equals(coordinates.getGroupId()))
+        .orElse(false));
   }
 
   private Dependency createDependency(Artifact artifact) {

@@ -93,9 +93,11 @@ public class MuleArtifactContentResolverTest {
       "        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
       "        xmlns:doc=\"http://www.mulesoft.org/schema/mule/documentation\" xsi:schemaLocation=\"\n" +
       "               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd\n" +
-      "               http://www.mulesoft.org/schema/mule/ee/domain http://www.mulesoft.org/schema/mule/ee/domain/current/mule-domain-ee.xsd\n" +
+      "               http://www.mulesoft.org/schema/mule/ee/domain http://www.mulesoft.org/schema/mule/ee/domain/current/mule-domain-ee.xsd\n"
+      +
       "http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd\">\n" +
-      "    <http:listener-config name=\"HTTP_Listener_config\" doc:name=\"HTTP Listener config\" doc:id=\"8d59b7ae-b7f7-43c6-8f07-a217e8ae8655\" >\n" +
+      "    <http:listener-config name=\"HTTP_Listener_config\" doc:name=\"HTTP Listener config\" doc:id=\"8d59b7ae-b7f7-43c6-8f07-a217e8ae8655\" >\n"
+      +
       "        <http:listener-connection host=\"0.0.0.0\" port=\"${httpPort}\" />\n" +
       "    </http:listener-config>\n" +
       "\n" +

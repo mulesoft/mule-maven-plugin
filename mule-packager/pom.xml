@@ -47,7 +47,11 @@
             <artifactId>mule-extension-model-loader</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.mule.mvel</groupId>
+            <artifactId>mule-mvel2</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-api</artifactId>

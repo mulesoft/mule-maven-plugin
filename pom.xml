@@ -50,6 +50,7 @@
         <mule.api.version>1.5.0-rc3</mule.api.version>
         <mule.maven.client.impl.version>1.7.0-rc3</mule.maven.client.impl.version>
         <mule.distribution.standalone.version>4.5.0-rc3</mule.distribution.standalone.version>
+        <mule.mvel2.version>2.1.9-MULE-020</mule.mvel2.version>
         <gson.version>2.8.6</gson.version>
         <guava.version>27.0-jre</guava.version>
         <snakeyaml.version>1.33</snakeyaml.version>
@@ -76,7 +77,7 @@
         <plexus.component.annotations.version>1.7.1</plexus.component.annotations.version>
         <jsonassert.version>1.5.0</jsonassert.version>
 
-        <jersey.version>2.25</jersey.version>
+        <jersey.version>2.34</jersey.version>
         <jersey.media.moxy>2.31</jersey.media.moxy>
 
         <junit.version>4.13</junit.version>
@@ -171,6 +172,11 @@
             <artifactId>plexus-sec-dispatcher</artifactId>
             </exclusion>
             </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.mule.mvel</groupId>
+                <artifactId>mule-mvel2</artifactId>
+                <version>${mule.mvel2.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.plugin-tools</groupId>

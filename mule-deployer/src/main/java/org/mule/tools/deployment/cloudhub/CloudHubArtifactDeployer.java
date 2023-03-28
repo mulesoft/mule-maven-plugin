@@ -26,6 +26,7 @@ import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -191,6 +192,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     Integer workersAmount;
     String workerType;
     MuleVersion muleVersion = new MuleVersion();
+    Boolean isLoggingCustomLog4JEnabled = null;
 
     if (originalApplication != null) {
       muleVersion.setVersion(deployment.getMuleVersion().get().split("-")[0]);
@@ -212,7 +214,8 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       workersAmount = (deployment.getWorkers() == null) ? originalApplication.getWorkers().getAmount() : deployment.getWorkers();
       workerType =
           isBlank(deployment.getWorkerType()) ? originalApplication.getWorkers().getType().getName() : deployment.getWorkerType();
-
+      isLoggingCustomLog4JEnabled =
+          Optional.ofNullable(deployment.getDisableCloudHubLogs()).orElse(originalApplication.getLoggingCustomLog4JEnabled());
     } else {
       muleVersion.setVersion(deployment.getMuleVersion().get().split("-")[0]);
       application.setMonitoringAutoRestart(true);
@@ -223,6 +226,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
       workersAmount = (deployment.getWorkers() == null) ? DEFAULT_CH_WORKERS : deployment.getWorkers();
       workerType = isBlank(deployment.getWorkerType()) ? DEFAULT_CH_WORKER_TYPE : deployment.getWorkerType();
+      isLoggingCustomLog4JEnabled = deployment.getDisableCloudHubLogs();
     }
 
     application.setDomain(deployment.getApplicationName());
@@ -232,7 +236,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
     application.setObjectStoreV1(!deployment.getObjectStoreV2());
     application.setPersistentQueues(deployment.getPersistentQueues());
-    application.setLoggingCustomLog4JEnabled(deployment.getDisableCloudHubLogs());
+    application.setLoggingCustomLog4JEnabled(isLoggingCustomLog4JEnabled);
 
     return application;
   }

@@ -106,6 +106,7 @@ public class CloudHubArtifactDeployerTest {
   @Test
   public void deployApplicationNew() throws DeploymentException {
     when(clientMock.isDomainAvailable(any())).thenReturn(true);
+    when(deploymentMock.getDisableCloudHubLogs()).thenReturn(Boolean.TRUE);
 
     doNothing().when(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
 
@@ -113,7 +114,9 @@ public class CloudHubArtifactDeployerTest {
 
     verify(clientMock).isDomainAvailable(any());
     verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
-    verify(cloudHubArtifactDeployerSpy).createApplication();
+    ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
+    verify(clientMock).createApplication(applicationCaptor.capture(), any());
+    assertThat("Application has logging disable", applicationCaptor.getValue().getLoggingCustomLog4JEnabled() == Boolean.TRUE);
     verify(cloudHubArtifactDeployerSpy).startApplication();
     verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
     verify(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
@@ -198,6 +201,37 @@ public class CloudHubArtifactDeployerTest {
     verify(cloudHubArtifactDeployerSpy).startApplication();
     verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
     verify(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
+  }
+
+  @Test
+  public void deployApplicationUpdateWhenLoggingCustomLog4JEnabledIsPresentShouldBeSet() throws DeploymentException {
+    when(clientMock.isDomainAvailable(any())).thenReturn(false);
+    when(deploymentMock.getDisableCloudHubLogs()).thenReturn(Boolean.TRUE);
+    when(applicationMock.getLoggingCustomLog4JEnabled()).thenReturn(Boolean.FALSE);
+
+    doNothing().when(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
+
+    cloudHubArtifactDeployerSpy.deployApplication();
+
+    ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
+    verify(clientMock).updateApplication(applicationCaptor.capture(), any());
+    assertThat("Application has logging disable", applicationCaptor.getValue().getLoggingCustomLog4JEnabled() == Boolean.TRUE);
+  }
+
+  @Test
+  public void deployApplicationUpdateWhenLoggingCustomLog4JEnabledIsNullInPomTheValueShouldBeSetTheOriginalApp()
+      throws DeploymentException {
+    when(clientMock.isDomainAvailable(any())).thenReturn(false);
+    when(deploymentMock.getDisableCloudHubLogs()).thenReturn(null);
+    when(applicationMock.getLoggingCustomLog4JEnabled()).thenReturn(Boolean.TRUE);
+
+    doNothing().when(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
+
+    cloudHubArtifactDeployerSpy.deployApplication();
+
+    ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
+    verify(clientMock).updateApplication(applicationCaptor.capture(), any());
+    assertThat("Application has logging disable", applicationCaptor.getValue().getLoggingCustomLog4JEnabled() == Boolean.TRUE);
   }
 
   @Test

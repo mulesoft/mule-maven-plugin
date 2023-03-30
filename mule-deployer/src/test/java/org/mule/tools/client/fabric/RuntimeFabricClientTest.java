@@ -29,14 +29,14 @@ import java.util.Set;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.mule.tools.client.fabric.RuntimeFabricClient.DEPLOYMENTS_PATH;
-import static org.powermock.api.mockito.PowerMockito.doNothing;
-import static org.powermock.api.mockito.PowerMockito.doReturn;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.spy;
 
 public class RuntimeFabricClientTest {
 

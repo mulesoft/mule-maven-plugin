@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mule.tools.client.core.exception.DeploymentException;
 import static org.junit.rules.ExpectedException.none;
-import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.mockito.Mockito.mock;
 
 public class RuntimeFabricDeploymentTest {
 

@@ -42,7 +42,7 @@ public class CloudHubDeploymentValidator extends AbstractDeploymentValidator {
    * 
    * @return The generated CloudHub client.
    */
-  private CloudHubClient getCloudHubClient() {
+  protected CloudHubClient getCloudHubClient() {
     CloudHubClient client = new CloudHubClient((CloudHubDeployment) deployment, null);
     return client;
   }

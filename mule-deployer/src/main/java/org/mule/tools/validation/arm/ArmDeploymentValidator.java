@@ -47,7 +47,7 @@ public class ArmDeploymentValidator extends AbstractDeploymentValidator {
    * @param client The ARM client.
    * @return The mule runtime version running in the target.
    */
-  private List<String> findRuntimeVersion(ArmClient client) {
+  protected List<String> findRuntimeVersion(ArmClient client) {
     TargetType targetType = ((ArmDeployment) deployment).getTargetType();
     List<String> runtimeVersions = new ArrayList<>();
     if (TargetType.server.equals(targetType)) {
@@ -65,7 +65,7 @@ public class ArmDeploymentValidator extends AbstractDeploymentValidator {
    *
    * @return The generated ARM client.
    */
-  private ArmClient getArmClient() {
+  protected ArmClient getArmClient() {
     ArmClient client = new ArmClient(deployment, null);
     client.init();
     return client;

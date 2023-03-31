@@ -9,8 +9,13 @@
  */
 package org.mule.tools.validation.agent;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 import org.mule.tools.client.agent.AgentClient;
 import org.mule.tools.client.agent.AgentInfo;
 import org.mule.tools.model.Deployment;
@@ -18,15 +23,12 @@ import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.validation.AbstractDeploymentValidator;
 import org.mule.tools.validation.EnvironmentSupportedVersions;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.powermock.api.mockito.PowerMockito.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(AgentDeploymentValidator.class)
+@RunWith(MockitoJUnitRunner.class)
 public class AgentDeploymentValidatorTest {
 
   private static final String MULE_VERSION = "4.0.0";
@@ -35,22 +37,33 @@ public class AgentDeploymentValidatorTest {
   private static final String CLIENT_URI = "http://localhost:9999/";
   private static final DeployerLog LOG_MOCK = mock(DeployerLog.class);
   private AbstractDeploymentValidator validatorSpy;
+  private AgentClient clientSpy;
 
   @Test
   public void getEnvironmentSupportedVersionsTest() throws Exception {
-    validatorSpy = spy(new AgentDeploymentValidator(new AgentDeployment()));
+    validatorSpy = new TestAgentDeploymentValidator(new AgentDeployment());
 
     AgentInfo agentInfo = new AgentInfo();
     agentInfo.setMuleVersion(MULE_VERSION);
     AgentDeployment deploymentMock = mock(AgentDeployment.class);
     when(deploymentMock.getUri()).thenReturn(CLIENT_URI);
-    AgentClient clientSpy = spy(new AgentClient(LOG_MOCK, deploymentMock));
+    clientSpy = spy(new AgentClient(LOG_MOCK, deploymentMock));
     doReturn(agentInfo).when(clientSpy).getAgentInfo();
-
-    doReturn(clientSpy).when(validatorSpy, "getAgentClient");
 
     assertThat("Supported version that was generated is not the expected", validatorSpy.getEnvironmentSupportedVersions(),
                equalTo(EXPECTED_ENVIRONMENT_SUPPORTED_VERSIONS));
 
+  }
+
+  protected class TestAgentDeploymentValidator extends AgentDeploymentValidator {
+
+    public TestAgentDeploymentValidator(Deployment deployment) {
+      super(deployment);
+    }
+
+    @Override
+    protected AgentClient getAgentClient() {
+      return clientSpy;
+    }
   }
 }

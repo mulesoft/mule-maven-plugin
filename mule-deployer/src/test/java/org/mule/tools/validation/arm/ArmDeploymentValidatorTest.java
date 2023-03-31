@@ -9,25 +9,26 @@
  */
 package org.mule.tools.validation.arm;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+
 import org.mule.tools.client.arm.ArmClient;
+import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.validation.AbstractDeploymentValidator;
 import org.mule.tools.validation.EnvironmentSupportedVersions;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.powermock.api.mockito.PowerMockito.doReturn;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.spy;
+import java.util.List;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(ArmDeploymentValidator.class)
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+
+@RunWith(MockitoJUnitRunner.class)
 public class ArmDeploymentValidatorTest {
 
   private static final String MULE_VERSION = "4.0.0";
@@ -38,21 +39,35 @@ public class ArmDeploymentValidatorTest {
   private final ArmDeployment armDeployment = new ArmDeployment();
   private static final DeployerLog LOG_MOCK = mock(DeployerLog.class);
   private AbstractDeploymentValidator validatorSpy;
+  private ArmClient clientSpy;
 
   @Test
   public void getEnvironmentSupportedVersionsTest() throws Exception {
     armDeployment.setUri(BASE_URI);
     armDeployment.setArmInsecure(true);
 
-    validatorSpy = spy(new ArmDeploymentValidator(armDeployment));
-
-    ArmClient clientSpy = spy(new ArmClient(armDeployment, LOG_MOCK));
-    doReturn(clientSpy).when(validatorSpy, "getArmClient");
-
-    doReturn(newArrayList(MULE_VERSION)).when(validatorSpy, "findRuntimeVersion", clientSpy);
+    validatorSpy = new TestArmDeploymentValidator(armDeployment);
+    clientSpy = spy(new ArmClient(armDeployment, LOG_MOCK));
 
     assertThat("Supported version that was generated is not the expected", validatorSpy.getEnvironmentSupportedVersions(),
                equalTo(EXPECTED_ENVIRONMENT_SUPPORTED_VERSIONS));
 
+  }
+
+  protected class TestArmDeploymentValidator extends ArmDeploymentValidator {
+
+    public TestArmDeploymentValidator(Deployment deployment) {
+      super(deployment);
+    }
+
+    @Override
+    protected List<String> findRuntimeVersion(ArmClient client) {
+      return newArrayList(MULE_VERSION);
+    }
+
+    @Override
+    protected ArmClient getArmClient() {
+      return clientSpy;
+    }
   }
 }

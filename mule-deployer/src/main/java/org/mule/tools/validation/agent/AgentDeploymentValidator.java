@@ -36,7 +36,7 @@ public class AgentDeploymentValidator extends AbstractDeploymentValidator {
    *
    * @return The generated Agent client.
    */
-  private AgentClient getAgentClient() {
+  protected AgentClient getAgentClient() {
     return new AgentClient(null, deployment);
   }
 }

@@ -9,25 +9,24 @@
  */
 package org.mule.tools.validation.standalone;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import org.mule.tools.client.core.exception.DeploymentException;
+import org.mule.tools.model.Deployment;
+import org.mule.tools.model.standalone.StandaloneDeployment;
+import org.mule.tools.validation.AbstractDeploymentValidator;
+import org.mule.tools.validation.EnvironmentSupportedVersions;
+
+import java.io.File;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.mule.tools.model.standalone.StandaloneDeployment;
-import org.mule.tools.validation.AbstractDeploymentValidator;
-import org.mule.tools.validation.EnvironmentSupportedVersions;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.io.File;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.powermock.api.mockito.PowerMockito.doReturn;
-import static org.powermock.api.mockito.PowerMockito.spy;
-
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(StandaloneDeploymentValidator.class)
+@RunWith(MockitoJUnitRunner.class)
 public class StandaloneDeploymentValidatorTest {
 
   @Rule
@@ -45,12 +44,22 @@ public class StandaloneDeploymentValidatorTest {
 
     standaloneDeployment.setMuleHome(muleHome);
 
-    validatorSpy = spy(new StandaloneDeploymentValidator(standaloneDeployment));
-
-    doReturn(MULE_VERSION).when(validatorSpy, "findRuntimeVersion", muleHome);
+    validatorSpy = new TestStandaloneDeploymentValidator(standaloneDeployment);
 
     assertThat("Supported version that was generated is not the expected", validatorSpy.getEnvironmentSupportedVersions(),
                equalTo(EXPECTED_ENVIRONMENT_SUPPORTED_VERSIONS));
 
+  }
+
+  protected class TestStandaloneDeploymentValidator extends StandaloneDeploymentValidator {
+
+    public TestStandaloneDeploymentValidator(Deployment deployment) {
+      super(deployment);
+    }
+
+    @Override
+    protected String findRuntimeVersion(File muleHome) throws DeploymentException {
+      return MULE_VERSION;
+    }
   }
 }

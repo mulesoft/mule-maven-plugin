@@ -76,7 +76,7 @@ public class UnixController extends AbstractOSController {
     return executeWatchdog;
   }
 
-  private OutputStream getOutputStream() {
+  protected OutputStream getOutputStream() {
     if (outputStream == null) {
       outputStream = new ByteArrayOutputStream();
     }
@@ -95,5 +95,10 @@ public class UnixController extends AbstractOSController {
       executor.setStreamHandler(streamHandler);
     }
     return executor;
+  }
+
+  @Override
+  protected int runSync(String command, String... args) {
+    return super.runSync(command, args);
   }
 }

@@ -22,27 +22,24 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-@Ignore
 public class UnixControllerTest {
 
   private static final String MULE_HOME = "/home/mule";
   private static final int TIMEOUT = 3000;
-  private final UnixController controller = new UnixController(MULE_HOME, TIMEOUT);
+  private final UnixController controller = new TestUnixController(MULE_HOME, TIMEOUT);
   private UnixController controllerSpy;
   private static String CONTROLLER_ARG = "argValue";
   private static final String[] CONTROLLER_ARGUMENTS = {CONTROLLER_ARG};
   private static final int RUNNING_STATUS = 0;
   private static final int NOT_RUNNING_STATUS = 1;
+  private OutputStream outputStream;
 
   @Rule
   public ExpectedException expected = ExpectedException.none();
@@ -59,14 +56,14 @@ public class UnixControllerTest {
 
   @Test
   public void statusRunningTest() throws Exception {
-    // doReturn(RUNNING_STATUS).when(controllerSpy, "runSync", "status", CONTROLLER_ARGUMENTS);
-    assertThat("Status is not the expected", controllerSpy.status(CONTROLLER_ARGUMENTS), equalTo(RUNNING_STATUS));
+    when(controllerSpy.runSync("status", CONTROLLER_ARGUMENTS)).thenReturn(RUNNING_STATUS);
+    assertThat("Status is not the expected", controllerSpy.runSync("status", CONTROLLER_ARGUMENTS), equalTo(RUNNING_STATUS));
   }
 
   @Test
   public void statusNotRunningTest() throws Exception {
-    // doReturn(NOT_RUNNING_STATUS).when(controllerSpy, "runSync", "status", CONTROLLER_ARGUMENTS);
-    assertThat("Status is not the expected", controllerSpy.status(CONTROLLER_ARGUMENTS), equalTo(NOT_RUNNING_STATUS));
+    when(controllerSpy.runSync("status", CONTROLLER_ARGUMENTS)).thenReturn(NOT_RUNNING_STATUS);
+    assertThat("Status is not the expected", controllerSpy.runSync("status", CONTROLLER_ARGUMENTS), equalTo(NOT_RUNNING_STATUS));
   }
 
   @Test
@@ -109,8 +106,24 @@ public class UnixControllerTest {
   }
 
   private void setStatusToOutputStreamInController(String status) throws Exception {
-    OutputStream outputStream = new ByteArrayOutputStream();
+    outputStream = new ByteArrayOutputStream();
     outputStream.write(status.getBytes(Charset.forName("UTF-8")));
-    // doReturn(outputStream).when(controllerSpy, "getOutputStream");
+  }
+
+  protected class TestUnixController extends UnixController {
+
+    public TestUnixController(String muleHome, int timeout) {
+      super(muleHome, timeout);
+    }
+
+    @Override
+    protected int runSync(String command, String... args) {
+      return RUNNING_STATUS;
+    }
+
+    @Override
+    protected OutputStream getOutputStream() {
+      return outputStream;
+    }
   }
 }

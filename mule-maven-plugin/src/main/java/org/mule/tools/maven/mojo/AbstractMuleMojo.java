@@ -11,7 +11,7 @@
 package org.mule.tools.maven.mojo;
 
 import java.io.File;
-import java.nio.file.Path;
+import java.io.IOException;
 import java.nio.file.Paths;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -20,12 +20,21 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.repository.RepositorySystem;
+import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
+import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
 import org.mule.tools.api.packager.resources.content.ResourcesContent;
 import org.mule.tools.api.packager.sources.ContentGenerator;
 import org.mule.tools.api.packager.sources.ContentGeneratorFactory;
 import org.mule.tools.api.util.Project;
 import org.mule.tools.api.validation.resolver.MulePluginResolver;
 import org.mule.tools.api.util.MavenProjectBuilder;
+import org.mule.tools.maven.utils.MuleApplicationModelLoader;
+
+import static java.nio.charset.Charset.defaultCharset;
+import static org.apache.commons.io.FileUtils.readFileToString;
+import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
+import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
+import static org.mule.tools.maven.utils.MuleApplicationModelLoader.MULE_ARTIFACT_JSON_FILE_NAME;
 
 
 /**
@@ -44,6 +53,9 @@ public abstract class AbstractMuleMojo extends AbstractGenericMojo {
 
   @Parameter(defaultValue = "${skipValidation}")
   protected boolean skipValidation = false;
+
+  @Parameter(property = "runtimeVersion")
+  public String runtimeVersion;
 
   protected ContentGenerator contentGenerator;
 
@@ -72,4 +84,23 @@ public abstract class AbstractMuleMojo extends AbstractGenericMojo {
     return new MulePluginResolver(builder, project);
   }
 
+  protected MuleApplicationModelLoader getMuleApplicationModelLoader() throws MojoExecutionException {
+    return new MuleApplicationModelLoader(getMuleApplicationModel(), getLog()).withRuntimeVersion(runtimeVersion);
+  }
+
+  protected MuleApplicationModel getMuleApplicationModel() throws MojoExecutionException {
+    File muleApplicationJsonPath = getMuleApplicationJsonPath();
+    try {
+      return new MuleApplicationModelJsonSerializer().deserialize(readFileToString(muleApplicationJsonPath, defaultCharset()));
+    } catch (IOException e) {
+      String message = "Fail to read mule application file from " + muleApplicationJsonPath;
+      getLog().error(message, e);
+      throw new MojoExecutionException(message, e);
+    }
+  }
+
+  protected File getMuleApplicationJsonPath() {
+    return Paths.get(project.getBasedir().getPath()).resolve(MULE_ARTIFACT_JSON_FILE_NAME)
+        .toFile();
+  }
 }

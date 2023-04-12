@@ -18,6 +18,7 @@
 
         <coverageLineLimit>0.33</coverageLineLimit>
         <coverageBranchLimit>0.13</coverageBranchLimit>
+        <mavenResolverVersion>1.6.3</mavenResolverVersion>
     </properties>
 
     <dependencies>
@@ -49,6 +50,10 @@
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-archiver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-connector-basic</artifactId>
         </dependency>
 
         <!-- Exchange -->

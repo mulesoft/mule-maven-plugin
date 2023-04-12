@@ -72,6 +72,7 @@
         <maven.compat.version>3.8.6</maven.compat.version>
         <maven.verifier.version>1.8.0</maven.verifier.version>
         <maven.dependency.tree.version>1.2</maven.dependency.tree.version>
+        <mavenResolverVersion>1.6.3</mavenResolverVersion>
         <plexus.container.default.version>1.7.1</plexus.container.default.version>
         <plexus.component.annotations.version>1.7.1</plexus.component.annotations.version>
         <jsonassert.version>1.5.0</jsonassert.version>
@@ -198,6 +199,11 @@
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-archiver</artifactId>
                 <version>${codehaus.plexus.archiver}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.resolver</groupId>
+                <artifactId>maven-resolver-connector-basic</artifactId>
+                <version>${mavenResolverVersion}</version>
             </dependency>
 
             <!-- Mule -->

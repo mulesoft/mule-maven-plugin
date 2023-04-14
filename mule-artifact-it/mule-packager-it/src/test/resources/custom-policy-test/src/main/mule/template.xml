@@ -25,6 +25,7 @@
                     {{#if distributed}}
                     </ee:set-attributes>
                     {{else}}
+                    <ee:set-attributes>
                     </ee:set-attributes>
                     {{/if}
 

@@ -100,6 +100,11 @@
             <artifactId>mule-maven-client-impl</artifactId>
             <version>${mule.maven.client.impl.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-spring-config</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.mockito</groupId>

@@ -4,7 +4,7 @@
 
     <groupId>org.mule.tools.maven</groupId>
     <artifactId>mule-artifact-tools</artifactId>
-    <version>3.8.3-SNAPSHOT</version>
+    <version>3.8.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Mule Artifact Tools</name>
@@ -33,7 +33,7 @@
     </organization>
 
     <modules>
-    	<module>mule-extension-model-loader</module>
+        <module>mule-extension-model-loader</module>
         <module>mule-packager</module>
         <module>mule-classloader-model</module>
         <module>mule-deployer</module>
@@ -48,8 +48,9 @@
 
         <mule.version>4.5.0-rc3</mule.version>
         <mule.api.version>1.5.0-rc3</mule.api.version>
-        <mule.maven.client.impl.version>1.8.0-20230123</mule.maven.client.impl.version>
+        <mule.maven.client.impl.version>1.7.0-rc3</mule.maven.client.impl.version>
         <mule.distribution.standalone.version>4.5.0-rc3</mule.distribution.standalone.version>
+        <mule.mvel2.version>2.1.9-MULE-020</mule.mvel2.version>
         <gson.version>2.8.6</gson.version>
         <guava.version>27.0-jre</guava.version>
         <snakeyaml.version>1.33</snakeyaml.version>
@@ -76,7 +77,7 @@
         <plexus.component.annotations.version>1.7.1</plexus.component.annotations.version>
         <jsonassert.version>1.5.0</jsonassert.version>
 
-        <jersey.version>2.25</jersey.version>
+        <jersey.version>2.34</jersey.version>
         <jersey.media.moxy>2.31</jersey.media.moxy>
 
         <junit.version>4.13</junit.version>
@@ -127,7 +128,6 @@
         <skipJaCoCoCoverage>${skipTests}</skipJaCoCoCoverage>
     </properties>
 
-
     <dependencyManagement>
         <dependencies>
             <!-- Maven Plugin Dependencies -->
@@ -148,29 +148,33 @@
                         <groupId>org.eclipse.sisu</groupId>
                         <artifactId>org.eclipse.sisu.plexus</artifactId>
                     </exclusion>
-            <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-sec-dispatcher</artifactId>
-            </exclusion>
-            </exclusions>
+                    <exclusion>
+                        <groupId>org.codehaus.plexus</groupId>
+                        <artifactId>plexus-sec-dispatcher</artifactId>
+                    </exclusion>
+               </exclusions>
             </dependency>
             <dependency>
-    <groupId>org.sonatype.plexus</groupId>
-    <artifactId>plexus-sec-dispatcher</artifactId>
-<version>1.4</version>
-</dependency>
-
+                <groupId>org.sonatype.plexus</groupId>
+                <artifactId>plexus-sec-dispatcher</artifactId>
+                <version>1.4</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-core</artifactId>
                 <version>${maven.version}</version>
                 <scope>provided</scope>
-                    <exclusions>
-            <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-sec-dispatcher</artifactId>
-            </exclusion>
-            </exclusions>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.codehaus.plexus</groupId>
+                        <artifactId>plexus-sec-dispatcher</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.mule.mvel</groupId>
+                <artifactId>mule-mvel2</artifactId>
+                <version>${mule.mvel2.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.plugin-tools</groupId>
@@ -206,7 +210,6 @@
                 <artifactId>mule-api</artifactId>
                 <version>${mule.api.version}</version>
             </dependency>
- 
 
             <dependency>
                 <groupId>org.mule.tools.maven</groupId>
@@ -279,8 +282,12 @@
                 <version>${semantic.version.version}</version>
             </dependency>
 
-
             <!-- Jersey -->
+            <dependency>
+                <groupId>org.glassfish.jersey.inject</groupId>
+                <artifactId>jersey-hk2</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
@@ -446,7 +453,6 @@
                         </execution>
                     </executions>
                 </plugin>
-
                 <plugin>
                     <groupId>com.marvinformatics.formatter</groupId>
                     <artifactId>formatter-maven-plugin</artifactId>
@@ -568,27 +574,27 @@
                 </configuration>
             </plugin>
             <plugin>
-        		<groupId>org.apache.maven.plugins</groupId>
-       			<artifactId>maven-enforcer-plugin</artifactId>
-        		<version>3.0.0-M3</version>
-        		<executions>
-          			<execution>
-            			<id>enforce-no-snapshots</id>
-            			<goals>
-              				<goal>enforce</goal>
-            			</goals>
-            		<configuration>
-              			<rules>
-                			<requireReleaseDeps>
-                  				<message>No Snapshots Allowed!</message>
-                  				<onlyWhenRelease>true</onlyWhenRelease>
-                  			</requireReleaseDeps>
-              			</rules>
-              			<fail>true</fail>
-            		</configuration>
-          </execution>
-        </executions>
-      </plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M3</version>
+                <executions>
+                    <execution>
+                        <id>enforce-no-snapshots</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireReleaseDeps>
+                                    <message>No Snapshots Allowed!</message>
+                                    <onlyWhenRelease>true</onlyWhenRelease>
+                                </requireReleaseDeps>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -606,7 +612,6 @@
             </plugin>
         </plugins>
     </reporting>
-
 
     <distributionManagement>
         <repository>

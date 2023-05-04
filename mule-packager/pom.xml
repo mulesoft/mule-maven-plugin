@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.mule.tools.maven</groupId>
         <artifactId>mule-artifact-tools</artifactId>
-        <version>3.8.3-SNAPSHOT</version>
+        <version>3.8.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -47,7 +47,11 @@
             <artifactId>mule-extension-model-loader</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.mule.mvel</groupId>
+            <artifactId>mule-mvel2</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-api</artifactId>

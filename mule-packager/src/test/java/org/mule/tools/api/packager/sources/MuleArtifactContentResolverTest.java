@@ -85,6 +85,25 @@ public class MuleArtifactContentResolverTest {
       "\t\t<xml-module:validate-schema doc:name=\"Validate schema\" doc:id=\"f9656931-d3ca-4969-bf7d-4c8d87fe4918\" config-ref=\"XML_Config\" schemas=\"schemas/shipwire/warehouse/rma/v01/ASN.xsd\"/>\n"
       +
       "</mule>";
+  private String DEFAULT_MULE_DOMAIN_CONFIG_CONTENT = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+      "<domain:mule-domain\n" +
+      "        xmlns:http=\"http://www.mulesoft.org/schema/mule/http\"\n" +
+      "        xmlns=\"http://www.mulesoft.org/schema/mule/core\"\n" +
+      "        xmlns:domain=\"http://www.mulesoft.org/schema/mule/ee/domain\"\n" +
+      "        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+      "        xmlns:doc=\"http://www.mulesoft.org/schema/mule/documentation\" xsi:schemaLocation=\"\n" +
+      "               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd\n" +
+      "               http://www.mulesoft.org/schema/mule/ee/domain http://www.mulesoft.org/schema/mule/ee/domain/current/mule-domain-ee.xsd\n"
+      +
+      "http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd\">\n" +
+      "    <http:listener-config name=\"HTTP_Listener_config\" doc:name=\"HTTP Listener config\" doc:id=\"8d59b7ae-b7f7-43c6-8f07-a217e8ae8655\" >\n"
+      +
+      "        <http:listener-connection host=\"0.0.0.0\" port=\"${httpPort}\" />\n" +
+      "    </http:listener-config>\n" +
+      "\n" +
+      "    <!-- configure here resource to be shared within the domain -->\n" +
+      "\n" +
+      "</domain:mule-domain>";
   private String MALFORMED_MULE_CONFIG_CONTENT = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
       "<mule xmlns=\"http://www.mulesoft.org/schema/mule/core\"\n" +
       "      xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
@@ -236,8 +255,43 @@ public class MuleArtifactContentResolverTest {
       actualConfigs.set(i, actualConfigs.get(i).replace("/", separator).replace("\"", separator));
     }
 
+    assertThat("Config files are for an application", resolver.isApplication(), is(true));
+    assertThat("Configs does not contain all expected elements", actualConfigs,
+               containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + separator + CONFIG_3));
+
+    assertThat("Configs contain an unexpected elements", actualConfigs.contains(COMMON_FILE), is(false));
+
+    assertThat("Configs contains more elements than expected", actualConfigs.size(), equalTo(3));
+  }
+
+  @Test
+  public void getConfigsWithDomainTest() throws IOException {
+    File config1 = new File(muleFolder, CONFIG_1);
+    File config2 = new File(muleFolder, CONFIG_2);
+    File config3Folder = new File(muleFolder, CONFIG_3_LOCATION);
+    File config3 = new File(config3Folder, CONFIG_3);
+    File commonFile = new File(muleFolder, COMMON_FILE);
+
+    config1.createNewFile();
+    FileUtils.writeStringToFile(config1, DEFAULT_MULE_DOMAIN_CONFIG_CONTENT, Charset.defaultCharset());
+
+    config2.createNewFile();
+    FileUtils.writeStringToFile(config2, DEFAULT_MULE_CONFIG_CONTENT, Charset.defaultCharset());
+
+    config3Folder.mkdirs();
+    config3.createNewFile();
+    FileUtils.writeStringToFile(config3, DEFAULT_MULE_CONFIG_CONTENT, Charset.defaultCharset());
+
+    commonFile.createNewFile();
 
 
+    List<String> actualConfigs = resolver.getConfigs();
+
+    for (int i = 0; i < actualConfigs.size(); i++) {
+      actualConfigs.set(i, actualConfigs.get(i).replace("/", separator).replace("\"", separator));
+    }
+
+    assertThat("Config files are for an domain", resolver.isApplication(), is(false));
     assertThat("Configs does not contain all expected elements", actualConfigs,
                containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + separator + CONFIG_3));
 

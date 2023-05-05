@@ -4,7 +4,7 @@
 
     <groupId>org.mule.tools.maven</groupId>
     <artifactId>mule-artifact-tools</artifactId>
-    <version>3.8.5-SNAPSHOT</version>
+    <version>3.8.6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Mule Artifact Tools</name>

@@ -16,6 +16,7 @@
 
         <coverageLineLimit>0.74</coverageLineLimit>
         <coverageBranchLimit>0.69</coverageBranchLimit>
+        <allure.version>2.8.1</allure.version>
     </properties>
 
     <build>
@@ -124,6 +125,12 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-java-commons</artifactId>
+            <version>${allure.version}</version>
             <scope>test</scope>
         </dependency>
 

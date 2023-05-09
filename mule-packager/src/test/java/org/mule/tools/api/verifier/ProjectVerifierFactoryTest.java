@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 
 import io.qameta.allure.Issue;
 import io.qameta.allure.Description;
+import jdk.jfr.Description;
 import org.junit.Test;
 import org.junit.Test.None;
 
@@ -54,7 +55,7 @@ public class ProjectVerifierFactoryTest {
 
   @Test
   @Issue("W-12354025")
-  @Description("Verify that PolicyYamlVerifier validation works after upgrading to snakeyaml 2.0")
+  @Description("We had to change PolicyYamlVerifier.validate() as in snakeyaml 2.0 the constructor of Yaml class has changed. This test verifies that we can correctly validate the yaml after the change and that it is able to read fields from the Yaml file")
   public void verifyValidation() throws ValidationException {
     PolicyYamlVerifier policyYamlVerifier =
         new PolicyYamlVerifier(this.getClass().getResource("/org/mule/tools/api/verifier").getPath(), "custom.policy.test.yaml");

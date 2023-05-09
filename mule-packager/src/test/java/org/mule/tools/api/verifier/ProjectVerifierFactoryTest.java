@@ -27,7 +27,6 @@ import java.net.URISyntaxException;
 
 import io.qameta.allure.Issue;
 import io.qameta.allure.Description;
-import jdk.jfr.Description;
 import org.junit.Test;
 import org.junit.Test.None;
 

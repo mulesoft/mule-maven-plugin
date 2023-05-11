@@ -13,10 +13,6 @@
     <properties>
         <licensePath>../LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-
-        <coverageLineLimit>0.74</coverageLineLimit>
-        <coverageBranchLimit>0.69</coverageBranchLimit>
-        <allure.version>2.8.1</allure.version>
     </properties>
 
     <build>

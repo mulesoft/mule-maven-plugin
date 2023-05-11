@@ -125,6 +125,7 @@
         <coverageLineLimit>0.99</coverageLineLimit>
         <coverageBranchLimit>0.99</coverageBranchLimit>
         <skipJaCoCoCoverage>${skipTests}</skipJaCoCoCoverage>
+        <allure.version>2.8.1</allure.version>
     </properties>
 
 

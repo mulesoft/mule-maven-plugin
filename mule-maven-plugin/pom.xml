@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.mule.tools.maven</groupId>
         <artifactId>mule-artifact-tools</artifactId>
-        <version>3.8.6-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -22,6 +22,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.mule.tools.maven</groupId>
+            <artifactId>mule-extension-model-loader</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>mule-packager</artifactId>
             <version>${project.version}</version>
@@ -31,48 +36,29 @@
             <artifactId>mule-deployer</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-
-        <!-- Maven Plugin Dependencies -->
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-plugin-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-core</artifactId>
-        </dependency>
+        <!-- Third-Party Libraries  -->
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-archiver</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
         </dependency>
-
-        <!-- Exchange -->
+        <!-- Testing -->
         <dependency>
-            <groupId>org.mule.tools.maven</groupId>
-            <artifactId>exchange-mule-plugin-utils</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-compat</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -80,20 +66,7 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>mule-releases</id>
-            <name>Mule Release Repository</name>
-            <url>https://repository-master.mulesoft.org/nexus/content/repositories/releases</url>
-        </repository>
-    </repositories>
 
     <build>
         <plugins>

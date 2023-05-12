@@ -13,7 +13,6 @@ import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.APPEND;
-import static java.util.Arrays.asList;
 import static java.util.regex.Pattern.compile;
 import static org.apache.commons.io.FileUtils.copyDirectoryToDirectory;
 import static org.apache.commons.io.FileUtils.copyFileToDirectory;
@@ -30,8 +29,10 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
+
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,11 +77,8 @@ public class Controller {
   }
 
   protected void checkRepositoryLocationAndUpdateInternalRepoPropertyIfPresent(String... args) {
-    Optional<String> repoVar =
-        asList(args).stream().filter(arg -> arg.contains("-M-DmuleRuntimeConfig.maven.repositoryLocation=")).findFirst();
-    if (repoVar.isPresent()) {
-      this.internalRepository = new File(repoVar.get().split("=")[1]);
-    }
+    Arrays.stream(args).filter(arg -> arg.contains("-M-DmuleRuntimeConfig.maven.repositoryLocation=")).findFirst()
+        .ifPresent(repo -> this.internalRepository = new File(repo.split("=")[1]));
   }
 
   public int stop(String... args) {
@@ -175,15 +173,15 @@ public class Controller {
 
   public void undeployDomain(String domain) {
     if (!new File(domainsDir, domain + ANCHOR_SUFFIX).exists()) {
-      new MuleControllerException("Couldn't undeploy domain [" + domain + "]. Domain is not deployed");
+      throw new MuleControllerException("Couldn't undeploy domain [" + domain + "]. Domain is not deployed");
     }
     if (!new File(domainsDir, domain + ANCHOR_SUFFIX).delete()) {
-      new MuleControllerException("Couldn't undeploy domain [" + domain + "]");
+      throw new MuleControllerException("Couldn't undeploy domain [" + domain + "]");
     }
   }
 
   public void undeployAll() {
-    for (File file : appsDir.listFiles()) {
+    for (File file : Objects.requireNonNull(appsDir.listFiles())) {
       try {
         forceDelete(file);
       } catch (IOException e) {
@@ -268,7 +266,7 @@ public class Controller {
   private Integer getMaxPropertyOrder(Path path) throws IOException {
     return Files.lines(path)
         .filter(line -> pattern.matcher(line).find())
-        .map(line -> getOrderNumber(line))
+        .map(this::getOrderNumber)
         .max(Integer::compare).get();
   }
 

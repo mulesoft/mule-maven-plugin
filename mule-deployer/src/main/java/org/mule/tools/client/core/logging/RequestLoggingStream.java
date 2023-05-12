@@ -26,8 +26,8 @@ import java.io.OutputStream;
  */
 public class RequestLoggingStream extends FilterOutputStream {
 
-  private StringBuilder request;
-  private ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
+  private final StringBuilder request;
+  private final ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
 
   public RequestLoggingStream(StringBuilder request, OutputStream inner) {
     super(inner);
@@ -42,7 +42,7 @@ public class RequestLoggingStream extends FilterOutputStream {
 
 
   public String getRequestLog() {
-    request.append(new String(requestBody.toByteArray()));
+    request.append(requestBody);
     request.append(format("%n"));
     return request.toString();
   }

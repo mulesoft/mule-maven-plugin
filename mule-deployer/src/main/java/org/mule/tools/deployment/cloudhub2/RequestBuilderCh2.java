@@ -101,7 +101,4 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     return new Cloudhub2Configuration(properties, loggingServiceProperties);
 
   }
-
-
-
 }

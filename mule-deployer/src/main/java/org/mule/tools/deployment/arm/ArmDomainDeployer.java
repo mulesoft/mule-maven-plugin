@@ -15,7 +15,6 @@ import org.mule.tools.model.Deployment;
 import org.mule.tools.deployment.Deployer;
 import org.mule.tools.utils.DeployerLog;
 
-
 /**
  * Deploys mule domains to ARM.
  */

@@ -10,9 +10,9 @@
 
 package org.mule.tools.api.packager.resources.generator;
 
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.maven.client.api.MavenClient;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 import org.mule.tools.api.packager.resources.content.DomainBundleProjectResourcesContent;
@@ -28,12 +28,12 @@ import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact
  */
 public class DomainBundleProjectResourcesContentGenerator implements ResourcesContentGenerator {
 
-  private final AetherMavenClient muleMavenPluginClient;
+  private final MavenClient mavenClient;
   private final List<ArtifactCoordinates> projectDependencies;
 
-  public DomainBundleProjectResourcesContentGenerator(AetherMavenClient aetherMavenClient,
+  public DomainBundleProjectResourcesContentGenerator(MavenClient mavenClient,
                                                       List<ArtifactCoordinates> projectDependencies) {
-    this.muleMavenPluginClient = aetherMavenClient;
+    this.mavenClient = mavenClient;
     this.projectDependencies = projectDependencies;
   }
 
@@ -43,7 +43,7 @@ public class DomainBundleProjectResourcesContentGenerator implements ResourcesCo
     List<BundleDescriptor> dependenciesBundleDescriptors =
         projectDependencies.stream().map(ArtifactUtils::toBundleDescriptor).collect(Collectors.toList());
     for (BundleDescriptor bundleDescriptor : dependenciesBundleDescriptors) {
-      BundleDependency dependency = muleMavenPluginClient.resolveBundleDescriptor(bundleDescriptor);
+      BundleDependency dependency = mavenClient.resolveBundleDescriptor(bundleDescriptor);
       resourcesContent.add(toArtifact(dependency));
     }
     return resourcesContent;

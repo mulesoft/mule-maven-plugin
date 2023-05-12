@@ -9,7 +9,6 @@
  */
 package org.mule.tools.client.standalone.controller;
 
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public abstract class AbstractOSController {
 
-  private static Logger logger = getLogger(AbstractOSController.class);
+  private static final Logger logger = getLogger(AbstractOSController.class);
 
   protected static final String STATUS = "Mule(\\sEnterprise Edition)? is running \\(([0-9]+)\\)\\.";
   protected static final Pattern STATUS_PATTERN = Pattern.compile(STATUS);
@@ -93,7 +92,7 @@ public abstract class AbstractOSController {
         paramsJoiner.add(cmdArg.replaceAll("(?<=\\.password=)(.*)", "****"));
       }
 
-      logger.info("Executing: " + paramsJoiner.toString());
+      logger.info("Executing: " + paramsJoiner);
       return executor.execute(commandLine, env);
     } catch (ExecuteException e) {
       return e.getExitValue();
@@ -105,11 +104,7 @@ public abstract class AbstractOSController {
   }
 
   protected Map<Object, Object> copyEnvironmentVariables() {
-    Map<String, String> env = System.getenv();
-    Map<Object, Object> newEnv = new HashMap<>();
-    for (Map.Entry<String, String> it : env.entrySet()) {
-      newEnv.put(it.getKey(), it.getValue());
-    }
+    Map<Object, Object> newEnv = new HashMap<>(System.getenv());
     newEnv.put(MULE_HOME_VARIABLE, muleHome);
     return newEnv;
   }

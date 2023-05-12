@@ -10,7 +10,6 @@
 package org.mule.tools.client.core.logging;
 
 
-import static java.lang.Boolean.parseBoolean;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.join;
 
@@ -48,7 +47,7 @@ public class ClientLoggingFilter implements ClientRequestFilter, ClientResponseF
   }
 
   @Override
-  public void filter(ClientRequestContext context) throws IOException {
+  public void filter(ClientRequestContext context) {
     StringBuilder request = new StringBuilder();
 
     request

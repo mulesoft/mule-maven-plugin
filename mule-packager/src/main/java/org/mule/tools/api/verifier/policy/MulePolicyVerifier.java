@@ -13,14 +13,8 @@ package org.mule.tools.api.verifier.policy;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.verifier.ProjectVerifier;
-import org.yaml.snakeyaml.TypeDescription;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
 
 import static java.lang.String.format;

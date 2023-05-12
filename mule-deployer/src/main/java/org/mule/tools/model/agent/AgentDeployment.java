@@ -31,7 +31,6 @@ public class AgentDeployment extends Deployment {
   @Parameter
   protected String uri;
 
-
   public String getUri() {
     return uri;
   }

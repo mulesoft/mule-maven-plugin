@@ -12,7 +12,6 @@ package org.mule.tools.client.arm;
 import java.io.File;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,7 +29,6 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
@@ -69,11 +67,11 @@ public class ArmClient extends AbstractMuleClient {
   private static final String STARTED_STATUS = "STARTED";
   private static final String DEPLOYMENT_IN_PROGRESS = "UPDATED";
 
-  private boolean armInsecure;
+  private final boolean armInsecure;
 
   public ArmClient(Deployment armDeployment, DeployerLog log) {
     super((AnypointDeployment) armDeployment, log);
-    armInsecure = ((ArmDeployment) armDeployment).isArmInsecure().get();
+    armInsecure = ((ArmDeployment) armDeployment).isArmInsecure().orElse(false);
     if (armInsecure) {
       log.warn("Using insecure mode for connecting to ARM, please consider configuring your truststore with ARM certificates. This option is insecure and not intended for production use.");
     }
@@ -186,13 +184,11 @@ public class ArmClient extends AbstractMuleClient {
   }
 
   public Servers getServer(Integer serverId) {
-    Servers target = get(baseUri, SERVERS + "/" + serverId, Servers.class);
-    return target;
+    return get(baseUri, SERVERS + "/" + serverId, Servers.class);
   }
 
   public Servers getServerGroup(Integer serverGroupId) {
-    Servers target = get(baseUri, SERVER_GROUP + "/" + serverGroupId, Servers.class);
-    return target;
+    return get(baseUri, SERVER_GROUP + "/" + serverGroupId, Servers.class);
   }
 
   public void deleteServer(Integer serverId) {
@@ -229,15 +225,14 @@ public class ArmClient extends AbstractMuleClient {
   }
 
   public Integer findApplicationId(ApplicationMetadata applicationMetadata) {
-    Applications apps = getApplications();
     Data[] appArray = getApplications().data;
     if (appArray == null) {
       return null;
     }
     String targetId = getId(applicationMetadata.getTargetType(), applicationMetadata.getTarget());
-    for (int i = 0; i < appArray.length; i++) {
-      if (applicationMetadata.getName().equals(appArray[i].artifact.name) && targetId.equals(appArray[i].target.id)) {
-        return appArray[i].id;
+    for (Data data : appArray) {
+      if (applicationMetadata.getName().equals(data.artifact.name) && targetId.equals(data.target.id)) {
+        return data.id;
       }
     }
     return null;
@@ -261,17 +256,17 @@ public class ArmClient extends AbstractMuleClient {
     public boolean verify(String s, SSLSession sslSession) {
       return true;
     }
-  };
+  }
 
   private static class TrustAllManager implements X509TrustManager {
 
     @Override
-    public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+    public void checkClientTrusted(X509Certificate[] x509Certificates, String s) {
 
     }
 
     @Override
-    public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+    public void checkServerTrusted(X509Certificate[] x509Certificates, String s) {
 
     }
 
@@ -279,6 +274,5 @@ public class ArmClient extends AbstractMuleClient {
     public X509Certificate[] getAcceptedIssuers() {
       return new X509Certificate[0];
     }
-  };
-
+  }
 }

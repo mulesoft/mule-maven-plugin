@@ -7,7 +7,6 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package org.mule.tools.maven.mojo;
 
 import java.io.File;
@@ -32,10 +31,7 @@ import org.mule.tools.maven.utils.MuleApplicationModelLoader;
 
 import static java.nio.charset.Charset.defaultCharset;
 import static org.apache.commons.io.FileUtils.readFileToString;
-import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
-import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.maven.utils.MuleApplicationModelLoader.MULE_ARTIFACT_JSON_FILE_NAME;
-
 
 /**
  * Base Mojo

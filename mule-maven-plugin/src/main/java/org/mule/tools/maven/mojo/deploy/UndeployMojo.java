@@ -24,7 +24,7 @@ import org.mule.tools.client.core.exception.DeploymentException;
  * @see DeployMojo
  * @since 1.0
  */
-@Mojo(name = "undeploy", requiresProject = true)
+@Mojo(name = "undeploy")
 public class UndeployMojo extends AbstractMuleDeployerMojo {
 
   @Override

@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.io.FileUtils;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
@@ -26,9 +27,9 @@ import org.mule.tools.utils.DeployerLog;
  */
 public class StandaloneUndeployer {
 
-  private List<File> muleHomes;
-  private String applicationName;
-  private DeployerLog log;
+  private final List<File> muleHomes;
+  private final String applicationName;
+  private final DeployerLog log;
 
   public StandaloneUndeployer(DeployerLog log, String applicationName, File... muleHomes) {
     this.muleHomes = Arrays.asList(muleHomes);
@@ -52,7 +53,7 @@ public class StandaloneUndeployer {
   private void undeploy(File muleHome) throws DeploymentException {
     File appsDir = new File(muleHome + "/apps/");
 
-    for (File file : appsDir.listFiles()) {
+    for (File file : Objects.requireNonNull(appsDir.listFiles())) {
       if (FilenameUtils.getBaseName(file.getName()).equals(applicationName)) {
         try {
           log.debug("Deleting " + file);

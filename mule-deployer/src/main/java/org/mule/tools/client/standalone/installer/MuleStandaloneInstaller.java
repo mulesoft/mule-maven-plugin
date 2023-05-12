@@ -11,6 +11,7 @@ package org.mule.tools.client.standalone.installer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
+
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.AbstractArtifactResolutionException;
@@ -29,13 +30,13 @@ import java.io.File;
 
 public class MuleStandaloneInstaller {
 
-  private ClusterDeployment clusterDeployment;
-  private MavenProject mavenProject;
-  private ArtifactResolver artifactResolver;
-  private ArchiverManager archiverManager;
-  private ArtifactFactory artifactFactory;
-  private DeployerLog log;
-  private ArtifactRepository localRepository;
+  private final ClusterDeployment clusterDeployment;
+  private final MavenProject mavenProject;
+  private final ArtifactResolver artifactResolver;
+  private final ArchiverManager archiverManager;
+  private final ArtifactFactory artifactFactory;
+  private final DeployerLog log;
+  private final ArtifactRepository localRepository;
 
   public MuleStandaloneInstaller(ClusterDeployment clusterDeployment, MavenProject mavenProject,
                                  ArtifactResolver artifactResolver, ArchiverManager archiverManager,
@@ -120,7 +121,7 @@ public class MuleStandaloneInstaller {
       artifactResolver.resolve(artifact, mavenProject.getRemoteArtifactRepositories(), localRepository);
       return artifact.getFile();
     } catch (AbstractArtifactResolutionException e) {
-      throw new DeploymentException("Fail download artifact: " + artifactDescription.toString(), e);
+      throw new DeploymentException("Fail download artifact: " + artifactDescription, e);
     }
   }
 }

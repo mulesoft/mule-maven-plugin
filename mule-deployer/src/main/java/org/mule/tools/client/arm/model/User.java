@@ -9,8 +9,6 @@
  */
 package org.mule.tools.client.arm.model;
 
-import org.mule.tools.client.arm.model.Organization;
-
 public class User {
 
   public Organization organization;

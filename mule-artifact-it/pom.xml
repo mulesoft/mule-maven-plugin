@@ -11,7 +11,6 @@
     <packaging>pom</packaging>
     <name>Mule Maven Plugin Integration Tests</name>
 
-
     <properties>
         <skipTests>${skipIntegrationTests}</skipTests>
         <licensePath>../LICENSE_HEADER.txt</licensePath>
@@ -106,8 +105,49 @@
     </profiles>
     <dependencies>
         <dependency>
-                <groupId>org.mule.runtime</groupId>
-                <artifactId>mule-api</artifactId>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-api</artifactId>
+        </dependency>
+        <!--New dependencies-->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vdurmont</groupId>
+            <artifactId>semver4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker-qual</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>api-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
         </dependency>
     </dependencies>
 </project>

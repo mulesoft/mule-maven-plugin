@@ -6,14 +6,13 @@
  */
 package org.mule.tools.api.validation;
 
-import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 
 import java.util.List;
 
 /**
- * Should implement logic for validating a {@link BundleDependency}
+ * Should implement logic for validating a {@link org.mule.maven.pom.parser.api.model.BundleDependency}
  */
 public interface DependencyValidator {
 

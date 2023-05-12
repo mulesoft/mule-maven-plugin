@@ -11,7 +11,7 @@ import static java.nio.file.Paths.get;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
-import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 import org.mule.tools.api.util.XmlFactoryUtils;

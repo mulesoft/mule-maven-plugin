@@ -6,7 +6,7 @@
  */
 package org.mule.tools.api.packager.sources;
 
-import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 

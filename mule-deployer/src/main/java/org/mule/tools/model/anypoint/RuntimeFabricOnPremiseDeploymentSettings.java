@@ -16,11 +16,19 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  */
 public class RuntimeFabricOnPremiseDeploymentSettings extends RuntimeFabricDeploymentSettings {
 
+  @Parameter
+  protected Resources resources;
+
+  @Parameter
+  protected Jvm jvm;
+
+  @Parameter
+  protected boolean persistentObjectStore;
+
   public RuntimeFabricOnPremiseDeploymentSettings() {
     http = new Http();
     resources = new Resources();
   }
-
 
   public RuntimeFabricOnPremiseDeploymentSettings(RuntimeFabricOnPremiseDeploymentSettings settings) {
     super(settings);
@@ -31,31 +39,19 @@ public class RuntimeFabricOnPremiseDeploymentSettings extends RuntimeFabricDeplo
     }
   }
 
-  @Parameter
-  protected Resources resources;
-
-  @Parameter
-  protected Jvm jvm;
-
-  @Parameter
-  protected boolean persistentObjectStore;
-
   public Resources getResources() {
     return resources;
   }
-
 
   public void setResources(Resources resources) {
     this.resources = resources;
   }
 
-
   public void setEnvironmentSpecificValues() throws DeploymentException {
     super.setEnvironmentSpecificValues();
 
-
     if (isEmpty(getResources().getMemory().getReserved())) {
-      getResources().getMemory().setReserved("700Mi");;
+      getResources().getMemory().setReserved("700Mi");
     }
 
     if (isEmpty(getResources().getMemory().getLimit())) {
@@ -63,13 +59,12 @@ public class RuntimeFabricOnPremiseDeploymentSettings extends RuntimeFabricDeplo
     }
 
     if (isEmpty(getResources().getCpu().getReserved())) {
-      getResources().getCpu().setReserved("500m");;
+      getResources().getCpu().setReserved("500m");
     }
 
     if (isEmpty(getResources().getCpu().getLimit())) {
       getResources().getCpu().setLimit(getResources().getCpu().getReserved());
     }
-
   }
 
   public boolean isPersistentObjectStore() {

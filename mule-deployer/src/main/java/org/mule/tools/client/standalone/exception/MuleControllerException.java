@@ -6,7 +6,6 @@
  */
 package org.mule.tools.client.standalone.exception;
 
-
 public class MuleControllerException extends RuntimeException {
 
   private static final long serialVersionUID = -235062000492669536L;

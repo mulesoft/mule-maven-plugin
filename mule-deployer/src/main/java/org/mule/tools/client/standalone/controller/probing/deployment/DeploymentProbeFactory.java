@@ -9,7 +9,6 @@ package org.mule.tools.client.standalone.controller.probing.deployment;
 import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.client.core.exception.DeploymentException;
 
-
 public class DeploymentProbeFactory {
 
   private static final String MULE_DOMAIN_PACKAGING = "mule-domain";

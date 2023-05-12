@@ -16,5 +16,4 @@ public interface DeploymentVerificationStrategy {
   Predicate<Deployment> isDeployed();
 
   Consumer<Deployment> onTimeout();
-
 }

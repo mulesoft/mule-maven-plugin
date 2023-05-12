@@ -18,13 +18,12 @@ import org.mule.tools.verification.DeploymentVerificationStrategy;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-
 public class AgentDeploymentVerification implements DeploymentVerification {
 
   private static final String STARTED_STATUS = "STARTED";
 
   private final AgentClient client;
-  private DeploymentVerification verification;
+  private final DeploymentVerification verification;
 
   public AgentDeploymentVerification(AgentClient client) {
     this.client = client;

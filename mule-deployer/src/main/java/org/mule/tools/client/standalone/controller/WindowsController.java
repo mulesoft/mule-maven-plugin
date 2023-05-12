@@ -72,8 +72,7 @@ public class WindowsController extends AbstractOSController {
   public int status(String... args) {
     String muleResult = executeCmd("sc queryex \"mule\" ");
     String muleEEResult = executeCmd("sc queryex \"mule_ee\" ");
-    Boolean result = muleResult.contains("RUNNING") || muleEEResult.contains("RUNNING");
-    return result ? 0 : 1;
+    return muleResult.contains("RUNNING") || muleEEResult.contains("RUNNING") ? 0 : 1;
   }
 
   private String executeCmd(String cmd) {
@@ -82,9 +81,9 @@ public class WindowsController extends AbstractOSController {
     try {
       p = Runtime.getRuntime().exec(cmd);
       BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-      String line = "";
+      String line;
       while ((line = reader.readLine()) != null) {
-        output.append(line + "\n");
+        output.append(line).append("\n");
       }
     } catch (Exception e) {
       e.printStackTrace();

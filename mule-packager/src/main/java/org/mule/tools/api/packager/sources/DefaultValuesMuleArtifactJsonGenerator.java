@@ -8,11 +8,11 @@ package org.mule.tools.api.packager.sources;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static org.mule.maven.client.api.model.BundleScope.COMPILE;
+import static org.mule.maven.pom.parser.api.model.BundleScope.COMPILE;
 import static org.mule.runtime.internal.dsl.DslConstants.EE_NAMESPACE;
 import static org.mule.tools.api.packager.sources.MuleArtifactContentResolver.CLASS_PATH_SEPARATOR;
 
-import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptorBuilder;

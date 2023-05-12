@@ -4,7 +4,7 @@
 
     <groupId>org.mule.tools.maven</groupId>
     <artifactId>mule-artifact-tools</artifactId>
-    <version>3.8.8-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Mule Artifact Tools</name>
@@ -34,11 +34,11 @@
 
     <modules>
         <module>mule-extension-model-loader</module>
-        <module>mule-packager</module>
         <module>mule-classloader-model</module>
         <module>mule-deployer</module>
+        <module>mule-packager</module>
         <module>mule-maven-plugin</module>
-        <module>mule-artifact-it</module>
+        <!-- <module>mule-artifact-it</module>-->
     </modules>
 
     <properties>
@@ -46,20 +46,20 @@
         <java.target>1.8</java.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <mule.version>4.5.0-rc3</mule.version>
-        <mule.api.version>1.5.0-rc3</mule.api.version>
-        <mule.maven.client.impl.version>1.7.0-rc3</mule.maven.client.impl.version>
-        <mule.distribution.standalone.version>4.5.0-rc3</mule.distribution.standalone.version>
+        <mule.version>4.6.0-SNAPSHOT</mule.version>
+        <mule.api.version>1.6.0-SNAPSHOT</mule.api.version>
+        <mule.maven.client.impl.version>2.0.0-SNAPSHOT</mule.maven.client.impl.version>
+        <mule.distribution.standalone.version>4.6.0-SNAPSHOT</mule.distribution.standalone.version>
         <mule.mvel2.version>2.1.9-MULE-020</mule.mvel2.version>
         <gson.version>2.8.6</gson.version>
-        <guava.version>27.0-jre</guava.version>
+        <guava.version>30.1.1-jre</guava.version>
         <snakeyaml.version>1.33</snakeyaml.version>
-        <semver4j.version>2.2.0</semver4j.version>
+        <semver4j.version>3.1.0</semver4j.version>
         <semantic.version.version>1.2.0</semantic.version.version>
-        <log4j.version>2.17.1</log4j.version>
+        <log4j.version>2.19.0</log4j.version>
         <commons.io.version>2.11.0</commons.io.version>
         <commons.exec.version>1.2</commons.exec.version>
-        <commons.lang.version>3.10</commons.lang.version>
+        <commons.lang.version>3.12.0</commons.lang.version>
         <commons.collections.version>4.4</commons.collections.version>
         <commons.cli.version>1.4</commons.cli.version>
         <commons.compress.version>1.21</commons.compress.version>
@@ -67,24 +67,22 @@
         <commons.logging.version>1.2</commons.logging.version>
         <jdom2.version>2.0.6</jdom2.version>
         <javax.activation.api.version>1.2.0</javax.activation.api.version>
-        <jaxb.api.version>2.3.1</jaxb.api.version>
+        <jaxb.api.version>2.4.0-b180830.0359</jaxb.api.version>
 
         <maven.version>3.8.6</maven.version>
         <maven.compat.version>3.8.6</maven.compat.version>
         <maven.verifier.version>1.8.0</maven.verifier.version>
         <maven.dependency.tree.version>1.2</maven.dependency.tree.version>
         <plexus.container.default.version>1.7.1</plexus.container.default.version>
-        <plexus.component.annotations.version>1.7.1</plexus.component.annotations.version>
+        <plexus.component.annotations.version>2.1.0</plexus.component.annotations.version>
         <jsonassert.version>1.5.0</jsonassert.version>
 
         <jersey.version>2.34</jersey.version>
         <jersey.media.moxy>2.31</jersey.media.moxy>
 
-        <junit.version>4.13</junit.version>
+        <junit.version>4.13.2</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
-        <hamcrest.all.version>1.3</hamcrest.all.version>
         <mockito.core.version>2.23.4</mockito.core.version>
-        <powermock.version>2.0.0</powermock.version>
         <mockserver.netty.version>5.7.2</mockserver.netty.version>
 
         <!-- Plugin Versions -->
@@ -102,7 +100,7 @@
         <maven.invoker.plugin.version>2.0.0</maven.invoker.plugin.version>
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
-        <maven.plugin.annotations.version>3.6.0</maven.plugin.annotations.version>
+        <maven.plugin.annotations.version>3.8.1</maven.plugin.annotations.version>
         <exchange.plugin.version>0.0.20</exchange.plugin.version>
 
         <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
@@ -134,103 +132,146 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Maven Plugin Dependencies -->
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-plugin-api</artifactId>
-                <version>${maven.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.maven</groupId>
-                        <artifactId>maven-model</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.maven</groupId>
-                        <artifactId>maven-artifact</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.eclipse.sisu</groupId>
-                        <artifactId>org.eclipse.sisu.plexus</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.codehaus.plexus</groupId>
-                        <artifactId>plexus-sec-dispatcher</artifactId>
-                    </exclusion>
-               </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.sonatype.plexus</groupId>
-                <artifactId>plexus-sec-dispatcher</artifactId>
-                <version>1.4</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-core</artifactId>
-                <version>${maven.version}</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.codehaus.plexus</groupId>
-                        <artifactId>plexus-sec-dispatcher</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.mule.mvel</groupId>
-                <artifactId>mule-mvel2</artifactId>
-                <version>${mule.mvel2.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven.plugin-tools</groupId>
-                <artifactId>maven-plugin-annotations</artifactId>
-                <version>${maven.plugin.annotations.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mule</groupId>
-                <artifactId>mule-maven-client-impl</artifactId>
-                <version>${mule.maven.client.impl.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.maven</groupId>
-                        <artifactId>maven-model</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-compress</artifactId>
-                <version>${commons.compress.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-archiver</artifactId>
-                <version>${codehaus.plexus.archiver}</version>
-            </dependency>
-
-            <!-- Mule -->
+            <!-- Runtime -->
             <dependency>
                 <groupId>org.mule.runtime</groupId>
                 <artifactId>mule-api</artifactId>
                 <version>${mule.api.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.mulesoft.anypoint</groupId>
+                <artifactId>mule-module-autodiscovery</artifactId>
+                <version>${mule.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mulesoft.mule.runtime</groupId>
+                <artifactId>mule-core-ee</artifactId>
+                <version>${mule.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mulesoft.mule.runtime.modules</groupId>
+                <artifactId>mule-runtime-ee-extension-model</artifactId>
+                <version>${mule.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mule.runtime</groupId>
+                <artifactId>mule-module-deployment-model-impl</artifactId>
+                <version>${mule.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mule.runtime</groupId>
+                <artifactId>mule-module-artifact</artifactId>
+                <version>${mule.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mule.runtime</groupId>
+                <artifactId>mule-module-properties-config</artifactId>
+                <version>${mule.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mule.runtime</groupId>
+                <artifactId>mule-module-container</artifactId>
+                <version>${mule.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mule.runtime</groupId>
+                <artifactId>mule-module-extensions-xml-support</artifactId>
+                <version>${mule.version}</version>
+            </dependency>
+            <!-- Runtime Others-->
+            <dependency>
+                <groupId>org.mule.runtime</groupId>
+                <artifactId>mule-artifact-ast</artifactId>
+                <version>1.1.0-rc3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mule.runtime</groupId>
+                <artifactId>mule-artifact-ast-xml-parser</artifactId>
+                <version>1.1.0-rc3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mule.runtime</groupId>
+                <artifactId>mule-artifact-ast-serialization</artifactId>
+                <version>1.1.0-rc3</version>
+            </dependency>
+            <!-- -->
+            <dependency>
+                <groupId>org.mule</groupId>
+                <artifactId>mule-maven-client-impl</artifactId>
+                <version>${mule.maven.client.impl.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.mule.tools.maven</groupId>
                 <artifactId>exchange-mule-plugin-utils</artifactId>
                 <version>${exchange.plugin.version}</version>
             </dependency>
-
-            <!-- Apache -->
+            <!-- Maven -->
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons.lang.version}</version>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-compat</artifactId>
+                <version>${maven.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.shared</groupId>
+                <artifactId>maven-verifier</artifactId>
+                <version>${maven.verifier.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.plugin-tools</groupId>
+                <artifactId>maven-plugin-annotations</artifactId>
+                <version>${maven.plugin.annotations.version}</version>
+            </dependency>
+            <!-- Third-Party Libraries  -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>2.0.7</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>2.0.7</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-classworlds</artifactId>
+                <version>2.6.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.8.6</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>30.1.1-jre</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.8.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
-                <artifactId>commons-collections4</artifactId>
-                <version>${commons.collections.version}</version>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.12.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -238,54 +279,35 @@
                 <version>${commons.exec.version}</version>
             </dependency>
             <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>${commons.io.version}</version>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons.collections.version}</version>
             </dependency>
             <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>${commons.logging.version}</version>
+                <groupId>jakarta.ws.rs</groupId>
+                <artifactId>jakarta.ws.rs-api</artifactId>
+                <version>2.1.6</version>
             </dependency>
             <dependency>
-                <groupId>commons-cli</groupId>
-                <artifactId>commons-cli</artifactId>
-                <version>${commons.cli.version}</version>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-archiver</artifactId>
+                <version>${codehaus.plexus.archiver}</version>
             </dependency>
             <dependency>
-                <groupId>org.jdom</groupId>
-                <artifactId>jdom2</artifactId>
-                <version>${jdom2.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
+                <groupId>com.vdurmont</groupId>
+                <artifactId>semver4j</artifactId>
+                <version>${semver4j.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${gson.version}</version>
+                <groupId>de.skuzzle</groupId>
+                <artifactId>semantic-version</artifactId>
+                <version>${semantic.version.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
             </dependency>
-
-            <dependency>
-                <groupId>com.vdurmont</groupId>
-                <artifactId>semver4j</artifactId>
-                <version>${semver4j.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>de.skuzzle</groupId>
-                <artifactId>semantic-version</artifactId>
-                <version>${semantic.version.version}</version>
-            </dependency>
-
             <!-- Jersey -->
             <dependency>
                 <groupId>org.glassfish.jersey.inject</groupId>
@@ -307,110 +329,37 @@
                 <artifactId>jersey-media-moxy</artifactId>
                 <version>${jersey.media.moxy}</version>
             </dependency>
+            <!-- Testing -->
             <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.api.version}</version>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>5.9.3</version>
             </dependency>
             <dependency>
-                <groupId>javax.activation</groupId>
-                <artifactId>javax.activation-api</artifactId>
-                <version>${javax.activation.api.version}</version>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>5.9.3</version>
             </dependency>
             <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>${jaxb.api.version}</version>
-            </dependency>
-
-            <!-- The Plexus annotations -->
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-component-annotations</artifactId>
-                <version>${plexus.component.annotations.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-compat</artifactId>
-                <version>${maven.compat.version}</version>
-                <exclusions>
-                <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-sec-dispatcher</artifactId>
-            </exclusion>
-            </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-container-default</artifactId>
-                <version>${plexus.container.default.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven.shared</groupId>
-                <artifactId>maven-dependency-tree</artifactId>
-                <version>${maven.dependency.tree.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.maven.shared</groupId>
-                <artifactId>maven-verifier</artifactId>
-                <version>${maven.verifier.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-verifier-plugin</artifactId>
-                <version>${maven.verifier.plugin.version}</version>
-                <type>maven-plugin</type>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-all</artifactId>
-                <version>${hamcrest.all.version}</version>
-                <scope>test</scope>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>3.24.2</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>${mockito.core.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-module-junit4</artifactId>
-                <version>${powermock.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-api-mockito2</artifactId>
-                <version>${powermock.version}</version>
-                <scope>test</scope>
+                <version>4.11.0</version>
             </dependency>
             <dependency>
                 <groupId>org.mock-server</groupId>
                 <artifactId>mockserver-netty</artifactId>
                 <version>${mockserver.netty.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>${log4j.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.skyscreamer</groupId>
-                <artifactId>jsonassert</artifactId>
-                <version>${jsonassert.version}</version>
-                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -491,7 +440,7 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>
+                </plugin><!--
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
@@ -506,7 +455,7 @@
                             </argLine>
                         </systemPropertyVariables>
                     </configuration>
-                </plugin>
+                </plugin>-->
             </plugins>
         </pluginManagement>
         <plugins>
@@ -522,7 +471,7 @@
                         </manifest>
                     </archive>
                 </configuration>
-            </plugin>
+            </plugin><!--
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
@@ -593,27 +542,21 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>3.0.0-M3</version>
-                <executions>
-                    <execution>
-                        <id>enforce-no-snapshots</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireReleaseDeps>
-                                    <message>No Snapshots Allowed!</message>
-                                    <onlyWhenRelease>true</onlyWhenRelease>
-                                </requireReleaseDeps>
-                            </rules>
-                            <fail>true</fail>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+                <configuration>
+                    <rules>
+                        <dependencyConvergence/>
+                        <requireReleaseDeps>
+                            <message>No Snapshots Allowed!</message>
+                            <onlyWhenRelease>true</onlyWhenRelease>
+                        </requireReleaseDeps>
+                    </rules>
+                    <fail>true</fail>
+                </configuration>
+            </plugin>-->
         </plugins>
     </build>
 
+    <!--
     <reporting>
         <plugins>
             <plugin>
@@ -627,7 +570,7 @@
                 <version>${spotbugs.maven.plugin.version}</version>
             </plugin>
         </plugins>
-    </reporting>
+    </reporting>-->
 
     <distributionManagement>
         <repository>

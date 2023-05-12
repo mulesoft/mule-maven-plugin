@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.DosFileAttributeView;
+import java.util.Objects;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -44,7 +45,7 @@ public class FileUtils {
     if (!destination.exists()) {
       destination.mkdir();
     }
-    for (String child : origin.list()) {
+    for (String child : Objects.requireNonNull(origin.list())) {
       copyDirectory(new File(origin, child), new File(destination, child), copyOption);
     }
   }

@@ -18,7 +18,7 @@ import org.mule.tools.utils.DeployerLog;
 
 public class Cloudhub2ArtifactDeployer extends RuntimeFabricArtifactDeployer {
 
-  private String CH2_DEPLOY_ERROR_MESSAGE = "The name of the application '${name}' is already used in the target";
+  private static final String CH2_DEPLOY_ERROR_MESSAGE = "The name of the application '${name}' is already used in the target";
 
   public Cloudhub2ArtifactDeployer(Deployment deployment, DeployerLog log) {
     super(deployment, new Cloudhub2RuntimeFabricClient((RuntimeFabricDeployment) deployment, log), log);

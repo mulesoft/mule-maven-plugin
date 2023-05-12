@@ -15,7 +15,6 @@ import org.mule.maven.client.api.MavenClient;
 import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.container.api.ModuleRepository;
 import org.mule.runtime.deployment.model.api.builder.RegionPluginClassLoadersFactory;
-import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginClassLoaderFactory;
 import org.mule.runtime.deployment.model.api.plugin.resolver.PluginDependenciesResolver;
 import org.mule.runtime.deployment.model.internal.DefaultRegionPluginClassLoadersFactory;
 import org.mule.runtime.module.artifact.api.classloader.ArtifactClassLoader;

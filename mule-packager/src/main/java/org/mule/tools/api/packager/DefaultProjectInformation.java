@@ -9,7 +9,7 @@ package org.mule.tools.api.packager;
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.tools.api.util.Project;
 import org.mule.tools.api.validation.exchange.ExchangeRepositoryMetadata;
 import org.mule.tools.model.Deployment;

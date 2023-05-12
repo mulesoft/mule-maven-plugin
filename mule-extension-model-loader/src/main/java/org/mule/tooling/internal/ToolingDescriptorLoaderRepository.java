@@ -14,10 +14,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ServiceLoader;
 
 import org.mule.maven.client.api.MavenClient;
 import org.mule.runtime.core.api.config.bootstrap.ArtifactType;
-import org.mule.runtime.core.api.registry.SpiServiceRegistry;
 import org.mule.runtime.module.artifact.api.descriptor.BundleDescriptorLoader;
 import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderConfigurationLoader;
 import org.mule.runtime.module.artifact.api.descriptor.DescriptorLoader;
@@ -27,17 +27,29 @@ import org.mule.runtime.module.deployment.impl.internal.application.DeployableMa
 import org.mule.runtime.module.deployment.impl.internal.plugin.PluginMavenClassLoaderConfigurationLoader;
 import org.mule.runtime.module.service.internal.artifact.LibFolderClassLoaderConfigurationLoader;
 
+import static com.google.common.collect.ImmutableList.copyOf;
+import static java.util.Collections.emptyList;
+
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ToolingDescriptorLoaderRepository implements DescriptorLoaderRepository {
 
-  private Map<Class, List<DescriptorLoader>> descriptorLoaders = Maps.newHashMap();
+  public static synchronized <T> Collection<T> doLookupProviders(Class<T> providerClass, ClassLoader classLoader) {
+    Iterator<T> iterator = ServiceLoader.load(providerClass, classLoader).iterator();
+    if (iterator.hasNext()) {
+      return copyOf(iterator);
+    } else {
+      return emptyList();
+    }
+  }
+
+  private final Map<Class, List<DescriptorLoader>> descriptorLoaders = Maps.newHashMap();
 
   public ToolingDescriptorLoaderRepository(MavenClient mavenClient) {
     ToolingClassLoaderConfigurationLoader toolingClassLoaderConfigurationLoader =
         new ToolingClassLoaderConfigurationLoader(Lists.newArrayList(new ClassLoaderConfigurationLoader[] {
             new DeployableMavenClassLoaderConfigurationLoader(Optional.of(mavenClient)),
             new PluginMavenClassLoaderConfigurationLoader(Optional.of(mavenClient))}));
-    this.descriptorLoaders.put(BundleDescriptorLoader.class,
-                               this.findBundleDescriptorLoaders(BundleDescriptorLoader.class, new SpiServiceRegistry()));
+    this.descriptorLoaders.put(BundleDescriptorLoader.class, this.findBundleDescriptorLoaders());
     this.descriptorLoaders.put(ClassLoaderConfigurationLoader.class,
                                Lists.newArrayList(new DescriptorLoader[] {toolingClassLoaderConfigurationLoader}));
   }
@@ -45,25 +57,13 @@ public class ToolingDescriptorLoaderRepository implements DescriptorLoaderReposi
   public ToolingDescriptorLoaderRepository() {
     ToolingClassLoaderConfigurationLoader toolingClassLoaderConfigurationLoader = new ToolingClassLoaderConfigurationLoader(Lists
         .newArrayList(new ClassLoaderConfigurationLoader[] {new LibFolderClassLoaderConfigurationLoader()}));
-    this.descriptorLoaders.put(BundleDescriptorLoader.class,
-                               this.findBundleDescriptorLoaders(BundleDescriptorLoader.class, new SpiServiceRegistry()));
+    this.descriptorLoaders.put(BundleDescriptorLoader.class, this.findBundleDescriptorLoaders());
     this.descriptorLoaders.put(ClassLoaderConfigurationLoader.class,
                                Lists.newArrayList(new DescriptorLoader[] {toolingClassLoaderConfigurationLoader}));
   }
 
-  private List<DescriptorLoader> findBundleDescriptorLoaders(Class<? extends DescriptorLoader> descriptorLoaderClass,
-                                                             SpiServiceRegistry serviceRegistry) {
-    List<DescriptorLoader> descriptorLoaders = new ArrayList();
-    Collection<? extends DescriptorLoader> providers =
-        serviceRegistry.lookupProviders(descriptorLoaderClass, this.getClass().getClassLoader());
-    Iterator var5 = providers.iterator();
-
-    while (var5.hasNext()) {
-      DescriptorLoader loader = (DescriptorLoader) var5.next();
-      descriptorLoaders.add(loader);
-    }
-
-    return descriptorLoaders;
+  private List<DescriptorLoader> findBundleDescriptorLoaders() {
+    return new ArrayList<>(doLookupProviders(BundleDescriptorLoader.class, this.getClass().getClassLoader()));
   }
 
   public <T extends DescriptorLoader> T get(String id, ArtifactType artifactType, Class<T> loaderClass)

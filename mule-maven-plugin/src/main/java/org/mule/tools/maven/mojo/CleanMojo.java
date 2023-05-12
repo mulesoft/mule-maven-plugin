@@ -6,10 +6,6 @@
  */
 package org.mule.tools.maven.mojo;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;

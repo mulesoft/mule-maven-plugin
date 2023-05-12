@@ -11,8 +11,8 @@ import javax.ws.rs.core.Response;
 
 public class ClientException extends RuntimeException {
 
-  private int statusCode;
-  private String reasonPhrase;
+  private final int statusCode;
+  private final String reasonPhrase;
 
   public ClientException(String message, int statusCode, String reasonPhrase) {
     super(String.format("%d %s: %s", statusCode, reasonPhrase, message));

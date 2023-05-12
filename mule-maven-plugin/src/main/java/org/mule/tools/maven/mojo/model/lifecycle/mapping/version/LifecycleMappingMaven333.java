@@ -9,6 +9,7 @@ package org.mule.tools.maven.mojo.model.lifecycle.mapping.version;
 import org.apache.maven.lifecycle.mapping.Lifecycle;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.project.ProjectLifecycleMapping;
 
+@SuppressWarnings("unchecked")
 public class LifecycleMappingMaven333 extends LifecycleMappingMavenVersionless {
 
   private final ProjectLifecycleMapping mapping;

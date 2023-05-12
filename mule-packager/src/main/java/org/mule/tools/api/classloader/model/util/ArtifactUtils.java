@@ -10,7 +10,8 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
+
+import static org.mule.maven.client.internal.MuleMavenClient.MULE_PLUGIN_CLASSIFIER;
 import static org.mule.runtime.api.util.Preconditions.checkState;
 import static org.mule.tools.api.classloader.Constants.ARTIFACT_ID;
 import static org.mule.tools.api.classloader.Constants.GROUP_ID;
@@ -21,15 +22,14 @@ import static org.mule.tools.api.classloader.Constants.SHARED_LIBRARY_FIELD;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
 
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.ApplicationGAVModel;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.util.FileJarExplorer;
 import org.mule.tools.api.util.JarInfo;
 
-import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;

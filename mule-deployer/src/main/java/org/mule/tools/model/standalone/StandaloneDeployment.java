@@ -151,5 +151,4 @@ public class StandaloneDeployment extends MuleRuntimeDeployment {
   public void setArtifactItems(List<ArtifactCoordinates> artifactItems) {
     this.artifactItems = artifactItems;
   }
-
 }

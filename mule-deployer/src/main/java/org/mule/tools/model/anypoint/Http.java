@@ -13,15 +13,11 @@ public class Http {
   @Parameter
   protected Inbound inbound = new Inbound();
 
-
   public Inbound getInbound() {
     return inbound;
   }
 
-
   public void setInbound(Inbound inbound) {
     this.inbound = inbound;
   }
-
-
 }

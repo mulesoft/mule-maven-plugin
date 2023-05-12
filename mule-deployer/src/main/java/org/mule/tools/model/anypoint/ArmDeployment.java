@@ -11,7 +11,6 @@ import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.model.TargetType;
 
 import java.util.Optional;
-import java.util.Map;
 
 import static java.lang.System.getProperty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -89,7 +88,7 @@ public class ArmDeployment extends AnypointDeployment {
 
     String isArmInsecure = getProperty("arm.insecure");
     if (isNotBlank(isArmInsecure)) {
-      setArmInsecure(Boolean.valueOf(isArmInsecure));
+      setArmInsecure(Boolean.parseBoolean(isArmInsecure));
     }
     if (!isArmInsecure().isPresent()) {
       setArmInsecure(false);

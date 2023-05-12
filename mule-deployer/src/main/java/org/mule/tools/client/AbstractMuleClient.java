@@ -105,11 +105,9 @@ public abstract class AbstractMuleClient extends AbstractClient {
   public UserInfo getMe() {
     String userInfoJsonString = get(baseUri, ME, String.class);
     if (userInfoJsonString.equalsIgnoreCase(UNAUTHORIZED)) {
-      StringBuilder message = new StringBuilder();
-      message.append("Unauthorized Access. Please verify that authToken is valid.");
-      throw new RuntimeException(message.toString());
+      throw new RuntimeException("Unauthorized Access. Please verify that authToken is valid.");
     }
-    JsonObject userInfoJson = (JsonObject) new JsonParser().parse(userInfoJsonString);
+    JsonObject userInfoJson = (JsonObject) JsonParser.parseString(userInfoJsonString);
     Organization organization = buildOrganization(userInfoJson);
     User user = new User();
     user.organization = organization;
@@ -233,8 +231,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
       message.append("Please check whether you have the access rights to this business group.");
       if (isEmpty(businessGroupName)) {
         message
-            .append(
-                    " Please set the businessGroup in the plugin configuration in case your user have access only within a business unit.");
+            .append("Please set the businessGroup in the plugin configuration in case your user have access only within a business unit.");
       }
       throw new RuntimeException(message.toString());
     }
@@ -267,30 +264,30 @@ public abstract class AbstractMuleClient extends AbstractClient {
 
     ArrayList<String> groups = new ArrayList<>();
 
-    String group = "";
+    StringBuilder group = new StringBuilder();
     int i = 0;
     for (; i < businessGroupName.length() - 1; i++) {
       if (businessGroupName.charAt(i) == '\\') {
         // Double backslash maps to business group with one backslash
         if (businessGroupName.charAt(i + 1) == '\\') {
           // For two backslashes we continue with the next character
-          group = group + "\\";
+          group.append("\\");
           i++;
         } else {
           // Single backslash starts a new business group
-          groups.add(group);
-          group = "";
+          groups.add(group.toString());
+          group = new StringBuilder();
         }
       } else {
         // Non backslash characters are mapped to the group
-        group = group + businessGroupName.charAt(i);
+        group.append(businessGroupName.charAt(i));
       }
     }
     // Do not end with backslash
     if (i < businessGroupName.length()) {
-      group = group + businessGroupName.charAt(businessGroupName.length() - 1);
+      group.append(businessGroupName.charAt(businessGroupName.length() - 1));
     }
-    groups.add(group);
+    groups.add(group.toString());
     return groups.toArray(new String[0]);
   }
 
@@ -308,9 +305,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
     if (groups.length == 0) {
       currentOrgId = organizationHierarchy.id;
     } else {
-      for (int group = 0; group < groups.length; group++) {
-        String groupName = groups[group];
-
+      for (String groupName : groups) {
         for (Organization o : subOrganizations) {
           if (o.name.equals(groupName)) {
             currentOrgId = o.id;

@@ -9,11 +9,6 @@ package org.mule.tools.model.anypoint;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.client.core.exception.DeploymentException;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 public class RuntimeFabricOnPremiseDeployment extends RuntimeFabricDeployment {
 
   @Parameter

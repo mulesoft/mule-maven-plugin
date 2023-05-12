@@ -59,5 +59,4 @@ public abstract class MuleRuntimeDeployment extends Deployment {
       throw new DeploymentException("Invalid deployment configuration, missing mule home value. Please set it either through the plugin configuration or -Dmule.home when building the current project");
     }
   }
-
 }

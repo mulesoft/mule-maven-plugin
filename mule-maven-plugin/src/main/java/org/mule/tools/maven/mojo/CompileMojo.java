@@ -7,9 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package org.mule.tools.maven.mojo;
-
 
 import java.io.IOException;
 
@@ -20,7 +18,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
-
 
 /**
  * @author Mulesoft Inc.

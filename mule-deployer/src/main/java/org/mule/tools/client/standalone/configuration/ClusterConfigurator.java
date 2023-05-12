@@ -9,7 +9,6 @@
  */
 package org.mule.tools.client.standalone.configuration;
 
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;

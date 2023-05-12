@@ -43,7 +43,6 @@ public class EnvironmentSupportedVersions {
     return environmentSupportedVersions.stream().anyMatch(v -> isSameVersion(v, muleVersion));
   }
 
-
   @Override
   public boolean equals(Object other) {
     if (this == other) {

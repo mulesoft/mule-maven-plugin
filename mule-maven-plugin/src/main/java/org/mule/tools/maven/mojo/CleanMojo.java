@@ -7,12 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package org.mule.tools.maven.mojo;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;

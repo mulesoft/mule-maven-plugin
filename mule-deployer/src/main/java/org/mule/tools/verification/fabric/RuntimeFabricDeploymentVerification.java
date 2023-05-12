@@ -29,7 +29,7 @@ import java.util.function.Predicate;
 public class RuntimeFabricDeploymentVerification implements DeploymentVerification {
 
   private final RuntimeFabricClient client;
-  private DefaultDeploymentVerification verification;
+  private final DefaultDeploymentVerification verification;
 
   private static final String FAILED_STATUS = "FAILED";
   private static final String APPLIED_STATUS = "APPLIED";

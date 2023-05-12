@@ -21,7 +21,6 @@ import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.arm.ArmDeploymentVerification;
 
-
 /**
  * Deploys mule artifacts to ARM, using the {@link ArmClient}.
  */
@@ -29,7 +28,7 @@ public class ArmArtifactDeployer implements ArtifactDeployer {
 
   private static final Long DEFAULT_ARM_DEPLOYMENT_TIMEOUT = 1200000L;
 
-  private ArmClient client;
+  private final ArmClient client;
   private final DeployerLog log;
   private Integer applicationId;
   private final ArmDeployment deployment;

@@ -1,9 +1,9 @@
 package org.mule.tooling.internal;
 
-import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.discoverRuntimeExtensionModels;
+import static org.mule.runtime.core.api.extension.provider.RuntimeExtensionModelProvider.discoverRuntimeExtensionModels;
 
 import org.mule.maven.client.api.MavenClient;
-import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.container.api.ModuleRepository;
@@ -13,17 +13,17 @@ import org.mule.runtime.container.internal.ContainerClassLoaderFactory;
 import org.mule.runtime.container.internal.DefaultModuleRepository;
 import org.mule.runtime.container.internal.JreModuleDiscoverer;
 import org.mule.runtime.container.internal.ModuleDiscoverer;
-import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
+import org.mule.runtime.core.api.extension.provider.MuleExtensionModelProvider;
 import org.mule.runtime.extension.api.extension.XmlSdk1ExtensionModelProvider;
 import org.mule.runtime.module.artifact.api.classloader.ArtifactClassLoader;
 import org.mule.tooling.api.ExtensionModelLoader;
 
-import com.mulesoft.mule.runtime.bti.api.extension.BtiExtensionModelProvider;
-import com.mulesoft.mule.runtime.core.api.extension.MuleEeExtensionModelProvider;
-import com.mulesoft.mule.runtime.http.policy.api.extension.HttpPolicyEeExtensionModelProvider;
-import com.mulesoft.mule.runtime.module.batch.api.extension.BatchExtensionModelProvider;
-import com.mulesoft.mule.runtime.module.serialization.kryo.api.extension.KryoSerializerEeExtensionModelProvider;
-import com.mulesoft.mule.runtime.tracking.api.extension.TrackingEeExtensionModelProvider;
+import com.mulesoft.mule.runtime.bti.api.extension.provider.BtiExtensionModelProvider;
+import com.mulesoft.mule.runtime.core.api.extension.provider.MuleEeExtensionModelProvider;
+import com.mulesoft.mule.runtime.http.policy.api.extension.provider.HttpPolicyEeExtensionModelProvider;
+import com.mulesoft.mule.runtime.module.batch.api.extension.provider.BatchExtensionModelProvider;
+import com.mulesoft.mule.runtime.module.serialization.kryo.api.extension.provider.KryoSerializerEeExtensionModelProvider;
+import com.mulesoft.mule.runtime.tracking.api.extension.provider.TrackingEeExtensionModelProvider;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -34,22 +34,22 @@ import java.util.Set;
 
 public class DefaultExtensionModelLoader implements ExtensionModelLoader {
 
-  private DefaultExtensionModelService service;
-  private MuleVersion muleVersion;
+  private final DefaultExtensionModelService service;
+  private final MuleVersion muleVersion;
 
   public DefaultExtensionModelLoader(MavenClient mavenClient, Path workingDir, ClassLoader parentClassloader,
                                      String runtimeVersion) {
 
     this.muleVersion = new MuleVersion(runtimeVersion);
 
-    List<ModuleDiscoverer> result = new ArrayList();
+    List<ModuleDiscoverer> result = new ArrayList<>();
     result.add(new JreModuleDiscoverer());
     result.add(new ClasspathModuleDiscoverer(parentClassloader, workingDir.toFile()));
     final ModuleRepository moduleRepository =
         new DefaultModuleRepository(new CompositeModuleDiscoverer(result.toArray(new ModuleDiscoverer[0])));
 
     ArtifactClassLoader containerClassLoaderFactory =
-        (new ContainerClassLoaderFactory(moduleRepository)).createContainerClassLoader(parentClassloader);
+        (new ContainerClassLoaderFactory(moduleRepository)).createContainerClassLoader(parentClassloader).getContainerClassLoader();
     MuleArtifactResourcesRegistry resourcesRegistry =
         new MuleArtifactResourcesRegistry(runtimeVersion, Optional.ofNullable(muleVersion), mavenClient,
                                           moduleRepository, containerClassLoaderFactory, workingDir.toFile());

@@ -10,12 +10,10 @@
 package org.mule.tools.api.classloader.model.resolver;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.mule.maven.client.internal.AetherMavenClient.MULE_PLUGIN_CLASSIFIER;
+import static org.mule.maven.client.internal.MuleMavenClient.MULE_PLUGIN_CLASSIFIER;
 import static org.mule.tools.api.validation.VersionUtils.getMajor;
 
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.maven.client.api.MavenClient;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -25,11 +23,13 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 
 public class MulePluginClassloaderModelResolver extends ClassloaderModelResolver {
 
-  public MulePluginClassloaderModelResolver(AetherMavenClient muleMavenPluginClient) {
-    super(muleMavenPluginClient, MULE_PLUGIN_CLASSIFIER);
+  public MulePluginClassloaderModelResolver(MavenClient mavenClient) {
+    super(mavenClient, MULE_PLUGIN_CLASSIFIER);
   }
 
   @Override

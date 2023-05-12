@@ -9,8 +9,8 @@
  */
 package org.mule.tools.api.classloader.model.resolver;
 
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.maven.client.api.MavenClient;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.util.FileJarExplorer;
@@ -31,15 +31,14 @@ import static org.mule.tools.api.classloader.model.util.ArtifactUtils.updatePack
 
 public abstract class ClassloaderModelResolver {
 
-  protected final AetherMavenClient muleMavenPluginClient;
+  protected final MavenClient mavenClient;
   private final String classifier;
   protected Map<BundleDependency, List<BundleDependency>> dependenciesMap;
 
   private JarExplorer jarExplorer = new FileJarExplorer();
 
-  public ClassloaderModelResolver(AetherMavenClient muleMavenPluginClient,
-                                  String classifier) {
-    this.muleMavenPluginClient = muleMavenPluginClient;
+  public ClassloaderModelResolver(MavenClient mavenClient, String classifier) {
+    this.mavenClient = mavenClient;
     this.classifier = classifier;
     dependenciesMap = new HashMap<>();
   }

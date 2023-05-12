@@ -12,14 +12,16 @@ package org.mule.tools.api.validation.project;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.internal.AetherMavenClient;
+
+import org.mule.maven.client.api.MavenClient;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,12 +36,12 @@ import org.apache.commons.lang3.StringUtils;
 public class DomainBundleProjectValidator extends AbstractProjectValidator {
 
   private static final int DOMAIN_BUNDLE_VALID_NUMBER_OF_DOMAINS = 1;
-  private final AetherMavenClient muleMavenPluginClient;
+  private final MavenClient mavenClient;
 
   public DomainBundleProjectValidator(ProjectInformation defaultProjectInformation,
-                                      AetherMavenClient aetherMavenClient) {
+                                      MavenClient mavenClient) {
     super(defaultProjectInformation, false);
-    this.muleMavenPluginClient = aetherMavenClient;
+    this.mavenClient = mavenClient;
   }
 
   /**
@@ -116,9 +118,9 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
   }
 
   protected List<BundleDependency> resolveApplicationDependencies(ArtifactCoordinates applicationCoordinates) {
-    return muleMavenPluginClient.resolveBundleDescriptorDependencies(false, true,
-                                                                     ArtifactUtils
-                                                                         .toBundleDescriptor(applicationCoordinates));
+    return mavenClient.resolveBundleDescriptorDependencies(false, true,
+                                                           ArtifactUtils
+                                                               .toBundleDescriptor(applicationCoordinates));
   }
 
   /**
@@ -154,7 +156,7 @@ public class DomainBundleProjectValidator extends AbstractProjectValidator {
         message += "However, the project has no reference to domains in its dependencies.";
       } else {
         message += "However, the project has reference to the following domains: "
-            + domains.stream().collect(Collectors.toList());
+            + new ArrayList<>(domains);
       }
       throw new ValidationException(message);
     }

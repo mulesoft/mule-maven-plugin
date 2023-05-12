@@ -10,8 +10,6 @@
 package org.mule.tools.validation.arm;
 
 import org.mule.tools.client.arm.ArmClient;
-import org.mule.tools.client.arm.model.Server;
-import org.mule.tools.client.arm.model.Servers;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.model.TargetType;
 import org.mule.tools.model.Deployment;

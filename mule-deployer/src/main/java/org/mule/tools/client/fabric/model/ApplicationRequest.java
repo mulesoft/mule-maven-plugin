@@ -10,10 +10,8 @@
 package org.mule.tools.client.fabric.model;
 
 import java.util.List;
-import java.util.Map;
 
 import org.mule.tools.model.anypoint.Integration;
-import org.mule.tools.model.anypoint.Service;
 
 public class ApplicationRequest {
 

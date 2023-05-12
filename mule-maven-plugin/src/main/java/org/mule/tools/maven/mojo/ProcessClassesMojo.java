@@ -39,7 +39,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
-
 /**
  * Post process the generated files from compilation, which in this case will be the mule-artifact.json from the compiled java
  * classes plus any other resource already copied to the output directory.
@@ -125,7 +124,7 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
         new MuleArtifactContentResolver(new ProjectStructure(projectBaseFolder.toPath(), false),
                                         getProjectInformation().getEffectivePom(),
                                         getProjectInformation().getProject().getBundleDependencies());
-    AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), runtimeVersion.toString(),
+    AstGenerator astGenerator = new AstGenerator(getMavenClient(), runtimeVersion.toString(),
                                                  project.getArtifacts(), Paths.get(project.getBuild().getDirectory()),
                                                  descriptor.getClassRealm(), project.getDependencies(),
                                                  contentResolver.isApplication());

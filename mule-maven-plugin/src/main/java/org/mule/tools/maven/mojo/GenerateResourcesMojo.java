@@ -7,7 +7,6 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package org.mule.tools.maven.mojo;
 
 import org.apache.maven.plugin.MojoFailureException;
@@ -36,7 +35,7 @@ public class GenerateResourcesMojo extends AbstractMuleMojo {
   }
 
   public ResourcesContentGenerator getResourcesContentGenerator() {
-    return new DomainBundleProjectResourcesContentGenerator(getAetherMavenClient(),
+    return new DomainBundleProjectResourcesContentGenerator(getMavenClient(),
                                                             toArtifactCoordinates(project.getDependencies()));
   }
 

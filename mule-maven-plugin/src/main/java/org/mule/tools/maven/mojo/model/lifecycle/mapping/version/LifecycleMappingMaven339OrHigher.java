@@ -7,13 +7,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package org.mule.tools.maven.mojo.model.lifecycle.mapping.version;
 
 import org.apache.maven.lifecycle.mapping.Lifecycle;
 import org.apache.maven.lifecycle.mapping.LifecyclePhase;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.project.ProjectLifecycleMapping;
 
+@SuppressWarnings("unchecked")
 public class LifecycleMappingMaven339OrHigher extends LifecycleMappingMavenVersionless {
 
   private final ProjectLifecycleMapping mapping;

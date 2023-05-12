@@ -38,5 +38,4 @@ public class Resources {
   public void setMemory(Resource memory) {
     this.memory = memory;
   }
-
 }

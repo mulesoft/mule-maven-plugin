@@ -18,7 +18,6 @@ public class Resource {
   @Parameter
   protected String limit;
 
-
   public Resource() {
     super();
   }
@@ -38,5 +37,4 @@ public class Resource {
   public void setLimit(String limit) {
     this.limit = limit;
   }
-
 }

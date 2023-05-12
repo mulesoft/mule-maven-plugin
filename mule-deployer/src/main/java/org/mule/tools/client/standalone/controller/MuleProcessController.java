@@ -17,7 +17,7 @@ public class MuleProcessController {
 
   public static final String MULE_PROCESS_CONTROLLER_TIMEOUT_PROPERTY = "mule.process.controller.timeout";
   public static final int DEFAULT_TIMEOUT = 60000;
-  private int controllerTimeout = Integer.getInteger(MULE_PROCESS_CONTROLLER_TIMEOUT_PROPERTY, DEFAULT_TIMEOUT);
+  private final int controllerTimeout = Integer.getInteger(MULE_PROCESS_CONTROLLER_TIMEOUT_PROPERTY, DEFAULT_TIMEOUT);
 
   private final Controller controller;
 

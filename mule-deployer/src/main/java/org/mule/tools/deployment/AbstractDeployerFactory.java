@@ -24,7 +24,6 @@ import org.mule.tools.deployment.arm.ArmDomainDeployer;
 import org.mule.tools.deployment.cloudhub.CloudHubApplicationDeployer;
 import org.mule.tools.deployment.cloudhub.CloudHubDomainDeployer;
 import org.mule.tools.deployment.cloudhub2.Cloudhub2ApplicationDeployer;
-import org.mule.tools.deployment.cloudhub2.Cloudhub2ArtifactDeployer;
 import org.mule.tools.deployment.cloudhub2.Cloudhub2DomainDeployer;
 import org.mule.tools.deployment.standalone.StandaloneApplicationDeployer;
 import org.mule.tools.deployment.standalone.StandaloneDomainDeployer;

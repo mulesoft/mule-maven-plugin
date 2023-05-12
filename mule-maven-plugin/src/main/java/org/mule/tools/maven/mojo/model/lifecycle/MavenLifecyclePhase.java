@@ -7,7 +7,6 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package org.mule.tools.maven.mojo.model.lifecycle;
 
 public enum MavenLifecyclePhase {
@@ -72,7 +71,7 @@ public enum MavenLifecyclePhase {
 
   private final String id;
 
-  private MavenLifecyclePhase(String id) {
+  MavenLifecyclePhase(String id) {
     this.id = id;
   }
 

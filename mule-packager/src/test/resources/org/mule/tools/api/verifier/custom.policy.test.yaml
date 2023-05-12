@@ -1,0 +1,25 @@
+id: http-caching
+name: HTTP Caching
+supportedPoliciesVersions: '>=v1'
+description: Provides caching service for HTTP requests.
+category: Quality of service
+type: system
+resourceLevelSupported: true
+standalone: true
+requiredCharacteristics: []
+providedCharacteristics:
+  - HTTP Caching
+configuration:
+  - propertyName: httpCachingKey
+    name: HTTP Caching Key
+    description: |
+      DataWeave Expression for extracting a key from the request.
+      For reference: https://docs.mulesoft.com/mule4-user-guide/v/4.1/dataweave-variables-context and https://docs.mulesoft.com/mule4-user-guide/v/4.1/about-mule-message
+    type: expression
+    defaultValue: "#[attributes.requestPath]"
+    optional: false
+    type: expression
+    defaultValue: "#[attributes.statusCode < 300]"
+    optional: true
+    sensitive: false
+    allowMultiple: false

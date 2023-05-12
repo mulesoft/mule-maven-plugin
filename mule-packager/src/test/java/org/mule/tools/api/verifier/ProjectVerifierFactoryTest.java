@@ -9,20 +9,28 @@
  */
 package org.mule.tools.api.verifier;
 
+import static org.mule.tools.api.packager.packaging.PackagingType.MULE_POLICY;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.tools.api.packager.packaging.PackagingType.MULE_POLICY;
 
+import org.mule.tools.api.exception.ValidationException;
+import org.mule.tools.api.verifier.policy.PolicyYamlVerifier;
 import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.verifier.policy.MulePolicyVerifier;
 
+import java.net.URL;
+import java.net.URISyntaxException;
+
+import io.qameta.allure.Issue;
+import io.qameta.allure.Description;
 import org.junit.Test;
+import org.junit.Test.None;
 
 public class ProjectVerifierFactoryTest {
-
 
   @Test
   public void createPolicyPreparePackagerTest() {
@@ -42,5 +50,14 @@ public class ProjectVerifierFactoryTest {
                    ProjectVerifyFactory.create(defaultProjectInformation), instanceOf(MuleProjectVerifier.class));
       }
     }
+  }
+
+  @Test
+  @Issue("W-12354025")
+  @Description("We had to change PolicyYamlVerifier.validate() as in snakeyaml 2.0 the constructor of Yaml class has changed. This test verifies that we can correctly validate the yaml after the change and that it is able to read fields from the Yaml file")
+  public void verifyValidation() throws ValidationException {
+    PolicyYamlVerifier policyYamlVerifier =
+        new PolicyYamlVerifier(this.getClass().getResource("/org/mule/tools/api/verifier").getPath(), "custom.policy.test.yaml");
+    policyYamlVerifier.validate();
   }
 }

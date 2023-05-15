@@ -13,6 +13,7 @@ package org.mule.tools.maven.mojo;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
 
+import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.validation.ValidationResultItem;
 import org.mule.tooling.api.AstGenerator;
@@ -49,7 +50,7 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
 
   @Component
   private PluginDescriptor descriptor;
-  private static final String RUNTIME_AST_VERSION = "4.4.0";
+  private static final MuleVersion MIN_RUNTIME_AST_VERSION = new MuleVersion("4.4.0");
   private static final String MULE_POLICY = "mule-policy";
   private static final String MULE_DOMAIN = "mule-domain";
   private static final String SKIP_AST = "skipAST";
@@ -81,7 +82,7 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
     }
   }
 
-  private void processAst() throws IOException, ConfigurationException {
+  private void processAst() throws IOException, ConfigurationException, MojoExecutionException {
     ArtifactAst artifact;
     try {
       artifact = getArtifactAst();
@@ -102,14 +103,18 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
     return "MULE_MAVEN_PLUGIN_PROCESS_CLASSES_PREVIOUS_RUN_PLACEHOLDER";
   }
 
-  public ArtifactAst getArtifactAst() throws IOException, ConfigurationException, DynamicStructureException {
+  public ArtifactAst getArtifactAst()
+      throws IOException, ConfigurationException, DynamicStructureException, MojoExecutionException {
     descriptor.getClassRealm()
         .addURL(project.getBasedir().toPath().resolve("src").resolve("main").resolve("resources").toUri().toURL());
+    MuleVersion appMinRuntimeVersion = new MuleVersion(this.getMuleApplicationModelLoader().getRuntimeVersion());
+    MuleVersion runtimeVersion =
+        appMinRuntimeVersion.newerThan(MIN_RUNTIME_AST_VERSION) ? appMinRuntimeVersion : MIN_RUNTIME_AST_VERSION;
     MuleArtifactContentResolver contentResolver =
         new MuleArtifactContentResolver(new ProjectStructure(projectBaseFolder.toPath(), false),
                                         getProjectInformation().getEffectivePom(),
                                         getProjectInformation().getProject().getBundleDependencies());
-    AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), RUNTIME_AST_VERSION,
+    AstGenerator astGenerator = new AstGenerator(getAetherMavenClient(), runtimeVersion.toString(),
                                                  project.getArtifacts(), Paths.get(project.getBuild().getDirectory()),
                                                  descriptor.getClassRealm(), project.getDependencies(),
                                                  contentResolver.isApplication());

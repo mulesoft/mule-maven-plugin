@@ -4,29 +4,15 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.mule.maven.client.api.MavenClient;
-import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.maven.client.api.model.MavenConfiguration;
-import org.mule.maven.client.api.model.RemoteRepository;
-import org.mule.maven.client.internal.AetherMavenClient;
-import org.mule.runtime.api.meta.model.ExtensionModel;
-import org.mule.runtime.api.util.Pair;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.runtime.container.internal.ModuleDiscoverer;
 
 import org.mule.tooling.api.ExtensionModelLoader;

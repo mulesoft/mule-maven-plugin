@@ -35,7 +35,7 @@ import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
 
 import org.mule.maven.client.api.MavenReactorResolver;
-import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -163,7 +163,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     }
 
     @Override
-    public File findArtifact(org.mule.maven.client.api.model.BundleDescriptor bundleDescriptor) {
+    public File findArtifact(BundleDescriptor bundleDescriptor) {
       if (checkArtifact(bundleDescriptor)) {
         if (bundleDescriptor.getType().equals(POM)) {
           return new File(temporaryFolder, POM_XML);
@@ -175,14 +175,14 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     }
 
     @Override
-    public List<String> findVersions(org.mule.maven.client.api.model.BundleDescriptor bundleDescriptor) {
+    public List<String> findVersions(BundleDescriptor bundleDescriptor) {
       if (checkArtifact(bundleDescriptor)) {
         return singletonList(descriptor.getVersion());
       }
       return emptyList();
     }
 
-    private boolean checkArtifact(org.mule.maven.client.api.model.BundleDescriptor bundleDescriptor) {
+    private boolean checkArtifact(BundleDescriptor bundleDescriptor) {
       return descriptor.getGroupId().equals(bundleDescriptor.getGroupId())
           && descriptor.getArtifactId().equals(bundleDescriptor.getArtifactId())
           && descriptor.getVersion().equals(bundleDescriptor.getVersion());

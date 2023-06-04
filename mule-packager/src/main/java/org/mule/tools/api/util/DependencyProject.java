@@ -12,9 +12,10 @@ package org.mule.tools.api.util;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.project.MavenProject;
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.maven.client.api.model.BundleScope;
+
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
+import org.mule.maven.pom.parser.api.model.BundleScope;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 
 import java.util.List;

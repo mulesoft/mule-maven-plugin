@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import org.mule.maven.client.api.MavenReactorResolver;
-import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.tools.api.util.MavenComponents;
 import org.mule.tools.api.util.SourcesProcessor;
 

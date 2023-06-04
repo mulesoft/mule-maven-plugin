@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.model.MavenConfiguration;
 import org.mule.maven.client.api.model.RemoteRepository;
-import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.maven.client.internal.MuleMavenClient;
 
 public abstract class MavenClientTest {
 
@@ -98,6 +98,6 @@ public abstract class MavenClientTest {
   }
 
   public MavenClient getMavenClientInstance(MavenConfiguration.MavenConfigurationBuilder configurationBuilder) {
-    return new AetherMavenClient(configurationBuilder.build());
+    return new MuleMavenClient(configurationBuilder.build());
   }
 }

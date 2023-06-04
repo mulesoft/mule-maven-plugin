@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 import org.hamcrest.core.StringContains;
 
-import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 

@@ -34,9 +34,11 @@ import static org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAs
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
 import static org.mule.tools.api.classloader.model.util.ZipUtils.compress;
 
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.maven.client.api.MavenClient;
+import org.mule.maven.client.internal.MuleMavenClient;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
+import org.mule.maven.pom.parser.internal.model.MavenPomModelWrapper;
 import org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver;
 import org.mule.tools.api.classloader.model.resolver.ApplicationDependencyResolver;
 import org.mule.tools.api.classloader.model.resolver.MulePluginClassloaderModelResolver;
@@ -88,7 +90,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-  private AetherMavenClient aetherMavenClientMock;
+  private MavenClient mavenClient;
   private File localRepository;
 
   @Before
@@ -134,7 +136,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
     appMulePluginDependencies.add(firstMulePlugin);
     appMulePluginDependencies.add(secondMulePlugin);
 
-    aetherMavenClientMock = getAetherMavenClientMock(appDependencies, appMulePluginDependencies);
+    mavenClient = getMavenClientMock(appDependencies, appMulePluginDependencies);
 
     AdditionalPluginDependenciesResolver additionalPluginDependenciesResolver = mock(AdditionalPluginDependenciesResolver.class);
     Map<BundleDependency, List<BundleDependency>> additionalPluginDependencies = new HashMap<>();
@@ -144,7 +146,7 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
     JarExplorer jarExplorer = mock(JarExplorer.class);
     ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
-        getClassLoaderModelAssemblySpy(aetherMavenClientMock, additionalPluginDependenciesResolver, jarExplorer);
+        getClassLoaderModelAssemblySpy(mavenClient, additionalPluginDependenciesResolver, jarExplorer);
 
     File outputDirectory = temporaryFolder.newFolder();
     File classesDirectory = new File(outputDirectory, CLASSES);
@@ -270,13 +272,13 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
     List<BundleDependency> appMulePluginDependencies = new ArrayList<>();
 
-    aetherMavenClientMock = getAetherMavenClientMock(appDependencies, appMulePluginDependencies);
+    mavenClient = getMavenClientMock(appDependencies, appMulePluginDependencies);
 
-    when(aetherMavenClientMock.resolveBundleDescriptorDependencies(eq(false), eq(false), any()))
+    when(mavenClient.resolveBundleDescriptorDependencies(eq(false), eq(false), any()))
         .thenReturn(appMulePluginDependencies);
 
     ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
-        getClassLoaderModelAssemblySpy(aetherMavenClientMock);
+        getClassLoaderModelAssemblySpy(mavenClient);
 
     Model artifactPomModel = providedModel.orElse(createArtifactModel(sharedLibraries, profile));
 
@@ -362,12 +364,12 @@ public class ApplicationClassLoaderModelAssemblerTest {
 
     List<BundleDependency> appMulePluginDependencies = new ArrayList<>();
 
-    aetherMavenClientMock = getAetherMavenClientMock(appDependencies, appMulePluginDependencies);
+    mavenClient = getMavenClientMock(appDependencies, appMulePluginDependencies);
 
-    when(aetherMavenClientMock.resolveBundleDescriptorDependencies(eq(false), eq(false), any())).thenReturn(new ArrayList<>());
+    when(mavenClient.resolveBundleDescriptorDependencies(eq(false), eq(false), any())).thenReturn(new ArrayList<>());
 
     ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
-        getClassLoaderModelAssemblySpy(aetherMavenClientMock);
+        getClassLoaderModelAssemblySpy(mavenClient);
 
     ApplicationClassloaderModel applicationClassloaderModel =
         applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), mock(ApplicationGAVModel.class));
@@ -390,10 +392,10 @@ public class ApplicationClassLoaderModelAssemblerTest {
     BundleDependency firstMulePlugin =
         buildBundleDependency(2, 3, MULE_PLUGIN_CLASSIFIER, VERSION, singletonList(mulePluginTransitiveDependency1)).build();
 
-    aetherMavenClientMock = getAetherMavenClientMock(appDependencies, singletonList(firstMulePlugin));
+    mavenClient = getMavenClientMock(appDependencies, singletonList(firstMulePlugin));
 
     ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy =
-        getClassLoaderModelAssemblySpy(aetherMavenClientMock);
+        getClassLoaderModelAssemblySpy(mavenClient);
 
     ApplicationClassloaderModel applicationClassloaderModel =
         applicationClassLoaderModelAssemblerSpy.getApplicationClassLoaderModel(mock(File.class), mock(ApplicationGAVModel.class));
@@ -450,19 +452,19 @@ public class ApplicationClassLoaderModelAssemblerTest {
         .setVersion(version).setBaseVersion(version).setType(TYPE).setClassifier(classifier).build();
   }
 
-  private ApplicationClassLoaderModelAssembler getClassLoaderModelAssemblySpy(AetherMavenClient aetherMavenClientMock,
+  private ApplicationClassLoaderModelAssembler getClassLoaderModelAssemblySpy(MavenClient mavenClient,
                                                                               AdditionalPluginDependenciesResolver additionalPluginDependenciesResolver,
                                                                               JarExplorer jarExplorer) {
     try {
       ApplicationClassLoaderModelAssembler applicationClassLoaderModelAssemblerSpy;
       if (additionalPluginDependenciesResolver != null) {
         applicationClassLoaderModelAssemblerSpy =
-            spy(new ApplicationClassLoaderModelAssembler(new ApplicationDependencyResolver(aetherMavenClientMock),
-                                                         new MulePluginClassloaderModelResolver(aetherMavenClientMock),
+            spy(new ApplicationClassLoaderModelAssembler(new ApplicationDependencyResolver(mavenClient),
+                                                         new MulePluginClassloaderModelResolver(mavenClient),
                                                          additionalPluginDependenciesResolver, jarExplorer));
       } else {
         applicationClassLoaderModelAssemblerSpy =
-            spy(new ApplicationClassLoaderModelAssembler(aetherMavenClientMock, temporaryFolder.newFolder()));
+            spy(new ApplicationClassLoaderModelAssembler(mavenClient, temporaryFolder.newFolder()));
       }
       ArtifactCoordinates projectArtifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
       doReturn(new Model()).when(applicationClassLoaderModelAssemblerSpy).getPomFile(any());
@@ -474,21 +476,21 @@ public class ApplicationClassLoaderModelAssemblerTest {
     }
   }
 
-  private ApplicationClassLoaderModelAssembler getClassLoaderModelAssemblySpy(AetherMavenClient aetherMavenClientMock) {
-    return getClassLoaderModelAssemblySpy(aetherMavenClientMock, null, new FileJarExplorer());
+  private ApplicationClassLoaderModelAssembler getClassLoaderModelAssemblySpy(MavenClient mavenClient) {
+    return getClassLoaderModelAssemblySpy(mavenClient, null, new FileJarExplorer());
   }
 
-  private AetherMavenClient getAetherMavenClientMock(List<BundleDependency> appDependencies,
-                                                     List<BundleDependency> appMulePluginDependencies) {
-    AetherMavenClient aetherMavenClientMock = mock(AetherMavenClient.class);
+  private MavenClient getMavenClientMock(List<BundleDependency> appDependencies,
+                                         List<BundleDependency> appMulePluginDependencies) {
+    MavenClient mavenClient = mock(MuleMavenClient.class);
     appDependencies.addAll(appMulePluginDependencies);
-    when(aetherMavenClientMock.resolveArtifactDependencies(any(File.class), anyBoolean(),
-                                                           anyBoolean(), any(Optional.class),
-                                                           any(Optional.class), any(Optional.class)))
-                                                               .thenReturn(appDependencies);
-    when(aetherMavenClientMock.getEffectiveModel(any(), any()))
-        .thenReturn(new Model());
+    when(mavenClient.resolveArtifactDependencies(any(File.class), anyBoolean(),
+                                                 anyBoolean(), any(Optional.class),
+                                                 any(Optional.class), any(Optional.class)))
+                                                     .thenReturn(appDependencies);
+    when(mavenClient.getEffectiveModel(any(), any()))
+        .thenReturn(new MavenPomModelWrapper(new Model()));
 
-    return aetherMavenClientMock;
+    return mavenClient;
   }
 }

@@ -14,7 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 

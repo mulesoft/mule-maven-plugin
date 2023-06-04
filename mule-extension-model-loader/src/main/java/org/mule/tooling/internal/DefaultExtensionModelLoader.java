@@ -3,7 +3,7 @@ package org.mule.tooling.internal;
 import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.discoverRuntimeExtensionModels;
 
 import org.mule.maven.client.api.MavenClient;
-import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.container.api.ModuleRepository;

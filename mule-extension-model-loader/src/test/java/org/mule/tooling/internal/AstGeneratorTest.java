@@ -9,15 +9,11 @@
  */
 package org.mule.tooling.internal;
 
-import static org.mockito.Mockito.mock;
-
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.nio.file.Paths;
@@ -25,12 +21,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.junit.Test;
 import org.mule.maven.client.api.MavenClient;
-import org.mule.maven.client.internal.AetherMavenClient;
 import org.mule.runtime.ast.api.ArtifactAst;
-import static com.google.common.io.Files.createTempDir;
-import org.mule.tooling.api.ExtensionModelLoader;
-import org.mule.tooling.internal.ExtensionModelLoaderTest;
-import org.mule.tooling.internal.DefaultExtensionModelLoader;
 import org.mule.tooling.api.AstGenerator;
 import org.mule.tooling.api.ConfigurationException;
 

@@ -11,9 +11,9 @@ package org.mule.tools.api.classloader.model.resolver;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.maven.client.internal.MuleMavenClient;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -41,7 +41,7 @@ public class MulePluginClassloaderModelResolverTest {
 
   @Before
   public void setUp() {
-    resolver = new MulePluginClassloaderModelResolver(mock(AetherMavenClient.class));
+    resolver = new MulePluginClassloaderModelResolver(mock(MuleMavenClient.class));
   }
 
   @Test

@@ -52,6 +52,10 @@
                     <groupId>com.mulesoft.licm</groupId>
                     <artifactId>licm</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.aether</groupId>
+                    <artifactId>aether-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -83,6 +87,12 @@
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-deployment-model-impl</artifactId>
             <version>${mule.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mule</groupId>
+                    <artifactId>mule-maven-client-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>

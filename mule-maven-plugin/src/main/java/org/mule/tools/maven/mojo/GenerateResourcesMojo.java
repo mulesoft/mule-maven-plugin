@@ -36,7 +36,7 @@ public class GenerateResourcesMojo extends AbstractMuleMojo {
   }
 
   public ResourcesContentGenerator getResourcesContentGenerator() {
-    return new DomainBundleProjectResourcesContentGenerator(getAetherMavenClient(),
+    return new DomainBundleProjectResourcesContentGenerator(getMavenClient(),
                                                             toArtifactCoordinates(project.getDependencies()));
   }
 

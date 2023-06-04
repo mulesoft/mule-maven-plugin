@@ -40,10 +40,12 @@ import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDepe
 import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.PLUGIN_ELEMENT;
 import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.VERSION_ELEMENT;
 
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.model.MavenConfiguration;
-import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.maven.client.internal.MuleMavenClient;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
+import org.mule.maven.pom.parser.internal.model.MavenPomModelWrapper;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
@@ -120,7 +122,7 @@ public class AdditionalPluginDependenciesResolverTest {
   private static BundleDependency resolvedDependencyX11;
   private static BundleDependency resolvedDependencyX20;
 
-  private AetherMavenClient mockedMavenClient;
+  private MavenClient mavenClient;
   private MavenConfiguration mockedMavenConfiguration;
 
   @Rule
@@ -202,7 +204,7 @@ public class AdditionalPluginDependenciesResolverTest {
 
   @Before
   public void setUp() throws IOException {
-    mockedMavenClient = mock(AetherMavenClient.class);
+    mavenClient = mock(MuleMavenClient.class);
     doAnswer(invocationOnMock -> {
       List<BundleDescriptor> dependencies = invocationOnMock.getArgument(0);
       return dependencies.stream()
@@ -210,11 +212,11 @@ public class AdditionalPluginDependenciesResolverTest {
           .filter(dependencyOptional -> dependencyOptional.isPresent())
           .map(dependencyOptional -> dependencyOptional.get())
           .collect(toList());
-    }).when(mockedMavenClient).resolveArtifactDependencies(any(), any(), any());
-    when(mockedMavenClient.getEffectiveModel(any(), any())).thenReturn(new Model());
+    }).when(mavenClient).resolveArtifactDependencies(any(), any(), any());
+    when(mavenClient.getEffectiveModel(any(), any())).thenReturn(new MavenPomModelWrapper(new Model()));
     mockedMavenConfiguration = mock(MavenConfiguration.class);
     when(mockedMavenConfiguration.getLocalMavenRepositoryLocation()).thenReturn(temporaryFolder.newFolder());
-    when(mockedMavenClient.getMavenConfiguration()).thenReturn(mockedMavenConfiguration);
+    when(mavenClient.getMavenConfiguration()).thenReturn(mockedMavenConfiguration);
   }
 
   private Optional<BundleDependency> resolveBundleDescriptor(BundleDescriptor bundleDescriptor) {
@@ -240,7 +242,7 @@ public class AdditionalPluginDependenciesResolverTest {
 
   private AdditionalPluginDependenciesResolver createAdditionalPluginDependenciesResolver(List<Plugin> pluginsWithAdditionalDependencies)
       throws IOException {
-    return new AdditionalPluginDependenciesResolver(mockedMavenClient, pluginsWithAdditionalDependencies,
+    return new AdditionalPluginDependenciesResolver(mavenClient, pluginsWithAdditionalDependencies,
                                                     temporaryFolder.newFolder());
   }
 
@@ -279,7 +281,7 @@ public class AdditionalPluginDependenciesResolverTest {
           .map(dependencyOptional -> dependencyOptional.get())
           .skip(1)
           .collect(toList());
-    }).when(mockedMavenClient).resolveArtifactDependencies(any(), any(), any());
+    }).when(mavenClient).resolveArtifactDependencies(any(), any(), any());
 
     DECLARED_POM_PLUGIN.setAdditionalDependencies(ImmutableList.of(declaredPomDependencyX10, declaredPomDependencyX11));
     Map<BundleDependency, List<BundleDependency>> resolvedAdditionalDependencies =
@@ -363,10 +365,10 @@ public class AdditionalPluginDependenciesResolverTest {
     pluginChildren.addChild(additionalDependencies);
     addDependency(additionalDependencies, "1");
     addDependency(additionalDependencies, "2");
-    reset(mockedMavenClient);
-    when(mockedMavenClient.getEffectiveModel(any(), any())).thenReturn(pair.getLeft());
+    reset(mavenClient);
+    when(mavenClient.getEffectiveModel(any(), any())).thenReturn(new MavenPomModelWrapper(pair.getLeft()));
 
-    when(mockedMavenClient.getMavenConfiguration()).thenReturn(mockedMavenConfiguration);
+    when(mavenClient.getMavenConfiguration()).thenReturn(mockedMavenConfiguration);
 
     BundleDependency mockedBundleDependency1 = mock(BundleDependency.class, RETURNS_DEEP_STUBS);
     when(mockedBundleDependency1.getDescriptor().getArtifactId()).thenReturn(ARTIFACT_ID_ELEMENT + "1");
@@ -390,9 +392,9 @@ public class AdditionalPluginDependenciesResolverTest {
             }
           })
           .collect(toList());
-    }).when(mockedMavenClient).resolveArtifactDependencies(any(), any(), any());
+    }).when(mavenClient).resolveArtifactDependencies(any(), any(), any());
 
-    when(mockedMavenClient.resolveBundleDescriptorDependencies(eq(false), eq(false), any())).thenReturn(emptyList());
+    when(mavenClient.resolveBundleDescriptorDependencies(eq(false), eq(false), any())).thenReturn(emptyList());
     Map<BundleDependency, List<BundleDependency>> resolvedAdditionalDependencies =
         createAdditionalPluginDependenciesResolver(emptyList())
             .resolveDependencies(of(RESOLVED_BUNDLE_PLUGIN), of(resolvedPluginClassLoaderModel));
@@ -430,8 +432,8 @@ public class AdditionalPluginDependenciesResolverTest {
   }
 
   private void testNoAdditionalDependenciesMulePluginDependencyPomConfiguration(Model model) throws IOException {
-    reset(mockedMavenClient);
-    when(mockedMavenClient.getEffectiveModel(any(), any())).thenReturn(model);
+    reset(mavenClient);
+    when(mavenClient.getEffectiveModel(any(), any())).thenReturn(new MavenPomModelWrapper(model));
     Map<BundleDependency, List<BundleDependency>> resolvedAdditionalDependencies =
         createAdditionalPluginDependenciesResolver(emptyList())
             .resolveDependencies(of(RESOLVED_BUNDLE_PLUGIN), of(resolvedPluginClassLoaderModel));

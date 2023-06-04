@@ -1,5 +1,9 @@
 package org.mule.tooling.internal;
 
+import static java.util.Optional.of;
+import static org.mule.maven.client.internal.util.FileUtils.loadFileContentFrom;
+import static org.mule.maven.pom.parser.api.model.MavenModelBuilderProvider.discoverProvider;
+import static org.mule.maven.pom.parser.internal.util.FileUtils.getPomUrlFromJar;
 import static org.mule.runtime.api.deployment.meta.Product.MULE;
 import static org.mule.runtime.container.api.ContainerClassLoaderProvider.createContainerClassLoader;
 import static org.mule.runtime.container.api.ModuleRepository.createModuleRepository;
@@ -9,12 +13,10 @@ import static org.mule.runtime.core.api.util.UUID.getUUID;
 import static org.mule.runtime.deployment.model.api.artifact.ArtifactDescriptorConstants.MULE_LOADER_ID;
 import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.defaultExtensionModelDiscoverer;
 import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.discoverRuntimeExtensionModels;
+import static org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor.MULE_ARTIFACT_PATH_INSIDE_JAR;
+import static org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor.MULE_PLUGIN_POM;
 import static org.mule.runtime.module.deployment.impl.internal.maven.AbstractMavenClassLoaderConfigurationLoader.CLASSLOADER_MODEL_MAVEN_REACTOR_RESOLVER;
-import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.createDeployablePomFile;
-import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.createDeployablePomProperties;
-import static org.mule.runtime.module.deployment.impl.internal.maven.MavenUtils.getPomModelFromJar;
 import static org.mule.runtime.module.extension.internal.ExtensionProperties.DISABLE_COMPONENT_IGNORE;
-import static org.mule.runtime.container.api.ContainerClassLoaderProvider.createContainerClassLoader;
 
 import static java.lang.Boolean.TRUE;
 import static java.lang.Boolean.valueOf;
@@ -34,8 +36,12 @@ import static com.google.common.collect.ImmutableSet.copyOf;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
 
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.mule.maven.client.api.MavenReactorResolver;
-import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
+import org.mule.maven.pom.parser.api.model.MavenModelBuilder;
+import org.mule.maven.pom.parser.api.model.MavenModelBuilderProvider;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -48,10 +54,12 @@ import org.mule.runtime.module.artifact.activation.api.extension.discovery.Exten
 import org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelLoaderRepository;
 import org.mule.runtime.module.artifact.api.classloader.MuleDeployableArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.descriptor.ApplicationDescriptor;
+import org.mule.runtime.module.artifact.api.descriptor.ArtifactDescriptorCreateException;
 import org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor;
 import org.mule.tooling.api.ExtensionModelService;
 import org.mule.tooling.api.ToolingException;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -60,6 +68,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableMap;
@@ -81,6 +90,27 @@ public class DefaultExtensionModelService implements ExtensionModelService {
 
   private static final String MULE_APPLICATION = "mule-application";
   private static final String MAVEN_MODEL_VERSION = "4.0.0";
+
+  /**
+   * Returns the {@link Model} from a given artifact folder
+   *
+   * @param artifactFile file containing the artifact content.
+   * @return the {@link Model} from the {@value ArtifactPluginDescriptor#MULE_PLUGIN_POM} file if available
+   * @throws ArtifactDescriptorCreateException if the artifact jar does not contain a
+   *                                           {@value ArtifactPluginDescriptor#MULE_PLUGIN_POM} file or the file can' be loaded
+   */
+  public static Model getPomModelFromJar(File artifactFile) {
+    String pomFilePath = MULE_ARTIFACT_PATH_INSIDE_JAR + "/" + MULE_PLUGIN_POM;
+    try {
+      MavenXpp3Reader reader = new MavenXpp3Reader();
+      return reader.read(new ByteArrayInputStream(loadFileContentFrom(getPomUrlFromJar(artifactFile)).get()));
+    } catch (IOException | XmlPullParserException e) {
+      throw new ArtifactDescriptorCreateException(format("There was an issue reading '%s' for the artifact '%s'",
+              pomFilePath, artifactFile.getAbsolutePath()),
+              e);
+    }
+  }
+
 
   private ExtensionModelDiscoverer extensionModelDiscoverer;
   private final MuleArtifactResourcesRegistry muleArtifactResourcesRegistry;
@@ -163,7 +193,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     }
 
     @Override
-    public File findArtifact(org.mule.maven.client.api.model.BundleDescriptor bundleDescriptor) {
+    public File findArtifact(BundleDescriptor bundleDescriptor) {
       if (checkArtifact(bundleDescriptor)) {
         if (bundleDescriptor.getType().equals(POM)) {
           return new File(temporaryFolder, POM_XML);
@@ -175,14 +205,14 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     }
 
     @Override
-    public List<String> findVersions(org.mule.maven.client.api.model.BundleDescriptor bundleDescriptor) {
+    public List<String> findVersions(BundleDescriptor bundleDescriptor) {
       if (checkArtifact(bundleDescriptor)) {
         return singletonList(descriptor.getVersion());
       }
       return emptyList();
     }
 
-    private boolean checkArtifact(org.mule.maven.client.api.model.BundleDescriptor bundleDescriptor) {
+    private boolean checkArtifact(BundleDescriptor bundleDescriptor) {
       return descriptor.getGroupId().equals(bundleDescriptor.getGroupId())
           && descriptor.getArtifactId().equals(bundleDescriptor.getArtifactId())
           && descriptor.getVersion().equals(bundleDescriptor.getVersion());
@@ -316,12 +346,9 @@ public class DefaultExtensionModelService implements ExtensionModelService {
   }
 
   private void createPomFile(BundleDescriptor pluginDescriptor, String uuid, File applicationFolder) {
-    Model model = new Model();
-    model.setGroupId(uuid);
-    model.setArtifactId(uuid);
-    model.setVersion(getProductVersion());
-    model.setPackaging(MULE_APPLICATION);
-    model.setModelVersion(MAVEN_MODEL_VERSION);
+    MavenModelBuilderProvider mavenModelBuilderProvider = discoverProvider();
+    MavenModelBuilder model = mavenModelBuilderProvider
+            .createMavenModelBuilder(uuid, uuid, getProductVersion(), of(MAVEN_MODEL_VERSION), of(MULE_APPLICATION));
 
     Dependency dependency = new Dependency();
     dependency.setGroupId(pluginDescriptor.getGroupId());
@@ -330,10 +357,15 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     dependency.setClassifier(pluginDescriptor.getClassifier().get());
     dependency.setType(pluginDescriptor.getType());
 
-    model.getDependencies().add(dependency);
+    //TODO ADD DEPENDENCY model
 
-    createDeployablePomFile(applicationFolder, model);
-    createDeployablePomProperties(applicationFolder, model);
+    Properties pomProperties = new Properties();
+    pomProperties.setProperty("groupId", model.getModel().getGroupId());
+    pomProperties.setProperty("artifactId", model.getModel().getArtifactId());
+    pomProperties.setProperty("version", model.getModel().getVersion());
+
+    model.createDeployablePomFile(applicationFolder.toPath());
+    model.createDeployablePomProperties(applicationFolder.toPath(), pomProperties);
   }
 
   @FunctionalInterface

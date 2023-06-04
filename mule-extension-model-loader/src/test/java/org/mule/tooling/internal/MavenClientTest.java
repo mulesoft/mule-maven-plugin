@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.model.MavenConfiguration;
 import org.mule.maven.client.api.model.RemoteRepository;
-import org.mule.maven.client.internal.AetherMavenClient;
 
 public abstract class MavenClientTest {
 

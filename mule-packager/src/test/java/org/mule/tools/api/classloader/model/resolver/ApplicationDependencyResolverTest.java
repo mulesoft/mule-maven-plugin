@@ -17,11 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.maven.client.api.model.BundleScope.PROVIDED;
 import static org.mule.tools.api.classloader.model.resolver.ApplicationDependencyResolver.MULE_DOMAIN_CLASSIFIER;
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleScope;
-import org.mule.maven.client.internal.AetherMavenClient;
 
 import com.google.common.collect.ImmutableList;
 
@@ -30,10 +26,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
+import org.mule.maven.client.api.MavenClient;
+import org.mule.maven.client.internal.MuleMavenClient;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleScope;
 
 public class ApplicationDependencyResolverTest {
 
-  private final AetherMavenClient mockMavenClient = mock(AetherMavenClient.class);
+  private final MavenClient mockMavenClient = mock(MuleMavenClient.class);
 
   @Test
   public void emptyDependencies() {
@@ -51,7 +51,7 @@ public class ApplicationDependencyResolverTest {
     BundleDependency mockNonProvidedDependency = mock(BundleDependency.class, RETURNS_DEEP_STUBS);
     BundleDependency mockDomainDependency = mock(BundleDependency.class, RETURNS_DEEP_STUBS);
 
-    when(mockProvidedDependency.getScope()).thenReturn(PROVIDED);
+    when(mockProvidedDependency.getScope()).thenReturn(BundleScope.PROVIDED);
     when(mockNonProvidedDependency.getScope()).thenReturn(BundleScope.COMPILE);
     when(mockDomainDependency.getScope()).thenReturn(BundleScope.COMPILE);
     when(mockDomainDependency.getDescriptor().getClassifier()).thenReturn(Optional.of(MULE_DOMAIN_CLASSIFIER));

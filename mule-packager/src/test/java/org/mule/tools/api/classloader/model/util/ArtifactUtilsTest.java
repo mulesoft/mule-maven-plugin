@@ -20,8 +20,8 @@ import static org.hamcrest.core.Is.is;
 import static org.mule.tools.api.classloader.model.Artifact.MULE_DOMAIN;
 import static org.mule.tools.api.classloader.model.util.ZipUtils.compress;
 
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.ApplicationGAVModel;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
@@ -34,7 +34,6 @@ import java.util.Optional;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
-import org.hamcrest.collection.IsArrayWithSize;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -126,7 +125,7 @@ public class ArtifactUtilsTest {
   @Test
   public void toDependencyTest() {
     BundleDependency bundleDependency =
-        new BundleDependency.Builder().sedBundleDescriptor(bundleDescriptor).setBundleUri(bundleURI).build();
+        new BundleDependency.Builder().setBundleDescriptor(bundleDescriptor).setBundleUri(bundleURI).build();
 
     Artifact actualArtifact = ArtifactUtils.toArtifact(bundleDependency);
 
@@ -137,7 +136,7 @@ public class ArtifactUtilsTest {
   @Test
   public void checkPackagesAndResourcesTests() throws Exception {
     BundleDependency bundleDependency =
-        new BundleDependency.Builder().sedBundleDescriptor(bundleDescriptor).setBundleUri(bundleURI).build();
+        new BundleDependency.Builder().setBundleDescriptor(bundleDescriptor).setBundleUri(bundleURI).build();
 
     File jarFile = FileUtils.toFile(bundleDependency.getBundleUri().toURL());
     jarFile.delete();
@@ -168,7 +167,7 @@ public class ArtifactUtilsTest {
             .build();
 
     BundleDependency bundleDependency =
-        new BundleDependency.Builder().sedBundleDescriptor(bundleDescriptor).build();
+        new BundleDependency.Builder().setBundleDescriptor(bundleDescriptor).build();
 
     Artifact actualArtifact = ArtifactUtils.updatePackagesResources(ArtifactUtils.toArtifact(bundleDependency));
 

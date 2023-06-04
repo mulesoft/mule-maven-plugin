@@ -9,24 +9,23 @@
  */
 package org.mule.tools.api.classloader.model.resolver;
 
-import static com.vdurmont.semver4j.Semver.SemverType.LOOSE;
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
-import static java.util.stream.Collectors.toList;
-import static org.apache.commons.io.FileUtils.toFile;
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
-import static org.mule.tools.api.classloader.model.ArtifactCoordinates.DEFAULT_ARTIFACT_TYPE;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toBundleDescriptor;
-import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
-
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.internal.AetherMavenClient;
+import com.vdurmont.semver4j.Semver;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.model.Build;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Model;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.mule.maven.client.api.MavenClient;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.MavenPomModel;
+import org.mule.maven.pom.parser.internal.model.MavenPomModelWrapper;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,13 +37,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import com.vdurmont.semver4j.Semver;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.model.Build;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.model.Model;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
+import static com.vdurmont.semver4j.Semver.SemverType.LOOSE;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.io.FileUtils.toFile;
+import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+import static org.mule.tools.api.classloader.model.ArtifactCoordinates.DEFAULT_ARTIFACT_TYPE;
+import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toBundleDescriptor;
+import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
 
 
 /**
@@ -65,14 +66,14 @@ public class AdditionalPluginDependenciesResolver {
   protected static final String VERSION_ELEMENT = "version";
   protected static final String PLUGIN_ELEMENT = "plugin";
   protected static final String DEPENDENCY_ELEMENT = "dependency";
-  private AetherMavenClient aetherMavenClient;
+  private MavenClient mavenClient;
   private List<Plugin> pluginsWithAdditionalDependencies;
   private File temporaryFolder;
 
-  public AdditionalPluginDependenciesResolver(AetherMavenClient muleMavenPluginClient,
+  public AdditionalPluginDependenciesResolver(MavenClient mavenClient,
                                               List<Plugin> additionalPluginDependencies,
                                               File temporaryFolder) {
-    this.aetherMavenClient = muleMavenPluginClient;
+    this.mavenClient = mavenClient;
     this.pluginsWithAdditionalDependencies = new ArrayList<>(additionalPluginDependencies);
     this.temporaryFolder = temporaryFolder;
   }
@@ -99,12 +100,12 @@ public class AdditionalPluginDependenciesResolver {
   }
 
   private List<BundleDependency> resolveDependencies(List<Dependency> additionalDependencies) {
-    return aetherMavenClient.resolveArtifactDependencies(additionalDependencies.stream()
+    return mavenClient.resolveArtifactDependencies(additionalDependencies.stream()
         .map(additionalDependency -> toBundleDescriptor(additionalDependency))
         .collect(toList()),
-                                                         of(aetherMavenClient.getMavenConfiguration()
-                                                             .getLocalMavenRepositoryLocation()),
-                                                         empty());
+                                                   of(mavenClient.getMavenConfiguration()
+                                                       .getLocalMavenRepositoryLocation()),
+                                                   empty());
   }
 
   private BundleDependency getPluginBundleDependency(Plugin plugin, List<BundleDependency> mulePlugins) {
@@ -166,8 +167,7 @@ public class AdditionalPluginDependenciesResolver {
 
     mulePlugins.forEach(mulePlugin -> {
       try {
-        Model pomModel =
-            aetherMavenClient.getEffectiveModel(toFile(mulePlugin.getBundleUri().toURL()), of(temporaryFolder));
+        Model pomModel = getModel(mavenClient.getEffectiveModel(toFile(mulePlugin.getBundleUri().toURL()), of(temporaryFolder)));
 
         Build build = pomModel.getBuild();
         if (build != null) {
@@ -277,4 +277,21 @@ public class AdditionalPluginDependenciesResolver {
         .findAny().isPresent();
   }
 
+  // TODO Ver que hacer aqui...
+  private Model getModel(MavenPomModel model) {
+    try {
+      Field field = MavenPomModelWrapper.class.getDeclaredField("model");
+      boolean canAccess = field.isAccessible();
+      if (!canAccess) {
+        field.setAccessible(true);
+      }
+      Model value = (Model) field.get(model);
+      if (canAccess != field.isAccessible()) {
+        field.setAccessible(canAccess);
+      }
+      return value;
+    } catch (Exception exception) {
+      throw new RuntimeException(exception);
+    }
+  }
 }

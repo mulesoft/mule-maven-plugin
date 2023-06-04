@@ -16,9 +16,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.maven.client.api.MavenClient;
+import org.mule.maven.client.internal.MuleMavenClient;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.util.ArtifactUtils;
 import org.mule.tools.api.exception.ValidationException;
@@ -71,7 +72,7 @@ public class DomainBundleProjectValidatorTest {
   private File localRepository;
 
   public Project dependencyProjectMock;
-  private AetherMavenClient aetherMavenClientMock;
+  private MavenClient mavenClient;
   private DefaultProjectInformation defaultProjectInformation;
 
   @Before
@@ -80,7 +81,7 @@ public class DomainBundleProjectValidatorTest {
 
     projectBaseDir.create();
     dependencyProjectMock = mock(Project.class);
-    aetherMavenClientMock = mock(AetherMavenClient.class);
+    mavenClient = mock(MuleMavenClient.class);
     defaultProjectInformation = new DefaultProjectInformation.Builder()
         .withGroupId(GROUP_ID)
         .withArtifactId(ARTIFACT_ID)
@@ -92,7 +93,7 @@ public class DomainBundleProjectValidatorTest {
         .withDependencyProject(dependencyProjectMock)
         .withResolvedPom(mock(Pom.class))
         .build();
-    validator = new DomainBundleProjectValidator(defaultProjectInformation, aetherMavenClientMock);
+    validator = new DomainBundleProjectValidator(defaultProjectInformation, mavenClient);
   }
 
   @Test
@@ -307,7 +308,7 @@ public class DomainBundleProjectValidatorTest {
     when(dependencyProjectMock.getDirectDependencies()).thenReturn(applicationDependencies);
 
     DomainBundleProjectValidator validatorSpy =
-        spy(new DomainBundleProjectValidator(defaultProjectInformation, aetherMavenClientMock));
+        spy(new DomainBundleProjectValidator(defaultProjectInformation, mavenClient));
     doNothing().when(validatorSpy).validateDomain(domains);
     doNothing().when(validatorSpy).validateApplications(eq(applicationDomain), any());
 

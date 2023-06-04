@@ -13,15 +13,15 @@ package org.mule.tools.api.classloader.model;
 import static java.nio.file.Paths.get;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
-import static org.mule.maven.client.internal.util.MavenUtils.getPomModelFromFile;
+import static org.mule.maven.pom.parser.internal.util.MavenUtils.getPomModelFromFile;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toApplicationModelArtifacts;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.updateArtifactsSharedState;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.updatePackagesResources;
 import static org.mule.tools.api.classloader.model.util.PluginUtils.toPluginDependencies;
 
+import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.MavenReactorResolver;
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver;
 import org.mule.tools.api.classloader.model.resolver.ApplicationDependencyResolver;
 import org.mule.tools.api.classloader.model.resolver.ClassloaderModelResolver;
@@ -51,11 +51,11 @@ public class ApplicationClassLoaderModelAssembler {
   private JarExplorer jarExplorer;
 
   @Deprecated
-  public ApplicationClassLoaderModelAssembler(AetherMavenClient aetherMavenClient, File temporaryFolder) {
-    this.applicationDependencyResolver = new ApplicationDependencyResolver(aetherMavenClient);
-    this.mulePluginClassLoaderModelResolver = new MulePluginClassloaderModelResolver(aetherMavenClient);
+  public ApplicationClassLoaderModelAssembler(MavenClient mavenClient, File temporaryFolder) {
+    this.applicationDependencyResolver = new ApplicationDependencyResolver(mavenClient);
+    this.mulePluginClassLoaderModelResolver = new MulePluginClassloaderModelResolver(mavenClient);
     this.additionalPluginDependenciesResolver =
-        new AdditionalPluginDependenciesResolver(aetherMavenClient, emptyList(), temporaryFolder);
+        new AdditionalPluginDependenciesResolver(mavenClient, emptyList(), temporaryFolder);
   }
 
   public ApplicationClassLoaderModelAssembler(ApplicationDependencyResolver applicationDependencyResolver,

@@ -11,8 +11,8 @@
 package org.mule.tools.api.util;
 
 import org.apache.maven.model.Dependency;
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 
@@ -23,7 +23,7 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 public class ArtifactUtils {
 
   /**
-   * Convert a {@link org.mule.maven.client.api.model.BundleDescriptor} instance to {@link ArtifactCoordinates}.
+   * Convert a {@link org.mule.maven.pom.parser.api.model.BundleDescriptor} instance to {@link ArtifactCoordinates}.
    *
    * @param bundleDescriptor the bundle descriptor to be converted.
    * @return the corresponding artifact coordinates with normalized version.
@@ -37,7 +37,7 @@ public class ArtifactUtils {
   }
 
   /**
-   * Convert a {@link org.mule.maven.client.api.model.BundleDependency} instance to {@link Artifact}.
+   * Convert a {@link org.mule.maven.pom.parser.api.model.BundleDependency} instance to {@link Artifact}.
    *
    * @param bundleDependency the bundle dependency to be converted.
    * @return the corresponding artifact with normalized version.
@@ -87,10 +87,10 @@ public class ArtifactUtils {
   }
 
   /**
-   * Converts a {@link ArtifactCoordinates} instance to a {@link org.mule.maven.client.api.model.BundleDescriptor} instance.
+   * Converts a {@link ArtifactCoordinates} instance to a {@link org.mule.maven.pom.parser.api.model.BundleDescriptor} instance.
    *
    * @param artifactCoordinates the artifact coordinates to be converted.
-   * @return the corresponding {@link org.mule.maven.client.api.model.BundleDescriptor} instance.
+   * @return the corresponding {@link org.mule.maven.pom.parser.api.model.BundleDescriptor} instance.
    */
   public static BundleDescriptor toBundleDescriptor(ArtifactCoordinates artifactCoordinates) {
     return new BundleDescriptor.Builder()

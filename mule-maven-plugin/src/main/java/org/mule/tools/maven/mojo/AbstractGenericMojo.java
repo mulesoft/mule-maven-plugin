@@ -10,7 +10,7 @@
 package org.mule.tools.maven.mojo;
 
 import com.mulesoft.exchange.mavenfacade.utils.ExchangeHelper;
-import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.maven.client.api.MavenClient;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
 import org.mule.tools.api.packager.ProjectInformation;
@@ -31,7 +31,6 @@ import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.model.anypoint.Cloudhub2Deployment;
-import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
 import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeployment;
 import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
@@ -127,7 +126,7 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
 
   protected ProjectVerifier verifier;
 
-  protected AetherMavenClient aetherMavenClient;
+  protected MavenClient mavenClient;
 
   public abstract String getPreviousRunPlaceholder();
 
@@ -196,16 +195,16 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
       ProjectRequirement requirement = new ProjectRequirement.ProjectRequirementBuilder().withStrictCheck(strictCheck)
           .withDisableSemver(disableSemver).build();
       validator =
-          ProjectValidatorFactory.create(getProjectInformation(), getAetherMavenClient(), sharedLibraries, requirement);
+          ProjectValidatorFactory.create(getProjectInformation(), getMavenClient(), sharedLibraries, requirement);
     }
     return validator;
   }
 
-  protected AetherMavenClient getAetherMavenClient() {
-    if (aetherMavenClient == null) {
+  protected MavenClient getMavenClient() {
+    if (mavenClient == null) {
       MavenExecutionRequest request = session.getRequest();
       List<RemoteRepository> remoteRepositories = RepositoryUtils.toRepos(remoteArtifactRepositories);
-      aetherMavenClient = new MuleMavenPluginClientBuilder(new MavenPackagerLog(getLog()))
+      mavenClient = new MuleMavenPluginClientBuilder(new MavenPackagerLog(getLog()))
           .withRemoteRepositories(remoteRepositories)
           .withLocalRepository(request.getLocalRepositoryPath())
           .withUserSettings(request.getUserSettingsFile())
@@ -215,7 +214,7 @@ public abstract class AbstractGenericMojo extends AbstractMojo {
           .withInactiveProfiles(request.getInactiveProfiles())
           .build();
     }
-    return aetherMavenClient;
+    return mavenClient;
   }
 
   protected List<ArtifactCoordinates> toArtifactCoordinates(List<Dependency> dependencies) {

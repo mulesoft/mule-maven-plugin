@@ -14,8 +14,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.util.ArtifactUtils;
@@ -73,7 +73,7 @@ public class ArtifactUtilsTest {
   @Test
   public void toDependencyTest() throws URISyntaxException {
     BundleDependency bundleDependency =
-        new BundleDependency.Builder().sedBundleDescriptor(bundleDescriptor).setBundleUri(bundleURI).build();
+        new BundleDependency.Builder().setBundleDescriptor(bundleDescriptor).setBundleUri(bundleURI).build();
 
     Artifact actualArtifact = ArtifactUtils.toArtifact(bundleDependency);
 

@@ -13,9 +13,12 @@ package org.mule.tools.api.util;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
+
+import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.MavenReactorResolver;
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.internal.AetherMavenClient;
+
+import org.mule.maven.client.internal.MuleMavenClient;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.ApplicationGAVModel;
 import org.mule.tools.api.classloader.model.Artifact;
@@ -134,10 +137,10 @@ public class SourcesProcessor {
   }
 
   protected ApplicationClassLoaderModelAssembler getClassLoaderModelAssembler() {
-    AetherMavenClient aetherMavenClient = getAetherMavenClient();
-    return new ApplicationClassLoaderModelAssembler(new ApplicationDependencyResolver(aetherMavenClient),
-                                                    new MulePluginClassloaderModelResolver(aetherMavenClient),
-                                                    new AdditionalPluginDependenciesResolver(aetherMavenClient,
+    MuleMavenClient mavenClient = getMavenClient();
+    return new ApplicationClassLoaderModelAssembler(new ApplicationDependencyResolver(mavenClient),
+                                                    new MulePluginClassloaderModelResolver(mavenClient),
+                                                    new AdditionalPluginDependenciesResolver(mavenClient,
                                                                                              mavenComponents
                                                                                                  .getAdditionalPluginDependencies() == null
                                                                                                      ? new ArrayList<>()
@@ -205,10 +208,10 @@ public class SourcesProcessor {
     return PackagingType.fromString(mavenComponents.getProject().getPackaging());
   }
 
-  protected AetherMavenClient getAetherMavenClient() {
+  protected MuleMavenClient getMavenClient() {
     MavenExecutionRequest request = mavenComponents.getSession().getRequest();
     List<RemoteRepository> remoteRepositories = RepositoryUtils.toRepos(mavenComponents.getRemoteArtifactRepositories());
-    AetherMavenClient aetherMavenClient = new MuleMavenPluginClientBuilder(new MavenPackagerLog(mavenComponents.getLog()))
+    return new MuleMavenPluginClientBuilder(new MavenPackagerLog(mavenComponents.getLog()))
         .withRemoteRepositories(remoteRepositories)
         .withLocalRepository(request.getLocalRepositoryPath())
         .withUserSettings(request.getUserSettingsFile())
@@ -217,7 +220,5 @@ public class SourcesProcessor {
         .withActiveProfiles(request.getActiveProfiles())
         .withInactiveProfiles(request.getInactiveProfiles())
         .build();
-
-    return aetherMavenClient;
   }
 }

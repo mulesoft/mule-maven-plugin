@@ -1,6 +1,6 @@
 package org.mule.tooling.internal;
 
-import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.discoverRuntimeExtensionModels;
+import static org.mule.runtime.core.api.extension.provider.RuntimeExtensionModelProvider.discoverRuntimeExtensionModels;
 
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.pom.parser.api.model.BundleDescriptor;
@@ -34,15 +34,15 @@ import java.util.Set;
 
 public class DefaultExtensionModelLoader implements ExtensionModelLoader {
 
-  private DefaultExtensionModelService service;
-  private MuleVersion muleVersion;
+  private final DefaultExtensionModelService service;
+  private final MuleVersion muleVersion;
 
   public DefaultExtensionModelLoader(MavenClient mavenClient, Path workingDir, ClassLoader parentClassloader,
                                      String runtimeVersion) {
 
     this.muleVersion = new MuleVersion(runtimeVersion);
 
-    List<ModuleDiscoverer> result = new ArrayList();
+    List<ModuleDiscoverer> result = new ArrayList<>();
     result.add(new JreModuleDiscoverer());
     result.add(new ClasspathModuleDiscoverer(parentClassloader, workingDir.toFile()));
     final ModuleRepository moduleRepository =

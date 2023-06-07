@@ -33,9 +33,11 @@
     </organization>
 
     <modules>
-        <module>mule-extension-model-loader</module><!--
-        <module>mule-packager</module>
+        <module>mule-extension-model-loader</module>
         <module>mule-classloader-model</module>
+        <!--
+        <module>mule-packager</module>
+
         <module>mule-deployer</module>
         <module>mule-maven-plugin</module>
         <module>mule-artifact-it</module>-->
@@ -212,6 +214,26 @@
                 <artifactId>plexus-classworlds</artifactId>
                 <version>2.6.0</version>
             </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.8.6</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>30.1.1-jre</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.8.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.12.0</version>
+            </dependency>
             <!-- Testing -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -227,6 +249,11 @@
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>3.24.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>4.11.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

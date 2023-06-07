@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ExtensionModelLoaderTest extends MavenClientTest {
 
   @Test
-  public void loadExtensionModelFromJar2(@TempDir Path tempDir) throws IOException {
+  void loadExtensionModelFromJar2(@TempDir Path tempDir) throws IOException {
     final Path temp = Files.createDirectories(tempDir.resolve("dummy/"));
     final File m2Repo = getM2Repo(getM2Home());
     final MavenClient client = getMavenClientInstance(getMavenConfiguration(m2Repo, getUserSettings(m2Repo), getSettingsSecurity(m2Repo)));

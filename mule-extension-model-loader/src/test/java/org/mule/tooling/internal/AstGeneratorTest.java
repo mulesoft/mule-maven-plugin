@@ -26,10 +26,10 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class AstGeneratorTest extends MavenClientTest {
+class AstGeneratorTest extends MavenClientTest {
 
   @Test
-  public void generateASTWithExtensionModels() throws Exception {
+  void generateASTWithExtensionModels() throws Exception {
     final Pair<AstGenerator, ArtifactAst> elements = getElements("mule-config.xml");
     elements.getLeft().validateAST(elements.getRight());
 
@@ -38,7 +38,7 @@ public class AstGeneratorTest extends MavenClientTest {
   }
 
   @Test
-  public void throwConfigurationExceptionIfMuleConfigHasErrors() {
+  void throwConfigurationExceptionIfMuleConfigHasErrors() {
     final Pair<AstGenerator, ArtifactAst> elements = getElements("mule-config2.xml");
     assertThatThrownBy(() -> elements.getLeft().validateAST(elements.getRight())).isExactlyInstanceOf(ConfigurationException.class);
   }

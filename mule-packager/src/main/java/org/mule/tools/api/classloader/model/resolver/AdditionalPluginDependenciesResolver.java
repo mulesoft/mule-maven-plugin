@@ -47,7 +47,6 @@ import static org.mule.tools.api.classloader.model.ArtifactCoordinates.DEFAULT_A
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toBundleDescriptor;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
 
-
 /**
  * Resolves additional plugin libraries for all plugins declared.
  *

@@ -7,62 +7,67 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package util;
 
+import org.assertj.core.api.ThrowableAssert;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.api.util.MavenComponents;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class MavenComponentsTest {
+class MavenComponentsTest {
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullLog() {
-    new MavenComponents().withLog(null);
+  @Test
+  void nullLog() {
+    testException(() -> new MavenComponents().withLog(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullProject() {
-    new MavenComponents().withProject(null);
+  @Test
+  void nullProject() {
+    testException(() -> new MavenComponents().withProject(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullOutputDirectory() {
-    new MavenComponents().withOutputDirectory(null);
+  @Test
+  void nullOutputDirectory() {
+    testException(() -> new MavenComponents().withOutputDirectory(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullSession() {
-    new MavenComponents().withSession(null);
+  @Test
+  void nullSession() {
+    testException(() -> new MavenComponents().withSession(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullSharedLibraries() {
-    new MavenComponents().withSharedLibraries(null);
+  @Test
+  void nullSharedLibraries() {
+    testException(() -> new MavenComponents().withSharedLibraries(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullProjectBuilder() {
-    new MavenComponents().withProjectBuilder(null);
+  @Test
+  void nullProjectBuilder() {
+    testException(() -> new MavenComponents().withProjectBuilder(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullRepositorySystem() {
-    new MavenComponents().withRepositorySystem(null);
+  @Test
+  void nullRepositorySystem() {
+    testException(() -> new MavenComponents().withRepositorySystem(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullLocalRepository() {
-    new MavenComponents().withLocalRepository(null);
+  @Test
+  void nullLocalRepository() {
+    testException(() -> new MavenComponents().withLocalRepository(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullRemoteArtifactRepository() {
-    new MavenComponents().withRemoteArtifactRepositories(null);
+  @Test
+  void nullRemoteArtifactRepository() {
+    testException(() -> new MavenComponents().withRemoteArtifactRepositories(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullProjectBaseFolder() {
-    new MavenComponents().withProjectBaseFolder(null);
+  @Test
+  void nullProjectBaseFolder() {
+    testException(() -> new MavenComponents().withProjectBaseFolder(null));
+  }
+
+  private void testException(ThrowableAssert.ThrowingCallable callable) {
+    assertThatThrownBy(callable).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 }

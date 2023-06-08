@@ -10,8 +10,8 @@
 package org.mule.tools.api.classloader.model.resolver;
 
 import static java.util.Collections.emptyList;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertThat;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -25,28 +25,28 @@ import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.internal.MuleMavenClient;
 import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.maven.pom.parser.api.model.BundleScope;
 
-public class ApplicationDependencyResolverTest {
+class ApplicationDependencyResolverTest {
 
   private final MavenClient mockMavenClient = mock(MuleMavenClient.class);
 
   @Test
-  public void emptyDependencies() {
+  void emptyDependencies() {
     when(mockMavenClient.resolveArtifactDependencies(any(), anyBoolean(), anyBoolean(), any(), any(), any()))
         .thenReturn(emptyList());
     ApplicationDependencyResolver applicationDependencyResolver = new ApplicationDependencyResolver(mockMavenClient);
     List<BundleDependency> bundleDependencies =
         applicationDependencyResolver.resolveApplicationDependencies(new File("not-relevant"));
-    assertThat(bundleDependencies, empty());
+    assertThat(bundleDependencies).isEmpty();
   }
 
   @Test
-  public void filterProvidedDependencies() {
+  void filterProvidedDependencies() {
     BundleDependency mockProvidedDependency = mock(BundleDependency.class, RETURNS_DEEP_STUBS);
     BundleDependency mockNonProvidedDependency = mock(BundleDependency.class, RETURNS_DEEP_STUBS);
     BundleDependency mockDomainDependency = mock(BundleDependency.class, RETURNS_DEEP_STUBS);
@@ -61,6 +61,6 @@ public class ApplicationDependencyResolverTest {
     ApplicationDependencyResolver applicationDependencyResolver = new ApplicationDependencyResolver(mockMavenClient);
     List<BundleDependency> bundleDependencies =
         applicationDependencyResolver.resolveApplicationDependencies(new File("not-relevant"));
-    assertThat(bundleDependencies, empty());
+    assertThat(bundleDependencies).isEmpty();
   }
 }

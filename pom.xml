@@ -36,8 +36,9 @@
         <module>mule-extension-model-loader</module>
         <module>mule-classloader-model</module>
         <module>mule-deployer</module>
-        <!--
         <module>mule-packager</module>
+        <!--
+
 
 
         <module>mule-maven-plugin</module>
@@ -133,6 +134,11 @@
         <dependencies>
             <!-- Runtime -->
             <dependency>
+                <groupId>org.mule.runtime</groupId>
+                <artifactId>mule-api</artifactId>
+                <version>${mule.api.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.mulesoft.anypoint</groupId>
                 <artifactId>mule-module-autodiscovery</artifactId>
                 <version>${mule.version}</version>
@@ -193,6 +199,11 @@
                 <groupId>org.mule</groupId>
                 <artifactId>mule-maven-client-impl</artifactId>
                 <version>${mule.maven.client.impl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mule.tools.maven</groupId>
+                <artifactId>exchange-mule-plugin-utils</artifactId>
+                <version>${exchange.plugin.version}</version>
             </dependency>
             <!-- Maven -->
             <dependency>
@@ -270,6 +281,16 @@
                 <groupId>com.vdurmont</groupId>
                 <artifactId>semver4j</artifactId>
                 <version>${semver4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.skuzzle</groupId>
+                <artifactId>semantic-version</artifactId>
+                <version>${semantic.version.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
             </dependency>
             <!-- Jersey -->
             <dependency>

@@ -9,33 +9,33 @@
  */
 package org.mule.tools.client;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-
 import java.util.concurrent.TimeoutException;
 
-import org.junit.Test;
-
-import org.mule.tools.client.OperationRetrier;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.OperationRetrier.RetriableOperation;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @author Mulesoft Inc.
  * @since 2.0.0
  */
-public class OperationRetrierTest {
+class OperationRetrierTest {
 
-  @Test(expected = TimeoutException.class)
-  public void retryFail() throws TimeoutException, InterruptedException {
-    OperationRetrier operationRetrier = new OperationRetrier();
-    operationRetrier.setAttempts(1);
-    operationRetrier.setSleepTime(1000L);
+  @Test
+  void retryFail() {
+    assertThatThrownBy(() -> {
+      OperationRetrier operationRetrier = new OperationRetrier();
+      operationRetrier.setAttempts(1);
+      operationRetrier.setSleepTime(1000L);
 
-    operationRetrier.retry(() -> true);
+      operationRetrier.retry(() -> true);
+    }).isExactlyInstanceOf(TimeoutException.class);
   }
 
   @Test
-  public void retrySucceed() throws TimeoutException, InterruptedException {
+  void retrySucceed() throws TimeoutException, InterruptedException {
     OperationRetrier operationRetrier = new OperationRetrier();
     operationRetrier.setAttempts(1);
     operationRetrier.setSleepTime(1000L);
@@ -44,7 +44,7 @@ public class OperationRetrierTest {
   }
 
   @Test
-  public void retryTwoTimesAndFail() {
+  void retryTwoTimesAndFail() {
     Integer maxAttempts = 2;
 
     OperationRetrier operationRetrier = new OperationRetrier();
@@ -57,32 +57,29 @@ public class OperationRetrierTest {
     try {
       operationRetrier.retry(retriableOperation);
     } catch (Exception e) {
-      assertThat(retriableOperation.getCount(), is(maxAttempts));
+      assertThat(retriableOperation.getCount()).isEqualTo(maxAttempts);
     }
   }
 
   @Test
-  public void retryTwoTimesAndSucced() throws TimeoutException, InterruptedException {
+  void retryTwoTimesAndSucced() throws TimeoutException, InterruptedException {
     Integer maxAttempts = 3;
 
     OperationRetrier operationRetrier = new OperationRetrier();
     operationRetrier.setAttempts(maxAttempts);
     operationRetrier.setSleepTime(1L);
 
-
     CounterRetriableOperation retriableOperation = new CounterRetriableOperation(maxAttempts);
     retriableOperation.setSuccedAt(2);
 
-
     operationRetrier.retry(retriableOperation);
-    assertThat(retriableOperation.getCount(), is(2));
+    assertThat(retriableOperation.getCount()).isEqualTo(2);
   }
 
-  class CounterRetriableOperation implements RetriableOperation {
+  static class CounterRetriableOperation implements RetriableOperation {
 
     private Integer count = 0;
-    private Integer maxAttempts;
-
+    private final Integer maxAttempts;
     private Integer succedAt = -1;
 
     public CounterRetriableOperation(Integer maxAttempts) {
@@ -103,14 +100,8 @@ public class OperationRetrierTest {
       if (succedAt == -1) {
         return count <= maxAttempts;
       } else {
-        if (count.equals(succedAt)) {
-          return false;
-        }
-        return true;
+        return !count.equals(succedAt);
       }
     }
   }
-
-
-
 }

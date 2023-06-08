@@ -20,12 +20,8 @@ package org.mule.tools.model.anypoint;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.apache.maven.model.Model;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
@@ -40,14 +36,13 @@ import java.lang.reflect.Modifier;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
-
-
 public class DeploymentConfigurator {
 
+  private static final String DEFAULT_GRANT_TYPE = "client_credentials";
+  private static final String CONNECTED_APPS_USER = "~~~Client~~~";
+
   private final DeployerLog log;
-  private AnypointDeployment anypointConfiguration;
-  private final String DEFAULT_GRANT_TYPE = "client_credentials";
-  private final String CONNECTED_APPS_USER = "~~~Client~~~";
+  private final AnypointDeployment anypointConfiguration;
 
   public DeploymentConfigurator(AnypointDeployment anypointConfiguration, DeployerLog log) {
     this.anypointConfiguration = anypointConfiguration;

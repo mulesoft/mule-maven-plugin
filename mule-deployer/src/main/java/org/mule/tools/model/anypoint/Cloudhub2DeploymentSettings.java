@@ -29,8 +29,6 @@ public class Cloudhub2DeploymentSettings extends RuntimeFabricDeploymentSettings
     instanceType = settings.instanceType;
   }
 
-
-
   public String getInstanceType() {
     return instanceType;
   }
@@ -38,7 +36,4 @@ public class Cloudhub2DeploymentSettings extends RuntimeFabricDeploymentSettings
   public void setInstanceType(String instanceType) {
     this.instanceType = instanceType;
   }
-
-
-
 }

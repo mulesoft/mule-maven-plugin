@@ -16,19 +16,13 @@ public class ObjectStoreV2 {
   @Parameter
   protected boolean enabled;
 
-
-
   public ObjectStoreV2() {}
-
 
   public boolean isEnabled() {
     return enabled;
   }
 
-
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
   }
-
-
 }

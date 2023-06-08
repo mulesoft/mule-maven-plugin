@@ -9,22 +9,16 @@
  */
 package org.mule.tools.client.cloudhub;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.cloudhub.model.Deployment;
 import org.mule.tools.client.cloudhub.model.DeploymentLogRequest;
@@ -33,8 +27,11 @@ import org.mule.tools.client.cloudhub.model.MuleVersion;
 import org.mule.tools.client.core.exception.ClientException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 
-@Ignore
-public class CloudHubClientTestCase {
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
+
+@Disabled("I suspect that there should be a server for the requests.")
+class CloudHubClientTestCase {
 
   private static final String BASE_URI = "https://anypoint.mulesoft.com";
   private static final String USERNAME = System.getProperty("username");
@@ -55,8 +52,8 @@ public class CloudHubClientTestCase {
   private Map<String, String> properties = new HashMap();
   private CloudHubDeployment cloudHubDeployment;
 
-  @Before
-  public void setup() throws URISyntaxException {
+  @BeforeEach
+  void setup() throws URISyntaxException {
     appName = String.format(BASE_DOMAIN_NAME, new Date().getTime());
 
     applicationFile = new File(getClass().getClassLoader().getResource(APPLICATION_FILE_NAME).toURI().getPath());
@@ -88,8 +85,8 @@ public class CloudHubClientTestCase {
     baseApplication.setRegion(REGION);
   }
 
-  @After
-  public void removeTestApplication() {
+  @AfterEach
+  void removeTestApplication() {
     Application application = cloudHubClient.getApplications(appName);
     if (application != null) {
       cloudHubClient.deleteApplications(application.getDomain());
@@ -97,17 +94,17 @@ public class CloudHubClientTestCase {
   }
 
   @Test
-  public void createApplicationValidParameters() {
+  void createApplicationValidParameters() {
     verifyAppDoesntExist(appName);
 
     Application application = cloudHubClient.createApplication(baseApplication, applicationFile);
-    assertThat(application.getDomain(), equalTo(appName));
+    assertThat(application.getDomain()).isEqualTo(appName);
 
     verifyAppExists(appName);
   }
 
   @Test
-  public void createApplicationThatAlreadyExists() throws Exception {
+  void createApplicationThatAlreadyExists() throws Exception {
     verifyAppDoesntExist(appName);
 
     cloudHubClient.createApplication(baseApplication, applicationFile);
@@ -117,14 +114,14 @@ public class CloudHubClientTestCase {
       cloudHubClient.createApplication(baseApplication, applicationFile);
       fail();
     } catch (ClientException e) {
-      assertThat(e.getStatusCode(), equalTo(409));
-      assertThat(e.getReasonPhrase(), equalTo("Conflict"));
+      assertThat(e.getStatusCode()).isEqualTo(409);
+      assertThat(e.getReasonPhrase()).isEqualTo("Conflict");
     }
   }
 
 
   @Test
-  public void startApplication() {
+  void startApplication() {
     verifyAppDoesntExist(appName);
 
     cloudHubClient.createApplication(baseApplication, applicationFile);
@@ -136,7 +133,7 @@ public class CloudHubClientTestCase {
 
 
   @Test
-  public void deleteApplication() {
+  void deleteApplication() {
     cloudHubClient.createApplication(baseApplication, applicationFile);
 
     verifyAppExists(appName);
@@ -145,7 +142,7 @@ public class CloudHubClientTestCase {
   }
 
   @Test
-  public void getLogsForDeployment() {
+  void getLogsForDeployment() {
     Application application = cloudHubClient.createApplication(baseApplication, applicationFile);
     cloudHubClient.startApplications(appName);
 
@@ -159,7 +156,7 @@ public class CloudHubClientTestCase {
   }
 
   @Test
-  public void getEntireLogsForDeployment() {
+  void getEntireLogsForDeployment() {
     Application application = cloudHubClient.createApplication(baseApplication, applicationFile);
     cloudHubClient.startApplications(appName);
 
@@ -173,11 +170,10 @@ public class CloudHubClientTestCase {
   }
 
   private void verifyAppDoesntExist(String appName) {
-    assertThat(cloudHubClient.getApplications(appName), nullValue());
+    assertThat(cloudHubClient.getApplications(appName)).isNull();
   }
 
   private void verifyAppExists(String appName) {
-    assertThat(cloudHubClient.getApplications(appName), notNullValue());
+    assertThat(cloudHubClient.getApplications(appName)).isNotNull();
   }
-
 }

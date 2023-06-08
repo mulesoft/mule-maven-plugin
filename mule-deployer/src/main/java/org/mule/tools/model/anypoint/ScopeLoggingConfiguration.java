@@ -33,6 +33,4 @@ public class ScopeLoggingConfiguration {
   public void setLogLevel(LogLevel logLevel) {
     this.logLevel = logLevel;
   }
-
-
 }

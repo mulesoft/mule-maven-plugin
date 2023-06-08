@@ -7,7 +7,6 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package org.mule.tools.model.standalone;
 
 import org.mule.tools.client.core.exception.DeploymentException;
@@ -63,5 +62,4 @@ public abstract class MuleRuntimeDeployment extends Deployment {
       throw new DeploymentException("Invalid deployment configuration, missing mule home value. Please set it either through the plugin configuration or -Dmule.home when building the current project");
     }
   }
-
 }

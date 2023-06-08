@@ -26,7 +26,7 @@ import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 public class CloudHubDeploymentVerification implements DeploymentVerification {
 
   private final CloudHubClient client;
-  private DefaultDeploymentVerification verification;
+  private final DefaultDeploymentVerification verification;
 
   private static final String FAILED_STATUS = "FAIL";
   public static final String STARTED_STATUS = "STARTED";

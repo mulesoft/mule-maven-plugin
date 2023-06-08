@@ -12,9 +12,9 @@ package org.mule.tools.client.fabric.model;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 public class Deployments implements Iterable<DeploymentGenericResponse> {
 
@@ -37,7 +37,7 @@ public class Deployments implements Iterable<DeploymentGenericResponse> {
   }
 
   private List<DeploymentGenericResponse> getItems() {
-    return items != null ? items : Collections.EMPTY_LIST;
+    return Optional.ofNullable(items).orElseGet(Collections::emptyList);
   }
 
 }

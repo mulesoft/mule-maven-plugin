@@ -9,60 +9,65 @@
  */
 package org.mule.tools.client.standalone.exception;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.assertj.core.api.AbstractThrowableAssert;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.instanceOf;
+import java.util.Objects;
+import java.util.Optional;
 
-public class MuleControllerExceptionTest {
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+@SuppressWarnings("rawtypes")
+class MuleControllerExceptionTest {
 
   private static final String EXCEPTION_MESSAGE = "Standalone failure";
   private final MuleControllerException muleControllerException = new MuleControllerException(EXCEPTION_MESSAGE);
 
-  @Rule
-  public ExpectedException expected = ExpectedException.none();
-
-  @Before
-  public void setUp() {
-    expected.expect(MuleControllerException.class);
+  @Test
+  void muleControllerExceptionNoMessageTest() throws MuleControllerException {
+    testException(new MuleControllerException(), null, null, null);
   }
 
   @Test
-  public void muleControllerExceptionNoMessageTest() throws MuleControllerException {
-    throw new MuleControllerException();
+  void muleControllerExceptionCustomMessageTest() throws MuleControllerException {
+    testException(muleControllerException, null, null, EXCEPTION_MESSAGE);
   }
 
   @Test
-  public void muleControllerExceptionCustomMessageTest() throws MuleControllerException {
-    expected.expectMessage(EXCEPTION_MESSAGE);
-    throw muleControllerException;
+  void muleControllerExceptionCustomMessageNullCauseTest() throws MuleControllerException {
+    testException(new MuleControllerException((Throwable) null), null, null, null);
   }
 
   @Test
-  public void muleControllerExceptionCustomMessageNullCauseTest() throws MuleControllerException {
-    throw new MuleControllerException((Throwable) null);
+  void muleControllerExceptionMessageWithCauseTest() throws MuleControllerException {
+    Exception exception =
+        new MuleControllerException(new IllegalArgumentException("Timeout should be a non negative integer number"));
+    testException(exception, null, IllegalArgumentException.class,
+                  "java.lang.IllegalArgumentException: Timeout should be a non negative integer number");
   }
 
   @Test
-  public void muleControllerExceptionMessageWithCauseTest() throws MuleControllerException {
-    expected.expectMessage("java.lang.IllegalArgumentException: Timeout should be a non negative integer number");
-    expected.expectCause(instanceOf(IllegalArgumentException.class));
-    throw new MuleControllerException(new IllegalArgumentException("Timeout should be a non negative integer number"));
+  void muleControllerExceptionCustomMessageWithCauseTest() throws MuleControllerException {
+    Exception exception =
+        new MuleControllerException(EXCEPTION_MESSAGE,
+                                    new IllegalArgumentException("Timeout should be a non negative integer number"));
+    testException(exception, null, IllegalArgumentException.class, EXCEPTION_MESSAGE);
   }
 
   @Test
-  public void muleControllerExceptionCustomMessageWithCauseTest() throws MuleControllerException {
-    expected.expectMessage(EXCEPTION_MESSAGE);
-    expected.expectCause(instanceOf(IllegalArgumentException.class));
-    throw new MuleControllerException(EXCEPTION_MESSAGE,
-                                      new IllegalArgumentException("Timeout should be a non negative integer number"));
+  void muleControllerExceptionCustomMessageWithNullCauseTest() throws MuleControllerException {
+    testException(new MuleControllerException(EXCEPTION_MESSAGE, null), null, null, EXCEPTION_MESSAGE);
   }
 
-  @Test
-  public void muleControllerExceptionCustomMessageWithNullCauseTest() throws MuleControllerException {
-    expected.expectMessage(EXCEPTION_MESSAGE);
-    throw new MuleControllerException(EXCEPTION_MESSAGE, null);
+  private void testException(Throwable throwable, Class clazz, Class cause, String message) {
+    AbstractThrowableAssert<?, ? extends Throwable> throwableAssert = assertThatThrownBy(() -> {
+      throw throwable;
+    })
+        .isExactlyInstanceOf(Optional.ofNullable(clazz).orElse(MuleControllerException.class))
+        .hasMessage(message);
+
+    if (Objects.nonNull(cause)) {
+      throwableAssert.cause().isExactlyInstanceOf(cause);
+    }
   }
 }

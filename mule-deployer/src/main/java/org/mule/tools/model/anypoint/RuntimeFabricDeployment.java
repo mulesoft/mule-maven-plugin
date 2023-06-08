@@ -12,17 +12,16 @@ package org.mule.tools.model.anypoint;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.client.core.exception.DeploymentException;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 public abstract class RuntimeFabricDeployment extends AnypointDeployment {
 
-  public static String MISSING_TARGET_EXCEPTION =
+  public static final String MISSING_TARGET_EXCEPTION =
       "Invalid deployment configuration, missing target value. Please set it in the plugin configuration";
 
-  public static String MISSING_PROVIDER_EXCEPTION =
+  public static final String MISSING_PROVIDER_EXCEPTION =
       "Invalid deployment configuration, missing provider value. Please set the provider as MC, CLUSTER or SERVER";
 
   @Parameter
@@ -40,7 +39,6 @@ public abstract class RuntimeFabricDeployment extends AnypointDeployment {
   public String getReplicas() {
     return replicas;
   }
-
 
   public void setReplicas(String replicas) {
     this.replicas = replicas;

@@ -29,10 +29,7 @@ public class Inbound {
     return publicUrl;
   }
 
-
   public void setPublicUrl(String publicUrl) {
     this.publicUrl = publicUrl;
   }
-
-
 }

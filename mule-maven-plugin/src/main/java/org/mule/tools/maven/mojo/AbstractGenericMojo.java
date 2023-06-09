@@ -54,6 +54,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.eclipse.aether.repository.RemoteRepository;
 
+@SuppressWarnings("unchecked")
 public abstract class AbstractGenericMojo extends AbstractMojo {
 
   @Parameter

@@ -38,7 +38,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
-
 /**
  * Post process the generated files from compilation, which in this case will be the mule-artifact.json from the compiled java
  * classes plus any other resource already copied to the output directory.

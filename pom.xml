@@ -37,11 +37,8 @@
         <module>mule-classloader-model</module>
         <module>mule-deployer</module>
         <module>mule-packager</module>
-        <!--
-
-
-
         <module>mule-maven-plugin</module>
+        <!--
         <module>mule-artifact-it</module>-->
     </modules>
 
@@ -266,6 +263,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-exec</artifactId>
                 <version>${commons.exec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons.collections.version}</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.ws.rs</groupId>

@@ -16,10 +16,10 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.maven.it.VerificationException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class CompileMojoTest extends MojoTest implements SettingsConfigurator {
+class CompileMojoTest extends MojoTest implements SettingsConfigurator {
 
   private static final String GOAL = "compile";
 
@@ -27,13 +27,13 @@ public class CompileMojoTest extends MojoTest implements SettingsConfigurator {
     this.goal = GOAL;
   }
 
-  @Before
-  public void before() throws IOException, VerificationException {
+  @BeforeEach
+  void before() throws IOException, VerificationException {
     clearResources();
   }
 
   @Test
-  public void testCompile() throws IOException, VerificationException {
+  void testCompile() throws IOException, VerificationException {
     verifier.executeGoal(GOAL);
     File expectedStructure = getExpectedStructure();
     assertThat("The directory structure is different from the expected", targetFolder,

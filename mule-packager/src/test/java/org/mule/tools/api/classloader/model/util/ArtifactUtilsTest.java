@@ -7,17 +7,15 @@
 package org.mule.tools.api.classloader.model.util;
 
 import static java.nio.file.Paths.get;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
-import static org.hamcrest.collection.IsArrayWithSize.arrayWithSize;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mule.tools.api.classloader.model.Artifact.MULE_DOMAIN;
 import static org.mule.tools.api.classloader.model.util.ZipUtils.compress;
 
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.ApplicationGAVModel;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
@@ -25,19 +23,16 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
-import org.hamcrest.collection.IsArrayWithSize;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
 
-public class ArtifactUtilsTest {
+class ArtifactUtilsTest {
 
   private static final String PARENT_VERSION = "2.0.0";
   private static final String PARENT_GROUP_ID = "parent.group.id";
@@ -56,16 +51,14 @@ public class ArtifactUtilsTest {
   private Model pomModel;
   private Parent parentProject;
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+  @TempDir
+  public Path temporaryFolder;
 
   private File localRepository;
 
-  @Before
-  public void before() throws IOException {
-    localRepository = temporaryFolder.newFolder();
+  @BeforeEach
+  void before() throws IOException {
+    localRepository = Files.createDirectories(temporaryFolder.resolve(UUID.randomUUID().toString())).toFile();
 
     bundleDescriptor =
         new BundleDescriptor.Builder().setGroupId(GROUP_ID).setArtifactId(ARTIFACT_ID).setVersion(VERSION).setBaseVersion(VERSION)
@@ -82,33 +75,32 @@ public class ArtifactUtilsTest {
     pomModel.setParent(parentProject);
   }
 
-
   private URI buildBundleURI() {
     File bundleFile = new File(localRepository.getAbsolutePath(), RESOURCE_LOCATION);
-    assertThat(bundleFile.mkdirs(), is(true));
+    assertThat(bundleFile.mkdirs()).isTrue();
     return bundleFile.toURI();
   }
 
   @Test
-  public void getApplicationArtifactCoordinates() {
+  void getApplicationArtifactCoordinates() {
     ApplicationGAVModel appGAVModel =
         new ApplicationGAVModel(pomModel.getGroupId(), pomModel.getArtifactId(), pomModel.getVersion());
     ArtifactCoordinates applicationArtifactCoordinates = ArtifactUtils.getApplicationArtifactCoordinates(pomModel, appGAVModel);
-    assertThat(applicationArtifactCoordinates.getType(), equalTo("jar"));
-    assertThat(applicationArtifactCoordinates.getClassifier(), equalTo(pomModel.getPackaging()));
-    assertThat(applicationArtifactCoordinates.getGroupId(), equalTo(appGAVModel.getGroupId()));
-    assertThat(applicationArtifactCoordinates.getArtifactId(), equalTo(appGAVModel.getArtifactId()));
-    assertThat(applicationArtifactCoordinates.getVersion(), equalTo(appGAVModel.getVersion()));
+    assertThat(applicationArtifactCoordinates.getType()).isEqualTo("jar");
+    assertThat(applicationArtifactCoordinates.getClassifier()).isEqualTo(pomModel.getPackaging());
+    assertThat(applicationArtifactCoordinates.getGroupId()).isEqualTo(appGAVModel.getGroupId());
+    assertThat(applicationArtifactCoordinates.getArtifactId()).isEqualTo(appGAVModel.getArtifactId());
+    assertThat(applicationArtifactCoordinates.getVersion()).isEqualTo(appGAVModel.getVersion());
   }
 
   @Test
-  public void toArtifactCoordinatesFromMinimumRequirementsTest() {
+  void toArtifactCoordinatesFromMinimumRequirementsTest() {
     ArtifactCoordinates actualArtifactCoordinates = ArtifactUtils.toArtifactCoordinates(bundleDescriptor);
     assertArtifactCoordinates(actualArtifactCoordinates, DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, null);
   }
 
   @Test
-  public void toArtifactCoordinatesTest() {
+  void toArtifactCoordinatesTest() {
     bundleDescriptor =
         new BundleDescriptor.Builder().setGroupId(GROUP_ID).setArtifactId(ARTIFACT_ID).setVersion(VERSION).setBaseVersion(VERSION)
             .setType(POM_TYPE)
@@ -120,20 +112,20 @@ public class ArtifactUtilsTest {
   }
 
   @Test
-  public void toDependencyTest() {
+  void toDependencyTest() {
     BundleDependency bundleDependency =
-        new BundleDependency.Builder().sedBundleDescriptor(bundleDescriptor).setBundleUri(bundleURI).build();
+        new BundleDependency.Builder().setBundleDescriptor(bundleDescriptor).setBundleUri(bundleURI).build();
 
     Artifact actualArtifact = ArtifactUtils.toArtifact(bundleDependency);
 
     assertArtifactCoordinates(actualArtifact.getArtifactCoordinates(), DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, null);
-    assertThat("Artifact path location is not the expected", actualArtifact.getUri(), equalTo(bundleURI));
+    assertThat(actualArtifact.getUri()).as("Artifact path location is not the expected").isEqualTo(bundleURI);
   }
 
   @Test
-  public void checkPackagesAndResourcesTests() throws Exception {
+  void checkPackagesAndResourcesTests() throws Exception {
     BundleDependency bundleDependency =
-        new BundleDependency.Builder().sedBundleDescriptor(bundleDescriptor).setBundleUri(bundleURI).build();
+        new BundleDependency.Builder().setBundleDescriptor(bundleDescriptor).setBundleUri(bundleURI).build();
 
     File jarFile = FileUtils.toFile(bundleDependency.getBundleUri().toURL());
     jarFile.delete();
@@ -145,15 +137,15 @@ public class ArtifactUtilsTest {
     Artifact actualArtifact = ArtifactUtils.updatePackagesResources(ArtifactUtils.toArtifact(bundleDependency));
     if (!System.getProperty("os.name").startsWith("Windows")) {
       assertArtifactCoordinates(actualArtifact.getArtifactCoordinates(), DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, null);
-      assertThat("Artifact packages are not the expected", actualArtifact.getPackages(), arrayWithSize(2));
-      assertThat(actualArtifact.getPackages(), arrayContaining("testpackage1", "testpackage2"));
-      assertThat("Artifact resources are not the expected", actualArtifact.getResources(), arrayWithSize(1));
-      assertThat(actualArtifact.getResources(), arrayContaining("testpackage1/myresource.properties"));
+      assertThat(actualArtifact.getPackages()).as("Artifact packages are not the expected").hasSize(2);
+      assertThat(actualArtifact.getPackages()).containsExactly("testpackage1", "testpackage2");
+      assertThat(actualArtifact.getResources()).as("Artifact resources are not the expected").hasSize(1);
+      assertThat(actualArtifact.getResources()).containsExactly("testpackage1/myresource.properties");
     }
   }
 
   @Test
-  public void checkPackagesAndResourcesWithNullUriTests() {
+  void checkPackagesAndResourcesWithNullUriTests() {
     bundleDescriptor =
         new BundleDescriptor.Builder()
             .setGroupId(GROUP_ID)
@@ -164,75 +156,72 @@ public class ArtifactUtilsTest {
             .build();
 
     BundleDependency bundleDependency =
-        new BundleDependency.Builder().sedBundleDescriptor(bundleDescriptor).build();
+        new BundleDependency.Builder().setBundleDescriptor(bundleDescriptor).build();
 
     Artifact actualArtifact = ArtifactUtils.updatePackagesResources(ArtifactUtils.toArtifact(bundleDependency));
 
     assertArtifactCoordinates(actualArtifact.getArtifactCoordinates(), DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, MULE_DOMAIN);
-    assertThat(actualArtifact.getPackages(), is(nullValue()));
-    assertThat(actualArtifact.getResources(), is(nullValue()));
+    assertThat(actualArtifact.getPackages()).isNull();
+    assertThat(actualArtifact.getResources()).isNull();
   }
 
   private void assertArtifactCoordinates(ArtifactCoordinates actualArtifactCoordinates, String type,
                                          String classifier) {
-    assertThat("Group id is not the expected", actualArtifactCoordinates.getGroupId(), equalTo(GROUP_ID));
-    assertThat("Artifact id is not the expected", actualArtifactCoordinates.getArtifactId(), equalTo(ARTIFACT_ID));
-    assertThat("Version is not the expected", actualArtifactCoordinates.getVersion(), equalTo(VERSION));
-    assertThat("Type is not the expected", actualArtifactCoordinates.getType(),
-               equalTo(type));
-    assertThat("Classifier is not the expected", actualArtifactCoordinates.getClassifier(), equalTo(classifier));
+    assertThat(actualArtifactCoordinates.getGroupId()).as("Group id is not the expected").isEqualTo(GROUP_ID);
+    assertThat(actualArtifactCoordinates.getArtifactId()).as("Artifact id is not the expected").isEqualTo(ARTIFACT_ID);
+    assertThat(actualArtifactCoordinates.getVersion()).as("Version is not the expected").isEqualTo(VERSION);
+    assertThat(actualArtifactCoordinates.getType()).as("Type is not the expected").isEqualTo(type);
+    assertThat(actualArtifactCoordinates.getClassifier()).as("Classifier is not the expected").isEqualTo(classifier);
 
   }
 
   @Test
-  public void isNotValidMulePluginMissingClassifierTest() {
+  void isNotValidMulePluginMissingClassifierTest() {
     Artifact notAMulePluginDependency = new Artifact(artifactCoordinates, bundleURI);
-    assertThat("Mule plugin validation method should have returned false",
-               ArtifactUtils.isValidMulePlugin(notAMulePluginDependency),
-               is(false));
+    assertThat(ArtifactUtils.isValidMulePlugin(notAMulePluginDependency))
+        .as("Mule plugin validation method should have returned false").isFalse();
   }
 
   @Test
-  public void isNotValidMulePluginWrongClassifierTest() {
+  void isNotValidMulePluginWrongClassifierTest() {
     artifactCoordinates =
         new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, NOT_MULE_PLUGIN);
     Artifact notAMulePluginArtifact = new Artifact(artifactCoordinates, bundleURI);
-    assertThat("Mule plugin validation method should have returned false",
-               ArtifactUtils.isValidMulePlugin(notAMulePluginArtifact),
-               is(false));
+    assertThat(ArtifactUtils.isValidMulePlugin(notAMulePluginArtifact))
+        .as("Mule plugin validation method should have returned false").isFalse();
   }
 
   @Test
-  public void isValidMulePluginTest() {
+  void isValidMulePluginTest() {
     artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, MULE_PLUGIN);
     Artifact mulePluginArtifact = new Artifact(artifactCoordinates, bundleURI);
-    assertThat("Mule plugin validation method should have returned true", ArtifactUtils.isValidMulePlugin(mulePluginArtifact),
-               is(true));
+    assertThat(ArtifactUtils.isValidMulePlugin(mulePluginArtifact)).as("Mule plugin validation method should have returned true")
+        .isTrue();
   }
 
   @Test
-  public void toBundleDescriptorTest() {
+  void toBundleDescriptorTest() {
     artifactCoordinates.setClassifier(MULE_APP_CLASSIFIER);
     artifactCoordinates.setVersion(VERSION);
     BundleDescriptor actualBundleDescriptor = ArtifactUtils.toBundleDescriptor(artifactCoordinates);
-    assertThat("The group id is not the expected", actualBundleDescriptor.getGroupId(), equalTo(GROUP_ID));
-    assertThat("The artifact id is not the expected", actualBundleDescriptor.getArtifactId(), equalTo(ARTIFACT_ID));
-    assertThat("The version is not the expected", actualBundleDescriptor.getVersion(), equalTo(VERSION));
-    assertThat("The base version is not the expected", actualBundleDescriptor.getBaseVersion(), equalTo(VERSION));
-    assertThat("The classifier is not the expected", actualBundleDescriptor.getClassifier(),
-               equalTo(Optional.of(MULE_APP_CLASSIFIER)));
-    assertThat("The type is not the expected", actualBundleDescriptor.getType(), equalTo(DEFAULT_ARTIFACT_DESCRIPTOR_TYPE));
+    assertThat(actualBundleDescriptor.getGroupId()).as("The group id is not the expected").isEqualTo(GROUP_ID);
+    assertThat(actualBundleDescriptor.getArtifactId()).as("The artifact id is not the expected").isEqualTo(ARTIFACT_ID);
+    assertThat(actualBundleDescriptor.getVersion()).as("The version is not the expected").isEqualTo(VERSION);
+    assertThat(actualBundleDescriptor.getBaseVersion()).as("The base version is not the expected").isEqualTo(VERSION);
+    assertThat(actualBundleDescriptor.getClassifier()).as("The classifier is not the expected")
+        .isEqualTo(Optional.of(MULE_APP_CLASSIFIER));
+    assertThat(actualBundleDescriptor.getType()).as("The type is not the expected").isEqualTo(DEFAULT_ARTIFACT_DESCRIPTOR_TYPE);
   }
 
   @Test
-  public void getBundleDescriptorTest() {
+  void getBundleDescriptorTest() {
     ApplicationGAVModel appGAVModel = new ApplicationGAVModel(GROUP_ID, ARTIFACT_ID, VERSION);
     BundleDescriptor actualBundleDescriptor = ArtifactUtils.getBundleDescriptor(appGAVModel);
 
-    assertThat("Group id is not the expected", actualBundleDescriptor.getGroupId(), equalTo(GROUP_ID));
-    assertThat("Artifact id is not the expected", actualBundleDescriptor.getArtifactId(), equalTo(ARTIFACT_ID));
-    assertThat("Version is not the expected", actualBundleDescriptor.getVersion(), equalTo(VERSION));
-    assertThat("Base version is not the expected", actualBundleDescriptor.getBaseVersion(), equalTo(VERSION));
-    assertThat("Type is not the expected", actualBundleDescriptor.getType(), equalTo(POM_TYPE));
+    assertThat(actualBundleDescriptor.getGroupId()).as("Group id is not the expected").isEqualTo(GROUP_ID);
+    assertThat(actualBundleDescriptor.getArtifactId()).as("Artifact id is not the expected").isEqualTo(ARTIFACT_ID);
+    assertThat(actualBundleDescriptor.getVersion()).as("Version is not the expected").isEqualTo(VERSION);
+    assertThat(actualBundleDescriptor.getBaseVersion()).as("Base version is not the expected").isEqualTo(VERSION);
+    assertThat(actualBundleDescriptor.getType()).as("Type is not the expected").isEqualTo(POM_TYPE);
   }
 }

@@ -9,8 +9,11 @@ package integration.test.mojo;
 import static integration.ProjectFactory.createProjectBaseDir;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.mule.tools.api.util.FileUtils;
-import org.mule.tools.maven.mojo.CompileMojo;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,16 +23,11 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
-import org.junit.After;
-import org.junit.Before;
-
 
 public class MojoTest implements SettingsConfigurator {
 
-  protected static final String[] excludes =
-      new String[] {".placeholder", "log.txt"};
+  protected static final String[] excludes = new String[] {".placeholder", "log.txt"};
   protected static final String[] excludesCompile = ArrayUtils.addAll(excludes, "maven-status");
-
   protected static final String TARGET_FOLDER_NAME = "target";
   protected static final String EMPTY_PROJECT_NAME = "empty-project";
   protected static final String SEMVER_CHECK = "semver-check";
@@ -46,7 +44,7 @@ public class MojoTest implements SettingsConfigurator {
   protected String goal;
 
 
-  @Before
+  @BeforeEach
   public void initializeContext() throws IOException, VerificationException {
     builder = new ProjectFactory();
     projectBaseDirectory = createProjectBaseDir("empty-" + goal + "-project", this.getClass());
@@ -63,7 +61,7 @@ public class MojoTest implements SettingsConfigurator {
     }
   }
 
-  @After
+  @AfterEach
   public void after() {
     verifier.resetStreams();
   }
@@ -74,7 +72,7 @@ public class MojoTest implements SettingsConfigurator {
     try {
       FileUtils.copyDirectoryRecursively(testMockArtifactsDirectory, localRepository, REPLACE_EXISTING);
     } catch (IOException e) {
-      e.printStackTrace();
+      fail(e);
     }
   }
 

@@ -6,6 +6,7 @@
  */
 package org.mule.tools.maven.mojo;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -21,32 +22,32 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
-public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
+class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
 
   private GenerateTestSourcesMojo mojoMock;
 
-  @Before
-  public void before() throws IOException {
+  @BeforeEach
+  void before() {
     logMock = mock(Log.class);
 
     buildMock = mock(Build.class);
-    when(buildMock.getDirectory()).thenReturn(projectBaseFolder.getRoot().getAbsolutePath());
+    when(buildMock.getDirectory()).thenReturn(projectBaseFolder.toFile().getAbsolutePath());
 
     projectMock = mock(MavenProject.class);
 
     mojoMock = mock(GenerateTestSourcesMojo.class);
     mojoMock.project = projectMock;
-    mojoMock.projectBaseFolder = projectBaseFolder.getRoot();
+    mojoMock.projectBaseFolder = projectBaseFolder.toFile();
 
     when(mojoMock.getLog()).thenReturn(logMock);
   }
 
   @Test
-  public void execute() throws MojoFailureException, MojoExecutionException, IOException {
+  void execute() throws MojoFailureException, MojoExecutionException, IOException {
     MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
@@ -58,8 +59,8 @@ public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
     verify(contentGeneratorMock, times(1)).createTestFolderContent();
   }
 
-  @Test(expected = MojoFailureException.class)
-  public void executeFailIOException() throws MojoFailureException, MojoExecutionException, IOException {
+  @Test
+  void executeFailIOException() throws MojoFailureException, MojoExecutionException, IOException {
     MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
@@ -67,11 +68,11 @@ public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
 
     doCallRealMethod().when(mojoMock).execute();
     doCallRealMethod().when(mojoMock).doExecute();
-    mojoMock.execute();
+    assertThatThrownBy(() -> mojoMock.execute()).isExactlyInstanceOf(MojoFailureException.class);
   }
 
-  @Test(expected = MojoFailureException.class)
-  public void executeFailIllegalArgument() throws MojoFailureException, MojoExecutionException, IOException {
+  @Test
+  void executeFailIllegalArgument() throws MojoFailureException, MojoExecutionException, IOException {
     MuleContentGenerator contentGeneratorMock = mock(MuleContentGenerator.class);
     doReturn(contentGeneratorMock).when(mojoMock).getContentGenerator();
 
@@ -79,7 +80,7 @@ public class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
 
     doCallRealMethod().when(mojoMock).execute();
     doCallRealMethod().when(mojoMock).doExecute();
-    mojoMock.execute();
+    assertThatThrownBy(() -> mojoMock.execute()).isExactlyInstanceOf(MojoFailureException.class);
   }
 
 }

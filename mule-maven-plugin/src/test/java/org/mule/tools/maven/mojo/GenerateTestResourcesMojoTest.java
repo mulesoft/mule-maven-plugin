@@ -6,25 +6,22 @@
  */
 package org.mule.tools.maven.mojo;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Before;
-import org.junit.Test;
-
-public class GenerateTestResourcesMojoTest extends AbstractMuleMojoTest {
+class GenerateTestResourcesMojoTest extends AbstractMuleMojoTest {
 
   private GenerateTestResourcesMojo mojo;
 
-  @Before
-  public void before() throws IOException {
+  @BeforeEach
+  void before() {
     mojo = new GenerateTestResourcesMojo();
   }
 
   @Test
-  public void getPreviousRunPlaceholder() {
-    assertThat(mojo.getPreviousRunPlaceholder(), is("MULE_MAVEN_PLUGIN_GENERATE_TEST_RESOURCES_PREVIOUS_RUN_PLACEHOLDER"));
+  void getPreviousRunPlaceholder() {
+    assertThat(mojo.getPreviousRunPlaceholder()).isEqualTo("MULE_MAVEN_PLUGIN_GENERATE_TEST_RESOURCES_PREVIOUS_RUN_PLACEHOLDER");
   }
 }

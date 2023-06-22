@@ -8,11 +8,16 @@ package org.mule.tools.client.authentication;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.Response.Status.OK;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockserver.integration.ClientAndServer;
 import org.mule.tools.client.arm.model.AuthorizationResponse;
 import org.mule.tools.client.arm.model.Environment;
 import org.mule.tools.client.arm.model.Environments;
@@ -30,17 +35,11 @@ import java.util.Vector;
 
 import javax.ws.rs.HttpMethod;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.mockserver.integration.ClientAndServer;
-
 /**
  * @author Mulesoft Inc.
  * @since 2.0.0
  */
-public class AuthenticationServiceClientMockServerTest {
+class AuthenticationServiceClientMockServerTest {
 
   private static final String USERNAME = "username";
   private static final String PASSWORD = "password";
@@ -73,18 +72,18 @@ public class AuthenticationServiceClientMockServerTest {
   public static final int DEFAULT_PORT = 8080;
   private static ClientAndServer mockServer;
 
-  @BeforeClass
+  @BeforeAll
   public static void before() {
     mockServer = startClientAndServer(DEFAULT_PORT);
   }
 
-  @AfterClass
+  @AfterAll
   public static void after() {
     mockServer.stop();
   }
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     mockServer.reset();
 
     AuthorizationResponse authResponse = new AuthorizationResponse();
@@ -99,7 +98,7 @@ public class AuthenticationServiceClientMockServerTest {
   }
 
   @Test
-  public void getMe() {
+  void getMe() {
     UserInfo userInfoResponse = new UserInfo();
     userInfoResponse.user = new User();
     userInfoResponse.user.id = USER_ID;
@@ -116,12 +115,12 @@ public class AuthenticationServiceClientMockServerTest {
 
     UserInfo userInfo = client.getMe();
 
-    assertThat(userInfo.user.id, equalTo(USER_ID));
-    assertThat(userInfo.user.organization.id, equalTo(USER_ORG1_ID));
+    assertThat(userInfo.user.id).isEqualTo(USER_ID);
+    assertThat(userInfo.user.organization.id).isEqualTo(USER_ORG1_ID);
   }
 
   @Test
-  public void getOrganizations() {
+  void getOrganizations() {
     client.getBearerToken(credentials);
 
     Organization organization1 = new Organization();
@@ -143,16 +142,16 @@ public class AuthenticationServiceClientMockServerTest {
 
     List<Organization> organizationsResponse = client.getOrganizations();
 
-    assertThat(organizationsResponse.size(), equalTo(2));
-    assertThat(organizationsResponse.get(0).id, equalTo(USER_ORG1_ID));
-    assertThat(organizationsResponse.get(0).name, equalTo(USER_ORG1_NAME));
+    assertThat(organizationsResponse.size()).isEqualTo(2);
+    assertThat(organizationsResponse.get(0).id).isEqualTo(USER_ORG1_ID);
+    assertThat(organizationsResponse.get(0).name).isEqualTo(USER_ORG1_NAME);
 
-    assertThat(organizationsResponse.get(1).id, equalTo(USER_ORG2_ID));
-    assertThat(organizationsResponse.get(1).name, equalTo(USER_ORG2_NAME));
+    assertThat(organizationsResponse.get(1).id).isEqualTo(USER_ORG2_ID);
+    assertThat(organizationsResponse.get(1).name).isEqualTo(USER_ORG2_NAME);
   }
 
   @Test
-  public void getEnvironments() {
+  void getEnvironments() {
     client.getBearerToken(credentials);
 
     UserInfo userInfoResponse = new UserInfo();
@@ -166,7 +165,6 @@ public class AuthenticationServiceClientMockServerTest {
                                                                                                        BEARER_USER_TOKEN))
         .respond(response().withStatusCode(OK.getStatusCode()).withBody(new Gson().toJson(userInfoResponse),
                                                                         MediaType.JSON_UTF_8));
-
 
     Environment environment1 = new Environment();
     environment1.id = USER_ENVIRONMENT1_ID;
@@ -191,16 +189,16 @@ public class AuthenticationServiceClientMockServerTest {
     UserInfo userInfo = client.getMe();
 
     List<Environment> environmentsResponse = client.getEnvironments(userInfo.user.organization.id);
-    assertThat(environmentsResponse.size(), equalTo(2));
 
-    assertThat(environmentsResponse.get(0).id, equalTo(USER_ENVIRONMENT1_ID));
-    assertThat(environmentsResponse.get(0).name, equalTo(USER_ENVIRONMENT1_NAME));
-    assertThat(environmentsResponse.get(0).isProduction, equalTo(USER_ENVIRONMENT1_PRODUCTION));
-    assertThat(environmentsResponse.get(0).organizationId, equalTo(USER_ENVIRONMENT1_ORG_ID));
+    assertThat(environmentsResponse.size()).isEqualTo(2);
+    assertThat(environmentsResponse.get(0).id).isEqualTo(USER_ENVIRONMENT1_ID);
+    assertThat(environmentsResponse.get(0).name).isEqualTo(USER_ENVIRONMENT1_NAME);
+    assertThat(environmentsResponse.get(0).isProduction).isEqualTo(USER_ENVIRONMENT1_PRODUCTION);
+    assertThat(environmentsResponse.get(0).organizationId).isEqualTo(USER_ENVIRONMENT1_ORG_ID);
 
-    assertThat(environmentsResponse.get(1).id, equalTo(USER_ENVIRONMENT2_ID));
-    assertThat(environmentsResponse.get(1).name, equalTo(USER_ENVIRONMENT2_NAME));
-    assertThat(environmentsResponse.get(1).isProduction, equalTo(USER_ENVIRONMENT2_PRODUCTION));
-    assertThat(environmentsResponse.get(1).organizationId, equalTo(USER_ENVIRONMENT2_ORG_ID));
+    assertThat(environmentsResponse.get(1).id).isEqualTo(USER_ENVIRONMENT2_ID);
+    assertThat(environmentsResponse.get(1).name).isEqualTo(USER_ENVIRONMENT2_NAME);
+    assertThat(environmentsResponse.get(1).isProduction).isEqualTo(USER_ENVIRONMENT2_PRODUCTION);
+    assertThat(environmentsResponse.get(1).organizationId).isEqualTo(USER_ENVIRONMENT2_ORG_ID);
   }
 }

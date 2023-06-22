@@ -12,7 +12,7 @@ import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 import java.io.File;
 
-public class AppClassLoaderModelJsonDeserializerValidationsTest extends ClassLoaderModelJsonDeserializerValidationsTest {
+class AppClassLoaderModelJsonDeserializerValidationsTest extends ClassLoaderModelJsonDeserializerValidationsTest {
 
   @Override
   protected ClassLoaderModel deserializeClassLoaderModel(File classloaderModelJsonFile) {

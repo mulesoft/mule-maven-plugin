@@ -10,15 +10,15 @@ import static com.google.common.collect.ImmutableList.of;
 import static integration.FileTreeMatcher.hasSameTreeStructure;
 import static java.io.File.separator;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
-import static org.apache.commons.io.FileUtils.readFileToString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import integration.ProjectFactory;
+import org.junit.jupiter.api.Test;
 import org.mule.maven.client.api.MavenClientProvider;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -26,7 +26,6 @@ import com.google.gson.JsonParser;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.maven.it.VerificationException;
 import org.json.JSONException;
-import org.junit.Test;
 
 public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
 
@@ -141,14 +140,16 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
   private static final String EXPECTED_TEST_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE =
       "/expected-files/expected-test-scope-classloader-model.json";
 
+  private static final Gson GSON = new GsonBuilder().create();
+
   @Test
   public void testProcessSources() throws IOException, VerificationException {
     verifier.executeGoal(PROCESS_SOURCES);
 
     File expectedStructure = getExpectedStructure();
 
-    assertThat("The directory structure is different from the expected", targetFolder,
-               hasSameTreeStructure(expectedStructure, excludes));
+    org.hamcrest.MatcherAssert.assertThat("The directory structure is different from the expected", targetFolder,
+                                          hasSameTreeStructure(expectedStructure, excludes));
 
     verifier.verifyErrorFreeLog();
   }
@@ -156,7 +157,7 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
   @Test
   public void testProvidedMulePluginShouldBeExcludedFromApplicationClassLoaderModel()
       throws IOException, VerificationException, JSONException {
-    projectBaseDirectory = builder.createProjectBaseDir("provided-mule-plugin-classloader-model-project", this.getClass());
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir("provided-mule-plugin-classloader-model-project", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.executeGoal(PROCESS_SOURCES);
@@ -167,8 +168,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     File expectedClassloaderModelFile = getFile(EXPECTED_PROVIDED_CLASSLOADER_MODEL_FILE);
     String expectedClassloaderModelFileContent = readFileToString(expectedClassloaderModelFile);
 
-    assertEquals("The classloader-model.json file is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
 
     File generatedMulePluginAClassloaderModelFile = getFile(GENERATED_PROVIDED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
     String generatedMulePluginAClassloaderModelFileContent = readFileToString(generatedMulePluginAClassloaderModelFile);
@@ -176,15 +178,16 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     File expectedMulePluginAClassloaderModelFile = getFile(EXPECTED_PROVIDED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
     String expectedMulePluginAClassloaderModelFileContent = readFileToString(expectedMulePluginAClassloaderModelFile);
 
-    assertEquals("The classloader-model.json file of the mule-plugin-a is different from the expected",
-                 generatedMulePluginAClassloaderModelFileContent, expectedMulePluginAClassloaderModelFileContent, true);
+    assertThat(generatedMulePluginAClassloaderModelFileContent)
+        .as("The classloader-model.json file of the mule-plugin-a is different from the expected")
+        .isEqualTo(expectedMulePluginAClassloaderModelFileContent);
 
     File expectedStructure = getExpectedStructure("/expected-provided-classloader-model-project");
     File targetStructure = new File(verifier.getBasedir() + separator + TARGET_FOLDER_NAME);
     deleteDirectory(new File(targetStructure, "temp"));
 
-    assertThat("The directory structure is different from the expected", targetStructure,
-               hasSameTreeStructure(expectedStructure, excludes));
+    org.hamcrest.MatcherAssert.assertThat("The directory structure is different from the expected", targetStructure,
+                                          hasSameTreeStructure(expectedStructure, excludes));
 
     verifier.verifyErrorFreeLog();
   }
@@ -192,7 +195,7 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
   @Test
   public void testProvidedMulePluginShouldBeExcludedFromApplicationClassLoaderModelEvenWithLowerVersions()
       throws IOException, VerificationException, JSONException {
-    projectBaseDirectory = builder.createProjectBaseDir("provided-plugin-dependency", this.getClass());
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir("provided-plugin-dependency", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
@@ -213,8 +216,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     File expectedClassloaderModelFile = getFile(expectedProvidedPluginDependencyClassloaderModelFile);
     String expectedClassloaderModelFileContent = readFileToString(expectedClassloaderModelFile);
 
-    assertEquals("The classloader-model.json file is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
 
     File generatedPluginAClassLoaderModelFile = getFile(generatedAPluginWithBProvidedClassLaoderModelFile);
     String generatedPluginAClassLoaderModelFileContent = readFileToString(generatedPluginAClassLoaderModelFile);
@@ -222,8 +226,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     File expectedPluginAClassloaderModelFile = getFile(expectedAPluginWithBProvidedClassLoaderModelFile);
     String expectedPluginAClassloaderModelFileContent = readFileToString(expectedPluginAClassloaderModelFile);
 
-    assertEquals("The classloader-model.json file is different from the expected",
-                 generatedPluginAClassLoaderModelFileContent, expectedPluginAClassloaderModelFileContent, true);
+    assertThat(generatedPluginAClassLoaderModelFileContent)
+        .as("The classloader-model.json file is different from the expected")
+        .isEqualTo(expectedPluginAClassloaderModelFileContent);
 
     verifier.verifyErrorFreeLog();
   }
@@ -241,15 +246,11 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
 
   private void doTestPrettyPrintClassLoaderModel(boolean prettyPrinting) throws IOException, VerificationException {
     String projectName = "pretty-print-process-sources-app";
-    projectBaseDirectory = builder.createProjectBaseDir(projectName, this.getClass());
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir(projectName, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-DprettyPrinting=" + prettyPrinting);
     verifier.executeGoal(PROCESS_SOURCES);
-
-    // Utility to print the same pretty printed json without pretty print
-    JsonParser parser = new JsonParser();
-    Gson gson = new GsonBuilder().create();
 
     File generatedClassloaderModelFile = getFile("/" + projectName + "/target/META-INF/mule-artifact/classloader-model.json");
     String generatedClassloaderModelFileContent = readFileToString(generatedClassloaderModelFile);
@@ -257,9 +258,11 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     File expectedClassloaderModelFile = getFile("/" + projectName + "/expected-files/classloader-model.json");
     String expectedClassloaderModelFileContent = readFileToString(expectedClassloaderModelFile);
 
-    assertThat("The classloader-model.json file is different from the expected",
-               generatedClassloaderModelFileContent, equalTo(prettyPrinting ? expectedClassloaderModelFileContent
-                   : gson.toJson(parser.parse(expectedClassloaderModelFileContent).getAsJsonObject())));
+    assertEqualsJson(
+                     "The classloader-model.json file is different from the expected",
+                     generatedClassloaderModelFileContent,
+                     expectedClassloaderModelFileContent,
+                     prettyPrinting);
 
     File generatedMulePluginAClassloaderModelFile =
         getFile("/" + projectName + "/target/repository/org/mule/group/mule-plugin-a/1.0.0/classloader-model.json");
@@ -269,10 +272,11 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
         getFile("/" + projectName + "/expected-files/mule-plugin-a/classloader-model.json");
     String expectedMulePluginAClassloaderModelFileContent = readFileToString(expectedMulePluginAClassloaderModelFile);
 
-    assertThat("The classloader-model.json file of the mule-plugin-a is different from the expected",
-               generatedMulePluginAClassloaderModelFileContent,
-               equalTo(prettyPrinting ? expectedMulePluginAClassloaderModelFileContent
-                   : gson.toJson(parser.parse(expectedMulePluginAClassloaderModelFileContent).getAsJsonObject())));
+    assertEqualsJson(
+                     "The classloader-model.json file of the mule-plugin-a is different from the expected",
+                     generatedMulePluginAClassloaderModelFileContent,
+                     expectedMulePluginAClassloaderModelFileContent,
+                     prettyPrinting);
 
     File generatedMulePluginBClassloaderModelFile =
         getFile("/" + projectName + "/target/repository/org/mule/group/mule-plugin-b/1.0.0/classloader-model.json");
@@ -282,17 +286,18 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
         getFile("/" + projectName + "/expected-files/mule-plugin-b/classloader-model.json");
     String expectedMulePluginBClassloaderModelFileContent = readFileToString(expectedMulePluginBClassloaderModelFile);
 
-    assertThat("The classloader-model.json file of the mule-plugin-b is different from the expected",
-               generatedMulePluginBClassloaderModelFileContent,
-               equalTo(prettyPrinting ? expectedMulePluginBClassloaderModelFileContent
-                   : gson.toJson(parser.parse(expectedMulePluginBClassloaderModelFileContent).getAsJsonObject())));
+    assertEqualsJson(
+                     "The classloader-model.json file of the mule-plugin-b is different from the expected",
+                     generatedMulePluginBClassloaderModelFileContent,
+                     expectedMulePluginBClassloaderModelFileContent,
+                     prettyPrinting);
 
     File expectedStructure = getExpectedStructure("/expected-pretty-print-process-sources-app");
     File targetStructure = new File(verifier.getBasedir() + separator + TARGET_FOLDER_NAME);
     deleteDirectory(new File(targetStructure, "temp"));
 
-    assertThat("The directory structure is different from the expected", targetStructure,
-               hasSameTreeStructure(expectedStructure, excludes));
+    org.hamcrest.MatcherAssert.assertThat("The directory structure is different from the expected", targetStructure,
+                                          hasSameTreeStructure(expectedStructure, excludes));
 
     verifier.verifyErrorFreeLog();
   }
@@ -302,7 +307,7 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
   // and so it needs to be installed in the local repository in order to be resolved.
   @Test
   public void testProcessSourcesClassloaderModelGeneratedFile() throws IOException, VerificationException, JSONException {
-    projectBaseDirectory = builder.createProjectBaseDir("empty-classloader-model-project", this.getClass());
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir("empty-classloader-model-project", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.executeGoal(PROCESS_SOURCES);
@@ -313,8 +318,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     File expectedClassloaderModelFile = getFile(EXPECTED_CLASSLOADER_MODEL_FILE);
     String expectedClassloaderModelFileContent = readFileToString(expectedClassloaderModelFile);
 
-    assertEquals("The classloader-model.json file is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
 
     File generatedMulePluginAClassloaderModelFile = getFile(GENERATED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
     String generatedMulePluginAClassloaderModelFileContent = readFileToString(generatedMulePluginAClassloaderModelFile);
@@ -322,8 +328,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     File expectedMulePluginAClassloaderModelFile = getFile(EXPECTED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
     String expectedMulePluginAClassloaderModelFileContent = readFileToString(expectedMulePluginAClassloaderModelFile);
 
-    assertEquals("The classloader-model.json file of the mule-plugin-a is different from the expected",
-                 generatedMulePluginAClassloaderModelFileContent, expectedMulePluginAClassloaderModelFileContent, true);
+    assertThat(generatedMulePluginAClassloaderModelFileContent)
+        .as("The classloader-model.json file of the mule-plugin-a is different from the expected")
+        .isEqualTo(expectedMulePluginAClassloaderModelFileContent);
 
     File generatedMulePluginBClassloaderModelFile =
         getFile(GENERATED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE);
@@ -333,22 +340,23 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
         getFile(EXPECTED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE);
     String expectedMulePluginBClassloaderModelFileContent = readFileToString(expectedMulePluginBClassloaderModelFile);
 
-    assertEquals("The classloader-model.json file of the mule-plugin-b is different from the expected",
-                 generatedMulePluginBClassloaderModelFileContent, expectedMulePluginBClassloaderModelFileContent, true);
+    assertThat(generatedMulePluginBClassloaderModelFileContent)
+        .as("The classloader-model.json file of the mule-plugin-b is different from the expected")
+        .isEqualTo(expectedMulePluginBClassloaderModelFileContent);
 
     File expectedStructure = getExpectedStructure("/expected-classloader-model-project");
     File targetStructure = new File(verifier.getBasedir() + separator + TARGET_FOLDER_NAME);
     deleteDirectory(new File(targetStructure, "temp"));
 
-    assertThat("The directory structure is different from the expected", targetStructure,
-               hasSameTreeStructure(expectedStructure, excludes));
+    org.hamcrest.MatcherAssert.assertThat("The directory structure is different from the expected", targetStructure,
+                                          hasSameTreeStructure(expectedStructure, excludes));
 
     verifier.verifyErrorFreeLog();
   }
 
   @Test
   public void testProcessSourcesClassloaderModelGeneratedTestJar() throws IOException, VerificationException, JSONException {
-    projectBaseDirectory = builder.createProjectBaseDir("test-jar-classloader-model-project", this.getClass());
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir("test-jar-classloader-model-project", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-DtestJar=true");
@@ -360,8 +368,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     File expectedClassloaderModelFile = getFile(EXPECTED_TEST_JAR_CLASSLOADER_MODEL_FILE);
     String expectedClassloaderModelFileContent = readFileToString(expectedClassloaderModelFile);
 
-    assertEquals("The classloader-model.json file is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
 
     File generatedMulePluginAClassloaderModelFile = getFile(GENERATED_MULE_PLUGIN_A_TEST_JAR_CLASSLOADER_MODEL_FILE);
     String generatedMulePluginAClassloaderModelFileContent = readFileToString(generatedMulePluginAClassloaderModelFile);
@@ -369,8 +378,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     File expectedMulePluginAClassloaderModelFile = getFile(EXPECTED_MULE_PLUGIN_A_CLASSLOADER_MODEL_FILE);
     String expectedMulePluginAClassloaderModelFileContent = readFileToString(expectedMulePluginAClassloaderModelFile);
 
-    assertEquals("The classloader-model.json file of the mule-plugin-a is different from the expected",
-                 generatedMulePluginAClassloaderModelFileContent, expectedMulePluginAClassloaderModelFileContent, true);
+    assertThat(generatedMulePluginAClassloaderModelFileContent)
+        .as("The classloader-model.json file of the mule-plugin-a is different from the expected")
+        .isEqualTo(expectedMulePluginAClassloaderModelFileContent);
 
     File generatedMulePluginBClassloaderModelFile =
         getFile(GENERATED_MULE_PLUGIN_B_TEST_JAR_CLASSLOADER_MODEL_FILE);
@@ -380,8 +390,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
         getFile(EXPECTED_MULE_PLUGIN_B_CLASSLOADER_MODEL_FILE);
     String expectedMulePluginBClassloaderModelFileContent = readFileToString(expectedMulePluginBClassloaderModelFile);
 
-    assertEquals("The classloader-model.json file of the mule-plugin-b is different from the expected",
-                 generatedMulePluginBClassloaderModelFileContent, expectedMulePluginBClassloaderModelFileContent, true);
+    assertThat(generatedMulePluginBClassloaderModelFileContent)
+        .as("The classloader-model.json file of the mule-plugin-b is different from the expected")
+        .isEqualTo(expectedMulePluginBClassloaderModelFileContent);
 
     // mule-plugin test dependency
     File generatedMulePluginDClassloaderModelFile =
@@ -392,15 +403,16 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
         getFile(EXPECTED_MULE_PLUGIN_D_CLASSLOADER_MODEL_FILE);
     String expectedMulePluginDClassloaderModelFileContent = readFileToString(expectedMulePluginDClassloaderModelFile);
 
-    assertEquals("The classloader-model.json file of the mule-plugin-d is different from the expected",
-                 generatedMulePluginDClassloaderModelFileContent, expectedMulePluginDClassloaderModelFileContent, true);
+    assertThat(generatedMulePluginDClassloaderModelFileContent)
+        .as("The classloader-model.json file of the mule-plugin-d is different from the expected")
+        .isEqualTo(expectedMulePluginDClassloaderModelFileContent);
 
     File expectedStructure = getExpectedStructure("/expected-test-jar-classloader-model-project");
     File targetStructure = new File(verifier.getBasedir() + separator + TARGET_FOLDER_NAME);
     deleteDirectory(new File(targetStructure, "temp"));
 
-    assertThat("The directory structure is different from the expected", targetStructure,
-               hasSameTreeStructure(expectedStructure, excludes));
+    org.hamcrest.MatcherAssert.assertThat("The directory structure is different from the expected", targetStructure,
+                                          hasSameTreeStructure(expectedStructure, excludes));
 
     verifier.verifyErrorFreeLog();
   }
@@ -408,7 +420,7 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
   @Test
   public void testProcessSourcesClassloaderModelGeneratedTestJarLightweightUseLocalRepository()
       throws IOException, VerificationException, JSONException {
-    projectBaseDirectory = builder.createProjectBaseDir("test-jar-classloader-model-project", this.getClass());
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir("test-jar-classloader-model-project", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-DtestJar=true");
@@ -426,8 +438,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     expectedClassloaderModelFileContent =
         expectedClassloaderModelFileContent.replace("${localRepository}", localRepository.getAbsolutePath());
 
-    assertEquals("The classloader-model.json file is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
 
     File generatedMulePluginAClassloaderModelFile =
         getFile(GENERATED_MULE_PLUGIN_A_TEST_JAR_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE);
@@ -439,8 +452,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     expectedMulePluginAClassloaderModelFileContent =
         expectedMulePluginAClassloaderModelFileContent.replace("${localRepository}", localRepository.getAbsolutePath());
 
-    assertEquals("The classloader-model.json file of the mule-plugin-a is different from the expected",
-                 generatedMulePluginAClassloaderModelFileContent, expectedMulePluginAClassloaderModelFileContent, true);
+    assertThat(generatedMulePluginAClassloaderModelFileContent)
+        .as("The classloader-model.json file of the mule-plugin-a is different from the expected")
+        .isEqualTo(expectedMulePluginAClassloaderModelFileContent);
 
     File generatedMulePluginBClassloaderModelFile =
         getFile(GENERATED_MULE_PLUGIN_B_TEST_JAR_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE);
@@ -452,8 +466,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     expectedMulePluginBClassloaderModelFileContent =
         expectedMulePluginBClassloaderModelFileContent.replace("${localRepository}", localRepository.getAbsolutePath());
 
-    assertEquals("The classloader-model.json file of the mule-plugin-b is different from the expected",
-                 generatedMulePluginBClassloaderModelFileContent, expectedMulePluginBClassloaderModelFileContent, true);
+    assertThat(generatedMulePluginBClassloaderModelFileContent)
+        .as("The classloader-model.json file of the mule-plugin-b is different from the expected")
+        .isEqualTo(expectedMulePluginBClassloaderModelFileContent);
 
     // mule-plugin test dependency
     File generatedMulePluginDClassloaderModelFile =
@@ -466,15 +481,16 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     expectedMulePluginDClassloaderModelFileContent =
         expectedMulePluginDClassloaderModelFileContent.replace("${localRepository}", localRepository.getAbsolutePath());
 
-    assertEquals("The classloader-model.json file of the mule-plugin-d is different from the expected",
-                 generatedMulePluginDClassloaderModelFileContent, expectedMulePluginDClassloaderModelFileContent, true);
+    assertThat(generatedMulePluginDClassloaderModelFileContent)
+        .as("The classloader-model.json file of the mule-plugin-d is different from the expected")
+        .isEqualTo(expectedMulePluginDClassloaderModelFileContent);
 
     File expectedStructure = getExpectedStructure("/expected-test-jar-lightweight-local-repository-classloader-model-project");
     File targetStructure = new File(verifier.getBasedir() + separator + TARGET_FOLDER_NAME);
     deleteDirectory(new File(targetStructure, "temp"));
 
-    assertThat("The directory structure is different from the expected", targetStructure,
-               hasSameTreeStructure(expectedStructure, excludes));
+    org.hamcrest.MatcherAssert.assertThat("The directory structure is different from the expected", targetStructure,
+                                          hasSameTreeStructure(expectedStructure, excludes));
 
     verifier.verifyErrorFreeLog();
   }
@@ -486,7 +502,7 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
   public void testProcessSourcesClassloaderModelLightweightUsingLocalRepository()
       throws IOException, VerificationException, JSONException {
     projectBaseDirectory =
-        builder.createProjectBaseDir("empty-lightweight-local-repository-classloader-model-project", this.getClass());
+        ProjectFactory.createProjectBaseDir("empty-lightweight-local-repository-classloader-model-project", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-DlightweightPackage=true");
@@ -503,8 +519,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     expectedClassloaderModelFileContent =
         expectedClassloaderModelFileContent.replace("${localRepository}", localRepository.getAbsolutePath());
 
-    assertEquals("The classloader-model.json file is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
 
     File generatedMulePluginAClassloaderModelFile =
         getFile(GENERATED_MULE_PLUGIN_A_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE);
@@ -516,8 +533,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     expectedMulePluginAClassloaderModelFileContent =
         expectedMulePluginAClassloaderModelFileContent.replace("${localRepository}", localRepository.getAbsolutePath());
 
-    assertEquals("The classloader-model.json file of the mule-plugin-a is different from the expected",
-                 generatedMulePluginAClassloaderModelFileContent, expectedMulePluginAClassloaderModelFileContent, true);
+    assertThat(generatedMulePluginAClassloaderModelFileContent)
+        .as("The classloader-model.json file of the mule-plugin-a is different from the expected")
+        .isEqualTo(expectedMulePluginAClassloaderModelFileContent);
 
     File generatedMulePluginBClassloaderModelFile =
         getFile(GENERATED_MULE_PLUGIN_B_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE);
@@ -529,8 +547,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     expectedMulePluginBClassloaderModelFileContent =
         expectedMulePluginBClassloaderModelFileContent.replace("${localRepository}", localRepository.getAbsolutePath());
 
-    assertEquals("The classloader-model.json file of the mule-plugin-b is different from the expected",
-                 generatedMulePluginBClassloaderModelFileContent, expectedMulePluginBClassloaderModelFileContent, true);
+    assertThat(generatedMulePluginBClassloaderModelFileContent)
+        .as("The classloader-model.json file of the mule-plugin-b is different from the expected")
+        .isEqualTo(expectedMulePluginBClassloaderModelFileContent);
 
     File generatedMulePluginCClassloaderModelFile =
         getFile(GENERATED_MULE_PLUGIN_C_LIGHTWEIGHT_LOCAL_REPOSITORY_CLASSLOADER_MODEL_FILE);
@@ -542,15 +561,17 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     expectedMulePluginCClassloaderModelFileContent =
         expectedMulePluginCClassloaderModelFileContent.replace("${localRepository}", localRepository.getAbsolutePath());
 
-    assertEquals("The classloader-model.json file of the mule-plugin-c is different from the expected",
-                 generatedMulePluginCClassloaderModelFileContent, expectedMulePluginCClassloaderModelFileContent, true);
+    assertThat(generatedMulePluginCClassloaderModelFileContent)
+        .as("The classloader-model.json file of the mule-plugin-c is different from the expected")
+        .isEqualTo(expectedMulePluginCClassloaderModelFileContent);
 
     File expectedStructure = getExpectedStructure("/expected-lightweight-local-repository-classloader-model-project");
     File targetStructure = new File(verifier.getBasedir() + separator + TARGET_FOLDER_NAME);
     deleteDirectory(new File(targetStructure, "temp"));
 
-    assertThat("The directory structure is different from the expected", targetStructure,
-               hasSameTreeStructure(expectedStructure, ArrayUtils.add(excludes, "mule-artifact.json")));
+    org.hamcrest.MatcherAssert.assertThat("The directory structure is different from the expected", targetStructure,
+                                          hasSameTreeStructure(expectedStructure,
+                                                               ArrayUtils.add(excludes, "mule-artifact.json")));
 
     verifier.verifyErrorFreeLog();
   }
@@ -561,8 +582,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     String generatedClassloaderModelFileContent = getFileContent(COMPILED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
     String expectedClassloaderModelFileContent =
         getFileContent(EXPECTED_COMPILED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
-    assertEquals("The classloader-model.json file of mule-application-compile project is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file of mule-application-compile project is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
   }
 
   @Test
@@ -571,8 +593,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     String generatedClassloaderModelFileContent = getFileContent(DEPENDENCY_VERSION_CHANGED_BY_USER_PROPERTY);
     String expectedClassloaderModelFileContent =
         getFileContent(EXPECTED_DEPENDENCY_VERSION_CHANGED_BY_USER_PROPERTY);
-    assertEquals("The classloader-model.json file of mule-application-dependency-by-user-property project is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file of mule-application-dependency-by-user-property project is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
   }
 
   @Test
@@ -580,8 +603,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     processSourcesOnProject("mule-application-dependency-by-user-property");
     String generatedClassloaderModelFileContent = getFileContent(DEPENDENCY_VERSION_CHANGED_BY_USER_PROPERTY);
     String expectedClassloaderModelFileContent = getFileContent(EXPECTED_DEPENDENCY_VERSION_DEFAULT);
-    assertEquals("The classloader-model.json file of mule-application-dependency-by-user-property project is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file of mule-application-dependency-by-user-property project is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
   }
 
   @Test
@@ -591,8 +615,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
         getFileContent(PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
     String expectedClassloaderModelFileContent =
         getFileContent(EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
-    assertEquals("The classloader-model.json file of mule-application-profile-activation-by-user-property project is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file of mule-application-profile-activation-by-user-property project is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
   }
 
   @Test
@@ -612,8 +637,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
         getFileContent(PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
     String expectedClassloaderModelFileContent =
         getFileContent(EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
-    assertEquals("The classloader-model.json file of mule-application-profile-activation-by-user-property project is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file of mule-application-profile-activation-by-user-property project is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
   }
 
   @Test
@@ -624,8 +650,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
         getFileContent(PROFILE_ACTIVATION_BY_USER_PROPERTY_GENERATED_CLASSLOADER_MODEL_FILE);
     String expectedClassloaderModelFileContent =
         getFileContent(EXPECTED_PROFILE_ACTIVATION_BY_USER_PROPERTY_INACTIVE_GENERATED_CLASSLOADER_MODEL_FILE);
-    assertEquals("The classloader-model.json file of mule-application-profile-activation-by-user-property project is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file of mule-application-profile-activation-by-user-property project is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
   }
 
   @Test
@@ -634,8 +661,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     String generatedClassloaderModelFileContent = getFileContent(PROVIDED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
     String expectedClassloaderModelFileContent =
         getFileContent(EXPECTED_PROVIDED_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
-    assertEquals("The classloader-model.json file of mule-application-provided project is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file of mule-application-provided project is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
   }
 
   @Test
@@ -644,8 +672,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     String generatedClassloaderModelFileContent = getFileContent(RUNTIME_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
     String expectedClassloaderModelFileContent =
         getFileContent(EXPECTED_RUNTIME_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
-    assertEquals("The classloader-model.json file of mule-application-runtime project is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file of mule-application-runtime project is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
   }
 
   @Test
@@ -654,8 +683,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     String generatedClassloaderModelFileContent = getFileContent(TEST_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
     String expectedClassloaderModelFileContent =
         getFileContent(EXPECTED_TEST_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
-    assertEquals("The classloader-model.json file of mule-application-test project is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file of mule-application-test project is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
   }
 
   @Test
@@ -664,8 +694,9 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     String generatedClassloaderModelFileContent = getFileContent(SHARED_PLUGIN_DEPENDENCY_GENERATED_CLASSLOADER_MODEL_FILE);
     String expectedClassloaderModelFileContent =
         getFileContent(EXPECTED_SHARED_PLUGIN_DEPENDENCY_CLASSLOADER_MODEL_FILE);
-    assertEquals("The classloader-model.json file of shared project is different from the expected",
-                 generatedClassloaderModelFileContent, expectedClassloaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent)
+        .as("The classloader-model.json file of shared project is different from the expected")
+        .isEqualTo(expectedClassloaderModelFileContent);
   }
 
   @Test
@@ -684,7 +715,7 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     processSourcesOnProject(appName);
     String generatedAppClassLoaderModelFileContent = getFileContent(classLoaderModelJsonLocation);
     String expectedAppClassLoaderModelFileContent = getFileContent(expectedClassLoaderModelJsonLocation);
-    assertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent, true);
+    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
   }
 
   @Test
@@ -693,7 +724,7 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     processSourcesOnProject(appName);
     String generatedClassloaderModelFileContent = getGeneratedClassloaderModelContent(appName);
     String expectedClassLoaderModelFileContent = getExpectedClassLoaderModelContent(appName);
-    assertEquals(generatedClassloaderModelFileContent, expectedClassLoaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent).isEqualTo(expectedClassLoaderModelFileContent);
   }
 
   @Test
@@ -702,7 +733,7 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     processSourcesOnProject(appName);
     String generatedClassloaderModelFileContent = getGeneratedClassloaderModelContent(appName);
     String expectedClassLoaderModelFileContent = getExpectedClassLoaderModelContent(appName);
-    assertEquals(generatedClassloaderModelFileContent, expectedClassLoaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent).isEqualTo(expectedClassLoaderModelFileContent);
   }
 
   @Test
@@ -715,7 +746,7 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     processSourcesOnProject(appName);
     String generatedClassloaderModelFileContent = getFileContent(pluginClassLoaderModelLocation);
     String expectedClassLoaderModelFileContent = getFileContent(expectedPluginClassLaoderModelFile);
-    assertEquals(generatedClassloaderModelFileContent, expectedClassLoaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent).isEqualTo(expectedClassLoaderModelFileContent);
   }
 
   @Test
@@ -724,7 +755,7 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     processSourcesOnProject(appName);
     String generatedClassloaderModelFileContent = getGeneratedClassloaderModelContent(appName);
     String expectedClassLoaderModelFileContent = getExpectedClassLoaderModelContent(appName);
-    assertEquals(generatedClassloaderModelFileContent, expectedClassLoaderModelFileContent, true);
+    assertThat(generatedClassloaderModelFileContent).isEqualTo(expectedClassLoaderModelFileContent);
   }
 
   private String getGeneratedClassloaderModelContent(String appName) throws Exception {
@@ -735,4 +766,12 @@ public class ProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
     return getFileContent(EXPECTED_CLASSLOADER_MODEL_FILE_ROOT_FOLDER + "expected-" + appName + "-" + CLASSLOADER_MODEL_FILE);
   }
 
+  private static String readFileToString(final File file) throws IOException {
+    return org.apache.commons.io.FileUtils.readFileToString(file, Charset.defaultCharset());
+  }
+
+  private static void assertEqualsJson(String description, String actual, String expected, boolean pretty) {
+    assertThat(actual).as(description)
+        .isEqualTo(pretty ? expected : GSON.toJson(JsonParser.parseString(expected).getAsJsonObject()));
+  }
 }

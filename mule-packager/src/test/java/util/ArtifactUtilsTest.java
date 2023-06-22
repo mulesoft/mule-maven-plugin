@@ -6,12 +6,10 @@
  */
 package util;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.util.ArtifactUtils;
@@ -20,10 +18,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ArtifactUtilsTest {
+class ArtifactUtilsTest {
 
   private static final String GROUP_ID = "group.id";
   private static final String ARTIFACT_ID = "artifact-id";
@@ -34,14 +31,11 @@ public class ArtifactUtilsTest {
   private static final String MULE_PLUGIN = "mule-plugin";
   private static final String RESOURCE_LOCATION = "/Users/username/.m2/group/id/artifact-id/1.0.0/artifact-id-1.0.0.jar";
   private BundleDescriptor bundleDescriptor;
-  private ArtifactCoordinates artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
+  private final ArtifactCoordinates artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION);
   private URI bundleURI;
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
-  @Before
-  public void before() throws URISyntaxException {
+  @BeforeEach
+  void before() throws URISyntaxException {
     bundleDescriptor =
         new BundleDescriptor.Builder().setGroupId(GROUP_ID).setArtifactId(ARTIFACT_ID).setVersion(VERSION).setBaseVersion(VERSION)
             .build();
@@ -49,13 +43,13 @@ public class ArtifactUtilsTest {
   }
 
   @Test
-  public void toArtifactCoordinatesFromMinimumRequirementsTest() {
+  void toArtifactCoordinatesFromMinimumRequirementsTest() {
     ArtifactCoordinates actualArtifactCoordinates = ArtifactUtils.toArtifactCoordinates(bundleDescriptor);
     assertArtifactCoordinates(actualArtifactCoordinates, DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, null);
   }
 
   @Test
-  public void toArtifactCoordinatesTest() {
+  void toArtifactCoordinatesTest() {
     bundleDescriptor =
         new BundleDescriptor.Builder().setGroupId(GROUP_ID).setArtifactId(ARTIFACT_ID).setVersion(VERSION).setBaseVersion(VERSION)
             .setType(POM_TYPE)
@@ -67,38 +61,35 @@ public class ArtifactUtilsTest {
   }
 
   @Test
-  public void toDependencyTest() throws URISyntaxException {
+  void toDependencyTest() {
     BundleDependency bundleDependency =
-        new BundleDependency.Builder().sedBundleDescriptor(bundleDescriptor).setBundleUri(bundleURI).build();
+        new BundleDependency.Builder().setBundleDescriptor(bundleDescriptor).setBundleUri(bundleURI).build();
 
     Artifact actualArtifact = ArtifactUtils.toArtifact(bundleDependency);
 
     assertArtifactCoordinates(actualArtifact.getArtifactCoordinates(), DEFAULT_ARTIFACT_DESCRIPTOR_TYPE, null);
-    assertThat("Artifact path location is not the expected", actualArtifact.getUri(), equalTo(bundleURI));
+    assertThat(actualArtifact.getUri()).as("Artifact path location is not the expected").isEqualTo(bundleURI);
   }
 
-  private void assertArtifactCoordinates(ArtifactCoordinates actualArtifactCoordinates, String type,
-                                         String classifier) {
-    assertThat("Group id is not the expected", actualArtifactCoordinates.getGroupId(), equalTo(GROUP_ID));
-    assertThat("Artifact id is not the expected", actualArtifactCoordinates.getArtifactId(), equalTo(ARTIFACT_ID));
-    assertThat("Version is not the expected", actualArtifactCoordinates.getVersion(), equalTo(VERSION));
-    assertThat("Type is not the expected", actualArtifactCoordinates.getType(),
-               equalTo(type));
-    assertThat("Classifier is not the expected", actualArtifactCoordinates.getClassifier(), equalTo(classifier));
-
+  private void assertArtifactCoordinates(ArtifactCoordinates actualArtifactCoordinates, String type, String classifier) {
+    assertThat(actualArtifactCoordinates.getGroupId()).as("Group id is not the expected").isEqualTo(GROUP_ID);
+    assertThat(actualArtifactCoordinates.getArtifactId()).as("Artifact id is not the expected").isEqualTo(ARTIFACT_ID);
+    assertThat(actualArtifactCoordinates.getVersion()).as("Version is not the expected").isEqualTo(VERSION);
+    assertThat(actualArtifactCoordinates.getType()).as("Type is not the expected").isEqualTo(type);
+    assertThat(actualArtifactCoordinates.getClassifier()).as("Classifier is not the expected").isEqualTo(classifier);
   }
 
   @Test
-  public void toBundleDescriptorTest() {
+  void toBundleDescriptorTest() {
     artifactCoordinates.setClassifier(MULE_APP_CLASSIFIER);
     artifactCoordinates.setVersion(VERSION);
     BundleDescriptor actualBundleDescriptor = ArtifactUtils.toBundleDescriptor(artifactCoordinates);
-    assertThat("The group id is not the expected", actualBundleDescriptor.getGroupId(), equalTo(GROUP_ID));
-    assertThat("The artifact id is not the expected", actualBundleDescriptor.getArtifactId(), equalTo(ARTIFACT_ID));
-    assertThat("The version is not the expected", actualBundleDescriptor.getVersion(), equalTo(VERSION));
-    assertThat("The base version is not the expected", actualBundleDescriptor.getBaseVersion(), equalTo(VERSION));
-    assertThat("The classifier is not the expected", actualBundleDescriptor.getClassifier(),
-               equalTo(Optional.of(MULE_APP_CLASSIFIER)));
-    assertThat("The type is not the expected", actualBundleDescriptor.getType(), equalTo(DEFAULT_ARTIFACT_DESCRIPTOR_TYPE));
+    assertThat(actualBundleDescriptor.getGroupId()).as("The group id is not the expected").isEqualTo(GROUP_ID);
+    assertThat(actualBundleDescriptor.getArtifactId()).as("The artifact id is not the expected").isEqualTo(ARTIFACT_ID);
+    assertThat(actualBundleDescriptor.getVersion()).as("The version is not the expected").isEqualTo(VERSION);
+    assertThat(actualBundleDescriptor.getBaseVersion()).as("The base version is not the expected").isEqualTo(VERSION);
+    assertThat(actualBundleDescriptor.getClassifier()).as("The classifier is not the expected")
+        .isEqualTo(Optional.of(MULE_APP_CLASSIFIER));
+    assertThat(actualBundleDescriptor.getType()).as("The type is not the expected").isEqualTo(DEFAULT_ARTIFACT_DESCRIPTOR_TYPE);
   }
 }

@@ -7,7 +7,6 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package integration;
 
 import java.io.File;
@@ -20,8 +19,8 @@ import org.hamcrest.Matcher;
 
 public class FileTreeMatcher {
 
-  private static String PADDING = "    ";
-  public static final String HORIZONTAL_LINE = StringUtils.repeat("-", PADDING.length() - 1);
+  private static final String PADDING = "    ";
+  private static final String HORIZONTAL_LINE = StringUtils.repeat("-", PADDING.length() - 1);
 
   public static Matcher<File> hasSameTreeStructure(final File root, String[] excludes) {
     return new BaseMatcher<File>() {
@@ -53,15 +52,17 @@ public class FileTreeMatcher {
       }
 
       private StringBuilder generateTreeRepresentation(File root, int padding) {
-        StringBuilder treeRepresentation = new StringBuilder("");
+        StringBuilder treeRepresentation = new StringBuilder();
         if (root.isFile()) {
           return treeRepresentation;
         }
         File[] rootChildren = root.listFiles() == null ? null
-            : Arrays.stream(root.listFiles()).filter(file -> !Arrays.asList(excludes).contains(file.getName()))
+            : Arrays.stream(Objects.requireNonNull(root.listFiles()))
+                .filter(file -> !Arrays.asList(excludes).contains(file.getName()))
                 .toArray(File[]::new);
-        for (File child : rootChildren) {
-          treeRepresentation.append(generateLeftPadding(padding) + child.getName() + ((child.isDirectory()) ? "/\n" : "\n"));
+        for (File child : Objects.requireNonNull(rootChildren)) {
+          treeRepresentation.append(generateLeftPadding(padding)).append(child.getName())
+              .append((child.isDirectory()) ? "/\n" : "\n");
           treeRepresentation.append(generateTreeRepresentation(child, padding + PADDING.length()));
         }
         return treeRepresentation;
@@ -77,16 +78,18 @@ public class FileTreeMatcher {
 
       private boolean sameTreeSructure(File root, File otherRoot) {
         File[] rootChildrenArray = root.listFiles() == null ? null
-            : Arrays.stream(root.listFiles()).filter(file -> !Arrays.asList(excludes).contains(file.getName()))
+            : Arrays.stream(Objects.requireNonNull(root.listFiles()))
+                .filter(file -> !Arrays.asList(excludes).contains(file.getName()))
                 .toArray(File[]::new);
         File[] otherRootChildrenArray = otherRoot.listFiles() == null ? null
-            : Arrays.stream(otherRoot.listFiles()).filter(file -> !Arrays.asList(excludes).contains(file.getName()))
+            : Arrays.stream(Objects.requireNonNull(otherRoot.listFiles()))
+                .filter(file -> !Arrays.asList(excludes).contains(file.getName()))
                 .toArray(File[]::new);
 
         if (rootChildrenArray == null || otherRootChildrenArray == null || rootChildrenArray.length == 0
             || otherRootChildrenArray.length == 0) {
-          return !((rootChildrenArray == null || rootChildrenArray.length == 0)
-              ^ (otherRootChildrenArray == null || otherRootChildrenArray.length == 0));
+          return (rootChildrenArray == null || rootChildrenArray.length == 0) == (otherRootChildrenArray == null
+              || otherRootChildrenArray.length == 0);
         }
         Set<File> rootChildren = new TreeSet<>(Arrays.asList(rootChildrenArray));
         Set<File> otherRootChildren = new TreeSet<>(Arrays.asList(otherRootChildrenArray));
@@ -106,10 +109,8 @@ public class FileTreeMatcher {
       }
 
       private boolean areSameFile(File file, File otherFile) {
-        return StringUtils.equals(file.getName(), otherFile.getName()) && (file.isFile() == otherFile.isFile());
+        return Objects.equals(file.getName(), otherFile.getName()) && (file.isFile() == otherFile.isFile());
       }
-
-
     };
   }
 

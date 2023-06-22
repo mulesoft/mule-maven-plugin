@@ -7,7 +7,6 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package org.mule.tools.maven.mojo;
 
 import static org.mockito.Mockito.mock;
@@ -18,6 +17,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 import com.google.common.collect.Lists;
@@ -26,14 +27,12 @@ import org.apache.maven.model.Build;
 import org.apache.maven.model.Model;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.api.packager.builder.MulePackageBuilder;
 
-public class AbstractMuleMojoTest {
+class AbstractMuleMojoTest {
 
   protected static final String GROUP_ID = "fake.group.id";
   protected static final String ARTIFACT_ID = "artifact-id";
@@ -53,18 +52,18 @@ public class AbstractMuleMojoTest {
   protected File muleSourceFolderMock;
   protected MulePackageBuilder packageBuilderMock;
 
-  @Rule
-  public TemporaryFolder projectBaseFolder = new TemporaryFolder();
+  @TempDir
+  public Path projectBaseFolder;
 
-  @Rule
-  public TemporaryFolder buildFolderFolder = new TemporaryFolder();
+  @TempDir
+  public Path buildFolderFolder;
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+  @TempDir
+  public Path expectedException;
 
-  @Before
-  public void beforeTest() throws IOException {
-    metaInfFolder = buildFolderFolder.newFolder(META_INF.value());
+  @BeforeEach
+  void beforeTest() throws IOException {
+    metaInfFolder = createFolder(buildFolderFolder.resolve(META_INF.value()));
     System.setOut(new PrintStream(outContent));
 
     logMock = mock(Log.class);
@@ -83,7 +82,7 @@ public class AbstractMuleMojoTest {
     systemProperties.put("muleDeploy", "false");
     when(mavenSessionMock.getSystemProperties()).thenReturn(systemProperties);
 
-    when(buildMock.getDirectory()).thenReturn(buildFolderFolder.getRoot().getAbsolutePath());
+    when(buildMock.getDirectory()).thenReturn(buildFolderFolder.toFile().getAbsolutePath());
   }
 
   /**
@@ -103,8 +102,10 @@ public class AbstractMuleMojoTest {
 
     mojo.project = projectMock;
     mojo.session = mavenSessionMock;
-    mojo.projectBaseFolder = projectBaseFolder.getRoot();
+    mojo.projectBaseFolder = projectBaseFolder.toFile();
   }
 
-
+  protected File createFolder(Path file) throws IOException {
+    return Files.createDirectories(file).toFile();
+  }
 }

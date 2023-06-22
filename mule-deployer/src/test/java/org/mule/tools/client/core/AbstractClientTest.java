@@ -9,16 +9,15 @@
  */
 package org.mule.tools.client.core;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Mulesoft Inc.
  * @since 3.0.0
  */
-public class AbstractClientTest {
+class AbstractClientTest {
 
   public static class TesteableClient extends AbstractClient {
 
@@ -27,10 +26,10 @@ public class AbstractClientTest {
   }
 
   @Test
-  public void getUserAgentMuleDeployer() {
+  void getUserAgentMuleDeployer() {
     AbstractClient client = new TesteableClient();
     String userAgent = client.getUserAgent();
-    assertThat(userAgent, is("mule-deployer"));
+    assertThat(userAgent).isEqualTo("mule-deployer");
   }
 
 }

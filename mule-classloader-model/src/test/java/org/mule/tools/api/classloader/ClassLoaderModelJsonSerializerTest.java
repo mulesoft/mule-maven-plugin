@@ -11,10 +11,8 @@
 
 package org.mule.tools.api.classloader;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
@@ -23,14 +21,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ClassLoaderModelJsonSerializerTest {
+class ClassLoaderModelJsonSerializerTest {
 
   protected static final String GROUP_ID = "org.mule.munit";
   protected static final String ARTIFACT_ID = "fake-id";
@@ -40,19 +38,8 @@ public class ClassLoaderModelJsonSerializerTest {
   private static final String CLASSIFIER = "classifier";
   private static final String CLASSLOADER_MODEL_JSON_FILE_NAME = "classloader-model.json";
 
-  @Rule
-  public TemporaryFolder projectBaseFolder = new TemporaryFolder();
-
-  private File projectTargetFolder;
-
-  @Before
-  public void setUp() throws IOException {
-    projectTargetFolder = projectBaseFolder.newFolder("target");
-  }
-
-
   @Test
-  public void classLoaderModelSerializationTest() throws URISyntaxException {
+  void classLoaderModelSerializationTest(@TempDir Path tempDir) throws URISyntaxException, IOException {
     ArtifactCoordinates artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, TYPE, CLASSIFIER);
     ClassLoaderModel expectedClassLoaderModel = new ClassLoaderModel(VERSION, artifactCoordinates);
     List<Artifact> dependencies = getDependencies();
@@ -60,12 +47,16 @@ public class ClassLoaderModelJsonSerializerTest {
     expectedClassLoaderModel.setPackages(new String[0]);
     expectedClassLoaderModel.setResources(new String[0]);
     File classloaderModelJsonFile =
-        ClassLoaderModelJsonSerializer.serializeToFile(expectedClassLoaderModel, projectTargetFolder);
-    assertThat("Classloader model json file name is incorrect",
-               classloaderModelJsonFile.getName().endsWith(CLASSLOADER_MODEL_JSON_FILE_NAME), is(true));
+        ClassLoaderModelJsonSerializer.serializeToFile(expectedClassLoaderModel,
+                                                       Files.createDirectories(tempDir.resolve("target")).toFile());
+    assertThat(classloaderModelJsonFile.getName())
+        .as("Classloader model json file name is incorrect")
+        .endsWith(CLASSLOADER_MODEL_JSON_FILE_NAME);
+
     ClassLoaderModel actualClassloaderModel = ClassLoaderModelJsonSerializer.deserialize(classloaderModelJsonFile);
-    assertThat("Actual classloader model is not equal to the expected", actualClassloaderModel,
-               equalTo(expectedClassLoaderModel));
+    assertThat(actualClassloaderModel)
+        .as("Actual classloader model is not equal to the expected")
+        .isEqualTo(expectedClassLoaderModel);
   }
 
   private List<Artifact> getDependencies() throws URISyntaxException {

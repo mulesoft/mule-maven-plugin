@@ -9,9 +9,18 @@
  */
 package org.mule.tools.maven.mojo;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import org.apache.maven.plugin.MojoFailureException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mule.tools.api.packager.packaging.PackagingType;
+import org.mule.tools.api.packager.resources.processor.DomainBundleProjectResourcesContentProcessor;
+import org.mule.tools.api.packager.resources.processor.ResourcesContentProcessor;
+
+import java.io.IOException;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doThrow;
@@ -20,57 +29,45 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.util.Optional;
-
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.junit.Before;
-import org.junit.Test;
-
-import org.mule.tools.api.packager.packaging.PackagingType;
-import org.mule.tools.api.packager.resources.processor.DomainBundleProjectResourcesContentProcessor;
-import org.mule.tools.api.packager.resources.processor.ResourcesContentProcessor;
-
 /**
  * @author Mulesoft Inc.
  * @since 3.1.0
  */
-public class ProcessSourcesMojoTest extends AbstractMuleMojoTest {
+class ProcessSourcesMojoTest extends AbstractMuleMojoTest {
 
   private static final String PREVIOUS_RUN_PLACEHOLDER = "MULE_MAVEN_PLUGIN_PROCESS_RESOURCES_PREVIOUS_RUN_PLACEHOLDER";
 
   private ProcessResourcesMojo mojo;
   private ProcessResourcesMojo mojoMock;
 
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     mojo = new ProcessResourcesMojo();
     mojoMock = mock(ProcessResourcesMojo.class);
   }
 
   @Test
-  public void getResourcesContentProcessorDomainBundle() {
+  void getResourcesContentProcessorDomainBundle() {
     when(projectMock.getPackaging()).thenReturn(PackagingType.MULE_DOMAIN_BUNDLE.toString());
     prepareMojoForProjectInformation(mojo, GROUP_ID, ARTIFACT_ID, VERSION);
 
     Optional<ResourcesContentProcessor> resourcesContentProcessor = mojo.getResourcesContentProcessor();
 
-    assertThat(resourcesContentProcessor.isPresent(), is(true));
-    assertThat(resourcesContentProcessor.get(), instanceOf(DomainBundleProjectResourcesContentProcessor.class));
+    assertThat(resourcesContentProcessor).isPresent();
+    assertThat(resourcesContentProcessor.get()).isInstanceOf(DomainBundleProjectResourcesContentProcessor.class);
   }
 
   @Test
-  public void getResourcesContentProcessor() {
+  void getResourcesContentProcessor() {
     prepareMojoForProjectInformation(mojo, GROUP_ID, ARTIFACT_ID, VERSION);
 
     Optional<ResourcesContentProcessor> resourcesContentProcessor = mojo.getResourcesContentProcessor();
 
-    assertThat(resourcesContentProcessor.isPresent(), is(false));
+    assertThat(resourcesContentProcessor).isNotPresent();
   }
 
   @Test
-  public void doExecuteEmptyResourcesContentProcessor() throws MojoFailureException, MojoExecutionException {
+  void doExecuteEmptyResourcesContentProcessor() throws MojoFailureException {
     when(mojoMock.getResourcesContentProcessor()).thenReturn(Optional.empty());
 
     doCallRealMethod().when(mojoMock).doExecute();
@@ -80,7 +77,7 @@ public class ProcessSourcesMojoTest extends AbstractMuleMojoTest {
   }
 
   @Test
-  public void doExecute() throws MojoFailureException, MojoExecutionException, IOException {
+  void doExecute() throws MojoFailureException, IOException {
     ResourcesContentProcessor resourcesContentProcessorMock = mock(ResourcesContentProcessor.class);
     when(mojoMock.getResourcesContentProcessor()).thenReturn(Optional.of(resourcesContentProcessorMock));
 
@@ -91,33 +88,33 @@ public class ProcessSourcesMojoTest extends AbstractMuleMojoTest {
     verify(resourcesContentProcessorMock, times(1)).process(any());
   }
 
-  @Test(expected = MojoFailureException.class)
-  public void doExecuteFailProcessIllegalArgumentException() throws MojoFailureException, MojoExecutionException, IOException {
+  @Test
+  void doExecuteFailProcessIllegalArgumentException() throws MojoFailureException, IOException {
     ResourcesContentProcessor resourcesContentProcessorMock = mock(ResourcesContentProcessor.class);
     doThrow(new IllegalArgumentException()).when(resourcesContentProcessorMock).process(any());
     when(mojoMock.getResourcesContentProcessor()).thenReturn(Optional.of(resourcesContentProcessorMock));
 
     doCallRealMethod().when(mojoMock).doExecute();
-    mojoMock.doExecute();
-
-    verify(mojoMock, times(1)).getResourcesContentProcessor();
-  }
-
-  @Test(expected = MojoFailureException.class)
-  public void doExecuteFailProcessIOException() throws MojoFailureException, MojoExecutionException, IOException {
-    ResourcesContentProcessor resourcesContentProcessorMock = mock(ResourcesContentProcessor.class);
-    doThrow(new IOException()).when(resourcesContentProcessorMock).process(any());
-    when(mojoMock.getResourcesContentProcessor()).thenReturn(Optional.of(resourcesContentProcessorMock));
-
-    doCallRealMethod().when(mojoMock).doExecute();
-    mojoMock.doExecute();
+    assertThatThrownBy(() -> mojoMock.doExecute()).isExactlyInstanceOf(MojoFailureException.class);
 
     verify(mojoMock, times(1)).getResourcesContentProcessor();
   }
 
   @Test
-  public void getPreviousRunPlaceholder() {
-    assertThat(mojo.getPreviousRunPlaceholder(), is(PREVIOUS_RUN_PLACEHOLDER));
+  void doExecuteFailProcessIOException() throws MojoFailureException, IOException {
+    ResourcesContentProcessor resourcesContentProcessorMock = mock(ResourcesContentProcessor.class);
+    doThrow(new IOException()).when(resourcesContentProcessorMock).process(any());
+    when(mojoMock.getResourcesContentProcessor()).thenReturn(Optional.of(resourcesContentProcessorMock));
+
+    doCallRealMethod().when(mojoMock).doExecute();
+    assertThatThrownBy(() -> mojoMock.doExecute()).isExactlyInstanceOf(MojoFailureException.class);
+
+    verify(mojoMock, times(1)).getResourcesContentProcessor();
+  }
+
+  @Test
+  void getPreviousRunPlaceholder() {
+    assertThat(mojo.getPreviousRunPlaceholder()).isEqualTo(PREVIOUS_RUN_PLACEHOLDER);
   }
 
 }

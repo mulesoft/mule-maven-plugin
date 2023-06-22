@@ -16,14 +16,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.io.File;
 import java.io.IOException;
 
+import integration.ProjectFactory;
 import org.apache.maven.it.VerificationException;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
 
@@ -34,7 +34,7 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     this.goal = PACKAGE;
   }
 
-  @Before
+  @BeforeEach
   public void before() throws IOException, VerificationException {
     clearResources();
   }
@@ -44,18 +44,15 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     verifier.executeGoal(PACKAGE);
 
     File expectedStructure = getExpectedStructure();
-
     assertThat("The directory structure is different from the expected", targetFolder,
                hasSameTreeStructure(expectedStructure, excludes));
-
     verifier.verifyErrorFreeLog();
   }
 
   @Test
   public void testPackageAppUsingLightweightWithLocalRepository() throws IOException, VerificationException {
     String artifactId = "empty-lightweight-local-repository-classloader-model-project";
-    projectBaseDirectory =
-        builder.createProjectBaseDir(artifactId, this.getClass());
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-DlightweightPackage=true");
@@ -68,16 +65,15 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     assertThat("The directory structure is different from the expected", targetStructure,
                hasSameTreeStructure(expectedStructure,
                                     addAll(excludes,
-                                           new String[] {
-                                               "empty-lightweight-local-repository-classloader-model-project-1.0.0-SNAPSHOT-mule-application-light-package.jar",
-                                               "temp", "munit-test.xml"})));
+                                           "empty-lightweight-local-repository-classloader-model-project-1.0.0-SNAPSHOT-mule-application-light-package.jar",
+                                           "temp", "munit-test.xml")));
     verifier.verifyErrorFreeLog();
   }
 
   @Test
   public void testPackageAppWithSharedLibraries() throws IOException, VerificationException {
     String artifactId = "validate-shared-libraries-project";
-    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
@@ -94,7 +90,7 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
   @Test
   public void testPackagePolicy() throws IOException, VerificationException {
     String artifactId = "empty-package-policy-project";
-    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
@@ -108,12 +104,12 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     verifier.verifyErrorFreeLog();
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testPackageMultiModuleAppModuleCorrectStructure() throws IOException, VerificationException {
     testPackageAppConfigFiles();
     String artifactId = "multi-module-application";
-    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
@@ -129,12 +125,12 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     verifier.verifyErrorFreeLog();
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testPackageMultiModulePolicyModuleCorrectStructure() throws IOException, VerificationException {
     testPackageAppConfigFiles();
     String artifactId = "multi-module-application";
-    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
@@ -153,7 +149,7 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
   @Test
   public void testPackageAppWithDefinedFinalName() throws IOException, VerificationException {
     String artifactId = "check-finalName-package-project";
-    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);
@@ -166,7 +162,7 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
   @Test
   public void testPackageAppConfigFiles() throws IOException, VerificationException {
     String artifactId = "config-files-package-project";
-    projectBaseDirectory = builder.createProjectBaseDir(artifactId, this.getClass());
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.setMavenDebug(true);

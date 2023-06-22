@@ -7,11 +7,9 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package org.mule.tools.maven.mojo.model.lifecycle;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,6 +31,8 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.TEST
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VERIFY;
 
+import org.apache.maven.lifecycle.mapping.LifecyclePhase;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.project.MuleLifecycleMapping;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenVersionless;
 
@@ -43,15 +43,13 @@ import java.util.Set;
 
 import org.apache.maven.lifecycle.DefaultLifecycles;
 import org.apache.maven.lifecycle.mapping.Lifecycle;
-import org.junit.Test;
 
-public class MuleLifecycleMappingMavenVersionlessTest {
+class MuleLifecycleMappingMavenVersionlessTest {
 
   private final String DEFAULT_LIFECYCLE = DefaultLifecycles.STANDARD_LIFECYCLES[0];
 
   @Test
-  public void getLifecyclePhases() {
-
+  void getLifecyclePhases() {
     Set<MavenLifecyclePhase> expectedLifecyclePhases =
         Sets.newHashSet(CLEAN, VALIDATE, INITIALIZE, GENERATE_SOURCES, PROCESS_SOURCES, PROCESS_RESOURCES, COMPILE,
                         PROCESS_CLASSES,
@@ -60,34 +58,36 @@ public class MuleLifecycleMappingMavenVersionlessTest {
 
     LifecycleMappingMavenVersionless lifecycleMappingMavenVersionlessMock = mock(LifecycleMappingMavenVersionless.class);
     when(lifecycleMappingMavenVersionlessMock.buildGoals(any())).thenReturn("");
-    Map lifecyclePhases = (new MuleLifecycleMapping()).getLifecyclePhases(lifecycleMappingMavenVersionlessMock);
+    Map<String, Object> lifecyclePhases = (new MuleLifecycleMapping()).getLifecyclePhases(lifecycleMappingMavenVersionlessMock);
 
 
-    assertThat("The number of lifecycle phases is wrong", lifecyclePhases.keySet().size(),
-               is(expectedLifecyclePhases.size()));
+    assertThat(lifecyclePhases.keySet())
+        .as("The number of lifecycle phases is wrong")
+        .hasSize(expectedLifecyclePhases.size());
 
-    expectedLifecyclePhases.forEach(expectedPhase -> assertThat("Missing lifecycle phase: " + expectedPhase.id(),
-                                                                lifecyclePhases.containsKey(expectedPhase.id()), is(true)));
-
+    expectedLifecyclePhases
+        .forEach(expectedPhase -> assertThat(lifecyclePhases.containsKey(expectedPhase.id()))
+            .as("Missing lifecycle phase: " + expectedPhase.id()).isTrue());
   }
 
   @Test
-  public void getMuleDefaultLifecycleTest() {
+  void getMuleDefaultLifecycleTest() {
     MuleLifecycleMapping muleLifecycleMappingMaven = new MuleLifecycleMapping();
 
-    Map lifecycles = muleLifecycleMappingMaven.getLifecycles();
-    Lifecycle defaultLifecycle = (Lifecycle) lifecycles.get(DEFAULT_LIFECYCLE);
-    Map phases = defaultLifecycle.getLifecyclePhases();
+    Map<String, Lifecycle> lifecycles = muleLifecycleMappingMaven.getLifecycles();
+    Lifecycle defaultLifecycle = lifecycles.get(DEFAULT_LIFECYCLE);
+    Map<String, LifecyclePhase> phases = defaultLifecycle.getLifecyclePhases();
 
     LifecycleMappingMavenVersionless lifecycleMappingMavenVersionlessMock = mock(LifecycleMappingMavenVersionless.class);
     when(lifecycleMappingMavenVersionlessMock.buildGoals(any())).thenReturn("");
-    Map expectedPhases = (new MuleLifecycleMapping()).getLifecyclePhases(lifecycleMappingMavenVersionlessMock);
-    for (Object phase : phases.keySet()) {
-      assertThat("Current phase is not defined in the expected lifecycle map", expectedPhases.containsKey(phase), is(true));
+    Map<String, Object> expectedPhases = (new MuleLifecycleMapping()).getLifecyclePhases(lifecycleMappingMavenVersionlessMock);
+
+    for (String phase : phases.keySet()) {
+      assertThat(expectedPhases.containsKey(phase)).as("Current phase is not defined in the expected lifecycle map").isTrue();
     }
 
-    for (Object phase : expectedPhases.keySet()) {
-      assertThat("Current phase is not defined in the actual lifecycle map", phases.containsKey(phase), is(true));
+    for (String phase : expectedPhases.keySet()) {
+      assertThat(phases.containsKey(phase)).as("Current phase is not defined in the actual lifecycle map").isTrue();
     }
   }
 

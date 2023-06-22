@@ -11,14 +11,12 @@ package org.mule.tools.client;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.junit.Test;
-import org.mockito.internal.matchers.Or;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.arm.model.Organization;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class AbstractMuleClientTest {
+class AbstractMuleClientTest {
 
   String userInfoJson = "{\n"
       + "  \"user\": {\n"
@@ -79,24 +77,25 @@ public class AbstractMuleClientTest {
       + "  }\n"
       + "}";
 
-  private static AbstractMuleClient client = new AbstractMuleClient(null) {
+  private static final AbstractMuleClient CLIENT = new AbstractMuleClient(null) {
 
     public void init() {}
   };
 
   @Test
-  public void buildOrganization() {
-    Organization o = client.buildOrganization((JsonObject) new JsonParser().parse(userInfoJson));
+  void buildOrganization() {
+    Organization o = CLIENT.buildOrganization((JsonObject) new JsonParser().parse(userInfoJson));
     System.out.println(o.toString());
-    assertThat("Master organization should be MuleSoft", o.name, equalTo("MuleSoft"));
+    assertThat(o.name).as("Master organization should be MuleSoft").isEqualTo("MuleSoft");
     Organization test1 = o.subOrganizations.get(0);
-    assertThat("Suborganization should be test1", test1.name, equalTo("test1"));
-    assertThat("Suborganization should be max-the-mule-broker", o.subOrganizations.get(1).name, equalTo("max-the-mule-broker"));
+    assertThat(test1.name).as("Suborganization should be test1").isEqualTo("test1");
+    assertThat(o.subOrganizations.get(1).name).as("Suborganization should be max-the-mule-broker")
+        .isEqualTo("max-the-mule-broker");
     Organization test2 = test1.subOrganizations.get(0);
-    assertThat("Suborganization should be test2", test2.name, equalTo("test2"));
+    assertThat(test2.name).as("Suborganization should be test2").isEqualTo("test2");
     Organization myapp = test2.subOrganizations.get(0);
-    assertThat("Suborganization should be myapp", myapp.name, equalTo("myapp"));
+    assertThat(myapp.name).as("Suborganization should be myapp").isEqualTo("myapp");
     Organization tests = myapp.subOrganizations.get(0);
-    assertThat("Suborganization should be tests", tests.name, equalTo("tests"));
+    assertThat(tests.name).as("Suborganization should be tests").isEqualTo("tests");
   }
 }

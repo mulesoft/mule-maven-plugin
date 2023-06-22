@@ -7,16 +7,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package integration.test.mojo;
 
-import integration.ProjectFactory;
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 
 import java.io.File;
-import java.io.IOException;
 
 public interface SettingsConfigurator {
 

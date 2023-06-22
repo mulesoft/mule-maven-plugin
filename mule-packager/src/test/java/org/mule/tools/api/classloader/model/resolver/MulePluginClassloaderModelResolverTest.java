@@ -9,28 +9,27 @@
  */
 package org.mule.tools.api.classloader.model.resolver;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleDescriptor;
-import org.mule.maven.client.internal.AetherMavenClient;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mule.maven.client.internal.MuleMavenClient;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 public class MulePluginClassloaderModelResolverTest {
 
   private static final String MULE_PLUGIN_CLASSIFIER = "mule-plugin";
-  private static final String USER_REPOSITORY_LOCATION =
-      "/Users/muleuser/.m2/repository";
+  private static final String USER_REPOSITORY_LOCATION = "/Users/muleuser/.m2/repository";
   private static final String SEPARATOR = "/";
   private static final String GROUP_ID_SEPARATOR = ".";
   private static final String GROUP_ID = "group.id";
@@ -39,39 +38,41 @@ public class MulePluginClassloaderModelResolverTest {
   private static final String TYPE = "jar";
   private MulePluginClassloaderModelResolver resolver;
 
-  @Before
-  public void setUp() {
-    resolver = new MulePluginClassloaderModelResolver(mock(AetherMavenClient.class));
+  @BeforeEach
+  void setUp() {
+    resolver = new MulePluginClassloaderModelResolver(mock(MuleMavenClient.class));
   }
 
   @Test
-  public void hasSameArtifactId() throws URISyntaxException {
+  void hasSameArtifactId() throws URISyntaxException {
     BundleDependency bundleDependency1 = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER);
     BundleDependency bundleDependency2 = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER);
-    assertThat("Method should have returned true",
-               resolver.hasSameArtifactIdAndMajor(bundleDependency1, bundleDependency2), is(true));
+    assertThat(resolver.hasSameArtifactIdAndMajor(bundleDependency1, bundleDependency2)).as("Method should have returned true")
+        .isTrue();
   }
 
   @Test
-  public void hasSameArtifactIdFalse() throws URISyntaxException {
+  void hasSameArtifactIdFalse() throws URISyntaxException {
     BundleDependency bundleDependency1 = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER);
     BundleDependency bundleDependency2 = buildBundleDependency(1, 2, MULE_PLUGIN_CLASSIFIER);
-    assertThat("Method should have returned false",
-               resolver.hasSameArtifactIdAndMajor(bundleDependency1, bundleDependency2), is(false));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void resolveMulePluginsVersionsPluginsToResolveNull() {
-    resolver.resolveConflicts(null, new ArrayList<>());
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void resolveMulePluginsVersionsDefinitivePluginsNull() {
-    resolver.resolveConflicts(new ArrayList<>(), null);
+    assertThat(resolver.hasSameArtifactIdAndMajor(bundleDependency1, bundleDependency2)).as("Method should have returned false")
+        .isFalse();
   }
 
   @Test
-  public void resolveMulePluginsVersionsDefinitivePluginsNewer() throws URISyntaxException {
+  void resolveMulePluginsVersionsPluginsToResolveNull() {
+    assertThatThrownBy(() -> resolver.resolveConflicts(null, new ArrayList<>()))
+        .isExactlyInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void resolveMulePluginsVersionsDefinitivePluginsNull() {
+    assertThatThrownBy(() -> resolver.resolveConflicts(new ArrayList<>(), null))
+        .isExactlyInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void resolveMulePluginsVersionsDefinitivePluginsNewer() throws URISyntaxException {
     BundleDependency mulePluginToResolveOlder = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER, "1.0.0");
     BundleDependency mulePluginToResolveNewer = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER, "1.0.1");
 
@@ -83,12 +84,13 @@ public class MulePluginClassloaderModelResolverTest {
 
     List<BundleDependency> resolvedPlugins =
         resolver.resolveConflicts(mulePluginsToResolve, definitiveMulePlugins);
-    assertThat("List should contain only the newer version", resolvedPlugins, containsInAnyOrder(mulePluginToResolveNewer));
-    assertThat("List should contain only one dependency", resolvedPlugins.size(), equalTo(1));
+    assertThat(resolvedPlugins).as("List should contain only the newer version")
+        .containsAll(Collections.singletonList(mulePluginToResolveNewer));
+    assertThat(resolvedPlugins).as("List should contain only one dependency").hasSize(1);
   }
 
   @Test
-  public void resolveMulePluginsVersionsDefinitivePluginsOlder() throws URISyntaxException {
+  void resolveMulePluginsVersionsDefinitivePluginsOlder() throws URISyntaxException {
     BundleDependency mulePluginToResolveOlder = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER, "1.0.0");
     BundleDependency mulePluginToResolveNewer = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER, "1.0.1");
 
@@ -100,12 +102,13 @@ public class MulePluginClassloaderModelResolverTest {
 
     List<BundleDependency> resolvedPlugins =
         resolver.resolveConflicts(mulePluginsToResolve, definitiveMulePlugins);
-    assertThat("List should contain only the older version", resolvedPlugins, containsInAnyOrder(mulePluginToResolveOlder));
-    assertThat("List should contain only one dependency", resolvedPlugins.size(), equalTo(1));
+    assertThat(resolvedPlugins).as("List should contain only the older version")
+        .containsAll(Collections.singletonList(mulePluginToResolveOlder));
+    assertThat(resolvedPlugins).as("List should contain only one dependency").hasSize(1);
   }
 
   @Test
-  public void resolveMulePluginsVersions() throws URISyntaxException {
+  void resolveMulePluginsVersions() throws URISyntaxException {
     BundleDependency mulePluginToResolveOlder = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER, "1.0.0");
     BundleDependency mulePluginToResolveNewer = buildBundleDependency(1, 1, MULE_PLUGIN_CLASSIFIER, "1.0.1");
     BundleDependency anotherRandomMulePlugin = buildBundleDependency(0, 0, MULE_PLUGIN_CLASSIFIER, "1.0.0");
@@ -119,9 +122,9 @@ public class MulePluginClassloaderModelResolverTest {
 
     List<BundleDependency> resolvedPlugins =
         resolver.resolveConflicts(mulePluginsToResolve, definitiveMulePlugins);
-    assertThat("List should contain only the older version", resolvedPlugins,
-               containsInAnyOrder(mulePluginToResolveOlder, anotherRandomMulePlugin));
-    assertThat("List should contain only one dependency", resolvedPlugins.size(), equalTo(2));
+    assertThat(resolvedPlugins).as("List should contain only the older version")
+        .containsAll(Arrays.asList(mulePluginToResolveOlder, anotherRandomMulePlugin));
+    assertThat(resolvedPlugins).as("List should contain only one dependency").hasSize(2);
   }
 
   private BundleDependency buildBundleDependency(int groupIdSuffix, int artifactIdSuffix, String classifier)

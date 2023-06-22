@@ -9,46 +9,45 @@
  */
 package org.mule.tools.client.standalone.exception;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import static org.hamcrest.Matchers.instanceOf;
-
+import org.assertj.core.api.AbstractThrowableAssert;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 
-public class DeploymentExceptionTest {
+import java.util.Objects;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+class DeploymentExceptionTest {
 
   private static final String EXCEPTION_MESSAGE = "Could not deploy";
   private final DeploymentException deploymentException = new DeploymentException(EXCEPTION_MESSAGE);
 
-  @Rule
-  public ExpectedException expected = ExpectedException.none();
-
-  @Before
-  public void setUp() {
-    expected.expect(DeploymentException.class);
-    expected.expectMessage(EXCEPTION_MESSAGE);
+  @Test
+  void deploymentExceptionCustomMessageTest() {
+    testException(deploymentException, DeploymentException.class, null);
   }
 
   @Test
-  public void deploymentExceptionCustomMessageTest() throws DeploymentException {
-    throw deploymentException;
-  }
-
-
-  @Test
-  public void deploymentExceptionCustomMessageNullCauseTest() throws DeploymentException {
+  void deploymentExceptionCustomMessageNullCauseTest() {
     deploymentException.initCause(null);
-    throw deploymentException;
+    testException(deploymentException, DeploymentException.class, null);
   }
 
   @Test
-  public void deploymentExceptionCustomMessageWithCauseTest() throws DeploymentException {
+  void deploymentExceptionCustomMessageWithCauseTest() {
     deploymentException.initCause(new IllegalArgumentException());
-    expected.expectCause(instanceOf(IllegalArgumentException.class));
-    throw deploymentException;
+    testException(deploymentException, DeploymentException.class, IllegalArgumentException.class);
   }
 
+  private void testException(Throwable throwable, Class<?> clazz, Class<?> cause) {
+    AbstractThrowableAssert<?, ? extends Throwable> throwableAssert = assertThatThrownBy(() -> {
+      throw throwable;
+    })
+        .isExactlyInstanceOf(clazz)
+        .hasMessage(EXCEPTION_MESSAGE);
+
+    if (Objects.nonNull(cause)) {
+      throwableAssert.cause().isExactlyInstanceOf(cause);
+    }
+  }
 }

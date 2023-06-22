@@ -13,8 +13,8 @@ import static java.lang.String.format;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -22,6 +22,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
+
+import org.junit.jupiter.api.Test;
+import org.mockserver.integration.ClientAndServer;
 import org.mule.tools.client.arm.ArmClient;
 import org.mule.tools.client.arm.model.AuthorizationResponse;
 import org.mule.tools.client.arm.model.Environment;
@@ -38,14 +41,7 @@ import com.google.gson.Gson;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.client.Invocation;
 
-import org.hamcrest.MatcherAssert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.mockserver.integration.ClientAndServer;
-
-
-public class AbstractMuleClientTestCase {
+class AbstractMuleClientTestCase {
 
   public static final int DEFAULT_PORT = 8080;
   public static final String BASE_URI = "http://localhost";
@@ -65,9 +61,6 @@ public class AbstractMuleClientTestCase {
   private AbstractMuleClient client;
   private CloudHubDeployment cloudHubDeployment;
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
   private AbstractMuleClient createClient(String businessgroup) {
     cloudHubDeployment = new CloudHubDeployment();
     cloudHubDeployment.setUri(format("%s:%s", BASE_URI, DEFAULT_PORT));
@@ -79,91 +72,89 @@ public class AbstractMuleClientTestCase {
   }
 
   @Test
-  public void emptyBusinessGroup() {
+  void emptyBusinessGroup() {
     client = createClient("");
     String[] result = client.createBusinessGroupPath();
-    assertThat(result.length, equalTo(0));
+    assertThat(result.length).isEqualTo(0);
   }
 
   @Test
-  public void nullBusinessGroup() {
+  void nullBusinessGroup() {
     client = createClient(null);
     String[] result = client.createBusinessGroupPath();
-    assertThat(result.length, equalTo(0));
+    assertThat(result.length).isEqualTo(0);
   }
 
   @Test
-  public void simpleBusinessGroup() {
+  void simpleBusinessGroup() {
     client = createClient("my-business-group");
     String[] result = client.createBusinessGroupPath();
-    assertThat(result.length, equalTo(1));
-    assertThat(result[0], equalTo("my-business-group"));
+    assertThat(result.length).isEqualTo(1);
+    assertThat(result[0]).isEqualTo("my-business-group");
   }
 
   @Test
-  public void groupWithOneBackslash() {
+  void groupWithOneBackslash() {
     client = createClient("my\\\\business\\\\group");
     String[] result = client.createBusinessGroupPath();
-    assertThat(result.length, equalTo(1));
-    assertThat(result[0], equalTo("my\\business\\group"));
+    assertThat(result.length).isEqualTo(1);
+    assertThat(result[0]).isEqualTo("my\\business\\group");
   }
 
   @Test
-  public void oneBackslashAtEnd() {
+  void oneBackslashAtEnd() {
     client = createClient("root\\\\");
     String[] result = client.createBusinessGroupPath();
-    assertThat(result.length, equalTo(1));
-    assertThat(result[0], equalTo("root\\"));
+    assertThat(result.length).isEqualTo(1);
+    assertThat(result[0]).isEqualTo("root\\");
   }
 
   @Test
-  public void twoBackslashAtEnd() {
+  void twoBackslashAtEnd() {
     client = createClient("root\\\\\\\\");
     String[] result = client.createBusinessGroupPath();
-    assertThat(result.length, equalTo(1));
-    assertThat(result[0], equalTo("root\\\\"));
+    assertThat(result.length).isEqualTo(1);
+    assertThat(result[0]).isEqualTo("root\\\\");
   }
 
   @Test
-  public void groupWithTwoBackslash() {
+  void groupWithTwoBackslash() {
     client = createClient("my\\\\\\\\group");
     String[] result = client.createBusinessGroupPath();
-    assertThat(result.length, equalTo(1));
-    assertThat(result[0], equalTo("my\\\\group"));
+    assertThat(result.length).isEqualTo(1);
+    assertThat(result[0]).isEqualTo("my\\\\group");
   }
 
   @Test
-  public void hierarchicalBusinessGroup() {
+  void hierarchicalBusinessGroup() {
     client = createClient("root\\leaf");
     String[] result = client.createBusinessGroupPath();
-    assertThat(result.length, equalTo(2));
-    assertThat(result[0], equalTo("root"));
-    assertThat(result[1], equalTo("leaf"));
+    assertThat(result.length).isEqualTo(2);
+    assertThat(result[0]).isEqualTo("root");
+    assertThat(result[1]).isEqualTo("leaf");
   }
 
   @Test
-  public void findEnvironmentByNameNoBusinessGroupAndNotPartOfMaster() {
-    expectedException.expect(RuntimeException.class);
-    expectedException
-        .expectMessage("Please set the businessGroup in the plugin configuration in case your user have access only within a business unit.");
+  void findEnvironmentByNameNoBusinessGroupAndNotPartOfMaster() {
     client = spy(createClient(EMPTY));
     doReturn(new Environments()).when(client).getEnvironments();
-    client.findEnvironmentByName("Production");
+    assertThatThrownBy(() -> client.findEnvironmentByName("Production"))
+        .isExactlyInstanceOf(RuntimeException.class)
+        .hasMessageContaining("Please set the businessGroup in the plugin configuration in case your user have access only within a business unit.");
   }
 
   @Test
-  public void findEnvironmentByNameNoBusinessGroup() {
-    expectedException.expect(RuntimeException.class);
-    expectedException
-        .expectMessage("Please set the businessGroup in the plugin configuration in case your user have access only within a business unit.");
+  void findEnvironmentByNameNoBusinessGroup() {
     client = spy(createClient(EMPTY));
     doReturn(null).when(client).getEnvironments();
-    client.findEnvironmentByName("Production");
+    assertThatThrownBy(() -> client.findEnvironmentByName("Production"))
+        .isExactlyInstanceOf(RuntimeException.class)
+        .hasMessageContaining("Please set the businessGroup in the plugin configuration in case your user have access only within a business unit.");
   }
 
 
   @Test
-  public void configureRequestWithTokenExtension() {
+  void configureRequestWithTokenExtension() {
     ArmDeployment armDeployment = new ArmDeployment();
     armDeployment.setUri(BASE_URI);
     armDeployment.setAuthToken("dummyToken");
@@ -179,7 +170,7 @@ public class AbstractMuleClientTestCase {
   }
 
   @Test
-  public void renewToken() {
+  void renewToken() {
     mockServer = startClientAndServer(DEFAULT_PORT);
 
     client = createClient("");
@@ -199,8 +190,7 @@ public class AbstractMuleClientTestCase {
     try {
       client.getMe();
     } catch (RuntimeException httpException) {
-      MatcherAssert.assertThat(httpException.getMessage(),
-                               equalTo("Unauthorized Access. Please verify that authToken is valid."));
+      assertThat(httpException.getMessage()).isEqualTo("Unauthorized Access. Please verify that authToken is valid.");
     }
 
     mockServer.reset();
@@ -242,8 +232,8 @@ public class AbstractMuleClientTestCase {
 
     UserInfo userInfo = client.getMe();
 
-    MatcherAssert.assertThat(userInfo.user.id, equalTo(USER_ID));
-    MatcherAssert.assertThat(userInfo.user.organization.id, equalTo(USER_ORG_ID));
+    assertThat(userInfo.user.id).isEqualTo(USER_ID);
+    assertThat(userInfo.user.organization.id).isEqualTo(USER_ORG_ID);
 
     mockServer.stop();
   }

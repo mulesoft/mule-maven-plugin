@@ -9,32 +9,27 @@
  */
 package org.mule.tools.client.core.exception;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.Response;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ClientExceptionTest {
+class ClientExceptionTest {
 
   private static final String URI = "/var/log/httpd/error_log";
   private static final int STATUS_CODE = 500;
   private static final String REASON_PHRASE = "Internal Server Error";
   private static final ClientException CUSTOM_CLIENT_EXCEPTION = new ClientException(URI, STATUS_CODE, REASON_PHRASE);
-  private Response responseMock = mock(Response.class);
-  private Response.StatusType statusTypeMock = mock(Response.StatusType.class);
+  private final Response responseMock = mock(Response.class);
+  private final Response.StatusType statusTypeMock = mock(Response.StatusType.class);
 
-  @Rule
-  public ExpectedException expected = ExpectedException.none();
-
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     when(statusTypeMock.getReasonPhrase()).thenReturn(REASON_PHRASE);
     when(statusTypeMock.getStatusCode()).thenReturn(STATUS_CODE);
     when(responseMock.getStatusInfo()).thenReturn(statusTypeMock);
@@ -42,31 +37,30 @@ public class ClientExceptionTest {
   }
 
   @Test
-  public void clientExceptionCustomMessageTest() {
-    setUpException();
-    throw CUSTOM_CLIENT_EXCEPTION;
+  void clientExceptionCustomMessageTest() {
+    testException(CUSTOM_CLIENT_EXCEPTION);
   }
 
   @Test
-  public void clientExceptionResponseMockAndUriTest() {
-    setUpException();
-    throw new ClientException(responseMock, URI);
+  void clientExceptionResponseMockAndUriTest() {
+    testException(new ClientException(responseMock, URI));
   }
 
   @Test
-  public void clientExceptionResponseMockTest() {
-    setUpException();
-    throw new ClientException(responseMock);
+  void clientExceptionResponseMockTest() {
+    testException(new ClientException(responseMock));
   }
 
   @Test
-  public void getStatusCodeTest() {
-    assertThat("Status code is not the expected", CUSTOM_CLIENT_EXCEPTION.getStatusCode(), equalTo(STATUS_CODE));
+  void getStatusCodeTest() {
+    assertThat(CUSTOM_CLIENT_EXCEPTION.getStatusCode()).as("Status code is not the expected").isEqualTo(STATUS_CODE);
   }
 
-  private void setUpException() {
-    expected.expect(ClientException.class);
-    expected.expectMessage(CUSTOM_CLIENT_EXCEPTION.getMessage());
+  private void testException(Throwable throwable) {
+    assertThatThrownBy(() -> {
+      throw throwable;
+    })
+        .isExactlyInstanceOf(ClientException.class)
+        .hasMessage(CUSTOM_CLIENT_EXCEPTION.getMessage());
   }
-
 }

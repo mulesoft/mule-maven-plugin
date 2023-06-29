@@ -142,7 +142,8 @@
             <dependency>
                 <groupId>com.mulesoft.anypoint</groupId>
                 <artifactId>mule-module-autodiscovery</artifactId>
-                <version>${mule.version}</version>
+                <!-- TODO - review after Gateway team changes versions to 4.5 (they still didn't discard 4.6) -->
+                <version>4.6.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.mulesoft.mule.runtime</groupId>

@@ -60,7 +60,6 @@
         <dependency>
             <groupId>com.mulesoft.anypoint</groupId>
             <artifactId>mule-module-autodiscovery</artifactId>
-            <version>${mule.version}</version>
         </dependency>
         <!-- Runtime Modules -->
         <dependency>

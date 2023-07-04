@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class MavenClientTest {
+
   public static final String USER_HOME_PROP = "user.home";
   public static final String M2_DIR = ".m2";
   public static final String M2_HOME = "M2_HOME";
@@ -86,9 +87,10 @@ public abstract class MavenClientTest {
     return mavenConfigurationBuilder;
   }
 
-  private void configureMavenCentralRepo(MavenConfiguration.MavenConfigurationBuilder mavenConfigurationBuilder) throws MalformedURLException {
+  private void configureMavenCentralRepo(MavenConfiguration.MavenConfigurationBuilder mavenConfigurationBuilder)
+      throws MalformedURLException {
     mavenConfigurationBuilder.remoteRepository(RemoteRepository.newRemoteRepositoryBuilder().id("central")
-      .url(new URL("https://repo.maven.apache.org/maven2/")).build());
+        .url(new URL("https://repo.maven.apache.org/maven2/")).build());
   }
 
   public MavenClient getMavenClientInstance(MavenConfiguration.MavenConfigurationBuilder configurationBuilder) {

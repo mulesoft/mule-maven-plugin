@@ -361,8 +361,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
         }
       });
       ExtensionModelLoaderRepository extensionModelLoaderRepository =
-          ExtensionModelLoaderRepository
-              .getExtensionModelLoaderManager(muleArtifactResourcesRegistry.getContainerArtifactClassLoader().getClassLoader());
+          ExtensionModelLoaderRepository.getExtensionModelLoaderManager();
       startIfNeeded(extensionModelLoaderRepository);
       final Set<ExtensionModel> loadedExtensionInformation =
           discoverPluginsExtensionModel(artifactClassLoader, extensionModelLoaderRepository, properties);

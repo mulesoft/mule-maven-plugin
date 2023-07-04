@@ -28,6 +28,7 @@ import org.mule.tools.api.packager.structure.ProjectStructure;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -68,6 +69,16 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
       }
     } catch (IllegalArgumentException | IOException | ConfigurationException e) {
       throw new MojoFailureException("Fail to compile", e);
+    } catch (NullPointerException e) {
+      // Temporary workaround until we update to the runtime version with the fix (4.5.0-rc9)
+      // W-12769196: MMP 3.8.4 - NullPointerException - When Error Handler hasn’t a Type
+      final String className = "org.mule.runtime.config.internal.validation.AbstractErrorTypesValidation";
+      final String methodName = "isErrorTypePresent";
+      if (!(e.getStackTrace().length > 1 &&
+          Objects.equals(className, e.getStackTrace()[0].getClassName()) &&
+          Objects.equals(methodName, e.getStackTrace()[0].getMethodName()))) {
+        throw new MojoFailureException("Fail to compile", e);
+      }
     }
     try {
       getContentGenerator().copyDescriptorFile();

@@ -34,26 +34,32 @@ class AstGeneratorTest extends MavenClientTest {
     elements.getLeft().validateAST(elements.getRight());
 
     assertThat(elements.getRight().topLevelComponents().get(0).getModel(ParameterizedModel.class)).isPresent();
-    assertThat(elements.getRight().topLevelComponents().get(0).getModel(ParameterizedModel.class).orElse(null)).isInstanceOf(ImmutableConstructModel.class);
+    assertThat(elements.getRight().topLevelComponents().get(0).getModel(ParameterizedModel.class).orElse(null))
+        .isInstanceOf(ImmutableConstructModel.class);
   }
 
   @Test
   void throwConfigurationExceptionIfMuleConfigHasErrors() {
     final Pair<AstGenerator, ArtifactAst> elements = getElements("mule-config2.xml");
-    assertThatThrownBy(() -> elements.getLeft().validateAST(elements.getRight())).isExactlyInstanceOf(ConfigurationException.class);
+    assertThatThrownBy(() -> elements.getLeft().validateAST(elements.getRight()))
+        .isExactlyInstanceOf(ConfigurationException.class);
   }
 
- private Pair<AstGenerator, ArtifactAst> getElements(String muleConfiguration) {
+  private Pair<AstGenerator, ArtifactAst> getElements(String muleConfiguration) {
     try {
       final Path workingPath = Paths.get("src", "test", "resources", "test-project");
       final Path configsBasePath = workingPath.resolve("src/main/mule");
       final File m2Repo = getM2Repo(getM2Home());
-      final MavenClient client = getMavenClientInstance(getMavenConfiguration(m2Repo, getUserSettings(m2Repo), getSettingsSecurity(m2Repo)));
-      final AstGenerator generator = new AstGenerator(client, "4.3.0", Collections.emptySet(), workingPath, null, Collections.emptyList());
-      final ArtifactAst artifact = generator.generateAST(Collections.singletonList(configsBasePath.resolve(muleConfiguration).toFile().getAbsolutePath()), configsBasePath);
+      final MavenClient client =
+          getMavenClientInstance(getMavenConfiguration(m2Repo, getUserSettings(m2Repo), getSettingsSecurity(m2Repo)));
+      final AstGenerator generator =
+          new AstGenerator(client, "4.3.0", Collections.emptySet(), workingPath, null, Collections.emptyList());
+      final ArtifactAst artifact =
+          generator.generateAST(Collections.singletonList(configsBasePath.resolve(muleConfiguration).toFile().getAbsolutePath()),
+                                configsBasePath);
       return Pair.of(generator, artifact);
     } catch (Exception exception) {
       throw new RuntimeException(exception);
     }
- }
+  }
 }

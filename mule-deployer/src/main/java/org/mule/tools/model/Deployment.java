@@ -24,7 +24,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public abstract class Deployment {
 
   @Parameter
-  protected File artifact;
+  protected String artifactPath;
 
   @Parameter
   protected String applicationName;
@@ -55,11 +55,19 @@ public abstract class Deployment {
    *
    */
   public File getArtifact() {
-    return artifact;
+    return new File(this.artifactPath);
   }
 
   public void setArtifact(File artifact) {
-    this.artifact = artifact;
+    this.artifactPath = artifact.getPath();
+  }
+
+  public void setArtifactPath(String artifactPath) {
+    this.artifactPath = artifactPath;
+  }
+
+  public String getArtifactPath() {
+    return this.artifactPath;
   }
 
   /**

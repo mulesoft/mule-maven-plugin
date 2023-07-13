@@ -1,0 +1,100 @@
+/*
+ * Mule ESB Maven Tools
+ * <p>
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * <p>
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+package org.mule.tools.deployment.fabric;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mule.tools.client.core.exception.DeploymentException;
+import org.mule.tools.client.fabric.RuntimeFabricClient;
+import org.mule.tools.client.fabric.model.Target;
+import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeployment;
+import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeploymentSettings;
+
+import java.util.ArrayList;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class RequestBuilderTest {
+
+  private static final String DOMAIN_TEST = "*.mydomain.com";
+  private static final String TARGETS_RESPONSE = "[\n" +
+      "   {\n" +
+      "      \"id\":\"sampleId\",      \n" +
+      "         \"name\":\"fabric1\",\n" +
+      "         \"organizationId\":\"orgId\",\n" +
+      "         \"status\":\"Connected\"         \n" +
+      "   }   \n" +
+      "]";
+  private static final String TARGET_RESPONSE = "{\n" +
+      "   \"id\":\"sampleId\",\n" +
+      "   \"name\":\"fabric1\",\n" +
+      "   \"runtimes\":[\n" +
+      "      {\n" +
+      "         \"type\":\"mule\",\n" +
+      "         \"versions\":[\n" +
+      "            {\n" +
+      "               \"baseVersion\":\"4.2.0\",\n" +
+      "               \"tag\":\"v1.2.28\"\n" +
+      "            }\n" +
+      "         ]\n" +
+      "      }\n" +
+      "   ]\n" +
+      "}";
+
+  private RequestBuilder requestBuilder;
+  private RuntimeFabricClient runtimeFabricClientMock;
+  private RuntimeFabricOnPremiseDeployment runtimeFabricDeployment;
+
+  @BeforeEach
+  public void setUp() throws DeploymentException {
+    runtimeFabricClientMock = mock(RuntimeFabricClient.class);
+    runtimeFabricDeployment = new RuntimeFabricOnPremiseDeployment();
+    runtimeFabricDeployment.setMuleVersion("4.2.0");
+    runtimeFabricDeployment.setApplicationName("test-app");
+    runtimeFabricDeployment.setTarget("fabric1");
+    runtimeFabricDeployment.setProvider("MC");
+    runtimeFabricDeployment.setDeploymentSettings(new RuntimeFabricOnPremiseDeploymentSettings());
+    requestBuilder = new RequestBuilder(runtimeFabricDeployment, runtimeFabricClientMock);
+
+    ArrayList<String> domains = newArrayList(DOMAIN_TEST);
+
+    when(runtimeFabricClientMock.getDomainInfo(any())).thenReturn(new Gson().toJsonTree(domains).getAsJsonArray());
+    when(runtimeFabricClientMock.getTargetInfo(any())).thenReturn(new Gson().fromJson(TARGET_RESPONSE, JsonObject.class));
+    when(runtimeFabricClientMock.getTargets()).thenReturn(new Gson().fromJson(TARGETS_RESPONSE, JsonArray.class));
+  }
+
+  @Test
+  public void autoGenerateUrl() throws Exception {
+    Target target = requestBuilder.buildTarget();
+    String finalUrl = DOMAIN_TEST.replace("*", runtimeFabricDeployment.getApplicationName());
+
+    assertThat(target.deploymentSettings.getHttp().getInbound().getPublicUrl()).describedAs("publicUrl is not the expected")
+        .isEqualTo(finalUrl);
+  }
+
+  @Test
+  public void useDefinedUrl() throws Exception {
+    String definedUrl = "myapp.test.com";
+    RuntimeFabricOnPremiseDeploymentSettings deploymentSettings = new RuntimeFabricOnPremiseDeploymentSettings();
+    deploymentSettings.getHttp().getInbound().setPublicUrl(definedUrl);
+    runtimeFabricDeployment.setDeploymentSettings(deploymentSettings);
+    Target target = requestBuilder.buildTarget();
+
+    assertThat(target.deploymentSettings.getHttp().getInbound().getPublicUrl()).describedAs("publicUrl is not the expected")
+        .isEqualTo(definedUrl);
+  }
+}

@@ -6,6 +6,7 @@
  */
 package org.mule.tools.validation.agent;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.mule.tools.client.agent.AgentClient;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
@@ -33,7 +34,8 @@ public class AgentDeploymentValidator extends AbstractDeploymentValidator {
    *
    * @return The generated Agent client.
    */
-  private AgentClient getAgentClient() {
+  @VisibleForTesting
+  protected AgentClient getAgentClient() {
     return new AgentClient(null, deployment);
   }
 }

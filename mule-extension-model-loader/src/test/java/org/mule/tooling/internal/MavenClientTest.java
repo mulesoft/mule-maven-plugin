@@ -13,8 +13,6 @@ import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.model.MavenConfiguration;
 import org.mule.maven.client.api.model.RemoteRepository;
 import org.mule.maven.client.internal.MuleMavenClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class MavenClientTest {
   public static final String USER_HOME_PROP = "user.home";

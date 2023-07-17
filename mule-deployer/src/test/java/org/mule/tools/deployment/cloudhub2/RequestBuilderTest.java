@@ -72,7 +72,7 @@ public class RequestBuilderTest {
   public void setUp(Cloudhub2DeploymentSettings settings) throws DeploymentException {
     runtimeFabricClientMock = mock(RuntimeFabricClient.class);
     cloudhub2Deployment = new Cloudhub2Deployment();
-    cloudhub2Deployment.setArtifact(null);
+    cloudhub2Deployment.setArtifact((String) null);
     cloudhub2Deployment.setMuleVersion("4.2.0");
     cloudhub2Deployment.setApplicationName("test-app");
     cloudhub2Deployment.setTarget("fabric1");

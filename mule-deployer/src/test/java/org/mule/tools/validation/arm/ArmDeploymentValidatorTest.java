@@ -9,28 +9,17 @@
  */
 package org.mule.tools.validation.arm;
 
-//import org.junit.Test;
-//import org.junit.runner.RunWith;
 import org.junit.jupiter.api.Test;
 import org.mule.tools.client.arm.ArmClient;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.validation.AbstractDeploymentValidator;
 import org.mule.tools.validation.EnvironmentSupportedVersions;
-//import org.powermock.core.classloader.annotations.PrepareForTest;
-//import org.powermock.modules.junit4.PowerMockRunner;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-//import static org.hamcrest.CoreMatchers.equalTo;
-//import static org.hamcrest.MatcherAssert.assertThat;
-//import static org.powermock.api.mockito.PowerMockito.doReturn;
-//import static org.powermock.api.mockito.PowerMockito.mock;
-//import static org.powermock.api.mockito.PowerMockito.spy;
 
-//@RunWith(PowerMockRunner.class)
-//@PrepareForTest(ArmDeploymentValidator.class)
 public class ArmDeploymentValidatorTest {
 
   private static final String MULE_VERSION = "4.0.0";
@@ -50,9 +39,8 @@ public class ArmDeploymentValidatorTest {
     validatorSpy = spy(new ArmDeploymentValidator(armDeployment));
 
     ArmClient clientSpy = spy(new ArmClient(armDeployment, LOG_MOCK));
-    // doReturn(clientSpy).when(validatorSpy)., "getArmClient");
-
-    // doReturn(newArrayList(MULE_VERSION)).when(validatorSpy)., "findRuntimeVersion", clientSpy);
+    doReturn(clientSpy).when((ArmDeploymentValidator) validatorSpy).getArmClient();
+    doReturn(newArrayList(MULE_VERSION)).when((ArmDeploymentValidator) validatorSpy).findRuntimeVersion(clientSpy);
 
     assertThat(validatorSpy.getEnvironmentSupportedVersions())
         .describedAs("Supported version that was generated is not the expected")

@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.xml.sax.SAXException;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class XmlFactoryUtilsTest {
 
@@ -38,11 +38,11 @@ public class XmlFactoryUtilsTest {
 
   @Test
   public void domFactoryFailsToReadXMLWithDocType() {
-    assertThrows(SAXException.class, () -> {
+    assertThatThrownBy(() -> {
       try (ByteArrayInputStream stream = new ByteArrayInputStream(XXE_ATTACK.getBytes())) {
         XmlFactoryUtils.createSecureDocumentBuilderFactory().newDocumentBuilder().parse(stream);
       }
-    });
+    }).isInstanceOf(SAXException.class);
   }
 
 

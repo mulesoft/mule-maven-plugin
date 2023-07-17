@@ -21,7 +21,7 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class MulePluginsCompatibilityValidatorTest {
@@ -74,11 +74,11 @@ public class MulePluginsCompatibilityValidatorTest {
 
   @Test
   public void validateSameDependenciesNotCompatibleVersionsListTest() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       dependencies.add(createDependency(0, "0.8.0", "mule-plugin"));
       dependencies.add(createDependency(0, "1.0.0", "mule-plugin"));
       validator.validate(dependencies);
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   // Reflexive

@@ -11,7 +11,7 @@ package org.mule.tools.api.validation;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,18 +37,18 @@ public class TestScopeDependencyValidatorTest {
 
   @Test
   public void testExceptionWhenInvalidDependencyValidatingMultiple() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       List<ArtifactCoordinates> dependencies = singletonList(createCoordinates(GROUP_ID, ARTIFACT_ID, "compile"));
       testScopeDependencyValidator.areDependenciesValid(dependencies);
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void testExceptionWhenInvalidGroupValidatingMultiple() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       List<ArtifactCoordinates> dependencies = singletonList(createCoordinates(SECOND_GROUP_ID, ARTIFACT_ID, "compile"));
       testScopeDependencyValidator.areDependenciesValid(dependencies);
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test

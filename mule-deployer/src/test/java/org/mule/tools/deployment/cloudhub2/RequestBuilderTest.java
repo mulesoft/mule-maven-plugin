@@ -28,7 +28,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -124,11 +124,11 @@ public class RequestBuilderTest {
 
   @Test
   public void requestBuildWithResourcesAndVCoresTest() {
-    assertThrows(DeploymentException.class, () -> {
+    assertThatThrownBy(() -> {
       setUp(null);
       ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setInstanceType("instanceValue");
       requestBuilder.buildDeploymentRequest();
-    });
+    }).isExactlyInstanceOf(DeploymentException.class);
 
   }
 

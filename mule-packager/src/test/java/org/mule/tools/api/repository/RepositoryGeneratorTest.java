@@ -11,7 +11,7 @@
 package org.mule.tools.api.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -86,7 +86,7 @@ public class RepositoryGeneratorTest {
 
   @Test
   public void generateMarkerFileInRepositoryFolderWhenFolderIsNotWritableTest() throws IOException {
-    assertThrows(IOException.class, () -> {
+    assertThatThrownBy(() -> {
       File generatedMarkerFile = temporaryFolder.resolve(".marker").toFile();
 
       assertThat(!generatedMarkerFile.exists()).describedAs("Marker file already exists");
@@ -95,7 +95,7 @@ public class RepositoryGeneratorTest {
       FileUtils.markAsReadOnly(readOnlyFolder);
 
       repositoryGenerator.generateMarkerFileInRepositoryFolder(readOnlyFolder);
-    });
+    }).isExactlyInstanceOf(IOException.class);
   }
 
   @Test

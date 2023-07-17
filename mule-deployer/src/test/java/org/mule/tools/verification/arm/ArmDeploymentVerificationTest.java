@@ -18,6 +18,7 @@ import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -54,24 +55,20 @@ public class ArmDeploymentVerificationTest {
 
   @Test
   public void assertDeploymentStartedFalse() {
-    assertThrows(DeploymentException.class, () -> {
+    assertThatThrownBy(() -> {
       application.data.desiredStatus = "UPDATED";
       deployment.setDeploymentTimeout(1000L);
       verification.assertDeployment(deployment);
-    });
+    }).isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test
   public void assertDeploymentFailed() {
-    Exception exception = assertThrows(DeploymentException.class, () -> {
+    assertThatThrownBy(() -> {
       application.data.lastReportedStatus = "FAILED";
       application.data.desiredStatus = "STARTED";
       verification.assertDeployment(deployment);
-    });
-
-    String expectedMessage = "Deployment has failed";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    }).isExactlyInstanceOf(DeploymentException.class)
+            .hasMessageContaining("Deployment has failed");
   }
 }

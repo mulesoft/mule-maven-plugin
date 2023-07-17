@@ -9,8 +9,6 @@
  */
 package org.mule.tools.validation.agent;
 
-//import org.junit.Test;
-//import org.junit.runner.RunWith;
 import org.junit.jupiter.api.Test;
 import org.mule.tools.client.agent.AgentClient;
 import org.mule.tools.client.agent.AgentInfo;
@@ -26,10 +24,7 @@ import org.mule.tools.validation.EnvironmentSupportedVersions;
 //import static org.hamcrest.MatcherAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-//import static org.powermock.api.mockito.PowerMockito.*;
 
-//@RunWith(PowerMockRunner.class)
-//@PrepareForTest(AgentDeploymentValidator.class)
 public class AgentDeploymentValidatorTest {
 
   private static final String MULE_VERSION = "4.0.0";
@@ -50,7 +45,7 @@ public class AgentDeploymentValidatorTest {
     AgentClient clientSpy = spy(new AgentClient(LOG_MOCK, deploymentMock));
     doReturn(agentInfo).when(clientSpy).getAgentInfo();
 
-    doReturn(clientSpy).when((AgentDeploymentValidator) validatorSpy).getAgentClient();//., "getAgentClient");
+    doReturn(clientSpy).when((AgentDeploymentValidator)validatorSpy).getAgentClient();
 
     assertThat(validatorSpy.getEnvironmentSupportedVersions())
         .describedAs("Supported version that was generated is not the expected")

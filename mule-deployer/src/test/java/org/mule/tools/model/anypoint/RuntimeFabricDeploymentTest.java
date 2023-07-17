@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 public class RuntimeFabricDeploymentTest {
@@ -35,18 +35,18 @@ public class RuntimeFabricDeploymentTest {
 
   @Test
   public void getTarget() {
-    assertThrows(DeploymentException.class, () -> {
+    assertThatThrownBy(() -> {
       fabricDeployment.setTarget(null);
       fabricDeployment.setEnvironmentSpecificValues();
-    });
+    }).isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test
   public void getProvider() {
-    assertThrows(DeploymentException.class, () -> {
+    assertThatThrownBy(() -> {
       fabricDeployment.setProvider(null);
       fabricDeployment.setEnvironmentSpecificValues();
-    });
+    }).isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test

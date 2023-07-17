@@ -13,9 +13,8 @@ package org.mule.tools.api.repository;
 //import static org.hamcrest.MatcherAssert.assertThat;
 //import static org.hamcrest.core.Is.is;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import static org.mockito.Mockito.*;
-import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,11 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
-//import org.junit.Before;
-//import org.junit.Rule;
-//import org.junit.Test;
-//import org.junit.rules.ExpectedException;
-//import org.junit.rules.TemporaryFolder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -36,6 +30,8 @@ import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.util.PackagerLog;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 
 @Disabled
 public class ArtifactInstallerTest {
@@ -58,26 +54,20 @@ public class ArtifactInstallerTest {
   private ArtifactInstaller installer;
   private Artifact artifact;
 
-  //  @Rule
-  //  public ExpectedException exception = ExpectedException.none();
   @TempDir
   public Path outputFolder;
-  //  @Rule
-  //  public TemporaryFolder outputFolder = new TemporaryFolder();
+
   @TempDir
   public Path artifactFileFolder;
-  //  @Rule
-  //  public TemporaryFolder artifactFileFolder = new TemporaryFolder();
+
   private ClassLoaderModel classLoaderModel;
 
   @BeforeEach
   public void before() throws IOException {
     logMock = mock(PackagerLog.class);
     installer = new ArtifactInstaller(logMock);
-    //    outputFolder.create();
     outputFolder.toFile();
     artifactFileFolder.toFile();
-    //    artifactFileFolder.create();
     ArtifactCoordinates coordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, TYPE, CLASSIFIER);
     artifact = new Artifact(coordinates, artifactFileFolder.toUri());
     classLoaderModel = mock(ClassLoaderModel.class);
@@ -99,19 +89,17 @@ public class ArtifactInstallerTest {
 
   @Test
   public void installNullArtifactTest() {
-    assertThrows(IllegalArgumentException.class, () -> {
-      installer.installArtifact(outputFolder.toFile(), null, Optional.empty());
-    });
+    assertThatThrownBy(() -> installer.installArtifact(outputFolder.toFile(), null, Optional.empty())).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   public void installArtifactToReadOnlyDestinationTest() throws IOException {
-    assertThrows(IOException.class, () -> {
+    assertThatThrownBy(() -> {
       File destination = outputFolder.resolve(FILE_NAME).toFile();//new File(outputFolder.getRoot().toFile(), FILE_NAME);
       destination.setReadOnly();
       artifact.setUri(destination.toURI());
       installer.installArtifact(outputFolder.toFile(), artifact, Optional.empty());
-    });
+    }).isExactlyInstanceOf(IOException.class);
   }
 
   @Test

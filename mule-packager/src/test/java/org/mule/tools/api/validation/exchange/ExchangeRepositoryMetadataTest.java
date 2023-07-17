@@ -18,8 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.mule.tools.client.authentication.model.Credentials;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ExchangeRepositoryMetadataTest {
 
@@ -46,22 +45,16 @@ public class ExchangeRepositoryMetadataTest {
 
   @Test
   public void getBaseUriNullTest() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> metadata.getBaseUri(null));
-
-    String expectedMessage = "URI should not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> metadata.getBaseUri(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("URI should not be null");
   }
 
   @Test
   public void getBaseUriNotParseableTest() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> metadata.getBaseUri(NOT_EXCHANGE_RELATED_URI));
-
-    String expectedMessage = "The URI https://www.mulesoft.com/ is not a valid URI to Exchange";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> metadata.getBaseUri(NOT_EXCHANGE_RELATED_URI))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The URI https://www.mulesoft.com/ is not a valid URI to Exchange");
   }
 
   @Test
@@ -76,23 +69,16 @@ public class ExchangeRepositoryMetadataTest {
 
   @Test
   public void getOrganizationIdNullTest() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> metadata.getOrganizationId(null));
-
-    String expectedMessage = "URI should not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> metadata.getOrganizationId(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("URI should not be null");
   }
 
   @Test
   public void getOrganizationIdNotParseableTest() {
-    Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> metadata.getOrganizationId(NOT_EXCHANGE_RELATED_URI));
-
-    String expectedMessage = "The URI https://www.mulesoft.com/ is not a valid URI to Exchange";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> metadata.getOrganizationId(NOT_EXCHANGE_RELATED_URI))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The URI https://www.mulesoft.com/ is not a valid URI to Exchange");
   }
 
   @Test

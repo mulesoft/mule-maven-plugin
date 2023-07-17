@@ -13,7 +13,7 @@ package org.mule.tools.api.packager.packaging;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_EXAMPLE;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_TEMPLATE;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
@@ -21,11 +21,8 @@ import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_POLICY;
 import static org.mule.tools.api.packager.structure.FolderNames.MAIN;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE;
-import static org.mule.tools.api.packager.structure.FolderNames.MUNIT;
 import static org.mule.tools.api.packager.structure.FolderNames.SRC;
-import static org.mule.tools.api.packager.structure.FolderNames.TEST;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -94,17 +91,17 @@ public class PackagingTypeTest {
 
   @Test
   public void unknownPackagingTypeFromString() {
-    assertThrows(IllegalArgumentException.class, () -> PackagingType.fromString(UNKNOWN_CLASSIFIER));
+    assertThatThrownBy(() -> PackagingType.fromString(UNKNOWN_CLASSIFIER)).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   public void emptyPackagingTypeFromString() {
-    assertThrows(IllegalArgumentException.class, () -> PackagingType.fromString(""));
+    assertThatThrownBy(() -> PackagingType.fromString("")).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   public void nullPackagingTypeFromString() {
-    assertThrows(IllegalArgumentException.class, () -> PackagingType.fromString(null));
+    assertThatThrownBy(() -> PackagingType.fromString(null)).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -144,12 +141,12 @@ public class PackagingTypeTest {
 
   @Test
   public void muleApplicationGetSourceFolderLocationNullArgument() {
-    assertThrows(IllegalArgumentException.class, () -> PackagingType.MULE_APPLICATION.getSourceFolderLocation(null));
+    assertThatThrownBy(() -> PackagingType.MULE_APPLICATION.getSourceFolderLocation(null));
   }
 
   @Test
   public void muleApplicationGetTestSourceFolderLocationNullArgument() {
-    assertThrows(IllegalArgumentException.class, () -> PackagingType.MULE_APPLICATION.getTestSourceFolderLocation(null));
+    assertThatThrownBy(() -> PackagingType.MULE_APPLICATION.getTestSourceFolderLocation(null));
   }
 
   @Test

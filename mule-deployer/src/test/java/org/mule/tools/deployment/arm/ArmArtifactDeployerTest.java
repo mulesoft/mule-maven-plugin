@@ -16,6 +16,7 @@ import org.mule.tools.client.arm.ApplicationMetadata;
 import org.mule.tools.client.arm.ArmClient;
 import org.mule.tools.client.model.TargetType;
 import org.mule.tools.client.core.exception.DeploymentException;
+import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.utils.DeployerLog;
 
@@ -25,7 +26,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 public class ArmArtifactDeployerTest {
@@ -66,12 +67,14 @@ public class ArmArtifactDeployerTest {
 
   @Test
   public void deployDomainTest() {
-    assertThrows(DeploymentException.class, () -> armArtifactDeployer.deployDomain());
+    assertThatThrownBy(() ->  armArtifactDeployer.deployDomain())
+            .isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test
   public void undeployDomainTest() throws DeploymentException {
-    assertThrows(DeploymentException.class, () -> armArtifactDeployer.undeployDomain());
+    assertThatThrownBy(() ->  armArtifactDeployer.undeployDomain())
+            .isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test

@@ -9,7 +9,6 @@
  */
 package org.mule.tools.api;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -20,7 +19,8 @@ import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mule.tools.api.exception.ValidationException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.PackagerTestUtils;
 import org.mule.tools.api.packager.Pom;
@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 
 import org.apache.commons.io.FileUtils;
 
@@ -48,8 +47,6 @@ public class ContentGeneratorTest {
   private static final String FAKE_FILE_NAME = "fakeFile.xml";
   private static final String MULE_ARTIFACT_DESCRIPTOR_FILE_NAME = "mule-artifact.json";
 
-  //  @Rule
-  //  public TemporaryFolder projectBaseFolder = new TemporaryFolder();
   @TempDir
   public Path projectBaseFolder;
 
@@ -60,7 +57,7 @@ public class ContentGeneratorTest {
 
   @BeforeEach
   public void setUp() throws IOException {
-    projectTargetFolder = Files.createDirectories(projectBaseFolder.resolve("target")).toFile();// projectBaseFolder.resolve("target").toFile();
+    projectTargetFolder = Files.createDirectories(projectBaseFolder.resolve("target")).toFile();
 
     DefaultProjectInformation info = new DefaultProjectInformation.Builder()
         .withGroupId(GROUP_ID)
@@ -78,7 +75,7 @@ public class ContentGeneratorTest {
 
   @Test
   public void failCreationProjectBaseFolderNonExistent() {
-    assertThrows(IllegalArgumentException.class, () -> {
+    assertThatThrownBy(() ->  {
       DefaultProjectInformation info = new DefaultProjectInformation.Builder()
           .withGroupId(GROUP_ID)
           .withArtifactId(ARTIFACT_ID)
@@ -88,13 +85,13 @@ public class ContentGeneratorTest {
           .setTestProject(false)
           .withBuildDirectory(projectTargetFolder.toPath()).build();
       new MuleContentGenerator(info, null);
-    });
+    }).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
 
   @Test
   public void failCreationProjectTargetFolderNonExistent() {
-    assertThrows(IllegalArgumentException.class, () -> {
+    assertThatThrownBy(() ->  {
       DefaultProjectInformation info = new DefaultProjectInformation.Builder()
           .withGroupId(GROUP_ID)
           .withArtifactId(ARTIFACT_ID)
@@ -104,19 +101,19 @@ public class ContentGeneratorTest {
           .setTestProject(false)
           .withBuildDirectory(Paths.get("/fake/project/base/folder")).build();
       new MuleContentGenerator(info, null);
-    });
+    }).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   public void createSrcFolderContentNonExistingSourceFolder() {
-    assertThrows(IllegalArgumentException.class, () -> {
+    assertThatThrownBy(() ->  {
       String destinationFolderName = packagingType.getSourceFolderName();
 
       Path destinationFolderPath = projectTargetFolder.toPath().resolve(destinationFolderName);
       PackagerTestUtils.createEmptyFolder(destinationFolderPath);
 
       contentGenerator.createMuleSrcFolderContent();
-    });
+    }).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -151,8 +148,8 @@ public class ContentGeneratorTest {
   }
 
   @Test
-  public void createTestFolderContentNonExistingDestinationFolder() throws IOException {
-    assertThrows(IllegalArgumentException.class, () -> {
+  public void createTestFolderContentNonExistingDestinationFolder() {
+    assertThatThrownBy(() ->  {
       String sourceFolderName = packagingType.getTestFolderName();
 
       Path sourceFolderPath = projectBaseFolder.toAbsolutePath().resolve(PackagerTestUtils.SRC).resolve(
@@ -161,7 +158,7 @@ public class ContentGeneratorTest {
       PackagerTestUtils.createFolder(sourceFolderPath, FAKE_FILE_NAME, true);
 
       contentGenerator.createTestFolderContent();
-    });
+    }).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -185,13 +182,13 @@ public class ContentGeneratorTest {
   }
 
   @Test
-  public void createMetaInfMuleSourceFolderContentNonExistingDestinationFolder() throws IOException {
-    assertThrows(IllegalArgumentException.class, () -> {
+  public void createMetaInfMuleSourceFolderContentNonExistingDestinationFolder() {
+    assertThatThrownBy(() ->  {
       Path sourceFolderPath = projectBaseFolder.toAbsolutePath();
       PackagerTestUtils.createFolder(sourceFolderPath, FAKE_FILE_NAME, true);
 
       contentGenerator.createMetaInfMuleSourceFolderContent();
-    });
+    }).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -209,30 +206,30 @@ public class ContentGeneratorTest {
   }
 
   @Test
-  public void createDescriptorsNoOriginalPom() throws IOException {
-    assertThrows(IllegalArgumentException.class, () -> {
+  public void createDescriptorsNoOriginalPom() {
+    assertThatThrownBy(() ->  {
       String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
       Path sourceFolderPath = projectBaseFolder.toAbsolutePath();
       PackagerTestUtils.createFolder(sourceFolderPath, descriptorFileName, true);
 
       contentGenerator.createDescriptors();
-    });
+    }).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
-  public void createDescriptorsNoPomDestinationFolder() throws IOException {
-    assertThrows(IllegalArgumentException.class, () -> {
+  public void createDescriptorsNoPomDestinationFolder() {
+    assertThatThrownBy(() ->  {
       Path sourceFolderPath = projectBaseFolder.toAbsolutePath();
       PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
 
       contentGenerator.createDescriptors();
-    });
+    }).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
-  public void createDescriptorsNoOriginalDescriptor() throws IOException {
-    assertThrows(IllegalArgumentException.class, () -> {
+  public void createDescriptorsNoOriginalDescriptor() {
+    assertThatThrownBy(() ->  {
       Path sourceFolderPath = projectBaseFolder.toAbsolutePath();
       PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
 
@@ -244,12 +241,12 @@ public class ContentGeneratorTest {
 
       contentGenerator.createDescriptors();
       contentGenerator.copyDescriptorFile();
-    });
+    }).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
-  public void createDescriptorsNoDescriptorDestinationFolder() throws IOException {
-    assertThrows(IllegalArgumentException.class, () -> {
+  public void createDescriptorsNoDescriptorDestinationFolder() {
+    assertThatThrownBy(() ->  {
       String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
       Path sourceFolderPath = projectBaseFolder.toAbsolutePath();
@@ -264,7 +261,7 @@ public class ContentGeneratorTest {
 
       contentGenerator.createDescriptors();
       contentGenerator.copyDescriptorFile();
-    });
+    }).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test

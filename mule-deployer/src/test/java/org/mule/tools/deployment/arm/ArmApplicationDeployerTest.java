@@ -11,13 +11,12 @@ package org.mule.tools.deployment.arm;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.utils.DeployerLog;
 
 import javax.ws.rs.NotFoundException;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 public class ArmApplicationDeployerTest {
@@ -76,8 +75,8 @@ public class ArmApplicationDeployerTest {
   }
 
   @Test
-  public void undeployNonExistentDoFailApplication() throws DeploymentException {
-    assertThrows(NotFoundException.class, () -> {
+  public void undeployNonExistentDoFailApplication() {
+    assertThatThrownBy(() -> {
       doReturn(true).when(artifactDeployerMock).isFailIfNotExists();
       doThrow(new NotFoundException()).when(artifactDeployerMock).undeployApplication();
 
@@ -86,6 +85,6 @@ public class ArmApplicationDeployerTest {
       verify(artifactDeployerMock, times(1)).undeployApplication();
       verify(artifactDeployerMock, times(1)).isFailIfNotExists();
       verify(logMock, times(0)).error(anyString());
-    });
+    }).isExactlyInstanceOf(NotFoundException.class);
   }
 }

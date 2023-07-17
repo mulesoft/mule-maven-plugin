@@ -10,8 +10,7 @@
 package org.mule.tools.api.validation.project;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mule.tools.api.validation.project.AbstractProjectValidator.isPackagingTypeValid;
 import org.mule.tools.api.exception.ValidationException;
 import org.junit.jupiter.api.Test;
@@ -41,16 +40,14 @@ public class AbstractProjectValidatorTest {
 
   @Test
   public void isPackagingTypeValidInvalidPackagingTest() {
-    assertThrows(ValidationException.class, () -> isPackagingTypeValid("no-valid-packaging"));
+    assertThatThrownBy(() -> isPackagingTypeValid("no-valid-packaging")).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isPackagingTypeValidNullTest() {
-    Exception exception = assertThrows(ValidationException.class, () -> isPackagingTypeValid(null));
-    String expectedMessage = "Packaging type name should not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> isPackagingTypeValid(null))
+            .isExactlyInstanceOf(ValidationException.class)
+            .hasMessageContaining("Packaging type name should not be null");
   }
 
 }

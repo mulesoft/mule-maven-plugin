@@ -10,7 +10,7 @@
 package org.mule.tools.api.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mule.tools.api.validation.VersionUtils.*;
 
@@ -30,22 +30,22 @@ public class VersionUtilsTest {
 
   @Test
   public void isVersionGraterOrEqualsIllegalVersion1() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       String version1 = "3.3.9.9";
       String version2 = "3.3.2";
 
       isVersionGreaterOrEquals(version1, version2);
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isVersionGraterOrEqualsIllegalVersion2() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       String version1 = "3.3.9";
       String version2 = "3.3.2.50";
 
       isVersionGreaterOrEquals(version1, version2);
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test

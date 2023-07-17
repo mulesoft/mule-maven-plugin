@@ -25,8 +25,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -74,30 +73,22 @@ public class RuntimeFabricDeploymentVerificationTest {
 
   @Test
   public void assertDeploymentStartedFalse() {
-    Exception exception = assertThrows(DeploymentException.class, () -> {
+    assertThatThrownBy(() -> {
       deploymentDetailedResponse.status = "DEPLOYING";
       deployment.setDeploymentTimeout(1000L);
       verification.assertDeployment(deployment);
-    });
-
-    String expectedMessage = "Validation timed out waiting for application to start. " +
-        "Please consider increasing the deploymentTimeout property.";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    }).isExactlyInstanceOf(DeploymentException.class)
+            .hasMessageContaining("Validation timed out waiting for application to start. " +
+                    "Please consider increasing the deploymentTimeout property.");
   }
 
   @Test
   public void assertDeploymentFailed() {
-    Exception exception = assertThrows(DeploymentException.class, () -> {
+    assertThatThrownBy(() -> {
       deploymentDetailedResponse.status = "FAILED";
       verification.assertDeployment(deployment);
-    });
-
-    String expectedMessage = "Deployment has failed";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    }).isExactlyInstanceOf(DeploymentException.class)
+            .hasMessageContaining("Deployment has failed");
   }
 
   @Test

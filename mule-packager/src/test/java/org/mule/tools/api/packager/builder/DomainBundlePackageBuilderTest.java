@@ -11,8 +11,7 @@
 package org.mule.tools.api.packager.builder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -63,9 +62,7 @@ public class DomainBundlePackageBuilderTest {
 
   @Test
   public void setNullArchiver() {
-    assertThrows(IllegalArgumentException.class, () -> {
-      this.builder.withArchiver(null);
-    });
+    assertThatThrownBy(() -> this.builder.withArchiver(null)).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -80,111 +77,77 @@ public class DomainBundlePackageBuilderTest {
 
   @Test
   public void setNullMavenFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> builder.withMaven(null));
-
-    String expectedMessage = "The folder must not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> builder.withMaven(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must not be null");
   }
 
   @Test
   public void setNonExistentMavenFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> builder.withMaven(new File("fake")));
-
-    String expectedMessage = "The folder must exist";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> builder.withMaven(new File("fake")))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must exist");;
   }
 
   @Test
   public void setNullDomainFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> builder.withDomain(null));
-
-    String expectedMessage = "The folder must not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() ->  builder.withDomain(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must not be null");
   }
 
   @Test
   public void setNonExistentDomainFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> builder.withDomain(new File("fake")));
-
-    String expectedMessage = "The folder must exist";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
-
+    assertThatThrownBy(() -> builder.withDomain(new File("fake")))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must exist");
   }
 
   @Test
   public void setNullApplicationsFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> builder.withApplications(null));
-
-    String expectedMessage = "The folder must not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> builder.withApplications(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must not be null");
   }
 
   @Test
   public void setNonExistentApplicationsFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> builder.withApplications(new File("fake")));
-
-    String expectedMessage = "The folder must exist";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> builder.withApplications(new File("fake")))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must exist");
   }
 
   @Test
   public void createPackageNullOriginalFolderPath() {
-    Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> builder.createPackage(null, destinationFile.toPath()));
-
-    String expectedMessage = "The origin path must not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> builder.createPackage(null, destinationFile.toPath()))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The origin path must not be null");
   }
 
   @Test
   public void createPackageNonExistentOriginalFolderPath() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+    assertThatThrownBy(() -> {
       File fileMock = mock(File.class);
       when(fileMock.exists()).thenReturn(false);
       builder.createPackage(new File("fake").toPath(), destinationFile.toPath());
-    });
-
-    String expectedMessage = "The origin path must exist";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    }).isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The origin path must exist");
   }
 
   @Test
   public void createPackageNullDestinationPath() {
-    Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> builder.createPackage(fakeTargetFolder.toPath(), null));
-
-    String expectedMessage = "The destination path must not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> builder.createPackage(fakeTargetFolder.toPath(), null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The destination path must not be null");
   }
 
   @Test
   public void createPackageAlreadyExistentNullDestinationPath() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+    assertThatThrownBy(() -> {
       destinationFile.createNewFile();
       builder.createPackage(fakeTargetFolder.toPath(), destinationFile.toPath());
-    });
-    String expectedMessage = "The destination file must not be duplicated";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    }).isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The destination file must not be duplicated");
   }
 
   @Test
@@ -202,43 +165,43 @@ public class DomainBundlePackageBuilderTest {
 
   @Test
   public void wiredCreatePackageNoDomain() {
-    assertThrows(IllegalStateException.class, () -> {
+    assertThatThrownBy(() -> {
       Path targetPath = fakeTargetFolder.toPath();
 
       builder.withApplications(targetPath.resolve(APPLICATIONS.value()).toFile());
       builder.withMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile());
 
       builder.createPackage(destinationFile.toPath());
-    });
+    }).isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
   public void wiredCreatePackageNoApplications() {
-    assertThrows(IllegalStateException.class, () -> {
+    assertThatThrownBy(() -> {
       Path targetPath = fakeTargetFolder.toPath();
 
       builder.withDomain(targetPath.resolve(DOMAIN.value()).toFile());
       builder.withMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile());
 
       builder.createPackage(destinationFile.toPath());
-    });
+    }).isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
   public void wiredCreatePackageNoMaven() {
-    assertThrows(IllegalStateException.class, () -> {
+    assertThatThrownBy(() -> {
       Path targetPath = fakeTargetFolder.toPath().toFile().toPath();
 
       builder.withDomain(targetPath.resolve(DOMAIN.value()).toFile());
       builder.withApplications(targetPath.resolve(APPLICATIONS.value()).toFile());
 
       builder.createPackage(destinationFile.toPath());
-    });
+    }).isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
   public void wiredCreatePackageNullDestinationPath() {
-    assertThrows(IllegalArgumentException.class, () -> {
+    assertThatThrownBy(() -> {
       Path targetPath = fakeTargetFolder.toPath();
 
       builder.withDomain(targetPath.resolve(DOMAIN.value()).toFile());
@@ -246,12 +209,12 @@ public class DomainBundlePackageBuilderTest {
       builder.withMaven(targetPath.resolve(META_INF.value()).resolve(MAVEN.value()).toFile());
 
       builder.createPackage(null);
-    });
+    }).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   public void wiredCreatePackageAlreadyExistentDestinationPath() {
-    assertThrows(IllegalArgumentException.class, () -> {
+    assertThatThrownBy(() -> {
       Path targetPath = fakeTargetFolder.toPath();
 
       builder.withDomain(targetPath.resolve(DOMAIN.value()).toFile());
@@ -260,7 +223,7 @@ public class DomainBundlePackageBuilderTest {
 
       destinationFile.createNewFile();
       builder.createPackage(destinationFile.toPath());
-    });
+    }).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test

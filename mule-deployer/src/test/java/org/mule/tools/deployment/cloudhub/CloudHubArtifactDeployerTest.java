@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -91,13 +91,13 @@ public class CloudHubArtifactDeployerTest {
 
   @Test
   public void deployDomainTest() {
-    assertThrows(DeploymentException.class, () -> cloudHubArtifactDeployer.deployDomain());
+    assertThatThrownBy(() -> cloudHubArtifactDeployer.deployDomain()).isExactlyInstanceOf(DeploymentException.class);
 
   }
 
   @Test
   public void undeployDomainTest() {
-    assertThrows(DeploymentException.class, () -> cloudHubArtifactDeployer.undeployDomain());
+    assertThatThrownBy(() -> cloudHubArtifactDeployer.undeployDomain()).isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test
@@ -236,7 +236,7 @@ public class CloudHubArtifactDeployerTest {
 
   @Test
   public void deployApplicationVerificationStartedFail() throws DeploymentException {
-    assertThrows(DeploymentException.class, () -> {
+    assertThatThrownBy(() -> {
       when(clientMock.isDomainAvailable(any())).thenReturn(true);
 
       CloudHubDeploymentVerification verificationMock = mock(CloudHubDeploymentVerification.class);
@@ -252,7 +252,7 @@ public class CloudHubArtifactDeployerTest {
       verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
       verify(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
       verify(verificationMock).assertDeployment(eq(deploymentMock));
-    });
+    }).isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test

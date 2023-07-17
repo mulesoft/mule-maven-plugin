@@ -10,13 +10,8 @@
 
 package org.mule.tools.api.packager.builder;
 
-//import static org.hamcrest.MatcherAssert.assertThat;
-//import static org.hamcrest.core.IsInstanceOf.instanceOf;
-//import static org.junit.Assert.assertEquals;
-//import static org.junit.Assert.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -37,23 +32,15 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
-//import org.junit.Before;
-//import org.junit.Rule;
-//import org.junit.Test;
-//import org.junit.rules.ExpectedException;
-//import org.junit.rules.TemporaryFolder;
-//import org.junit.runner.RunWith;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import org.mule.tools.api.packager.MuleProjectFoldersGenerator;
 import org.mule.tools.api.packager.archiver.MuleArchiver;
 import org.mule.tools.api.packager.packaging.PackagingOptions;
 import org.mule.tools.api.packager.packaging.PackagingType;
 
-//@RunWith(MockitoJUnitRunner.class)
 public class MulePackageBuilderTest {
 
   private static final String GROUP_ID = "com.fake.group";
@@ -87,146 +74,114 @@ public class MulePackageBuilderTest {
 
   @Test
   public void setNullClassesFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> this.builder.withClasses(null));
-    String expectedMessage = "The folder must not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> this.builder.withClasses(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must not be null");
   }
 
   @Test
   public void setNonExistentClassesFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> builder.withClasses(new File("fake")));
-    String expectedMessage = "The folder must exists";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> builder.withClasses(new File("fake")))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must exists");
   }
 
   @Test
   public void setNullTestClassesFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> this.builder.withTestClasses(null));
-    String expectedMessage = "The folder must not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> this.builder.withTestClasses(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must not be null");
   }
 
   @Test
   public void setNonExistentTestClassesFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> this.builder.withTestClasses(new File("fake")));
-    String expectedMessage = "The folder must exists";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> this.builder.withTestClasses(new File("fake")))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must exists");
   }
 
   @Test
   public void setNullTestMuleFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> this.builder.withTestMule(null));
-    String expectedMessage = "The folder must not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> this.builder.withTestMule(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must not be null");
   }
 
   @Test
   public void setNonExistentTestMuleFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> this.builder.withTestMule(new File("fake")));
-    String expectedMessage = "The folder must exists";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> this.builder.withTestMule(new File("fake")))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must exists");
   }
 
   @Test
   public void setNullMavenFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> this.builder.withMaven(null));
-    String expectedMessage = "The folder must not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> this.builder.withMaven(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must not be null");
   }
 
   @Test
   public void setNonExistentMavenFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> this.builder.withMaven(new File("fake")));
-    String expectedMessage = "The folder must exists";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> this.builder.withMaven(new File("fake")))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must exists");
   }
 
   @Test
   public void setNullMuleSrcFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> this.builder.withMuleSrc(null));
-    String expectedMessage = "The folder must not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> this.builder.withMuleSrc(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must not be null");
   }
 
   @Test
   public void setNonExistentMuleSrcFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> this.builder.withMuleSrc(new File("fake")));
-    String expectedMessage = "The folder must exists";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> this.builder.withMuleSrc(new File("fake")))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must exists");
   }
 
   @Test
   public void setNullMuleArtifactFolderTest() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> this.builder.withMuleArtifact(null));
-    String expectedMessage = "The folder must not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> this.builder.withMuleArtifact(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must not be null");
   }
 
   @Test
   public void setNonExistentMuleArtifactFolderTest() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> this.builder.withMuleArtifact(new File("fake")));
-    String expectedMessage = "The folder must exists";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> this.builder.withMuleArtifact(new File("fake")))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must exists");
   }
 
   @Test
   public void setNullRepositoryFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> this.builder.withRepository(null));
-    String expectedMessage = "The folder must not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> this.builder.withRepository(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must not be null");
   }
 
   @Test
   public void setNonExistentRepositoryFolder() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> this.builder.withRepository(new File("fake")));
-    String expectedMessage = "The folder must exists";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> this.builder.withRepository(new File("fake")))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The folder must exists");
   }
 
   @Test
   public void setNullRootResourceFile() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> this.builder.withRootResource(null));
-    String expectedMessage = "The resource must not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> this.builder.withRootResource(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The resource must not be null");
   }
 
   @Test
   public void setNonExistentRootResourceFile() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> this.builder.withRootResource(new File("fake")));
-    String expectedMessage = "The resource must exists";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> this.builder.withRootResource(new File("fake")))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("The resource must exists");
   }
 
   @Test
@@ -242,13 +197,15 @@ public class MulePackageBuilderTest {
 
   @Test
   public void setNullPackagingOptions() {
-    assertThrows(IllegalArgumentException.class, () -> this.builder.withPackagingOptions(null));
+    assertThatThrownBy(() -> this.builder.withPackagingOptions(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class);
 
   }
 
   @Test
   public void setNullArchiver() {
-    assertThrows(IllegalArgumentException.class, () -> this.builder.withArchiver(null));
+    assertThatThrownBy(() -> this.builder.withArchiver(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -263,18 +220,19 @@ public class MulePackageBuilderTest {
 
   @Test
   public void createPackageNullOriginFolderPath() {
-    assertThrows(IllegalArgumentException.class, () -> builder.createPackage(null, destinationFile.toPath()));
+    assertThatThrownBy(() -> builder.createPackage(null, destinationFile.toPath()))
+            .isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   public void createPackageNonExistingOriginFolderPath() {
-    assertThrows(IllegalArgumentException.class,
-                 () -> builder.createPackage(new File("fake").toPath(), destinationFile.toPath()));
+    assertThatThrownBy(() -> builder.createPackage(new File("fake").toPath(), destinationFile.toPath()))
+            .isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   public void createPackageNullDestinationPath() {
-    assertThrows(IllegalArgumentException.class, () -> {
+    assertThatThrownBy(() -> {
       boolean onlyMuleSources = true;
       boolean lightweightPackage = false;
       boolean attachMuleSources = false;
@@ -283,12 +241,12 @@ public class MulePackageBuilderTest {
       builder.withPackagingOptions(new PackagingOptions(onlyMuleSources, lightweightPackage, attachMuleSources, testPackage));
 
       builder.createPackage(fakeTargetFolder.toPath(), null);
-    });
+    }).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   public void createPackageAlreadyExistingDestinationPath() {
-    assertThrows(IllegalArgumentException.class, () -> {
+    assertThatThrownBy(() -> {
       boolean onlyMuleSources = true;
       boolean lightweightPackage = false;
       boolean attachMuleSources = false;
@@ -298,12 +256,13 @@ public class MulePackageBuilderTest {
 
       destinationFile.createNewFile();
       builder.createPackage(fakeTargetFolder.toPath(), destinationFile.toPath());
-    });
+    }).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   public void createPackageNoPackagingOptionsProvided() {
-    assertThrows(IllegalStateException.class, () -> builder.createPackage(fakeTargetFolder.toPath(), destinationFile.toPath()));
+    assertThatThrownBy(() -> builder.createPackage(fakeTargetFolder.toPath(), destinationFile.toPath()))
+            .isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
@@ -440,7 +399,7 @@ public class MulePackageBuilderTest {
 
   @Test
   public void wiredCreatePackageNoClasses() {
-    assertThrows(IllegalStateException.class, () -> {
+    assertThatThrownBy(() -> {
       boolean onlyMuleSources = false;
       boolean lightweightPackage = false;
       boolean attachMuleSources = true;
@@ -456,12 +415,12 @@ public class MulePackageBuilderTest {
       builder.withRepository(targetPath.resolve(REPOSITORY.value()).toFile());
 
       builder.createPackage(destinationFile.toPath());
-    });
+    }).isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
   public void wiredCreatePackageNoMaven() {
-    assertThrows(IllegalStateException.class, () -> {
+    assertThatThrownBy(() -> {
       boolean onlyMuleSources = false;
       boolean lightweightPackage = false;
       boolean attachMuleSources = true;
@@ -478,12 +437,12 @@ public class MulePackageBuilderTest {
       builder.withRepository(targetPath.resolve(REPOSITORY.value()).toFile());
 
       builder.createPackage(destinationFile.toPath());
-    });
+    }).isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
   public void wiredCreatePackageNMuleArtifact() {
-    assertThrows(IllegalStateException.class, () -> {
+    assertThatThrownBy(() -> {
       boolean onlyMuleSources = false;
       boolean lightweightPackage = false;
       boolean attachMuleSources = true;
@@ -499,12 +458,12 @@ public class MulePackageBuilderTest {
       builder.withRepository(targetPath.resolve(REPOSITORY.value()).toFile());
 
       builder.createPackage(destinationFile.toPath());
-    });
+    }).isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
   public void wiredCreatePackageNoMuleSources() {
-    assertThrows(IllegalStateException.class, () -> {
+    assertThatThrownBy(() -> {
       boolean onlyMuleSources = false;
       boolean lightweightPackage = false;
       boolean attachMuleSources = true;
@@ -520,12 +479,12 @@ public class MulePackageBuilderTest {
       builder.withRepository(targetPath.resolve(REPOSITORY.value()).toFile());
 
       builder.createPackage(destinationFile.toPath());
-    });
+    }).isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
   public void wiredCreatePackageNoRepository() {
-    assertThrows(IllegalStateException.class, () -> {
+    assertThatThrownBy(() -> {
       boolean onlyMuleSources = false;
       boolean lightweightPackage = false;
       boolean attachMuleSources = true;
@@ -541,7 +500,7 @@ public class MulePackageBuilderTest {
       builder.withMuleSrc(targetPath.resolve(META_INF.value()).resolve(MULE_SRC.value()).toFile());
 
       builder.createPackage(destinationFile.toPath());
-    });
+    }).isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
@@ -565,7 +524,7 @@ public class MulePackageBuilderTest {
 
   @Test
   public void wiredCreatePackageNoTestClassesTestPackage() {
-    assertThrows(IllegalStateException.class, () -> {
+    assertThatThrownBy(() -> {
       boolean onlyMuleSources = false;
       boolean lightweightPackage = false;
       boolean attachMuleSources = true;
@@ -585,12 +544,12 @@ public class MulePackageBuilderTest {
       builder.withRepository(targetPath.resolve(REPOSITORY.value()).toFile());
 
       builder.createPackage(destinationFile.toPath());
-    });
+    }).isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
   public void wiredCreatePackageNoTestMuleTestPackage() {
-    assertThrows(IllegalStateException.class, () -> {
+    assertThatThrownBy(() -> {
       boolean onlyMuleSources = false;
       boolean lightweightPackage = false;
       boolean attachMuleSources = true;
@@ -610,7 +569,7 @@ public class MulePackageBuilderTest {
       builder.withRepository(targetPath.resolve(REPOSITORY.value()).toFile());
 
       builder.createPackage(destinationFile.toPath());
-    });
+    }).isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test

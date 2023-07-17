@@ -9,16 +9,13 @@
  */
 package org.mule.tools.validation;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
-import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.mule.tools.model.Deployment;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,16 +28,12 @@ public class AbstractDeploymentValidatorTest {
 
   @Test
   public void validateMuleVersionAgainstEnvironmentMissingMuleVersionTest() {
-    Exception exception = assertThrows(DeploymentException.class, () -> {
+    assertThatThrownBy(() -> {
       deploymentMock = createDeploymentMock(null);
       validator = new DeploymentValidatorMock(deploymentMock);
       validator.validateMuleVersionAgainstEnvironment();
-    });
-
-    String expectedMessage = "muleVersion is not present in deployment configuration";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    }).isExactlyInstanceOf(DeploymentException.class)
+            .hasMessageContaining("muleVersion is not present in deployment configuration");
   }
 
   private Deployment createDeploymentMock(String version) {
@@ -51,16 +44,12 @@ public class AbstractDeploymentValidatorTest {
 
   @Test
   public void validateMuleVersionAgainstEnvironmentCannotResolveEnvironmentMuleVersionTest() {
-    Exception exception = assertThrows(DeploymentException.class, () -> {
+    assertThatThrownBy(() -> {
       Deployment deploymentMock = createDeploymentMock(MULE_VERSION);
       validator = new DeploymentValidatorMock(deploymentMock);
       validator.validateMuleVersionAgainstEnvironment();
-    });
-
-    String expectedMessage = CANNOT_RESOLVE_ENVIRONMENT_VERSION_MESSAGE;
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    }).isExactlyInstanceOf(DeploymentException.class)
+            .hasMessageContaining(CANNOT_RESOLVE_ENVIRONMENT_VERSION_MESSAGE);
   }
 
   class DeploymentValidatorMock extends AbstractDeploymentValidator {

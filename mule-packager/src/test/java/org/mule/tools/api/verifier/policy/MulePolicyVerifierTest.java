@@ -12,8 +12,7 @@ package org.mule.tools.api.verifier.policy;
 
 import static java.lang.String.join;
 import static java.nio.file.Paths.get;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_POLICY;
 
@@ -48,52 +47,38 @@ public class MulePolicyVerifierTest {
 
   @Test
   public void isPolicyProjectStructureIsInvalidWithoutMuleArtifact() {
-    Exception exception =
-        assertThrows(ValidationException.class, () -> getVerifier(getTestResourceFolder(MISSING_MULE_ARTIFACT)).verify());
-    String expectedMessage = "The file mule-artifact.json should be present.";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> getVerifier(getTestResourceFolder(MISSING_MULE_ARTIFACT)).verify())
+            .isExactlyInstanceOf(ValidationException.class)
+            .hasMessageContaining("The file mule-artifact.json should be present.");
   }
 
   @Test
   public void isPolicyProjectStructureIsInvalidWithoutTemplateXML() {
-    Exception exception =
-        assertThrows(ValidationException.class, () -> getVerifier(getTestResourceFolder(MISSING_TEMPLATE_XML)).verify());
-    String expectedMessage = "The file " + concatPath("src", "main", "mule", "template.xml") + " should be present.";
-    String actualMessage = exception.getMessage();
+    assertThatThrownBy(() -> getVerifier(getTestResourceFolder(MISSING_TEMPLATE_XML)).verify())
+            .isExactlyInstanceOf(ValidationException.class)
+            .hasMessageContaining("The file " + concatPath("src", "main", "mule", "template.xml") + " should be present.");
 
-    assertTrue(actualMessage.contains(expectedMessage));
   }
 
   @Test
   public void isPolicyProjectStructureIsInvalidWithMissingYaml() {
-    Exception exception =
-        assertThrows(ValidationException.class, () -> getVerifier(getTestResourceFolder(MISSING_YAML)).verify());
-    String expectedMessage = "The file " + ARTIFACT_ID + ".yaml should be present.";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> getVerifier(getTestResourceFolder(MISSING_YAML)).verify())
+            .isExactlyInstanceOf(ValidationException.class)
+            .hasMessageContaining("The file " + ARTIFACT_ID + ".yaml should be present.");
   }
 
   @Test
   public void isPolicyProjectStructureIsInvalidWithMissingYaml2() {
-    Exception exception =
-        assertThrows(ValidationException.class, () -> getVerifier(ARTIFACT_ID_2, getTestResourceFolder(MISSING_YAML2)).verify());
-    String expectedMessage = "The file " + ARTIFACT_ID_2 + ".yaml should be present.";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> getVerifier(ARTIFACT_ID_2, getTestResourceFolder(MISSING_YAML2)).verify())
+            .isExactlyInstanceOf(ValidationException.class)
+            .hasMessageContaining("The file " + ARTIFACT_ID_2 + ".yaml should be present.");
   }
 
   @Test
   public void isPolicyProjectStructureIsInvalidWithInvalidYaml() {
-    Exception exception =
-        assertThrows(ValidationException.class, () -> getVerifier(getTestResourceFolder(INVALID_YAML)).verify());
-    String expectedMessage = "Error validating '" + ARTIFACT_ID + ".yaml'. Missing required creator property 'id'";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> getVerifier(getTestResourceFolder(INVALID_YAML)).verify())
+            .isExactlyInstanceOf(ValidationException.class)
+            .hasMessageContaining("Error validating '" + ARTIFACT_ID + ".yaml'. Missing required creator property 'id'");
   }
 
   private Path getTestResourceFolder(String folderName) {

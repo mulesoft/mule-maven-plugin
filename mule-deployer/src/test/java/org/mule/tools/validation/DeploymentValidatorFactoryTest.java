@@ -22,7 +22,7 @@ import org.mule.tools.validation.cloudhub.CloudHubDeploymentValidator;
 import org.mule.tools.validation.standalone.StandaloneDeploymentValidator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mule.tools.validation.DeploymentValidatorFactory.createDeploymentValidator;
 
@@ -54,6 +54,7 @@ public class DeploymentValidatorFactoryTest {
 
   @Test
   public void createDeploymentValidatorUnknownDeploymentExceptionTest() {
-    assertThrows(DeploymentException.class, () -> createDeploymentValidator(mock(Deployment.class)));
+    assertThatThrownBy(() -> createDeploymentValidator(mock(Deployment.class)))
+            .isExactlyInstanceOf(DeploymentException.class);
   }
 }

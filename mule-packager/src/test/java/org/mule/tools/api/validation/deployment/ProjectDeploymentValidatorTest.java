@@ -10,7 +10,7 @@
 package org.mule.tools.api.validation.deployment;
 
 import static java.util.Collections.singletonList;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mule.tools.api.packager.packaging.Classifier.LIGHT_PACKAGE;
@@ -100,7 +100,7 @@ public class ProjectDeploymentValidatorTest {
 
   @Test
   public void isDeployableMuleApplicationTemplate() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging(MULE_APPLICATION.toString())
           .withClassifier(MULE_APPLICATION_TEMPLATE.toString())
@@ -109,12 +109,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMulePolicy() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging(MULE_POLICY.toString())
           .withClassifier(MULE_POLICY.toString())
@@ -123,7 +123,7 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
@@ -140,7 +140,7 @@ public class ProjectDeploymentValidatorTest {
 
   @Test
   public void isDeployableMuleDomainBundle() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging(MULE_DOMAIN_BUNDLE.toString())
           .withClassifier(MULE_DOMAIN_BUNDLE.toString())
@@ -149,13 +149,13 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
 
   @Test
   public void isDeployableMuleApplicationFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-packaging")
@@ -167,13 +167,13 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
 
   @Test
   public void isDeployableMuleApplicationLightPackageFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier")
@@ -185,7 +185,7 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
@@ -281,7 +281,7 @@ public class ProjectDeploymentValidatorTest {
 
   @Test
   public void isDeployableMuleApplicationTemplateFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier")
@@ -293,12 +293,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMuleApplicationTemplateLightPackageFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier")
@@ -310,12 +310,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMuleApplicationTemplateLightPackageTestJarFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier")
@@ -327,12 +327,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMuleApplicationTemplateTestJarFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier")
@@ -344,12 +344,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMuleDomainFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier").isDeployment(true)
@@ -360,12 +360,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMuleDomainTemplateLightPackageFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier")
@@ -377,12 +377,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMuleDomainLightPackageTestJarFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier")
@@ -394,12 +394,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMuleDomainTestJarFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier")
@@ -411,12 +411,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMuleDomainBundleFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier")
@@ -428,12 +428,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMuleDomainBundleTemplateLightPackageFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier")
@@ -445,12 +445,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMuleDomainBundleLightPackageTestJarFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier")
@@ -462,12 +462,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMuleDomainBundleTestJarFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier")
@@ -479,12 +479,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMulePolicyFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier")
@@ -496,12 +496,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMulePolicyLightPackageFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier")
@@ -513,12 +513,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMulePolicyLightPackageTestJarFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging("fake-packaging")
           .withClassifier("fake-classifier")
@@ -530,12 +530,12 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isDeployableMulePolicyTestJarFromArtifact() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       projectInformationBuilder
           .withPackaging(MULE_POLICY.toString())
           .withClassifier(MULE_POLICY.toString())
@@ -544,7 +544,7 @@ public class ProjectDeploymentValidatorTest {
 
       validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
       validator.isDeployable();
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
 }

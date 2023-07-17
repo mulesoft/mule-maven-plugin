@@ -20,8 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 public class DeploymentTest {
@@ -45,13 +44,9 @@ public class DeploymentTest {
   @Test
   public void setBasicDeploymentValuesApplicationFileNotSetTest() {
     System.clearProperty("mule.artifact");
-    Exception exception = assertThrows(DeploymentException.class, () -> deploymentSpy.setBasicDeploymentValues(project));
-
-    String expectedMessage =
-        "Artifact to be deployed could not be found. Please set its location setting -Dmule.artifact=path/to/jar or in the deployment configuration pom element";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> deploymentSpy.setBasicDeploymentValues(project))
+            .isExactlyInstanceOf(DeploymentException.class)
+            .hasMessageContaining("Artifact to be deployed could not be found. Please set its location setting -Dmule.artifact=path/to/jar or in the deployment configuration pom element");
   }
 
   @Test

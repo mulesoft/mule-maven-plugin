@@ -13,8 +13,7 @@ package org.mule.tools.api.packager.sources;
 import static java.io.File.separator;
 import static java.lang.String.join;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -137,12 +136,9 @@ public class MuleArtifactContentResolverTest {
 
   @Test
   public void muleArtifactContentResolverNullPathArgumentInConstructorTest() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> newResolver(null, null, null));
-
-    String expectedMessage = "Project structure should not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> newResolver(null, null, null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("Project structure should not be null");
   }
 
   @Test
@@ -303,14 +299,14 @@ public class MuleArtifactContentResolverTest {
     File config2 = new File(muleFolder, CONFIG_2);
     String expectedExceptionMessage =
         "Element type \"xml-module:validate-schema\" must be followed by either attribute specifications, \">\" or \"/>\"";
-    assertThrows(RuntimeException.class, () -> {
+    assertThatThrownBy(() -> {
       config1.createNewFile();
       FileUtils.writeStringToFile(config1, DEFAULT_MULE_CONFIG_CONTENT, Charset.defaultCharset());
 
       config2.createNewFile();
       FileUtils.writeStringToFile(config2, MALFORMED_MULE_CONFIG_CONTENT, Charset.defaultCharset());
-      List<String> actualConfigs = resolver.getConfigs();
-    });
+      List<String> actualConfigs = resolver.getConfigs();})
+            .isExactlyInstanceOf(RuntimeException.class);
   }
 
   @Test

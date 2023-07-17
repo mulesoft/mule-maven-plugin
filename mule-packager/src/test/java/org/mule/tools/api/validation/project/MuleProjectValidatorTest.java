@@ -11,8 +11,7 @@
 package org.mule.tools.api.validation.project;
 
 import static java.util.Collections.emptySet;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
@@ -100,23 +99,23 @@ public class MuleProjectValidatorTest {
 
   @Test
   public void projectStructureValidMuleApplicationInvalid() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       Path mainSrcFolder = projectBaseFolder.toAbsolutePath().resolve(SRC.value()).resolve(MAIN.value());
       mainSrcFolder.toFile().mkdirs();
 
       isProjectStructureValid(MULE_APPLICATION.toString(), projectBaseFolder.toAbsolutePath());
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isProjectStructureInvalidValidMuleApplication() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       Path muleMainSrcFolder =
           projectBaseFolder.toAbsolutePath().resolve(SRC.value()).resolve(MAIN.value()).resolve(POLICY.value());
       muleMainSrcFolder.toFile().mkdirs();
 
       isProjectStructureValid(MULE_APPLICATION.toString(), projectBaseFolder.toAbsolutePath());
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
@@ -130,23 +129,23 @@ public class MuleProjectValidatorTest {
 
   @Test
   public void isProjectStructureValidMulePolicyInvalid() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       Path mainSrcFolder = projectBaseFolder.toAbsolutePath().resolve(SRC.value()).resolve(MAIN.value());
       mainSrcFolder.toFile().mkdirs();
 
       isProjectStructureValid(MULE_POLICY.toString(), projectBaseFolder.toAbsolutePath());
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isProjectStructureInvalidValidMulePolicy() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       Path muleMainSrcFolder =
           projectBaseFolder.toAbsolutePath().resolve(SRC.value()).resolve(MAIN.value()).resolve("invalid-src-folder");
       muleMainSrcFolder.toFile().mkdirs();
 
       isProjectStructureValid(MULE_POLICY.toString(), projectBaseFolder.toAbsolutePath());
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
@@ -160,23 +159,23 @@ public class MuleProjectValidatorTest {
 
   @Test
   public void isProjectStructureValidMuleDomainInvalid() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       Path mainSrcFolder = projectBaseFolder.toAbsolutePath().resolve(SRC.value()).resolve(MAIN.value());
       mainSrcFolder.toFile().mkdirs();
 
       isProjectStructureValid(MULE_DOMAIN.toString(), projectBaseFolder.toAbsolutePath());
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void isProjectStructureInValidMuleDomain() {
-    assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       Path muleMainSrcFolder =
           projectBaseFolder.toAbsolutePath().resolve(SRC.value()).resolve(MAIN.value()).resolve(POLICY.value());
       muleMainSrcFolder.toFile().mkdirs();
 
       isProjectStructureValid(MULE_DOMAIN.toString(), projectBaseFolder.toAbsolutePath());
-    });
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
@@ -190,13 +189,13 @@ public class MuleProjectValidatorTest {
 
   @Test
   public void isDescriptorFilePresentMuleApplicationInvalid() {
-    assertThrows(ValidationException.class,
-                 () -> validator.validateDescriptorFile(projectBaseFolder.toAbsolutePath(), Optional.empty()));
+    assertThatThrownBy(() -> validator.validateDescriptorFile(projectBaseFolder.toAbsolutePath(), Optional.empty()))
+            .isExactlyInstanceOf(ValidationException.class);
   }
 
   @Disabled
   @Test
-  public void isProjectValid() throws ValidationException, IOException {
+  public void isProjectValid() throws ValidationException {
 
     projectBaseFolder.resolve(MULE_ARTIFACT_JSON);
     projectBaseFolder.toAbsolutePath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value()).toFile().mkdirs();
@@ -213,17 +212,13 @@ public class MuleProjectValidatorTest {
 
   @Test
   public void validateNoSharedLibrariesInDependencies() {
-    Exception exception = assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       List<SharedLibraryDependency> sharedLibraries = new ArrayList<>();
       sharedLibraries.add(buildSharedLibraryDependency(GROUP_ID, ARTIFACT_ID));
 
       validator.validateSharedLibraries(sharedLibraries, new ArrayList<>());
-    });
-
-    String expectedMessage = VALIDATE_SHARED_LIBRARIES_MESSAGE + "[artifact-id:group-id]";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    }).isExactlyInstanceOf(ValidationException.class)
+            .hasMessageContaining(VALIDATE_SHARED_LIBRARIES_MESSAGE + "[artifact-id:group-id]");
   }
 
   @Test
@@ -246,17 +241,14 @@ public class MuleProjectValidatorTest {
 
   @Test
   public void validateDomainNull() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> validator.validateDomain(null));
-
-    String expectedMessage = "Set of domains should not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> validator.validateDomain(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("Set of domains should not be null");
   }
 
   @Test
   public void validateDomainNotAllDomains() {
-    Exception exception = assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       Set<ArtifactCoordinates> domains = new HashSet<>();
 
       ArtifactCoordinates muleDomainA =
@@ -265,11 +257,8 @@ public class MuleProjectValidatorTest {
       domains.add(muleDomainA);
 
       validator.validateDomain(domains);
-    });
-    String expectedMessage = "Not all dependencies are mule domains";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    }).isExactlyInstanceOf(ValidationException.class)
+            .hasMessageContaining("Not all dependencies are mule domains");
   }
 
   @Test
@@ -291,7 +280,7 @@ public class MuleProjectValidatorTest {
 
   @Test
   public void validateDomainInvalidScopeTest() {
-    Exception exception = assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       Set<ArtifactCoordinates> domains = new HashSet<>();
 
       ArtifactCoordinates muleDomain =
@@ -299,17 +288,14 @@ public class MuleProjectValidatorTest {
       domains.add(muleDomain);
 
       validator.validateDomain(domains);
-    });
-    String expectedMessage = "A mule-domain dependency should have the <provided> scope";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    }).isExactlyInstanceOf(ValidationException.class)
+            .hasMessageContaining("A mule-domain dependency should have the <provided> scope");
   }
 
   @Test
   public void validateDomainMoreThanOneDomain() {
     Set<ArtifactCoordinates> domains = new HashSet<>();
-    Exception exception = assertThrows(ValidationException.class, () -> {
+    assertThatThrownBy(() -> {
       ArtifactCoordinates muleDomainA =
           new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID_PREFIX + "a", VERSION, TYPE, MULE_DOMAIN.toString());
       ArtifactCoordinates muleDomainB =
@@ -318,21 +304,16 @@ public class MuleProjectValidatorTest {
       domains.add(muleDomainA);
       domains.add(muleDomainB);
       validator.validateDomain(domains);
-    });
-    String expectedMessage = "A mule project of type mule-application should reference at most 1. " +
-        "However, the project has references to the following domains: ";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    }).isExactlyInstanceOf(ValidationException.class)
+            .hasMessageContaining("A mule project of type mule-application should reference at most 1. " +
+                    "However, the project has references to the following domains: ");
   }
 
   @Test
   public void validateReferencedDomainsIfPresentNull() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> validator.validateReferencedDomainsIfPresent(null));
-    String expectedMessage = "List of dependencies should not be null";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> validator.validateReferencedDomainsIfPresent(null))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("List of dependencies should not be null");
   }
 
   @Test

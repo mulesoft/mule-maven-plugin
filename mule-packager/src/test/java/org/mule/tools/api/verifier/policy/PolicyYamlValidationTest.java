@@ -9,14 +9,17 @@
  */
 package org.mule.tools.api.verifier.policy;
 
+import org.assertj.core.util.introspection.CaseFormatUtils;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mule.tools.api.exception.ValidationException;
 import org.junit.jupiter.api.Test;
+
 import java.io.File;
 
 import static java.lang.String.join;
 import static java.nio.file.Paths.get;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class PolicyYamlValidationTest {
 
@@ -39,132 +42,44 @@ public class PolicyYamlValidationTest {
   }
 
   @Test
-  public void missingIdYamlFailsParsing() {
-    Exception exception = assertThrows(ValidationException.class, () -> testYaml("missing-id.yaml"));
-    String expectedMessage = "Missing required creator property id";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
-  }
-
-  @Test
-  public void missingNameYamlFailsParsing() {
-    Exception exception = assertThrows(ValidationException.class, () -> testYaml("missing-name.yaml"));
-    String expectedMessage = "Missing required creator property name";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
-  }
-
-  @Test
   public void missingSupportedPoliciesVersionsYamlSucceeds() throws ValidationException {
     testYaml("missing-supportedPoliciesVersions.yaml");
   }
 
-  @Test
-  public void missingDescriptionYamlFailsParsing() {
-    Exception exception = assertThrows(ValidationException.class, () -> testYaml("missing-description.yaml"));
-    String expectedMessage = "Missing required creator property description";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
-  }
-
-  @Test
-  public void missingCategoryYamlFailsParsing() {
-    Exception exception = assertThrows(ValidationException.class, () -> testYaml("missing-category.yaml"));
-    String expectedMessage = "Missing required creator property category";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
-  }
-
-  @Test
-  public void missingTypeYamlFailsParsing() {
-    Exception exception = assertThrows(ValidationException.class, () -> testYaml("missing-type.yaml"));
-    String expectedMessage = "Missing required creator property type";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
-  }
-
-  @Test
-  public void missingResourceLevelSupportedYamlFailsParsing() {
-    Exception exception = assertThrows(ValidationException.class, () -> testYaml("missing-resourceLevelSupported.yaml"));
-    String expectedMessage = "Missing required creator property resourceLevelSupported";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
-  }
-
-  @Test
-  public void missingStandaloneYamlFailsParsing() {
-    Exception exception = assertThrows(ValidationException.class, () -> testYaml("missing-standalone.yaml"));
-    String expectedMessage = "Missing required creator property standalone";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
-  }
-
-  @Test
-  public void missingRequiredCharacteristicsYamlFailsParsing() {
-    Exception exception = assertThrows(ValidationException.class, () -> testYaml("missing-requiredCharacteristics.yaml"));
-    String expectedMessage = "Missing required creator property requiredCharacteristics";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
-  }
-
-  @Test
-  public void missingProvidedCharacteristicsYamlFailsParsing() {
-    Exception exception = assertThrows(ValidationException.class, () -> testYaml("missing-providedCharacteristics.yaml"));
-    String expectedMessage = "Missing required creator property providedCharacteristics";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
-  }
-
-  @Test
-  public void missingConfigurationYamlFailsParsing() {
-    Exception exception = assertThrows(ValidationException.class, () -> testYaml("missing-configuration.yaml"));
-    String expectedMessage = "Missing required creator property configuration";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
-  }
-
-  @Test
-  public void wrongTypeFailsParsing() {
-    Exception exception = assertThrows(ValidationException.class, () -> testYaml("wrong-type.yaml"));
-    String expectedMessage = "Missing required creator property 'resourceLevelSupported'";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+  @ParameterizedTest(name = "missing{0}YamlFailsParsing")
+  @ValueSource(strings = {"Description", "Category", "Type", "Name", "Id", "Standalone", "ResourceLevelSupported",
+      "RequiredCharacteristics", "ProvidedCharacteristics", "Configuration"})
+  public void missingPropertyYamlFailsParsing(String property) {
+    final String propertyName = CaseFormatUtils.toCamelCase(property);
+    assertThatThrownBy(() -> testYaml("missing-" + propertyName + ".yaml"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining(expectMissingProperty(propertyName));
   }
 
   @Test
   public void missingValueYamlFailsParsing() {
-    Exception exception = assertThrows(ValidationException.class, () -> testYaml("missing-value.yaml"));
-    String expectedMessage = "Missing required creator property 'requiredCharacteristics'";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+    assertThatThrownBy(() -> testYaml("missing-value.yaml"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining(expectMissingProperty("requiredCharacteristics"));
   }
 
   @Test
-  public void missingParameterFromConfigurationItemFailsParsing() {
-    Exception exception = assertThrows(ValidationException.class, () -> {
-      testYaml("missing-configurationProperty.yaml");
-    });
-    String expectedMessage = "Missing required creator property propertyName";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
+  public void wrongTypeFailsParsing() {
+    assertThatThrownBy(() -> testYaml("wrong-type.yaml"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining(expectMissingProperty("resourceLevelSupported"));
   }
 
-  //  private void expectMissingProperty(String property) {
-  //    expectedException.expectMessage("Missing required creator property '" + property + "'");
-  //  }
+  @Test
+  public void missingParameterFromConfigurationItemFailsParsing() throws ValidationException {
+    assertThatThrownBy(() -> testYaml("missing-configurationProperty.yaml"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining(expectMissingProperty("propertyName"));
+  }
+
+  private String expectMissingProperty(String property) {
+    return "Missing required creator property '" + property + "'";
+  }
 
   private void testYaml(String file) throws ValidationException {
     new PolicyYamlVerifier(getTestResourceFolder(), file).validate();

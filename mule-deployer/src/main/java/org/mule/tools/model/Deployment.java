@@ -51,7 +51,7 @@ public abstract class Deployment {
    *
    */
   public File getArtifact() {
-    return new File(this.artifact);
+    return Optional.ofNullable(this.artifact).map(File::new).orElse(null);
   }
 
   public void setArtifact(File artifact) {

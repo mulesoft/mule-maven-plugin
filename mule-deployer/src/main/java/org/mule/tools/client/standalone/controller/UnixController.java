@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.exec.*;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 
@@ -73,7 +74,8 @@ public class UnixController extends AbstractOSController {
     return executeWatchdog;
   }
 
-  private OutputStream getOutputStream() {
+  @VisibleForTesting
+  protected OutputStream getOutputStream() {
     if (outputStream == null) {
       outputStream = new ByteArrayOutputStream();
     }

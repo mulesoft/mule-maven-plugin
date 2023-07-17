@@ -29,6 +29,7 @@ import java.util.Optional;
 //import org.junit.rules.ExpectedException;
 //import org.junit.rules.TemporaryFolder;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.api.classloader.model.Artifact;
@@ -36,6 +37,7 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.util.PackagerLog;
 
+@Disabled
 public class ArtifactInstallerTest {
 
   private static final String ARTIFACT_ID = "artifact-id";

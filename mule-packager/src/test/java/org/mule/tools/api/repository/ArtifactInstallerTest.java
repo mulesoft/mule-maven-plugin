@@ -10,8 +10,7 @@
 
 package org.mule.tools.api.repository;
 
-//import static org.hamcrest.MatcherAssert.assertThat;
-//import static org.hamcrest.core.Is.is;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.mockito.Mockito.*;
@@ -23,7 +22,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.api.classloader.model.Artifact;
@@ -32,8 +30,6 @@ import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.util.PackagerLog;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-
-//@Disabled
 public class ArtifactInstallerTest {
 
   private static final String ARTIFACT_ID = "artifact-id";
@@ -73,17 +69,17 @@ public class ArtifactInstallerTest {
     classLoaderModel = mock(ClassLoaderModel.class);
   }
 
-  @Disabled
   @Test
   public void installArtifactTest() throws IOException {
     ArtifactCoordinates coordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, TYPE, CLASSIFIER);
-    artifact = new Artifact(coordinates, artifactFileFolder.resolve(ARTIFACT_FILE_NAME).toUri());
-    artifactFileFolder.resolve(POM_FILE_NAME);
-    File installedFile = outputFolder.resolve(OUTPUT_DIRECTORY + File.separator + GENERATED_PACKAGE_NAME).toFile();//new File(outputFolder.getRoot().toFile(), OUTPUT_DIRECTORY + File.separator + GENERATED_PACKAGE_NAME);
-    File pomFile = outputFolder.resolve(OUTPUT_DIRECTORY + File.separator + POM_FILE_NAME).toFile();//new File(outputFolder.getRoot().toFile(), OUTPUT_DIRECTORY + File.separator + POM_FILE_NAME);
+    artifact = new Artifact(coordinates, Files.createFile(artifactFileFolder.resolve(ARTIFACT_FILE_NAME)).toUri());
+    Files.createFile(artifactFileFolder.resolve(POM_FILE_NAME)).toFile();
+    File installedFile =
+        new File(outputFolder.toAbsolutePath().toFile(), OUTPUT_DIRECTORY + File.separator + GENERATED_PACKAGE_NAME);
+    File pomFile = new File(outputFolder.toAbsolutePath().toFile(), OUTPUT_DIRECTORY + File.separator + POM_FILE_NAME);
 
     assertThat(!installedFile.exists()).describedAs("File should not be installed yet");
-    installer.installArtifact(outputFolder.toFile(), artifact, Optional.empty());
+    installer.installArtifact(outputFolder.toAbsolutePath().toFile(), artifact, Optional.empty());
     assertThat(installedFile.exists()).describedAs("File was not installed");
     assertThat(pomFile.exists()).describedAs("Pom file was not copied");
   }
@@ -116,18 +112,14 @@ public class ArtifactInstallerTest {
     verify(artifactInstallerSpy, times(0)).generatePomFile(any(), any());
   }
 
-  @Disabled
   @Test
   public void generatePomFileWhenPomFileNameDoesNotExistTest() throws IOException {
-    //Files.createFile(artifactFileFolder.resolve(DEFAULT_POM_FILE_NAME));
-    artifact.setUri(artifactFileFolder.resolve(DEFAULT_POM_FILE_NAME).toUri());
-    Files.createFile(outputFolder.resolve(POM_FILE_NAME));
-    //    muleArtifactJsonFile = projectBaseFolder.resolve(MULE_ARTIFACT_JSON).toFile();
-    File generatedPomFile = outputFolder.resolve(POM_FILE_NAME).toFile();//new File(outputFolder.getRoot().toFile(), POM_FILE_NAME);
+    artifact.setUri(Files.createFile(artifactFileFolder.resolve(DEFAULT_POM_FILE_NAME)).toUri());
+    File generatedPomFile = new File(outputFolder.toAbsolutePath().toString(), POM_FILE_NAME);
 
     assertThat(generatedPomFile.exists()).describedAs("Pom file should not exist").isFalse();
 
-    installer.generatePomFile(artifact, outputFolder.toFile());
+    installer.generatePomFile(artifact, outputFolder.toAbsolutePath().toFile());
 
     assertThat(generatedPomFile.exists()).describedAs("Pom file should have been created").isTrue();
   }

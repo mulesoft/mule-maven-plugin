@@ -46,8 +46,8 @@ public class AbstractProjectValidatorTest {
   @Test
   public void isPackagingTypeValidNullTest() {
     assertThatThrownBy(() -> isPackagingTypeValid(null))
-            .isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("Packaging type name should not be null");
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("Packaging type name should not be null");
   }
 
 }

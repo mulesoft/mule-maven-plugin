@@ -70,7 +70,7 @@ public class StandaloneArtifactDeployerTest {
   @Test
   public void undeployDomainTest() {
     assertThatThrownBy(() -> deployer.undeployDomain())
-            .isExactlyInstanceOf(DeploymentException.class);;
+        .isExactlyInstanceOf(DeploymentException.class);;
   }
 
   @Test

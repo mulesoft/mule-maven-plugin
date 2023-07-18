@@ -48,37 +48,37 @@ public class MulePolicyVerifierTest {
   @Test
   public void isPolicyProjectStructureIsInvalidWithoutMuleArtifact() {
     assertThatThrownBy(() -> getVerifier(getTestResourceFolder(MISSING_MULE_ARTIFACT)).verify())
-            .isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("The file mule-artifact.json should be present.");
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("The file mule-artifact.json should be present.");
   }
 
   @Test
   public void isPolicyProjectStructureIsInvalidWithoutTemplateXML() {
     assertThatThrownBy(() -> getVerifier(getTestResourceFolder(MISSING_TEMPLATE_XML)).verify())
-            .isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("The file " + concatPath("src", "main", "mule", "template.xml") + " should be present.");
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("The file " + concatPath("src", "main", "mule", "template.xml") + " should be present.");
 
   }
 
   @Test
   public void isPolicyProjectStructureIsInvalidWithMissingYaml() {
     assertThatThrownBy(() -> getVerifier(getTestResourceFolder(MISSING_YAML)).verify())
-            .isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("The file " + ARTIFACT_ID + ".yaml should be present.");
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("The file " + ARTIFACT_ID + ".yaml should be present.");
   }
 
   @Test
   public void isPolicyProjectStructureIsInvalidWithMissingYaml2() {
     assertThatThrownBy(() -> getVerifier(ARTIFACT_ID_2, getTestResourceFolder(MISSING_YAML2)).verify())
-            .isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("The file " + ARTIFACT_ID_2 + ".yaml should be present.");
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("The file " + ARTIFACT_ID_2 + ".yaml should be present.");
   }
 
   @Test
   public void isPolicyProjectStructureIsInvalidWithInvalidYaml() {
     assertThatThrownBy(() -> getVerifier(getTestResourceFolder(INVALID_YAML)).verify())
-            .isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("Error validating '" + ARTIFACT_ID + ".yaml'. Missing required creator property 'id'");
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("Error validating '" + ARTIFACT_ID + ".yaml'. Missing required creator property 'id'");
   }
 
   private Path getTestResourceFolder(String folderName) {

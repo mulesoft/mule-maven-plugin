@@ -67,7 +67,7 @@ public class MuleArtifactJsonValidatorTest {
 
       isMuleArtifactJsonPresent(projectBaseFolder.toAbsolutePath());
     }).isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("Invalid Mule project. Missing mule-artifact.json file, it must be present in the root of application");
+        .hasMessageContaining("Invalid Mule project. Missing mule-artifact.json file, it must be present in the root of application");
   }
 
   @Test
@@ -78,8 +78,8 @@ public class MuleArtifactJsonValidatorTest {
   @Test
   public void isMuleArtifactJsonValidEmptyFileTest() {
     assertThatThrownBy(() -> isMuleArtifactJsonValid(projectBaseFolder.toAbsolutePath(), Optional.empty()))
-            .isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("The mule-artifact.json file is empty");
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("The mule-artifact.json file is empty");
   }
 
   @Test
@@ -88,7 +88,7 @@ public class MuleArtifactJsonValidatorTest {
       FileUtils.writeStringToFile(muleArtifactJsonFile, "{}}}", (String) null);
       isMuleArtifactJsonValid(projectBaseFolder.toAbsolutePath(), Optional.empty());
     }).isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("JsonSyntaxException");
+        .hasMessageContaining("JsonSyntaxException");
   }
 
   @Test
@@ -98,7 +98,7 @@ public class MuleArtifactJsonValidatorTest {
       muleArtifactJsonFile = projectBaseFolder.resolve(MULE_ARTIFACT_JSON).toFile();
       isMuleArtifactJsonValid(projectBaseFolder.toAbsolutePath(), Optional.empty());
     }).isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("java.io.FileNotFoundException");
+        .hasMessageContaining("java.io.FileNotFoundException");
   }
 
   @Test
@@ -184,7 +184,7 @@ public class MuleArtifactJsonValidatorTest {
 
       validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
     }).isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [name, minMuleVersion, requiredProduct]");
+        .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [name, minMuleVersion, requiredProduct]");
   }
 
   @Test
@@ -196,7 +196,7 @@ public class MuleArtifactJsonValidatorTest {
 
       validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
     }).isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [name]");
+        .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [name]");
   }
 
   @Test
@@ -208,7 +208,7 @@ public class MuleArtifactJsonValidatorTest {
 
       validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
     }).isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [minMuleVersion]");
+        .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [minMuleVersion]");
   }
 
   @Test
@@ -220,7 +220,7 @@ public class MuleArtifactJsonValidatorTest {
 
       validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
     }).isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [requiredProduct]. requiredProduct valid values are: MULE, MULE_EE");
+        .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [requiredProduct]. requiredProduct valid values are: MULE, MULE_EE");
   }
 
   @Test
@@ -232,7 +232,7 @@ public class MuleArtifactJsonValidatorTest {
 
       validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
     }).isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [name]");
+        .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [name]");
   }
 
   @Test
@@ -244,7 +244,7 @@ public class MuleArtifactJsonValidatorTest {
 
       validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
     }).isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [requiredProduct]");
+        .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [requiredProduct]");
   }
 
   @Test
@@ -255,7 +255,7 @@ public class MuleArtifactJsonValidatorTest {
 
       checkMinMuleVersionValue(muleArtifact, missingFields, Optional.empty());
     }).isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("Version 4.0 does not comply with semantic versioning specification");
+        .hasMessageContaining("Version 4.0 does not comply with semantic versioning specification");
   }
 
   @Test

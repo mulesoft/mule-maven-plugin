@@ -55,8 +55,8 @@ public class CloudHubDeploymentVerificationTest {
       deployment.setDeploymentTimeout(1000L);
       verification.assertDeployment(deployment);
     }).isExactlyInstanceOf(DeploymentException.class)
-            .hasMessageContaining("Validation timed out waiting for application to start. " +
-                    "Please consider increasing the deploymentTimeout property.");
+        .hasMessageContaining("Validation timed out waiting for application to start. " +
+            "Please consider increasing the deploymentTimeout property.");
   }
 
   @Test
@@ -65,7 +65,7 @@ public class CloudHubDeploymentVerificationTest {
       application.setStatus("FAILED");
       verification.assertDeployment(deployment);
     }).isExactlyInstanceOf(DeploymentException.class)
-            .hasMessageContaining("Deployment has failed");
+        .hasMessageContaining("Deployment has failed");
   }
 
   @Test
@@ -76,7 +76,7 @@ public class CloudHubDeploymentVerificationTest {
       deployment.setDeploymentTimeout(1000L);
       verification.assertDeployment(deployment);
     }).isExactlyInstanceOf(DeploymentException.class)
-            .hasMessageContaining("Validation timed out waiting for application to start. " +
-                    "Please consider increasing the deploymentTimeout property.");
+        .hasMessageContaining("Validation timed out waiting for application to start. " +
+            "Please consider increasing the deploymentTimeout property.");
   }
 }

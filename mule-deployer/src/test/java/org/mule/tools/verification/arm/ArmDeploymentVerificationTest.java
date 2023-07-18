@@ -69,6 +69,6 @@ public class ArmDeploymentVerificationTest {
       application.data.desiredStatus = "STARTED";
       verification.assertDeployment(deployment);
     }).isExactlyInstanceOf(DeploymentException.class)
-            .hasMessageContaining("Deployment has failed");
+        .hasMessageContaining("Deployment has failed");
   }
 }

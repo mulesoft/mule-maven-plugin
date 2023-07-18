@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.nio.file.Files;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -190,14 +191,13 @@ public class MuleProjectValidatorTest {
   @Test
   public void isDescriptorFilePresentMuleApplicationInvalid() {
     assertThatThrownBy(() -> validator.validateDescriptorFile(projectBaseFolder.toAbsolutePath(), Optional.empty()))
-            .isExactlyInstanceOf(ValidationException.class);
+        .isExactlyInstanceOf(ValidationException.class);
   }
 
   @Disabled
   @Test
-  public void isProjectValid() throws ValidationException {
-
-    projectBaseFolder.resolve(MULE_ARTIFACT_JSON);
+  public void isProjectValid() throws ValidationException, IOException {
+    Files.createFile(projectBaseFolder.resolve(MULE_ARTIFACT_JSON));
     projectBaseFolder.toAbsolutePath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value()).toFile().mkdirs();
 
     MuleProjectValidator validatorSpy = spy(validator);
@@ -218,7 +218,7 @@ public class MuleProjectValidatorTest {
 
       validator.validateSharedLibraries(sharedLibraries, new ArrayList<>());
     }).isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining(VALIDATE_SHARED_LIBRARIES_MESSAGE + "[artifact-id:group-id]");
+        .hasMessageContaining(VALIDATE_SHARED_LIBRARIES_MESSAGE + "[artifact-id:group-id]");
   }
 
   @Test
@@ -242,8 +242,8 @@ public class MuleProjectValidatorTest {
   @Test
   public void validateDomainNull() {
     assertThatThrownBy(() -> validator.validateDomain(null))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("Set of domains should not be null");
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Set of domains should not be null");
   }
 
   @Test
@@ -258,7 +258,7 @@ public class MuleProjectValidatorTest {
 
       validator.validateDomain(domains);
     }).isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("Not all dependencies are mule domains");
+        .hasMessageContaining("Not all dependencies are mule domains");
   }
 
   @Test
@@ -289,7 +289,7 @@ public class MuleProjectValidatorTest {
 
       validator.validateDomain(domains);
     }).isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("A mule-domain dependency should have the <provided> scope");
+        .hasMessageContaining("A mule-domain dependency should have the <provided> scope");
   }
 
   @Test
@@ -305,15 +305,15 @@ public class MuleProjectValidatorTest {
       domains.add(muleDomainB);
       validator.validateDomain(domains);
     }).isExactlyInstanceOf(ValidationException.class)
-            .hasMessageContaining("A mule project of type mule-application should reference at most 1. " +
-                    "However, the project has references to the following domains: ");
+        .hasMessageContaining("A mule project of type mule-application should reference at most 1. " +
+            "However, the project has references to the following domains: ");
   }
 
   @Test
   public void validateReferencedDomainsIfPresentNull() {
     assertThatThrownBy(() -> validator.validateReferencedDomainsIfPresent(null))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("List of dependencies should not be null");
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("List of dependencies should not be null");
   }
 
   @Test

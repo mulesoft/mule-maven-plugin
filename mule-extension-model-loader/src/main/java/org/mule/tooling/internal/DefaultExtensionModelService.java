@@ -105,8 +105,8 @@ public class DefaultExtensionModelService implements ExtensionModelService {
       return reader.read(new ByteArrayInputStream(loadFileContentFrom(getPomUrlFromJar(artifactFile)).get()));
     } catch (IOException | XmlPullParserException e) {
       throw new ArtifactDescriptorCreateException(format("There was an issue reading '%s' for the artifact '%s'",
-              pomFilePath, artifactFile.getAbsolutePath()),
-              e);
+                                                         pomFilePath, artifactFile.getAbsolutePath()),
+                                                  e);
     }
   }
 
@@ -138,7 +138,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     Map<String, Object> classLoaderModelAttributes = new HashMap<>();
     classLoaderModelAttributes
         .put(CLASSLOADER_MODEL_MAVEN_REACTOR_RESOLVER,
-                new PluginFileMavenReactor(bundleDescriptor, pluginJarFile, muleArtifactResourcesRegistry.getWorkingDirectory()));
+             new PluginFileMavenReactor(bundleDescriptor, pluginJarFile, muleArtifactResourcesRegistry.getWorkingDirectory()));
 
     BundleDescriptor pluginDescriptor = new BundleDescriptor.Builder()
         .setGroupId(bundleDescriptor.getGroupId())
@@ -147,7 +147,8 @@ public class DefaultExtensionModelService implements ExtensionModelService {
         .setVersion(bundleDescriptor.getVersion())
         .setClassifier(bundleDescriptor.getClassifier().orElse(null))
         .build();
-    PluginResources extensionInformationOptional = withTemporaryApplication(pluginDescriptor, classLoaderModelAttributes, this::loadExtensionData, null);
+    PluginResources extensionInformationOptional =
+        withTemporaryApplication(pluginDescriptor, classLoaderModelAttributes, this::loadExtensionData, null);
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("Extension model for {} loaded in {}ms", pluginJarFile, NANOSECONDS.toMillis(nanoTime() - startTime));
     }
@@ -248,7 +249,8 @@ public class DefaultExtensionModelService implements ExtensionModelService {
   @Override
   public PluginResources loadExtensionData(BundleDescriptor pluginDescriptor, MuleVersion muleVersion) {
     long startTime = nanoTime();
-    PluginResources extensionInformation = withTemporaryApplication(pluginDescriptor, emptyMap(), this::loadExtensionData, muleVersion);
+    PluginResources extensionInformation =
+        withTemporaryApplication(pluginDescriptor, emptyMap(), this::loadExtensionData, muleVersion);
 
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("Extension model for {} loaded in {}ms", pluginDescriptor, NANOSECONDS.toMillis(nanoTime() - startTime));
@@ -271,7 +273,8 @@ public class DefaultExtensionModelService implements ExtensionModelService {
           .setName(applicationName)
           .setRequiredProduct(MULE)
           .withBundleDescriptorLoader(new MuleArtifactLoaderDescriptor(MULE_LOADER_ID, emptyMap()))
-          .withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(MULE_LOADER_ID, classLoaderModelLoaderAttributes))
+          .withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(MULE_LOADER_ID,
+                                                                                 classLoaderModelLoaderAttributes))
           .build();
       ApplicationDescriptor applicationDescriptor = muleArtifactResourcesRegistry.getApplicationDescriptorFactory()
           .createArtifact(applicationFolder, empty(), muleApplicationModel);
@@ -329,7 +332,7 @@ public class DefaultExtensionModelService implements ExtensionModelService {
   private void createPomFile(BundleDescriptor pluginDescriptor, String uuid, File applicationFolder) {
     MavenModelBuilderProvider mavenModelBuilderProvider = discoverProvider();
     MavenModelBuilder model = mavenModelBuilderProvider
-            .createMavenModelBuilder(uuid, uuid, getProductVersion(), of(MAVEN_MODEL_VERSION), of(MULE_APPLICATION));
+        .createMavenModelBuilder(uuid, uuid, getProductVersion(), of(MAVEN_MODEL_VERSION), of(MULE_APPLICATION));
 
     model.addDependency(new BundleDependency.Builder().setBundleDescriptor(pluginDescriptor).build());
 
@@ -381,7 +384,8 @@ public class DefaultExtensionModelService implements ExtensionModelService {
     Set<ArtifactPluginDescriptor> artifactPluginDescriptors =
         artifactClassLoader.getArtifactPluginClassLoaders().stream()
             .map(a -> effectiveModel(properties, a.getArtifactDescriptor())).collect(toSet());
-    ExtensionModelDiscoverer extensionModelDiscoverer = defaultExtensionModelDiscoverer(artifactClassLoader, extensionModelLoaderRepository);
+    ExtensionModelDiscoverer extensionModelDiscoverer =
+        defaultExtensionModelDiscoverer(artifactClassLoader, extensionModelLoaderRepository);
     ExtensionDiscoveryRequest request = ExtensionDiscoveryRequest.builder()
         .setArtifactPlugins(artifactPluginDescriptors)
         .setParentArtifactExtensions(copyOf(loadRuntimeExtensionModels()))

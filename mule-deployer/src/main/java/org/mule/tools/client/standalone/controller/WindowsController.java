@@ -9,6 +9,7 @@
  */
 package org.mule.tools.client.standalone.controller;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 
 import java.io.BufferedReader;
@@ -78,7 +79,8 @@ public class WindowsController extends AbstractOSController {
     return muleResult.contains("RUNNING") || muleEEResult.contains("RUNNING") ? 0 : 1;
   }
 
-  private String executeCmd(String cmd) {
+  @VisibleForTesting
+  protected String executeCmd(String cmd) {
     StringBuilder output = new StringBuilder();
     Process p;
     try {
@@ -100,7 +102,8 @@ public class WindowsController extends AbstractOSController {
     super.restart(args);
   }
 
-  private void install(String... args) {
+  @VisibleForTesting
+  protected void install(String... args) {
     int errorInstall = runSync("install", args);
     if (errorInstall != 0 && errorInstall != 0x431) {
       throw new MuleControllerException("The mule instance couldn't be installed as a service");

@@ -33,7 +33,7 @@ import org.mule.tools.api.util.PackagerLog;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
-@Disabled
+//@Disabled
 public class ArtifactInstallerTest {
 
   private static final String ARTIFACT_ID = "artifact-id";
@@ -73,6 +73,7 @@ public class ArtifactInstallerTest {
     classLoaderModel = mock(ClassLoaderModel.class);
   }
 
+  @Disabled
   @Test
   public void installArtifactTest() throws IOException {
     ArtifactCoordinates coordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, TYPE, CLASSIFIER);
@@ -115,6 +116,7 @@ public class ArtifactInstallerTest {
     verify(artifactInstallerSpy, times(0)).generatePomFile(any(), any());
   }
 
+  @Disabled
   @Test
   public void generatePomFileWhenPomFileNameDoesNotExistTest() throws IOException {
     //Files.createFile(artifactFileFolder.resolve(DEFAULT_POM_FILE_NAME));

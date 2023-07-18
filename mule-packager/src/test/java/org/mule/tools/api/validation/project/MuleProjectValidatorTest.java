@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.nio.file.Files;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -195,9 +196,8 @@ public class MuleProjectValidatorTest {
 
   @Disabled
   @Test
-  public void isProjectValid() throws ValidationException {
-
-    projectBaseFolder.resolve(MULE_ARTIFACT_JSON);
+  public void isProjectValid() throws ValidationException, IOException {
+    Files.createFile(projectBaseFolder.resolve(MULE_ARTIFACT_JSON));
     projectBaseFolder.toAbsolutePath().resolve(SRC.value()).resolve(MAIN.value()).resolve(MULE.value()).toFile().mkdirs();
 
     MuleProjectValidator validatorSpy = spy(validator);

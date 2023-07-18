@@ -9,6 +9,7 @@
  */
 package org.mule.tools.validation.standalone;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
@@ -48,7 +49,8 @@ public class StandaloneDeploymentValidator extends AbstractDeploymentValidator {
    * @return the mule runtime version of the distribution.
    * @throws DeploymentException if cannot find the mule core version.
    */
-  private String findRuntimeVersion(File muleHome) throws DeploymentException {
+  @VisibleForTesting
+  protected String findRuntimeVersion(File muleHome) throws DeploymentException {
     MuleCoreJarVersionFinder muleCoreJarVersionFinder = new MuleCoreJarVersionFinder();
     try {
       walkFileTree(muleHome.toPath(), muleCoreJarVersionFinder);

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import static org.mockito.Mockito.*;
 
+@Disabled
 public class ExchangeClientTest {
 
   private static final String EXCHANGE_REPO_URI =
@@ -45,7 +46,6 @@ public class ExchangeClientTest {
   }
 
   @Test
-  @Disabled
   public void test() {
     client = new ExchangeClient(METADATA);
     client.getGeneratedGroupId();

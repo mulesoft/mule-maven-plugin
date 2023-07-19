@@ -88,7 +88,7 @@
 
         <!-- Plugin Versions -->
         <maven.plugin.version>3.6.0</maven.plugin.version>
-        <license.plugin.version>2.11</license.plugin.version>
+        
         <codehaus.plexus.archiver>3.7.0</codehaus.plexus.archiver>
         <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
         <jacoco.maven.plugin.version>0.8.6</jacoco.maven.plugin.version>
@@ -114,8 +114,10 @@
         <formatterGoal>validate</formatterGoal>
         <skipVerifications>false</skipVerifications>
 
-        <licensePath>LICENSE_HEADER.txt</licensePath>
-        <formatterConfigPath>formatter.xml</formatterConfigPath>
+        <mulesoftLicenseVersion>1.1.0</mulesoftLicenseVersion>
+        <license.maven.plugin.version>4.2</license.maven.plugin.version>
+        <licensePath>LICENSE_HEADER_80.txt</licensePath>
+        <licenseYear>2023</licenseYear>
 
         <skipTests>false</skipTests>
         <jacoco.report.location>${session.executionRootDirectory}/target/jacoco.exec</jacoco.report.location>
@@ -428,9 +430,19 @@
                 <plugin>
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <version>${license.plugin.version}</version>
+                    <version>${license.maven.plugin.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.mulesoft.license</groupId>
+                            <artifactId>license</artifactId>
+                            <version>${mulesoftLicenseVersion}</version>
+                        </dependency>
+                    </dependencies>
                     <configuration>
                         <header>${licensePath}</header>
+                        <properties>
+                            <year>${licenseYear}</year>
+                        </properties>
                         <includes>
                             <include>**/*.java</include>
                         </includes>

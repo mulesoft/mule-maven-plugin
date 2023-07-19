@@ -1,3 +1,6 @@
+/*
+ * Copyright 2023 Salesforce, Inc. All rights reserved.
+ */
 package org.mule.tooling.api;
 
 import org.mule.runtime.api.meta.model.ExtensionModel;

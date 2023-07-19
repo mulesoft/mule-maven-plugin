@@ -1,3 +1,6 @@
+/*
+ * Copyright 2023 Salesforce, Inc. All rights reserved.
+ */
 package org.mule.tooling.internal;
 
 import java.io.File;

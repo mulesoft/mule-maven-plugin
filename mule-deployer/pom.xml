@@ -11,7 +11,6 @@
     <name>Mule Deployer</name>
 
     <properties>
-        <licensePath>../LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
 
         <coverageLineLimit>0.17</coverageLineLimit>

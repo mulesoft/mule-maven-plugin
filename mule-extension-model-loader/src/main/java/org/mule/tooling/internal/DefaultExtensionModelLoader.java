@@ -1,3 +1,6 @@
+/*
+ * Copyright 2023 Salesforce, Inc. All rights reserved.
+ */
 package org.mule.tooling.internal;
 
 import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.discoverRuntimeExtensionModels;

@@ -10,7 +10,10 @@ import static java.util.stream.Collectors.toList;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toApplicationModelArtifacts;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.updatePackagesResources;
 
+//import org.mule.runtime.module.artifact.api.descriptor.BundleDependency;
+//import org.mule.runtime.module.artifact.api.descriptor.BundleDescriptor;
 import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.Plugin;
 
 import java.util.List;
@@ -23,13 +26,13 @@ import java.util.Map;
  */
 public class PluginUtils {
 
-  public static List<Plugin> toPluginDependencies(Map<BundleDependency, List<BundleDependency>> pluginsAndDependencies) {
+  public static List<Plugin> toPluginDependencies(Map<BundleDescriptor, List<BundleDependency>> pluginsAndDependencies) {
     return pluginsAndDependencies.entrySet().stream().map(
                                                           (pluginEntry) -> {
                                                             Plugin plugin = new Plugin();
-                                                            plugin.setArtifactId(pluginEntry.getKey().getDescriptor()
+                                                            plugin.setArtifactId(pluginEntry.getKey()
                                                                 .getArtifactId());
-                                                            plugin.setGroupId(pluginEntry.getKey().getDescriptor().getGroupId());
+                                                            plugin.setGroupId(pluginEntry.getKey().getGroupId());
                                                             plugin.setAdditionalDependencies(
                                                                                              updatePackagesResources(toApplicationModelArtifacts(pluginEntry
                                                                                                  .getValue())));
@@ -40,5 +43,21 @@ public class PluginUtils {
 
   }
 
+  //  public static List<Plugin> toPluginDependencies(Map<BundleDependency, List<BundleDependency>> pluginsAndDependencies) {
+  //    return pluginsAndDependencies.entrySet().stream().map(
+  //                                                          (pluginEntry) -> {
+  //                                                            Plugin plugin = new Plugin();
+  //                                                            plugin.setArtifactId(pluginEntry.getKey().getDescriptor()
+  //                                                                .getArtifactId());
+  //                                                            plugin.setGroupId(pluginEntry.getKey().getDescriptor().getGroupId());
+  //                                                            plugin.setAdditionalDependencies(
+  //                                                                                             updatePackagesResources(toApplicationModelArtifacts(pluginEntry
+  //                                                                                                 .getValue())));
+  //                                                            return plugin;
+  //                                                          })
+  //        .collect(toList());
+  //
+  //
+  //  }
 
 }

@@ -183,6 +183,11 @@
                 <artifactId>mule-module-extensions-xml-support</artifactId>
                 <version>${mule.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.mule.runtime</groupId>
+                <artifactId>mule-module-artifact-activation</artifactId>
+                <version>4.5.0-SNAPSHOT</version>
+            </dependency>
             <!-- Runtime Others-->
             <dependency>
                 <groupId>org.mule.runtime</groupId>

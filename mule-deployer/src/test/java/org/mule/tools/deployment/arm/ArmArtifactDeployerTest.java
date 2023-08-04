@@ -67,14 +67,14 @@ public class ArmArtifactDeployerTest {
 
   @Test
   public void deployDomainTest() {
-    assertThatThrownBy(() ->  armArtifactDeployer.deployDomain())
-            .isExactlyInstanceOf(DeploymentException.class);
+    assertThatThrownBy(() -> armArtifactDeployer.deployDomain())
+        .isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test
   public void undeployDomainTest() throws DeploymentException {
-    assertThatThrownBy(() ->  armArtifactDeployer.undeployDomain())
-            .isExactlyInstanceOf(DeploymentException.class);
+    assertThatThrownBy(() -> armArtifactDeployer.undeployDomain())
+        .isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test

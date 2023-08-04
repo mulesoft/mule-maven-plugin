@@ -33,7 +33,7 @@ public class AbstractDeploymentValidatorTest {
       validator = new DeploymentValidatorMock(deploymentMock);
       validator.validateMuleVersionAgainstEnvironment();
     }).isExactlyInstanceOf(DeploymentException.class)
-            .hasMessageContaining("muleVersion is not present in deployment configuration");
+        .hasMessageContaining("muleVersion is not present in deployment configuration");
   }
 
   private Deployment createDeploymentMock(String version) {
@@ -49,7 +49,7 @@ public class AbstractDeploymentValidatorTest {
       validator = new DeploymentValidatorMock(deploymentMock);
       validator.validateMuleVersionAgainstEnvironment();
     }).isExactlyInstanceOf(DeploymentException.class)
-            .hasMessageContaining(CANNOT_RESOLVE_ENVIRONMENT_VERSION_MESSAGE);
+        .hasMessageContaining(CANNOT_RESOLVE_ENVIRONMENT_VERSION_MESSAGE);
   }
 
   class DeploymentValidatorMock extends AbstractDeploymentValidator {

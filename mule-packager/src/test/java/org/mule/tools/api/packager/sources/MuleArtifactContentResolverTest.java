@@ -137,8 +137,8 @@ public class MuleArtifactContentResolverTest {
   @Test
   public void muleArtifactContentResolverNullPathArgumentInConstructorTest() {
     assertThatThrownBy(() -> newResolver(null, null, null))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("Project structure should not be null");
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Project structure should not be null");
   }
 
   @Test
@@ -305,8 +305,9 @@ public class MuleArtifactContentResolverTest {
 
       config2.createNewFile();
       FileUtils.writeStringToFile(config2, MALFORMED_MULE_CONFIG_CONTENT, Charset.defaultCharset());
-      List<String> actualConfigs = resolver.getConfigs();})
-            .isExactlyInstanceOf(RuntimeException.class);
+      List<String> actualConfigs = resolver.getConfigs();
+    })
+        .isExactlyInstanceOf(RuntimeException.class);
   }
 
   @Test

@@ -75,7 +75,7 @@ public class ContentGeneratorTest {
 
   @Test
   public void failCreationProjectBaseFolderNonExistent() {
-    assertThatThrownBy(() ->  {
+    assertThatThrownBy(() -> {
       DefaultProjectInformation info = new DefaultProjectInformation.Builder()
           .withGroupId(GROUP_ID)
           .withArtifactId(ARTIFACT_ID)
@@ -91,7 +91,7 @@ public class ContentGeneratorTest {
 
   @Test
   public void failCreationProjectTargetFolderNonExistent() {
-    assertThatThrownBy(() ->  {
+    assertThatThrownBy(() -> {
       DefaultProjectInformation info = new DefaultProjectInformation.Builder()
           .withGroupId(GROUP_ID)
           .withArtifactId(ARTIFACT_ID)
@@ -106,7 +106,7 @@ public class ContentGeneratorTest {
 
   @Test
   public void createSrcFolderContentNonExistingSourceFolder() {
-    assertThatThrownBy(() ->  {
+    assertThatThrownBy(() -> {
       String destinationFolderName = packagingType.getSourceFolderName();
 
       Path destinationFolderPath = projectTargetFolder.toPath().resolve(destinationFolderName);
@@ -149,7 +149,7 @@ public class ContentGeneratorTest {
 
   @Test
   public void createTestFolderContentNonExistingDestinationFolder() {
-    assertThatThrownBy(() ->  {
+    assertThatThrownBy(() -> {
       String sourceFolderName = packagingType.getTestFolderName();
 
       Path sourceFolderPath = projectBaseFolder.toAbsolutePath().resolve(PackagerTestUtils.SRC).resolve(
@@ -183,7 +183,7 @@ public class ContentGeneratorTest {
 
   @Test
   public void createMetaInfMuleSourceFolderContentNonExistingDestinationFolder() {
-    assertThatThrownBy(() ->  {
+    assertThatThrownBy(() -> {
       Path sourceFolderPath = projectBaseFolder.toAbsolutePath();
       PackagerTestUtils.createFolder(sourceFolderPath, FAKE_FILE_NAME, true);
 
@@ -207,7 +207,7 @@ public class ContentGeneratorTest {
 
   @Test
   public void createDescriptorsNoOriginalPom() {
-    assertThatThrownBy(() ->  {
+    assertThatThrownBy(() -> {
       String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
       Path sourceFolderPath = projectBaseFolder.toAbsolutePath();
@@ -219,7 +219,7 @@ public class ContentGeneratorTest {
 
   @Test
   public void createDescriptorsNoPomDestinationFolder() {
-    assertThatThrownBy(() ->  {
+    assertThatThrownBy(() -> {
       Path sourceFolderPath = projectBaseFolder.toAbsolutePath();
       PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
 
@@ -229,7 +229,7 @@ public class ContentGeneratorTest {
 
   @Test
   public void createDescriptorsNoOriginalDescriptor() {
-    assertThatThrownBy(() ->  {
+    assertThatThrownBy(() -> {
       Path sourceFolderPath = projectBaseFolder.toAbsolutePath();
       PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
 
@@ -246,7 +246,7 @@ public class ContentGeneratorTest {
 
   @Test
   public void createDescriptorsNoDescriptorDestinationFolder() {
-    assertThatThrownBy(() ->  {
+    assertThatThrownBy(() -> {
       String descriptorFileName = MULE_ARTIFACT_DESCRIPTOR_FILE_NAME;
 
       Path sourceFolderPath = projectBaseFolder.toAbsolutePath();

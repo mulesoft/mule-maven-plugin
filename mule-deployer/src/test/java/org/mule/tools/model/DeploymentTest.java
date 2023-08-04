@@ -45,8 +45,8 @@ public class DeploymentTest {
   public void setBasicDeploymentValuesApplicationFileNotSetTest() {
     System.clearProperty("mule.artifact");
     assertThatThrownBy(() -> deploymentSpy.setBasicDeploymentValues(project))
-            .isExactlyInstanceOf(DeploymentException.class)
-            .hasMessageContaining("Artifact to be deployed could not be found. Please set its location setting -Dmule.artifact=path/to/jar or in the deployment configuration pom element");
+        .isExactlyInstanceOf(DeploymentException.class)
+        .hasMessageContaining("Artifact to be deployed could not be found. Please set its location setting -Dmule.artifact=path/to/jar or in the deployment configuration pom element");
   }
 
   @Test

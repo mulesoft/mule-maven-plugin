@@ -45,7 +45,7 @@ public class AgentDeploymentValidatorTest {
     AgentClient clientSpy = spy(new AgentClient(LOG_MOCK, deploymentMock));
     doReturn(agentInfo).when(clientSpy).getAgentInfo();
 
-    doReturn(clientSpy).when((AgentDeploymentValidator)validatorSpy).getAgentClient();
+    doReturn(clientSpy).when((AgentDeploymentValidator) validatorSpy).getAgentClient();
 
     assertThat(validatorSpy.getEnvironmentSupportedVersions())
         .describedAs("Supported version that was generated is not the expected")

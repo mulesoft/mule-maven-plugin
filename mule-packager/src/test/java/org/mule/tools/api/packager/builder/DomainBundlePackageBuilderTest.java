@@ -78,50 +78,50 @@ public class DomainBundlePackageBuilderTest {
   @Test
   public void setNullMavenFolder() {
     assertThatThrownBy(() -> builder.withMaven(null))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("The folder must not be null");
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("The folder must not be null");
   }
 
   @Test
   public void setNonExistentMavenFolder() {
     assertThatThrownBy(() -> builder.withMaven(new File("fake")))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("The folder must exist");;
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("The folder must exist");;
   }
 
   @Test
   public void setNullDomainFolder() {
-    assertThatThrownBy(() ->  builder.withDomain(null))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("The folder must not be null");
+    assertThatThrownBy(() -> builder.withDomain(null))
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("The folder must not be null");
   }
 
   @Test
   public void setNonExistentDomainFolder() {
     assertThatThrownBy(() -> builder.withDomain(new File("fake")))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("The folder must exist");
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("The folder must exist");
   }
 
   @Test
   public void setNullApplicationsFolder() {
     assertThatThrownBy(() -> builder.withApplications(null))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("The folder must not be null");
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("The folder must not be null");
   }
 
   @Test
   public void setNonExistentApplicationsFolder() {
     assertThatThrownBy(() -> builder.withApplications(new File("fake")))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("The folder must exist");
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("The folder must exist");
   }
 
   @Test
   public void createPackageNullOriginalFolderPath() {
     assertThatThrownBy(() -> builder.createPackage(null, destinationFile.toPath()))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("The origin path must not be null");
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("The origin path must not be null");
   }
 
   @Test
@@ -131,14 +131,14 @@ public class DomainBundlePackageBuilderTest {
       when(fileMock.exists()).thenReturn(false);
       builder.createPackage(new File("fake").toPath(), destinationFile.toPath());
     }).isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("The origin path must exist");
+        .hasMessageContaining("The origin path must exist");
   }
 
   @Test
   public void createPackageNullDestinationPath() {
     assertThatThrownBy(() -> builder.createPackage(fakeTargetFolder.toPath(), null))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("The destination path must not be null");
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("The destination path must not be null");
   }
 
   @Test
@@ -147,7 +147,7 @@ public class DomainBundlePackageBuilderTest {
       destinationFile.createNewFile();
       builder.createPackage(fakeTargetFolder.toPath(), destinationFile.toPath());
     }).isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("The destination file must not be duplicated");
+        .hasMessageContaining("The destination file must not be duplicated");
   }
 
   @Test

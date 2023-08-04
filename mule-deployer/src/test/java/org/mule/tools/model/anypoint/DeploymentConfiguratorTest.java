@@ -6,7 +6,7 @@
  */
 package org.mule.tools.model.anypoint;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.anyString;
@@ -20,7 +20,7 @@ import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.settings.crypto.SettingsDecryptionRequest;
 import org.apache.maven.settings.crypto.SettingsDecryptionResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.utils.DeployerLog;
 
 
@@ -58,8 +58,8 @@ public class DeploymentConfiguratorTest {
 
     settings.addServer(server);
     configurator.initializeEnvironment(settings, decrypter);
-    assertTrue(deployment.getConnectedAppClientId().equals(CLIENT_ID));
-    assertTrue(deployment.getConnectedAppClientSecret().equals(CLIENT_SECRET));
+    assertThat(deployment.getConnectedAppClientId().equals(CLIENT_ID)).isTrue();
+    assertThat(deployment.getConnectedAppClientSecret().equals(CLIENT_SECRET)).isTrue();
   }
 
   @Test

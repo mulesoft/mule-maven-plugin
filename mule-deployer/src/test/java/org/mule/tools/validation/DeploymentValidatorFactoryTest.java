@@ -55,6 +55,6 @@ public class DeploymentValidatorFactoryTest {
   @Test
   public void createDeploymentValidatorUnknownDeploymentExceptionTest() {
     assertThatThrownBy(() -> createDeploymentValidator(mock(Deployment.class)))
-            .isExactlyInstanceOf(DeploymentException.class);
+        .isExactlyInstanceOf(DeploymentException.class);
   }
 }

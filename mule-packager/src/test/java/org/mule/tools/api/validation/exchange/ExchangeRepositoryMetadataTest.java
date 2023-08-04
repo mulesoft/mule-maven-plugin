@@ -46,15 +46,15 @@ public class ExchangeRepositoryMetadataTest {
   @Test
   public void getBaseUriNullTest() {
     assertThatThrownBy(() -> metadata.getBaseUri(null))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("URI should not be null");
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("URI should not be null");
   }
 
   @Test
   public void getBaseUriNotParseableTest() {
     assertThatThrownBy(() -> metadata.getBaseUri(NOT_EXCHANGE_RELATED_URI))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("The URI https://www.mulesoft.com/ is not a valid URI to Exchange");
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("The URI https://www.mulesoft.com/ is not a valid URI to Exchange");
   }
 
   @Test
@@ -70,15 +70,15 @@ public class ExchangeRepositoryMetadataTest {
   @Test
   public void getOrganizationIdNullTest() {
     assertThatThrownBy(() -> metadata.getOrganizationId(null))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("URI should not be null");
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("URI should not be null");
   }
 
   @Test
   public void getOrganizationIdNotParseableTest() {
     assertThatThrownBy(() -> metadata.getOrganizationId(NOT_EXCHANGE_RELATED_URI))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("The URI https://www.mulesoft.com/ is not a valid URI to Exchange");
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("The URI https://www.mulesoft.com/ is not a valid URI to Exchange");
   }
 
   @Test

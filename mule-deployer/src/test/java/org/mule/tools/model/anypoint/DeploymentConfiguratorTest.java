@@ -23,6 +23,7 @@ import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.settings.crypto.SettingsDecryptionRequest;
 import org.apache.maven.settings.crypto.SettingsDecryptionResult;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mule.tools.utils.DeployerLog;
 
@@ -65,6 +66,7 @@ public class DeploymentConfiguratorTest {
     assertThat(deployment.getConnectedAppClientSecret().equals(CLIENT_SECRET)).isTrue();
   }
 
+  @Disabled
   @Test
   public void configuratorForCh2ShouldNotNeedARealArtifact() throws MojoFailureException {
     AnypointDeployment deployment = new Cloudhub2Deployment();

@@ -89,7 +89,8 @@ public class ArtifactInstallerTest {
 
   @Test
   public void installNullArtifactTest() {
-    assertThatThrownBy(() -> installer.installArtifact(outputFolder.toFile(), null, Optional.empty())).isExactlyInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> installer.installArtifact(outputFolder.toFile(), null, Optional.empty()))
+        .isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test

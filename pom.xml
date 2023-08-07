@@ -101,7 +101,7 @@
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
         <maven.plugin.annotations.version>3.8.1</maven.plugin.annotations.version>
-        <exchange.plugin.version>0.0.19</exchange.plugin.version>
+        <exchange.plugin.version>0.0.20</exchange.plugin.version>
 
         <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
         <maven.resources.plugin.version>2.7</maven.resources.plugin.version>
@@ -201,6 +201,12 @@
                 <groupId>org.mule.tools.maven</groupId>
                 <artifactId>exchange-mule-plugin-utils</artifactId>
                 <version>${exchange.plugin.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.maven</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!-- Maven -->
             <dependency>

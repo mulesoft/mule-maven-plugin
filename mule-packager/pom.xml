@@ -60,6 +60,11 @@
             <artifactId>maven-compat</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-spi</artifactId>
+            <version>1.9.14</version>
+        </dependency>
+        <dependency>
             <groupId>de.skuzzle</groupId>
             <artifactId>semantic-version</artifactId>
         </dependency>

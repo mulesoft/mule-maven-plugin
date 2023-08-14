@@ -22,5 +22,5 @@ public class LifecyclePluginsGAVs {
   static final String MAVEN_DEPLOY_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-deploy-plugin:3.0.0";
   static final String MAVEN_SITE_PLUGIN = ORG_APACHE_MAVEN_PLUGINS + ":maven-site-plugin:3.12.1";
 
-  static final String EXCHANGE_PUBLICATION_PLUGIN = EXCHANGE_PLUGIN + ":exchange-mule-maven-plugin:0.0.17";
+  static final String EXCHANGE_PUBLICATION_PLUGIN = EXCHANGE_PLUGIN + ":exchange-mule-maven-plugin:0.0.20";
 }

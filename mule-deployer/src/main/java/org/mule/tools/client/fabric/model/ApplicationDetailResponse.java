@@ -15,6 +15,7 @@ import java.util.Map;
 public class ApplicationDetailResponse {
 
   public AssetReference ref;
+  public String status;
   public String desiredState;
   public Map<String, String> configuration;
   public List<AssetResponse> assets;

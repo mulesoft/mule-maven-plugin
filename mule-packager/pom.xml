@@ -48,6 +48,12 @@
         <dependency>
             <groupId>org.mule.tools.maven</groupId>
             <artifactId>exchange-mule-plugin-utils</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.maven</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mule</groupId>

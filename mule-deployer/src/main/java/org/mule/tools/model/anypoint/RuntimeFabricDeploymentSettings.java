@@ -158,13 +158,4 @@ public class RuntimeFabricDeploymentSettings {
     }
   }
 
-  public boolean isPersistentObjectStore() {
-    return persistentObjectStore;
-  }
-
-  public void setPersistentObjectStore(boolean persistentObjectStore) {
-    this.persistentObjectStore = persistentObjectStore;
-  }
-
-
 }

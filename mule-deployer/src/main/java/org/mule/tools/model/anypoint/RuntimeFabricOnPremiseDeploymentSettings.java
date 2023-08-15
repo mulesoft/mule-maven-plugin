@@ -42,7 +42,7 @@ public class RuntimeFabricOnPremiseDeploymentSettings extends RuntimeFabricDeplo
 
   @Parameter
   protected boolean persistentObjectStore;
-  
+
   public Resources getResources() {
     return resources;
   }

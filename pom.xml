@@ -114,8 +114,10 @@
         <formatterGoal>validate</formatterGoal>
         <skipVerifications>false</skipVerifications>
 
-        <licensePath>LICENSE_HEADER.txt</licensePath>
-        <formatterConfigPath>formatter.xml</formatterConfigPath>
+        <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
+        <license.maven.plugin.version>4.2</license.maven.plugin.version>
+        <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
+        <licenseYear>2023</licenseYear>
 
         <skipTests>false</skipTests>
         <jacoco.report.location>${session.executionRootDirectory}/target/jacoco.exec</jacoco.report.location>
@@ -425,12 +427,23 @@
                         <target>${java.target}</target>
                     </configuration>
                 </plugin>
+
                 <plugin>
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <version>${license.plugin.version}</version>
+                    <version>${license.maven.plugin.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.mulesoft.license</groupId>
+                            <artifactId>license</artifactId>
+                            <version>${mulesoftLicenseVersion}</version>
+                        </dependency>
+                    </dependencies>
                     <configuration>
                         <header>${licensePath}</header>
+                        <properties>
+                            <year>${licenseYear}</year>
+                        </properties>
                         <includes>
                             <include>**/*.java</include>
                         </includes>

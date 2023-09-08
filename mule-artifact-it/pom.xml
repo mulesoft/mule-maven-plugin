@@ -14,7 +14,6 @@
 
     <properties>
         <skipTests>${skipIntegrationTests}</skipTests>
-        <licensePath>../LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 

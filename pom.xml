@@ -115,7 +115,6 @@
         <formatterGoal>validate</formatterGoal>
         <skipVerifications>false</skipVerifications>
 
-        <licensePath>LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
 
         <skipTests>false</skipTests>
@@ -126,6 +125,11 @@
         <coverageLineLimit>0.99</coverageLineLimit>
         <coverageBranchLimit>0.99</coverageBranchLimit>
         <skipJaCoCoCoverage>${skipTests}</skipJaCoCoCoverage>
+
+        <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
+        <license.maven.plugin.version>4.2</license.maven.plugin.version>
+        <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
+        <licenseYear>2023</licenseYear>
     </properties>
 
     <dependencyManagement>
@@ -431,28 +435,40 @@
                         <target>${java.target}</target>
                     </configuration>
                 </plugin>
-                <plugin>
-                    <groupId>com.mycila</groupId>
-                    <artifactId>license-maven-plugin</artifactId>
-                    <version>${license.plugin.version}</version>
-                    <configuration>
-                        <header>${licensePath}</header>
-                        <includes>
-                            <include>**/*.java</include>
-                        </includes>
-                        <mapping>
-                            <java>SLASHSTAR_STYLE</java>
-                        </mapping>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <phase>compile</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license.maven.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.mulesoft.license</groupId>
+                        <artifactId>license</artifactId>
+                        <version>${mulesoftLicenseVersion}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <header>${licensePath}</header>
+                    <properties>
+                        <year>${licenseYear}</year>
+                    </properties>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                    <mapping>
+                        <java>SLASHSTAR_STYLE</java>
+                    </mapping>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
                 <plugin>
                     <groupId>com.marvinformatics.formatter</groupId>
                     <artifactId>formatter-maven-plugin</artifactId>

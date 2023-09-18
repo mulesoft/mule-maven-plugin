@@ -6,37 +6,33 @@
  */
 package org.mule.tools.deployment.arm;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.client.arm.ApplicationMetadata;
 import org.mule.tools.client.arm.ArmClient;
 import org.mule.tools.client.model.TargetType;
 import org.mule.tools.client.core.exception.DeploymentException;
+import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.mule.tools.model.anypoint.ArmDeployment;
 import org.mule.tools.utils.DeployerLog;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
-import static org.powermock.api.mockito.PowerMockito.spy;
 
 public class ArmArtifactDeployerTest {
 
   private static final Integer FAKE_APPLICATION_ID = 1;
   private static final String FAKE_APPLICATION_NAME = "fake-name";
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir
+  Path temporaryFolder;
 
   private DeployerLog logMock;
   private ArmClient clientMock;
@@ -46,7 +42,7 @@ public class ArmArtifactDeployerTest {
 
   private ArmArtifactDeployer armArtifactDeployer;
 
-  @Before
+  @BeforeEach
   public void setUp() throws DeploymentException {
     deploymentMock = mock(ArmDeployment.class);
     when(deploymentMock.getApplicationName()).thenReturn(FAKE_APPLICATION_NAME);
@@ -67,15 +63,15 @@ public class ArmArtifactDeployerTest {
   }
 
   @Test
-  public void deployDomainTest() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
-    armArtifactDeployer.deployDomain();
+  public void deployDomainTest() {
+    assertThatThrownBy(() -> armArtifactDeployer.deployDomain())
+        .isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test
   public void undeployDomainTest() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
-    armArtifactDeployer.undeployDomain();
+    assertThatThrownBy(() -> armArtifactDeployer.undeployDomain())
+        .isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test
@@ -120,17 +116,19 @@ public class ArmArtifactDeployerTest {
 
   @Test
   public void getApplicationIdTest() {
-    assertThat("Application id is not the expected", armArtifactDeployer.getApplicationId(), equalTo(FAKE_APPLICATION_ID));
+    assertThat(armArtifactDeployer.getApplicationId()).describedAs("Application id is not the expected")
+        .isEqualTo(FAKE_APPLICATION_ID);
   }
 
   @Test
   public void getApplicationNameTest() {
-    assertThat("Application name is not the expected", armArtifactDeployer.getApplicationName(), equalTo(FAKE_APPLICATION_NAME));
+    assertThat(armArtifactDeployer.getApplicationName()).describedAs("Application name is not the expected")
+        .isEqualTo(FAKE_APPLICATION_NAME);
   }
 
   @Test
-  public void getApplicationMetadataTest() throws IOException {
-    File artifactFile = temporaryFolder.newFile();
+  public void getApplicationMetadataTest() {
+    File artifactFile = temporaryFolder.toFile();
     when(deploymentMock.getArtifact()).thenReturn(artifactFile);
 
     when(deploymentMock.getApplicationName()).thenReturn(FAKE_APPLICATION_NAME);
@@ -143,30 +141,33 @@ public class ArmArtifactDeployerTest {
 
     ApplicationMetadata metadata = armArtifactDeployer.getApplicationMetadata();
 
-    assertThat("Artifact file is not the expected", metadata.getFile(), equalTo(artifactFile));
-    assertThat("Application name is not the expected", metadata.getName(), equalTo(FAKE_APPLICATION_NAME));
-    assertThat("Target type is not the expected", metadata.getTargetType(), equalTo(targetType));
-    assertThat("Target is not the expected", metadata.getTarget(), equalTo(target));
+    assertThat(metadata.getFile()).describedAs("Artifact file is not the expected").isEqualTo(artifactFile);
+    assertThat(metadata.getName()).describedAs("Application name is not the expected").isEqualTo(FAKE_APPLICATION_NAME);
+    assertThat(metadata.getTargetType()).describedAs("Target type is not the expected").isEqualTo(targetType);
+    assertThat(metadata.getTarget()).describedAs("Target is not the expected").isEqualTo(target);
   }
 
   @Test
   public void isFailIfNotExistsNotSetTest() {
     when(deploymentMock.isFailIfNotExists()).thenReturn(Optional.empty());
 
-    assertThat("isFailIfNotExists method should have returned true", armArtifactDeployer.isFailIfNotExists(), is(true));
+    assertThat(armArtifactDeployer.isFailIfNotExists()).describedAs("isFailIfNotExists method should have returned true")
+        .isTrue();
   }
 
   @Test
   public void isFailIfNotExistsSetFalseTest() {
     when(deploymentMock.isFailIfNotExists()).thenReturn(Optional.of(false));
 
-    assertThat("isFailIfNotExists method should have returned false", armArtifactDeployer.isFailIfNotExists(), is(false));
+    assertThat(armArtifactDeployer.isFailIfNotExists()).describedAs("isFailIfNotExists method should have returned false")
+        .isFalse();
   }
 
   @Test
   public void isFailIfNotExistsSetTrueTest() {
     when(deploymentMock.isFailIfNotExists()).thenReturn(Optional.of(true));
 
-    assertThat("isFailIfNotExists method should have returned true", armArtifactDeployer.isFailIfNotExists(), is(true));
+    assertThat(armArtifactDeployer.isFailIfNotExists()).describedAs("isFailIfNotExists method should have returned true")
+        .isTrue();
   }
 }

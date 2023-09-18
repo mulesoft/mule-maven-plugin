@@ -6,8 +6,8 @@
  */
 package org.mule.tools.deployment.standalone;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -21,7 +21,7 @@ public class StandaloneDomainDeployerTest {
   private StandaloneDomainDeployer domainDeployer;
   private StandaloneArtifactDeployer deployerMock;
 
-  @Before
+  @BeforeEach
   public void setUp() throws DeploymentException {
     deployerMock = mock(StandaloneArtifactDeployer.class);
     domainDeployer = new StandaloneDomainDeployer(deployerMock);
@@ -37,7 +37,7 @@ public class StandaloneDomainDeployerTest {
 
     verify(deployerMock, times(0)).undeployDomain();
     verify(deployerMock, times(0)).deployApplication();
-    verify(deployerMock, times(0)).addDomainFromstandaloneDeployment(any());
+    verify(deployerMock, times(0)).addDomainFromStandaloneDeployment(any());
     verify(deployerMock, times(0)).undeployApplication();
   }
 
@@ -51,7 +51,7 @@ public class StandaloneDomainDeployerTest {
     verify(deployerMock, times(0)).waitForDeployments();
     verify(deployerMock, times(0)).deployDomain();
     verify(deployerMock, times(0)).deployApplication();
-    verify(deployerMock, times(0)).addDomainFromstandaloneDeployment(any());
+    verify(deployerMock, times(0)).addDomainFromStandaloneDeployment(any());
     verify(deployerMock, times(0)).undeployApplication();
   }
 }

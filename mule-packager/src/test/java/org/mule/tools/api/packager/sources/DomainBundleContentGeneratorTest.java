@@ -4,15 +4,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
 package org.mule.tools.api.packager.sources;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.api.packager.DefaultProjectInformation;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import static org.mockito.Mockito.*;
 
@@ -20,20 +21,18 @@ public class DomainBundleContentGeneratorTest {
 
   private DomainBundleContentGenerator generator;
 
-  @Rule
-  public TemporaryFolder projectBaseFolder = new TemporaryFolder();
+  @TempDir
+  public Path projectBaseFolder;
+  @TempDir
+  public Path buidlDirectory;
 
-  @Rule
-  public TemporaryFolder buidlDirectory = new TemporaryFolder();
   private DefaultProjectInformation defaultProjectInformation;
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
     defaultProjectInformation = mock(DefaultProjectInformation.class);
-    projectBaseFolder.create();
-    buidlDirectory.create();
-    when(defaultProjectInformation.getProjectBaseFolder()).thenReturn(projectBaseFolder.getRoot().toPath());
-    when(defaultProjectInformation.getBuildDirectory()).thenReturn(buidlDirectory.getRoot().toPath());
+    when(defaultProjectInformation.getProjectBaseFolder()).thenReturn(projectBaseFolder.toAbsolutePath());
+    when(defaultProjectInformation.getBuildDirectory()).thenReturn(buidlDirectory.toAbsolutePath());
     generator = new DomainBundleContentGenerator(defaultProjectInformation);
   }
 

@@ -4,31 +4,30 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
 package org.mule.tools.api.packager.sources;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.tools.api.packager.Pom;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 public class DefaultValuesPolicyMuleArtifactJsonGeneratorTest {
 
@@ -45,17 +44,16 @@ public class DefaultValuesPolicyMuleArtifactJsonGeneratorTest {
 
   private static MuleApplicationModel muleArtifact;
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir
+  public Path temporaryFolder;
 
   private MuleApplicationModel.MuleApplicationModelBuilder builder;
   private MuleApplicationModel.MuleApplicationModelBuilder defaultBuilder;
   private DefaultValuesPolicyMuleArtifactJsonGenerator generator;
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
     generator = new DefaultValuesPolicyMuleArtifactJsonGenerator();
-    temporaryFolder.create();
     defaultBuilder = new MuleApplicationModel.MuleApplicationModelBuilder().setName(NAME).setMinMuleVersion(MIN_MULE_VERSION)
         .withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(ID, new HashMap<>()))
         .withBundleDescriptorLoader(new MuleArtifactLoaderDescriptor(MULE, new HashMap<>()));
@@ -77,11 +75,12 @@ public class DefaultValuesPolicyMuleArtifactJsonGeneratorTest {
 
     generator.setBuilderWithDefaultBundleDescriptorLoaderValue(builder, muleArtifact, resolverMock);
 
-    assertThat("Bundle descriptor loader id defined in builder is not the expected",
-               builder.getBundleDescriptorLoader().getId(), equalTo(MULE));
+    assertThat(builder.getBundleDescriptorLoader().getId())
+        .describedAs("Bundle descriptor loader id defined in builder is not the expected").isEqualTo(MULE);
 
-    assertThat("Bundle descriptor loader attributes defined in builder is not the expected",
-               builder.getBundleDescriptorLoader().getAttributes(), equalTo(defaultBundleDescriptorAttributes(pomMock)));
+    assertThat(builder.getBundleDescriptorLoader().getAttributes())
+        .describedAs("Bundle descriptor loader attributes defined in builder is not the expected")
+        .isEqualTo(defaultBundleDescriptorAttributes(pomMock));
   }
 
   @Test
@@ -103,13 +102,13 @@ public class DefaultValuesPolicyMuleArtifactJsonGeneratorTest {
 
     generator.setBuilderWithDefaultBundleDescriptorLoaderValue(builder, muleArtifactSpy, resolverMock);
 
-    assertThat("Bundle descriptor loader id defined in builder is not the expected",
-               builder.getBundleDescriptorLoader().getId(), equalTo(MULE));
+    assertThat(builder.getBundleDescriptorLoader().getId())
+        .describedAs("Bundle descriptor loader id defined in builder is not the expected").isEqualTo(MULE);
 
     attributes.putAll(defaultBundleDescriptorAttributes(pomMock));
 
-    assertThat("Bundle descriptor loader attributes defined in builder is not the expected",
-               builder.getBundleDescriptorLoader().getAttributes(), equalTo(attributes));
+    assertThat(builder.getBundleDescriptorLoader().getAttributes())
+        .describedAs("Bundle descriptor loader attributes defined in builder is not the expected").isEqualTo(attributes);
   }
 
   @Test
@@ -120,11 +119,12 @@ public class DefaultValuesPolicyMuleArtifactJsonGeneratorTest {
 
     generator.setBuilderWithDefaultBundleDescriptorLoaderValue(builder, muleArtifact, resolverMock);
 
-    assertThat("Bundle descriptor loader id defined in builder is not the expected",
-               builder.getBundleDescriptorLoader().getId(), equalTo(MULE));
+    assertThat(builder.getBundleDescriptorLoader().getId())
+        .describedAs("Bundle descriptor loader id defined in builder is not the expected").isEqualTo(MULE);
 
-    assertThat("Bundle descriptor loader attributes defined in builder is not the expected",
-               builder.getBundleDescriptorLoader().getAttributes(), equalTo(defaultBundleDescriptorAttributes(pomMock)));
+    assertThat(builder.getBundleDescriptorLoader().getAttributes())
+        .describedAs("Bundle descriptor loader attributes defined in builder is not the expected")
+        .isEqualTo(defaultBundleDescriptorAttributes(pomMock));
   }
 
   @Test
@@ -140,9 +140,8 @@ public class DefaultValuesPolicyMuleArtifactJsonGeneratorTest {
 
     generator.setBuilderWithDefaultExportedPackagesValue(defaultBuilder, muleArtifact, resolverMock);
 
-    assertThat("Exported packages are not the expected",
-               defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("exportedPackages"),
-               nullValue());
+    assertThat(defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("exportedPackages"))
+        .describedAs("Exported packages are not the expected").isNull();
   }
 
   @Test
@@ -158,9 +157,8 @@ public class DefaultValuesPolicyMuleArtifactJsonGeneratorTest {
 
     generator.setBuilderWithDefaultExportedResourcesValue(defaultBuilder, muleArtifact, resolverMock);
 
-    assertThat("Exported resources are not the expected",
-               defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("exportedResources"),
-               nullValue());
+    assertThat(defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("exportedResources"))
+        .describedAs("Exported resources are not the expected").isNull();
   }
 
   private Pom mockPom() {

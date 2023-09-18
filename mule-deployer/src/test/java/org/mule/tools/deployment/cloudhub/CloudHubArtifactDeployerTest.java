@@ -6,11 +6,9 @@
  */
 package org.mule.tools.deployment.cloudhub;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mule.tools.client.arm.model.User;
 import org.mule.tools.client.arm.model.UserInfo;
@@ -26,15 +24,15 @@ import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -50,10 +48,8 @@ public class CloudHubArtifactDeployerTest {
 
   private static final String FAKE_APPLICATION_NAME = "fake-name";
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+  @TempDir
+  Path temporaryFolder;
 
   private File applicationFile;
   private UserInfo userInfo;
@@ -65,9 +61,9 @@ public class CloudHubArtifactDeployerTest {
 
   private CloudHubArtifactDeployer cloudHubArtifactDeployer;
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
-    applicationFile = temporaryFolder.newFile();
+    applicationFile = temporaryFolder.toFile();
     userInfo = createUserInfo();
 
     logMock = mock(DeployerLog.class);
@@ -90,14 +86,15 @@ public class CloudHubArtifactDeployerTest {
 
   }
 
-  @Test(expected = DeploymentException.class)
-  public void deployDomainTest() throws DeploymentException {
-    cloudHubArtifactDeployer.deployDomain();
+  @Test
+  public void deployDomainTest() {
+    assertThatThrownBy(() -> cloudHubArtifactDeployer.deployDomain()).isExactlyInstanceOf(DeploymentException.class);
+
   }
 
-  @Test(expected = DeploymentException.class)
-  public void undeployDomainTest() throws DeploymentException {
-    cloudHubArtifactDeployer.undeployDomain();
+  @Test
+  public void undeployDomainTest() {
+    assertThatThrownBy(() -> cloudHubArtifactDeployer.undeployDomain()).isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test
@@ -113,7 +110,8 @@ public class CloudHubArtifactDeployerTest {
     verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
     ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
     verify(clientMock).createApplication(applicationCaptor.capture(), any());
-    assertThat("Application has logging disable", applicationCaptor.getValue().getLoggingCustomLog4JEnabled() == Boolean.TRUE);
+    assertThat(applicationCaptor.getValue().getLoggingCustomLog4JEnabled()).describedAs("Application has logging disable")
+        .isTrue();
     verify(cloudHubArtifactDeployerSpy).startApplication();
     verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
     verify(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
@@ -129,8 +127,8 @@ public class CloudHubArtifactDeployerTest {
     cloudHubArtifactDeployerSpy.deployApplication();
     ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
     verify(clientMock).createApplication(applicationCaptor.capture(), any());
-    assertThat("application does not have userid",
-               clientUserInfo.user.id.equalsIgnoreCase(applicationCaptor.getValue().getUserId()));
+    assertThat(clientUserInfo.user.id.equalsIgnoreCase(applicationCaptor.getValue().getUserId()))
+        .describedAs("application does not have userid").isTrue();
     verify(clientMock).isDomainAvailable(any());
     verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
     verify(cloudHubArtifactDeployerSpy).createApplication();
@@ -149,7 +147,7 @@ public class CloudHubArtifactDeployerTest {
     cloudHubArtifactDeployerSpy.deployApplication();
     ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
     verify(clientMock).createApplication(applicationCaptor.capture(), any());
-    assertThat("application has userid", applicationCaptor.getValue().getUserId() == null);
+    assertThat(applicationCaptor.getValue().getUserId()).describedAs("application has userid").isNull();
     verify(clientMock).isDomainAvailable(any());
     verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
     verify(cloudHubArtifactDeployerSpy).createApplication();
@@ -212,7 +210,8 @@ public class CloudHubArtifactDeployerTest {
 
     ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
     verify(clientMock).updateApplication(applicationCaptor.capture(), any());
-    assertThat("Application has logging disable", applicationCaptor.getValue().getLoggingCustomLog4JEnabled() == Boolean.TRUE);
+    assertThat(applicationCaptor.getValue().getLoggingCustomLog4JEnabled()).describedAs("Application has logging disable")
+        .isTrue();
   }
 
   @Test
@@ -228,28 +227,29 @@ public class CloudHubArtifactDeployerTest {
 
     ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
     verify(clientMock).updateApplication(applicationCaptor.capture(), any());
-    assertThat("Application has logging disable", applicationCaptor.getValue().getLoggingCustomLog4JEnabled() == Boolean.TRUE);
+    assertThat(applicationCaptor.getValue().getLoggingCustomLog4JEnabled()).describedAs("Application has logging disable")
+        .isTrue();
   }
 
   @Test
   public void deployApplicationVerificationStartedFail() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
+    assertThatThrownBy(() -> {
+      when(clientMock.isDomainAvailable(any())).thenReturn(true);
 
-    when(clientMock.isDomainAvailable(any())).thenReturn(true);
+      CloudHubDeploymentVerification verificationMock = mock(CloudHubDeploymentVerification.class);
+      doThrow(DeploymentException.class).when(verificationMock).assertDeployment(deploymentMock);
+      cloudHubArtifactDeployer.setDeploymentVerification(verificationMock);
 
-    CloudHubDeploymentVerification verificationMock = mock(CloudHubDeploymentVerification.class);
-    doThrow(DeploymentException.class).when(verificationMock).assertDeployment(deploymentMock);
-    cloudHubArtifactDeployer.setDeploymentVerification(verificationMock);
+      cloudHubArtifactDeployer.deployApplication();
 
-    cloudHubArtifactDeployer.deployApplication();
-
-    verify(clientMock).isDomainAvailable(any());
-    verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
-    verify(cloudHubArtifactDeployerSpy).createApplication();
-    verify(cloudHubArtifactDeployerSpy).startApplication();
-    verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
-    verify(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
-    verify(verificationMock).assertDeployment(eq(deploymentMock));
+      verify(clientMock).isDomainAvailable(any());
+      verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
+      verify(cloudHubArtifactDeployerSpy).createApplication();
+      verify(cloudHubArtifactDeployerSpy).startApplication();
+      verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
+      verify(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
+      verify(verificationMock).assertDeployment(eq(deploymentMock));
+    }).isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test
@@ -261,8 +261,8 @@ public class CloudHubArtifactDeployerTest {
 
   @Test
   public void getApplicationNameTest() {
-    assertThat("Application name is not the expected", cloudHubArtifactDeployer.getApplicationName(),
-               equalTo(FAKE_APPLICATION_NAME));
+    assertThat(cloudHubArtifactDeployer.getApplicationName()).describedAs("Application name is not the expected")
+        .isEqualTo(FAKE_APPLICATION_NAME);
   }
 
   private Application createApplication(String name) {
@@ -276,8 +276,9 @@ public class CloudHubArtifactDeployerTest {
     Map<String, String> originalProperties = new HashMap<>();
     originalProperties.put("foo", "bar");
     Map<String, String> resolvedProperties = cloudHubArtifactDeployer.resolveProperties(originalProperties, null, true);
-    assertThat("originalProperties should have the same size", resolvedProperties.size(), equalTo(1));
-    assertThat("resolvedProperties should contains the (foo,bar) entry", resolvedProperties, hasEntry("foo", "bar"));
+    assertThat(resolvedProperties.size()).describedAs("originalProperties should have the same size").isEqualTo(1);
+    assertThat(resolvedProperties).describedAs("resolvedProperties should contains the (foo,bar) entry").containsEntry("foo",
+                                                                                                                       "bar");
   }
 
   @Test
@@ -285,8 +286,9 @@ public class CloudHubArtifactDeployerTest {
     Map<String, String> originalProperties = new HashMap<>();
     originalProperties.put("foo", "bar");
     Map<String, String> resolvedProperties = cloudHubArtifactDeployer.resolveProperties(originalProperties, null, false);
-    assertThat("originalProperties should have the same size", resolvedProperties.size(), equalTo(1));
-    assertThat("resolvedProperties should contains the (foo,bar) entry", resolvedProperties, hasEntry("foo", "bar"));
+    assertThat(resolvedProperties.size()).describedAs("originalProperties should have the same size").isEqualTo(1);
+    assertThat(resolvedProperties).describedAs("resolvedProperties should contains the (foo,bar) entry").containsEntry("foo",
+                                                                                                                       "bar");
   }
 
   @Test
@@ -297,9 +299,11 @@ public class CloudHubArtifactDeployerTest {
     properties.put("key", "val");
     properties.put("foo", "lala");
     Map<String, String> resolvedProperties = cloudHubArtifactDeployer.resolveProperties(originalProperties, properties, true);
-    assertThat("resolvedProperties does not have the expected size", resolvedProperties.size(), equalTo(2));
-    assertThat("resolvedProperties should contains the (key,val) entry", resolvedProperties, hasEntry("key", "val"));
-    assertThat("resolvedProperties should contains the (foo,lala) entry", resolvedProperties, hasEntry("foo", "lala"));
+    assertThat(resolvedProperties.size()).describedAs("resolvedProperties does not have the expected size").isEqualTo(2);
+    assertThat(resolvedProperties).describedAs("resolvedProperties should contains the (key,val) entry").containsEntry("key",
+                                                                                                                       "val");
+    assertThat(resolvedProperties).describedAs("resolvedProperties should contains the (foo,lala) entry").containsEntry("foo",
+                                                                                                                        "lala");
   }
 
   @Test
@@ -308,7 +312,7 @@ public class CloudHubArtifactDeployerTest {
     originalProperties.put("foo", "bar");
     Map<String, String> properties = new HashMap<>();
     Map<String, String> resolvedProperties = cloudHubArtifactDeployer.resolveProperties(originalProperties, properties, true);
-    assertThat("resolvedProperties does not have the expected size", resolvedProperties.size(), equalTo(0));
+    assertThat(resolvedProperties.size()).describedAs("resolvedProperties does not have the expected size").isEqualTo(0);
   }
 
   @Test
@@ -319,9 +323,11 @@ public class CloudHubArtifactDeployerTest {
     properties.put("key", "val");
     properties.put("foo", "lala");
     Map<String, String> resolvedProperties = cloudHubArtifactDeployer.resolveProperties(originalProperties, properties, false);
-    assertThat("resolvedProperties does not have the expected size", resolvedProperties.size(), equalTo(2));
-    assertThat("resolvedProperties should contains the (key,val) entry", resolvedProperties, hasEntry("key", "val"));
-    assertThat("resolvedProperties should contains the (foo,bar) entry", resolvedProperties, hasEntry("foo", "bar"));
+    assertThat(resolvedProperties.size()).describedAs("resolvedProperties does not have the expected size").isEqualTo(2);
+    assertThat(resolvedProperties).describedAs("resolvedProperties should contains the (key,val) entry").containsEntry("key",
+                                                                                                                       "val");
+    assertThat(resolvedProperties).describedAs("resolvedProperties should contains the (foo,bar) entry").containsEntry("foo",
+                                                                                                                       "bar");
   }
 
   @Test
@@ -335,7 +341,7 @@ public class CloudHubArtifactDeployerTest {
 
     ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
     verify(clientMock).createApplication(applicationCaptor.capture(), any());
-    assertThat("ObjectStoreV1 must be true", applicationCaptor.getValue().getObjectStoreV1(), equalTo(true));
+    assertThat(applicationCaptor.getValue().getObjectStoreV1()).describedAs("ObjectStoreV1 must be true").isTrue();
   }
 
   @Test
@@ -349,7 +355,7 @@ public class CloudHubArtifactDeployerTest {
 
     ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
     verify(clientMock).createApplication(applicationCaptor.capture(), any());
-    assertThat("ObjectStoreV1 must be false", applicationCaptor.getValue().getObjectStoreV1(), equalTo(false));
+    assertThat(applicationCaptor.getValue().getObjectStoreV1()).describedAs("ObjectStoreV1 must be false").isFalse();
   }
 
   @Test
@@ -376,7 +382,7 @@ public class CloudHubArtifactDeployerTest {
 
     ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
     verify(clientMock).createApplication(applicationCaptor.capture(), any());
-    assertThat("ObjectStoreV1 must be true", applicationCaptor.getValue().getObjectStoreV1(), equalTo(true));
+    assertThat(applicationCaptor.getValue().getObjectStoreV1()).describedAs("ObjectStoreV1 must be true").isTrue();
   }
 
   @Test
@@ -403,7 +409,7 @@ public class CloudHubArtifactDeployerTest {
 
     ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
     verify(clientMock).createApplication(applicationCaptor.capture(), any());
-    assertThat("ObjectStoreV1 must be true", applicationCaptor.getValue().getObjectStoreV1(), equalTo(false));
+    assertThat(applicationCaptor.getValue().getObjectStoreV1()).describedAs("ObjectStoreV1 must be true").isFalse();
   }
 
   private List<SupportedVersion> getObjectStoreV1Enabled(boolean enabled, String muleVersion) {

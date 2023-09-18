@@ -4,11 +4,10 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
 package org.mule.tools.api.packager.archiver;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
@@ -20,21 +19,21 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.codehaus.plexus.archiver.dir.DirectoryArchiver;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class MuleExplodedArchiverTest extends AbstractMuleArchiverTest {
 
   public MuleExplodedArchiver archiver;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     archiver = new MuleExplodedArchiver();
   }
 
   @Test
   public void validateArchiverType() {
-    assertThat("The archiver type is not as expected", archiver.getArchiver(), instanceOf(DirectoryArchiver.class));
+    assertThat(archiver.getArchiver()).describedAs("The archiver type is not as expected").isInstanceOf(DirectoryArchiver.class);
   }
 
   @Test
@@ -42,7 +41,7 @@ public class MuleExplodedArchiverTest extends AbstractMuleArchiverTest {
     Path appBasePath = Paths.get(REAL_APP_TARGET);
     Path appMetaInfPath = appBasePath.resolve(META_INF.value());
 
-    File destinationFile = new File(targetFileFolder.getRoot(), REAL_APP_TARGET + "-lala");
+    File destinationFile = new File(targetFileFolder.toAbsolutePath().toFile(), REAL_APP_TARGET + "-lala");
 
     archiver.addToRoot(getTestResourceFile(appBasePath.resolve(CLASSES.value())), null, null);
     archiver.addMaven(getTestResourceFile(appMetaInfPath.resolve(MAVEN.value())), null, null);
@@ -52,7 +51,7 @@ public class MuleExplodedArchiverTest extends AbstractMuleArchiverTest {
 
     archiver.createArchive();
 
-    assertThat("The destination file should be a folder", destinationFile.isDirectory(), is(true));
+    assertThat(destinationFile.isDirectory()).describedAs("The destination file should be a folder").isTrue();
     assertCompleteAppContent(destinationFile);
   }
 }

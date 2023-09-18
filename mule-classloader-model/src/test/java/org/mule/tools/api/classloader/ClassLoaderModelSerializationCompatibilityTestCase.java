@@ -7,31 +7,30 @@
 package org.mule.tools.api.classloader;
 
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.deserialize;
 import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.serializeToFile;
 import static org.mule.tools.api.classloader.model.ArtifactCoordinates.DEFAULT_ARTIFACT_TYPE;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 /**
  * The following test is to validate compatibility between new version of the ClassLoaderModel.
  * This is needed because, if we intend to package applications with added fields in the ClassLoaderModel,
  * they should behave the same way even deployed in runtime versions that use a previous version of the mule-maven-plugin.
  */
-public class ClassLoaderModelSerializationCompatibilityTestCase {
+@SuppressWarnings("unchecked")
+class ClassLoaderModelSerializationCompatibilityTestCase {
 
   private static final String GROUP_ID = "group.id";
   private static final String APP_ARTIFACT_ID = "artifact-id";
@@ -47,57 +46,54 @@ public class ClassLoaderModelSerializationCompatibilityTestCase {
   private static final ArtifactCoordinates pluginArtifactCoordinates =
       new ArtifactCoordinates(GROUP_ID, PLUGIN_ARTIFACT_ID, VERSION);
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
   @Test
-  public void testSerializationOfNewArtifactVersion() throws Exception {
+  void testSerializationOfNewArtifactVersion(@TempDir Path tempDir) {
     List<Artifact> dependencies = new ArrayList<>();
     dependencies.add(new ArtifactWithExtraFields(pluginArtifactCoordinates, TEST_URI, "transientField"));
     ClassLoaderModel classLoaderModel = new ClassLoaderModel(VERSION, appArtifactCoordinates);
     classLoaderModel.setDependencies(dependencies);
-    File serializedClassLoaderModel = serializeToFile(classLoaderModel, temporaryFolder.newFolder());
+    File serializedClassLoaderModel = serializeToFile(classLoaderModel, tempDir.toFile());
     ClassLoaderModel deserializedClassLoaderModel = deserialize(serializedClassLoaderModel);
     assertModelsAreEqual(classLoaderModel, deserializedClassLoaderModel);
   }
 
   @Test
-  public void testSerializationOfNewModelVersion() throws Exception {
+  void testSerializationOfNewModelVersion(@TempDir Path tempDir) {
     List<Artifact> dependencies = new ArrayList<>();
     dependencies.add(new Artifact(pluginArtifactCoordinates, TEST_URI));
     ClassLoaderModel classLoaderModel = new ClassLoaderModelWithExtraField(VERSION, appArtifactCoordinates, "transientField");
     classLoaderModel.setDependencies(dependencies);
-    File serializedClassLoaderModel = serializeToFile(classLoaderModel, temporaryFolder.newFolder());
+    File serializedClassLoaderModel = serializeToFile(classLoaderModel, tempDir.toFile());
     ClassLoaderModel deserializedClassLoaderModel = deserialize(serializedClassLoaderModel);
     assertModelsAreEqual(classLoaderModel, deserializedClassLoaderModel);
   }
 
   @Test
-  public void testSerialzationOfNewModelAndArtifactVersion() throws Exception {
+  void testSerialzationOfNewModelAndArtifactVersion(@TempDir Path tempDir) {
     List<Artifact> dependencies = new ArrayList<>();
     dependencies.add(new ArtifactWithExtraFields(pluginArtifactCoordinates, TEST_URI, "transientField"));
     ClassLoaderModel classLoaderModel = new ClassLoaderModelWithExtraField(VERSION, appArtifactCoordinates, "transientField");
     classLoaderModel.setDependencies(dependencies);
-    File serializedClassLoaderModel = serializeToFile(classLoaderModel, temporaryFolder.newFolder());
+    File serializedClassLoaderModel = serializeToFile(classLoaderModel, tempDir.toFile());
     ClassLoaderModel deserializedClassLoaderModel = deserialize(serializedClassLoaderModel);
     assertModelsAreEqual(classLoaderModel, deserializedClassLoaderModel);
   }
 
   private void assertModelsAreEqual(ClassLoaderModel originalModel, ClassLoaderModel deserializedModel) {
-    assertThat(originalModel, equalTo(deserializedModel));
+    assertThat(originalModel).isEqualTo(deserializedModel);
     List<Artifact> originalDependencies = originalModel.getDependencies();
     List<Artifact> deserializedDependencies = deserializedModel.getDependencies();
     for (int i = 0; i < originalDependencies.size(); i++) {
       Artifact originalArtifact = originalDependencies.get(i);
       Artifact deserializedArtifact = deserializedDependencies.get(i);
-      assertThat(originalArtifact, equalTo(deserializedArtifact));
+      assertThat(originalArtifact).isEqualTo(deserializedArtifact);
     }
 
   }
 
-  private class ArtifactWithExtraFields extends Artifact {
+  private static class ArtifactWithExtraFields extends Artifact {
 
-    private String newArtifactField;
+    private final String newArtifactField;
 
     public ArtifactWithExtraFields(ArtifactCoordinates artifactCoordinates, URI uri, String extraField) {
       super(artifactCoordinates, uri);
@@ -110,9 +106,9 @@ public class ClassLoaderModelSerializationCompatibilityTestCase {
 
   }
 
-  private class ClassLoaderModelWithExtraField extends ClassLoaderModel {
+  private static class ClassLoaderModelWithExtraField extends ClassLoaderModel {
 
-    private String newField;
+    private final String newField;
 
     public ClassLoaderModelWithExtraField(String version, ArtifactCoordinates artifactCoordinates, String extraField) {
       super(version, artifactCoordinates);
@@ -124,6 +120,4 @@ public class ClassLoaderModelSerializationCompatibilityTestCase {
     }
 
   }
-
-
 }

@@ -10,7 +10,7 @@ import static java.util.stream.Collectors.toList;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toApplicationModelArtifacts;
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.updatePackagesResources;
 
-import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.tools.api.classloader.model.Plugin;
 
 import java.util.List;

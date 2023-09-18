@@ -16,6 +16,7 @@ import org.mule.tools.api.validation.TestScopeDependencyValidator;
 import org.mule.tools.api.validation.VersionUtils;
 import org.mule.tools.api.validation.project.AbstractProjectValidator;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-
 
 /**
  * It creates all the required folders in the project.build.directory
@@ -36,7 +36,8 @@ public class ValidateMojo extends AbstractMuleMojo {
 
   private static final String MIN_MAVEN_VERSION = "3.3.3";
   private static final DependencyValidator TEST_SCOPE_DEPENDENCY_VALIDATOR = new TestScopeDependencyValidator(
-                                                                                                              asList(),
+                                                                                                              Collections
+                                                                                                                  .emptyList(),
                                                                                                               asList("com.mulesoft.munit",
                                                                                                                      "com.mulesoft.munit.utils"));
 
@@ -71,7 +72,7 @@ public class ValidateMojo extends AbstractMuleMojo {
 
   protected void validateNotAllowedDependencies() throws ValidationException {
     List<ArtifactCoordinates> dependencies =
-        project.getDependencies().stream().map(d -> buildArtifactCoordinates(d)).collect(Collectors.toList());
+        project.getDependencies().stream().map(this::buildArtifactCoordinates).collect(Collectors.toList());
     if (!project.getPackaging().equals(PackagingType.MULE_DOMAIN_BUNDLE.toString())) {
       areDependenciesAllowed(dependencies);
     }

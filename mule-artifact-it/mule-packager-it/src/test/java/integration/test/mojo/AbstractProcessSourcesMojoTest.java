@@ -6,6 +6,10 @@
  */
 package integration.test.mojo;
 
+import integration.ProjectFactory;
+import org.apache.maven.it.VerificationException;
+import org.junit.jupiter.api.BeforeEach;
+
 import static integration.FileTreeMatcher.hasSameTreeStructure;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.io.FileUtils.readFileToString;
@@ -13,12 +17,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 
-import org.apache.maven.it.VerificationException;
-import org.junit.Before;
-
-public abstract class AbstractProcessSourcesMojoTest extends MojoTest {
+abstract class AbstractProcessSourcesMojoTest extends MojoTest {
 
   protected static final String PROCESS_SOURCES = "process-sources";
 
@@ -26,8 +28,8 @@ public abstract class AbstractProcessSourcesMojoTest extends MojoTest {
     this.goal = PROCESS_SOURCES;
   }
 
-  @Before
-  public void before() throws IOException {
+  @BeforeEach
+  void before() throws IOException {
     clearResources();
   }
 
@@ -44,17 +46,17 @@ public abstract class AbstractProcessSourcesMojoTest extends MojoTest {
 
   protected void processSourcesOnProject(String applicationName, List<String> cliOptions)
       throws IOException, VerificationException {
-    projectBaseDirectory = builder.createProjectBaseDir(applicationName, this.getClass());
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir(applicationName, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
     verifier.addCliOption("-DskipValidation=true");
-    cliOptions.stream().forEach(option -> verifier.addCliOption(option));
+    cliOptions.forEach(option -> verifier.addCliOption(option));
     verifier.executeGoal(PROCESS_SOURCES);
   }
 
   protected String getFileContent(String path) throws IOException {
     File generatedClassloaderModelFile = getFile(path);
-    return readFileToString(generatedClassloaderModelFile);
+    return readFileToString(generatedClassloaderModelFile, Charset.defaultCharset());
   }
 
 }

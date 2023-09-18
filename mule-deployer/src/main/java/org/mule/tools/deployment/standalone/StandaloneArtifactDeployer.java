@@ -22,9 +22,9 @@ import org.mule.tools.utils.DeployerLog;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static org.mule.tools.client.standalone.controller.probing.deployment.DeploymentProbeFactory.createProbe;
 
@@ -39,8 +39,8 @@ public class StandaloneArtifactDeployer implements ArtifactDeployer {
 
   private static final long DEFAULT_POLLING_DELAY = 1000;
 
-  private MuleProcessController controller;
-  private Prober prober;
+  private final MuleProcessController controller;
+  private final Prober prober;
 
   public StandaloneArtifactDeployer(Deployment deployment, MuleProcessController controller, DeployerLog log, Prober prober) {
     this.deployment = (StandaloneDeployment) deployment;
@@ -68,7 +68,7 @@ public class StandaloneArtifactDeployer implements ArtifactDeployer {
    * @return A {@link PollingProber} instance
    */
   private static Prober getProber(Deployment deployment) {
-    return new PollingProber(((StandaloneDeployment) deployment).getDeploymentTimeout()
+    return new PollingProber(deployment.getDeploymentTimeout()
         .orElse(DEFAULT_STANDALONE_DEPLOYMENT_TIMEOUT), DEFAULT_POLLING_DELAY);
   }
 
@@ -143,7 +143,7 @@ public class StandaloneArtifactDeployer implements ArtifactDeployer {
    * @param configuration A deployment configuration
    * @throws DeploymentException If there is no domain defined in the deployment configuration
    */
-  public void addDomainFromstandaloneDeployment(StandaloneDeployment configuration) throws DeploymentException {
+  public void addDomainFromStandaloneDeployment(StandaloneDeployment configuration) throws DeploymentException {
     if (configuration.getDomain().isPresent()) {
       log.info("Adding domain with configuration: " + configuration.getDomain());
       controller.deployDomain(configuration.getDomain().get().getAbsolutePath());
@@ -155,7 +155,7 @@ public class StandaloneArtifactDeployer implements ArtifactDeployer {
   @Override
   public String toString() {
     return String.format("StandaloneDeployer with [Controller=%s, log=%s, application=%s, timeout=%d, pollingDelay=%d ]",
-                         controller, log, deployment.getArtifact(), deployment.getDeploymentTimeout(),
+                         controller, log, deployment.getArtifact(), deployment.getDeploymentTimeout().get(),
                          DEFAULT_POLLING_DELAY);
   }
 
@@ -192,7 +192,7 @@ public class StandaloneArtifactDeployer implements ArtifactDeployer {
   @Override
   public void deployApplication() throws DeploymentException {
     renameApplicationToApplicationName();
-    addDomainFromstandaloneDeployment(deployment);
+    addDomainFromStandaloneDeployment(deployment);
     File application = deployment.getArtifact();
     checkState(application != null, "Application cannot be null");
     try {
@@ -227,7 +227,7 @@ public class StandaloneArtifactDeployer implements ArtifactDeployer {
   protected void undeploy(File muleHome) throws DeploymentException {
     File appsDir = new File(muleHome + "/apps/");
 
-    for (File file : appsDir.listFiles()) {
+    for (File file : Objects.requireNonNull(appsDir.listFiles())) {
       if (FilenameUtils.getBaseName(file.getName()).equals(deployment.getApplicationName())) {
         try {
           log.info("Deleting " + file);

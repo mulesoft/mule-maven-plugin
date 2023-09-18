@@ -6,7 +6,6 @@
  */
 package org.mule.tools.maven.mojo;
 
-
 import java.io.IOException;
 
 import org.apache.maven.plugin.MojoFailureException;
@@ -16,7 +15,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
-
 
 /**
  * @author Mulesoft Inc.

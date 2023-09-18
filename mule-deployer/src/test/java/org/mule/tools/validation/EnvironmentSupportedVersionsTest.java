@@ -6,46 +6,34 @@
  */
 package org.mule.tools.validation;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(Parameterized.class)
 public class EnvironmentSupportedVersionsTest {
 
-  private final EnvironmentSupportedVersions supportedVersion;
-  private final String version;
-  private final Boolean isSupported;
-
-  @Parameterized.Parameters
-  public static Collection<Object[]> data() {
-    return Arrays.asList(new Object[][] {
-        {"4.0.0", new EnvironmentSupportedVersions(newArrayList("4.0.0")), Boolean.TRUE},
-        {"4.0.0", new EnvironmentSupportedVersions(newArrayList("4.0.1")), Boolean.FALSE},
-        {"4.0.0", new EnvironmentSupportedVersions(newArrayList("4.0.0", "4.0.1")), Boolean.TRUE},
-        {"4.0.1", new EnvironmentSupportedVersions(newArrayList("4.0.0", "4.0.1")), Boolean.TRUE},
-        {"3.0.0", new EnvironmentSupportedVersions(newArrayList("4.0.0", "4.0.1")), Boolean.FALSE},
-        {"3.0.0-SNAPSHOT", new EnvironmentSupportedVersions(newArrayList("3.0.0-SNAPSHOT", "4.0.0", "4.0.1")), Boolean.TRUE},
-        {"3.0.0-SNAPSHOT", new EnvironmentSupportedVersions(newArrayList("3.0.0")), Boolean.FALSE},
-    });
+  public static Stream<Arguments> data() {
+    return Stream.of(Arguments.of("4.0.0", new EnvironmentSupportedVersions(newArrayList("4.0.0")), Boolean.TRUE),
+                     Arguments.of("4.0.0", new EnvironmentSupportedVersions(newArrayList("4.0.1")), Boolean.FALSE),
+                     Arguments.of("4.0.0", new EnvironmentSupportedVersions(newArrayList("4.0.0", "4.0.1")), Boolean.TRUE),
+                     Arguments.of("4.0.1", new EnvironmentSupportedVersions(newArrayList("4.0.0", "4.0.1")), Boolean.TRUE),
+                     Arguments.of("3.0.0", new EnvironmentSupportedVersions(newArrayList("4.0.0", "4.0.1")), Boolean.FALSE),
+                     Arguments.of("3.0.0-SNAPSHOT",
+                                  new EnvironmentSupportedVersions(newArrayList("3.0.0-SNAPSHOT", "4.0.0", "4.0.1")),
+                                  Boolean.TRUE),
+                     Arguments.of("3.0.0-SNAPSHOT", new EnvironmentSupportedVersions(newArrayList("3.0.0")), Boolean.FALSE));
   }
 
-  public EnvironmentSupportedVersionsTest(String version, EnvironmentSupportedVersions supportedVersion, Boolean isSupported) {
-    this.version = version;
-    this.supportedVersion = supportedVersion;
-    this.isSupported = isSupported;
-  }
-
-  @Test
-  public void supportsTest() {
-    assertThat("The version " + version + " should " + (isSupported ? "" : " not ") + " be supported.",
-               supportedVersion.supports(version), equalTo(isSupported));
+  @ParameterizedTest
+  @MethodSource("data")
+  public void supportsTest(String version, EnvironmentSupportedVersions supportedVersion, Boolean isSupported) {
+    assertThat(supportedVersion.supports(version))
+        .describedAs("The version " + version + " should " + (isSupported ? "" : " not ") + " be supported.")
+        .isEqualTo(isSupported);
   }
 }

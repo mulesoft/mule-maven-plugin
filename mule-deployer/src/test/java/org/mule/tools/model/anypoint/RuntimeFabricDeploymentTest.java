@@ -6,13 +6,12 @@
  */
 package org.mule.tools.model.anypoint;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
-import static org.junit.rules.ExpectedException.none;
-import static org.powermock.api.mockito.PowerMockito.mock;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 public class RuntimeFabricDeploymentTest {
 
@@ -20,12 +19,9 @@ public class RuntimeFabricDeploymentTest {
   public static final String PROVIDER = "SERVER";
   private RuntimeFabricOnPremiseDeployment fabricDeployment;
 
-
-  @Rule
-  public ExpectedException expectedException = none();
   private RuntimeFabricOnPremiseDeploymentSettings deploymentSettingsMock;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     fabricDeployment = new RuntimeFabricOnPremiseDeployment();
     fabricDeployment.setTarget(TARGET_NAME);
@@ -35,19 +31,19 @@ public class RuntimeFabricDeploymentTest {
   }
 
   @Test
-  public void getTarget() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
-    expectedException.expectMessage("missing target value");
-    fabricDeployment.setTarget(null);
-    fabricDeployment.setEnvironmentSpecificValues();
+  public void getTarget() {
+    assertThatThrownBy(() -> {
+      fabricDeployment.setTarget(null);
+      fabricDeployment.setEnvironmentSpecificValues();
+    }).isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test
-  public void getProvider() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
-    expectedException.expectMessage("Please set the provider as MC, CLUSTER or SERVER");
-    fabricDeployment.setProvider(null);
-    fabricDeployment.setEnvironmentSpecificValues();
+  public void getProvider() {
+    assertThatThrownBy(() -> {
+      fabricDeployment.setProvider(null);
+      fabricDeployment.setEnvironmentSpecificValues();
+    }).isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test

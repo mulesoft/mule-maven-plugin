@@ -6,8 +6,8 @@
  */
 package org.mule.tools.api.validation.resolver.visitor;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.util.Project;
@@ -15,8 +15,8 @@ import org.mule.tools.api.util.ProjectBuilder;
 import org.mule.tools.api.validation.resolver.model.ProjectDependencyNode;
 
 import java.util.Set;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static util.ResolverTestHelper.buildDependencies;
 import static util.ResolverTestHelper.buildProjectDependencyNodeSpies;
@@ -28,7 +28,7 @@ public class AbstractArtifactVisitorTest {
   private ProjectDependencyNode nodeMock;
   private Set<ProjectDependencyNode> dependenciesMock;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     visitor = spy(AbstractArtifactVisitor.class);
     nodeMock = spy(new ProjectDependencyNode(mock(Project.class), mock(ProjectBuilder.class)));
@@ -58,6 +58,7 @@ public class AbstractArtifactVisitorTest {
       verify(dependencyNode, times(1)).accept(any());
     }
 
-    assertThat("Collected dependencies is not the expected", visitor.getCollectedDependencies(), equalTo(dependenciesCollected));
+    assertThat(visitor.getCollectedDependencies()).describedAs("Collected dependencies is not the expected")
+        .isEqualTo(dependenciesCollected);
   }
 }

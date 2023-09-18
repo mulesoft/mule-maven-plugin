@@ -9,8 +9,8 @@ package org.mule.tools.deployment.fabric;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.fabric.RuntimeFabricClient;
 import org.mule.tools.client.fabric.model.Target;
@@ -18,11 +18,9 @@ import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeployment;
 import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeploymentSettings;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -58,7 +56,7 @@ public class RequestBuilderTest {
   private RuntimeFabricClient runtimeFabricClientMock;
   private RuntimeFabricOnPremiseDeployment runtimeFabricDeployment;
 
-  @Before
+  @BeforeEach
   public void setUp() throws DeploymentException {
     runtimeFabricClientMock = mock(RuntimeFabricClient.class);
     runtimeFabricDeployment = new RuntimeFabricOnPremiseDeployment();
@@ -81,8 +79,8 @@ public class RequestBuilderTest {
     Target target = requestBuilder.buildTarget();
     String finalUrl = DOMAIN_TEST.replace("*", runtimeFabricDeployment.getApplicationName());
 
-    assertThat("publicUrl is not the expected", target.deploymentSettings.getHttp().getInbound().getPublicUrl(),
-               equalTo(finalUrl));
+    assertThat(target.deploymentSettings.getHttp().getInbound().getPublicUrl()).describedAs("publicUrl is not the expected")
+        .isEqualTo(finalUrl);
   }
 
   @Test
@@ -93,7 +91,7 @@ public class RequestBuilderTest {
     runtimeFabricDeployment.setDeploymentSettings(deploymentSettings);
     Target target = requestBuilder.buildTarget();
 
-    assertThat("publicUrl is not the expected", target.deploymentSettings.getHttp().getInbound().getPublicUrl(),
-               equalTo(definedUrl));
+    assertThat(target.deploymentSettings.getHttp().getInbound().getPublicUrl()).describedAs("publicUrl is not the expected")
+        .isEqualTo(definedUrl);
   }
 }

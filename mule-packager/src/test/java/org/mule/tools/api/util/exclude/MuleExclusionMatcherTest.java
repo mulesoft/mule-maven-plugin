@@ -8,40 +8,47 @@ package org.mule.tools.api.util.exclude;
 
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+//import org.apache.commons.lang3.StringUtils;
+//import org.junit.Before;
+//import org.junit.Rule;
+//import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+//import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.apache.commons.io.FileUtils.writeLines;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeThat;
+//import static org.hamcrest.core.Is.is;
+//import static org.hamcrest.core.IsEqual.equalTo;
+//import static org.junit.Assert.assertThat;
+//import static org.junit.Assert.fail;
+//import static org.junit.Assume.assumeThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mule.tools.api.util.exclude.MuleExclusionMatcher.MULE_EXCLUDE_FILENAME;
 
 public class MuleExclusionMatcherTest {
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir
+  public Path temporaryFolder;
+  //  @Rule
+  //  public TemporaryFolder temporaryFolder = new TemporaryFolder();
   private File muleExcludeFile;
   private Path projectBaseFolder;
   private MuleExclusionMatcher matcher;
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
-    temporaryFolder.create();
-    muleExcludeFile = temporaryFolder.newFile(MULE_EXCLUDE_FILENAME);
-    projectBaseFolder = Paths.get(temporaryFolder.getRoot().toURI());
+    //    temporaryFolder.create();
+    muleExcludeFile = temporaryFolder.resolve(MULE_EXCLUDE_FILENAME).toFile();
+    projectBaseFolder = Paths.get(temporaryFolder.toAbsolutePath().toUri());
   }
 
   @Test
@@ -52,23 +59,23 @@ public class MuleExclusionMatcherTest {
   @Test
   public void nonExistingFileTest() {
     FileUtils.deleteQuietly(muleExcludeFile);
-    assertThat(muleExcludeFile.exists(), is(false));
+    assertThat(muleExcludeFile.exists()).isFalse();
     buildMuleExclusionMatcher();
   }
 
   @Test
   public void customMuleExcludeFileTest() throws IOException {
-    File shouldMatchConfigFile1 = temporaryFolder.newFile("a.xml");
-    temporaryFolder.newFolder("src", "main", "mule");
-    File shouldMatchConfigFile2 = temporaryFolder.newFile("src/main/mule/lala.xml");
+    File shouldMatchConfigFile1 = temporaryFolder.resolve("a.xml").toFile();
+    //    temporaryFolder.newFolder("src", "main", "mule");
+    File shouldMatchConfigFile2 = temporaryFolder.resolve("src/main/mule/lala.xml").toFile();//temporaryFolder.newFile("src/main/mule/lala.xml");
 
-    File shouldNotMatchConfigFile = temporaryFolder.newFile("b.xml");
+    File shouldNotMatchConfigFile = temporaryFolder.resolve("b.xml").toFile();//temporaryFolder.newFile("b.xml");
     writeLinesToMuleExcludeFile("a.xml", "**/*/lala.xml", "# comment");
     buildMuleExclusionMatcher();
 
-    assertThat("This file should be matched", matcher.matches(shouldMatchConfigFile1.toPath()), equalTo(true));
-    assertThat("This file should be matched", matcher.matches(shouldMatchConfigFile2.toPath()), equalTo(true));
-    assertThat("This file should not be matched", matcher.matches(shouldNotMatchConfigFile.toPath()), equalTo(false));
+    assertThat(matcher.matches(shouldMatchConfigFile1.toPath())).describedAs("This file should be matched").isTrue();
+    assertThat(matcher.matches(shouldMatchConfigFile2.toPath())).describedAs("This file should be matched").isTrue();
+    assertThat(matcher.matches(shouldNotMatchConfigFile.toPath())).describedAs("This file should not be matched").isFalse();
   }
 
   private void writeLinesToMuleExcludeFile(String... lines) throws IOException {

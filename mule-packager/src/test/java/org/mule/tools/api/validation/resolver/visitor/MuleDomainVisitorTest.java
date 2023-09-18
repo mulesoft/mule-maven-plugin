@@ -6,15 +6,14 @@
  */
 package org.mule.tools.api.validation.resolver.visitor;
 
-import org.junit.Test;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.validation.resolver.model.ProjectDependencyNode;
 
 import java.util.Set;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static util.ResolverTestHelper.buildDependencies;
@@ -34,6 +33,6 @@ public class MuleDomainVisitorTest {
 
     visitor.collectDependencies(nodeSpy);
 
-    assertThat("Collected dependencies should be empty", visitor.getCollectedDependencies().isEmpty(), is(true));
+    assertThat(visitor.getCollectedDependencies().isEmpty()).describedAs("Collected dependencies should be empty").isTrue();
   }
 }

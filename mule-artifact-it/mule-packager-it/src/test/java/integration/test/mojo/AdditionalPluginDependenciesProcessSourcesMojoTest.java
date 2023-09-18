@@ -6,13 +6,10 @@
  */
 package integration.test.mojo;
 
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.fail;
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
-
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class AdditionalPluginDependenciesProcessSourcesMojoTest extends AbstractProcessSourcesMojoTest {
 
@@ -35,80 +32,80 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
 
 
   @Test
-  public void muleAppWithPluginWithAdditionalDependency() throws Exception {
+  void muleAppWithPluginWithAdditionalDependency() throws Exception {
     final String appName = "mule-app-plugin-with-additional-dep";
     final String appLocation = getAppLocation(appName);
     processSourcesOnProject(appLocation);
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent, true);
+    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
   }
 
   @Test
-  public void muleAppWithPluginWithDependencyAndAdditionalDependencyWithSameVersion() throws Exception {
+  void muleAppWithPluginWithDependencyAndAdditionalDependencyWithSameVersion() throws Exception {
     final String appName = "mule-app-plugin-with-dep-and-additional-dep-same-version";
     final String appLocation = getAppLocation(appName);
     processSourcesOnProject(appLocation);
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent, true);
+    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
   }
 
   @Test
-  public void muleAppWithPluginWithDependencyAndAdditionalDependencyWithDifferentVersion() throws Exception {
+  void muleAppWithPluginWithDependencyAndAdditionalDependencyWithDifferentVersion() throws Exception {
     final String appName = "mule-app-plugin-with-dep-and-additional-dep-different-version";
     final String appLocation = getAppLocation(appName);
     processSourcesOnProject(appLocation);
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent, true);
+    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_V2_PATH_SUFFIX);
   }
 
   @Test
-  public void muleAppWithMultiplePluginsWithAdditionalDependencies() throws Exception {
+  void muleAppWithMultiplePluginsWithAdditionalDependencies() throws Exception {
     final String appName = "mule-app-multiple-plugins-with-additional-deps";
     final String appLocation = getAppLocation(appName);
     processSourcesOnProject(appLocation);
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent, true);
+    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
   }
 
 
   @Test
-  public void muleAppWithMultiplePluginsWithSameAdditionalDependencies() throws Exception {
+  void muleAppWithMultiplePluginsWithSameAdditionalDependencies() throws Exception {
     final String appName = "mule-app-multiple-plugins-with-same-additional-dep";
     final String appLocation = getAppLocation(appName);
     processSourcesOnProject(appLocation);
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent, true);
+    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Z_PATH_SUFFIX);
   }
 
   @Test
-  public void muleAppWithMultiplePluginsWithSameAdditionalDependenciesWithDifferentVersion() throws Exception {
+  void muleAppWithMultiplePluginsWithSameAdditionalDependenciesWithDifferentVersion() throws Exception {
     final String appName = "mule-app-multiple-plugins-with-same-additional-dep-different-version";
     final String appLocation = getAppLocation(appName);
     processSourcesOnProject(appLocation);
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent, true);
+    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Z_PATH_SUFFIX);
@@ -119,14 +116,14 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
    * Validates that if a mule-plugin defined additional libraries those are taken into account.
    */
   @Test
-  public void muleAppWithReusableAppPlugin() throws Exception {
+  void muleAppWithReusableAppPlugin() throws Exception {
     final String appName = "mule-app-plugin-with-reusable-app";
     final String appLocation = getAppLocation(appName);
     processSourcesOnProject(appLocation);
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent, true);
+    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Z_PATH_SUFFIX);
   }
@@ -136,14 +133,14 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
    * plugins.
    */
   @Test
-  public void muleAppWithReusableAppPluginAndOverridedAdditionalDependency() throws Exception {
+  void muleAppWithReusableAppPluginAndOverridedAdditionalDependency() throws Exception {
     final String appName = "mule-app-plugin-with-reusable-app-and-additional-dep-x-v2";
     final String appLocation = getAppLocation(appName);
     processSourcesOnProject(appLocation);
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent, true);
+    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_V2_PATH_SUFFIX);
   }
 
@@ -151,42 +148,42 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
    * Validates that if two mule-plugin have the same additional library then the latest one is going to be used.
    */
   @Test
-  public void muleAppWithReusableAppAndUsingAnotherReusableAppWithANewestXVersion() throws Exception {
+  void muleAppWithReusableAppAndUsingAnotherReusableAppWithANewestXVersion() throws Exception {
     final String appName = "mule-app-plugin-with-reusable-app-and-reusable-app2";
     final String appLocation = getAppLocation(appName);
     processSourcesOnProject(appLocation);
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent, true);
+    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_V3_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Z_PATH_SUFFIX);
   }
 
   @Test
-  public void muleAppWithPluginWithSameDependencyAsAdditionalDifferentClassifier() throws Exception {
+  void muleAppWithPluginWithSameDependencyAsAdditionalDifferentClassifier() throws Exception {
     final String appName = "mule-app-plugin-with-same-additional-dep-different-classifier";
     final String appLocation = getAppLocation(appName);
     processSourcesOnProject(appLocation);
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent, true);
+    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, "/target/repository/group/id/y/artifact-id-y/1.0.0/artifact-id-y-1.0.0-test-jar.jar");
   }
 
   @Test
-  public void muleAppWithPluginWithSameDependencyAsAdditionalDifferentClassifierAsTransitive() throws Exception {
+  void muleAppWithPluginWithSameDependencyAsAdditionalDifferentClassifierAsTransitive() throws Exception {
     final String appName = "mule-app-plugin-with-same-additional-dep-different-classifier-as-transitive";
     final String appLocation = getAppLocation(appName);
     processSourcesOnProject(appLocation);
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent, true);
+    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
     assertArtifactInstalled(appLocation,
@@ -206,7 +203,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
   private void assertArtifactInstalled(String appLocation, String location) throws Exception {
     String finalLocation = appLocation + location;
     try {
-      assertThat(getFile(finalLocation).exists(), equalTo(true));
+      assertThat(getFile(finalLocation)).exists();
     } catch (Exception e) {
       fail(e.getMessage());
     }

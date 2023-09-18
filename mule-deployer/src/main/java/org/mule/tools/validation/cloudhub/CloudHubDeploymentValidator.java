@@ -6,6 +6,7 @@
  */
 package org.mule.tools.validation.cloudhub;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.SupportedVersion;
 import org.mule.tools.client.core.exception.DeploymentException;
@@ -39,7 +40,8 @@ public class CloudHubDeploymentValidator extends AbstractDeploymentValidator {
    * 
    * @return The generated CloudHub client.
    */
-  private CloudHubClient getCloudHubClient() {
+  @VisibleForTesting
+  protected CloudHubClient getCloudHubClient() {
     CloudHubClient client = new CloudHubClient((CloudHubDeployment) deployment, null);
     return client;
   }

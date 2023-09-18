@@ -4,30 +4,28 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
+
 package org.mule.tools.api.packager.archiver;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-
-import java.io.File;
-
 import org.codehaus.plexus.archiver.dir.DirectoryArchiver;
-import org.codehaus.plexus.archiver.zip.ZipArchiver;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DomainBundleExplodedArchiverTest {
 
   private DomainBundleArchiver archiver;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     archiver = new DomainBundleExplodedArchiver();
   }
 
   @Test
   public void validateArchiverType() {
-    assertThat("The archiver type is not as expected", archiver.getArchiver(), instanceOf(DirectoryArchiver.class));
+    assertThat(archiver.getArchiver()).describedAs("The archiver type is not as expected").isInstanceOf(DirectoryArchiver.class);
   }
 
 }

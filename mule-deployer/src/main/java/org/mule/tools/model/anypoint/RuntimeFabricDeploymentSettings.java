@@ -20,7 +20,6 @@ public class RuntimeFabricDeploymentSettings {
     http = new Http();
   }
 
-
   public RuntimeFabricDeploymentSettings(RuntimeFabricDeploymentSettings settings) {
     runtimeVersion = settings.runtimeVersion;
     lastMileSecurity = settings.lastMileSecurity;
@@ -103,47 +102,33 @@ public class RuntimeFabricDeploymentSettings {
     this.updateStrategy = updateStrategy;
   }
 
-
-
   public boolean isEnforceDeployingReplicasAcrossNodes() {
     return enforceDeployingReplicasAcrossNodes;
   }
-
-
 
   public void setEnforceDeployingReplicasAcrossNodes(boolean enforceDeployingReplicasAcrossNodes) {
     this.enforceDeployingReplicasAcrossNodes = enforceDeployingReplicasAcrossNodes;
   }
 
-
-
   public Http getHttp() {
     return http;
   }
-
-
 
   public void setHttp(Http http) {
     this.http = http;
   }
 
-
   public boolean isForwardSslSession() {
     return forwardSslSession;
   }
-
-
 
   public void setForwardSslSession(boolean forwardSslSession) {
     this.forwardSslSession = forwardSslSession;
   }
 
-
   public boolean isDisableAmLogForwarding() {
     return disableAmLogForwarding;
   }
-
-
 
   public void setDisableAmLogForwarding(boolean disableAmLogForwarding) {
     this.disableAmLogForwarding = disableAmLogForwarding;

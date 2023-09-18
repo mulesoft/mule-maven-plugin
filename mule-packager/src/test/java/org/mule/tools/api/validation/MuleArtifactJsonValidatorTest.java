@@ -4,12 +4,11 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
 package org.mule.tools.api.validation;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
@@ -19,6 +18,10 @@ import static org.mule.tools.api.validation.MuleArtifactJsonValidator.checkName;
 import static org.mule.tools.api.validation.MuleArtifactJsonValidator.isMuleArtifactJsonPresent;
 import static org.mule.tools.api.validation.MuleArtifactJsonValidator.isMuleArtifactJsonValid;
 import static org.mule.tools.api.validation.MuleArtifactJsonValidator.validateMuleArtifactMandatoryFields;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
 import org.mule.tools.api.exception.ValidationException;
@@ -26,265 +29,260 @@ import org.mule.tools.model.Deployment;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
 
 public class MuleArtifactJsonValidatorTest {
 
-  @Rule
-  public TemporaryFolder projectBaseFolder = new TemporaryFolder();
+  @TempDir
+  public Path projectBaseFolder;
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
   private File muleArtifactJsonFile;
   private List<String> missingFields;
   private Deployment deploymentConfigurationMock;
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
-    projectBaseFolder.create();
-    muleArtifactJsonFile = projectBaseFolder.newFile(MULE_ARTIFACT_JSON);
+    projectBaseFolder.toFile();
+    Files.createFile(projectBaseFolder.resolve(MULE_ARTIFACT_JSON));
+    muleArtifactJsonFile = projectBaseFolder.resolve(MULE_ARTIFACT_JSON).toFile();
+    projectBaseFolder.resolve(muleArtifactJsonFile.toString());
     missingFields = new ArrayList<>();
     deploymentConfigurationMock = mock(Deployment.class);
     when(deploymentConfigurationMock.getMuleVersion()).thenReturn(Optional.of("4.0.0"));
   }
 
   @Test
-  public void isMuleArtifactJsonPresentFailTest() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException
-        .expectMessage("Invalid Mule project. Missing mule-artifact.json file, it must be present in the root of application");
+  public void isMuleArtifactJsonPresentFailTest() {
+    assertThatThrownBy(() -> {
+      muleArtifactJsonFile.delete();
 
-    muleArtifactJsonFile.delete();
-
-    isMuleArtifactJsonPresent(projectBaseFolder.getRoot().toPath());
+      isMuleArtifactJsonPresent(projectBaseFolder.toAbsolutePath());
+    }).isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("Invalid Mule project. Missing mule-artifact.json file, it must be present in the root of application");
   }
 
   @Test
-  public void isMuleArtifactJsonPresentTest() throws ValidationException, IOException {
-    isMuleArtifactJsonPresent(projectBaseFolder.getRoot().toPath());
+  public void isMuleArtifactJsonPresentTest() throws ValidationException {
+    isMuleArtifactJsonPresent(projectBaseFolder.toAbsolutePath());
   }
 
   @Test
-  public void isMuleArtifactJsonValidEmptyFileTest() throws IOException, ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("The mule-artifact.json file is empty");
-    isMuleArtifactJsonValid(projectBaseFolder.getRoot().toPath(), Optional.empty());
+  public void isMuleArtifactJsonValidEmptyFileTest() {
+    assertThatThrownBy(() -> isMuleArtifactJsonValid(projectBaseFolder.toAbsolutePath(), Optional.empty()))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("The mule-artifact.json file is empty");
   }
 
   @Test
-  public void isMuleArtifactJsonValidInvalidJsonSyntaxTest() throws IOException, ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("JsonSyntaxException");
-    FileUtils.writeStringToFile(muleArtifactJsonFile, "{}}}", (String) null);
-    isMuleArtifactJsonValid(projectBaseFolder.getRoot().toPath(), Optional.empty());
+  public void isMuleArtifactJsonValidInvalidJsonSyntaxTest() {
+    assertThatThrownBy(() -> {
+      FileUtils.writeStringToFile(muleArtifactJsonFile, "{}}}", (String) null);
+      isMuleArtifactJsonValid(projectBaseFolder.toAbsolutePath(), Optional.empty());
+    }).isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("JsonSyntaxException");
   }
 
   @Test
-  public void isMuleArtifactJsonValidArbitraryIOExceptionTest() throws IOException, ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("java.io.FileNotFoundException");
-    muleArtifactJsonFile.delete();
-    muleArtifactJsonFile = projectBaseFolder.newFolder(MULE_ARTIFACT_JSON);
-    isMuleArtifactJsonValid(projectBaseFolder.getRoot().toPath(), Optional.empty());
+  public void isMuleArtifactJsonValidArbitraryIOExceptionTest() {
+    assertThatThrownBy(() -> {
+      muleArtifactJsonFile.delete();
+      muleArtifactJsonFile = projectBaseFolder.resolve(MULE_ARTIFACT_JSON).toFile();
+      isMuleArtifactJsonValid(projectBaseFolder.toAbsolutePath(), Optional.empty());
+    }).isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("java.io.FileNotFoundException");
   }
 
   @Test
-  public void checkNameMissingTest() throws IOException {
+  public void checkNameMissingTest() {
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer().deserialize("{}");
 
     checkName(muleArtifact, missingFields);
 
-    assertThat("Missing fields should contain the name field name", missingFields, containsInAnyOrder("name"));
+    assertThat(missingFields).describedAs("Missing fields should contain the name field name").contains("name");
   }
 
   @Test
-  public void checkNameTest() throws IOException {
+  public void checkNameTest() {
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer().deserialize("{ name:aaa }");
 
     checkName(muleArtifact, missingFields);
 
-    assertThat("Missing fields should be empty", missingFields.isEmpty(), is(true));
+    assertThat(missingFields.isEmpty()).describedAs("Missing fields should be empty").isTrue();
   }
 
   @Test
-  public void checkMinMuleVersionValueMissingTest() throws IOException, ValidationException {
+  public void checkMinMuleVersionValueMissingTest() throws ValidationException {
     MuleApplicationModel muleArtifact = new MuleApplicationModelJsonSerializer().deserialize("{ }");
 
     checkMinMuleVersionValue(muleArtifact, missingFields, Optional.empty());
 
-    assertThat("Missing fields should contain the minMuleVersion field name", missingFields,
-               containsInAnyOrder("minMuleVersion"));
+    assertThat(missingFields).describedAs("Missing fields should contain the minMuleVersion field name")
+        .contains("minMuleVersion");
   }
 
   @Test
-  public void checkMinMuleVersionValueTest() throws IOException, ValidationException {
+  public void checkMinMuleVersionValueTest() throws ValidationException {
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.0.0 }");
 
     checkMinMuleVersionValue(muleArtifact, missingFields, Optional.empty());
 
-    assertThat("Missing fields should be empty", missingFields.isEmpty(), is(true));
+    assertThat(missingFields.isEmpty()).describedAs("Missing fields should be empty").isTrue();
   }
 
   @Test
-  public void checkClassLoaderModelDescriptorMissingTest() throws IOException {
+  public void checkClassLoaderModelDescriptorMissingTest() {
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer().deserialize("{ }");
 
     checkClassLoaderModelDescriptor(muleArtifact, missingFields);
 
-    assertThat("Missing fields should contain the classLoaderModelLoaderDescriptor and classLoaderModelLoaderDescriptor.id fields names",
-               missingFields,
-               containsInAnyOrder("classLoaderModelLoaderDescriptor", "classLoaderModelLoaderDescriptor.id"));
+    assertThat(missingFields)
+        .describedAs("Missing fields should contain the classLoaderModelLoaderDescriptor and classLoaderModelLoaderDescriptor.id fields names")
+        .contains("classLoaderModelLoaderDescriptor", "classLoaderModelLoaderDescriptor.id");
   }
 
   @Test
-  public void checkClassLoaderModelDescriptorMissingIdTest() throws IOException {
+  public void checkClassLoaderModelDescriptorMissingIdTest() {
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer().deserialize("{ classLoaderModelLoaderDescriptor: {} }");
 
     checkClassLoaderModelDescriptor(muleArtifact, missingFields);
 
-    assertThat("There should be just one missing field", missingFields.size(), equalTo(1));
-    assertThat("Missing fields should contain the classLoaderModelLoaderDescriptor.id fields names", missingFields,
-               containsInAnyOrder("classLoaderModelLoaderDescriptor.id"));
+    assertThat(missingFields.size()).describedAs("There should be just one missing field").isEqualTo(1);
+    assertThat(missingFields).describedAs("Missing fields should contain the classLoaderModelLoaderDescriptor.id fields names")
+        .contains("classLoaderModelLoaderDescriptor.id");
   }
 
   @Test
-  public void checkClassLoaderModelDescriptorTest() throws IOException {
+  public void checkClassLoaderModelDescriptorTest() {
     MuleApplicationModel muleArtifact =
         new MuleApplicationModelJsonSerializer().deserialize("{ classLoaderModelLoaderDescriptor: { id:mule } }");
 
     checkClassLoaderModelDescriptor(muleArtifact, missingFields);
 
-    assertThat("Missing fields should be empty", missingFields.isEmpty(), is(true));
+    assertThat(missingFields.isEmpty()).describedAs("Missing fields should be empty").isTrue();
   }
 
   @Test
-  public void validateMuleArtifactMandatoryFieldsMissingTest() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException
-        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [name, minMuleVersion, requiredProduct]");
+  public void validateMuleArtifactMandatoryFieldsMissingTest() {
+    assertThatThrownBy(() -> {
+      MuleApplicationModel muleArtifact =
+          new MuleApplicationModelJsonSerializer()
+              .deserialize("{ }");
 
-    MuleApplicationModel muleArtifact =
-        new MuleApplicationModelJsonSerializer()
-            .deserialize("{ }");
-
-    validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
+      validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
+    }).isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [name, minMuleVersion, requiredProduct]");
   }
 
   @Test
-  public void validateMuleArtifactMandatoryFieldsMissingNameTest() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [name]");
+  public void validateMuleArtifactMandatoryFieldsMissingNameTest() {
+    assertThatThrownBy(() -> {
+      MuleApplicationModel muleArtifact =
+          new MuleApplicationModelJsonSerializer()
+              .deserialize("{ minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: { id:mule }, requiredProduct: MULE }");
 
-    MuleApplicationModel muleArtifact =
-        new MuleApplicationModelJsonSerializer()
-            .deserialize("{ minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: { id:mule }, requiredProduct: MULE }");
-
-    validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
+      validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
+    }).isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [name]");
   }
 
   @Test
-  public void validateMuleArtifactMandatoryFieldsMissingMinMuleVersionTest() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException
-        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [minMuleVersion]");
+  public void validateMuleArtifactMandatoryFieldsMissingMinMuleVersionTest() {
+    assertThatThrownBy(() -> {
+      MuleApplicationModel muleArtifact =
+          new MuleApplicationModelJsonSerializer()
+              .deserialize("{ name:lala, classLoaderModelLoaderDescriptor: { id:mule }, requiredProduct: MULE }");
 
-    MuleApplicationModel muleArtifact =
-        new MuleApplicationModelJsonSerializer()
-            .deserialize("{ name:lala, classLoaderModelLoaderDescriptor: { id:mule }, requiredProduct: MULE }");
-
-    validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
+      validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
+    }).isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [minMuleVersion]");
   }
 
   @Test
-  public void validateMuleArtifactMandatoryFieldsMissingclassLoaderModelLoaderDescriptorTest() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException
-        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [requiredProduct]. requiredProduct valid values are: MULE, MULE_EE");
+  public void validateMuleArtifactMandatoryFieldsMissingclassLoaderModelLoaderDescriptorTest() {
+    assertThatThrownBy(() -> {
+      MuleApplicationModel muleArtifact =
+          new MuleApplicationModelJsonSerializer()
+              .deserialize("{ name:lala, minMuleVersion:4.0.0, requiredProduct: MULE_EEa }");
 
-    MuleApplicationModel muleArtifact =
-        new MuleApplicationModelJsonSerializer()
-            .deserialize("{ name:lala, minMuleVersion:4.0.0, requiredProduct: MULE_EEa }");
-
-    validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
+      validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
+    }).isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [requiredProduct]. requiredProduct valid values are: MULE, MULE_EE");
   }
 
   @Test
-  public void validateMuleArtifactMandatoryFieldsMissingNameAndClassLoaderModelLoaderDescriptorIdTest()
-      throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException
-        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [name]");
+  public void validateMuleArtifactMandatoryFieldsMissingNameAndClassLoaderModelLoaderDescriptorIdTest() {
+    assertThatThrownBy(() -> {
+      MuleApplicationModel muleArtifact =
+          new MuleApplicationModelJsonSerializer()
+              .deserialize("{ minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: {  }, requiredProduct: MULE }");
 
-    MuleApplicationModel muleArtifact =
-        new MuleApplicationModelJsonSerializer()
-            .deserialize("{ minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: {  }, requiredProduct: MULE }");
-
-    validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
+      validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
+    }).isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [name]");
   }
 
   @Test
-  public void validateMuleArtifactMandatoryFieldsMissingRequiredProductTest()
-      throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException
-        .expectMessage("The following mandatory fields in the mule-artifact.json are missing or invalid: [requiredProduct]");
+  public void validateMuleArtifactMandatoryFieldsMissingRequiredProductTest() {
+    assertThatThrownBy(() -> {
+      MuleApplicationModel muleArtifact =
+          new MuleApplicationModelJsonSerializer()
+              .deserialize("{ name:lala, minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: { id:mule } }");
 
-    MuleApplicationModel muleArtifact =
-        new MuleApplicationModelJsonSerializer()
-            .deserialize("{ name:lala, minMuleVersion:4.0.0, classLoaderModelLoaderDescriptor: { id:mule } }");
-
-    validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
+      validateMuleArtifactMandatoryFields(muleArtifact, Optional.empty());
+    }).isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("The following mandatory fields in the mule-artifact.json are missing or invalid: [requiredProduct]");
   }
 
   @Test
-  public void checkMinMuleVersionInvalidValueTest() throws IOException, ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("Version 4.0 does not comply with semantic versioning specification");
-    MuleApplicationModel muleArtifact =
-        new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.0 }");
+  public void checkMinMuleVersionInvalidValueTest() {
+    assertThatThrownBy(() -> {
+      MuleApplicationModel muleArtifact =
+          new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.0 }");
 
-    checkMinMuleVersionValue(muleArtifact, missingFields, Optional.empty());
+      checkMinMuleVersionValue(muleArtifact, missingFields, Optional.empty());
+    }).isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("Version 4.0 does not comply with semantic versioning specification");
   }
 
   @Test
-  public void checkMinMuleVersionAgainstDeploymentInvalidValueTest() throws IOException, ValidationException {
-    expectedException.expect(ValidationException.class);
-    MuleApplicationModel muleArtifact =
-        new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.0.0 }");
+  public void checkMinMuleVersionAgainstDeploymentInvalidValueTest() {
+    assertThatThrownBy(() -> {
+      MuleApplicationModel muleArtifact =
+          new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.0.0 }");
 
-    checkMinMuleVersionValue(muleArtifact, missingFields, Optional.of("3.8.0"));
+      checkMinMuleVersionValue(muleArtifact, missingFields, Optional.of("3.8.0"));
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
-  public void checkMinMuleVersionAgainstDeploymentInvalidValue2Test() throws IOException, ValidationException {
-    expectedException.expect(ValidationException.class);
-    MuleApplicationModel muleArtifact =
-        new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.1.0 }");
+  public void checkMinMuleVersionAgainstDeploymentInvalidValue2Test() {
+    assertThatThrownBy(() -> {
+      MuleApplicationModel muleArtifact =
+          new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.1.0 }");
 
-    checkMinMuleVersionValue(muleArtifact, missingFields, Optional.of("4.0.0"));
+      checkMinMuleVersionValue(muleArtifact, missingFields, Optional.of("4.0.0"));
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
-  public void checkMinMuleVersionAgainstDeploymentInvalidValue3Test() throws IOException, ValidationException {
-    expectedException.expect(ValidationException.class);
-    MuleApplicationModel muleArtifact =
-        new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.0.1 }");
+  public void checkMinMuleVersionAgainstDeploymentInvalidValue3Test() {
+    assertThatThrownBy(() -> {
+      MuleApplicationModel muleArtifact =
+          new MuleApplicationModelJsonSerializer().deserialize("{ minMuleVersion:4.0.1 }");
 
-    checkMinMuleVersionValue(muleArtifact, missingFields, Optional.of("4.0.0"));
+      checkMinMuleVersionValue(muleArtifact, missingFields, Optional.of("4.0.0"));
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test

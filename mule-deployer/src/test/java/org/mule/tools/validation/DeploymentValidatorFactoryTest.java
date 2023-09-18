@@ -6,9 +6,7 @@
  */
 package org.mule.tools.validation;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.agent.AgentDeployment;
@@ -20,43 +18,40 @@ import org.mule.tools.validation.arm.ArmDeploymentValidator;
 import org.mule.tools.validation.cloudhub.CloudHubDeploymentValidator;
 import org.mule.tools.validation.standalone.StandaloneDeploymentValidator;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mule.tools.validation.DeploymentValidatorFactory.createDeploymentValidator;
 
 public class DeploymentValidatorFactoryTest {
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
   @Test
   public void createDeploymentValidatorToAgentTest() throws DeploymentException {
-    assertThat("The deployment validator is not the expected", createDeploymentValidator(new AgentDeployment()),
-               instanceOf(AgentDeploymentValidator.class));
+    assertThat(createDeploymentValidator(new AgentDeployment())).describedAs("The deployment validator is not the expected")
+        .isInstanceOf(AgentDeploymentValidator.class);
   }
 
   @Test
   public void createDeploymentValidatorToStandaloneTest() throws DeploymentException {
-    assertThat("The deployment validator is not the expected", createDeploymentValidator(new StandaloneDeployment()),
-               instanceOf(StandaloneDeploymentValidator.class));
+    assertThat(createDeploymentValidator(new StandaloneDeployment())).describedAs("The deployment validator is not the expected")
+        .isInstanceOf(StandaloneDeploymentValidator.class);
   }
 
   @Test
   public void createDeploymentValidatorToArmTest() throws DeploymentException {
-    assertThat("The deployment validator is not the expected", createDeploymentValidator(new ArmDeployment()),
-               instanceOf(ArmDeploymentValidator.class));
+    assertThat(createDeploymentValidator(new ArmDeployment())).describedAs("The deployment validator is not the expected")
+        .isInstanceOf(ArmDeploymentValidator.class);
   }
 
   @Test
   public void createDeploymentValidatorToCloudHubTest() throws DeploymentException {
-    assertThat("The deployment validator is not the expected", createDeploymentValidator(new CloudHubDeployment()),
-               instanceOf(CloudHubDeploymentValidator.class));
+    assertThat(createDeploymentValidator(new CloudHubDeployment())).describedAs("The deployment validator is not the expected")
+        .isInstanceOf(CloudHubDeploymentValidator.class);
   }
 
   @Test
-  public void createDeploymentValidatorUnknownDeploymentExceptionTest() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
-    createDeploymentValidator(mock(Deployment.class));
+  public void createDeploymentValidatorUnknownDeploymentExceptionTest() {
+    assertThatThrownBy(() -> createDeploymentValidator(mock(Deployment.class)))
+        .isExactlyInstanceOf(DeploymentException.class);
   }
 }

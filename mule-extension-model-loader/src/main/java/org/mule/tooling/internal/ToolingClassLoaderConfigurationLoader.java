@@ -9,7 +9,7 @@ package org.mule.tooling.internal;
 import static java.lang.String.format;
 import static java.lang.System.nanoTime;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
-import static org.mule.runtime.deployment.model.api.artifact.ArtifactDescriptorConstants.MULE_LOADER_ID;
+import static org.mule.runtime.module.artifact.api.descriptor.ArtifactDescriptorConstants.MULE_LOADER_ID;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.runtime.core.api.config.bootstrap.ArtifactType;
@@ -32,7 +32,7 @@ public class ToolingClassLoaderConfigurationLoader implements ClassLoaderConfigu
 
   private static final Logger LOGGER = getLogger(ToolingClassLoaderConfigurationLoader.class);
 
-  private List<ClassLoaderConfigurationLoader> classLoaderConfigurationLoaders;
+  private final List<ClassLoaderConfigurationLoader> classLoaderConfigurationLoaders;
 
   public ToolingClassLoaderConfigurationLoader(List<ClassLoaderConfigurationLoader> classLoaderConfigurationLoaders) {
     this.classLoaderConfigurationLoaders = classLoaderConfigurationLoaders;
@@ -64,7 +64,6 @@ public class ToolingClassLoaderConfigurationLoader implements ClassLoaderConfigu
   @Override
   public boolean supportsArtifactType(ArtifactType artifactType) {
     return classLoaderConfigurationLoaders.stream()
-        .filter(classLoaderConfigurationLoader -> classLoaderConfigurationLoader.supportsArtifactType(artifactType)).findFirst()
-        .isPresent();
+        .anyMatch(classLoaderConfigurationLoader -> classLoaderConfigurationLoader.supportsArtifactType(artifactType));
   }
 }

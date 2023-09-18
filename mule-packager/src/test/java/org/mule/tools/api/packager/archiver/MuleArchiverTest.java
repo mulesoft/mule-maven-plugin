@@ -4,38 +4,41 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
 package org.mule.tools.api.packager.archiver;
 
 import static java.nio.file.Paths.get;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
 
-import java.io.File;
-import java.nio.file.Path;
+//import java.io.File;
+//import java.nio.file.Path;
 
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.nio.file.Path;
 
 public class MuleArchiverTest extends AbstractMuleArchiverTest {
 
-  @Before
+  @BeforeEach
   public void setUp() {
     archiver = new MuleArchiver();
   }
 
   @Test
   public void validateArchiverType() {
-    assertThat("The archiver type is not as expected", archiver.getArchiver(), instanceOf(ZipArchiver.class));
+    assertThat(archiver.getArchiver()).describedAs("The archiver type is not as expected").isInstanceOf(ZipArchiver.class);
   }
 
   @Test
@@ -43,7 +46,7 @@ public class MuleArchiverTest extends AbstractMuleArchiverTest {
     Path appBasePath = get(REAL_APP_TARGET);
     Path appMetaInfPath = appBasePath.resolve(META_INF.value());
 
-    File destinationFile = new File(targetFileFolder.getRoot(), REAL_APP_TARGET + ".zip");
+    File destinationFile = new File(targetFileFolder.toAbsolutePath().toFile(), REAL_APP_TARGET + ".zip");
 
     archiver.addToRoot(getTestResourceFile(appBasePath.resolve(CLASSES.value())), null, null);
     archiver.addMaven(getTestResourceFile(appMetaInfPath.resolve(MAVEN.value())), null, null);
@@ -54,7 +57,7 @@ public class MuleArchiverTest extends AbstractMuleArchiverTest {
 
     archiver.createArchive();
 
-    assertThat("The destination file should be a file", destinationFile.isDirectory(), is(false));
+    assertThat(destinationFile.isDirectory()).describedAs("The destination file should be a file").isFalse();
     File destinationDirectoryForUnzip = uncompressArchivedApp(destinationFile);
     assertCompleteAppContent(destinationDirectoryForUnzip);
   }

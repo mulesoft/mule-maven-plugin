@@ -6,8 +6,8 @@
  */
 package org.mule.tools.api.validation.resolver.model;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.util.Project;
@@ -15,8 +15,7 @@ import org.mule.tools.api.util.ProjectBuilder;
 import java.util.Map;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static util.ResolverTestHelper.MULE_PLUGIN_CLASSIFIER;
@@ -32,7 +31,7 @@ public class ProjectDependencyNodeTest {
   private int NUMBER_DEPENDENCIES = 10;
   private DependenciesFilter filterMock;
 
-  @Before
+  @BeforeEach
   public void setUp() throws ValidationException {
     projectMock = mock(Project.class);
     builderMock = mock(ProjectBuilder.class);
@@ -45,7 +44,7 @@ public class ProjectDependencyNodeTest {
 
   @Test
   public void getChildrenTest() throws ValidationException {
-    assertThat("List of artifact coordinates is not the expected", nodeSpy.getChildren(filterMock),
-               equalTo(newHashSet(dependenciesMock.values())));
+    assertThat(nodeSpy.getChildren(filterMock)).describedAs("List of artifact coordinates is not the expected")
+        .isEqualTo(newHashSet(dependenciesMock.values()));
   }
 }

@@ -4,24 +4,24 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
 package org.mule.tools.api.repository;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.*;
 
 import org.apache.maven.project.*;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Spy;
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
@@ -39,7 +39,8 @@ public class RepositoryGeneratorTest {
   private static final String TYPE = "jar";
   private static final String CLASSIFIER = "classifier";
   private static final String REPOSITORY_FOLDER = "repository";
-  private TemporaryFolder temporaryFolder;
+  @TempDir
+  public Path temporaryFolder;
   private RepositoryGenerator repositoryGenerator;
   private MavenProject projectMock;
   private ArtifactInstaller artifactInstallerMock;
@@ -48,16 +49,11 @@ public class RepositoryGeneratorTest {
   private ApplicationClassloaderModel appModelMock;
   private ApplicationGAVModel appGAVModel;
 
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
-
   @Spy
   RepositoryGenerator repositoryGeneratorSpy;
 
-  @Before
+  @BeforeEach
   public void before() throws IOException, ProjectBuildingException {
-    temporaryFolder = new TemporaryFolder();
-    temporaryFolder.create();
     projectMock = mock(MavenProject.class);
     resultMock = mock(ProjectBuildingResult.class);
     when(resultMock.getProject()).thenReturn(projectMock);
@@ -65,8 +61,8 @@ public class RepositoryGeneratorTest {
     ApplicationClassLoaderModelAssembler applicationClassloaderModelAssemblerMock =
         mock(ApplicationClassLoaderModelAssembler.class);
     appGAVModel = new ApplicationGAVModel(GROUP_ID, ARTIFACT_ID, VERSION);
-    repositoryGenerator = new RepositoryGenerator(temporaryFolder.newFile("pom.xml"),
-                                                  temporaryFolder.getRoot(), artifactInstallerMock,
+    repositoryGenerator = new RepositoryGenerator(temporaryFolder.resolve("pom.xml").toFile(),
+                                                  temporaryFolder.toFile(), artifactInstallerMock,
                                                   applicationClassloaderModelAssemblerMock, appGAVModel, new ArrayList<String>());
     repositoryGeneratorSpy = spy(repositoryGenerator);
     appModelMock = mock(ApplicationClassloaderModel.class);
@@ -76,31 +72,32 @@ public class RepositoryGeneratorTest {
 
   @Test
   public void generateMarkerFileInRepositoryFolderTest() throws IOException {
-    File generatedMarkerFile = new File(temporaryFolder.getRoot(), ".marker");
+    File generatedMarkerFile = temporaryFolder.resolve(".marker").toFile();
 
-    assertThat("Marker file already exists", !generatedMarkerFile.exists());
+    assertThat(!generatedMarkerFile.exists()).describedAs("Marker file already exists");
 
-    repositoryGenerator.generateMarkerFileInRepositoryFolder(temporaryFolder.getRoot());
+    repositoryGenerator.generateMarkerFileInRepositoryFolder(temporaryFolder.toFile());
 
-    assertThat("Marker file was not generated", generatedMarkerFile.exists());
+    assertThat(generatedMarkerFile.exists()).describedAs("Marker file was not generated");
   }
 
   @Test
   public void generateMarkerFileInRepositoryFolderWhenFolderIsNotWritableTest() throws IOException {
-    exception.expect(IOException.class);
-    File generatedMarkerFile = new File(temporaryFolder.getRoot(), ".marker");
+    assertThatThrownBy(() -> {
+      File generatedMarkerFile = temporaryFolder.resolve(".marker").toFile();
 
-    assertThat("Marker file already exists", !generatedMarkerFile.exists());
+      assertThat(!generatedMarkerFile.exists()).describedAs("Marker file already exists");
 
-    File readOnlyFolder = temporaryFolder.getRoot();
-    FileUtils.markAsReadOnly(readOnlyFolder);
+      File readOnlyFolder = temporaryFolder.toFile();
+      FileUtils.markAsReadOnly(readOnlyFolder);
 
-    repositoryGenerator.generateMarkerFileInRepositoryFolder(readOnlyFolder);
+      repositoryGenerator.generateMarkerFileInRepositoryFolder(readOnlyFolder);
+    }).isExactlyInstanceOf(IOException.class);
   }
 
   @Test
   public void installEmptySetArtifactsTest() throws IOException {
-    File repositoryFolder = temporaryFolder.getRoot();
+    File repositoryFolder = temporaryFolder.toFile();
     when(appModelMock.getArtifacts()).thenReturn(Collections.emptySet());
     repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifactInstallerMock, appModelMock, false);
     verify(repositoryGeneratorSpy, times(1)).generateMarkerFileInRepositoryFolder(repositoryFolder);
@@ -109,7 +106,7 @@ public class RepositoryGeneratorTest {
 
   @Test
   public void installArtifactsTest() throws IOException {
-    File repositoryFolder = temporaryFolder.getRoot();
+    File repositoryFolder = temporaryFolder.toFile();
     buildArtifacts();
     when(appModelMock.getArtifacts()).thenReturn(artifacts);
     repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifactInstallerMock, appModelMock, true);
@@ -119,19 +116,18 @@ public class RepositoryGeneratorTest {
 
   @Test
   public void getRepositoryFolderIfDoesNotExistTest() {
-    temporaryFolder.delete();
-    File repositoryFolder = new File(temporaryFolder.getRoot(), REPOSITORY_FOLDER);
-    assertThat("Repository folder already exists", !repositoryFolder.exists());
+    File repositoryFolder = temporaryFolder.resolve(REPOSITORY_FOLDER).toFile();
+    assertThat(!repositoryFolder.exists()).describedAs("Repository folder already exists");
     repositoryFolder = repositoryGenerator.getRepositoryFolder();
-    assertThat("Repository folder was not created", repositoryFolder.exists());
+    assertThat(repositoryFolder.exists()).describedAs("Repository folder was not created");
   }
 
   @Test
   public void getRepositoryFolderIfAlreadyExistsTest() throws IOException {
-    File expectedRepositoryFolder = temporaryFolder.newFolder(REPOSITORY_FOLDER);
-    assertThat("Repository folder does not exist", expectedRepositoryFolder.exists());
+    File expectedRepositoryFolder = temporaryFolder.resolve(REPOSITORY_FOLDER).toFile();
+    assertThat(expectedRepositoryFolder.exists()).describedAs("Repository folder does not exist");
     File actualRepositoryFolder = repositoryGenerator.getRepositoryFolder();
-    assertThat("Repository folder was modified", actualRepositoryFolder, equalTo(expectedRepositoryFolder));
+    assertThat(actualRepositoryFolder).describedAs("Repository folder was modified").isEqualTo(expectedRepositoryFolder);
   }
 
   private void buildArtifacts() {

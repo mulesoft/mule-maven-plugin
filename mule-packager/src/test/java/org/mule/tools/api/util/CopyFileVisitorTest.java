@@ -6,25 +6,24 @@
  */
 package org.mule.tools.api.util;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.List;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 /**
  * @author Mulesoft Inc.
@@ -40,8 +39,8 @@ public class CopyFileVisitorTest {
   public static final String HIDDEN_FILE = ".hiddenFile";
   public static final String HIDDEN_FOLDER = ".hiddenFolder";
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir
+  public Path temporaryFolder;
 
   private File fromFolder;
   private File targetFolder;
@@ -53,14 +52,14 @@ public class CopyFileVisitorTest {
 
   private BasicFileAttributes basicFileAttributesMock;
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
     basicFileAttributesMock = mock(BasicFileAttributes.class);
 
-    fromFolder = new File(temporaryFolder.getRoot(), FROM_FOLDER);
+    fromFolder = temporaryFolder.resolve(FROM_FOLDER).toFile();
     fromFolder.mkdirs();
 
-    targetFolder = new File(temporaryFolder.getRoot(), TARGET_FOLDER);
+    targetFolder = temporaryFolder.resolve(TARGET_FOLDER).toFile();
     targetFolder.mkdirs();
 
     normalFile = new File(fromFolder, NORMAL_FILE);
@@ -86,7 +85,7 @@ public class CopyFileVisitorTest {
     CopyFileVisitor visitor = new CopyFileVisitor(fromFolder, targetFolder);
 
     FileVisitResult fileVisitResult = visitor.visitFileFailed(normalFile.toPath(), new IOException());
-    assertThat(fileVisitResult, is(CONTINUE));
+    assertThat(fileVisitResult).isEqualTo(CONTINUE);
   }
 
   @Test
@@ -94,7 +93,7 @@ public class CopyFileVisitorTest {
     CopyFileVisitor visitor = new CopyFileVisitor(fromFolder, targetFolder);
 
     FileVisitResult fileVisitResult = visitor.postVisitDirectory(fromFolder.toPath(), new IOException());
-    assertThat(fileVisitResult, is(CONTINUE));
+    assertThat(fileVisitResult).isEqualTo(CONTINUE);
   }
 
   @Test
@@ -102,7 +101,7 @@ public class CopyFileVisitorTest {
     CopyFileVisitor visitor = new CopyFileVisitor(fromFolder, targetFolder);
 
     FileVisitResult fileVisitResult = visitor.preVisitDirectory(fromFolder.toPath(), basicFileAttributesMock);
-    assertThat(fileVisitResult, is(CONTINUE));
+    assertThat(fileVisitResult).isEqualTo(CONTINUE);
   }
 
   @Test
@@ -111,7 +110,7 @@ public class CopyFileVisitorTest {
     visitor.setExclusions(singletonList(fromFolder.toPath()));
 
     FileVisitResult fileVisitResult = visitor.preVisitDirectory(fromFolder.toPath(), basicFileAttributesMock);
-    assertThat(fileVisitResult, is(SKIP_SUBTREE));
+    assertThat(fileVisitResult).isEqualTo(SKIP_SUBTREE);
   }
 
   @Test
@@ -119,7 +118,7 @@ public class CopyFileVisitorTest {
     CopyFileVisitor visitor = new CopyFileVisitor(fromFolder, targetFolder);
 
     FileVisitResult fileVisitResult = visitor.preVisitDirectory(hiddenFolder.toPath(), basicFileAttributesMock);
-    assertThat(fileVisitResult, is(CONTINUE));
+    assertThat(fileVisitResult).isEqualTo(CONTINUE);
   }
 
   @Test
@@ -128,7 +127,7 @@ public class CopyFileVisitorTest {
     visitor.setExclusions(singletonList(hiddenFolder.toPath()));
 
     FileVisitResult fileVisitResult = visitor.preVisitDirectory(hiddenFolder.toPath(), basicFileAttributesMock);
-    assertThat(fileVisitResult, is(SKIP_SUBTREE));
+    assertThat(fileVisitResult).isEqualTo(SKIP_SUBTREE);
   }
 
   @Test
@@ -136,14 +135,14 @@ public class CopyFileVisitorTest {
     CopyFileVisitor visitor = new CopyFileVisitor(fromFolder, targetFolder, true, true);
 
     FileVisitResult fileVisitResult = visitor.preVisitDirectory(fromFolder.toPath(), basicFileAttributesMock);
-    assertThat(fileVisitResult, is(CONTINUE));
+    assertThat(fileVisitResult).isEqualTo(CONTINUE);
   }
 
   @Test
   public void preVisitDirectoryIgnoreHiddenHiddenFolder() throws IOException {
     CopyFileVisitor visitor = new CopyFileVisitor(fromFolder, targetFolder, true, true);
     FileVisitResult fileVisitResult = visitor.preVisitDirectory(hiddenFolder.toPath(), basicFileAttributesMock);
-    assertThat(fileVisitResult, is(SKIP_SUBTREE));
+    assertThat(fileVisitResult).isEqualTo(SKIP_SUBTREE);
   }
 
   @Test
@@ -151,7 +150,7 @@ public class CopyFileVisitorTest {
     CopyFileVisitor visitor = new CopyFileVisitor(fromFolder, targetFolder);
 
     FileVisitResult fileVisitResult = visitor.visitFile(normalFile.toPath(), basicFileAttributesMock);
-    assertThat(fileVisitResult, is(CONTINUE));
+    assertThat(fileVisitResult).isEqualTo(CONTINUE);
   }
 
   @Test
@@ -159,7 +158,7 @@ public class CopyFileVisitorTest {
     CopyFileVisitor visitor = new CopyFileVisitor(fromFolder, targetFolder);
 
     FileVisitResult fileVisitResult = visitor.visitFile(hiddenFile.toPath(), basicFileAttributesMock);
-    assertThat(fileVisitResult, is(CONTINUE));
+    assertThat(fileVisitResult).isEqualTo(CONTINUE);
   }
 
   @Test
@@ -167,7 +166,7 @@ public class CopyFileVisitorTest {
     CopyFileVisitor visitor = new CopyFileVisitor(fromFolder, targetFolder, true, true);
 
     FileVisitResult fileVisitResult = visitor.visitFile(normalFile.toPath(), basicFileAttributesMock);
-    assertThat(fileVisitResult, is(CONTINUE));
+    assertThat(fileVisitResult).isEqualTo(CONTINUE);
   }
 
   @Test
@@ -175,7 +174,7 @@ public class CopyFileVisitorTest {
     CopyFileVisitor visitor = new CopyFileVisitor(fromFolder, targetFolder, true, true);
 
     FileVisitResult fileVisitResult = visitor.visitFile(hiddenFile.toPath(), basicFileAttributesMock);
-    assertThat(fileVisitResult, is(SKIP_SUBTREE));
+    assertThat(fileVisitResult).isEqualTo(SKIP_SUBTREE);
   }
 
   @Test
@@ -189,7 +188,7 @@ public class CopyFileVisitorTest {
         Files.setAttribute(hiddenFile.toPath(), "dos:hidden", false);
       }
       FileVisitResult fileVisitResult = visitor.visitFile(hiddenFile.toPath(), basicFileAttributesMock);
-      assertThat(fileVisitResult, is(SKIP_SUBTREE));
+      assertThat(fileVisitResult).isEqualTo(SKIP_SUBTREE);
     }
   }
 

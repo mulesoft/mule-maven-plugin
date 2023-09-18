@@ -7,19 +7,17 @@
 package org.mule.tools.api.classloader.model;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ArtifactTest {
+class ArtifactTest {
 
   private static final String RESOURCE_FULL_PATH = "User/lala/repository/aaa/bbb.jar";
   private static final URI EXPECTED_URI = URI.create("repository/aaa/bbb.jar");
@@ -37,53 +35,50 @@ public class ArtifactTest {
   private static final String OUTPUT_DIRECTORY =
       PREFIX_GROUP_ID + File.separator + POSFIX_GROUP_ID + File.separator + ARTIFACT_ID + File.separator + VERSION;
 
-  @Rule
-  public TemporaryFolder outputFolder = new TemporaryFolder();
   private ArtifactCoordinates artifactCoordinates;
 
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     artifactCoordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, TYPE, CLASSIFIER);
     artifact = new Artifact(artifactCoordinates, URI.create(RESOURCE_FULL_PATH));
     newArtifact = new Artifact(artifactCoordinates, URI.create(RESOURCE_FULL_PATH));
   }
 
   @Test
-  public void setNewArtifactURIWindowsRelativePathTest() throws URISyntaxException {
+  void setNewArtifactURIWindowsRelativePathTest() throws URISyntaxException {
     newArtifactFile = new File("repository\\aaa\\bbb.jar");
     artifact.setNewArtifactURI(newArtifact, newArtifactFile);
-    assertThat("Relative path is not the expected", newArtifact.getUri(), equalTo(EXPECTED_URI));
+    assertThat(newArtifact.getUri()).as("Relative path is not the expected").isEqualTo(EXPECTED_URI);
   }
 
   @Test
-  public void setNewArtifactURIUnixRelativePathTest() throws URISyntaxException {
+  void setNewArtifactURIUnixRelativePathTest() throws URISyntaxException {
     newArtifactFile = new File("repository/aaa/bbb.jar");
     artifact.setNewArtifactURI(newArtifact, newArtifactFile);
-    assertThat("Relative path is not the expected", newArtifact.getUri(), equalTo(EXPECTED_URI));
+    assertThat(newArtifact.getUri()).as("Relative path is not the expected").isEqualTo(EXPECTED_URI);
   }
 
   @Test
-  public void getFormattedMavenDirectoryTest() {
-    File actual = artifact.getFormattedMavenDirectory(outputFolder.getRoot());
-    File expected = new File(outputFolder.getRoot(),
-                             OUTPUT_DIRECTORY);
-    assertThat("Actual formatted output directory is not the expected", actual.getAbsolutePath(),
-               equalTo(expected.getAbsolutePath()));
+  void getFormattedMavenDirectoryTest(@TempDir File outputFolder) {
+    File actual = artifact.getFormattedMavenDirectory(outputFolder);
+    File expected = new File(outputFolder, OUTPUT_DIRECTORY);
+    assertThat(actual.getAbsolutePath()).as("Actual formatted output directory is not the expected")
+        .isEqualTo(expected.getAbsolutePath());
   }
 
   @Test
-  public void getFormattedArtifactFileNameTest() {
+  void getFormattedArtifactFileNameTest() {
     String actual = artifact.getFormattedArtifactFileName();
     String expected = ARTIFACT_ID + "-" + VERSION + "-" + CLASSIFIER + "." + TYPE;
-    assertThat("Formatted file name is different from the expected", actual, equalTo(expected));
+    assertThat(actual).as("Formatted file name is different from the expected").isEqualTo(expected);
   }
 
   @Test
-  public void getFormattedFileNameWithoutClassifierTest() {
+  void getFormattedFileNameWithoutClassifierTest() {
     artifactCoordinates.setClassifier(StringUtils.EMPTY);
     artifact = new Artifact(artifactCoordinates, URI.create(RESOURCE_FULL_PATH));
     String actual = artifact.getFormattedArtifactFileName();
     String expected = ARTIFACT_ID + "-" + VERSION + "." + TYPE;
-    assertThat("Formatted file name is different from the expected", actual, equalTo(expected));
+    assertThat(actual).as("Formatted file name is different from the expected").isEqualTo(expected);
   }
 }

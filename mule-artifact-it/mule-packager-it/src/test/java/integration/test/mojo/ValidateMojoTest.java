@@ -6,11 +6,14 @@
  */
 package integration.test.mojo;
 
+import integration.ProjectFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.it.VerificationException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ValidateMojoTest extends MojoTest {
+import static org.junit.jupiter.api.Assertions.fail;
+
+class ValidateMojoTest extends MojoTest {
 
   protected static final String VALIDATE = "validate";
   private static final String MISSING_DECLARED_SHARED_LIBRARIES_PROJECT = "missing-declared-shared-libraries-project";
@@ -25,8 +28,8 @@ public class ValidateMojoTest extends MojoTest {
   }
 
   @Test
-  public void testFailOnInvalidPackageType() throws Exception {
-    projectBaseDirectory = builder.createProjectBaseDir(INVALID_PACKAGE_PROJECT, this.getClass());
+  void testFailOnInvalidPackageType() throws Exception {
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir(INVALID_PACKAGE_PROJECT, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
     String textInLog = "Unknown packaging: mule-invalid";
@@ -34,8 +37,8 @@ public class ValidateMojoTest extends MojoTest {
   }
 
   @Test
-  public void testFailWhenMissingPackageType() throws Exception {
-    projectBaseDirectory = builder.createProjectBaseDir(MISSING_PACKAGE_TYPE_PROJECT, this.getClass());
+  void testFailWhenMissingPackageType() throws Exception {
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir(MISSING_PACKAGE_TYPE_PROJECT, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
     String textInLog = "Unknown packaging type jar. Please specify a valid mule packaging type:";
@@ -43,8 +46,8 @@ public class ValidateMojoTest extends MojoTest {
   }
 
   @Test
-  public void testFailOnMissingSharedLibrariesProject() throws Exception {
-    projectBaseDirectory = builder.createProjectBaseDir(MISSING_DECLARED_SHARED_LIBRARIES_PROJECT, this.getClass());
+  void testFailOnMissingSharedLibrariesProject() throws Exception {
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir(MISSING_DECLARED_SHARED_LIBRARIES_PROJECT, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
     String textInLog = "The mule application does not contain the following shared libraries: ";
@@ -52,22 +55,23 @@ public class ValidateMojoTest extends MojoTest {
   }
 
   @Test
-  public void testValidateSharedLibrariesProject() throws Exception {
-    projectBaseDirectory = builder.createProjectBaseDir(VALIDATE_SHARED_LIBRARIES_PROJECT, this.getClass());
+  void testValidateSharedLibrariesProject() throws Exception {
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir(VALIDATE_SHARED_LIBRARIES_PROJECT, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
     try {
       verifier.executeGoal(VALIDATE);
     } catch (VerificationException e) {
+      fail(e);
     }
     verifier.verifyErrorFreeLog();
   }
 
   @Test
-  public void testProjectWithMunitAsCompileDependency() throws Exception {
-    projectBaseDirectory = builder.createProjectBaseDir("munit-as-compile", this.getClass());
+  void testProjectWithMunitAsCompileDependency() throws Exception {
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir("munit-as-compile", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
-    String textInLog = "should have scope \'test\'";
+    String textInLog = "should have scope 'test'";
     executeGoalAndVerifyText(VALIDATE, textInLog);
   }
 
@@ -78,14 +82,14 @@ public class ValidateMojoTest extends MojoTest {
       if (StringUtils.isNotBlank(text)) {
         verifier.verifyTextInLog(text);
       } else {
-        throw e;
+        fail(e);
       }
     }
   }
 
   @Test
-  public void testValidateBundleDomainWithApplicationReferringToDifferentDomainsProject() throws Exception {
-    projectBaseDirectory = builder.createProjectBaseDir(VALIDATE_DOMAIN_BUNDLE_PROJECT, this.getClass());
+  void testValidateBundleDomainWithApplicationReferringToDifferentDomainsProject() throws Exception {
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir(VALIDATE_DOMAIN_BUNDLE_PROJECT, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
     String textInLog = "Validation exception: Every application in the domain bundle must refer to the specified domain: " +

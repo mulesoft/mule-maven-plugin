@@ -4,28 +4,28 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
 package org.mule.tools.api.packager.sources;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.mule.maven.client.api.model.BundleDependency;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
 import java.nio.file.Path;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-
 public class MulePolicyArtifactContentResolverTest extends MuleArtifactContentResolverTest {
 
   private static final String TEMPLATE_XML = "template.xml";
   Path path;
 
-  @Before
+  @BeforeEach
   public void setUpTemplatePath() {
     path = mock(Path.class);
     when(path.getFileName()).thenReturn(path);
@@ -34,7 +34,7 @@ public class MulePolicyArtifactContentResolverTest extends MuleArtifactContentRe
 
   @Test
   public void hasMuleAsRootElementWithNullDocument() {
-    assertThat("Method should have returned true", resolver.hasMuleAsRootElement(path));
+    assertThat(resolver.hasMuleAsRootElement(path)).describedAs("Method should have returned true");
   }
 
   @Override

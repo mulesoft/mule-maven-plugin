@@ -6,22 +6,18 @@
  */
 package org.mule.tools.api.validation.exchange;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.mule.tools.client.authentication.model.Credentials;
-import org.mule.tools.client.arm.model.AuthorizationResponse;
-
-import javax.ws.rs.core.Response;
 
 import java.util.ArrayList;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.*;
 
-@Ignore
+@Disabled
 public class ExchangeClientTest {
 
   private static final String EXCHANGE_REPO_URI =
@@ -40,7 +36,7 @@ public class ExchangeClientTest {
   private ExchangeClient client;
   private ExchangeClient clientSpy;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     client = new ExchangeClient(METADATA);
     clientSpy = spy(client);

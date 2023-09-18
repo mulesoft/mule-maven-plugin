@@ -4,13 +4,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.packager;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+package org.mule.tools.api.packager;
 
 import java.io.IOException;
 import java.nio.file.Path;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * This class contains static methods used by all the test classes in the package org.mule.tools.packager
@@ -53,19 +53,19 @@ public class PackagerTestUtils {
   }
 
   public static void assertFolderExist(Path path) {
-    assertThat("The folder " + path.toString() + " should exist", path.toFile().exists(), is(true));
+    assertThat(path.toFile().exists()).describedAs("The folder " + path.toString() + " should exist").isTrue();
   }
 
   public static void assertFolderIsEmpty(Path path) {
-    assertThat("The folder " + path.toString() + " should be empty", path.toFile().listFiles().length, is(0));
+    assertThat(path.toFile().listFiles().length).describedAs("The folder " + path.toString() + " should be empty").isEqualTo(0);
   }
 
   public static void assertFileExists(Path path) {
-    assertThat("The file" + path.toString() + " is missing", path.toFile().exists(), is(true));
+    assertThat(path.toFile().exists()).describedAs("The file" + path.toString() + " is missing").isTrue();
   }
 
   public static void assertFileDoesNotExists(Path path) {
-    assertThat("The file" + path.toString() + " should not not exits", path.toFile().exists(), is(false));
+    assertThat(path.toFile().exists()).describedAs("The file" + path.toString() + " should not not exits").isFalse();
   }
 
 

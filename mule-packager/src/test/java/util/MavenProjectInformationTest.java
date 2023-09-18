@@ -7,37 +7,33 @@
 package util;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mule.tools.api.util.MavenProjectInformation.getProjectInformation;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.api.util.MavenProjectInformation;
 
+import java.nio.file.Path;
 import java.util.Properties;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
-public class MavenProjectInformationTest {
+class MavenProjectInformationTest {
 
   private MavenProjectInformation mavenProjectInformation;
   private MavenSession mavenSessionMock;
   private MavenProject mavenProjectMock;
   private Build buildMock;
 
-  @Rule
-  public TemporaryFolder projectBaseFolder = new TemporaryFolder();
-
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     mavenSessionMock = mock(MavenSession.class);
     mavenProjectMock = mock(MavenProject.class);
     buildMock = mock(Build.class);
@@ -46,8 +42,6 @@ public class MavenProjectInformationTest {
     systemProperties.put("sysPropTest", "false");
     when(mavenSessionMock.getSystemProperties()).thenReturn(systemProperties);
     when(mavenSessionMock.getGoals()).thenReturn(newArrayList("deploy"));
-
-    when(buildMock.getDirectory()).thenReturn(projectBaseFolder.toString());
 
     when(mavenProjectMock.getBuild()).thenReturn(buildMock);
     when(mavenProjectMock.getModel()).thenReturn(mock(Model.class));
@@ -58,31 +52,34 @@ public class MavenProjectInformationTest {
   }
 
   @Test
-  public void isDeploySpecifyingGoal() {
-    mavenProjectInformation = getProjectInformation(mavenSessionMock, mavenProjectMock, projectBaseFolder.getRoot(), false,
+  void isDeploySpecifyingGoal(@TempDir Path tempDir) {
+    when(buildMock.getDirectory()).thenReturn(tempDir.toAbsolutePath().toString());
+    mavenProjectInformation = getProjectInformation(mavenSessionMock, mavenProjectMock, tempDir.toAbsolutePath().toFile(), false,
                                                     newArrayList(), "mule-application");
-    assertThat("The project information is not a deploy goal", mavenProjectInformation.isDeployment(), equalTo(true));
+    assertThat(mavenProjectInformation.isDeployment()).as("The project information is not a deploy goal").isTrue();
   }
 
   @Test
-  public void isDeploySpecifyingSystemProperty() {
+  void isDeploySpecifyingSystemProperty(@TempDir Path tempDir) {
+    when(buildMock.getDirectory()).thenReturn(tempDir.toAbsolutePath().toString());
     Properties systemProperties = new Properties();
     systemProperties.put("muleDeploy", "true");
     when(mavenSessionMock.getSystemProperties()).thenReturn(systemProperties);
     when(mavenSessionMock.getGoals()).thenReturn(newArrayList("verify"));
 
-    mavenProjectInformation = getProjectInformation(mavenSessionMock, mavenProjectMock, projectBaseFolder.getRoot(), false,
+    mavenProjectInformation = getProjectInformation(mavenSessionMock, mavenProjectMock, tempDir.toAbsolutePath().toFile(), false,
                                                     newArrayList(), "mule-application");
-    assertThat("The project information is not a deploy goal", mavenProjectInformation.isDeployment(), equalTo(true));
+    assertThat(mavenProjectInformation.isDeployment()).as("The project information is not a deploy goal").isTrue();
   }
 
   @Test
-  public void isnotDeploy() {
+  void isNotDeploy(@TempDir Path tempDir) {
+    when(buildMock.getDirectory()).thenReturn(tempDir.toAbsolutePath().toString());
     when(mavenSessionMock.getGoals()).thenReturn(newArrayList("verify"));
 
-    mavenProjectInformation = getProjectInformation(mavenSessionMock, mavenProjectMock, projectBaseFolder.getRoot(), false,
+    mavenProjectInformation = getProjectInformation(mavenSessionMock, mavenProjectMock, tempDir.toAbsolutePath().toFile(), false,
                                                     newArrayList(), "mule-application");
-    assertThat("The project information is for a deploy goal", mavenProjectInformation.isDeployment(), equalTo(false));
+    assertThat(mavenProjectInformation.isDeployment()).as("The project information is for a deploy goal").isFalse();
   }
 
 }

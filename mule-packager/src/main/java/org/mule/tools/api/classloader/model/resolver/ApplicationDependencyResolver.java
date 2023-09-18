@@ -7,10 +7,11 @@
 package org.mule.tools.api.classloader.model.resolver;
 
 import static java.util.Optional.empty;
+
+import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.MavenReactorResolver;
-import org.mule.maven.client.api.model.BundleDependency;
-import org.mule.maven.client.api.model.BundleScope;
-import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.pom.parser.api.model.BundleScope;
 
 import java.io.File;
 import java.util.List;
@@ -21,10 +22,10 @@ public class ApplicationDependencyResolver {
 
   protected static final String MULE_DOMAIN_CLASSIFIER = "mule-domain";
 
-  private final AetherMavenClient muleMavenPluginClient;
+  private final MavenClient mavenClient;
 
-  public ApplicationDependencyResolver(AetherMavenClient muleMavenPluginClient) {
-    this.muleMavenPluginClient = muleMavenPluginClient;
+  public ApplicationDependencyResolver(MavenClient mavenClient) {
+    this.mavenClient = mavenClient;
   }
 
   /**
@@ -58,7 +59,7 @@ public class ApplicationDependencyResolver {
   public List<BundleDependency> resolveApplicationDependencies(File pomFile, boolean includeTestDependencies,
                                                                Optional<MavenReactorResolver> mavenReactorResolver) {
     List<BundleDependency> resolvedApplicationDependencies =
-        muleMavenPluginClient
+        mavenClient
             .resolveArtifactDependencies(pomFile, includeTestDependencies, true, empty(), mavenReactorResolver, empty())
             .stream()
             .filter(d -> !(d.getScope() == BundleScope.PROVIDED) || (d.getDescriptor().getClassifier().isPresent()

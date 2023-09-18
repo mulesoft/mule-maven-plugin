@@ -6,8 +6,7 @@
  */
 package org.mule.tools.validation.agent;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.agent.AgentClient;
 import org.mule.tools.client.agent.AgentInfo;
 import org.mule.tools.model.Deployment;
@@ -15,15 +14,14 @@ import org.mule.tools.model.agent.AgentDeployment;
 import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.validation.AbstractDeploymentValidator;
 import org.mule.tools.validation.EnvironmentSupportedVersions;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+//import org.powermock.core.classloader.annotations.PrepareForTest;
+//import org.powermock.modules.junit4.PowerMockRunner;
+//
+//import static org.hamcrest.CoreMatchers.equalTo;
+//import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.powermock.api.mockito.PowerMockito.*;
-
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(AgentDeploymentValidator.class)
 public class AgentDeploymentValidatorTest {
 
   private static final String MULE_VERSION = "4.0.0";
@@ -44,10 +42,11 @@ public class AgentDeploymentValidatorTest {
     AgentClient clientSpy = spy(new AgentClient(LOG_MOCK, deploymentMock));
     doReturn(agentInfo).when(clientSpy).getAgentInfo();
 
-    doReturn(clientSpy).when(validatorSpy, "getAgentClient");
+    doReturn(clientSpy).when((AgentDeploymentValidator) validatorSpy).getAgentClient();
 
-    assertThat("Supported version that was generated is not the expected", validatorSpy.getEnvironmentSupportedVersions(),
-               equalTo(EXPECTED_ENVIRONMENT_SUPPORTED_VERSIONS));
+    assertThat(validatorSpy.getEnvironmentSupportedVersions())
+        .describedAs("Supported version that was generated is not the expected")
+        .isEqualTo(EXPECTED_ENVIRONMENT_SUPPORTED_VERSIONS);
 
   }
 }

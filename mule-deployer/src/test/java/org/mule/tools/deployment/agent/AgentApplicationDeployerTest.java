@@ -6,8 +6,8 @@
  */
 package org.mule.tools.deployment.agent;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.deployment.artifact.ApplicationDeployer;
 
@@ -20,7 +20,7 @@ public class AgentApplicationDeployerTest {
   private AgentApplicationDeployer agentApplicationDeployer;
   private ApplicationDeployer applicationDeployerMock;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     applicationDeployerMock = mock(ApplicationDeployer.class);
     agentApplicationDeployer = new AgentApplicationDeployer(applicationDeployerMock);

@@ -7,7 +7,6 @@
 package org.mule.tools.maven.mojo;
 
 import static java.lang.String.format;
-import static java.util.Optional.empty;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import org.mule.tools.api.util.MavenComponents;
@@ -18,7 +17,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-
 
 @Mojo(name = "process-sources",
     defaultPhase = LifecyclePhase.PROCESS_SOURCES,

@@ -6,10 +6,9 @@
  */
 package org.mule.tools.client.standalone.controller.probing;
 
-import org.hamcrest.core.IsInstanceOf;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mule.tools.client.standalone.controller.probing.deployment.ApplicationDeploymentProbe;
 import org.mule.tools.client.standalone.controller.probing.deployment.DeploymentProbe;
 import org.mule.tools.client.standalone.controller.probing.deployment.DomainDeploymentProbe;
@@ -21,17 +20,14 @@ import java.util.Collection;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(Parameterized.class)
 public class DeploymentProbeFactoryTest {
 
   public static final String MULE_APPLICATION = "mule-application";
   public static final String MULE_DOMAIN = "mule-domain";
   Set<String> supportedPackaging = newHashSet(MULE_APPLICATION, MULE_DOMAIN);
 
-  @Parameterized.Parameters
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][] {
         {MULE_APPLICATION, ApplicationDeploymentProbe.class}, {MULE_DOMAIN, DomainDeploymentProbe.class},
@@ -40,21 +36,22 @@ public class DeploymentProbeFactoryTest {
   }
 
   private String packaging;
-
   private Class clazz;
 
-  public DeploymentProbeFactoryTest(String classifier, Class clazz) {
-    this.packaging = classifier;
-    this.clazz = clazz;
+  @BeforeEach
+  void initializeService() {
+    this.packaging = new String();
   }
 
-  @Test
+  @ParameterizedTest
+  @MethodSource("data")
   public void createProbeTest() {
     try {
-      assertThat("ProbeDeployment is not the expected", DeploymentProbeFactory.createProbe(packaging), new IsInstanceOf(clazz));
+      assertThat(DeploymentProbeFactory.createProbe(packaging)).describedAs("ProbeDeployment is not the expected")
+          .isInstanceOfAny(clazz);
     } catch (DeploymentException e) {
-      assertThat("The packaging " + packaging + " should have support for probing", !supportedPackaging.contains(packaging),
-                 is(true));
+      assertThat(!supportedPackaging.contains(packaging))
+          .describedAs("The packaging " + packaging + " should have support for probing").isTrue();
     }
   }
 

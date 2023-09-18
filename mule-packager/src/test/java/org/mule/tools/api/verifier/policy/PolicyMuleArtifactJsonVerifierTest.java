@@ -9,30 +9,24 @@ package org.mule.tools.api.verifier.policy;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.nio.file.Paths.get;
-import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Mockito.mock;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_POLICY;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.util.Project;
 
+import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.nio.file.Path;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class PolicyMuleArtifactJsonVerifierTest {
 
   private static final String GROUP_ID = "com.mule.anypoint.api.manager";
   private static final String ARTIFACT_ID = "custom.policy.test";
   private static final String VERSION = "1.0.0-SNAPSHOT";
-
-  @Rule
-  public ExpectedException expectedException = none();
 
   @Test
   public void goodYamlSuccessfulValidation() throws ValidationException {
@@ -45,30 +39,27 @@ public class PolicyMuleArtifactJsonVerifierTest {
   }
 
   @Test
-  public void wrongGroupIdFailsValidation() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException
-        .expectMessage(format("Error in file 'mule-artifact.json'. The groupId does not match the one defined in the pom.xml. Expected '%s'.",
-                              GROUP_ID + 2));
-    validateMuleArtifactJson(GROUP_ID + 2, ARTIFACT_ID, VERSION, "mule-artifact.json");
+  public void wrongGroupIdFailsValidation() {
+    assertThatThrownBy(() -> validateMuleArtifactJson(GROUP_ID + 2, ARTIFACT_ID, VERSION, "mule-artifact.json"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining(format("Error in file 'mule-artifact.json'. The groupId does not match the one defined in the pom.xml. Expected '%s'.",
+                                     GROUP_ID + 2));
   }
 
   @Test
-  public void wrongArtifactIdFailsValidation() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException
-        .expectMessage(format("Error in file 'mule-artifact.json'. The artifactId does not match the one defined in the pom.xml. Expected '%s'.",
-                              ARTIFACT_ID + 2));
-    validateMuleArtifactJson(GROUP_ID, ARTIFACT_ID + 2, VERSION, "mule-artifact.json");
+  public void wrongArtifactIdFailsValidation() {
+    assertThatThrownBy(() -> validateMuleArtifactJson(GROUP_ID, ARTIFACT_ID + 2, VERSION, "mule-artifact.json"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining(format("Error in file 'mule-artifact.json'. The artifactId does not match the one defined in the pom.xml. Expected '%s'.",
+                                     ARTIFACT_ID + 2));
   }
 
   @Test
-  public void wrongVersionFailsValidation() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException
-        .expectMessage(format("Error in file 'mule-artifact.json'. The version does not match the one defined in the pom.xml. Expected '%s'.",
-                              VERSION + 2));
-    validateMuleArtifactJson(GROUP_ID, ARTIFACT_ID, VERSION + 2, "mule-artifact.json");
+  public void wrongVersionFailsValidation() {
+    assertThatThrownBy(() -> validateMuleArtifactJson(GROUP_ID, ARTIFACT_ID, VERSION + 2, "mule-artifact.json"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining(format("Error in file 'mule-artifact.json'. The version does not match the one defined in the pom.xml. Expected '%s'.",
+                                     VERSION + 2));
   }
 
   @Test
@@ -87,11 +78,10 @@ public class PolicyMuleArtifactJsonVerifierTest {
   }
 
   @Test
-  public void wrongClassifierFailsValidation() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException
-        .expectMessage("Error in file 'wrong-classifier.json'. The field 'classifier' had an unexpected value. Expected 'mule-policy'.");
-    validateMuleArtifactJson("wrong-classifier.json");
+  public void wrongClassifierFailsValidation() {
+    assertThatThrownBy(() -> validateMuleArtifactJson("wrong-classifier.json"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("Error in file 'wrong-classifier.json'. The field 'classifier' had an unexpected value. Expected 'mule-policy'.");
   }
 
   @Test
@@ -100,34 +90,31 @@ public class PolicyMuleArtifactJsonVerifierTest {
   }
 
   @Test
-  public void wrongTypeFailsValidation() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException
-        .expectMessage("Error in file 'wrong-type.json'. The field 'type' had an unexpected value. Expected 'jar'.");
-    validateMuleArtifactJson("wrong-type.json");
+  public void wrongTypeFailsValidation() {
+    assertThatThrownBy(() -> validateMuleArtifactJson("wrong-type.json"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("Error in file 'wrong-type.json'. The field 'type' had an unexpected value. Expected 'jar'.");
   }
 
   @Test
-  public void configsFailsValidation() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("Error in file 'configs.json'. The field configs must not be defined or be empty.");
-    validateMuleArtifactJson("configs.json");
+  public void configsFailsValidation() {
+    assertThatThrownBy(() -> validateMuleArtifactJson("configs.json"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("Error in file 'configs.json'. The field configs must not be defined or be empty.");
   }
 
   @Test
-  public void exportedPackagesFailsValidation() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException
-        .expectMessage("Error in file 'exported-packages.json'. The field exportedPackages must not be defined or be empty.");
-    validateMuleArtifactJson("exported-packages.json");
+  public void exportedPackagesFailsValidation() {
+    assertThatThrownBy(() -> validateMuleArtifactJson("exported-packages.json"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("Error in file 'exported-packages.json'. The field exportedPackages must not be defined or be empty.");
   }
 
   @Test
-  public void exportedResourcesFailsValidation() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException
-        .expectMessage("Error in file 'exported-resources.json'. The field exportedResources must not be defined or be empty.");
-    validateMuleArtifactJson("exported-resources.json");
+  public void exportedResourcesFailsValidation() {
+    assertThatThrownBy(() -> validateMuleArtifactJson("exported-resources.json"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("Error in file 'exported-resources.json'. The field exportedResources must not be defined or be empty.");
   }
 
   private void validateMuleArtifactJson(String fileName) throws ValidationException {

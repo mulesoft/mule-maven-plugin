@@ -6,10 +6,10 @@
  */
 package org.mule.tools.deployment;
 
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.deployment.agent.AgentApplicationDeployer;
 import org.mule.tools.deployment.agent.AgentDomainDeployer;
@@ -26,80 +26,60 @@ import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.model.standalone.StandaloneDeployment;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.stream.Stream;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.isA;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mule.tools.deployment.AbstractDeployerFactory.*;
 
-@RunWith(Enclosed.class)
 public class AbstractDeployerFactoryTest {
 
-
-  @RunWith(Parameterized.class)
   public static class GetDeployerFactoryTest {
 
-    private final Deployment deployment;
-    private final Class expectedClass;
 
-    @Parameterized.Parameters
-    public static Collection<Object[]> data() {
-      return Arrays.asList(new Object[][] {
-          {new AgentDeployment(), AbstractDeployerFactory.AgentDeployerFactory.class},
-          {new ArmDeployment(), AbstractDeployerFactory.ArmDeployerFactory.class},
-          {new CloudHubDeployment(), AbstractDeployerFactory.CloudHubDeployerFactory.class},
-          {new StandaloneDeployment(), AbstractDeployerFactory.StandaloneDeployerFactory.class}
-      });
+    public static Stream<Arguments> data() {
+      return Stream.of(Arguments.of(new AgentDeployment(), AbstractDeployerFactory.AgentDeployerFactory.class),
+                       Arguments.of(new ArmDeployment(), AbstractDeployerFactory.ArmDeployerFactory.class),
+                       Arguments.of(new CloudHubDeployment(), AbstractDeployerFactory.CloudHubDeployerFactory.class),
+                       Arguments.of(new StandaloneDeployment(), AbstractDeployerFactory.StandaloneDeployerFactory.class));
     }
 
-    public GetDeployerFactoryTest(Deployment deployment, Class expectedClass) {
-      this.deployment = deployment;
-      this.expectedClass = expectedClass;
-    }
 
-    @Test
-    public void getDeployerFactoryTest() {
-      assertThat("The factory is not the expected", AbstractDeployerFactory.getDeployerFactory(deployment), isA(expectedClass));
+    @ParameterizedTest
+    @MethodSource("data")
+    public void getDeployerFactoryTest(Deployment deployment, Class expectedClass) {
+      assertThat(AbstractDeployerFactory.getDeployerFactory(deployment)).describedAs("The factory is not the expected")
+          .isInstanceOf(expectedClass);
     }
   }
-
-  @RunWith(Parameterized.class)
   public static class CreateArtifactDeployerTest {
 
-    private final Deployment deployment;
-    private final Class expectedClass;
-    private final AbstractDeployerFactory factory;
 
-    @Parameterized.Parameters
-    public static Collection<Object[]> data() {
-      return Arrays.asList(new Object[][] {
-          {getAgentDeployment(), AGENT_DEPLOYER_FACTORY, MULE_APPLICATION_CLASSIFIER, AgentApplicationDeployer.class},
-          {getAgentDeployment(), AGENT_DEPLOYER_FACTORY, MULE_DOMAIN_CLASSIFIER, AgentDomainDeployer.class},
-          {getArmDeployment(), ARM_DEPLOYER_FACTORY, MULE_APPLICATION_CLASSIFIER, ArmApplicationDeployer.class},
-          {getArmDeployment(), ARM_DEPLOYER_FACTORY, MULE_DOMAIN_CLASSIFIER, ArmDomainDeployer.class},
-          {getCloudHubDeployment(), CLOUDHUB_DEPLOYER_FACTORY, MULE_APPLICATION_CLASSIFIER,
-              CloudHubApplicationDeployer.class},
-          {getCloudHubDeployment(), CLOUDHUB_DEPLOYER_FACTORY, MULE_DOMAIN_CLASSIFIER, CloudHubDomainDeployer.class},
-          {getStandaloneDeployment(), STANDALONE_DEPLOYER_FACTORY, MULE_APPLICATION_CLASSIFIER,
-              StandaloneApplicationDeployer.class},
-          {getStandaloneDeployment(), STANDALONE_DEPLOYER_FACTORY, MULE_DOMAIN_CLASSIFIER, StandaloneDomainDeployer.class}
-
-      });
+    public static Stream<Arguments> data() {
+      return Stream
+          .of(Arguments.of(getAgentDeployment(), AGENT_DEPLOYER_FACTORY, MULE_APPLICATION_CLASSIFIER,
+                           AgentApplicationDeployer.class),
+              Arguments.of(getAgentDeployment(), AGENT_DEPLOYER_FACTORY, MULE_DOMAIN_CLASSIFIER, AgentDomainDeployer.class),
+              Arguments.of(getArmDeployment(), ARM_DEPLOYER_FACTORY, MULE_APPLICATION_CLASSIFIER, ArmApplicationDeployer.class),
+              Arguments.of(getArmDeployment(), ARM_DEPLOYER_FACTORY, MULE_DOMAIN_CLASSIFIER, ArmDomainDeployer.class),
+              Arguments.of(getCloudHubDeployment(), CLOUDHUB_DEPLOYER_FACTORY, MULE_APPLICATION_CLASSIFIER,
+                           CloudHubApplicationDeployer.class),
+              Arguments.of(getCloudHubDeployment(), CLOUDHUB_DEPLOYER_FACTORY, MULE_DOMAIN_CLASSIFIER,
+                           CloudHubDomainDeployer.class),
+              Arguments.of(getStandaloneDeployment(), STANDALONE_DEPLOYER_FACTORY, MULE_APPLICATION_CLASSIFIER,
+                           StandaloneApplicationDeployer.class),
+              Arguments.of(getStandaloneDeployment(), STANDALONE_DEPLOYER_FACTORY, MULE_DOMAIN_CLASSIFIER,
+                           StandaloneDomainDeployer.class));
     }
 
-    public CreateArtifactDeployerTest(Deployment deployment, AbstractDeployerFactory factory, String packagingType,
-                                      Class expectedClass) {
-      this.deployment = deployment;
-      this.deployment.setPackaging(packagingType);
-      this.factory = factory;
-      this.expectedClass = expectedClass;
-    }
-
-    @Test
-    public void createArtifactDeployerTest() throws DeploymentException {
-      assertThat("The factory is not the expected", factory.createArtifactDeployer(deployment, null), isA(expectedClass));
+    @ParameterizedTest
+    @MethodSource("data")
+    public void createArtifactDeployerTest(Deployment deployment, AbstractDeployerFactory factory, String packagingType,
+                                           Class expectedClass)
+        throws DeploymentException {
+      deployment.setPackaging(packagingType);
+      assertThat(factory.createArtifactDeployer(deployment, null)).describedAs("The factory is not the expected")
+          .isInstanceOf(expectedClass);
     }
 
     private static ArmDeployment getArmDeployment() {

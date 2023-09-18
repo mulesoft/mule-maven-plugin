@@ -13,11 +13,10 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.maven.it.VerificationException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-
-public class GenerateTestSourcesMojoTest extends MojoTest implements SettingsConfigurator {
+class GenerateTestSourcesMojoTest extends MojoTest implements SettingsConfigurator {
 
   private static final String GENERATE_TEST_SOURCES = "generate-test-sources";
 
@@ -25,18 +24,17 @@ public class GenerateTestSourcesMojoTest extends MojoTest implements SettingsCon
     this.goal = GENERATE_TEST_SOURCES;
   }
 
-  @Before
-  public void before() throws IOException {
+  @BeforeEach
+  void before() throws IOException {
     clearResources();
   }
 
   @Test
-  public void testGenerateTestSources() throws IOException, VerificationException {
+  void testGenerateTestSources() throws IOException, VerificationException {
     verifier.executeGoal(GENERATE_TEST_SOURCES);
     File expectedStructure = getExpectedStructure();
     assertThat("The directory structure is different from the expected", targetFolder,
                hasSameTreeStructure(expectedStructure, excludes));
-
     verifier.verifyErrorFreeLog();
   }
 }

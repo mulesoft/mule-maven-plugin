@@ -18,10 +18,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.model.MavenConfiguration;
 import org.mule.maven.client.api.model.RemoteRepository;
-import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.maven.client.internal.MuleMavenClient;
 
 public abstract class MavenClientTest {
-
   public static final String USER_HOME_PROP = "user.home";
   public static final String M2_DIR = ".m2";
   public static final String M2_HOME = "M2_HOME";
@@ -54,8 +53,7 @@ public abstract class MavenClientTest {
   }
 
   public File getUserSettings(File m2Repo) {
-    final File overriddenOrDefault = getOverriddenOrDefault(m2Repo, USER_SETTINGS, "settings.xml");
-    return overriddenOrDefault;
+    return getOverriddenOrDefault(m2Repo, USER_SETTINGS, "settings.xml");
   }
 
   private File getOverriddenOrDefault(File m2Repo, String property, String defaultPathInM2) {
@@ -75,21 +73,16 @@ public abstract class MavenClientTest {
   }
 
   public File getSettingsSecurity(File m2Repo) {
-    final File overriddenOrDefault = getOverriddenOrDefault(m2Repo, SETTINGS_SECURITY, "settings-security.xml");
-    return overriddenOrDefault;
+    return getOverriddenOrDefault(m2Repo, SETTINGS_SECURITY, "settings-security.xml");
   }
 
-  public MavenConfiguration.MavenConfigurationBuilder getMavenConfiguration(File m2Repo, Optional<File> userSettings,
-                                                                            Optional<File> settingsSecurity)
+  public MavenConfiguration.MavenConfigurationBuilder getMavenConfiguration(File m2Repo, File userSettings, File settingsSecurity)
       throws MalformedURLException {
     final MavenConfiguration.MavenConfigurationBuilder mavenConfigurationBuilder =
         new MavenConfiguration.MavenConfigurationBuilder().localMavenRepositoryLocation(m2Repo);
-    if (userSettings.isPresent()) {
-      mavenConfigurationBuilder.userSettingsLocation(userSettings.get());
-    }
-    if (settingsSecurity.isPresent()) {
-      mavenConfigurationBuilder.settingsSecurityLocation(settingsSecurity.get());
-    }
+
+    Optional.ofNullable(userSettings).ifPresent(mavenConfigurationBuilder::userSettingsLocation);
+    Optional.ofNullable(settingsSecurity).ifPresent(mavenConfigurationBuilder::settingsSecurityLocation);
     // Needed to take into account repositories declared in the pom.xml of the project and it's dependencies.
     configureMavenCentralRepo(mavenConfigurationBuilder);
 
@@ -97,13 +90,12 @@ public abstract class MavenClientTest {
     return mavenConfigurationBuilder;
   }
 
-  private void configureMavenCentralRepo(MavenConfiguration.MavenConfigurationBuilder mavenConfigurationBuilder)
-      throws MalformedURLException {
+  private void configureMavenCentralRepo(MavenConfiguration.MavenConfigurationBuilder mavenConfigurationBuilder) throws MalformedURLException {
     mavenConfigurationBuilder.remoteRepository(RemoteRepository.newRemoteRepositoryBuilder().id("central")
-        .url(new URL("https://repo.maven.apache.org/maven2/")).build());
+      .url(new URL("https://repo.maven.apache.org/maven2/")).build());
   }
 
   public MavenClient getMavenClientInstance(MavenConfiguration.MavenConfigurationBuilder configurationBuilder) {
-    return new AetherMavenClient(configurationBuilder.build());
+    return new MuleMavenClient(configurationBuilder.build());
   }
 }

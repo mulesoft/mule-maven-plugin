@@ -8,28 +8,25 @@ package org.mule.tools.maven.mojo;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
-import static org.junit.rules.ExpectedException.none;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.validation.project.AbstractProjectValidator;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Properties;
 
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class ValidateMojoTest extends AbstractMuleMojoTest {
 
@@ -42,11 +39,8 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
 
   private AbstractProjectValidator validatorMock;
 
-  @Rule
-  public ExpectedException expectedException = none();
-
-  @Before
-  public void before() throws IOException {
+  @BeforeEach
+  public void before() {
     validatorMock = mock(AbstractProjectValidator.class);
 
     mojoMock = mock(ValidateMojo.class);
@@ -60,8 +54,7 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
   }
 
   @Test
-  public void executeDoNotVerify()
-      throws MojoFailureException, MojoExecutionException, IOException, ValidationException {
+  public void executeDoNotVerify() throws MojoFailureException, MojoExecutionException, ValidationException {
     mojoMock.skipValidation = true;
 
     doCallRealMethod().when(mojoMock).execute();
@@ -71,8 +64,7 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
   }
 
   @Test
-  public void execute()
-      throws MojoFailureException, MojoExecutionException, IOException, ValidationException {
+  public void execute() throws MojoFailureException, MojoExecutionException, ValidationException {
     when(validatorMock.isProjectValid(any())).thenReturn(true);
     when(mojoMock.getProjectValidator()).thenReturn(validatorMock);
 
@@ -85,8 +77,7 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
   }
 
   @Test
-  public void validateMavenEnvironmentValid()
-      throws MojoFailureException, MojoExecutionException, IOException, ValidationException {
+  public void validateMavenEnvironmentValid() throws ValidationException {
 
     Properties systemProperties = new Properties();
     systemProperties.put("maven.version", "3.3.3");
@@ -97,9 +88,8 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     mojoMock.validateMavenEnvironment();
   }
 
-  @Test(expected = ValidationException.class)
-  public void validateMavenEnvironmentInvalid()
-      throws MojoFailureException, MojoExecutionException, IOException, ValidationException {
+  @Test
+  public void validateMavenEnvironmentInvalid() throws ValidationException {
 
     Properties systemProperties = new Properties();
     systemProperties.put("maven.version", "3.3.2");
@@ -107,12 +97,11 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     when(mavenSessionMock.getRequest()).thenReturn(mavenExecutionRequestMock);
 
     doCallRealMethod().when(mojoMock).validateMavenEnvironment();
-    mojoMock.validateMavenEnvironment();
+    assertThatThrownBy(() -> mojoMock.validateMavenEnvironment()).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
-  public void validateNotAllowedDependenciesValid()
-      throws MojoFailureException, MojoExecutionException, IOException, ValidationException {
+  public void validateNotAllowedDependenciesValid() throws ValidationException {
     Dependency dependencyMock = mock(Dependency.class);
 
     when(dependencyMock.getGroupId()).thenReturn("fake.group.id");
@@ -122,18 +111,16 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     when(dependencyMock.getType()).thenReturn("mule-server-plugin");
     when(dependencyMock.getClassifier()).thenReturn("mule-server-plugin");
 
-    when(projectMock.getDependencies()).thenReturn(Arrays.asList(dependencyMock));
-    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION.toString());
+    when(projectMock.getDependencies()).thenReturn(singletonList(dependencyMock));
+    when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
 
     doCallRealMethod().when(mojoMock).buildArtifactCoordinates(any());
     doCallRealMethod().when(mojoMock).validateNotAllowedDependencies();
     mojoMock.validateNotAllowedDependencies();
   }
 
-  @Test(expected = ValidationException.class)
-  public void validateNotAllowedDependenciesInvalid()
-      throws MojoFailureException, MojoExecutionException, IOException, ValidationException {
-
+  @Test
+  public void validateNotAllowedDependenciesInvalid() throws ValidationException {
     Dependency dependencyMock = mock(Dependency.class);
 
     when(dependencyMock.getGroupId()).thenReturn("fake.group.id");
@@ -143,12 +130,12 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     when(dependencyMock.getType()).thenReturn("mule-server-plugin");
     when(dependencyMock.getClassifier()).thenReturn("mule-server-plugin");
 
-    when(projectMock.getDependencies()).thenReturn(Arrays.asList(dependencyMock));
+    when(projectMock.getDependencies()).thenReturn(singletonList(dependencyMock));
     when(projectMock.getPackaging()).thenReturn(MULE_APPLICATION);
 
     doCallRealMethod().when(mojoMock).buildArtifactCoordinates(any());
     doCallRealMethod().when(mojoMock).validateNotAllowedDependencies();
-    mojoMock.validateNotAllowedDependencies();
+    assertThatThrownBy(() -> mojoMock.validateNotAllowedDependencies()).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
@@ -171,10 +158,10 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     doCallRealMethod().when(mojoMock).buildArtifactCoordinates(any());
     doCallRealMethod().when(mojoMock).validateNotAllowedDependencies();
 
-    expectedException.expect(ValidationException.class);
-    expectedException.expectMessage(format("%s:%s:%s", MUNIT_GROUP_ID, MUNIT_RUNNER_ARTIFACT_ID, version));
-    expectedException.expectMessage("should have scope \'test\', found \'compile\'");
-    mojoMock.validateNotAllowedDependencies();
+    assertThatThrownBy(() -> mojoMock.validateNotAllowedDependencies())
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining(format("%s:%s:%s", MUNIT_GROUP_ID, MUNIT_RUNNER_ARTIFACT_ID, version))
+        .hasMessageContaining("should have scope 'test', found 'compile'");
   }
 
   @Test
@@ -196,10 +183,10 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     doCallRealMethod().when(mojoMock).buildArtifactCoordinates(any());
     doCallRealMethod().when(mojoMock).validateNotAllowedDependencies();
 
-    expectedException.expect(ValidationException.class);
-    expectedException.expectMessage(format("%s:%s:%s", MUNIT_GROUP_ID, MUNIT_TOOLS_ARTIFACT_ID, version));
-    expectedException.expectMessage("should have scope \'test\', found \'compile\'");
-    mojoMock.validateNotAllowedDependencies();
+    assertThatThrownBy(() -> mojoMock.validateNotAllowedDependencies())
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining(format("%s:%s:%s", MUNIT_GROUP_ID, MUNIT_TOOLS_ARTIFACT_ID, version))
+        .hasMessageContaining("should have scope 'test', found 'compile'");
   }
 
   @Test

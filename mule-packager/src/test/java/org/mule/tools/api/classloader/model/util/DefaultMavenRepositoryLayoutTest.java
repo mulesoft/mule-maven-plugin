@@ -10,21 +10,18 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
-import java.io.IOException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedFileName;
 import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedOutputDirectory;
 import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getNormalizedVersion;
 
-public class DefaultMavenRepositoryLayoutTest {
+class DefaultMavenRepositoryLayoutTest {
 
   private static final String ARTIFACT_ID = "artifact-id";
   private static final String VERSION = "1.0.0";
@@ -41,59 +38,55 @@ public class DefaultMavenRepositoryLayoutTest {
   private ArtifactHandler handler;
   private Artifact artifact;
 
-  @Rule
-  public TemporaryFolder outputFolder = new TemporaryFolder();
-
-  @Before
-  public void before() throws IOException {
+  @BeforeEach
+  void before() {
     handler = new DefaultArtifactHandler(TYPE);
     artifact = new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, SCOPE, TYPE, CLASSIFIER, handler);
   }
 
   @Test
-  public void getNormalizedVersionFromBaseVersionTest() {
+  void getNormalizedVersionFromBaseVersionTest() {
     artifact = new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION + "-" + TIMESTAMP, SCOPE, TYPE, CLASSIFIER, handler);
     String actual = getNormalizedVersion(artifact);
-    assertThat("The normalized version is different from the expected", actual, equalTo(VERSION + "-" + SNAPSHOT_VERSION));
+    assertThat(actual).as("The normalized version is different from the expected").isEqualTo(VERSION + "-" + SNAPSHOT_VERSION);
   }
 
 
   @Test
-  public void getNormalizedVersionFromVersionTest() {
+  void getNormalizedVersionFromVersionTest() {
     String expected = getNormalizedVersion(artifact);
-    assertThat("The normalized version is different from the expected", expected, equalTo(VERSION));
+    assertThat(expected).as("The normalized version is different from the expected").isEqualTo(VERSION);
   }
 
   @Test
-  public void getFormattedOutputDirectoryTest() {
-    File actual = getFormattedOutputDirectory(outputFolder.getRoot(), artifact);
-    File expected = new File(outputFolder.getRoot(),
-                             OUTPUT_DIRECTORY);
-    assertThat("Actual formatted output directory is not the expected", actual.getAbsolutePath(),
-               equalTo(expected.getAbsolutePath()));
+  void getFormattedOutputDirectoryTest(@TempDir File outputFolder) {
+    File actual = getFormattedOutputDirectory(outputFolder, artifact);
+    File expected = new File(outputFolder, OUTPUT_DIRECTORY);
+    assertThat(actual.getAbsolutePath()).as("Actual formatted output directory is not the expected")
+        .isEqualTo(expected.getAbsolutePath());
   }
 
   @Test
-  public void getFormattedFileNameTest() {
+  void getFormattedFileNameTest() {
     String actual = getFormattedFileName(artifact);
     String expected = ARTIFACT_ID + "-" + VERSION + "-" + CLASSIFIER + "." + TYPE;
-    assertThat("Formatted file name is different from the expected", actual, equalTo(expected));
+    assertThat(actual).as("Formatted file name is different from the expected").isEqualTo(expected);
   }
 
   @Test
-  public void getFormattedFileNameWithoutClassifierTest() {
+  void getFormattedFileNameWithoutClassifierTest() {
     artifact = new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, SCOPE, TYPE, null, handler);
     String actual = getFormattedFileName(artifact);
     String expected = ARTIFACT_ID + "-" + VERSION + "." + TYPE;
-    assertThat("Formatted file name is different from the expected", actual, equalTo(expected));
+    assertThat(actual).as("Formatted file name is different from the expected").isEqualTo(expected);
   }
 
   @Test
-  public void getFormattedFileNameWithoutHandlerTest() {
+  void getFormattedFileNameWithoutHandlerTest() {
     artifact = new DefaultArtifact(GROUP_ID, ARTIFACT_ID, VERSION, SCOPE, TYPE, CLASSIFIER, null);
     String actual = getFormattedFileName(artifact);
     String expected = ARTIFACT_ID + "-" + VERSION + "-" + CLASSIFIER + "." + TYPE;
-    assertThat("Formatted file name is different from the expected", actual, equalTo(expected));
+    assertThat(actual).as("Formatted file name is different from the expected").isEqualTo(expected);
   }
 
 }

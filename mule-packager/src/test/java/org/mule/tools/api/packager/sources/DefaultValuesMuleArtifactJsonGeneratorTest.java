@@ -4,18 +4,19 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
 package org.mule.tools.api.packager.sources;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSerializer;
@@ -23,15 +24,12 @@ import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 public class DefaultValuesMuleArtifactJsonGeneratorTest {
 
@@ -55,14 +53,14 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
   private MuleApplicationModel.MuleApplicationModelBuilder builder;
   private MuleApplicationModel.MuleApplicationModelBuilder defaultBuilder;
   private DefaultValuesMuleArtifactJsonGenerator generator;
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+  @TempDir
+  public Path temporaryFolder;
   private MuleApplicationModel.MuleApplicationModelBuilder builderSpy;
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
     generator = new DefaultValuesMuleArtifactJsonGenerator();
-    temporaryFolder.create();
     defaultBuilder = new MuleApplicationModel.MuleApplicationModelBuilder().setName(NAME).setMinMuleVersion(MIN_MULE_VERSION)
         .withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(ID, new HashMap<>()))
         .withBundleDescriptorLoader(new MuleArtifactLoaderDescriptor(MULE, new HashMap<>()));
@@ -83,8 +81,8 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
 
     generator.setBuilderWithDefaultBundleDescriptorLoaderValue(builder, muleArtifactSpy, resolverMock);
 
-    assertThat("Bundle descriptor loader id defined in builder is not the expected",
-               builder.getBundleDescriptorLoader().getId(), equalTo(MULE));
+    assertThat(builder.getBundleDescriptorLoader().getId())
+        .describedAs("Bundle descriptor loader id defined in builder is not the expected").isEqualTo(MULE);
   }
 
   @Test
@@ -103,11 +101,11 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
 
     generator.setBuilderWithDefaultBundleDescriptorLoaderValue(builder, muleArtifactSpy, resolverMock);
 
-    assertThat("Bundle descriptor loader id defined in builder is not the expected",
-               builder.getBundleDescriptorLoader().getId(), equalTo(MULE));
+    assertThat(builder.getBundleDescriptorLoader().getId())
+        .describedAs("Bundle descriptor loader id defined in builder is not the expected").isEqualTo(MULE);
 
-    assertThat("Bundle descriptor loader attributes defined in builder is not the expected",
-               builder.getBundleDescriptorLoader().getAttributes(), equalTo(attributes));
+    assertThat(builder.getBundleDescriptorLoader().getAttributes())
+        .describedAs("Bundle descriptor loader attributes defined in builder is not the expected").isEqualTo(attributes);
   }
 
   @Test
@@ -116,8 +114,8 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
 
     generator.setBuilderWithDefaultBundleDescriptorLoaderValue(builder, muleArtifact, resolverMock);
 
-    assertThat("Bundle descriptor loader id defined in builder is not the expected",
-               builder.getBundleDescriptorLoader().getId(), equalTo(MULE));
+    assertThat(builder.getBundleDescriptorLoader().getId())
+        .describedAs("Bundle descriptor loader id defined in builder is not the expected").isEqualTo(MULE);
   }
 
   @Test
@@ -136,8 +134,8 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
 
     generator.setBuilderWithDefaultConfigsValue(defaultBuilder, muleArtifactMock, resolverMock);
 
-    assertThat("Configs are not the expected", defaultBuilder.build().getConfigs(),
-               containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3));
+    assertThat(defaultBuilder.build().getConfigs()).describedAs("Configs are not the expected").containsAnyOf(CONFIG_1, CONFIG_2,
+                                                                                                              CONFIG_3);
   }
 
   @Test
@@ -152,15 +150,15 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
     List<String> testConfigs = new ArrayList<>();
     originalConfigs.add(CONFIG_3);
     doReturn(testConfigs).when(resolverMock).getTestConfigs();
-    doReturn(new ProjectStructure(temporaryFolder.getRoot().toPath(), true)).when(resolverMock).getProjectStructure();
+    doReturn(new ProjectStructure(temporaryFolder.toAbsolutePath(), true)).when(resolverMock).getProjectStructure();
     muleArtifact =
         new MuleApplicationModelJsonSerializer()
             .deserialize("{  }");
 
     generator.setBuilderWithDefaultConfigsValue(defaultBuilder, muleArtifact, resolverMock);
 
-    assertThat("Configs are not the expected", defaultBuilder.build().getConfigs(),
-               containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3));
+    assertThat(defaultBuilder.build().getConfigs()).describedAs("Configs are not the expected").containsAnyOf(CONFIG_1, CONFIG_2,
+                                                                                                              CONFIG_3);
   }
 
   @Test
@@ -176,9 +174,8 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
 
     generator.setBuilderWithDefaultExportedPackagesValue(defaultBuilder, muleArtifact, resolverMock);
 
-    assertThat("Exported packages are not the expected",
-               defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("exportedPackages"),
-               equalTo(exportedPackages));
+    assertThat(defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("exportedPackages"))
+        .describedAs("Exported packages are not the expected").isEqualTo(exportedPackages);
   }
 
   @Test
@@ -194,9 +191,8 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
 
     generator.setBuilderWithDefaultExportedResourcesValue(defaultBuilder, muleArtifact, resolverMock);
 
-    assertThat("Exported resources are not the expected",
-               defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("exportedResources"),
-               equalTo(exportedResources));
+    assertThat(defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("exportedResources"))
+        .describedAs("Exported resources are not the expected").isEqualTo(exportedResources);
   }
 
   @Test
@@ -218,10 +214,9 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
 
     generator.setBuilderWithDefaultExportedResourcesValue(defaultBuilder, muleArtifact, resolverMock);
 
-    assertThat("Exported resources are not the expected",
-               (List<String>) defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes()
-                   .get("exportedResources"),
-               containsInAnyOrder(JAR_1, JAR_2, JAR_3, JAR_4, JAR_5, JAR_6));
+    assertThat((List<String>) defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes()
+        .get("exportedResources")).describedAs("Exported resources are not the expected").containsAnyOf(JAR_1, JAR_2, JAR_3,
+                                                                                                        JAR_4, JAR_5, JAR_6);
   }
 
   @Test
@@ -239,23 +234,20 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
 
     generator.setBuilderWithDefaultExportedResourcesValue(defaultBuilder, muleArtifact, resolverMock);
 
-    assertThat("Exported resources are not the expected",
-               (List<String>) defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes()
-                   .get("exportedResources"),
-               containsInAnyOrder(JAR_4, JAR_5, JAR_6));
+    assertThat((List<String>) defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes()
+        .get("exportedResources")).describedAs("Exported resources are not the expected").containsAnyOf(JAR_4, JAR_5, JAR_6);
   }
 
   @Test
   public void setBuilderWithIncludeTestDependenciesTest() throws IOException {
     MuleArtifactContentResolver resolverMock = mock(MuleArtifactContentResolver.class);
 
-    when(resolverMock.getProjectStructure()).thenReturn(new ProjectStructure(temporaryFolder.getRoot().toPath(), true));
+    when(resolverMock.getProjectStructure()).thenReturn(new ProjectStructure(temporaryFolder.toAbsolutePath(), true));
 
     generator.setBuilderWithIncludeTestDependencies(defaultBuilder, resolverMock);
 
-    assertThat("Include test dependencies are not the expected",
-               defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("includeTestDependencies"),
-               equalTo("true"));
+    assertThat(defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("includeTestDependencies"))
+        .describedAs("Include test dependencies are not the expected").isEqualTo("true");
   }
 
   @Test
@@ -278,7 +270,7 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
   public void setBuilderWithDefaultSecureProperties() {
     MuleApplicationModelJsonSerializer serializer = new MuleApplicationModelJsonSerializer();
     MuleApplicationModel model = serializer.deserialize("{}");
-    assertThat("Secure properties should be null", model.getSecureProperties(), nullValue());
+    assertThat(model.getSecureProperties()).describedAs("Secure properties should be null").isNull();
     generator.setBuilderWithDefaultSecureProperties(builderSpy, model);
     verify(builderSpy).setSecureProperties(new ArrayList<>());
   }

@@ -6,8 +6,9 @@
  */
 package org.mule.tools.deployment.cloudhub;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 
 import static org.mockito.Mockito.*;
@@ -17,7 +18,7 @@ public class CloudHubDomainDeployerTest {
   private CloudHubDomainDeployer domainDeployer;
   private CloudHubArtifactDeployer artifactDeployerMock;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     artifactDeployerMock = mock(CloudHubArtifactDeployer.class);
     domainDeployer = new CloudHubDomainDeployer(artifactDeployerMock);

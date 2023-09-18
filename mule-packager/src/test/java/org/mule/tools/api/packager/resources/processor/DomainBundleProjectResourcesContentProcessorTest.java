@@ -4,17 +4,18 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
 package org.mule.tools.api.packager.resources.processor;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.packager.resources.content.ResourcesContent;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,18 +24,17 @@ import static org.mockito.Mockito.*;
 
 public class DomainBundleProjectResourcesContentProcessorTest {
 
-  @Rule
-  public TemporaryFolder targetFolder = new TemporaryFolder();
+  @TempDir
+  public Path targetFolder;
   private File domainFolder;
   private File applicationsFolder;
   private DomainBundleProjectResourcesContentProcessor contentProcessor;
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
-    targetFolder.create();
-    domainFolder = targetFolder.newFolder("domain");
-    applicationsFolder = targetFolder.newFolder("applications");
-    contentProcessor = new DomainBundleProjectResourcesContentProcessor(targetFolder.getRoot().toPath());
+    domainFolder = targetFolder.resolve("domain").toFile();
+    applicationsFolder = targetFolder.resolve("applications").toFile();
+    contentProcessor = new DomainBundleProjectResourcesContentProcessor(targetFolder.toAbsolutePath());
   }
 
   @Test

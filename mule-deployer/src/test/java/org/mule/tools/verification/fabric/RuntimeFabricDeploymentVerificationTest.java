@@ -6,10 +6,8 @@
  */
 package org.mule.tools.verification.fabric;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.fabric.RuntimeFabricClient;
 import org.mule.tools.client.fabric.model.DeploymentDetailedResponse;
@@ -20,11 +18,11 @@ import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
 import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeployment;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -39,10 +37,7 @@ public class RuntimeFabricDeploymentVerificationTest {
   private DeploymentGenericResponse deploymentGenericResponse;
   private DeploymentDetailedResponse deploymentDetailedResponse;
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
-  @Before
+  @BeforeEach
   public void setUp() {
     clientMock = mock(RuntimeFabricClient.class);
     deploymentDetailedResponse = new DeploymentDetailedResponse();
@@ -74,21 +69,23 @@ public class RuntimeFabricDeploymentVerificationTest {
   }
 
   @Test
-  public void assertDeploymentStartedFalse() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
-    expectedException.expectMessage("Validation timed out waiting for application to start. " +
-        "Please consider increasing the deploymentTimeout property.");
-    deploymentDetailedResponse.status = "DEPLOYING";
-    deployment.setDeploymentTimeout(1000L);
-    verification.assertDeployment(deployment);
+  public void assertDeploymentStartedFalse() {
+    assertThatThrownBy(() -> {
+      deploymentDetailedResponse.status = "DEPLOYING";
+      deployment.setDeploymentTimeout(1000L);
+      verification.assertDeployment(deployment);
+    }).isExactlyInstanceOf(DeploymentException.class)
+        .hasMessageContaining("Validation timed out waiting for application to start. " +
+            "Please consider increasing the deploymentTimeout property.");
   }
 
   @Test
-  public void assertDeploymentFailed() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
-    expectedException.expectMessage("Deployment has failed");
-    deploymentDetailedResponse.status = "FAILED";
-    verification.assertDeployment(deployment);
+  public void assertDeploymentFailed() {
+    assertThatThrownBy(() -> {
+      deploymentDetailedResponse.status = "FAILED";
+      verification.assertDeployment(deployment);
+    }).isExactlyInstanceOf(DeploymentException.class)
+        .hasMessageContaining("Deployment has failed");
   }
 
   @Test

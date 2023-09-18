@@ -4,20 +4,20 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
 package org.mule.tools.api.packager.sources;
 
 import static java.io.File.separator;
 import static java.lang.String.join;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.hamcrest.core.StringContains;
-
-import org.mule.maven.client.api.model.BundleDependency;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
@@ -31,11 +31,6 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
 import org.w3c.dom.Document;
 
 public class MuleArtifactContentResolverTest {
@@ -57,11 +52,9 @@ public class MuleArtifactContentResolverTest {
   private static final String RESOURCES_FOLDER_LOCATION = getRelativePath("src", "main", "resources");
   public static final String HIDDEN_FILE = ".hiddenFile";
   private static final String TEST_RESOURCES_FOLDER_LOCATION = getRelativePath("src", "test", "resources");
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+  @TempDir
+  public Path temporaryFolder;
 
   protected MuleArtifactContentResolver resolver;
   private File javaFolder;
@@ -115,20 +108,19 @@ public class MuleArtifactContentResolverTest {
   private org.w3c.dom.Document documentMock;
   private org.w3c.dom.Element rootElementMock;
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
-    temporaryFolder.create();
     Pom pomMock = mock(Pom.class);
-    resolver = newResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), false), pomMock,
-                           new ArrayList<>());
-    javaFolder = new File(temporaryFolder.getRoot(), JAVA_FOLDER_LOCATION);
-    muleFolder = new File(temporaryFolder.getRoot(), MULE_FOLDER_LOCATION);
-    munitFolder = new File(temporaryFolder.getRoot(), MUNIT_FOLDER_LOCATION);
-    resourcesFolder = new File(temporaryFolder.getRoot(), RESOURCES_FOLDER_LOCATION);
+    resolver = newResolver(new ProjectStructure(temporaryFolder.toAbsolutePath(), false), pomMock,
+                           new ArrayList<BundleDependency>());
+    javaFolder = temporaryFolder.resolve(JAVA_FOLDER_LOCATION).toFile();
+    muleFolder = temporaryFolder.resolve(MULE_FOLDER_LOCATION).toFile();
+    munitFolder = temporaryFolder.resolve(MUNIT_FOLDER_LOCATION).toFile();
+    resourcesFolder = temporaryFolder.resolve(RESOURCES_FOLDER_LOCATION).toFile();
     List<Path> resourcesPath = new ArrayList<>();
     resourcesPath.add(resourcesFolder.toPath());
     when(pomMock.getResourcesLocation()).thenReturn(resourcesPath);
-    testResourcesFolder = new File(temporaryFolder.getRoot(), TEST_RESOURCES_FOLDER_LOCATION);
+    testResourcesFolder = temporaryFolder.resolve(TEST_RESOURCES_FOLDER_LOCATION).toFile();
     muleFolder.mkdirs();
     munitFolder.mkdirs();
     javaFolder.mkdirs();
@@ -141,9 +133,9 @@ public class MuleArtifactContentResolverTest {
 
   @Test
   public void muleArtifactContentResolverNullPathArgumentInConstructorTest() {
-    expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage("Project structure should not be null");
-    newResolver(null, null, null);
+    assertThatThrownBy(() -> newResolver(null, null, null))
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Project structure should not be null");
   }
 
   @Test
@@ -162,9 +154,9 @@ public class MuleArtifactContentResolverTest {
     for (int i = 0; i < actualExportedPackages.size(); i++) {
       actualExportedPackages.set(i, actualExportedPackages.get(i).replace("/", separator).replace("\"", separator));
     }
-    assertThat("Exported packages does not contain all expected elements", actualExportedPackages,
-               containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + separator + JAR_3));
-    assertThat("Exported packages contains more elements than expected", actualExportedPackages.size(), equalTo(3));
+    assertThat(actualExportedPackages).describedAs("Exported packages does not contain all expected elements")
+        .containsAnyOf(JAR_1, JAR_2, JAR_3_LOCATION + separator + JAR_3);
+    assertThat(actualExportedPackages.size()).describedAs("Exported packages contains more elements than expected").isEqualTo(3);
   }
 
   @Test
@@ -195,12 +187,13 @@ public class MuleArtifactContentResolverTest {
       actualExportedResources.set(i, actualExportedResources.get(i).replace("/", separator).replace("\"", separator));
     }
 
-    assertThat("Exported resources does not contain all expected elements", actualExportedResources,
-               containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + separator + JAR_3, configFileName));
+    assertThat(actualExportedResources).describedAs("Exported resources does not contain all expected elements")
+        .containsAnyOf(JAR_1, JAR_2, JAR_3_LOCATION + separator + JAR_3, configFileName);
 
-    assertThat("Configs contain an unexpected elements", actualExportedResources.contains(hiddenFile), is(false));
+    assertThat(actualExportedResources.contains(hiddenFile)).describedAs("Configs contain an unexpected elements").isFalse();
 
-    assertThat("Exported resources contains more elements than expected", actualExportedResources.size(), equalTo(4));
+    assertThat(actualExportedResources.size()).describedAs("Exported resources contains more elements than expected")
+        .isEqualTo(4);
   }
 
   @Test
@@ -213,15 +206,16 @@ public class MuleArtifactContentResolverTest {
     jar2.createNewFile();
     jar3Folder.mkdirs();
     jar3.createNewFile();
-    resolver = newResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true), mock(Pom.class),
+    resolver = newResolver(new ProjectStructure(temporaryFolder.toAbsolutePath(), true), mock(Pom.class),
                            new ArrayList<>());
     List<String> actualExportedResources = resolver.getTestExportedResources();
     for (int i = 0; i < actualExportedResources.size(); i++) {
       actualExportedResources.set(i, actualExportedResources.get(i).replace("/", separator).replace("\"", separator));
     }
-    assertThat("Exported resources does not contain all expected elements", actualExportedResources,
-               containsInAnyOrder(JAR_1, JAR_2, JAR_3_LOCATION + separator + JAR_3));
-    assertThat("Exported resources contains more elements than expected", actualExportedResources.size(), equalTo(3));
+    assertThat(actualExportedResources).describedAs("Exported resources does not contain all expected elements")
+        .containsAnyOf(JAR_1, JAR_2, JAR_3_LOCATION + separator + JAR_3);
+    assertThat(actualExportedResources.size()).describedAs("Exported resources contains more elements than expected")
+        .isEqualTo(3);
   }
 
   @Test
@@ -251,13 +245,13 @@ public class MuleArtifactContentResolverTest {
       actualConfigs.set(i, actualConfigs.get(i).replace("/", separator).replace("\"", separator));
     }
 
-    assertThat("Config files are for an application", resolver.isApplication(), is(true));
-    assertThat("Configs does not contain all expected elements", actualConfigs,
-               containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + separator + CONFIG_3));
+    assertThat(resolver.isApplication()).describedAs("Config files are for an application").isTrue();
+    assertThat(actualConfigs).describedAs("Configs does not contain all expected elements")
+        .containsAnyOf(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + separator + CONFIG_3);
 
-    assertThat("Configs contain an unexpected elements", actualConfigs.contains(COMMON_FILE), is(false));
+    assertThat(actualConfigs.contains(COMMON_FILE)).describedAs("Configs contain an unexpected elements").isFalse();
 
-    assertThat("Configs contains more elements than expected", actualConfigs.size(), equalTo(3));
+    assertThat(actualConfigs.size()).describedAs("Configs contains more elements than expected").isEqualTo(3);
   }
 
   @Test
@@ -287,13 +281,13 @@ public class MuleArtifactContentResolverTest {
       actualConfigs.set(i, actualConfigs.get(i).replace("/", separator).replace("\"", separator));
     }
 
-    assertThat("Config files are for an domain", resolver.isApplication(), is(false));
-    assertThat("Configs does not contain all expected elements", actualConfigs,
-               containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + separator + CONFIG_3));
+    assertThat(resolver.isApplication()).describedAs("Config files are for an domain").isFalse();
+    assertThat(actualConfigs).describedAs("Configs does not contain all expected element")
+        .containsAnyOf(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + separator + CONFIG_3);
 
-    assertThat("Configs contain an unexpected elements", actualConfigs.contains(COMMON_FILE), is(false));
+    assertThat(actualConfigs.contains(COMMON_FILE)).describedAs("Configs contain an unexpected elements").isFalse();
 
-    assertThat("Configs contains more elements than expected", actualConfigs.size(), equalTo(3));
+    assertThat(actualConfigs.size()).describedAs("Configs contains more elements than expected").isEqualTo(3);
   }
 
   @Test
@@ -302,16 +296,15 @@ public class MuleArtifactContentResolverTest {
     File config2 = new File(muleFolder, CONFIG_2);
     String expectedExceptionMessage =
         "Element type \"xml-module:validate-schema\" must be followed by either attribute specifications, \">\" or \"/>\"";
+    assertThatThrownBy(() -> {
+      config1.createNewFile();
+      FileUtils.writeStringToFile(config1, DEFAULT_MULE_CONFIG_CONTENT, Charset.defaultCharset());
 
-    config1.createNewFile();
-    FileUtils.writeStringToFile(config1, DEFAULT_MULE_CONFIG_CONTENT, Charset.defaultCharset());
-
-    config2.createNewFile();
-    FileUtils.writeStringToFile(config2, MALFORMED_MULE_CONFIG_CONTENT, Charset.defaultCharset());
-
-    expectedException.expect(RuntimeException.class);
-    expectedException.expectMessage(StringContains.containsString(expectedExceptionMessage));
-    List<String> actualConfigs = resolver.getConfigs();
+      config2.createNewFile();
+      FileUtils.writeStringToFile(config2, MALFORMED_MULE_CONFIG_CONTENT, Charset.defaultCharset());
+      List<String> actualConfigs = resolver.getConfigs();
+    })
+        .isExactlyInstanceOf(RuntimeException.class);
   }
 
   @Test
@@ -334,18 +327,18 @@ public class MuleArtifactContentResolverTest {
 
     commonFile.createNewFile();
 
-    resolver = newResolver(new ProjectStructure(temporaryFolder.getRoot().toPath(), true), mock(Pom.class),
+    resolver = newResolver(new ProjectStructure(temporaryFolder.toAbsolutePath(), true), mock(Pom.class),
                            new ArrayList<>());
     List<String> actualConfigs = resolver.getTestConfigs();
     for (int i = 0; i < actualConfigs.size(); i++) {
       actualConfigs.set(i, actualConfigs.get(i).replace("/", separator).replace("\"", separator));
     }
-    assertThat("Configs does not contain all expected elements", actualConfigs,
-               containsInAnyOrder(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + separator + CONFIG_3));
+    assertThat(actualConfigs).describedAs("Configs does not contain all expected elements")
+        .containsAnyOf(CONFIG_1, CONFIG_2, CONFIG_3_LOCATION + separator + CONFIG_3);
 
-    assertThat("Configs contain an unexpected elements", actualConfigs.contains(COMMON_FILE), is(false));
+    assertThat(actualConfigs.contains(COMMON_FILE)).describedAs("Configs contain an unexpected elements").isFalse();
 
-    assertThat("Configs contains more elements than expected", actualConfigs.size(), equalTo(3));
+    assertThat(actualConfigs.size()).describedAs("Configs contains more elements than expected").isEqualTo(3);
   }
 
   private static String getRelativePath(String... segments) {
@@ -358,36 +351,36 @@ public class MuleArtifactContentResolverTest {
   @Test
   public void hasMuleAsRootElementMuleRoot() {
     when(rootElementMock.getTagName()).thenReturn("mule");
-    assertThat("Method should have returned true", resolver.hasMuleAsRootElement(documentMock));
+    assertThat(resolver.hasMuleAsRootElement(documentMock)).describedAs("Method should have returned true");
   }
 
   @Test
   public void hasMuleAsRootElementMuleDomainRoot() {
     when(rootElementMock.getTagName()).thenReturn("domain:mule-domain");
-    assertThat("Method should have returned true", resolver.hasMuleAsRootElement(documentMock));
+    assertThat(resolver.hasMuleAsRootElement(documentMock)).describedAs("Method should have returned true");
   }
 
   @Test
   public void hasMuleAsRootElementOtherThanMuleOrMuleDomainRoot() {
     when(rootElementMock.getTagName()).thenReturn("mulesoft");
-    assertThat("Method should have returned false", !resolver.hasMuleAsRootElement(documentMock));
+    assertThat(!resolver.hasMuleAsRootElement(documentMock)).describedAs("Method should have returned false");
   }
 
   @Test
   public void hasMuleAsRootElementWithNullName() {
     when(rootElementMock.getTagName()).thenReturn(null);
-    assertThat("Method should have returned false", !resolver.hasMuleAsRootElement((Document) null));
+    assertThat(!resolver.hasMuleAsRootElement((Document) null)).describedAs("Method should have returned false");
   }
 
   @Test
   public void hasMuleAsRootElementWithNoRoot() {
     when(documentMock.getDocumentElement()).thenReturn(null);
-    assertThat("Method should have returned false", !resolver.hasMuleAsRootElement(documentMock));
+    assertThat(!resolver.hasMuleAsRootElement(documentMock)).describedAs("Method should have returned false");
   }
 
   @Test
   public void hasMuleAsRootElementWithNullDocument() {
-    assertThat("Method should have returned false", !resolver.hasMuleAsRootElement((Document) null));
+    assertThat(!resolver.hasMuleAsRootElement((Document) null)).describedAs("Method should have returned false");
   }
 
   protected MuleArtifactContentResolver newResolver(ProjectStructure projectStructure, Pom pomMock,

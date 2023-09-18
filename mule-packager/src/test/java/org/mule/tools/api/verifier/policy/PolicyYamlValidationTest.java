@@ -6,20 +6,19 @@
  */
 package org.mule.tools.api.verifier.policy;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.assertj.core.util.introspection.CaseFormatUtils;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mule.tools.api.exception.ValidationException;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
 import static java.lang.String.join;
 import static java.nio.file.Paths.get;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class PolicyYamlValidationTest {
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void normalYamlParsesCorrectly() throws ValidationException {
@@ -40,103 +39,43 @@ public class PolicyYamlValidationTest {
   }
 
   @Test
-  public void missingIdYamlFailsParsing() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectMissingProperty("id");
-    testYaml("missing-id.yaml");
-  }
-
-  @Test
-  public void missingNameYamlFailsParsing() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectMissingProperty("name");
-    testYaml("missing-name.yaml");
-  }
-
-  @Test
   public void missingSupportedPoliciesVersionsYamlSucceeds() throws ValidationException {
     testYaml("missing-supportedPoliciesVersions.yaml");
   }
 
-  @Test
-  public void missingDescriptionYamlFailsParsing() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectMissingProperty("description");
-    testYaml("missing-description.yaml");
+  @ParameterizedTest(name = "missing{0}YamlFailsParsing")
+  @ValueSource(strings = {"Description", "Category", "Type", "Name", "Id", "Standalone", "ResourceLevelSupported",
+      "RequiredCharacteristics", "ProvidedCharacteristics", "Configuration"})
+  public void missingPropertyYamlFailsParsing(String property) {
+    final String propertyName = CaseFormatUtils.toCamelCase(property);
+    assertThatThrownBy(() -> testYaml("missing-" + propertyName + ".yaml"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining(expectMissingProperty(propertyName));
   }
 
   @Test
-  public void missingCategoryYamlFailsParsing() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectMissingProperty("category");
-    testYaml("missing-category.yaml");
+  public void missingValueYamlFailsParsing() {
+    assertThatThrownBy(() -> testYaml("missing-value.yaml"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining(expectMissingProperty("requiredCharacteristics"));
   }
 
   @Test
-  public void missingTypeYamlFailsParsing() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectMissingProperty("type");
-    testYaml("missing-type.yaml");
-  }
-
-  @Test
-  public void missingResourceLevelSupportedYamlFailsParsing() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectMissingProperty("resourceLevelSupported");
-    testYaml("missing-resourceLevelSupported.yaml");
-  }
-
-  @Test
-  public void missingStandaloneYamlFailsParsing() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectMissingProperty("standalone");
-    testYaml("missing-standalone.yaml");
-  }
-
-  @Test
-  public void missingRequiredCharacteristicsYamlFailsParsing() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectMissingProperty("requiredCharacteristics");
-    testYaml("missing-requiredCharacteristics.yaml");
-  }
-
-  @Test
-  public void missingProvidedCharacteristicsYamlFailsParsing() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectMissingProperty("providedCharacteristics");
-    testYaml("missing-providedCharacteristics.yaml");
-  }
-
-  @Test
-  public void missingConfigurationYamlFailsParsing() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectMissingProperty("configuration");
-    testYaml("missing-configuration.yaml");
-  }
-
-  @Test
-  public void wrongTypeFailsParsing() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("Missing required creator property 'resourceLevelSupported'");
-    testYaml("wrong-type.yaml");
-  }
-
-  @Test
-  public void missingValueYamlFailsParsing() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("Missing required creator property 'requiredCharacteristics'");
-    testYaml("missing-value.yaml");
+  public void wrongTypeFailsParsing() {
+    assertThatThrownBy(() -> testYaml("wrong-type.yaml"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining(expectMissingProperty("resourceLevelSupported"));
   }
 
   @Test
   public void missingParameterFromConfigurationItemFailsParsing() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectMissingProperty("propertyName");
-    testYaml("missing-configurationProperty.yaml");
+    assertThatThrownBy(() -> testYaml("missing-configurationProperty.yaml"))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining(expectMissingProperty("propertyName"));
   }
 
-  private void expectMissingProperty(String property) {
-    expectedException.expectMessage("Missing required creator property '" + property + "'");
+  private String expectMissingProperty(String property) {
+    return "Missing required creator property '" + property + "'";
   }
 
   private void testYaml(String file) throws ValidationException {

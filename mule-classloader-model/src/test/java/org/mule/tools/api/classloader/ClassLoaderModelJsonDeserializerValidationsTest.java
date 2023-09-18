@@ -6,130 +6,138 @@
  */
 package org.mule.tools.api.classloader;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.deserialize;
 import static org.mule.tools.api.classloader.model.ArtifactCoordinates.DEFAULT_ARTIFACT_TYPE;
 
 import static org.apache.commons.io.FileUtils.toFile;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThrows;
 
+import org.junit.jupiter.api.Test;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 import java.io.File;
 
-import org.junit.Test;
-
-public class ClassLoaderModelJsonDeserializerValidationsTest {
+class ClassLoaderModelJsonDeserializerValidationsTest {
 
   protected ClassLoaderModel deserializeClassLoaderModel(File classloaderModelJsonFile) {
     return deserialize(classloaderModelJsonFile);
   }
 
   @Test
-  public void classLoaderModelNoVersion() {
+  void classLoaderModelNoVersion() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-version.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
+    assertThatThrownBy(() -> deserializeClassLoaderModel(classloaderModelJsonFile))
+        .isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
-  public void classLoaderModelNoArtifactCoordinates() {
+  void classLoaderModelNoArtifactCoordinates() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-artifact-coordinates.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
+    assertThatThrownBy(() -> deserializeClassLoaderModel(classloaderModelJsonFile))
+        .isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
-  public void classLoaderModelNoArtifactCoordinatesGroupId() {
+  void classLoaderModelNoArtifactCoordinatesGroupId() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-artifact-coordinates-group-id.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
+    assertThatThrownBy(() -> deserializeClassLoaderModel(classloaderModelJsonFile))
+        .isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
-  public void classLoaderModelNoArtifactCoordinatesArtifactId() {
+  void classLoaderModelNoArtifactCoordinatesArtifactId() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-artifact-coordinates-artifact-id.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
+    assertThatThrownBy(() -> deserializeClassLoaderModel(classloaderModelJsonFile))
+        .isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
-  public void classLoaderModelNoArtifactCoordinatesVersion() {
+  void classLoaderModelNoArtifactCoordinatesVersion() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-artifact-coordinates-version.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
+    assertThatThrownBy(() -> deserializeClassLoaderModel(classloaderModelJsonFile))
+        .isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
-  public void classLoaderModelNoArtifactCoordinatesType() {
+  void classLoaderModelNoArtifactCoordinatesType() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-artifact-coordinates-type.json"));
 
     ClassLoaderModel deserialized = deserializeClassLoaderModel(classloaderModelJsonFile);
-    assertThat(deserialized.getArtifactCoordinates().getType(), is(DEFAULT_ARTIFACT_TYPE));
+    assertThat(deserialized.getArtifactCoordinates().getType()).isEqualTo(DEFAULT_ARTIFACT_TYPE);
   }
 
   @Test
-  public void classLoaderModelNoArtifactCoordinatesClassifier() {
+  void classLoaderModelNoArtifactCoordinatesClassifier() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-artifact-coordinates-classifier.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
+    assertThatThrownBy(() -> deserializeClassLoaderModel(classloaderModelJsonFile))
+        .isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
-  public void classLoaderModelNoDepArtifactCoordinates() {
+  void classLoaderModelNoDepArtifactCoordinates() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-dep-artifact-coordinates.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
+    assertThatThrownBy(() -> deserializeClassLoaderModel(classloaderModelJsonFile))
+        .isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
-  public void classLoaderModelNoDepArtifactCoordinatesGroupId() {
+  void classLoaderModelNoDepArtifactCoordinatesGroupId() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-dep-artifact-coordinates-group-id.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
+    assertThatThrownBy(() -> deserializeClassLoaderModel(classloaderModelJsonFile))
+        .isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
-  public void classLoaderModelNoDepArtifactCoordinatesArtifactId() {
+  void classLoaderModelNoDepArtifactCoordinatesArtifactId() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-dep-artifact-coordinates-artifact-id.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
+    assertThatThrownBy(() -> deserializeClassLoaderModel(classloaderModelJsonFile))
+        .isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
-  public void classLoaderModelNoDepArtifactCoordinatesVersion() {
+  void classLoaderModelNoDepArtifactCoordinatesVersion() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-dep-artifact-coordinates-version.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
+    assertThatThrownBy(() -> deserializeClassLoaderModel(classloaderModelJsonFile))
+        .isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
-  public void classLoaderModelNoDepArtifactCoordinatesType() {
+  void classLoaderModelNoDepArtifactCoordinatesType() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-dep-artifact-coordinates-type.json"));
 
     ClassLoaderModel deserialized = deserializeClassLoaderModel(classloaderModelJsonFile);
-    assertThat(deserialized.getDependencies().get(0).getArtifactCoordinates().getType(), is(DEFAULT_ARTIFACT_TYPE));
+    assertThat(deserialized.getDependencies().get(0).getArtifactCoordinates().getType()).isEqualTo(DEFAULT_ARTIFACT_TYPE);
   }
 
   @Test
-  public void classLoaderModelNoDepUri() {
+  void classLoaderModelNoDepUri() {
     File classloaderModelJsonFile =
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-dep-uri.json"));
 
-    assertThrows(IllegalStateException.class, () -> deserializeClassLoaderModel(classloaderModelJsonFile));
+    assertThatThrownBy(() -> deserializeClassLoaderModel(classloaderModelJsonFile))
+        .isExactlyInstanceOf(IllegalStateException.class);
   }
-
 }

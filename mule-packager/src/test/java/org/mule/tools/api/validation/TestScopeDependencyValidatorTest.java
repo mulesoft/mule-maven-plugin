@@ -7,20 +7,15 @@
 package org.mule.tools.api.validation;
 
 import static java.util.Collections.singletonList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.rules.ExpectedException.none;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class TestScopeDependencyValidatorTest {
 
@@ -30,34 +25,33 @@ public class TestScopeDependencyValidatorTest {
 
   private DependencyValidator testScopeDependencyValidator;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     this.testScopeDependencyValidator =
         new TestScopeDependencyValidator(singletonList(new TestScopeDependencyValidator.Dependency(GROUP_ID, ARTIFACT_ID)),
                                          singletonList(SECOND_GROUP_ID));
   }
 
-  @Rule
-  public ExpectedException expectedException = none();
-
   @Test
-  public void testExceptionWhenInvalidDependencyValidatingMultiple() throws Exception {
-    List<ArtifactCoordinates> dependencies = singletonList(createCoordinates(GROUP_ID, ARTIFACT_ID, "compile"));
-    expectedException.expect(ValidationException.class);
-    testScopeDependencyValidator.areDependenciesValid(dependencies);
+  public void testExceptionWhenInvalidDependencyValidatingMultiple() {
+    assertThatThrownBy(() -> {
+      List<ArtifactCoordinates> dependencies = singletonList(createCoordinates(GROUP_ID, ARTIFACT_ID, "compile"));
+      testScopeDependencyValidator.areDependenciesValid(dependencies);
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
-  public void testExceptionWhenInvalidGroupValidatingMultiple() throws Exception {
-    List<ArtifactCoordinates> dependencies = singletonList(createCoordinates(SECOND_GROUP_ID, ARTIFACT_ID, "compile"));
-    expectedException.expect(ValidationException.class);
-    testScopeDependencyValidator.areDependenciesValid(dependencies);
+  public void testExceptionWhenInvalidGroupValidatingMultiple() {
+    assertThatThrownBy(() -> {
+      List<ArtifactCoordinates> dependencies = singletonList(createCoordinates(SECOND_GROUP_ID, ARTIFACT_ID, "compile"));
+      testScopeDependencyValidator.areDependenciesValid(dependencies);
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
   public void validatorDoesNotFailIfScopeIsTests() throws Exception {
     List<ArtifactCoordinates> dependencies = singletonList(createCoordinates(GROUP_ID, ARTIFACT_ID, "test"));
-    assertThat(testScopeDependencyValidator.areDependenciesValid(dependencies), is(true));
+    assertThat(testScopeDependencyValidator.areDependenciesValid(dependencies)).isTrue();
   }
 
 

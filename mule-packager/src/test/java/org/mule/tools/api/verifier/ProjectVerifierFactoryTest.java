@@ -6,8 +6,7 @@
  */
 package org.mule.tools.api.verifier;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_POLICY;
@@ -15,8 +14,7 @@ import static org.mule.tools.api.packager.packaging.PackagingType.MULE_POLICY;
 import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.verifier.policy.MulePolicyVerifier;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ProjectVerifierFactoryTest {
 
@@ -25,8 +23,8 @@ public class ProjectVerifierFactoryTest {
   public void createPolicyPreparePackagerTest() {
     DefaultProjectInformation defaultProjectInformation = mock(DefaultProjectInformation.class);
     when(defaultProjectInformation.getPackaging()).thenReturn(MULE_POLICY.toString());
-    assertThat("The Package Preparer type is not the expected", ProjectVerifyFactory.create(defaultProjectInformation),
-               instanceOf(MulePolicyVerifier.class));
+    assertThat(ProjectVerifyFactory.create(defaultProjectInformation))
+        .describedAs("The Package Preparer type is not the expected").isInstanceOf(MulePolicyVerifier.class);
   }
 
   @Test
@@ -35,8 +33,9 @@ public class ProjectVerifierFactoryTest {
       if (!classifier.equals(MULE_POLICY)) {
         DefaultProjectInformation defaultProjectInformation = mock(DefaultProjectInformation.class);
         when(defaultProjectInformation.getPackaging()).thenReturn(classifier.toString());
-        assertThat("The Package Preparer type is not the expected for " + classifier.toString(),
-                   ProjectVerifyFactory.create(defaultProjectInformation), instanceOf(MuleProjectVerifier.class));
+        assertThat(ProjectVerifyFactory.create(defaultProjectInformation))
+            .describedAs("The Package Preparer type is not the expected for " + classifier.toString())
+            .isInstanceOf(MuleProjectVerifier.class);
       }
     }
   }

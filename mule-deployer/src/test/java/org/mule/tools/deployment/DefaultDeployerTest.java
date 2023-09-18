@@ -7,8 +7,8 @@
 package org.mule.tools.deployment;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.utils.DeployerLog;
 
@@ -23,7 +23,7 @@ public class DefaultDeployerTest {
   private Deployer deployerSpy;
   private DeployerLog logMock;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     deployerSpy = spy(Deployer.class);
     logMock = mock(DeployerLog.class);

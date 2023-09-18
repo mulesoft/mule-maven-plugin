@@ -7,19 +7,18 @@
 package org.mule.tools.api.util;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.nio.file.Path;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.xml.sax.SAXException;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class XmlFactoryUtilsTest {
 
-  @ClassRule
-  public static final TemporaryFolder tempFolder = new TemporaryFolder();
+  @TempDir
+  public Path temporaryFolder;
   /**
    * If someone tries to parse an XML with a doctype declaration we will always fail to parse the XML, protecting their systems
    * from XXE attacks
@@ -34,11 +33,13 @@ public class XmlFactoryUtilsTest {
       "<lolz>&lol2;\n" + //
       "</lolz>\n";
 
-  @Test(expected = SAXException.class)
-  public void domFactoryFailsToReadXMLWithDocType() throws SAXException, IOException, ParserConfigurationException {
-    try (ByteArrayInputStream stream = new ByteArrayInputStream(XXE_ATTACK.getBytes())) {
-      XmlFactoryUtils.createSecureDocumentBuilderFactory().newDocumentBuilder().parse(stream);
-    }
+  @Test
+  public void domFactoryFailsToReadXMLWithDocType() {
+    assertThatThrownBy(() -> {
+      try (ByteArrayInputStream stream = new ByteArrayInputStream(XXE_ATTACK.getBytes())) {
+        XmlFactoryUtils.createSecureDocumentBuilderFactory().newDocumentBuilder().parse(stream);
+      }
+    }).isInstanceOf(SAXException.class);
   }
 
 

@@ -4,25 +4,22 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.validation;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.fail;
+package org.mule.tools.api.validation;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.mule.tools.api.classloader.model.Artifact;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class MulePluginsCompatibilityValidatorTest {
 
@@ -34,10 +31,7 @@ public class MulePluginsCompatibilityValidatorTest {
   private final ArtifactCoordinates DEPENDENCY1 = createDependency(1, "1.0.1", "mule-plugin");
   private final ArtifactCoordinates DEPENDENCY2 = createDependency(2, "1.0.2", "mule-plugin");
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
-  @Before
+  @BeforeEach
   public void before() {
     validator = new MulePluginsCompatibilityValidator();
     dependencies = new ArrayList<>();
@@ -76,11 +70,12 @@ public class MulePluginsCompatibilityValidatorTest {
   }
 
   @Test
-  public void validateSameDependenciesNotCompatibleVersionsListTest() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    dependencies.add(createDependency(0, "0.8.0", "mule-plugin"));
-    dependencies.add(createDependency(0, "1.0.0", "mule-plugin"));
-    validator.validate(dependencies);
+  public void validateSameDependenciesNotCompatibleVersionsListTest() {
+    assertThatThrownBy(() -> {
+      dependencies.add(createDependency(0, "0.8.0", "mule-plugin"));
+      dependencies.add(createDependency(0, "1.0.0", "mule-plugin"));
+      validator.validate(dependencies);
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   // Reflexive
@@ -89,8 +84,8 @@ public class MulePluginsCompatibilityValidatorTest {
     dependencies.add(DEPENDENCY0);
     dependencies.add(DEPENDENCY0);
 
-    assertThat("A mule plugin should be self-compatible", validator.areMulePluginVersionCompatible(dependencies),
-               is(true));
+    assertThat(validator.areMulePluginVersionCompatible(dependencies)).describedAs("A mule plugin should be self-compatible")
+        .isTrue();
   }
 
   // Symmetric
@@ -106,9 +101,8 @@ public class MulePluginsCompatibilityValidatorTest {
     dependencies2.add(DEPENDENCY1);
     dependencies2.add(DEPENDENCY0);
 
-    assertThat("Validation should order-independent",
-               validator.areMulePluginVersionCompatible(dependencies1) == validator.areMulePluginVersionCompatible(dependencies2),
-               is(true));
+    assertThat(validator.areMulePluginVersionCompatible(dependencies1) == validator.areMulePluginVersionCompatible(dependencies2))
+        .describedAs("Validation should order-independent").isTrue();
   }
 
   // Transitive
@@ -123,10 +117,9 @@ public class MulePluginsCompatibilityValidatorTest {
     dependencies2.add(DEPENDENCY0);
     dependencies2.add(DEPENDENCY2);
 
-    assertThat("Validation should be valid for all elements of same version",
-               validator.areMulePluginVersionCompatible(dependencies) && validator
-                   .areMulePluginVersionCompatible(dependencies1) == validator.areMulePluginVersionCompatible(dependencies2),
-               is(true));
+    assertThat(validator.areMulePluginVersionCompatible(dependencies) && validator
+        .areMulePluginVersionCompatible(dependencies1) == validator.areMulePluginVersionCompatible(dependencies2))
+            .describedAs("Validation should be valid for all elements of same version").isTrue();
   }
 
   @Test
@@ -134,8 +127,8 @@ public class MulePluginsCompatibilityValidatorTest {
     dependencies.add(createDependency(0, "0.8.0", "mule-plugin"));
     dependencies.add(createDependency(1, "1.0.1", "mule-plugin"));
 
-    assertThat("Mule plugins should be considered version compatible", validator.areMulePluginVersionCompatible(dependencies),
-               is(false));
+    assertThat(validator.areMulePluginVersionCompatible(dependencies))
+        .describedAs("Mule plugins should be considered version compatible").isFalse();
   }
 
   @Test
@@ -144,8 +137,8 @@ public class MulePluginsCompatibilityValidatorTest {
     dependencies.add(createDependency(1, "1.0.1", "mule-plugin"));
     dependencies.add(createDependency(2, "0.8.1", "mule-plugin"));
 
-    assertThat("Mule plugins should be considered version compatible", validator.areMulePluginVersionCompatible(dependencies),
-               is(false));
+    assertThat(validator.areMulePluginVersionCompatible(dependencies))
+        .describedAs("Mule plugins should be considered version compatible").isFalse();
   }
 
   @Test
@@ -154,24 +147,22 @@ public class MulePluginsCompatibilityValidatorTest {
     dependencies.add(createDependency(1, "1.0.1", "mule-plugin"));
     dependencies.add(createDependency(2, "2.0.1", "mule-plugin"));
 
-    assertThat("Mule plugins should be considered version compatible", validator.areMulePluginVersionCompatible(dependencies),
-               is(false));
+    assertThat(validator.areMulePluginVersionCompatible(dependencies))
+        .describedAs("Mule plugins should be considered version compatible").isFalse();
   }
 
   @Test
   public void areMulePluginVersionCompatibleEmptyListTest() {
-    assertThat("Mule plugins empty list should be considered version compatible",
-               validator.areMulePluginVersionCompatible(dependencies),
-               is(true));
+    assertThat(validator.areMulePluginVersionCompatible(dependencies))
+        .describedAs("Mule plugins empty list should be considered version compatible").isTrue();
   }
 
   @Test
   public void areMulePluginVersionCompatibleOneElementTest() {
     dependencies.add(createDependency(0, "1.0.0", "mule-plugin"));
 
-    assertThat("Mule plugins unit list should be considered version compatible",
-               validator.areMulePluginVersionCompatible(dependencies),
-               is(true));
+    assertThat(validator.areMulePluginVersionCompatible(dependencies))
+        .describedAs("Mule plugins unit list should be considered version compatible").isTrue();
   }
 
   @Test
@@ -181,15 +172,15 @@ public class MulePluginsCompatibilityValidatorTest {
     dependencies.add(createDependency(2, "1.1.0", "mule-plugin"));
     dependencies.add(createDependency(3, "1.1.1", "mule-plugin"));
 
-    assertThat("Mule plugins should be considered version compatible", validator.areMulePluginVersionCompatible(dependencies),
-               is(true));
+    assertThat(validator.areMulePluginVersionCompatible(dependencies))
+        .describedAs("Mule plugins should be considered version compatible").isTrue();
   }
 
   @Test
   public void buildEmptyDependencyMapTest() {
     List<ArtifactCoordinates> dependencies = new ArrayList<>();
     Map<String, List<ArtifactCoordinates>> actualDependencyMap = validator.buildDependencyMap(dependencies);
-    assertThat("Dependency map should be empty", actualDependencyMap.size(), equalTo(0));
+    assertThat(actualDependencyMap.size()).describedAs("Dependency map should be empty").isEqualTo(0);
   }
 
   @Test
@@ -202,9 +193,9 @@ public class MulePluginsCompatibilityValidatorTest {
     dependencies.add(createDependency(0, "1.1.1", "mule-plugin"));
 
     Map<String, List<ArtifactCoordinates>> actualDependencyMap = validator.buildDependencyMap(dependencies);
-    assertThat("Dependency map should contain 1 element", actualDependencyMap.size(), equalTo(1));
-    assertThat("The dependency list should contain 4 elements",
-               actualDependencyMap.values().stream().allMatch(l -> l.size() == 4), is(true));
+    assertThat(actualDependencyMap.size()).describedAs("Dependency map should contain 1 element").isEqualTo(1);
+    assertThat(actualDependencyMap.values().stream().allMatch(l -> l.size() == 4))
+        .describedAs("The dependency list should contain 4 elements").isTrue();
   }
 
   @Test
@@ -216,9 +207,9 @@ public class MulePluginsCompatibilityValidatorTest {
     dependencies.add(createDependency(2, "1.0.0", "mule-plugin"));
 
     Map<String, List<ArtifactCoordinates>> actualDependencyMap = validator.buildDependencyMap(dependencies);
-    assertThat("Dependency map should contain 3 elements", actualDependencyMap.size(), equalTo(3));
-    assertThat("Every dependency list should contain 1 element",
-               actualDependencyMap.values().stream().allMatch(l -> l.size() == 1), is(true));
+    assertThat(actualDependencyMap.size()).describedAs("Dependency map should contain 3 elements").isEqualTo(3);
+    assertThat(actualDependencyMap.values().stream().allMatch(l -> l.size() == 1))
+        .describedAs("Every dependency list should contain 1 element").isTrue();
   }
 
   private ArtifactCoordinates createDependency(int i, String version, String classifier) {

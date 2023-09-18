@@ -8,33 +8,28 @@ package org.mule.tools.model;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.project.MavenProject;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 public class DeploymentTest {
 
 
   private static final String PACKAGE_FILE_NAME = "package.jar";
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
   private Deployment deploymentSpy;
   private MavenProject project;
   private MavenProject projectMock;
 
 
-  @Before
+  @BeforeEach
   public void setUp() {
     deploymentSpy = spy(Deployment.class);
     project = new MavenProject();
@@ -44,19 +39,18 @@ public class DeploymentTest {
   }
 
   @Test
-  public void setBasicDeploymentValuesApplicationFileNotSetTest() throws DeploymentException {
+  public void setBasicDeploymentValuesApplicationFileNotSetTest() {
     System.clearProperty("mule.artifact");
-    expectedException.expect(DeploymentException.class);
-    expectedException
-        .expectMessage("Artifact to be deployed could not be found. Please set its location setting -Dmule.artifact=path/to/jar or in the deployment configuration pom element");
-    deploymentSpy.setBasicDeploymentValues(project);
+    assertThatThrownBy(() -> deploymentSpy.setBasicDeploymentValues(project))
+        .isExactlyInstanceOf(DeploymentException.class)
+        .hasMessageContaining("Artifact to be deployed could not be found. Please set its location setting -Dmule.artifact=path/to/jar or in the deployment configuration pom element");
   }
 
   @Test
   public void setBasicDeploymentValuesApplicationFileSetSystemPropertiesTest() throws DeploymentException {
     deploymentSpy.setBasicDeploymentValues(project);
-    assertThat("The application package jar could not be resolved by system property", deploymentSpy.getArtifact().getPath(),
-               equalTo(PACKAGE_FILE_NAME));
+    assertThat(deploymentSpy.getArtifact().getPath())
+        .describedAs("The application package jar could not be resolved by system property").isEqualTo(PACKAGE_FILE_NAME);
   }
 
   @Test
@@ -68,8 +62,8 @@ public class DeploymentTest {
     artifacts.add(artifactMock);
     when(projectMock.getAttachedArtifacts()).thenReturn(artifacts);
     deploymentSpy.setBasicDeploymentValues(project);
-    assertThat("The application package jar could not be resolved by maven project", deploymentSpy.getArtifact().getName(),
-               equalTo(PACKAGE_FILE_NAME));
+    assertThat(deploymentSpy.getArtifact().getName())
+        .describedAs("The application package jar could not be resolved by maven project").isEqualTo(PACKAGE_FILE_NAME);
   }
 
   @Test
@@ -77,8 +71,8 @@ public class DeploymentTest {
     String applicationName = "package";
     System.setProperty("mule.application.name", applicationName);
     deploymentSpy.setBasicDeploymentValues(project);
-    assertThat("The application name could not be resolved by system property", deploymentSpy.getApplicationName(),
-               equalTo(applicationName));
+    assertThat(deploymentSpy.getApplicationName()).describedAs("The application name could not be resolved by system property")
+        .isEqualTo(applicationName);
     System.clearProperty("mule.application.name");
 
   }
@@ -88,8 +82,8 @@ public class DeploymentTest {
     String artifactId = "artifact-id";
     when(projectMock.getArtifactId()).thenReturn(artifactId);
     deploymentSpy.setBasicDeploymentValues(projectMock);
-    assertThat("The application application name could not be resolved by maven project", deploymentSpy.getApplicationName(),
-               equalTo(artifactId));
+    assertThat(deploymentSpy.getApplicationName())
+        .describedAs("The application application name could not be resolved by maven project").isEqualTo(artifactId);
   }
 
   @Test
@@ -97,8 +91,8 @@ public class DeploymentTest {
     String isSkip = "true";
     System.setProperty("mule.skip", isSkip);
     deploymentSpy.setBasicDeploymentValues(projectMock);
-    assertThat("The skip property could not be resolved by system property", deploymentSpy.getSkip(),
-               equalTo(isSkip));
+    assertThat(deploymentSpy.getSkip()).describedAs("The skip property could not be resolved by system property")
+        .isEqualTo(isSkip);
     System.clearProperty("mule.skip");
 
   }
@@ -106,8 +100,7 @@ public class DeploymentTest {
   @Test
   public void setBasicDeploymentValueSkipNotSetTest() throws DeploymentException {
     deploymentSpy.setBasicDeploymentValues(projectMock);
-    assertThat("The skip property could not be resolved by default", deploymentSpy.getSkip(),
-               equalTo("false"));
+    assertThat(deploymentSpy.getSkip()).describedAs("The skip property could not be resolved by default").isEqualTo("false");
   }
 
   @Test
@@ -115,8 +108,8 @@ public class DeploymentTest {
     String muleVersion = "4.0.0";
     System.setProperty("mule.version", muleVersion);
     deploymentSpy.setBasicDeploymentValues(projectMock);
-    assertThat("The mule version property could not be resolved by system property", deploymentSpy.getMuleVersion().get(),
-               equalTo(muleVersion));
+    assertThat(deploymentSpy.getMuleVersion().get())
+        .describedAs("The mule version property could not be resolved by system property").isEqualTo(muleVersion);
     System.clearProperty("mule.version");
 
   }
@@ -124,7 +117,6 @@ public class DeploymentTest {
   @Test
   public void setBasicDeploymentValueMuleVersionNotSetTest() throws DeploymentException {
     deploymentSpy.setBasicDeploymentValues(projectMock);
-    assertThat("The mule version should not be present", deploymentSpy.getMuleVersion().isPresent(),
-               equalTo(false));
+    assertThat(deploymentSpy.getMuleVersion().isPresent()).describedAs("The mule version should not be present").isFalse();
   }
 }

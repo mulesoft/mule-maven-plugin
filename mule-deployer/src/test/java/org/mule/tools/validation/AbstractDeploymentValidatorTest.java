@@ -6,15 +6,13 @@
  */
 package org.mule.tools.validation;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -22,22 +20,17 @@ public class AbstractDeploymentValidatorTest {
 
   private static final String CANNOT_RESOLVE_ENVIRONMENT_VERSION_MESSAGE = "Cannot resolve environment runtime version";
   private static final String MULE_VERSION = "4.1.0";
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
   private DeploymentValidatorMock validator;
   private Deployment deploymentMock;
 
-  @Before
-  public void setUp() {
-    expectedException.expect(DeploymentException.class);
-  }
-
   @Test
-  public void validateMuleVersionAgainstEnvironmentMissingMuleVersionTest() throws DeploymentException {
-    expectedException.expectMessage("muleVersion is not present in deployment configuration");
-    deploymentMock = createDeploymentMock(null);
-    validator = new DeploymentValidatorMock(deploymentMock);
-    validator.validateMuleVersionAgainstEnvironment();
+  public void validateMuleVersionAgainstEnvironmentMissingMuleVersionTest() {
+    assertThatThrownBy(() -> {
+      deploymentMock = createDeploymentMock(null);
+      validator = new DeploymentValidatorMock(deploymentMock);
+      validator.validateMuleVersionAgainstEnvironment();
+    }).isExactlyInstanceOf(DeploymentException.class)
+        .hasMessageContaining("muleVersion is not present in deployment configuration");
   }
 
   private Deployment createDeploymentMock(String version) {
@@ -47,11 +40,13 @@ public class AbstractDeploymentValidatorTest {
   }
 
   @Test
-  public void validateMuleVersionAgainstEnvironmentCannotResolveEnvironmentMuleVersionTest() throws DeploymentException {
-    expectedException.expectMessage(CANNOT_RESOLVE_ENVIRONMENT_VERSION_MESSAGE);
-    Deployment deploymentMock = createDeploymentMock(MULE_VERSION);
-    validator = new DeploymentValidatorMock(deploymentMock);
-    validator.validateMuleVersionAgainstEnvironment();
+  public void validateMuleVersionAgainstEnvironmentCannotResolveEnvironmentMuleVersionTest() {
+    assertThatThrownBy(() -> {
+      Deployment deploymentMock = createDeploymentMock(MULE_VERSION);
+      validator = new DeploymentValidatorMock(deploymentMock);
+      validator.validateMuleVersionAgainstEnvironment();
+    }).isExactlyInstanceOf(DeploymentException.class)
+        .hasMessageContaining(CANNOT_RESOLVE_ENVIRONMENT_VERSION_MESSAGE);
   }
 
   class DeploymentValidatorMock extends AbstractDeploymentValidator {

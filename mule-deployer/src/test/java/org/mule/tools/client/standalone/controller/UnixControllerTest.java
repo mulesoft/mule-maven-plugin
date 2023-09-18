@@ -6,27 +6,18 @@
  */
 package org.mule.tools.client.standalone.controller;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
-import java.sql.Blob;
+import java.nio.charset.StandardCharsets;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.powermock.api.mockito.PowerMockito.doReturn;
-import static org.powermock.api.mockito.PowerMockito.spy;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({UnixController.class})
 public class UnixControllerTest {
 
   private static final String MULE_HOME = "/home/mule";
@@ -38,29 +29,32 @@ public class UnixControllerTest {
   private static final int RUNNING_STATUS = 0;
   private static final int NOT_RUNNING_STATUS = 1;
 
-  @Rule
-  public ExpectedException expected = ExpectedException.none();
-
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     controllerSpy = spy(controller);
   }
 
   @Test
   public void getMuleBinTest() {
-    assertThat("Mule bin path is not the expected", controller.getMuleBin(), equalTo(MULE_HOME + "/bin/mule"));
+    assertThat(controller.getMuleBin())
+        .describedAs("Mule bin path is not the expected")
+        .isEqualTo(MULE_HOME + "/bin/mule");
   }
 
   @Test
-  public void statusRunningTest() throws Exception {
-    doReturn(RUNNING_STATUS).when(controllerSpy, "runSync", "status", CONTROLLER_ARGUMENTS);
-    assertThat("Status is not the expected", controllerSpy.status(CONTROLLER_ARGUMENTS), equalTo(RUNNING_STATUS));
+  public void statusRunningTest() {
+    doReturn(RUNNING_STATUS).when(controllerSpy).runSync("status", CONTROLLER_ARGUMENTS);
+    assertThat(controllerSpy.status(CONTROLLER_ARGUMENTS))
+        .as("Status is not the expected")
+        .isEqualTo(RUNNING_STATUS);
   }
 
   @Test
   public void statusNotRunningTest() throws Exception {
-    doReturn(NOT_RUNNING_STATUS).when(controllerSpy, "runSync", "status", CONTROLLER_ARGUMENTS);
-    assertThat("Status is not the expected", controllerSpy.status(CONTROLLER_ARGUMENTS), equalTo(NOT_RUNNING_STATUS));
+    doReturn(NOT_RUNNING_STATUS).when(controllerSpy).runSync("status", CONTROLLER_ARGUMENTS);
+    assertThat(controllerSpy.status(CONTROLLER_ARGUMENTS))
+        .as("Status is not the expected")
+        .isEqualTo(NOT_RUNNING_STATUS);
   }
 
   @Test
@@ -68,43 +62,48 @@ public class UnixControllerTest {
     int processId = 1;
     doReturn(true).when(controllerSpy).isMuleRunning();
     doReturn(processId).when(controllerSpy).getProcessIdFromStatus();
-    assertThat("Process id is not the expected", controllerSpy.getProcessId(), equalTo(processId));
+    assertThat(controllerSpy.getProcessId())
+        .as("Process id is not the expected")
+        .isEqualTo(processId);
   }
 
   @Test
   public void getProcessIdMuleProcessNotRunningExceptionTest() {
-    expected.expect(MuleControllerException.class);
-    expected.expectMessage("Mule Runtime is not running");
     doReturn(false).when(controllerSpy).isMuleRunning();
-    controllerSpy.getProcessId();
+    assertThatThrownBy(() -> controllerSpy.getProcessId())
+        .isExactlyInstanceOf(MuleControllerException.class)
+        .hasMessage("Mule Runtime is not running");
   }
 
   @Test
   public void getProcessIdFromMuleStatusTest() throws Exception {
     int processId = 10;
     setStatusToOutputStreamInController("Mule is running (" + processId + ").");
-    assertThat("Process id is not the expected", controllerSpy.getProcessIdFromStatus(), equalTo(processId));
+    assertThat(controllerSpy.getProcessIdFromStatus())
+        .as("Process id is not the expected")
+        .isEqualTo(processId);
   }
 
   @Test
   public void getProcessIdFromMuleEEStatusTest() throws Exception {
     int processId = 10;
     setStatusToOutputStreamInController("Mule Enterprise Edition is running (" + processId + ").");
-    assertThat("Process id is not the expected", controllerSpy.getProcessIdFromStatus(), equalTo(processId));
+    assertThat(controllerSpy.getProcessIdFromStatus())
+        .as("Process id is not the expected")
+        .isEqualTo(processId);
   }
 
   @Test
   public void getProcessIdFromStatusExceptionTest() throws Exception {
-    expected.expect(MuleControllerException.class);
-    expected
-        .expectMessage("bin/mule status didn't return the expected pattern: Mule(\\sEnterprise Edition)? is running \\(([0-9]+)\\)\\.");
     setStatusToOutputStreamInController("Not running");
-    controllerSpy.getProcessIdFromStatus();
+    assertThatThrownBy(() -> controllerSpy.getProcessIdFromStatus())
+        .isExactlyInstanceOf(MuleControllerException.class)
+        .hasMessage("bin/mule status didn't return the expected pattern: Mule(\\sEnterprise Edition)? is running \\(([0-9]+)\\)\\.");
   }
 
   private void setStatusToOutputStreamInController(String status) throws Exception {
     OutputStream outputStream = new ByteArrayOutputStream();
-    outputStream.write(status.getBytes(Charset.forName("UTF-8")));
-    doReturn(outputStream).when(controllerSpy, "getOutputStream");
+    outputStream.write(status.getBytes(StandardCharsets.UTF_8));
+    when(controllerSpy.getOutputStream()).thenReturn(outputStream);
   }
 }

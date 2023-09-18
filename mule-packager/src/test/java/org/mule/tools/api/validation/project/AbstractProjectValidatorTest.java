@@ -6,15 +6,11 @@
  */
 package org.mule.tools.api.validation.project;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mule.tools.api.validation.project.AbstractProjectValidator.isPackagingTypeValid;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 import org.mule.tools.api.exception.ValidationException;
+import org.junit.jupiter.api.Test;
 
 public class AbstractProjectValidatorTest {
 
@@ -24,35 +20,31 @@ public class AbstractProjectValidatorTest {
   protected static final String MULE_DOMAIN = "mule-domain";
   protected static final String MULE_POLICY = "mule-policy";
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
   @Test
   public void isMuleApplicationPackagingTypeValidTest() throws ValidationException {
-    assertThat("Packaging type should be valid", isPackagingTypeValid(MULE_APPLICATION), is(true));
+    assertThat(isPackagingTypeValid(MULE_APPLICATION)).describedAs("Packaging type should be valid").isTrue();
   }
 
   @Test
   public void isMuleDomainPackagingTypeValidTest() throws ValidationException {
-    assertThat("Packaging type should be valid", isPackagingTypeValid(MULE_DOMAIN), is(true));
+    assertThat(isPackagingTypeValid(MULE_DOMAIN)).describedAs("Packaging type should be valid").isTrue();
   }
 
   @Test
   public void isMulePolicyPackagingTypeValidTest() throws ValidationException {
-    assertThat("Packaging type should be valid", isPackagingTypeValid(MULE_POLICY), is(true));
+    assertThat(isPackagingTypeValid(MULE_POLICY)).describedAs("Packaging type should be valid").isTrue();
   }
 
   @Test
-  public void isPackagingTypeValidInvalidPackagingTest() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    isPackagingTypeValid("no-valid-packaging");
+  public void isPackagingTypeValidInvalidPackagingTest() {
+    assertThatThrownBy(() -> isPackagingTypeValid("no-valid-packaging")).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
-  public void isPackagingTypeValidNullTest() throws ValidationException {
-    expectedException.expect(ValidationException.class);
-    expectedException.expectMessage("Packaging type name should not be null");
-    isPackagingTypeValid(null);
+  public void isPackagingTypeValidNullTest() {
+    assertThatThrownBy(() -> isPackagingTypeValid(null))
+        .isExactlyInstanceOf(ValidationException.class)
+        .hasMessageContaining("Packaging type name should not be null");
   }
 
 }

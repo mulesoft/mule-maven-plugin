@@ -6,10 +6,8 @@
  */
 package org.mule.tools.verification.arm;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.arm.ArmClient;
 import org.mule.tools.client.arm.model.Application;
 import org.mule.tools.client.arm.model.Data;
@@ -17,6 +15,9 @@ import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.ArmDeployment;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -30,10 +31,7 @@ public class ArmDeploymentVerificationTest {
   private ArmDeploymentVerification verification;
   private Deployment deployment;
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
-  @Before
+  @BeforeEach
   public void setUp() {
     clientMock = mock(ArmClient.class);
     application = new Application();
@@ -53,19 +51,21 @@ public class ArmDeploymentVerificationTest {
   }
 
   @Test
-  public void assertDeploymentStartedFalse() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
-    application.data.desiredStatus = "UPDATED";
-    deployment.setDeploymentTimeout(1000L);
-    verification.assertDeployment(deployment);
+  public void assertDeploymentStartedFalse() {
+    assertThatThrownBy(() -> {
+      application.data.desiredStatus = "UPDATED";
+      deployment.setDeploymentTimeout(1000L);
+      verification.assertDeployment(deployment);
+    }).isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test
-  public void assertDeploymentFailed() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
-    expectedException.expectMessage("Deployment has failed");
-    application.data.lastReportedStatus = "FAILED";
-    application.data.desiredStatus = "STARTED";
-    verification.assertDeployment(deployment);
+  public void assertDeploymentFailed() {
+    assertThatThrownBy(() -> {
+      application.data.lastReportedStatus = "FAILED";
+      application.data.desiredStatus = "STARTED";
+      verification.assertDeployment(deployment);
+    }).isExactlyInstanceOf(DeploymentException.class)
+        .hasMessageContaining("Deployment has failed");
   }
 }

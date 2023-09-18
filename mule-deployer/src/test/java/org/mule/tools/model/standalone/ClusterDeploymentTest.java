@@ -6,12 +6,11 @@
  */
 package org.mule.tools.model.standalone;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.spy;
 
 public class ClusterDeploymentTest {
@@ -20,7 +19,7 @@ public class ClusterDeploymentTest {
 
   private ClusterDeployment deploymentSpy;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     deploymentSpy = spy(ClusterDeployment.class);
   }
@@ -31,8 +30,8 @@ public class ClusterDeploymentTest {
 
     Integer clusterDefaultSize = 2;
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The cluster size was not resolved to the default value",
-               deploymentSpy.getSize(), equalTo(clusterDefaultSize));
+    assertThat(deploymentSpy.getSize()).describedAs("The cluster size was not resolved to the default value")
+        .isEqualTo(clusterDefaultSize);
     System.clearProperty("mule.home");
 
   }

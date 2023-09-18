@@ -6,19 +6,19 @@
  */
 package org.mule.tools.model.anypoint;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.Mockito.spy;
 
 public class AnypointDeploymentTest {
 
   private AnypointDeployment deploymentSpy;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     deploymentSpy = spy(AnypointDeployment.class);
   }
@@ -28,8 +28,8 @@ public class AnypointDeploymentTest {
     String anypointUri = "www.lala.com";
     System.setProperty("anypoint.baseUri", anypointUri);
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The anypoint baseUri was not resolved by system property",
-               deploymentSpy.getUri(), equalTo(anypointUri));
+    assertThat(deploymentSpy.getUri()).describedAs("The anypoint baseUri was not resolved by system property")
+        .isEqualTo(anypointUri);
     System.clearProperty("anypoint.baseUri");
   }
 
@@ -37,8 +37,8 @@ public class AnypointDeploymentTest {
   public void setAnypointDeploymentValuesAnypointUriNotSetTest() throws DeploymentException {
     String anypointUriDefaultValue = "https://anypoint.mulesoft.com";
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The anypoint baseUri was not resolved to the default value",
-               deploymentSpy.getUri(), equalTo(anypointUriDefaultValue));
+    assertThat(deploymentSpy.getUri()).describedAs("The anypoint baseUri was not resolved to the default value")
+        .isEqualTo(anypointUriDefaultValue);
   }
 
   @Test
@@ -46,16 +46,16 @@ public class AnypointDeploymentTest {
     String businessGroup = "business";
     System.setProperty("anypoint.businessGroup", businessGroup);
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The anypoint business group was not resolved by system property",
-               deploymentSpy.getBusinessGroup(), equalTo(businessGroup));
+    assertThat(deploymentSpy.getBusinessGroup()).describedAs("The anypoint business group was not resolved by system property")
+        .isEqualTo(businessGroup);
     System.clearProperty("anypoint.businessGroup");
   }
 
   @Test
   public void setAnypointDeploymentValuesAnypointBusinessGroupNotSetTest() throws DeploymentException {
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The anypoint baseUri was not resolved to the default value",
-               deploymentSpy.getBusinessGroup().isEmpty(), equalTo(true));
+    assertThat(deploymentSpy.getBusinessGroup().isEmpty())
+        .describedAs("The anypoint baseUri was not resolved to the default value").isTrue();
   }
 
   @Test
@@ -63,8 +63,8 @@ public class AnypointDeploymentTest {
     String environment = "Production";
     System.setProperty("anypoint.environment", environment);
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The anypoint environment was not resolved by system property",
-               deploymentSpy.getEnvironment(), equalTo(environment));
+    assertThat(deploymentSpy.getEnvironment()).describedAs("The anypoint environment was not resolved by system property")
+        .isEqualTo(environment);
     System.clearProperty("anypoint.environment");
   }
 
@@ -73,8 +73,7 @@ public class AnypointDeploymentTest {
     String password = "1234";
     System.setProperty("anypoint.password", password);
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The password was not resolved by system property",
-               deploymentSpy.getPassword(), equalTo(password));
+    assertThat(deploymentSpy.getPassword()).describedAs("The password was not resolved by system property").isEqualTo(password);
     System.clearProperty("anypoint.password");
   }
 
@@ -83,8 +82,8 @@ public class AnypointDeploymentTest {
     String mavenServer = "server";
     System.setProperty("maven.server", mavenServer);
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The maven server was not resolved by system property",
-               deploymentSpy.getServer(), equalTo(mavenServer));
+    assertThat(deploymentSpy.getServer()).describedAs("The maven server was not resolved by system property")
+        .isEqualTo(mavenServer);
     System.clearProperty("maven.server");
   }
 
@@ -93,8 +92,7 @@ public class AnypointDeploymentTest {
     String username = "root";
     System.setProperty("anypoint.username", username);
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The username was not resolved by system property",
-               deploymentSpy.getUsername(), equalTo(username));
+    assertThat(deploymentSpy.getUsername()).describedAs("The username was not resolved by system property").isEqualTo(username);
     System.clearProperty("anypoint.username");
   }
 }

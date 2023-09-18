@@ -6,6 +6,7 @@
  */
 package org.mule.tools.maven.utils;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,14 +18,14 @@ import org.apache.maven.model.Build;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Reporting;
 import org.apache.maven.project.MavenProject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Mulesoft Inc.
  * @since 3.1.0
  */
-public class ProjectDirectoryUpdaterTest {
+class ProjectDirectoryUpdaterTest {
 
   private static final String DEFAULT_BUILD_DIRECTORY = "/my/fake/dir";
 
@@ -35,8 +36,8 @@ public class ProjectDirectoryUpdaterTest {
 
   private ProjectDirectoryUpdater projectDirectoryUpdater;
 
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     modelMock = mock(Model.class);
     buildMock = mock(Build.class);
     reportingMock = mock(Reporting.class);
@@ -52,18 +53,19 @@ public class ProjectDirectoryUpdaterTest {
     projectDirectoryUpdater = new ProjectDirectoryUpdater(mavenProjectMock);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void createNullProject() {
-    new ProjectDirectoryUpdater(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void updateBuildOutputDirectoryNullDirectory() {
-    projectDirectoryUpdater.updateBuildOutputDirectory(null);
+  @Test
+  void createNullProject() {
+    assertThatThrownBy(() -> new ProjectDirectoryUpdater(null)).isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
-  public void updateBuildOutputDirectory() {
+  void updateBuildOutputDirectoryNullDirectory() {
+    assertThatThrownBy(() -> projectDirectoryUpdater.updateBuildOutputDirectory(null))
+        .isExactlyInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void updateBuildOutputDirectory() {
     projectDirectoryUpdater.updateBuildOutputDirectory(DEFAULT_BUILD_DIRECTORY);
 
     verify(mavenProjectMock, times(1)).getModel();
@@ -71,13 +73,14 @@ public class ProjectDirectoryUpdaterTest {
     verify(buildMock, times(1)).setOutputDirectory(Paths.get(DEFAULT_BUILD_DIRECTORY, "classes").toString());
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void updateBuildTestOputputDirectoryNullDirectory() {
-    projectDirectoryUpdater.updateBuildTestOputputDirectory(null);
+  @Test
+  void updateBuildTestOputputDirectoryNullDirectory() {
+    assertThatThrownBy(() -> projectDirectoryUpdater.updateBuildTestOputputDirectory(null))
+        .isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
-  public void updateBuildTestOputputDirectory() {
+  void updateBuildTestOputputDirectory() {
     projectDirectoryUpdater.updateBuildTestOputputDirectory(DEFAULT_BUILD_DIRECTORY);
 
     verify(mavenProjectMock, times(1)).getModel();
@@ -85,13 +88,14 @@ public class ProjectDirectoryUpdaterTest {
     verify(buildMock, times(1)).setTestOutputDirectory(Paths.get(DEFAULT_BUILD_DIRECTORY, "test-classes").toString());
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void updateReportingOutputDirectoryNullDirectory() {
-    projectDirectoryUpdater.updateReportingOutputDirectory(null);
+  @Test
+  void updateReportingOutputDirectoryNullDirectory() {
+    assertThatThrownBy(() -> projectDirectoryUpdater.updateReportingOutputDirectory(null))
+        .isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
-  public void updateReportingOutputDirectory() {
+  void updateReportingOutputDirectory() {
     projectDirectoryUpdater.updateReportingOutputDirectory(DEFAULT_BUILD_DIRECTORY);
 
     verify(mavenProjectMock, times(1)).getModel();
@@ -99,13 +103,14 @@ public class ProjectDirectoryUpdaterTest {
     verify(reportingMock, times(1)).setOutputDirectory(Paths.get(DEFAULT_BUILD_DIRECTORY, "site").toString());
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void updateBuildDirectoryNullDirectory() {
-    projectDirectoryUpdater.updateBuildDirectory(null);
+  @Test
+  void updateBuildDirectoryNullDirectory() {
+    assertThatThrownBy(() -> projectDirectoryUpdater.updateBuildDirectory(null))
+        .isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
-  public void updateBuildDirectory() {
+  void updateBuildDirectory() {
     projectDirectoryUpdater.updateBuildDirectory(DEFAULT_BUILD_DIRECTORY);
 
     verify(mavenProjectMock, times(3)).getModel();

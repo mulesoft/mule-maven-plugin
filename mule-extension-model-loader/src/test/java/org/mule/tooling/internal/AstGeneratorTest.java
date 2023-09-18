@@ -6,74 +6,57 @@
  */
 package org.mule.tooling.internal;
 
-import static org.mockito.Mockito.mock;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.nio.file.Paths;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Dependency;
-import org.junit.Test;
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.Test;
 import org.mule.maven.client.api.MavenClient;
-import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.ast.api.ArtifactAst;
-import static com.google.common.io.Files.createTempDir;
-import org.mule.tooling.api.ExtensionModelLoader;
-import org.mule.tooling.internal.ExtensionModelLoaderTest;
-import org.mule.tooling.internal.DefaultExtensionModelLoader;
+import org.mule.runtime.extension.api.model.construct.ImmutableConstructModel;
 import org.mule.tooling.api.AstGenerator;
 import org.mule.tooling.api.ConfigurationException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import org.mule.runtime.extension.api.model.construct.ImmutableConstructModel;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
 
-import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class AstGeneratorTest extends MavenClientTest {
+class AstGeneratorTest extends MavenClientTest {
 
   @Test
-  public void generateASTWithExtensionModels() throws Exception {
-    final File m2Repo = getM2Repo(getM2Home());
-    MavenClient client = getMavenClientInstance(
-                                                getMavenConfiguration(m2Repo, Optional.ofNullable(getUserSettings(m2Repo)),
-                                                                      Optional.ofNullable(getSettingsSecurity(m2Repo))));
-    Path workingPath = Paths.get("src", "test", "resources", "test-project");
-    Set<Artifact> dependencies = new HashSet<Artifact>();
-    AstGenerator generator = new AstGenerator(client, "4.3.0", dependencies, workingPath, null, new ArrayList<Dependency>());
-    Path configsBasePath = workingPath.resolve("src/main/mule");
-    ArtifactAst artifact =
-        generator.generateAST(Arrays.asList(configsBasePath.resolve("mule-config.xml").toFile().getAbsolutePath()),
-                              configsBasePath);
-    generator.validateAST(artifact);
-    String absolutePath = workingPath.toFile().getAbsolutePath();
-    assertThat(artifact.topLevelComponents().get(0).getModel(ParameterizedModel.class).isPresent(), is(true));
-    assertThat(artifact.topLevelComponents().get(0).getModel(ParameterizedModel.class).get().getClass(),
-               equalTo(ImmutableConstructModel.class));
+  void generateASTWithExtensionModels() throws Exception {
+    final Pair<AstGenerator, ArtifactAst> elements = getElements("mule-config.xml");
+    elements.getLeft().validateAST(elements.getRight());
+
+    assertThat(elements.getRight().topLevelComponents().get(0).getModel(ParameterizedModel.class)).isPresent();
+    assertThat(elements.getRight().topLevelComponents().get(0).getModel(ParameterizedModel.class).orElse(null))
+        .isInstanceOf(ImmutableConstructModel.class);
   }
 
-  @Test(expected = ConfigurationException.class)
-  public void throwConfigurationExceptionIfMuleConfigHasErrors() throws Exception {
-    final File m2Repo = getM2Repo(getM2Home());
-    MavenClient client = getMavenClientInstance(
-                                                getMavenConfiguration(m2Repo, Optional.ofNullable(getUserSettings(m2Repo)),
-                                                                      Optional.ofNullable(getSettingsSecurity(m2Repo))));
-    Path workingPath = Paths.get("src", "test", "resources", "test-project");
-    Set<Artifact> dependencies = new HashSet<Artifact>();
-    AstGenerator generator = new AstGenerator(client, "4.3.0", dependencies, workingPath, null, new ArrayList<Dependency>());
-    Path configsBasePath = workingPath.resolve("src/main/mule");
-    ArtifactAst artifact =
-        generator.generateAST(Arrays.asList(configsBasePath.resolve("mule-config2.xml").toFile().getAbsolutePath()),
-                              configsBasePath);
-    generator.validateAST(artifact);
+  @Test
+  void throwConfigurationExceptionIfMuleConfigHasErrors() {
+    final Pair<AstGenerator, ArtifactAst> elements = getElements("mule-config2.xml");
+    assertThatThrownBy(() -> elements.getLeft().validateAST(elements.getRight()))
+        .isExactlyInstanceOf(ConfigurationException.class);
   }
 
-
+  private Pair<AstGenerator, ArtifactAst> getElements(String muleConfiguration) {
+    try {
+      final Path workingPath = Paths.get("src", "test", "resources", "test-project");
+      final Path configsBasePath = workingPath.resolve("src/main/mule");
+      final File m2Repo = getM2Repo(getM2Home());
+      final MavenClient client =
+          getMavenClientInstance(getMavenConfiguration(m2Repo, getUserSettings(m2Repo), getSettingsSecurity(m2Repo)));
+      final AstGenerator generator =
+          new AstGenerator(client, "4.3.0", Collections.emptySet(), workingPath, null, Collections.emptyList());
+      final ArtifactAst artifact =
+          generator.generateAST(Collections.singletonList(configsBasePath.resolve(muleConfiguration).toFile().getAbsolutePath()),
+                                configsBasePath);
+      return Pair.of(generator, artifact);
+    } catch (Exception exception) {
+      throw new RuntimeException(exception);
+    }
+  }
 }

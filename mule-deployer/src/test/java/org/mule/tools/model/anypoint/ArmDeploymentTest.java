@@ -6,20 +6,19 @@
  */
 package org.mule.tools.model.anypoint;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.model.TargetType;
 import org.mule.tools.client.core.exception.DeploymentException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.spy;
 
 public class ArmDeploymentTest {
 
   private ArmDeployment deploymentSpy;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     deploymentSpy = spy(ArmDeployment.class);
   }
@@ -29,8 +28,8 @@ public class ArmDeploymentTest {
     String isArmInsecure = "true";
     System.setProperty("arm.insecure", isArmInsecure);
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The isArmInsecure property was not resolved by system property",
-               deploymentSpy.isArmInsecure().get(), equalTo(Boolean.valueOf(isArmInsecure)));
+    assertThat(deploymentSpy.isArmInsecure().get()).describedAs("The isArmInsecure property was not resolved by system property")
+        .isEqualTo(Boolean.valueOf(isArmInsecure));
     System.clearProperty("arm.insecure");
   }
 
@@ -38,16 +37,17 @@ public class ArmDeploymentTest {
   public void setArmDeploymentValuesIsArmInsecureNotSetTest() throws DeploymentException {
     Boolean isArmInsecureDefaultValue = Boolean.FALSE;
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The arm isInsecure property was not resolved to the default value",
-               deploymentSpy.isArmInsecure().get(), equalTo(isArmInsecureDefaultValue));
+    assertThat(deploymentSpy.isArmInsecure().get())
+        .describedAs("The arm isInsecure property was not resolved to the default value").isEqualTo(isArmInsecureDefaultValue);
   }
 
   @Test
   public void setArmDeploymentValuesIsFailIfNotExistsSetTest() throws DeploymentException {
     Boolean isFailIfNotExistsDefaultValue = Boolean.TRUE;
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The isFailIfNotExists property was not resolved to the default value",
-               deploymentSpy.isFailIfNotExists().get(), equalTo(isFailIfNotExistsDefaultValue));
+    assertThat(deploymentSpy.isFailIfNotExists().get())
+        .describedAs("The isFailIfNotExists property was not resolved to the default value")
+        .isEqualTo(isFailIfNotExistsDefaultValue);
   }
 
   @Test
@@ -55,8 +55,8 @@ public class ArmDeploymentTest {
     String anypointTarget = "target";
     System.setProperty("anypoint.target", anypointTarget);
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The target property was not resolved by system property",
-               deploymentSpy.getTarget(), equalTo(anypointTarget));
+    assertThat(deploymentSpy.getTarget()).describedAs("The target property was not resolved by system property")
+        .isEqualTo(anypointTarget);
     System.clearProperty("anypoint.target");
   }
 
@@ -65,8 +65,8 @@ public class ArmDeploymentTest {
     String anypointTargetType = "server";
     System.setProperty("anypoint.target.type", anypointTargetType);
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The target type property was not resolved by system property",
-               deploymentSpy.getTargetType(), equalTo(TargetType.server));
+    assertThat(deploymentSpy.getTargetType()).describedAs("The target type property was not resolved by system property")
+        .isEqualTo(TargetType.server);
     System.clearProperty("anypoint.target.type");
   }
 }

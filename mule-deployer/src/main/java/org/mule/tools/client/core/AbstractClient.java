@@ -6,7 +6,6 @@
  */
 package org.mule.tools.client.core;
 
-
 import static com.google.common.net.HttpHeaders.USER_AGENT;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.Response.Status.Family.SUCCESSFUL;
@@ -40,6 +39,7 @@ import org.mule.tools.utils.DeployerLog;
 
 import com.google.gson.Gson;
 
+@SuppressWarnings("rawtypes")
 public abstract class AbstractClient {
 
   private String userAgent = "mule-deployer%s";

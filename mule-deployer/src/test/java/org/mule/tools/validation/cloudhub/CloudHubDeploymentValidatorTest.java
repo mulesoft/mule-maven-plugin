@@ -6,31 +6,22 @@
  */
 package org.mule.tools.validation.cloudhub;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.SupportedVersion;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.validation.AbstractDeploymentValidator;
 import org.mule.tools.validation.EnvironmentSupportedVersions;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.powermock.api.mockito.PowerMockito.doReturn;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.spy;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(CloudHubDeploymentValidator.class)
 public class CloudHubDeploymentValidatorTest {
 
   private static final String MULE_VERSION1 = "4.0.0";
@@ -46,7 +37,7 @@ public class CloudHubDeploymentValidatorTest {
   private static final DeployerLog LOG_MOCK = mock(DeployerLog.class);
   private AbstractDeploymentValidator validatorSpy;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     SupportedVersion sv1 = new SupportedVersion();
     sv1.setVersion(MULE_VERSION1);
@@ -66,12 +57,12 @@ public class CloudHubDeploymentValidatorTest {
     validatorSpy = spy(new CloudHubDeploymentValidator(cloudHubDeployment));
 
     CloudHubClient clientSpy = spy(new CloudHubClient(cloudHubDeployment, LOG_MOCK));
-    doReturn(clientSpy).when(validatorSpy, "getCloudHubClient");
+    doReturn(clientSpy).when((CloudHubDeploymentValidator) validatorSpy).getCloudHubClient();
 
     doReturn(supportedVersions).when(clientSpy).getSupportedMuleVersions();
 
-    assertThat("Supported version that was generated is not the expected", validatorSpy.getEnvironmentSupportedVersions(),
-               equalTo(expectedEnvironmentSupportedVersions));
+    assertThat(validatorSpy.getEnvironmentSupportedVersions())
+        .describedAs("Supported version that was generated is not the expected").isEqualTo(expectedEnvironmentSupportedVersions);
 
   }
 }

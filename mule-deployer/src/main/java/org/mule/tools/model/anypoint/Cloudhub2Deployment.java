@@ -6,10 +6,7 @@
  */
 package org.mule.tools.model.anypoint;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.util.List;
-import java.util.Map;
 
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mule.tools.client.core.exception.DeploymentException;

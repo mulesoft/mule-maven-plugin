@@ -7,18 +7,18 @@
 package org.mule.tools.api.util.exclude;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GlobMatcherFileReaderTest {
 
   private GlobMatcherFileReader reader;
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
     reader = new GlobMatcherFileReader();
   }
@@ -26,43 +26,43 @@ public class GlobMatcherFileReaderTest {
   @Test
   public void blankLineTest() throws IOException {
     processLines("   ");
-    assertThat("Result should be empty", reader.getResult().isEmpty(), equalTo(true));
+    assertThat(reader.getResult().isEmpty()).describedAs("Result should be empty").isTrue();
   }
 
   @Test
   public void emptyLineTest() throws IOException {
     processLines(StringUtils.EMPTY);
-    assertThat("Result should be empty", reader.getResult().isEmpty(), equalTo(true));
+    assertThat(reader.getResult().isEmpty()).describedAs("Result should be empty").isTrue();
   }
 
   @Test
   public void commentLineTest() throws IOException {
     processLines("# this is a comment");
-    assertThat("Result should be empty", reader.getResult().isEmpty(), equalTo(true));
+    assertThat(reader.getResult().isEmpty()).describedAs("Result should be empty").isTrue();
   }
 
   @Test
   public void commentLineTrailingSpacesTest() throws IOException {
     processLines(" # this is a comment");
-    assertThat("Result should be empty", reader.getResult().isEmpty(), equalTo(true));
+    assertThat(reader.getResult().isEmpty()).describedAs("Result should be empty").isTrue();
   }
 
   @Test
   public void oneLineTest() throws IOException {
     processLines("*");
-    assertThat("Result should contain one matcher", reader.getResult().size(), equalTo(1));
+    assertThat(reader.getResult().size()).describedAs("Result should contain one matcher").isEqualTo(1);
   }
 
   @Test
   public void twoLinesTest() throws IOException {
     processLines("*", "*.java");
-    assertThat("Result should contain two matchers", reader.getResult().size(), equalTo(2));
+    assertThat(reader.getResult().size()).describedAs("Result should contain two matchers").isEqualTo(2);
   }
 
   @Test
   public void manyLinesWithCommentsAndBlankLinesTest() throws IOException {
     processLines("# This is a comment", "*.java", "*.cpp", StringUtils.EMPTY, "*.class");
-    assertThat("Result should contain three matchers", reader.getResult().size(), equalTo(3));
+    assertThat(reader.getResult().size()).describedAs("Result should contain three matchers").isEqualTo(3);
   }
 
   private void processLines(String... lines) throws IOException {

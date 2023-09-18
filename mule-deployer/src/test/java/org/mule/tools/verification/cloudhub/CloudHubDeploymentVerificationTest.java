@@ -6,16 +6,15 @@
  */
 package org.mule.tools.verification.cloudhub;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.Application;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -28,10 +27,9 @@ public class CloudHubDeploymentVerificationTest {
   private CloudHubDeploymentVerification verification;
   private Deployment deployment;
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
-  @Before
+
+  @BeforeEach
   public void setUp() {
     clientMock = mock(CloudHubClient.class);
     application = new Application();
@@ -48,31 +46,34 @@ public class CloudHubDeploymentVerificationTest {
   }
 
   @Test
-  public void assertDeploymentStartedFalse() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
-    expectedException.expectMessage("Validation timed out waiting for application to start. " +
-        "Please consider increasing the deploymentTimeout property.");
-    application.setStatus("DEPLOYING");
-    deployment.setDeploymentTimeout(1000L);
-    verification.assertDeployment(deployment);
+  public void assertDeploymentStartedFalse() {
+    assertThatThrownBy(() -> {
+      application.setStatus("DEPLOYING");
+      deployment.setDeploymentTimeout(1000L);
+      verification.assertDeployment(deployment);
+    }).isExactlyInstanceOf(DeploymentException.class)
+        .hasMessageContaining("Validation timed out waiting for application to start. " +
+            "Please consider increasing the deploymentTimeout property.");
   }
 
   @Test
-  public void assertDeploymentFailed() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
-    expectedException.expectMessage("Deployment has failed");
-    application.setStatus("FAILED");
-    verification.assertDeployment(deployment);
+  public void assertDeploymentFailed() {
+    assertThatThrownBy(() -> {
+      application.setStatus("FAILED");
+      verification.assertDeployment(deployment);
+    }).isExactlyInstanceOf(DeploymentException.class)
+        .hasMessageContaining("Deployment has failed");
   }
 
   @Test
-  public void assertDeploymentSucessAfterFailure() throws DeploymentException {
-    expectedException.expect(DeploymentException.class);
-    expectedException.expectMessage("Validation timed out waiting for application to start. " +
-        "Please consider increasing the deploymentTimeout property.");
-    application.setStatus("FAILED");
-    application.setDeploymentUpdateStatus("DEPLOYING");
-    deployment.setDeploymentTimeout(1000L);
-    verification.assertDeployment(deployment);
+  public void assertDeploymentSucessAfterFailure() {
+    assertThatThrownBy(() -> {
+      application.setStatus("FAILED");
+      application.setDeploymentUpdateStatus("DEPLOYING");
+      deployment.setDeploymentTimeout(1000L);
+      verification.assertDeployment(deployment);
+    }).isExactlyInstanceOf(DeploymentException.class)
+        .hasMessageContaining("Validation timed out waiting for application to start. " +
+            "Please consider increasing the deploymentTimeout property.");
   }
 }

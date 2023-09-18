@@ -6,15 +6,14 @@
  */
 package org.mule.tools.deployment.arm;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.utils.DeployerLog;
 
 import javax.ws.rs.NotFoundException;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 public class ArmApplicationDeployerTest {
@@ -24,10 +23,7 @@ public class ArmApplicationDeployerTest {
   private ArmArtifactDeployer artifactDeployerMock;
   private DeployerLog logMock;
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
-  @Before
+  @BeforeEach
   public void setUp() {
     artifactDeployerMock = mock(ArmArtifactDeployer.class);
     logMock = mock(DeployerLog.class);
@@ -76,15 +72,16 @@ public class ArmApplicationDeployerTest {
   }
 
   @Test
-  public void undeployNonExistentDoFailApplication() throws DeploymentException {
-    expectedException.expect(NotFoundException.class);
-    doReturn(true).when(artifactDeployerMock).isFailIfNotExists();
-    doThrow(new NotFoundException()).when(artifactDeployerMock).undeployApplication();
+  public void undeployNonExistentDoFailApplication() {
+    assertThatThrownBy(() -> {
+      doReturn(true).when(artifactDeployerMock).isFailIfNotExists();
+      doThrow(new NotFoundException()).when(artifactDeployerMock).undeployApplication();
 
-    applicationDeployer.undeploy();
+      applicationDeployer.undeploy();
 
-    verify(artifactDeployerMock, times(1)).undeployApplication();
-    verify(artifactDeployerMock, times(1)).isFailIfNotExists();
-    verify(logMock, times(0)).error(anyString());
+      verify(artifactDeployerMock, times(1)).undeployApplication();
+      verify(artifactDeployerMock, times(1)).isFailIfNotExists();
+      verify(logMock, times(0)).error(anyString());
+    }).isExactlyInstanceOf(NotFoundException.class);
   }
 }

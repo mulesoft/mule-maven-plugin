@@ -6,19 +6,18 @@
  */
 package org.mule.tools.model.anypoint;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.spy;
 
 public class CloudHubDeploymentTest {
 
   private CloudHubDeployment deploymentSpy;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     deploymentSpy = spy(CloudHubDeployment.class);
   }
@@ -28,8 +27,8 @@ public class CloudHubDeploymentTest {
     String cloudHubWorkers = "10";
     System.setProperty("cloudhub.workers", cloudHubWorkers);
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The cloudhub workers was not resolved by system property",
-               deploymentSpy.getWorkers(), equalTo(Integer.valueOf(cloudHubWorkers)));
+    assertThat(deploymentSpy.getWorkers()).describedAs("The cloudhub workers was not resolved by system property")
+        .isEqualTo(Integer.valueOf(cloudHubWorkers));
     System.clearProperty("cloudhub.workers");
   }
 
@@ -38,38 +37,37 @@ public class CloudHubDeploymentTest {
     String cloudHubWorkerType = "worker-type";
     System.setProperty("cloudhub.workerType", cloudHubWorkerType);
     deploymentSpy.setEnvironmentSpecificValues();
-    assertThat("The cloudhub worker type property was not resolved by system property",
-               deploymentSpy.getWorkerType(), equalTo(cloudHubWorkerType));
+    assertThat(deploymentSpy.getWorkerType()).describedAs("The cloudhub worker type property was not resolved by system property")
+        .isEqualTo(cloudHubWorkerType);
     System.clearProperty("cloudhub.workerType");
   }
 
   @Test
   public void defaultOsV2ValueIsNull() {
-    assertThat("The default value for Object Store v2 property is not null",
-               deploymentSpy.getObjectStoreV2(), equalTo(null));
+    assertThat(deploymentSpy.getObjectStoreV2()).describedAs("The default value for Object Store v2 property is not null")
+        .isNull();
   }
 
   @Test
   public void defaultPersistentQueuesValueIsFalse() {
-    assertThat("The default value for Persistent Queues property is not false",
-               deploymentSpy.getPersistentQueues(), equalTo(false));
+    assertThat(deploymentSpy.getPersistentQueues()).describedAs("The default value for Persistent Queues property is not false")
+        .isFalse();
   }
 
   @Test
   public void defaultDisableCloudHubLogsValueIsFalse() {
-    assertThat("The default value for Custom Log4J property is not false",
-               deploymentSpy.getDisableCloudHubLogs(), equalTo(false));
+    assertThat(deploymentSpy.getDisableCloudHubLogs()).describedAs("The default value for Custom Log4J property is not false")
+        .isFalse();
   }
 
   @Test
   public void defaultWaitBeforeValidationIsZero() {
-    assertThat("The default value for pepe is not zero",
-               deploymentSpy.getWaitBeforeValidation(), equalTo(6000));
+    assertThat(deploymentSpy.getWaitBeforeValidation()).describedAs("The default value for pepe is not zero").isEqualTo(6000);
   }
 
   @Test
   public void defaultApplyLatestRuntimePatch() {
-    assertThat("The default value for apply patch property must be false",
-               deploymentSpy.getApplyLatestRuntimePatch(), equalTo(false));
+    assertThat(deploymentSpy.getApplyLatestRuntimePatch()).describedAs("The default value for apply patch property must be false")
+        .isFalse();
   }
 }

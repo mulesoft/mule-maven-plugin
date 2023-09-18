@@ -151,6 +151,6 @@ public class CloudHubDeployment extends AnypointDeployment {
   }
 
   public boolean overrideProperties() {
-    return overrideProperties == null ? true : overrideProperties;
+    return overrideProperties == null || overrideProperties;
   }
 }

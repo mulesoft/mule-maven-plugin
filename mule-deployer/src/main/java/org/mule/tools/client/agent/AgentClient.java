@@ -23,6 +23,7 @@ import org.mule.tools.utils.DeployerLog;
 /**
  * A client to the Mule Agent.
  */
+@SuppressWarnings("rawtypes")
 public class AgentClient extends AbstractClient {
 
   public static final String APPLICATIONS_PATH = "/mule/applications/";

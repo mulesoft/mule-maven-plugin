@@ -6,47 +6,43 @@
  */
 package org.mule.tools.api.classloader.model;
 
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class ApplicationGAVModelTest {
+class ApplicationGAVModelTest {
 
   private static final String GROUP_ID = "group-id";
   private static final String ARTIFACT_ID = "artifact-id";
   private static final String VERSION = "version";
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
   @Test
-  public void modelCreationIsCorrect() {
+  void modelCreationIsCorrect() {
     ApplicationGAVModel appGAVModel = new ApplicationGAVModel(GROUP_ID, ARTIFACT_ID, VERSION);
-    assertEquals(GROUP_ID, appGAVModel.getGroupId());
-    assertEquals(ARTIFACT_ID, appGAVModel.getArtifactId());
-    assertEquals(VERSION, appGAVModel.getVersion());
+    assertThat(GROUP_ID).isEqualTo(appGAVModel.getGroupId());
+    assertThat(ARTIFACT_ID).isEqualTo(appGAVModel.getArtifactId());
+    assertThat(VERSION).isEqualTo(appGAVModel.getVersion());
   }
 
   @Test
-  public void cannotCreateModelWithoutGroupId() throws NullPointerException {
-    expectedException.expect(NullPointerException.class);
-    expectedException.expectMessage("groupId cannot be null");
-    ApplicationGAVModel appGAVModel = new ApplicationGAVModel(null, ARTIFACT_ID, VERSION);
+  void cannotCreateModelWithoutGroupId() throws NullPointerException {
+    assertThatThrownBy(() -> new ApplicationGAVModel(null, ARTIFACT_ID, VERSION))
+        .isExactlyInstanceOf(NullPointerException.class)
+        .hasMessage("groupId cannot be null");
   }
 
   @Test
-  public void cannotCreateModelWithoutArtifactId() throws NullPointerException {
-    expectedException.expect(NullPointerException.class);
-    expectedException.expectMessage("artifactId cannot be null");
-    ApplicationGAVModel appGAVModel = new ApplicationGAVModel(GROUP_ID, null, VERSION);
+  void cannotCreateModelWithoutArtifactId() throws NullPointerException {
+    assertThatThrownBy(() -> new ApplicationGAVModel(GROUP_ID, null, VERSION))
+        .isExactlyInstanceOf(NullPointerException.class)
+        .hasMessage("artifactId cannot be null");
   }
 
   @Test
-  public void cannotCreateModelWithoutVersion() throws NullPointerException {
-    expectedException.expect(NullPointerException.class);
-    expectedException.expectMessage("version cannot be null");
-    ApplicationGAVModel appGAVModel = new ApplicationGAVModel(GROUP_ID, ARTIFACT_ID, null);
+  void cannotCreateModelWithoutVersion() throws NullPointerException {
+    assertThatThrownBy(() -> new ApplicationGAVModel(GROUP_ID, ARTIFACT_ID, null))
+        .isExactlyInstanceOf(NullPointerException.class)
+        .hasMessage("version cannot be null");
   }
 }

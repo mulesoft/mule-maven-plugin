@@ -6,15 +6,12 @@
  */
 package org.mule.tools.model.anypoint;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.rules.ExpectedException.none;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class RuntimeFabricDeploymentSettingsTest {
 
@@ -31,11 +28,7 @@ public class RuntimeFabricDeploymentSettingsTest {
   public static final String DEFAULT_UPDATE_STRATEGY = "rolling";
   private RuntimeFabricOnPremiseDeploymentSettings deploymentSettings;
 
-
-  @Rule
-  public ExpectedException expectedException = none();
-
-  @Before
+  @BeforeEach
   public void setUp() {
     deploymentSettings = new RuntimeFabricOnPremiseDeploymentSettings();
     deploymentSettings.setRuntimeVersion("4.1.3");
@@ -60,8 +53,9 @@ public class RuntimeFabricDeploymentSettingsTest {
   public void undefinedCPUMaxUseCPUReservedValue() throws DeploymentException {
 
     deploymentSettings.setEnvironmentSpecificValues();
-    assertThat("The cpu limit value is not the same as cpu reserved", deploymentSettings.getResources().getCpu().getLimit(),
-               equalTo(deploymentSettings.getResources().getCpu().getReserved()));
+    assertThat(deploymentSettings.getResources().getCpu().getLimit())
+        .describedAs("The cpu limit value is not the same as cpu reserved")
+        .isEqualTo(deploymentSettings.getResources().getCpu().getReserved());
   }
 
 
@@ -69,23 +63,24 @@ public class RuntimeFabricDeploymentSettingsTest {
   public void setCPUMaxValue() throws DeploymentException {
     deploymentSettings.getResources().getCpu().setLimit(CPU_LIMIT);
     deploymentSettings.setEnvironmentSpecificValues();
-    assertThat("The cpu limit value is not right", deploymentSettings.getResources().getCpu().getLimit(), equalTo(CPU_LIMIT));
+    assertThat(deploymentSettings.getResources().getCpu().getLimit()).describedAs("The cpu limit value is not right")
+        .isEqualTo(CPU_LIMIT);
   }
 
   @Test
   public void undefinedMemoryMaxUseMemoryReservedValue() throws DeploymentException {
     deploymentSettings.setEnvironmentSpecificValues();
-    assertThat("The memory limit value is not the same as memory reserved",
-               deploymentSettings.getResources().getMemory().getLimit(),
-               equalTo(deploymentSettings.getResources().getMemory().getReserved()));
+    assertThat(deploymentSettings.getResources().getMemory().getLimit())
+        .describedAs("The memory limit value is not the same as memory reserved")
+        .isEqualTo(deploymentSettings.getResources().getMemory().getReserved());
   }
 
   @Test
   public void setMemoryMaxValue() throws DeploymentException {
     deploymentSettings.getResources().getMemory().setLimit(MEMORY_LIMIT);
     deploymentSettings.setEnvironmentSpecificValues();
-    assertThat("The memory limit value is not right", deploymentSettings.getResources().getMemory().getLimit(),
-               equalTo(MEMORY_LIMIT));
+    assertThat(deploymentSettings.getResources().getMemory().getLimit()).describedAs("The memory limit value is not right")
+        .isEqualTo(MEMORY_LIMIT);
   }
 
 }

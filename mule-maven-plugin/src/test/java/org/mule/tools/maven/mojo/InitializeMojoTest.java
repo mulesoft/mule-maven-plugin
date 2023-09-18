@@ -13,30 +13,28 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
-import org.junit.Before;
-import org.junit.Test;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.api.packager.MuleProjectFoldersGenerator;
 
-public class InitializeMojoTest extends AbstractMuleMojoTest {
+class InitializeMojoTest extends AbstractMuleMojoTest {
 
   private InitializeMojo mojoMock;
 
-  @Before
-  public void before() throws IOException {
+  @BeforeEach
+  void before() {
     mojoMock = mock(InitializeMojo.class);
     mojoMock.project = projectMock;
 
-    when(buildMock.getDirectory()).thenReturn(projectBaseFolder.getRoot().getAbsolutePath());
+    when(buildMock.getDirectory()).thenReturn(projectBaseFolder.toFile().getAbsolutePath());
   }
 
   @Test
-  public void execute() throws MojoFailureException, MojoExecutionException, IOException {
+  void execute() throws MojoFailureException, MojoExecutionException {
     Log logMock = mock(Log.class);
     MuleProjectFoldersGenerator projectFoldersGeneratorMock = mock(MuleProjectFoldersGenerator.class);
 
@@ -48,7 +46,7 @@ public class InitializeMojoTest extends AbstractMuleMojoTest {
     mojoMock.execute();
 
     verify(mojoMock, times(1)).getProjectFoldersGenerator();
-    verify(projectFoldersGeneratorMock, times(1)).generate(projectBaseFolder.getRoot().toPath());
+    verify(projectFoldersGeneratorMock, times(1)).generate(projectBaseFolder);
   }
 
 }

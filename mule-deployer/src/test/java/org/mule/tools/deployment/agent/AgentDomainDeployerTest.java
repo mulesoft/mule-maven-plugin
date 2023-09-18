@@ -6,8 +6,8 @@
  */
 package org.mule.tools.deployment.agent;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.deployment.artifact.DomainDeployer;
 
@@ -20,7 +20,7 @@ public class AgentDomainDeployerTest {
   private AgentDomainDeployer agentDomainDeployer;
   private DomainDeployer domainDeployerMock;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     domainDeployerMock = mock(DomainDeployer.class);
     agentDomainDeployer = new AgentDomainDeployer(domainDeployerMock);

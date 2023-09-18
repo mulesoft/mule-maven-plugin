@@ -6,9 +6,8 @@
  */
 package org.mule.tools.validation.arm;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.mule.tools.client.arm.ArmClient;
-import org.mule.tools.client.arm.model.Server;
-import org.mule.tools.client.arm.model.Servers;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.model.TargetType;
 import org.mule.tools.model.Deployment;
@@ -44,7 +43,8 @@ public class ArmDeploymentValidator extends AbstractDeploymentValidator {
    * @param client The ARM client.
    * @return The mule runtime version running in the target.
    */
-  private List<String> findRuntimeVersion(ArmClient client) {
+  @VisibleForTesting
+  protected List<String> findRuntimeVersion(ArmClient client) {
     TargetType targetType = ((ArmDeployment) deployment).getTargetType();
     List<String> runtimeVersions = new ArrayList<>();
     if (TargetType.server.equals(targetType)) {
@@ -62,7 +62,8 @@ public class ArmDeploymentValidator extends AbstractDeploymentValidator {
    *
    * @return The generated ARM client.
    */
-  private ArmClient getArmClient() {
+  @VisibleForTesting
+  protected ArmClient getArmClient() {
     ArmClient client = new ArmClient(deployment, null);
     client.init();
     return client;

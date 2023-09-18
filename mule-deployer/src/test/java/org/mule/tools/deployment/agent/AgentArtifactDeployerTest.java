@@ -6,10 +6,9 @@
  */
 package org.mule.tools.deployment.agent;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.client.agent.AgentClient;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.agent.AgentDeployment;
@@ -17,6 +16,7 @@ import org.mule.tools.verification.agent.AgentDeploymentVerification;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import static org.mockito.Mockito.*;
 
@@ -30,13 +30,13 @@ public class AgentArtifactDeployerTest {
   private static final String APPLICATION_NAME = "app-name";
   private File applicationFile;
   private AgentArtifactDeployer deployerSpy;
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir
+  Path temporaryFolder;
   private AgentDeploymentVerification deploymentVerificationMock;
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException, DeploymentException {
-    applicationFile = temporaryFolder.newFile();
+    applicationFile = temporaryFolder.toFile();
     clientMock = mock(AgentClient.class);
     deploymentMock = mock(AgentDeployment.class);
     deployer = new AgentArtifactDeployer(deploymentMock, clientMock);

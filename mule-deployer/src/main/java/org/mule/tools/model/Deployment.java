@@ -20,7 +20,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public abstract class Deployment {
 
   @Parameter
-  protected File artifact;
+  protected String artifact;
 
   @Parameter
   protected String applicationName;
@@ -51,11 +51,15 @@ public abstract class Deployment {
    *
    */
   public File getArtifact() {
-    return artifact;
+    return Optional.ofNullable(this.artifact).map(File::new).orElse(null);
   }
 
   public void setArtifact(File artifact) {
-    this.artifact = artifact;
+    this.artifact = artifact.getPath();
+  }
+
+  public void setArtifact(String artifactPath) {
+    this.artifact = artifactPath;
   }
 
   /**

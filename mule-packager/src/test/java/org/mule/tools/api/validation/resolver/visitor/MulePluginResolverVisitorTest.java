@@ -6,8 +6,8 @@
  */
 package org.mule.tools.api.validation.resolver.visitor;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.validation.resolver.model.ProjectDependencyNode;
@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static util.ResolverTestHelper.buildVisitorSpies;
 import static util.ResolverTestHelper.createProjectDependencyNodeSpy;
@@ -30,7 +30,7 @@ public class MulePluginResolverVisitorTest {
   private static final int NUMBER_VISITORS = 10;
   private Set<ArtifactCoordinates> collectDependencies;
 
-  @Before
+  @BeforeEach
   public void setUp() throws ValidationException {
     nodeSpy = createProjectDependencyNodeSpy();
     collectDependencies = newHashSet();
@@ -49,7 +49,8 @@ public class MulePluginResolverVisitorTest {
 
   @Test
   public void collectDependenciesTest() {
-    assertThat("Collected dependencies is not the expected", visitor.getCollectedDependencies(), equalTo(collectDependencies));
+    assertThat(visitor.getCollectedDependencies()).describedAs("Collected dependencies is not the expected")
+        .isEqualTo(collectDependencies);
 
     for (DependencyNodeVisitor visitorSpy : visitorSpies) {
       verify(visitorSpy, times(1)).getCollectedDependencies();

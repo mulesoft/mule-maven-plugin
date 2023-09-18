@@ -4,25 +4,28 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
 package org.mule.tools.api.repository;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.util.PackagerLog;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ArtifactInstallerTest {
 
@@ -44,85 +47,87 @@ public class ArtifactInstallerTest {
   private ArtifactInstaller installer;
   private Artifact artifact;
 
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
-  @Rule
-  public TemporaryFolder outputFolder = new TemporaryFolder();
-  @Rule
-  public TemporaryFolder artifactFileFolder = new TemporaryFolder();
+  @TempDir
+  public Path outputFolder;
+
+  @TempDir
+  public Path artifactFileFolder;
+
   private ClassLoaderModel classLoaderModel;
 
-  @Before
+  @BeforeEach
   public void before() throws IOException {
     logMock = mock(PackagerLog.class);
     installer = new ArtifactInstaller(logMock);
-    outputFolder.create();
-    artifactFileFolder.create();
+    outputFolder.toFile();
+    artifactFileFolder.toFile();
     ArtifactCoordinates coordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, TYPE, CLASSIFIER);
-    artifact = new Artifact(coordinates, artifactFileFolder.getRoot().toURI());
+    artifact = new Artifact(coordinates, artifactFileFolder.toUri());
     classLoaderModel = mock(ClassLoaderModel.class);
   }
 
   @Test
   public void installArtifactTest() throws IOException {
     ArtifactCoordinates coordinates = new ArtifactCoordinates(GROUP_ID, ARTIFACT_ID, VERSION, TYPE, CLASSIFIER);
-    artifact = new Artifact(coordinates, artifactFileFolder.newFile(ARTIFACT_FILE_NAME).toURI());
-    artifactFileFolder.newFile(POM_FILE_NAME);
-    File installedFile = new File(outputFolder.getRoot(), OUTPUT_DIRECTORY + File.separator + GENERATED_PACKAGE_NAME);
-    File pomFile = new File(outputFolder.getRoot(), OUTPUT_DIRECTORY + File.separator + POM_FILE_NAME);
+    artifact = new Artifact(coordinates, Files.createFile(artifactFileFolder.resolve(ARTIFACT_FILE_NAME)).toUri());
+    Files.createFile(artifactFileFolder.resolve(POM_FILE_NAME)).toFile();
+    File installedFile =
+        new File(outputFolder.toAbsolutePath().toFile(), OUTPUT_DIRECTORY + File.separator + GENERATED_PACKAGE_NAME);
+    File pomFile = new File(outputFolder.toAbsolutePath().toFile(), OUTPUT_DIRECTORY + File.separator + POM_FILE_NAME);
 
-    assertThat("File should not be installed yet", !installedFile.exists());
-    installer.installArtifact(outputFolder.getRoot(), artifact, Optional.empty());
-    assertThat("File was not installed", installedFile.exists());
-    assertThat("Pom file was not copied", pomFile.exists());
+    assertThat(!installedFile.exists()).describedAs("File should not be installed yet");
+    installer.installArtifact(outputFolder.toAbsolutePath().toFile(), artifact, Optional.empty());
+    assertThat(installedFile.exists()).describedAs("File was not installed");
+    assertThat(pomFile.exists()).describedAs("Pom file was not copied");
   }
 
   @Test
-  public void installNullArtifactTest() throws IOException {
-    exception.expect(IllegalArgumentException.class);
-    installer.installArtifact(outputFolder.getRoot(), null, Optional.empty());
+  public void installNullArtifactTest() {
+    assertThatThrownBy(() -> installer.installArtifact(outputFolder.toFile(), null, Optional.empty()))
+        .isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   public void installArtifactToReadOnlyDestinationTest() throws IOException {
-    exception.expect(IOException.class);
-    File destination = new File(outputFolder.getRoot(), FILE_NAME);
-    destination.setReadOnly();
-    artifact.setUri(destination.toURI());
-    installer.installArtifact(outputFolder.getRoot(), artifact, Optional.empty());
+    assertThatThrownBy(() -> {
+      File destination = outputFolder.resolve(FILE_NAME).toFile();//new File(outputFolder.getRoot().toFile(), FILE_NAME);
+      destination.setReadOnly();
+      artifact.setUri(destination.toURI());
+      installer.installArtifact(outputFolder.toFile(), artifact, Optional.empty());
+    }).isExactlyInstanceOf(IOException.class);
   }
 
   @Test
   public void generateDependencyDescriptorFileWhenClassloaderIsPresentTest() throws IOException {
     ArtifactInstaller artifactInstallerSpy = spy(installer);
-    doNothing().when(artifactInstallerSpy).generateClassloderModelFile(classLoaderModel, artifactFileFolder.getRoot(), false);
+    doNothing().when(artifactInstallerSpy).generateClassloderModelFile(classLoaderModel, artifactFileFolder.toFile(), false);
 
-    artifactInstallerSpy.generateDependencyDescriptorFile(artifact, artifactFileFolder.getRoot(), Optional.of(classLoaderModel),
+    artifactInstallerSpy.generateDependencyDescriptorFile(artifact, artifactFileFolder.toFile(), Optional.of(classLoaderModel),
                                                           false);
 
-    verify(artifactInstallerSpy, times(1)).generateClassloderModelFile(classLoaderModel, artifactFileFolder.getRoot(), false);
+    verify(artifactInstallerSpy, times(1)).generateClassloderModelFile(classLoaderModel, artifactFileFolder.toFile(), false);
     verify(artifactInstallerSpy, times(0)).generatePomFile(any(), any());
   }
 
   @Test
   public void generatePomFileWhenPomFileNameDoesNotExistTest() throws IOException {
-    artifact.setUri(artifactFileFolder.newFile(DEFAULT_POM_FILE_NAME).toURI());
-    File generatedPomFile = new File(outputFolder.getRoot(), POM_FILE_NAME);
+    artifact.setUri(Files.createFile(artifactFileFolder.resolve(DEFAULT_POM_FILE_NAME)).toUri());
+    File generatedPomFile = new File(outputFolder.toAbsolutePath().toString(), POM_FILE_NAME);
 
-    assertThat("Pom file should not exist", generatedPomFile.exists(), is(false));
+    assertThat(generatedPomFile.exists()).describedAs("Pom file should not exist").isFalse();
 
-    installer.generatePomFile(artifact, outputFolder.getRoot());
+    installer.generatePomFile(artifact, outputFolder.toAbsolutePath().toFile());
 
-    assertThat("Pom file should have been created", generatedPomFile.exists(), is(true));
+    assertThat(generatedPomFile.exists()).describedAs("Pom file should have been created").isTrue();
   }
 
   @Test
   public void generatePomFileWhenPomFileDoesNotExistTest() throws IOException {
-    File generatedPomFile = new File(outputFolder.getRoot(), POM_FILE_NAME);
+    File generatedPomFile = outputFolder.resolve(POM_FILE_NAME).toFile();//new File(outputFolder.getRoot().toFile(), POM_FILE_NAME);
 
-    assertThat("Pom file should not exist", generatedPomFile.exists(), is(false));
+    assertThat(generatedPomFile.exists()).describedAs("Pom file should not exist").isFalse();
 
-    installer.generatePomFile(artifact, outputFolder.getRoot());
+    installer.generatePomFile(artifact, outputFolder.toFile());
   }
 
 }

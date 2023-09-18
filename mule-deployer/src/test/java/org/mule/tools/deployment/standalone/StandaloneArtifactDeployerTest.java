@@ -6,10 +6,9 @@
  */
 package org.mule.tools.deployment.standalone;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.client.standalone.controller.MuleProcessController;
 import org.mule.tools.client.standalone.controller.probing.Prober;
 import org.mule.tools.client.core.exception.DeploymentException;
@@ -19,9 +18,12 @@ import org.mule.tools.utils.DeployerLog;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Files;
+import java.util.UUID;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -39,14 +41,14 @@ public class StandaloneArtifactDeployerTest {
   private File artifactFile;
   private File muleHome;
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir
+  Path temporaryFolder;
 
-  @Before
+  @BeforeEach
   public void setUp() throws DeploymentException, IOException {
     deploymentMock = mock(StandaloneDeployment.class);
-    artifactFile = temporaryFolder.newFile(ARTIFACT_FILENAME);
-    muleHome = temporaryFolder.newFolder(MULE_HOME_DIRECTORY);
+    artifactFile = temporaryFolder.resolve((ARTIFACT_FILENAME)).toFile();
+    muleHome = Files.createDirectories(temporaryFolder.resolve(MULE_HOME_DIRECTORY)).toFile();
     doReturn(artifactFile).when(deploymentMock).getArtifact();
     doReturn(muleHome).when(deploymentMock).getMuleHome();
     doReturn(ARTIFACT_NAME).when(deploymentMock).getApplicationName();
@@ -56,21 +58,24 @@ public class StandaloneArtifactDeployerTest {
     deployer = new StandaloneArtifactDeployer(deploymentMock, controllerMock, logMock, proberMock);
     deployerSpy = spy(deployer);
     doNothing().when(deployerSpy).renameApplicationToApplicationName();
-    doNothing().when(deployerSpy).addDomainFromstandaloneDeployment(any());
+    doNothing().when(deployerSpy).addDomainFromStandaloneDeployment(any());
   }
 
   @Test
   public void deployDomainTest() {}
 
-  @Test(expected = DeploymentException.class)
-  public void undeployDomainTest() throws DeploymentException {
-    deployer.undeployDomain();
+  @Test
+  public void undeployDomainTest() {
+    assertThatThrownBy(() -> deployer.undeployDomain())
+        .isExactlyInstanceOf(DeploymentException.class);;
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void deployApplicationNullFileTest() throws DeploymentException {
-    doReturn(null).when(deploymentMock).getArtifact();
-    deployerSpy.deployApplication();
+  @Test
+  public void deployApplicationNullFileTest() {
+    assertThatThrownBy(() -> {
+      doReturn(null).when(deploymentMock).getArtifact();
+      deployerSpy.deployApplication();
+    }).isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test
@@ -79,17 +84,21 @@ public class StandaloneArtifactDeployerTest {
     verify(controllerMock, times(1)).deploy(artifactFile.getAbsolutePath());
   }
 
-  @Test(expected = DeploymentException.class)
-  public void deployApplicationMuleControllerExceptionTest() throws DeploymentException {
-    doThrow(new MuleControllerException()).when(controllerMock).deploy(artifactFile.getAbsolutePath());
+  @Test
+  public void deployApplicationMuleControllerExceptionTest() {
+    assertThatThrownBy(() -> {
+      doThrow(new MuleControllerException()).when(controllerMock).deploy(artifactFile.getAbsolutePath());
+      deployer.deployApplication();
+    }).isExactlyInstanceOf(DeploymentException.class);
 
-    deployer.deployApplication();
   }
 
-  @Test(expected = DeploymentException.class)
-  public void undeployApplicationNotExistentMuleHomeTest() throws DeploymentException {
-    muleHome.delete();
-    deployer.undeployApplication();
+  @Test
+  public void undeployApplicationNotExistentMuleHomeTest() {
+    assertThatThrownBy(() -> {
+      muleHome.delete();
+      deployer.undeployApplication();
+    }).isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test
@@ -105,26 +114,28 @@ public class StandaloneArtifactDeployerTest {
   @Test
   public void undeployTest() throws DeploymentException, IOException {
     File appsFolder = new File(muleHome, "apps");
-    assertThat("Directory should have been created", appsFolder.mkdir(), is(true));
+    assertThat(appsFolder.mkdir()).describedAs("Directory should have been created").isTrue();
 
     File deployedFile = new File(appsFolder, ARTIFACT_FILENAME);
-    assertThat("File should have been created", deployedFile.createNewFile(), is(true));
+    assertThat(deployedFile.createNewFile()).describedAs("File should have been created").isTrue();
 
     deployer.undeploy(muleHome);
 
-    assertThat("File should have been deleted", deployedFile.exists(), is(false));
-    assertThat("Folder shouldn't be deleted", appsFolder.exists(), is(true));
+    assertThat(deployedFile.exists()).describedAs("File should have been deleted").isFalse();
+    assertThat(appsFolder.exists()).describedAs("Folder shouldn't be deleted").isTrue();
   }
 
-  @Test(expected = DeploymentException.class)
-  public void undeployNotFoundTest() throws DeploymentException, IOException {
-    File appsFolder = new File(muleHome, "apps");
-    assertThat("Directory should have been created", appsFolder.mkdir(), is(true));
+  @Test
+  public void undeployNotFoundTest() {
+    assertThatThrownBy(() -> {
+      File appsFolder = new File(muleHome, "apps");
+      assertThat(appsFolder.mkdir()).describedAs("Directory should have been created").isTrue();
 
-    File deployedFile = new File(appsFolder, ARTIFACT_FILENAME);
-    assertThat("File should have been deleted", deployedFile.exists(), is(false));
+      File deployedFile = new File(appsFolder, ARTIFACT_FILENAME);
+      assertThat(deployedFile.exists()).describedAs("File should have been deleted").isFalse();
 
-    deployer.undeploy(muleHome);
+      deployer.undeploy(muleHome);
+    }).isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test
@@ -134,10 +145,12 @@ public class StandaloneArtifactDeployerTest {
     verify(controllerMock, times(1)).isRunning();
   }
 
-  @Test(expected = MuleControllerException.class)
+  @Test
   public void verifyMuleIsStartedExceptionTest() {
-    doReturn(false).when(controllerMock).isRunning();
-    deployer.verifyMuleIsStarted();
-    verify(controllerMock, times(1)).isRunning();
+    assertThatThrownBy(() -> {
+      doReturn(false).when(controllerMock).isRunning();
+      deployer.verifyMuleIsStarted();
+      verify(controllerMock, times(1)).isRunning();
+    }).isExactlyInstanceOf(MuleControllerException.class);
   }
 }

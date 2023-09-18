@@ -9,8 +9,8 @@ package org.mule.tools.api.repository;
 import static com.google.common.base.Preconditions.checkArgument;
 import org.mule.maven.client.api.model.Authentication;
 import org.mule.maven.client.api.model.MavenConfiguration;
-import org.mule.maven.client.internal.AetherMavenClient;
-import org.mule.maven.client.internal.AetherMavenClientProvider;
+import org.mule.maven.client.internal.MuleMavenClient;
+import org.mule.maven.client.internal.MuleMavenClientProvider;
 import org.mule.maven.client.internal.DefaultLocalRepositorySupplierFactory;
 import org.mule.maven.client.internal.DefaultSettingsSupplierFactory;
 import org.mule.maven.client.internal.MavenEnvironmentVariables;
@@ -80,10 +80,10 @@ public class MuleMavenPluginClientBuilder {
     return this;
   }
 
-  public AetherMavenClient build() {
+  public MuleMavenClient build() {
     MavenConfiguration mavenConfiguration = buildMavenConfiguration();
-    AetherMavenClientProvider provider = new AetherMavenClientProvider();
-    return (AetherMavenClient) provider.createMavenClient(mavenConfiguration);
+    MuleMavenClientProvider provider = new MuleMavenClientProvider();
+    return (MuleMavenClient) provider.createMavenClient(mavenConfiguration);
   }
 
   protected MavenConfiguration buildMavenConfiguration() {

@@ -7,8 +7,7 @@
 package org.mule.tools.api.packager.archiver;
 
 import static java.nio.file.Paths.get;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
+
 import static org.mule.tools.api.packager.structure.FolderNames.JAVA;
 import static org.mule.tools.api.packager.structure.FolderNames.MAIN;
 import static org.mule.tools.api.packager.structure.FolderNames.MAVEN;
@@ -31,8 +30,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.io.TempDir;
+
 
 /**
  * Generic test for MuleArchiver
@@ -44,8 +44,8 @@ public abstract class AbstractMuleArchiverTest {
   protected static final String REAL_APP = "real-app";
   protected static final String REAL_APP_TARGET = REAL_APP + "-target";
 
-  @Rule
-  public TemporaryFolder targetFileFolder = new TemporaryFolder();
+  @TempDir
+  public Path targetFileFolder;
 
   protected MuleArchiver archiver;
 
@@ -69,8 +69,8 @@ public abstract class AbstractMuleArchiverTest {
     foundFilesVerified.removeAll(expectedFilesVerified);
     expectedFilesVerified.removeAll(allFilesInDestination);
 
-    assertThat("Expected files not found:", expectedFilesVerified, empty());
-    assertThat("Found files not expected:", foundFilesVerified, empty());
+    Assertions.assertThat(expectedFilesVerified).describedAs("Expected files not found:").isEmpty();
+    Assertions.assertThat(foundFilesVerified).describedAs("Found files not expected:").isEmpty();
   }
 
   protected List<Path> getArchiveRelativePaths() {
@@ -137,7 +137,7 @@ public abstract class AbstractMuleArchiverTest {
   }
 
   protected File getDestinationDirectoryForUnzip() {
-    File destinationFile = new File(targetFileFolder.getRoot(), "temp");
+    File destinationFile = new File(targetFileFolder.toAbsolutePath().toFile(), "temp");
     destinationFile.mkdirs();
     return destinationFile;
   }

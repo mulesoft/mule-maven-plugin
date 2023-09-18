@@ -6,14 +6,12 @@
  */
 package org.mule.tools.api.validation;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mule.tools.api.validation.VersionUtils.*;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.mule.tools.api.exception.ValidationException;
 
 import java.util.ArrayList;
@@ -27,20 +25,24 @@ import java.util.Map;
  */
 public class VersionUtilsTest {
 
-  @Test(expected = ValidationException.class)
-  public void isVersionGraterOrEqualsIllegalVersion1() throws ValidationException {
-    String version1 = "3.3.9.9";
-    String version2 = "3.3.2";
+  @Test
+  public void isVersionGraterOrEqualsIllegalVersion1() {
+    assertThatThrownBy(() -> {
+      String version1 = "3.3.9.9";
+      String version2 = "3.3.2";
 
-    isVersionGreaterOrEquals(version1, version2);
+      isVersionGreaterOrEquals(version1, version2);
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
-  @Test(expected = ValidationException.class)
-  public void isVersionGraterOrEqualsIllegalVersion2() throws ValidationException {
-    String version1 = "3.3.9";
-    String version2 = "3.3.2.50";
+  @Test
+  public void isVersionGraterOrEqualsIllegalVersion2() {
+    assertThatThrownBy(() -> {
+      String version1 = "3.3.9";
+      String version2 = "3.3.2.50";
 
-    isVersionGreaterOrEquals(version1, version2);
+      isVersionGreaterOrEquals(version1, version2);
+    }).isExactlyInstanceOf(ValidationException.class);
   }
 
   @Test
@@ -48,7 +50,7 @@ public class VersionUtilsTest {
     String version1 = "3.3.9";
     String version2 = "3.3.2";
 
-    assertThat(isVersionGreaterOrEquals(version1, version2), is(true));
+    assertThat(isVersionGreaterOrEquals(version1, version2)).isTrue();
   }
 
   @Test
@@ -56,7 +58,7 @@ public class VersionUtilsTest {
     String version1 = "3.5.0";
     String version2 = "3.3.3";
 
-    assertThat(isVersionGreaterOrEquals(version1, version2), is(true));
+    assertThat(isVersionGreaterOrEquals(version1, version2)).isTrue();
   }
 
   @Test
@@ -64,7 +66,7 @@ public class VersionUtilsTest {
     String version1 = "3.0.0";
     String version2 = "2.1.3";
 
-    assertThat(isVersionGreaterOrEquals(version1, version2), is(true));
+    assertThat(isVersionGreaterOrEquals(version1, version2)).isTrue();
   }
 
   @Test
@@ -72,7 +74,7 @@ public class VersionUtilsTest {
     String version1 = "3.0.5";
     String version2 = "3.3.3";
 
-    assertThat(isVersionGreaterOrEquals(version1, version2), is(false));
+    assertThat(isVersionGreaterOrEquals(version1, version2)).isFalse();
   }
 
   @Test
@@ -80,7 +82,7 @@ public class VersionUtilsTest {
     String version1 = "3.0.0";
     String version2 = "4.0.0";
 
-    assertThat(isVersionGreaterOrEquals(version1, version2), is(false));
+    assertThat(isVersionGreaterOrEquals(version1, version2)).isFalse();
   }
 
   @Test
@@ -88,7 +90,7 @@ public class VersionUtilsTest {
     String version1 = "3.3.9";
     String version2 = "3.3";
 
-    assertThat(isVersionGreaterOrEquals(version1, version2), is(true));
+    assertThat(isVersionGreaterOrEquals(version1, version2)).isTrue();
   }
 
   @Test
@@ -96,7 +98,7 @@ public class VersionUtilsTest {
     String version1 = "3.3.2";
     String version2 = "3.3.9";
 
-    assertThat(isVersionGreaterOrEquals(version1, version2), is(false));
+    assertThat(isVersionGreaterOrEquals(version1, version2)).isFalse();
   }
 
   @Test
@@ -104,7 +106,7 @@ public class VersionUtilsTest {
     String version1 = "3.3";
     String version2 = "3.3.9";
 
-    assertThat(isVersionGreaterOrEquals(version1, version2), is(false));
+    assertThat(isVersionGreaterOrEquals(version1, version2)).isFalse();
   }
 
   @Test
@@ -112,7 +114,7 @@ public class VersionUtilsTest {
     String version1 = "3.3.9-SNAPSHOT";
     String version2 = "3.3.2";
 
-    assertThat(isVersionGreaterOrEquals(version1, version2), is(true));
+    assertThat(isVersionGreaterOrEquals(version1, version2)).isTrue();
   }
 
   @Test
@@ -120,26 +122,26 @@ public class VersionUtilsTest {
     String version1 = "3.3.2";
     String version2 = "3.3.9-SNAPSHOT";
 
-    assertThat(isVersionGreaterOrEquals(version1, version2), is(false));
+    assertThat(isVersionGreaterOrEquals(version1, version2)).isFalse();
   }
 
   @Test
   public void completeIncrementalString() throws ValidationException {
     String version = "3.3";
-    assertThat(completeIncremental(version), is(version + ".0"));
+    assertThat(completeIncremental(version)).isEqualTo(version + ".0");
   }
 
   @Test
   public void completeIncrementalStringWithQualifier() throws ValidationException {
     String version = "3.3";
     String qualifier = "-SNAPSHOT";
-    assertThat(completeIncremental(version + qualifier), is(version + ".0"));
+    assertThat(completeIncremental(version + qualifier)).isEqualTo(version + ".0");
   }
 
   @Test
   public void completeIncrementalStringNoChanges() throws ValidationException {
     String version = "3.3.2";
-    assertThat(completeIncremental(version), is(version));
+    assertThat(completeIncremental(version)).isEqualTo(version);
   }
 
   @Test
@@ -147,7 +149,7 @@ public class VersionUtilsTest {
     String version = "3.3.2";
     String qualifier = "-SNAPSHOT";
 
-    assertThat(completeIncremental(version + qualifier), is(version));
+    assertThat(completeIncremental(version + qualifier)).isEqualTo(version);
   }
 
   @Test
@@ -216,7 +218,7 @@ public class VersionUtilsTest {
     Map<String, String> testInput = getBaseVersionTestInput();
     for (String version : testInput.keySet()) {
       String expectedBaseVersion = testInput.get(version);
-      assertThat("Base version is not the expected", getBaseVersion(version), equalTo(expectedBaseVersion));
+      assertThat(getBaseVersion(version)).describedAs("Base version is not the expected").isEqualTo(expectedBaseVersion);
     }
   }
 
@@ -241,7 +243,7 @@ public class VersionUtilsTest {
     Map<String, String> testInput = getMajorTestInput();
     for (String version : testInput.keySet()) {
       String expectedMajor = testInput.get(version);
-      assertThat("Major is not the expected", getMajor(version), equalTo(expectedMajor));
+      assertThat(getMajor(version)).describedAs("Major is not the expected").isEqualTo(expectedMajor);
     }
   }
 
@@ -266,7 +268,7 @@ public class VersionUtilsTest {
     Map<String, String> testInput = completeIncrementalTestInput();
     for (String version : testInput.keySet()) {
       String expectedVersion = testInput.get(version);
-      assertThat("Completed version is not the expected", completeIncremental(version), equalTo(expectedVersion));
+      assertThat(completeIncremental(version)).describedAs("Completed version is not the expected").isEqualTo(expectedVersion);
     }
   }
 
@@ -287,7 +289,7 @@ public class VersionUtilsTest {
     Map<String, Boolean> testInput = isRangeTestInput();
     for (String version : testInput.keySet()) {
       Boolean expectedResult = testInput.get(version);
-      assertThat("Expected result is not the expected", isRange(version), equalTo(expectedResult));
+      assertThat(isRange(version)).describedAs("Expected result is not the expected").isEqualTo(expectedResult);
     }
   }
 

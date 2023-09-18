@@ -5,7 +5,7 @@
     <parent>
         <artifactId>mule-artifact-tools</artifactId>
         <groupId>org.mule.tools.maven</groupId>
-        <version>3.8.8-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>mule-extension-model-loader</artifactId>
@@ -17,115 +17,99 @@
         <coverageLineLimit>0</coverageLineLimit>
         <coverageBranchLimit>0</coverageBranchLimit>
     </properties>
+
     <dependencies>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId> org.mule.runtime</groupId>
-            <artifactId>mule-module-logging</artifactId>
-            <version>${mule.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-artifact-ast-xml-parser</artifactId>
-            <version>1.1.0-rc1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-artifact-ast-serialization</artifactId>
-            <version>1.1.0-rc1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.mulesoft.anypoint</groupId>
-            <artifactId>api-gateway-api</artifactId>
-            <version>1.5.0-20220922</version>
-        </dependency>
+        <!-- Runtime -->
         <dependency>
             <groupId>com.mulesoft.mule.runtime</groupId>
             <artifactId>mule-core-ee</artifactId>
-            <version>${mule.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.mulesoft.licm</groupId>
-                    <artifactId>licm</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.mulesoft.anypoint</groupId>
-            <artifactId>mule-module-autodiscovery</artifactId>
-            <version>${mule.version}</version>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-dwb-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-artifact</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-properties-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-container</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-extensions-xml-support</artifactId>
-            <version>${mule.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-javaee</artifactId>
-            <version>${mule.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-tls</artifactId>
-            <version>${mule.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.mulesoft.mule.runtime.modules</groupId>
-            <artifactId>mule-runtime-ee-extension-model</artifactId>
-            <version>${mule.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-deployment-model-impl</artifactId>
-            <version>${mule.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-artifact-activation</artifactId>
-            <version>${mule.version}</version>
+            <artifactId>mule-artifact-ast</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-api</artifactId>
-            <version>${mule.api.version}</version>
+            <artifactId>mule-artifact-ast-xml-parser</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-artifact-ast-serialization</artifactId>
+        </dependency>
+        <!-- Runtime Anypoint-->
+        <dependency>
+            <groupId>com.mulesoft.anypoint</groupId>
+            <artifactId>mule-module-autodiscovery</artifactId>
+        </dependency>
+        <!-- Runtime Modules -->
+        <dependency>
+            <groupId>com.mulesoft.mule.runtime.modules</groupId>
+            <artifactId>mule-runtime-ee-extension-model</artifactId>
+        </dependency>
+        <!-- -->
         <dependency>
             <groupId>org.mule</groupId>
             <artifactId>mule-maven-client-impl</artifactId>
-            <version>${mule.maven.client.impl.version}</version>
+        </dependency>
+        <!-- Third-Party Libraries  -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.mule.mvel</groupId>
-            <artifactId>mule-mvel2</artifactId>
-            <version>${mule.mvel2.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-spring-config</artifactId>
-            <version>${mule.version}</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
         </dependency>
-        <!-- Test dependencies -->
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-classworlds</artifactId>
+        </dependency>
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.sonatype.plexus</groupId>
-            <artifactId>plexus-sec-dispatcher</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

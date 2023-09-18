@@ -9,7 +9,7 @@ package org.mule.tools.api.validation;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mule.tools.api.packager.packaging.Classifier.LIGHT_PACKAGE;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_APPLICATION_EXAMPLE;
@@ -19,114 +19,114 @@ import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN_BUNDL
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_POLICY;
 import static org.mule.tools.api.packager.packaging.Classifier.TEST_JAR;
 
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.stream.Stream;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 
-@RunWith(Parameterized.class)
 public class AllowedDependencyValidatorTest {
 
   public static final String COMPILE = "compile";
   public static final String PROVIDED = "provided";
-  private final boolean isAllowed;
-  private final ArtifactCoordinates artifactCoordinates;
 
-  @Parameterized.Parameters
-  public static Collection<Object[]> data() {
-    return Arrays.asList(new Object[][] {
-        {"mule-service", COMPILE, FALSE},
-        {"mule-service", PROVIDED, TRUE},
-        {"mule-server-plugin", COMPILE, FALSE},
-        {"mule-server-plugin", PROVIDED, TRUE},
+  public static Stream<Arguments> data() {
+    return Stream.of(
+                     Arguments.of("mule-service", COMPILE, FALSE),
+                     Arguments.of("mule-service", PROVIDED, TRUE),
+                     Arguments.of("mule-server-plugin", COMPILE, FALSE),
+                     Arguments.of("mule-server-plugin", PROVIDED, TRUE),
 
-        {MULE_DOMAIN_BUNDLE.toString(), COMPILE, FALSE},
-        {MULE_DOMAIN_BUNDLE.toString(), PROVIDED, FALSE},
+                     Arguments.of(MULE_DOMAIN_BUNDLE.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_DOMAIN_BUNDLE.toString(), PROVIDED, FALSE),
 
-        {MULE_DOMAIN.toString(), COMPILE, FALSE},
-        {MULE_DOMAIN.toString(), PROVIDED, TRUE},
+                     Arguments.of(MULE_DOMAIN.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_DOMAIN.toString(), PROVIDED, TRUE),
 
-        {MULE_DOMAIN.toString() + "-" + LIGHT_PACKAGE.toString(), COMPILE, FALSE},
-        {MULE_DOMAIN.toString() + "-" + LIGHT_PACKAGE.toString(), PROVIDED, TRUE},
+                     Arguments.of(MULE_DOMAIN.toString() + "-" + LIGHT_PACKAGE.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_DOMAIN.toString() + "-" + LIGHT_PACKAGE.toString(), PROVIDED, TRUE),
 
-        {MULE_DOMAIN.toString() + "-" + TEST_JAR.toString(), COMPILE, FALSE},
-        {MULE_DOMAIN.toString() + "-" + TEST_JAR.toString(), PROVIDED, TRUE},
+                     Arguments.of(MULE_DOMAIN.toString() + "-" + TEST_JAR.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_DOMAIN.toString() + "-" + TEST_JAR.toString(), PROVIDED, TRUE),
 
-        {MULE_DOMAIN.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(), COMPILE, FALSE},
-        {MULE_DOMAIN.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(), PROVIDED, TRUE},
-
-
-        {MULE_POLICY.toString(), COMPILE, FALSE},
-        {MULE_POLICY.toString(), PROVIDED, TRUE},
-
-        {MULE_POLICY.toString() + "-" + LIGHT_PACKAGE.toString(), COMPILE, FALSE},
-        {MULE_POLICY.toString() + "-" + LIGHT_PACKAGE.toString(), PROVIDED, TRUE},
-
-        {MULE_POLICY.toString() + "-" + TEST_JAR.toString(), COMPILE, FALSE},
-        {MULE_POLICY.toString() + "-" + TEST_JAR.toString(), PROVIDED, TRUE},
-
-        {MULE_POLICY.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(), COMPILE, FALSE},
-        {MULE_POLICY.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(), PROVIDED, TRUE},
+                     Arguments.of(MULE_DOMAIN.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(), COMPILE,
+                                  FALSE),
+                     Arguments.of(MULE_DOMAIN.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(), PROVIDED,
+                                  TRUE),
 
 
-        {MULE_APPLICATION.toString(), COMPILE, FALSE},
-        {MULE_APPLICATION.toString(), PROVIDED, TRUE},
+                     Arguments.of(MULE_POLICY.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_POLICY.toString(), PROVIDED, TRUE),
 
-        {MULE_APPLICATION.toString() + "-" + LIGHT_PACKAGE.toString(), COMPILE, FALSE},
-        {MULE_APPLICATION.toString() + "-" + LIGHT_PACKAGE.toString(), PROVIDED, TRUE},
+                     Arguments.of(MULE_POLICY.toString() + "-" + LIGHT_PACKAGE.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_POLICY.toString() + "-" + LIGHT_PACKAGE.toString(), PROVIDED, TRUE),
 
-        {MULE_APPLICATION.toString() + "-" + TEST_JAR.toString(), COMPILE, FALSE},
-        {MULE_APPLICATION.toString() + "-" + TEST_JAR.toString(), PROVIDED, TRUE},
+                     Arguments.of(MULE_POLICY.toString() + "-" + TEST_JAR.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_POLICY.toString() + "-" + TEST_JAR.toString(), PROVIDED, TRUE),
 
-        {MULE_APPLICATION.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(), COMPILE, FALSE},
-        {MULE_APPLICATION.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(), PROVIDED, TRUE},
+                     Arguments.of(MULE_POLICY.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(), COMPILE,
+                                  FALSE),
+                     Arguments.of(MULE_POLICY.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(), PROVIDED,
+                                  TRUE),
+
+                     Arguments.of(MULE_APPLICATION.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_APPLICATION.toString(), PROVIDED, TRUE),
+
+                     Arguments.of(MULE_APPLICATION.toString() + "-" + LIGHT_PACKAGE.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_APPLICATION.toString() + "-" + LIGHT_PACKAGE.toString(), PROVIDED, TRUE),
+
+                     Arguments.of(MULE_APPLICATION.toString() + "-" + TEST_JAR.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_APPLICATION.toString() + "-" + TEST_JAR.toString(), PROVIDED, TRUE),
+
+                     Arguments.of(MULE_APPLICATION.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(),
+                                  COMPILE, FALSE),
+                     Arguments.of(MULE_APPLICATION.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(),
+                                  PROVIDED, TRUE),
 
 
-        {MULE_APPLICATION_EXAMPLE.toString(), COMPILE, FALSE},
-        {MULE_APPLICATION_EXAMPLE.toString(), PROVIDED, TRUE},
+                     Arguments.of(MULE_APPLICATION_EXAMPLE.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_APPLICATION_EXAMPLE.toString(), PROVIDED, TRUE),
 
-        {MULE_APPLICATION_EXAMPLE.toString() + "-" + LIGHT_PACKAGE.toString(), COMPILE, FALSE},
-        {MULE_APPLICATION_EXAMPLE.toString() + "-" + LIGHT_PACKAGE.toString(), PROVIDED, TRUE},
+                     Arguments.of(MULE_APPLICATION_EXAMPLE.toString() + "-" + LIGHT_PACKAGE.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_APPLICATION_EXAMPLE.toString() + "-" + LIGHT_PACKAGE.toString(), PROVIDED, TRUE),
 
-        {MULE_APPLICATION_EXAMPLE.toString() + "-" + TEST_JAR.toString(), COMPILE, FALSE},
-        {MULE_APPLICATION_EXAMPLE.toString() + "-" + TEST_JAR.toString(), PROVIDED, TRUE},
+                     Arguments.of(MULE_APPLICATION_EXAMPLE.toString() + "-" + TEST_JAR.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_APPLICATION_EXAMPLE.toString() + "-" + TEST_JAR.toString(), PROVIDED, TRUE),
 
-        {MULE_APPLICATION_EXAMPLE.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(), COMPILE, FALSE},
-        {MULE_APPLICATION_EXAMPLE.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(), PROVIDED, TRUE},
+                     Arguments
+                         .of(MULE_APPLICATION_EXAMPLE.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(),
+                             COMPILE, FALSE),
+                     Arguments
+                         .of(MULE_APPLICATION_EXAMPLE.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(),
+                             PROVIDED, TRUE),
 
 
-        {MULE_APPLICATION_TEMPLATE.toString(), COMPILE, FALSE},
-        {MULE_APPLICATION_TEMPLATE.toString(), PROVIDED, TRUE},
+                     Arguments.of(MULE_APPLICATION_TEMPLATE.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_APPLICATION_TEMPLATE.toString(), PROVIDED, TRUE),
 
-        {MULE_APPLICATION_TEMPLATE.toString() + "-" + LIGHT_PACKAGE.toString(), COMPILE, FALSE},
-        {MULE_APPLICATION_TEMPLATE.toString() + "-" + LIGHT_PACKAGE.toString(), PROVIDED, TRUE},
+                     Arguments.of(MULE_APPLICATION_TEMPLATE.toString() + "-" + LIGHT_PACKAGE.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_APPLICATION_TEMPLATE.toString() + "-" + LIGHT_PACKAGE.toString(), PROVIDED, TRUE),
 
-        {MULE_APPLICATION_TEMPLATE.toString() + "-" + TEST_JAR.toString(), COMPILE, FALSE},
-        {MULE_APPLICATION_TEMPLATE.toString() + "-" + TEST_JAR.toString(), PROVIDED, TRUE},
+                     Arguments.of(MULE_APPLICATION_TEMPLATE.toString() + "-" + TEST_JAR.toString(), COMPILE, FALSE),
+                     Arguments.of(MULE_APPLICATION_TEMPLATE.toString() + "-" + TEST_JAR.toString(), PROVIDED, TRUE),
 
-        {MULE_APPLICATION_TEMPLATE.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(), COMPILE, FALSE},
-        {MULE_APPLICATION_TEMPLATE.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(), PROVIDED, TRUE},
-
-    });
+                     Arguments
+                         .of(MULE_APPLICATION_TEMPLATE.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(),
+                             COMPILE, FALSE),
+                     Arguments
+                         .of(MULE_APPLICATION_TEMPLATE.toString() + "-" + LIGHT_PACKAGE.toString() + "-" + TEST_JAR.toString(),
+                             PROVIDED, TRUE));
   }
 
-  public AllowedDependencyValidatorTest(String classifier, String scope, Boolean isAllowed) {
-
-    this.artifactCoordinates = buildFakeArtifactCoordinates();
-    this.artifactCoordinates.setScope(scope);
-    this.artifactCoordinates.setClassifier(classifier);
-    this.isAllowed = isAllowed;
-  }
-
-  @Test
-  public void areDependenciesAllowed() {
+  @ParameterizedTest
+  @MethodSource("data")
+  public void areDependenciesAllowed(String classifier, String scope, Boolean isAllowed) {
+    ArtifactCoordinates artifactCoordinates;
+    artifactCoordinates = buildFakeArtifactCoordinates();
+    artifactCoordinates.setScope(scope);
+    artifactCoordinates.setClassifier(classifier);
     try {
       AllowedDependencyValidator.areDependenciesAllowed(asList(artifactCoordinates));
     } catch (ValidationException e) {

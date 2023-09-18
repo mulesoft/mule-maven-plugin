@@ -6,61 +6,46 @@
  */
 package org.mule.tools.api.util.exclude;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.mule.tools.client.standalone.controller.probing.deployment.ApplicationDeploymentProbe;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.stream.Stream;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(Parameterized.class)
 public class GlobMatcherTest {
 
-  private final GlobMatcher matcher;
-  private final Path path;
-  private final boolean expectedResult;
-
-  @Parameterized.Parameters
-  public static Collection<Object[]> data() {
-    return Arrays.asList(new Object[][] {
-        // Positive tests
-        {"*.java", "/User/lala/src/main/mule/blabla.java", Boolean.TRUE},
-        {"*.*", "/User/lala/src/main/mule/.project", Boolean.TRUE},
-        {"*.{java,class}", "/User/lala/src/main/mule/blabla.java", Boolean.TRUE},
-        {"*.{java,class}", "/User/lala/src/main/mule/blabla.class", Boolean.TRUE},
-        {"foo-test.???", "/User/lala/src/test/munit/foo-test.xml", Boolean.TRUE},
-        {"/user/*/*", "/user/lala/bla.txt", Boolean.TRUE},
-        {"/user/*/*", "/user/lala/src/", Boolean.TRUE},
-        {"/user/**", "/user/lala/src", Boolean.TRUE},
-        {"C:\\\\*", "C:\\foo", Boolean.TRUE},
-        // Negative tests
-        {"*.cpp", "/User/lala/src/main/mule/blabla.java", Boolean.FALSE},
-        {"*.*", "/User/lala/src/main/mu.le/project", Boolean.FALSE},
-        {"*.{java,class}", "/User/class/src/main/mule/blabla.cpp", Boolean.FALSE},
-        {"*.{java,class}", "/User/java/src/main/mule/blabla.cpp", Boolean.FALSE},
-        {"foo-test.???", "/User/lala/src/test/munit/foo-test.html", Boolean.FALSE},
-        {"/user/*/*", "/user/lala/src/blabla", Boolean.FALSE},
-        {"/user/**", "/user/", Boolean.FALSE},
-        {"/user/**", "/user", Boolean.FALSE},
-        {"C:\\\\**", "C:\\foo\\lala", Boolean.TRUE},
-    });
+  public static Stream<Arguments> data() {
+    return Stream.of(
+                     // Positive tests
+                     Arguments.of("*.java", "/User/lala/src/main/mule/blabla.java", Boolean.TRUE),
+                     Arguments.of("*.*", "/User/lala/src/main/mule/.project", Boolean.TRUE),
+                     Arguments.of("*.{java,class}", "/User/lala/src/main/mule/blabla.java", Boolean.TRUE),
+                     Arguments.of("*.{java,class}", "/User/lala/src/main/mule/blabla.class", Boolean.TRUE),
+                     Arguments.of("foo-test.???", "/User/lala/src/test/munit/foo-test.xml", Boolean.TRUE),
+                     Arguments.of("/user/*/*", "/user/lala/bla.txt", Boolean.TRUE),
+                     Arguments.of("/user/*/*", "/user/lala/src/", Boolean.TRUE),
+                     Arguments.of("/user/**", "/user/lala/src", Boolean.TRUE),
+                     Arguments.of("C:\\\\*", "C:\\foo", Boolean.TRUE),
+                     // Negative tests
+                     Arguments.of("*.cpp", "/User/lala/src/main/mule/blabla.java", Boolean.FALSE),
+                     Arguments.of("*.*", "/User/lala/src/main/mu.le/project", Boolean.FALSE),
+                     Arguments.of("*.{java,class}", "/User/class/src/main/mule/blabla.cpp", Boolean.FALSE),
+                     Arguments.of("*.{java,class}", "/User/java/src/main/mule/blabla.cpp", Boolean.FALSE),
+                     Arguments.of("foo-test.???", "/User/lala/src/test/munit/foo-test.html", Boolean.FALSE),
+                     Arguments.of("/user/*/*", "/user/lala/src/blabla", Boolean.FALSE),
+                     Arguments.of("/user/**", "/user/", Boolean.FALSE),
+                     Arguments.of("/user/**", "/user", Boolean.FALSE),
+                     Arguments.of("C:\\\\**", "C:\\foo\\lala", Boolean.TRUE));
   }
 
-  public GlobMatcherTest(String pattern, String path, Boolean expectedResult) {
-    this.matcher = new GlobMatcher(pattern);
-    this.path = Paths.get(path);
-    this.expectedResult = expectedResult;
-  }
-
-  @Test
-  public void matchTest() {
-    assertThat("The matcher should have returned " + !expectedResult + " to path " + path.toString(), matcher.matches(path),
-               is(expectedResult));
+  @ParameterizedTest
+  @MethodSource("data")
+  public void matchTest(GlobMatcher matcher, Path path, boolean expectedResult) {
+    assertThat(matcher.matches(path))
+        .describedAs("The matcher should have returned " + !expectedResult + " to path " + path.toString())
+        .isEqualTo(expectedResult);
   }
 }

@@ -9,9 +9,7 @@ package org.mule.tools.deployment.cloudhub2;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.fabric.RuntimeFabricClient;
 import org.mule.tools.model.anypoint.Cloudhub2Deployment;
@@ -26,15 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class RequestBuilderTest {
 
-  @Rule
-  public ExpectedException exceptionRule = ExpectedException.none();
   private static final String DOMAIN_TEST = "*.mydomain.com";
   private static final String TARGETS_RESPONSE = "[\n" +
       "   {\n" +
@@ -72,7 +69,7 @@ public class RequestBuilderTest {
   public void setUp(Cloudhub2DeploymentSettings settings) throws DeploymentException {
     runtimeFabricClientMock = mock(RuntimeFabricClient.class);
     cloudhub2Deployment = new Cloudhub2Deployment();
-    cloudhub2Deployment.setArtifact(null);
+    cloudhub2Deployment.setArtifact((String) null);
     cloudhub2Deployment.setMuleVersion("4.2.0");
     cloudhub2Deployment.setApplicationName("test-app");
     cloudhub2Deployment.setTarget("fabric1");
@@ -110,7 +107,7 @@ public class RequestBuilderTest {
   public void requestBuildTest() throws Exception {
     setUp(null);
     String request = new Gson().toJson(requestBuilder.buildDeploymentRequest());
-    assertThat("request is not the expected", DEPLOY_REQUEST.equals(request));
+    assertThat(DEPLOY_REQUEST).describedAs("request is not the expected").isEqualTo(request);
   }
 
   @Test
@@ -119,16 +116,17 @@ public class RequestBuilderTest {
     settings.setGenerateDefaultPublicUrl(true);
     setUp(settings);
     String request = new Gson().toJson(requestBuilder.buildDeploymentRequest());
-    assertThat("request is not the expected", DEPLOY_REQUEST_WITH_PUBLIC_URL.equals(request));
+    assertThat(DEPLOY_REQUEST_WITH_PUBLIC_URL).describedAs("request is not the expected").isEqualTo(request);
   }
 
   @Test
-  public void requestBuildWithResourcesAndVCoresTest() throws Exception {
-    setUp(null);
-    exceptionRule.expect(DeploymentException.class);
-    exceptionRule.expectMessage(RequestBuilderCh2.RESOURCES_EXCEPTION);
-    ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setInstanceType("instanceValue");
-    requestBuilder.buildDeploymentRequest();
+  public void requestBuildWithResourcesAndVCoresTest() {
+    assertThatThrownBy(() -> {
+      setUp(null);
+      ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setInstanceType("instanceValue");
+      requestBuilder.buildDeploymentRequest();
+    }).isExactlyInstanceOf(DeploymentException.class);
+
   }
 
   @Test
@@ -137,6 +135,6 @@ public class RequestBuilderTest {
     cloudhub2Deployment.setvCores(null);
     ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setInstanceType("instanceValue");
     String request = new Gson().toJson(requestBuilder.buildDeploymentRequest());
-    assertThat("request is not the expected", DEPLOY_REQUEST_WITH_INSTANCE_TYPE.equals(request));
+    assertThat(DEPLOY_REQUEST_WITH_INSTANCE_TYPE).describedAs("request is not the expected").isEqualTo(request);
   }
 }

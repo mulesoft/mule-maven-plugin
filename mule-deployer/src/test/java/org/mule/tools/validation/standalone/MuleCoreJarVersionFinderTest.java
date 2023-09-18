@@ -6,63 +6,61 @@
  */
 package org.mule.tools.validation.standalone;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
+import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class MuleCoreJarVersionFinderTest {
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
+  @TempDir
+  Path temporaryFolder;
   private File visitingFile;
 
   private MuleCoreJarVersionFinder finder;
   private BasicFileAttributes fileAttributesMock;
   private File temporaryFolderRoot;
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
-    temporaryFolder.create();
+    temporaryFolder.toFile();
     finder = new MuleCoreJarVersionFinder();
     fileAttributesMock = mock(BasicFileAttributes.class);
-    temporaryFolderRoot = temporaryFolder.getRoot();
+    temporaryFolderRoot = temporaryFolder.toAbsolutePath().toFile();
   }
 
   @Test
   public void visitFileFindMuleCoreJarTest() throws IOException {
     String muleVersion = "4.0.0-SNAPSHOT";
-    visitingFile = temporaryFolder.newFile("mule-core-" + muleVersion + ".jar");
+    visitingFile = temporaryFolder.resolve("mule-core-" + muleVersion + ".jar").toFile();
     finder.visitFile(visitingFile.toPath(), fileAttributesMock);
-    assertThat("Version was not correctly parsed from file name", finder.getMuleCoreVersion(), equalTo(muleVersion));
+    assertThat(finder.getMuleCoreVersion()).describedAs("Version was not correctly parsed from file name").isEqualTo(muleVersion);
     assertOtherImplementedMethods(FileVisitResult.TERMINATE);
   }
 
   @Test
   public void visitFileFindAnyJarTest() throws IOException {
-    visitingFile = temporaryFolder.newFile("any-jar.jar");
+    visitingFile = temporaryFolder.resolve("any-jar.jar").toFile();
     finder.visitFile(visitingFile.toPath(), fileAttributesMock);
-    assertThat("Version was not correctly parsed from file name", finder.getMuleCoreVersion(), equalTo(null));
+    assertThat(finder.getMuleCoreVersion()).describedAs("Version was not correctly parsed from file name").isNull();
     assertOtherImplementedMethods(FileVisitResult.CONTINUE);
   }
 
 
   private void assertOtherImplementedMethods(FileVisitResult terminate) throws IOException {
-    assertThat("preVisitDirectory method does not return the expected FileVisitResult",
-               finder.preVisitDirectory(temporaryFolderRoot.toPath(), fileAttributesMock), equalTo(terminate));
-    assertThat("visitFileFailed method does not return the expected FileVisitResult",
-               finder.visitFileFailed(visitingFile.toPath(), new IOException()), equalTo(terminate));
-    assertThat("postVisitDirectory method does not return the expected FileVisitResult",
-               finder.postVisitDirectory(temporaryFolderRoot.toPath(), new IOException()), equalTo(terminate));
+    assertThat(finder.preVisitDirectory(temporaryFolderRoot.toPath(), fileAttributesMock))
+        .describedAs("preVisitDirectory method does not return the expected FileVisitResult").isEqualTo(terminate);
+    assertThat(finder.visitFileFailed(visitingFile.toPath(), new IOException()))
+        .describedAs("visitFileFailed method does not return the expected FileVisitResult").isEqualTo(terminate);
+    assertThat(finder.postVisitDirectory(temporaryFolderRoot.toPath(), new IOException()))
+        .describedAs("postVisitDirectory method does not return the expected FileVisitResult").isEqualTo(terminate);
   }
 }

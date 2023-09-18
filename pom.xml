@@ -38,14 +38,14 @@
         <module>mule-deployer</module>
         <module>mule-packager</module>
         <module>mule-maven-plugin</module>
-        <!-- <module>mule-artifact-it</module>-->
+        <module>mule-artifact-it</module>
     </modules>
 
     <properties>
         <java.source>1.8</java.source>
         <java.target>1.8</java.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
+        <dw.version>2.5.0-rc11</dw.version>
         <mule.version>4.5.0-rc11</mule.version>
         <mule.api.version>1.5.0-rc11</mule.api.version>
         <mule.maven.client.impl.version>2.0.0-rc11</mule.maven.client.impl.version>
@@ -143,6 +143,11 @@
                 <groupId>com.mulesoft.mule.runtime</groupId>
                 <artifactId>mule-core-ee</artifactId>
                 <version>${mule.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mule.runtime</groupId>
+                <artifactId>mule-dwb-api</artifactId>
+                <version>${dw.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mulesoft.mule.runtime.modules</groupId>

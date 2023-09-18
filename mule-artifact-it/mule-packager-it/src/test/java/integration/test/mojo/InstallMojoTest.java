@@ -32,6 +32,8 @@ public class InstallMojoTest extends MojoTest {
   private static final String MULE_APPLICATION_TEMPLATE_CLASSIFIER = "mule-application-template";
   private static final String MULE_APPLICATION_CLASSIFIER_LIGHT_PACKAGE = "mule-application-light-package";
   private static final String MULE_APPLICATION_WITH_PLUGIN_DEP = "simple-app-with-lib";
+  private static final String DWB_APP = "dwb-app";
+  private static final String DWB_EXTENSION = "dwb-extension";
   private static final String MULE_PARENT = "test-parent-pom";
   private static final String MULE_CHILD = "test-child";
   private static final String MULE_RELATIVE_PATH = "test-relative-path";
@@ -294,5 +296,21 @@ public class InstallMojoTest extends MojoTest {
 
     verifier.verifyErrorFreeLog();
     assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
+  }
+
+  @Test
+  public void testInstallAppWithDwb() throws IOException, VerificationException {
+    File pluginBaseDirectory = ProjectFactory.createProjectBaseDir(DWB_EXTENSION, this.getClass());
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir(DWB_APP, this.getClass());
+
+    Verifier verifierPlugin = buildVerifier(pluginBaseDirectory);
+    verifier = buildVerifier(projectBaseDirectory);
+
+    verifier.deleteArtifacts(GROUP_ID, DWB_EXTENSION, VERSION);
+    verifierPlugin.deleteArtifacts(GROUP_ID, DWB_APP, VERSION);
+
+    verifierPlugin.executeGoal(INSTALL);
+    verifier.executeGoal(INSTALL);
+    verifier.verifyErrorFreeLog();
   }
 }

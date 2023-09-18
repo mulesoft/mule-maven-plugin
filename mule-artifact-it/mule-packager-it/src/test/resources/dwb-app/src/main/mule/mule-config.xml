@@ -1,0 +1,44 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:dwb="http://www.mulesoft.org/schema/mule/dwb"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+      http://www.mulesoft.org/schema/mule/dwb http://www.mulesoft.org/schema/mule/dwb/current/mule-dwb.xsd">
+
+    <http:listener-config name="listenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${http.port}" />
+    </http:listener-config>
+
+    <flow name="readTest">
+        <http:listener path="/read" config-ref="listenerConfig"/>
+        <dwb:read>
+            <dwb:data>#[output application/dwb --- { message: attributes.queryParams.someMessage}]</dwb:data>
+        </dwb:read>
+    </flow>
+
+    <flow name="writeTest">
+        <http:listener path="/write" config-ref="listenerConfig"/>
+        <dwb:write message="#[attributes.queryParams.someMessage]"/>
+        <set-payload value="#[output java --- payload.message as String]"/>
+    </flow>
+
+    <flow name="writeCustomTest">
+        <http:listener path="/writeCustom" config-ref="listenerConfig"/>
+        <dwb:write-custom message="#['*--This is the actual message--*']"/>
+        <set-payload value="#[output java --- payload.sanitized as String]"/>
+    </flow>
+
+    <flow name="writeAndReadCustomTest">
+        <http:listener path="/writeAndReadCustom" config-ref="listenerConfig"/>
+        <dwb:write-custom message="#['*--This is the actual message--*']"/>
+        <dwb:read-custom key="raw"/>
+    </flow>
+
+    <flow name="writeAndReadTest">
+        <http:listener path="/writeAndRead" config-ref="listenerConfig"/>
+        <dwb:write message="#['DW: a *fun* language']"/>
+        <dwb:read/>
+    </flow>
+
+</mule>

@@ -11,7 +11,7 @@ import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toApplicat
 import static org.mule.tools.api.classloader.model.util.ArtifactUtils.updatePackagesResources;
 
 import org.mule.maven.pom.parser.api.model.BundleDependency;
-import org.mule.tools.api.classloader.model.Plugin;
+import org.mule.tools.api.muleclassloader.model.Plugin;
 
 import java.util.List;
 import java.util.Map;

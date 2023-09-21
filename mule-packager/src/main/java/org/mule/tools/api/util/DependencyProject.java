@@ -12,7 +12,7 @@ import org.apache.maven.project.MavenProject;
 import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.maven.pom.parser.api.model.BundleScope;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
 
 import java.util.List;
 import java.util.stream.Collectors;

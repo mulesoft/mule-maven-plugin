@@ -9,7 +9,7 @@ package org.mule.tools.api.validation;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 
 /**

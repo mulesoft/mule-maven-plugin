@@ -4,18 +4,18 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.classloader;
+package org.mule.tools.api.muleclassloader;
 
-import static org.mule.tools.api.classloader.Constants.CLASSLOADER_MODEL_FILE_NAME;
-import static org.mule.tools.api.classloader.Constants.PACKAGES_FIELD;
-import static org.mule.tools.api.classloader.Constants.RESOURCES_FIELD;
+import static org.mule.tools.api.muleclassloader.Constants.CLASSLOADER_MODEL_FILE_NAME;
+import static org.mule.tools.api.muleclassloader.Constants.PACKAGES_FIELD;
+import static org.mule.tools.api.muleclassloader.Constants.RESOURCES_FIELD;
 
 import static java.lang.String.format;
 
-import org.mule.tools.api.classloader.model.AppClassLoaderModel;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.muleclassloader.model.AppClassLoaderModel;
+import org.mule.tools.api.muleclassloader.model.Artifact;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.ClassLoaderModel;
 
 import java.io.BufferedReader;
 import java.io.File;

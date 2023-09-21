@@ -8,8 +8,8 @@ package org.mule.tools.api.classloader.model.resolver;
 
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.pom.parser.api.model.BundleDependency;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.muleclassloader.model.Artifact;
+import org.mule.tools.api.muleclassloader.model.ClassLoaderModel;
 import org.mule.tools.api.util.FileJarExplorer;
 import org.mule.tools.api.util.JarExplorer;
 import org.mule.tools.api.util.JarInfo;

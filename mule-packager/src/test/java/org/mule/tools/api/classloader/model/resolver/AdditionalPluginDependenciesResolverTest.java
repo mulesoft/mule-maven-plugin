@@ -42,9 +42,9 @@ import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.maven.pom.parser.internal.model.MavenPomModelWrapper;
 import org.mule.runtime.api.exception.MuleRuntimeException;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.muleclassloader.model.Artifact;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.ClassLoaderModel;
 
 import java.io.File;
 import java.io.IOException;

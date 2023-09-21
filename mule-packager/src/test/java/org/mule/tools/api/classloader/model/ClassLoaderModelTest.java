@@ -8,6 +8,9 @@ package org.mule.tools.api.classloader.model;
 
 import org.junit.jupiter.api.Test;
 
+import org.junit.rules.ExpectedException;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.ClassLoaderModel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

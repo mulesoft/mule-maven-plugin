@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Spy;
 import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
-import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
-import org.mule.tools.api.classloader.model.ApplicationGAVModel;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.ApplicationClassloaderModel;
+import org.mule.tools.api.muleclassloader.model.ApplicationGAVModel;
+import org.mule.tools.api.muleclassloader.model.Artifact;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
 import org.mule.tools.api.util.FileUtils;
 
 public class RepositoryGeneratorTest {

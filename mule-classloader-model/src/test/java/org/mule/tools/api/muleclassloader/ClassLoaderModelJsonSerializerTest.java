@@ -8,9 +8,9 @@ package org.mule.tools.api.classloader;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.muleclassloader.model.Artifact;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.ClassLoaderModel;
 
 import java.io.File;
 import java.io.IOException;

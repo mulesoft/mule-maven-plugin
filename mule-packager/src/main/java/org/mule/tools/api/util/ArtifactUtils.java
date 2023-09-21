@@ -9,8 +9,8 @@ package org.mule.tools.api.util;
 import org.apache.maven.model.Dependency;
 import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.maven.pom.parser.api.model.BundleDescriptor;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.Artifact;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
 
 /**
  * ArtifactUtils presents helper methods to convert artifact related classes and recognize mule plugin artifacts.

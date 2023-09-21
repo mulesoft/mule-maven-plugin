@@ -13,20 +13,20 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import static org.mule.maven.client.internal.MuleMavenClient.MULE_PLUGIN_CLASSIFIER;
 import static org.mule.runtime.api.util.Preconditions.checkState;
-import static org.mule.tools.api.classloader.Constants.ARTIFACT_ID;
-import static org.mule.tools.api.classloader.Constants.GROUP_ID;
-import static org.mule.tools.api.classloader.Constants.MULE_MAVEN_PLUGIN_ARTIFACT_ID;
-import static org.mule.tools.api.classloader.Constants.MULE_MAVEN_PLUGIN_GROUP_ID;
-import static org.mule.tools.api.classloader.Constants.SHARED_LIBRARIES_FIELD;
-import static org.mule.tools.api.classloader.Constants.SHARED_LIBRARY_FIELD;
+import static org.mule.tools.api.muleclassloader.Constants.ARTIFACT_ID;
+import static org.mule.tools.api.muleclassloader.Constants.GROUP_ID;
+import static org.mule.tools.api.muleclassloader.Constants.MULE_MAVEN_PLUGIN_ARTIFACT_ID;
+import static org.mule.tools.api.muleclassloader.Constants.MULE_MAVEN_PLUGIN_GROUP_ID;
+import static org.mule.tools.api.muleclassloader.Constants.SHARED_LIBRARIES_FIELD;
+import static org.mule.tools.api.muleclassloader.Constants.SHARED_LIBRARY_FIELD;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_DOMAIN;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
 
 import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.maven.pom.parser.api.model.BundleDescriptor;
-import org.mule.tools.api.classloader.model.ApplicationGAVModel;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.ApplicationGAVModel;
+import org.mule.tools.api.muleclassloader.model.Artifact;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
 import org.mule.tools.api.util.FileJarExplorer;
 import org.mule.tools.api.util.JarInfo;
 

@@ -8,7 +8,7 @@ package org.mule.tools.api.validation;
 
 import static java.lang.System.lineSeparator;
 import static org.eclipse.aether.util.artifact.JavaScopes.TEST;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 
 import java.util.ArrayList;

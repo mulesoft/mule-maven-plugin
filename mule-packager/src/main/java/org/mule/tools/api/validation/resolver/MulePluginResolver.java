@@ -11,7 +11,7 @@ import static com.google.common.collect.Lists.newArrayList;
 
 import java.util.List;
 
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.util.Project;
 import org.mule.tools.api.util.ProjectBuilder;

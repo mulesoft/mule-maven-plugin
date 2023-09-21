@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.classloader.model;
+package org.mule.tools.api.muleclassloader.model;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.io.File.separatorChar;

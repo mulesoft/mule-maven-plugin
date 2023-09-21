@@ -8,8 +8,8 @@ package org.mule.tools.maven.mojo;
 
 import com.mulesoft.exchange.mavenfacade.utils.ExchangeHelper;
 import org.mule.maven.client.api.MavenClient;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.SharedLibraryDependency;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.SharedLibraryDependency;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.validation.project.ProjectRequirement;

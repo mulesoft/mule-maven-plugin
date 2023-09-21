@@ -8,7 +8,7 @@ package org.mule.tools.api.classloader.model.util;
 
 import static java.nio.file.Paths.get;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mule.tools.api.classloader.model.Artifact.MULE_DOMAIN;
+import static org.mule.tools.api.muleclassloader.model.Artifact.MULE_DOMAIN;
 import static org.mule.tools.api.classloader.model.util.ZipUtils.compress;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,9 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.maven.pom.parser.api.model.BundleDescriptor;
-import org.mule.tools.api.classloader.model.ApplicationGAVModel;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.ApplicationGAVModel;
+import org.mule.tools.api.muleclassloader.model.Artifact;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
 
 import java.io.File;
 import java.io.IOException;

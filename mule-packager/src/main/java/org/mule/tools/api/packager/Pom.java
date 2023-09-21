@@ -6,8 +6,8 @@
  */
 package org.mule.tools.api.packager;
 
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.Artifact;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
 
 import java.io.IOException;
 import java.nio.file.Path;

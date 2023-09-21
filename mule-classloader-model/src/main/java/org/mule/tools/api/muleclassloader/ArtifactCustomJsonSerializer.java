@@ -4,13 +4,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.classloader;
+package org.mule.tools.api.muleclassloader;
 
-import static org.mule.tools.api.classloader.Constants.ARTIFACT_IS_SHARED_FIELD;
-import static org.mule.tools.api.classloader.Constants.ARTIFACT_PACKAGES_FIELD;
-import static org.mule.tools.api.classloader.Constants.ARTIFACT_RESOURCES_FIELD;
+import static org.mule.tools.api.muleclassloader.Constants.ARTIFACT_IS_SHARED_FIELD;
+import static org.mule.tools.api.muleclassloader.Constants.ARTIFACT_PACKAGES_FIELD;
+import static org.mule.tools.api.muleclassloader.Constants.ARTIFACT_RESOURCES_FIELD;
 
-import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.muleclassloader.model.Artifact;
 
 import java.lang.reflect.Type;
 

@@ -4,11 +4,11 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.classloader;
+package org.mule.tools.api.muleclassloader;
 
-import static org.mule.tools.api.classloader.AppClassLoaderModelJsonSerializer.deserialize;
+import static org.mule.tools.api.muleclassloader.AppClassLoaderModelJsonSerializer.deserialize;
 
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.muleclassloader.model.ClassLoaderModel;
 
 import java.io.File;
 
@@ -16,7 +16,7 @@ class AppClassLoaderModelJsonDeserializerValidationsTest extends ClassLoaderMode
 
   @Override
   protected ClassLoaderModel deserializeClassLoaderModel(File classloaderModelJsonFile) {
-    return deserialize(classloaderModelJsonFile);
+    return AppClassLoaderModelJsonSerializer.deserialize(classloaderModelJsonFile);
   }
 
 }

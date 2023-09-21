@@ -8,7 +8,7 @@ package org.mule.tools.api.validation.resolver.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.util.Project;
 import org.mule.tools.api.util.ProjectBuilder;

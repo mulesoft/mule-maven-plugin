@@ -7,7 +7,7 @@
 package org.mule.tools.model.standalone;
 
 import org.apache.maven.plugins.annotations.Parameter;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
 import org.mule.tools.client.core.exception.DeploymentException;
 
 import java.io.File;

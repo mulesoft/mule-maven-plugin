@@ -21,9 +21,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.muleclassloader.model.Artifact;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.ClassLoaderModel;
 import org.mule.tools.api.util.PackagerLog;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

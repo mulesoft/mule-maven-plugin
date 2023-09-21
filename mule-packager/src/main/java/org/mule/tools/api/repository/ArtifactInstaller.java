@@ -10,8 +10,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
 import static org.apache.commons.io.FileUtils.copyFile;
 import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
-import org.mule.tools.api.classloader.model.Artifact;
-import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.muleclassloader.model.Artifact;
+import org.mule.tools.api.muleclassloader.model.ClassLoaderModel;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 import org.mule.tools.api.util.PackagerLog;
 

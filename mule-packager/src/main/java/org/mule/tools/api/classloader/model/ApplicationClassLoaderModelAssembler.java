@@ -18,6 +18,14 @@ import static org.mule.tools.api.classloader.model.util.PluginUtils.toPluginDepe
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.MavenReactorResolver;
 import org.mule.maven.pom.parser.api.model.BundleDependency;
+import org.mule.maven.client.api.model.BundleDependency;
+import org.mule.maven.client.internal.AetherMavenClient;
+import org.mule.tools.api.muleclassloader.model.ApplicationGAVModel;
+import org.mule.tools.api.muleclassloader.model.ApplicationClassloaderModel;
+import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.Artifact;
+import org.mule.tools.api.muleclassloader.model.AppClassLoaderModel;
+import org.mule.tools.api.muleclassloader.model.ClassLoaderModel;
 import org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver;
 import org.mule.tools.api.classloader.model.resolver.ApplicationDependencyResolver;
 import org.mule.tools.api.classloader.model.resolver.ClassloaderModelResolver;

@@ -6,7 +6,7 @@
  */
 package org.mule.tools.api.packager.resources.processor;
 
-import org.mule.tools.api.muleclassloader.model.Artifact;
+import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.packager.resources.content.ResourcesContent;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 

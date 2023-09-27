@@ -19,7 +19,7 @@ import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.eclipse.aether.deployment.DeploymentException;
-import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.model.standalone.ClusterDeployment;
 import org.mule.tools.utils.DeployerLog;
 

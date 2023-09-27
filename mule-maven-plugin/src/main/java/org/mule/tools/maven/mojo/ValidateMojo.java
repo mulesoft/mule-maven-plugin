@@ -8,7 +8,7 @@ package org.mule.tools.maven.mojo;
 
 import static java.util.Arrays.asList;
 import static org.mule.tools.api.validation.AllowedDependencyValidator.areDependenciesAllowed;
-import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.validation.DependencyValidator;

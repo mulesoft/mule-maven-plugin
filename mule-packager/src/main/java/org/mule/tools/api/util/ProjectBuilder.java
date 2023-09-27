@@ -6,7 +6,7 @@
  */
 package org.mule.tools.api.util;
 
-import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ProjectBuildingException;
 
 public interface ProjectBuilder {

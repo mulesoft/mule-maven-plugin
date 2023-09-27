@@ -7,8 +7,8 @@
 package org.mule.tools.api.packager.sources;
 
 import static java.lang.Boolean.FALSE;
-import static org.mule.tools.api.muleclassloader.ClassLoaderModelJsonSerializer.deserialize;
-import static org.mule.tools.api.muleclassloader.ClassLoaderModelJsonSerializer.serializeToFile;
+import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.deserialize;
+import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.serializeToFile;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_POLICY;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
@@ -18,7 +18,7 @@ import static org.mule.tools.api.packager.structure.FolderNames.TEST_MULE;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 import static org.mule.tools.api.packager.structure.PackagerFiles.ARTIFACT_AST;
 
-import org.mule.tools.api.muleclassloader.model.ClassLoaderModel;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.packager.structure.ProjectStructure;

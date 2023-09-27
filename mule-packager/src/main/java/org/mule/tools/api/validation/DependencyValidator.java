@@ -6,7 +6,7 @@
  */
 package org.mule.tools.api.validation;
 
-import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.ValidationException;
 
 import java.util.List;

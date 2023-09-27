@@ -10,7 +10,7 @@ package org.mule.tools.api.packager.resources.processor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mule.tools.api.muleclassloader.model.Artifact;
+import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.packager.resources.content.ResourcesContent;
 
 import java.io.File;

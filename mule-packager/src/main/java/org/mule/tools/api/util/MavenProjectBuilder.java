@@ -15,10 +15,9 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.*;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.repository.RepositorySystem;
-import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.exception.*;
 import org.mule.tools.api.exception.ProjectBuildingException;
-import org.mule.tools.api.util.*;
 
 import java.util.List;
 import java.util.stream.Collectors;

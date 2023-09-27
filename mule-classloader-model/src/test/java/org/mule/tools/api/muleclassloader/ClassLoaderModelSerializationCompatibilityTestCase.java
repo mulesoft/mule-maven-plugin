@@ -4,19 +4,19 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.muleclassloader;
+package org.mule.tools.api.classloader;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.deserialize;
-import static org.mule.tools.api.muleclassloader.ClassLoaderModelJsonSerializer.serializeToFile;
-import static org.mule.tools.api.muleclassloader.model.ArtifactCoordinates.DEFAULT_ARTIFACT_TYPE;
+import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.serializeToFile;
+import static org.mule.tools.api.classloader.model.ArtifactCoordinates.DEFAULT_ARTIFACT_TYPE;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mule.tools.api.muleclassloader.model.Artifact;
-import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
-import org.mule.tools.api.muleclassloader.model.ClassLoaderModel;
+import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 import java.net.URI;
 import java.nio.file.Path;

@@ -4,18 +4,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.muleclassloader;
+package org.mule.tools.api.classloader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mule.tools.api.muleclassloader.ClassLoaderModelJsonSerializer.deserialize;
-import static org.mule.tools.api.muleclassloader.model.ArtifactCoordinates.DEFAULT_ARTIFACT_TYPE;
+import static org.mule.tools.api.classloader.ClassLoaderModelJsonSerializer.deserialize;
+import static org.mule.tools.api.classloader.model.ArtifactCoordinates.DEFAULT_ARTIFACT_TYPE;
 
 import static org.apache.commons.io.FileUtils.toFile;
 
 import org.junit.jupiter.api.Test;
-import org.mule.tools.api.muleclassloader.model.ClassLoaderModel;
-import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 import java.io.File;
 
@@ -76,7 +75,7 @@ class ClassLoaderModelJsonDeserializerValidationsTest {
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-artifact-coordinates-type.json"));
 
     ClassLoaderModel deserialized = deserializeClassLoaderModel(classloaderModelJsonFile);
-    assertThat(deserialized.getArtifactCoordinates().getType(), is(DEFAULT_ARTIFACT_TYPE));
+    assertThat(deserialized.getArtifactCoordinates().getType()).isEqualTo(DEFAULT_ARTIFACT_TYPE);
   }
 
   @Test
@@ -130,7 +129,7 @@ class ClassLoaderModelJsonDeserializerValidationsTest {
         toFile(this.getClass().getClassLoader().getResource("classloader-model-no-dep-artifact-coordinates-type.json"));
 
     ClassLoaderModel deserialized = deserializeClassLoaderModel(classloaderModelJsonFile);
-    assertThat(deserialized.getDependencies().get(0).getArtifactCoordinates().getType(), is(DEFAULT_ARTIFACT_TYPE));
+    assertThat(deserialized.getDependencies().get(0).getArtifactCoordinates().getType()).isEqualTo(DEFAULT_ARTIFACT_TYPE);
   }
 
   @Test

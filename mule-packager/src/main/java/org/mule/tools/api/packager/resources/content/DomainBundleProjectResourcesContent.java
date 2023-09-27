@@ -6,7 +6,7 @@
  */
 package org.mule.tools.api.packager.resources.content;
 
-import org.mule.tools.api.muleclassloader.model.Artifact;
+import org.mule.tools.api.classloader.model.Artifact;
 
 import java.util.*;
 

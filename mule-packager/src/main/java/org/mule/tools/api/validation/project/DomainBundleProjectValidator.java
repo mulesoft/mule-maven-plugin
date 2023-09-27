@@ -11,9 +11,9 @@ import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
 
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.pom.parser.api.model.BundleDependency;
-import org.mule.tools.api.muleclassloader.model.Artifact;
-import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.util.ArtifactUtils;
+import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
+import org.mule.tools.api.muleclassloader.model.util.ArtifactUtils;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.ProjectInformation;
 

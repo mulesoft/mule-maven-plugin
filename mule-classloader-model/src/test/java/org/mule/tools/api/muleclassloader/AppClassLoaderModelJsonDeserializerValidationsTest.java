@@ -4,11 +4,11 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.muleclassloader;
+package org.mule.tools.api.classloader;
 
-import static org.mule.tools.api.muleclassloader.AppClassLoaderModelJsonSerializer.deserialize;
+import static org.mule.tools.api.classloader.AppClassLoaderModelJsonSerializer.deserialize;
 
-import org.mule.tools.api.muleclassloader.model.ClassLoaderModel;
+import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 import java.io.File;
 

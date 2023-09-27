@@ -14,13 +14,8 @@ import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.FolderNames.REPOSITORY;
 
 import org.mule.maven.client.api.MavenReactorResolver;
-import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
-import org.mule.tools.api.muleclassloader.model.ApplicationClassloaderModel;
-import org.mule.tools.api.muleclassloader.model.ApplicationGAVModel;
-import org.mule.tools.api.muleclassloader.model.Artifact;
-import org.mule.tools.api.muleclassloader.model.ArtifactCoordinates;
-import org.mule.tools.api.muleclassloader.model.ClassLoaderModel;
-import org.mule.tools.api.muleclassloader.model.NotParameterizedClassLoaderModel;
+import org.mule.tools.api.classloader.model.*;
+import org.mule.tools.api.muleclassloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.util.FileUtils;
 
 import java.io.File;

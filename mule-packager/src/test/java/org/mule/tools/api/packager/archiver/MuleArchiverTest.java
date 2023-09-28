@@ -16,13 +16,8 @@ import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_SRC;
 
-//import java.io.File;
-//import java.nio.file.Path;
-
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
-import org.codehaus.plexus.logging.Logger;
-import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -67,7 +62,6 @@ public class MuleArchiverTest extends AbstractMuleArchiverTest {
     final ZipUnArchiver zipUnArchiver = new ZipUnArchiver();
     zipUnArchiver.setSourceFile(destinationFile);
     zipUnArchiver.setDestDirectory(destinationDirectoryForUnzip);
-    zipUnArchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_DISABLED, "someName"));
     zipUnArchiver.extract();
     return destinationDirectoryForUnzip;
   }

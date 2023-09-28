@@ -21,8 +21,6 @@ import java.nio.file.Path;
 
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
-import org.codehaus.plexus.logging.Logger;
-import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,7 +62,6 @@ public class MuleArchiverTest extends AbstractMuleArchiverTest {
     final ZipUnArchiver zipUnArchiver = new ZipUnArchiver();
     zipUnArchiver.setSourceFile(destinationFile);
     zipUnArchiver.setDestDirectory(destinationDirectoryForUnzip);
-    zipUnArchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_DISABLED, "someName"));
     zipUnArchiver.extract();
     return destinationDirectoryForUnzip;
   }

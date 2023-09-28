@@ -15,12 +15,9 @@ import java.io.IOException;
 
 import org.apache.maven.it.VerificationException;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
-import org.codehaus.plexus.logging.Logger;
-import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
 
 public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
 
@@ -186,7 +183,6 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     final ZipUnArchiver zipUnArchiver = new ZipUnArchiver();
     zipUnArchiver.setSourceFile(sourceFile);
     zipUnArchiver.setDestDirectory(destinationFolder);
-    zipUnArchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_DISABLED, "someName"));
     zipUnArchiver.extract();
   }
 

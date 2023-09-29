@@ -76,7 +76,7 @@
         <plexus.component.annotations.version>1.7.1</plexus.component.annotations.version>
         <jsonassert.version>1.5.0</jsonassert.version>
 
-        <jersey.version>2.25</jersey.version>
+        <jersey.version>2.35</jersey.version>
         <jersey.media.moxy>2.31</jersey.media.moxy>
 
         <junit.version>4.13</junit.version>

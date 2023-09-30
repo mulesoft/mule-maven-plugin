@@ -74,7 +74,7 @@
         <maven.dependency.tree.version>1.2</maven.dependency.tree.version>
         <plexus.container.default.version>1.7.1</plexus.container.default.version>
         <plexus.component.annotations.version>1.7.1</plexus.component.annotations.version>
-        <jsonassert.version>1.5.0</jsonassert.version>
+        <jsonassert.version>1.5.1</jsonassert.version>
 
         <jersey.version>2.25</jersey.version>
         <jersey.media.moxy>2.31</jersey.media.moxy>

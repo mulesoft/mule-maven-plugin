@@ -64,7 +64,7 @@
         <commons.compress.version>1.21</commons.compress.version>
         <slf4j.api.version>1.8.0-beta2</slf4j.api.version>
         <commons.logging.version>1.2</commons.logging.version>
-        <jdom2.version>2.0.6</jdom2.version>
+        <jdom2.version>2.0.6.1</jdom2.version>
         <javax.activation.api.version>1.2.0</javax.activation.api.version>
         <jaxb.api.version>2.3.1</jaxb.api.version>
 

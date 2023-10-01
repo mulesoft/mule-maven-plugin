@@ -13,8 +13,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 public class Inbound {
 
-  @Parameter
-  protected String publicUrl;
+  @Parameter(defaultValue = "")
+  protected String publicUrl = "";
 
   @Parameter
   protected String pathRewrite;

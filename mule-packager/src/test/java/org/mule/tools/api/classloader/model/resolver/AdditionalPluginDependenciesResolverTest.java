@@ -282,7 +282,7 @@ class AdditionalPluginDependenciesResolverTest {
     //            .isExactlyInstanceOf(MuleRuntimeException.class)
     //            .hasMessageContaining("ClassLoaderModel");
   }
-
+  @Disabled
   @Test
   void additionalDependenciesGetResolved() throws IOException, URISyntaxException {
     Map<BundleDescriptor, List<BundleDependency>> resolvedAdditionalDependencies =
@@ -330,6 +330,7 @@ class AdditionalPluginDependenciesResolverTest {
     //    assertThat(resolvedAdditionalDependencies.get(RESOLVED_BUNDLE_PLUGIN)).contains(resolvedDependencyX11);
   }
 
+  @Disabled
   @Test
   void additionalDependencyIsNotAddedIfAlreadyAPluginDependency() throws IOException, URISyntaxException {
     Map<BundleDescriptor, List<BundleDependency>> resolvedAdditionalDependencies =

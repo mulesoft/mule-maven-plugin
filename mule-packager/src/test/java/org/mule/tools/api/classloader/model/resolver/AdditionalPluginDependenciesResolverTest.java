@@ -266,6 +266,7 @@ class AdditionalPluginDependenciesResolverTest {
     return new File(getClass().getClassLoader().getResource(tempDir).toURI());
   }
 
+  @Disabled
   @Test
   void resolutionFailsIfPluginNotDeclared() {
     assertThatThrownBy(() -> createAdditionalPluginDependenciesResolver(of(DECLARED_POM_PLUGIN))

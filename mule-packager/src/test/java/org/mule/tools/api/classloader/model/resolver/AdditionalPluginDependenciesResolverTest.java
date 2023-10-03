@@ -282,6 +282,7 @@ class AdditionalPluginDependenciesResolverTest {
     //            .isExactlyInstanceOf(MuleRuntimeException.class)
     //            .hasMessageContaining("ClassLoaderModel");
   }
+
   @Disabled
   @Test
   void additionalDependenciesGetResolved() throws IOException, URISyntaxException {

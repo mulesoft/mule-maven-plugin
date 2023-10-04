@@ -6,16 +6,17 @@
  */
 package integration.test.mojo;
 
-import java.io.File;
-import java.io.IOException;
-
+import integration.test.util.ProjectFactory;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import integration.test.util.ProjectFactory;
-import integration.test.util.StandaloneEnvironment;
+import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * @author Mulesoft Inc.
@@ -24,7 +25,7 @@ import integration.test.util.StandaloneEnvironment;
 public abstract class AbstractDeploymentTest {
 
   private static final String MAVEN_OPTS = "MAVEN_OPTS";
-  private static final String DEFAULT_MULE_VERSION = "4.4.0-20220824";
+  private static final String DEFAULT_MULE_VERSION = "4.4.0-20230918";
   private static final String MAVEN_OPTS_PROPERTY_KEY = "argLine";
 
   protected static final String DEPLOY_GOAL = "deploy";
@@ -34,7 +35,6 @@ public abstract class AbstractDeploymentTest {
 
   protected static final String DEFAULT_DEBUG_ARG_LINE = "-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=y";
 
-  protected ProjectFactory projectFactory;
   protected Logger log = LoggerFactory.getLogger(this.getClass());
 
   protected String username = System.getProperty(USERNAME_ENVIRONMENT_VARIABLE);
@@ -55,37 +55,27 @@ public abstract class AbstractDeploymentTest {
   }
 
   protected Verifier buildBaseVerifier() throws IOException, VerificationException {
-    projectFactory = new ProjectFactory();
-    File projectBaseDirectory = projectFactory.createProjectBaseDir(getApplication(), this.getClass());
-
+    File projectBaseDirectory = ProjectFactory.createProjectBaseDir(getApplication(), this.getClass());
     Verifier verifier = buildVerifier(projectBaseDirectory);
-
     verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
-
     verifier.setMavenDebug(true);
-
     verifier.setDebug(true);
-
     return verifier;
   }
 
   protected Verifier buildVerifier(File projectBaseDirectory) throws VerificationException {
     Verifier verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
-
     setSettings(verifier);
-
     setMuleMavenPluginVersion(verifier);
-
     setMavenOpts(verifier);
-
     return verifier;
   }
 
   private void setSettings(Verifier verifier) {
-    String mavenSettings = System.getenv("MAVEN_SETTINGS");
-    if (mavenSettings != null) {
-      verifier.addCliOption("-s " + mavenSettings);
-    }
+    Stream.of("MAVEN_SETTINGS", "settingsxml", "maven.settings")
+        .map(key -> Optional.ofNullable(System.getenv(key)).orElseGet(() -> System.getenv(key)))
+        .filter(Objects::nonNull)
+        .findFirst().ifPresent(mavenSettings -> verifier.addCliOption("-s " + mavenSettings));
   }
 
   private void setMuleMavenPluginVersion(Verifier verifier) {
@@ -101,6 +91,5 @@ public abstract class AbstractDeploymentTest {
       verifier.setEnvironmentVariable(MAVEN_OPTS, mavenOpts);
     }
   }
-
 
 }

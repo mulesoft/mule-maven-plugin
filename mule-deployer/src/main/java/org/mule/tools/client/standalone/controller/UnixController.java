@@ -57,7 +57,9 @@ public class UnixController extends AbstractOSController {
 
   @Override
   public int status(String... args) {
-    return runSync("status", args);
+    InternalOutputStream outputStream = new InternalOutputStream();
+    int status = runSync("status", outputStream, args);
+    return status == 0 && outputStream.toString().contains("is running") ? 0 : 1;
   }
 
   private ExecuteStreamHandler getExecuteStreamHandler(OutputStream outputStream) {

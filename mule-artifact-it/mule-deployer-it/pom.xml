@@ -11,7 +11,6 @@
     <name>Mule Deployer Integration Tests</name>
 
     <properties>
-        <licensePath>../../LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
     </properties>
 

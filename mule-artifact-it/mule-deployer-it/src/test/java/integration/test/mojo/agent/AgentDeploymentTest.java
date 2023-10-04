@@ -7,28 +7,26 @@
 package integration.test.mojo.agent;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.concurrent.TimeoutException;
 
 import integration.test.mojo.AbstractDeploymentTest;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import integration.test.util.StandaloneEnvironment;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public abstract class AgentDeploymentTest extends AbstractDeploymentTest {
 
-  @Rule
-  public TemporaryFolder environmentWorkingDir = new TemporaryFolder();
+  @TempDir
+  public Path environmentWorkingDir;
 
-  protected static StandaloneEnvironment standaloneEnvironment;
+  protected StandaloneEnvironment standaloneEnvironment;
   protected Verifier verifier;
   private String application;
 
@@ -40,21 +38,21 @@ public abstract class AgentDeploymentTest extends AbstractDeploymentTest {
     return application;
   }
 
-  @Before
+  @BeforeEach
   public void before() throws VerificationException, InterruptedException, IOException, TimeoutException {
     log.info("Initializing context...");
 
-    standaloneEnvironment = new StandaloneEnvironment(environmentWorkingDir.getRoot(), getMuleVersion());
+    standaloneEnvironment = new StandaloneEnvironment(environmentWorkingDir.toFile(), getMuleVersion());
     standaloneEnvironment.start(true);
 
     verifier = buildBaseVerifier();
   }
 
-  @After
-  public void after() throws IOException, InterruptedException {
+  @AfterEach
+  public void after() throws InterruptedException, TimeoutException {
     standaloneEnvironment.stop();
     verifier.resetStreams();
-    environmentWorkingDir.delete();
+    environmentWorkingDir.toFile().delete();
   }
 
   protected void deploy() throws VerificationException, InterruptedException {

@@ -10,15 +10,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.concurrent.TimeoutException;
 
 import integration.test.mojo.AbstractDeploymentTest;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.LoggerFactory;
 
 import integration.test.util.StandaloneEnvironment;
@@ -30,8 +30,8 @@ public class StandaloneDeploymentTest extends AbstractDeploymentTest {
   public static final String VERIFIER_MULE_HOME_TEST = "mule.home.test";
   protected static StandaloneEnvironment standaloneEnvironment;
 
-  @Rule
-  public TemporaryFolder environmentWorkingDir = new TemporaryFolder();
+  @TempDir
+  public Path environmentWorkingDir;
 
   private Verifier verifier;
   private String application;
@@ -44,12 +44,12 @@ public class StandaloneDeploymentTest extends AbstractDeploymentTest {
     return application;
   }
 
-  @Before
+  @BeforeEach
   public void before() throws VerificationException, InterruptedException, IOException, TimeoutException {
     log = LoggerFactory.getLogger(this.getClass());
     log.info("Initializing context...");
 
-    standaloneEnvironment = new StandaloneEnvironment(environmentWorkingDir.getRoot(), getMuleVersion());
+    standaloneEnvironment = new StandaloneEnvironment(environmentWorkingDir.toFile(), getMuleVersion());
     standaloneEnvironment.start(false);
 
     verifier = buildBaseVerifier();
@@ -59,11 +59,11 @@ public class StandaloneDeploymentTest extends AbstractDeploymentTest {
     verifier.setEnvironmentVariable(VERIFIER_MULE_HOME_TEST, standaloneEnvironment.getMuleHome());
   }
 
-  @After
-  public void after() throws IOException, InterruptedException {
+  @AfterEach
+  public void after() throws InterruptedException, TimeoutException {
     standaloneEnvironment.stop();
     verifier.resetStreams();
-    environmentWorkingDir.delete();
+    environmentWorkingDir.toFile().delete();
   }
 
   protected void deploy() throws VerificationException {

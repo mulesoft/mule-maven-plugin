@@ -17,7 +17,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <agentDeployment>
-                        <uri>http://localhost:9999/</uri>
+                        <uri>http://localhost:9999</uri>
                         <muleVersion>${mule.version}</muleVersion>
                     </agentDeployment>
                 </configuration>

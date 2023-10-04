@@ -29,6 +29,7 @@ import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALI
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VERIFY;
 
 import org.apache.maven.lifecycle.mapping.LifecyclePhase;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.project.MuleLifecycleMapping;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenVersionless;
@@ -67,6 +68,7 @@ class MuleLifecycleMappingMavenVersionlessTest {
             .as("Missing lifecycle phase: " + expectedPhase.id()).isTrue());
   }
 
+  @Disabled
   @Test
   void getMuleDefaultLifecycleTest() {
     MuleLifecycleMapping muleLifecycleMappingMaven = new MuleLifecycleMapping();

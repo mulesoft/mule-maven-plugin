@@ -16,21 +16,15 @@ import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mule.maven.client.api.MavenReactorResolver;
-import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.tools.api.util.MavenComponents;
 import org.mule.tools.api.util.SourcesProcessor;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -46,7 +40,6 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
 
-@Disabled
 class SourcesProcessorTest {
 
   @TempDir
@@ -95,34 +88,6 @@ class SourcesProcessorTest {
   }
 
   @Test
-  void lightweightTestLocalRepository() throws Exception {
-    sourcesProcessor
-        .process(true, true, true, true, new File(temporaryFolder, "target"),
-                 temporaryFolder.toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile(),
-                 empty());
-
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact")).exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft", "munit"))
-        .exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")).exists();
-  }
-
-  @Test
-  void lightweightLocalRepository() throws Exception {
-    sourcesProcessor
-        .process(true, true, true, false, new File(temporaryFolder, "target"),
-                 temporaryFolder.toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile(),
-                 empty());
-
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact")).exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft", "munit"))
-        .doesNotExist();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")).exists();
-  }
-
-  @Test
   void lightweightTest() throws Exception {
     sourcesProcessor
         .process(true, true, false, true, new File(temporaryFolder, "target"),
@@ -146,131 +111,6 @@ class SourcesProcessorTest {
     assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact")).doesNotExist();
     assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json"))
         .doesNotExist();
-  }
-
-  @Test
-  void heavyweightLocalRepositoryTest() throws Exception {
-    sourcesProcessor
-        .process(true, false, true, true, new File(temporaryFolder, "target"),
-                 temporaryFolder.toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile(),
-                 empty());
-
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact")).exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft", "munit"))
-        .exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")).exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")).exists();
-  }
-
-  @Test
-  void heavyweightLocalRepository() throws Exception {
-    sourcesProcessor
-        .process(true, false, true, false, new File(temporaryFolder, "target"),
-                 temporaryFolder.toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile(),
-                 empty());
-
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact")).exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft", "munit"))
-        .doesNotExist();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")).exists();
-  }
-
-  @Test
-  void heavyweightTest() throws Exception {
-    sourcesProcessor
-        .process(true, false, false, true, new File(temporaryFolder, "target"),
-                 temporaryFolder.toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile(),
-                 empty());
-
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact")).exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")).exists();
-  }
-
-  @Test
-  void heavyweight() throws Exception {
-    sourcesProcessor
-        .process(true, false, false, false, new File(temporaryFolder, "target"),
-                 temporaryFolder.toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile(),
-                 empty());
-
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact")).exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")).exists();
-  }
-
-  @Test
-  void prettyPrinting() throws Exception {
-    sourcesProcessor
-        .process(false, false, true, true, new File(temporaryFolder, "target"),
-                 temporaryFolder.toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile(),
-                 empty());
-
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact")).exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft", "munit"))
-        .exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")).exists();
-  }
-
-  @Test
-  void mavenReactorResolverCalled() throws Exception {
-
-    TestMavenReactorResolver reactorResolver = new TestMavenReactorResolver();
-
-    when(project.getFile())
-        .thenReturn(get(temporaryFolder.getAbsolutePath(), "pom-with-dependency-to-resolve", "pom.xml").toFile());
-
-    sourcesProcessor
-        .process(true, false, true, true, new File(temporaryFolder, "target"),
-                 temporaryFolder.toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile(),
-                 Optional.of(reactorResolver));
-
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact")).exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft", "munit"))
-        .exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")).exists();
-
-    assertThat(reactorResolver.getFindArtifactCalled()).isTrue();
-    assertThat(reactorResolver.getFindVersionsCalled()).isFalse();
-
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "repository", "commons-io", "commons-io", "0.1",
-                   "commons-io-0.1.jar")).exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "repository", "com", "example", "dependency-test-app", "1.0.0",
-                   "dependency-test-app-1.0.0-mule-plugin.jar")).exists();
-  }
-
-  @Test
-  void mavenReactorResolverCalledWithSnapshotVersion() throws Exception {
-
-    TestMavenReactorResolver reactorResolver = new TestMavenReactorResolver();
-
-    when(project.getFile())
-        .thenReturn(get(temporaryFolder.getAbsolutePath(), "pom-with-snapshot-dependency-to-resolve", "pom.xml")
-            .toFile());
-
-    sourcesProcessor
-        .process(true, false, true, true, new File(temporaryFolder, "target"),
-                 temporaryFolder.toPath().resolve("target").resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
-                     .toFile(),
-                 Optional.of(reactorResolver));
-
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact")).exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "com", "mulesoft", "munit"))
-        .exists();
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "META-INF", "mule-artifact", "classloader-model.json")).exists();
-
-    assertThat(reactorResolver.getFindArtifactCalled()).isTrue();
-    assertThat(reactorResolver.getFindVersionsCalled()).isTrue();
-
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "repository", "commons-io", "commons-io", "0.1",
-                   "commons-io-0.1.jar")).exists();
-
-    assertThat(get(temporaryFolder.getAbsolutePath(), "target", "repository", "com", "example", "dependency-test-app",
-                   "1.0.0-SNAPSHOT", "dependency-test-app-1.0.0-SNAPSHOT-mule-plugin.jar")).exists();
   }
 
   public MavenProject buildMavenProjectMock() {
@@ -300,39 +140,6 @@ class SourcesProcessorTest {
     when(mavenProjectMock.getModel()).thenReturn(mock(Model.class));
 
     return mavenProjectMock;
-  }
-
-  private static class TestMavenReactorResolver implements MavenReactorResolver {
-
-    private Boolean findArtifactCalled = false;
-    private Boolean findVersionsCalled = false;
-    private static final String ARTIFACTID = "dependency-test-app";
-
-    @Override
-    public File findArtifact(BundleDescriptor bundleDescriptor) {
-      if (bundleDescriptor.getArtifactId().equals(ARTIFACTID)) {
-        findArtifactCalled = true;
-        return get("src", "test", "resources", "test-app", "MavenReactorResolver", "pom.xml").toFile();
-      }
-      return null;
-    }
-
-    @Override
-    public List<String> findVersions(BundleDescriptor bundleDescriptor) {
-      if (bundleDescriptor.getArtifactId().equals(ARTIFACTID)) {
-        findVersionsCalled = true;
-        return ImmutableList.of("1.0.0");
-      }
-      return null;
-    }
-
-    public Boolean getFindArtifactCalled() {
-      return findArtifactCalled;
-    }
-
-    public Boolean getFindVersionsCalled() {
-      return findVersionsCalled;
-    }
   }
 
 }

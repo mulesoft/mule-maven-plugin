@@ -111,7 +111,7 @@ public class ApplicationClassLoaderModelAssembler {
     applicationClassLoaderModel.addAllMulePluginClassloaderModels(pluginsClassLoaderModels);
 
     appModel.setAdditionalPluginDependencies(toPluginDependencies(additionalPluginDependenciesResolver
-        .resolveDependencies(pomFile.getParentFile())));
+        .resolveDependencies(appDependencies, pluginsClassLoaderModels)));
 
     return applicationClassLoaderModel;
   }

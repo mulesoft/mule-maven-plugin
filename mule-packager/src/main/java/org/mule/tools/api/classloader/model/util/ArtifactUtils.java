@@ -24,7 +24,6 @@ import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
 
 import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.maven.pom.parser.api.model.BundleDescriptor;
-import org.mule.maven.pom.parser.api.model.BundleScope;
 import org.mule.tools.api.classloader.model.ApplicationGAVModel;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
@@ -131,32 +130,6 @@ public class ArtifactUtils {
         .setBaseVersion(dependency.getVersion())
         .setClassifier(dependency.getClassifier())
         .setType(dependency.getType()).build();
-  }
-
-  public static BundleDescriptor toBundleDescriptor(org.mule.runtime.module.artifact.api.descriptor.BundleDescriptor artifact) {
-    return new BundleDescriptor.Builder()
-        .setArtifactId(artifact.getArtifactId())
-        .setGroupId(artifact.getGroupId())
-        .setVersion(artifact.getVersion())
-        .setBaseVersion(artifact.getBaseVersion())
-        .setClassifier(String.valueOf(artifact.getClassifier()))
-        .setType(artifact.getType()).build();
-  }
-
-  public static BundleDependency toBundleDependency(org.mule.runtime.module.artifact.api.descriptor.BundleDependency dependency) {
-    org.mule.runtime.module.artifact.api.descriptor.BundleDescriptor artifact = dependency.getDescriptor();
-    BundleDescriptor.Builder descriptorBuilder = new BundleDescriptor.Builder();
-    BundleDescriptor descriptor = descriptorBuilder.setArtifactId(artifact.getArtifactId())
-        .setGroupId(artifact.getGroupId())
-        .setVersion(artifact.getVersion())
-        .setBaseVersion(artifact.getBaseVersion())
-        .setClassifier(String.valueOf(artifact.getClassifier()))
-        .setType(artifact.getType()).build();
-    return new BundleDependency.Builder()
-        .setBundleUri(dependency.getBundleUri())
-        .setDescriptor(descriptor)
-        .setScope(BundleScope.valueOf(dependency.getScope().name().toUpperCase()))
-        .build();
   }
 
   public static List<Artifact> toApplicationModelArtifacts(List<BundleDependency> appDependencies) {

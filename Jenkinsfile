@@ -8,7 +8,7 @@
             "mavenAdditionalArgs": "",
             "deployArtifacts": true,
             "binariesScan": true,
-            "skipTestsArgs": "-DskipIntegrationTests"
+            "skipTestsArgs": ""
     ]
 
     def CURRENT_STAGE
@@ -37,23 +37,11 @@
                     }
                 }
             }
-            stage('Binaries Scan') {
-                when {
-                  expression { pipelineParams.binariesScan }
-                }
-                steps {
-                    script {
-                        CURRENT_STAGE = env.STAGE_NAME
-                        scanSonarQube(pipelineParams.projectKey)
-                        scanNexusIQ()
-                    }
-                }
-            }
             stage('Deploy Artifacts') {
                 steps {
                     script {
                         CURRENT_STAGE = env.STAGE_NAME
-                        if (isUnix() && !isDevBranch()) {
+                        if (isUnix()) {
                             echo "Performing artifacts deployment..."
                             buildWithMaven("clean deploy -DskipTests -P '!default'")
                         } else {

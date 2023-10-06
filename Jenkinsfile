@@ -1,5 +1,5 @@
     @Library('lifecycle-utils@master') _
-    
+
     Map pipelineParams = [
             "agent": "ubuntu-14.04",
             "jdk": "JDK8",
@@ -38,7 +38,7 @@
                 }
             }
             stage('Binaries Scan') {
-                when {                    
+                when {
                   expression { pipelineParams.binariesScan }
                 }
                 steps {

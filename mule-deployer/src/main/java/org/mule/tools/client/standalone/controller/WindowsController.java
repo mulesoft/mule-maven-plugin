@@ -101,6 +101,9 @@ public class WindowsController extends AbstractOSController {
 
   @VisibleForTesting
   protected void install(String... args) {
+    if (!executeCmd("sc query \"mule_ee\" ").contains("FAILED")) {
+      executeCmd("sc delete \"mule_ee\" ");
+    }
     int errorInstall = runSync("install", args);
     if (errorInstall != 0 && errorInstall != 0x431) {
       throw new MuleControllerException("The mule instance couldn't be installed as a service");

@@ -12,17 +12,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.client.arm.ArmClient;
 import org.mule.tools.client.arm.model.Applications;
 import org.mule.tools.client.arm.model.Data;
@@ -48,9 +48,6 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
   public static final String RUNNING_STATUS = "RUNNING";
   private static StandaloneEnvironment standaloneEnvironment;
 
-  @Rule
-  public TemporaryFolder environmentWorkingDir = new TemporaryFolder();
-
   private Verifier verifier;
   private ArmClient armClient;
 
@@ -58,7 +55,10 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
     return APPLICATION;
   }
 
-  @Before
+  @TempDir
+  public Path environmentWorkingDir;
+
+  @BeforeEach
   public void before() throws VerificationException, InterruptedException, IOException, TimeoutException {
     log = LoggerFactory.getLogger(this.getClass());
     log.info("Initializing context...");
@@ -69,7 +69,7 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
         armClient.deleteServer(Integer.valueOf(t.id));
       }
     }
-    standaloneEnvironment = new StandaloneEnvironment(environmentWorkingDir.getRoot(), getMuleVersion());
+    standaloneEnvironment = new StandaloneEnvironment(environmentWorkingDir.toFile(), getMuleVersion());
 
     standaloneEnvironment.register(armClient.getRegistrationToken(), ARM_INSTANCE_NAME);
     standaloneEnvironment.start(false);
@@ -96,11 +96,11 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
     verifier.verifyErrorFreeLog();
   }
 
-  @After
-  public void after() throws IOException, InterruptedException {
+  @AfterEach
+  public void after() throws InterruptedException, TimeoutException {
     standaloneEnvironment.stop();
     verifier.resetStreams();
-    environmentWorkingDir.delete();
+    environmentWorkingDir.toFile().delete();
 
     Data application = getApplication(APPLICATION_ARTIFACT_ID, ARM_INSTANCE_NAME);
     armClient.deleteServer(Integer.valueOf(application.target.id));

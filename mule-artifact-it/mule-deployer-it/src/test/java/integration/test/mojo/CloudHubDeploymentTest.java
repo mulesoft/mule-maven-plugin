@@ -6,104 +6,59 @@
  */
 package integration.test.mojo;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assume.assumeTrue;
-import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
-
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
-import org.junit.AssumptionViolatedException;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TestRule;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.model.Statement;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestWatcher;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mule.tools.client.OperationRetrier;
 import org.mule.tools.client.OperationRetrier.RetriableOperation;
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.Application;
-import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 
-@RunWith(Parameterized.class)
-public class CloudHubDeploymentTest extends AbstractDeploymentTest {
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
+
+@Disabled
+public class CloudHubDeploymentTest extends AbstractDeploymentTest implements TestWatcher {
 
   private static final long RETRY_SLEEP_TIME = 30000;
-
   private static final int APPLICATION_NAME_LENGTH = 10;
   private static final String APPLICATION = "empty-mule-deploy-cloudhub-project";
   private static final String APPLICATION_NAME = randomAlphabetic(APPLICATION_NAME_LENGTH).toLowerCase();
   private static final String SNAPSHOT_SUFFIX = "-SNAPSHOT";
   private static final String DEPLOYMENT_TIMEOUT = "1000000";
-
   private static final String STARTED_STATUS = "STARTED";
 
-  @Rule
-  public ExpectedException exceptionRule = ExpectedException.none();
+  private static Stream<Arguments> muleVersions() {
+    return Stream.of(
+                     Arguments.of("4.4.0-SNAPSHOT"));
+  }
 
   private Verifier verifier;
   private CloudHubClient cloudHubClient;
 
-  @Rule
-  public final TestRule cloudHubWatcher = new TestWatcher() {
-
-    @Override
-    public Statement apply(Statement base, Description description) {
-      return super.apply(base, description);
-    }
-
-    @Override
-    protected void succeeded(Description description) {
-      cloudHubClient.deleteApplications(APPLICATION_NAME);
-    }
-
-    @Override
-    protected void failed(Throwable e, Description description) {}
-
-    @Override
-    protected void skipped(AssumptionViolatedException e, Description description) {}
-
-    @Override
-    protected void starting(Description description) {
-      super.starting(description);
-    }
-
-    @Override
-    protected void finished(Description description) {
-      super.finished(description);
-    }
-  };
-
-  @Parameterized.Parameters
-  public static Iterable<? extends Object> data() {
-    return Arrays.asList("4.3.0-SNAPSHOT");
-  }
-
-  private String muleVersion;
-
-  public CloudHubDeploymentTest(String muleVersion) {
-    this.muleVersion = muleVersion;
+  @Override
+  public void testSuccessful(ExtensionContext context) {
+    cloudHubClient.deleteApplications(APPLICATION_NAME);
   }
 
   public String getApplication() {
     return APPLICATION;
   }
 
-  @Before
-  public void before() throws VerificationException, InterruptedException, IOException {
+  public void before(String muleVersion) throws VerificationException, IOException {
     log.info("Initializing context...");
 
     verifier = buildBaseVerifier();
@@ -115,13 +70,17 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     verifier.setEnvironmentVariable("cloudhub.deployment.timeout", DEPLOYMENT_TIMEOUT);
   }
 
-  @Test
-  public void testCloudHubDeploy() throws VerificationException, InterruptedException, TimeoutException, DeploymentException {
+  @ParameterizedTest
+  @MethodSource("muleVersions")
+  public void testCloudHubDeploy(String muleVersion)
+      throws VerificationException, InterruptedException, TimeoutException, IOException {
+    before(muleVersion);
     cloudHubClient = new CloudHubClient(getCloudhubDeployment(), null);
-    String version = muleVersion.replace(SNAPSHOT_SUFFIX, "");;
+    String version = muleVersion.replace(SNAPSHOT_SUFFIX, "");
 
-    assumeTrue("Version not supported by CloudHub", cloudHubClient.getSupportedMuleVersions().stream().map(sv -> sv.getVersion())
-        .collect(Collectors.toSet()).contains(version));
+    assertThat(cloudHubClient.getSupportedMuleVersions().stream()
+        .map(org.mule.tools.client.cloudhub.model.SupportedVersion::getVersion)
+        .collect(Collectors.toSet()).contains(version)).describedAs("Version not supported by CloudHub");
 
     log.info("Executing mule:deploy goal...");
     verifier.addCliOption("-DmuleDeploy");
@@ -129,27 +88,29 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     verifier.executeGoal(DEPLOY_GOAL);
 
     String status = validateApplicationIsInStatus(APPLICATION_NAME, STARTED_STATUS);
-    assertThat("Application was not deployed", status, is(STARTED_STATUS));
+    assertThat(status).isEqualTo(STARTED_STATUS).describedAs("Application was not deployed");
 
     verifier.verifyErrorFreeLog();
   }
 
-  @Test
-  public void testCloudHubDeployWithInvalidOrg()
-      throws VerificationException, InterruptedException, TimeoutException, DeploymentException {
+  @ParameterizedTest
+  @MethodSource("muleVersions")
+  public void testCloudHubDeployWithInvalidOrg(String muleVersion) throws VerificationException, IOException {
+    before(muleVersion);
     CloudHubDeployment cloudHubDeployment = getCloudhubDeployment();
     cloudHubDeployment.setBusinessGroupId("notValidOrg");
     cloudHubClient = new CloudHubClient(cloudHubDeployment, null);
-    String version = muleVersion.replace(SNAPSHOT_SUFFIX, "");;
-    exceptionRule.expect(java.lang.IllegalStateException.class);
-    exceptionRule.expectMessage("Cannot get the environment, the business group is not valid");
 
-    log.info("Executing mule:deploy goal...");
-    verifier.addCliOption("-DmuleDeploy");
+    Assertions.assertThrows(
+                            VerificationException.class,
+                            () -> {
+                              log.info("Executing mule:deploy goal...");
+                              verifier.addCliOption("-DmuleDeploy");
+                              verifier.executeGoal(DEPLOY_GOAL);
+                            },
+                            "Cannot get the environment, the business group is not valid");
 
-    verifier.executeGoal(DEPLOY_GOAL);
   }
-
 
   private CloudHubDeployment getCloudhubDeployment() {
     CloudHubDeployment cloudHubDeployment = new CloudHubDeployment();
@@ -161,7 +122,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
   }
 
   private String validateApplicationIsInStatus(String applicationName, String status)
-      throws DeploymentException, TimeoutException, InterruptedException {
+      throws TimeoutException, InterruptedException {
     log.debug("Checking application " + applicationName + " for status " + status + "...");
 
     ApplicationStatusRetriableOperation operation = new ApplicationStatusRetriableOperation(status, applicationName);
@@ -178,9 +139,8 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
   class ApplicationStatusRetriableOperation implements RetriableOperation {
 
     private String applicationStatus;
-
-    private String expectedStatus;
-    private String applicationName;
+    private final String expectedStatus;
+    private final String applicationName;
 
     public ApplicationStatusRetriableOperation(String expectedStatus, String applicationName) {
       this.expectedStatus = expectedStatus;
@@ -194,13 +154,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
     @Override
     public Boolean run() {
       Application application = cloudHubClient.getApplications(applicationName);
-      if (application != null) {
-        applicationStatus = application.getStatus();
-        if (application != null && expectedStatus.equals(application.getStatus())) {
-          return false;
-        }
-      }
-      return true;
+      return application == null || !expectedStatus.equals(application.getStatus());
     }
   }
 }

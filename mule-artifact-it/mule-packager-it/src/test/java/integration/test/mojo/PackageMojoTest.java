@@ -16,8 +16,6 @@ import java.io.IOException;
 import integration.ProjectFactory;
 import org.apache.maven.it.VerificationException;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
-import org.codehaus.plexus.logging.Logger;
-import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -182,7 +180,6 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     final ZipUnArchiver zipUnArchiver = new ZipUnArchiver();
     zipUnArchiver.setSourceFile(sourceFile);
     zipUnArchiver.setDestDirectory(destinationFolder);
-    zipUnArchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_DISABLED, "someName"));
     zipUnArchiver.extract();
   }
 

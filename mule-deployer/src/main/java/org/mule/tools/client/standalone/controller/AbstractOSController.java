@@ -6,12 +6,13 @@
  */
 package org.mule.tools.client.standalone.controller;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.*;
 import java.util.regex.Pattern;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.exec.*;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 import org.slf4j.Logger;
@@ -19,6 +20,28 @@ import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public abstract class AbstractOSController {
+
+  @VisibleForTesting
+  protected static class InternalOutputStream extends OutputStream {
+
+    private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+    @Override
+    public void write(int b) throws IOException {
+      buffer.write(b);
+      System.out.write(b);
+    }
+
+    @Override
+    public void flush() throws IOException {
+      buffer.flush();
+    }
+
+    @Override
+    public String toString() {
+      return buffer.toString();
+    }
+  }
 
   private static final Logger logger = getLogger(AbstractOSController.class);
 
@@ -65,12 +88,17 @@ public abstract class AbstractOSController {
     }
   }
 
-  protected int runSync(String command, String... args) {
+  protected int runSync(String command, OutputStream outputStream, String... args) {
     Map<Object, Object> newEnv = copyEnvironmentVariables();
-    return executeSyncCommand(command, args, newEnv, timeout);
+    return executeSyncCommand(command, args, newEnv, timeout, outputStream);
   }
 
-  private int executeSyncCommand(String command, String[] args, Map<Object, Object> newEnv, int timeout)
+  protected int runSync(String command, String... args) {
+    return runSync(command, null, args);
+  }
+
+  private int executeSyncCommand(String command, String[] args, Map<Object, Object> newEnv, int timeout,
+                                 OutputStream outputStream)
       throws MuleControllerException {
     CommandLine commandLine = new CommandLine(muleBin);
     commandLine.addArgument(command);
@@ -78,7 +106,7 @@ public abstract class AbstractOSController {
     DefaultExecutor executor = new DefaultExecutor();
     ExecuteWatchdog watchdog = new ExecuteWatchdog(timeout);
     executor.setWatchdog(watchdog);
-    executor.setStreamHandler(new PumpStreamHandler());
+    executor.setStreamHandler(Optional.ofNullable(outputStream).map(PumpStreamHandler::new).orElseGet(PumpStreamHandler::new));
     return doExecution(executor, commandLine, newEnv);
   }
 

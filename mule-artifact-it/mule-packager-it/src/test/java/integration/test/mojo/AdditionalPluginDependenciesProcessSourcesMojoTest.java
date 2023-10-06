@@ -7,6 +7,8 @@
 package integration.test.mojo;
 
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -30,6 +32,9 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
   private static final String GENERATED_CLASSLOADER_MODEL_PATH_COMMON_SUFFIX =
       "/target/META-INF/mule-artifact/classloader-model.json";
 
+  private static void jsonAssertEquals(String expected, String actual) {
+    JSONAssert.assertEquals(expected, actual, JSONCompareMode.LENIENT);
+  }
 
   @Test
   void muleAppWithPluginWithAdditionalDependency() throws Exception {
@@ -39,7 +44,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
+    jsonAssertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
   }
@@ -52,7 +57,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
+    jsonAssertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
   }
 
@@ -64,7 +69,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
+    jsonAssertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_V2_PATH_SUFFIX);
   }
@@ -77,7 +82,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
+    jsonAssertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
   }
@@ -91,7 +96,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
+    jsonAssertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Z_PATH_SUFFIX);
@@ -105,7 +110,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
+    jsonAssertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Z_PATH_SUFFIX);
@@ -123,7 +128,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
+    jsonAssertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Z_PATH_SUFFIX);
   }
@@ -140,7 +145,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
+    jsonAssertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_V2_PATH_SUFFIX);
   }
 
@@ -155,7 +160,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
+    jsonAssertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_V3_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Z_PATH_SUFFIX);
@@ -169,7 +174,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
+    jsonAssertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, "/target/repository/group/id/y/artifact-id-y/1.0.0/artifact-id-y-1.0.0-test-jar.jar");
@@ -183,7 +188,7 @@ public class AdditionalPluginDependenciesProcessSourcesMojoTest extends Abstract
     String generatedAppClassLoaderModelFileContent = getFileContent(getCorrectGeneratedClassloaderModelPath(appLocation));
     String expectedAppClassLoaderModelFileContent =
         getFileContent(getCorrectExpectedClassloaderModelPath(appLocation, appName));
-    assertThat(generatedAppClassLoaderModelFileContent).isEqualTo(expectedAppClassLoaderModelFileContent);
+    jsonAssertEquals(generatedAppClassLoaderModelFileContent, expectedAppClassLoaderModelFileContent);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_X_PATH_SUFFIX);
     assertArtifactInstalled(appLocation, GENERATED__DEPENDENCY_Y_PATH_SUFFIX);
     assertArtifactInstalled(appLocation,

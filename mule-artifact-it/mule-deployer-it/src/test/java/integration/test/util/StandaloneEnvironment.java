@@ -6,7 +6,7 @@
  */
 package integration.test.util;
 
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Fail.fail;
 import static org.mule.tools.api.util.FileUtils.copyDirectoryRecursively;
 
 import java.io.File;
@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 import org.mule.tools.client.standalone.controller.MuleProcessController;
 
@@ -69,12 +70,13 @@ public class StandaloneEnvironment {
       unpackAgent();
     }
     controller.start();
-    checkIfStarted(CHECK_RUNTIME_STARTED_MAX_ATTEMPTS);
+    checkIf(CHECK_RUNTIME_STARTED_MAX_ATTEMPTS, () -> isRunning() && isDomainDeployed("default"),
+            "Waiting for Standalone to accept deployments has timeout.");
   }
 
-  public void stop() throws IOException, InterruptedException {
+  public void stop() throws InterruptedException, TimeoutException {
     controller.stop();
-    // killMuleProcesses();
+    checkIf(CHECK_RUNTIME_STARTED_MAX_ATTEMPTS, () -> !isRunning(), "Waiting for stopping has timeout.");
   }
 
   public Boolean isRunning() {
@@ -147,16 +149,16 @@ public class StandaloneEnvironment {
     log.info("Agent successfully unpacked.");
   }
 
-  private void checkIfStarted(int attempts) throws InterruptedException, TimeoutException {
+  private void checkIf(int attempts, Supplier<Boolean> supplier, String message) throws InterruptedException, TimeoutException {
     int count = 0;
     while (count <= attempts) {
-      if (controller.isRunning()) {
+      if (supplier.get()) {
         return;
       }
       Thread.sleep(1000);
       count++;
     }
-    throw new TimeoutException("Waiting for Standalone to accept deployments has timeout.");
+    throw new TimeoutException(message);
   }
 
   private void intiStandAloneEnvironment() {

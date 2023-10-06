@@ -134,7 +134,6 @@ public class ArtifactUtils {
   }
 
   public static BundleDescriptor toBundleDescriptor(org.mule.runtime.module.artifact.api.descriptor.BundleDescriptor artifact) {
-    //    BundleDescriptor.Builder descriptorBuilder = new BundleDescriptor.Builder();
     return new BundleDescriptor.Builder()
         .setArtifactId(artifact.getArtifactId())
         .setGroupId(artifact.getGroupId())
@@ -142,12 +141,6 @@ public class ArtifactUtils {
         .setBaseVersion(artifact.getBaseVersion())
         .setClassifier(String.valueOf(artifact.getClassifier()))
         .setType(artifact.getType()).build();
-    //return descriptor;
-    //    BundleDependency.Builder dependencyBuilder = new BundleDependency.Builder();
-    //    return dependencyBuilder//.setBundleUri(artifact.getFile().toURI())
-    //        .setDescriptor(descriptor)
-    //.setScope(BundleScope.valueOf(artifact.getScope().toUpperCase()))
-    //        .build();
   }
 
   public static BundleDependency toBundleDependency(org.mule.runtime.module.artifact.api.descriptor.BundleDependency dependency) {
@@ -159,13 +152,11 @@ public class ArtifactUtils {
         .setBaseVersion(artifact.getBaseVersion())
         .setClassifier(String.valueOf(artifact.getClassifier()))
         .setType(artifact.getType()).build();
-    //    BundleDependency.Builder dependencyBuilder = new BundleDependency.Builder();
     return new BundleDependency.Builder()
         .setBundleUri(dependency.getBundleUri())
         .setDescriptor(descriptor)
         .setScope(BundleScope.valueOf(dependency.getScope().name().toUpperCase()))
         .build();
-    //return bundleDependency;
   }
 
   public static List<Artifact> toApplicationModelArtifacts(List<BundleDependency> appDependencies) {

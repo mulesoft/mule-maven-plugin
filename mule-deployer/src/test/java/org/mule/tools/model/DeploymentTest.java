@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
-public class DeploymentTest {
 
+public class DeploymentTest {
 
   private static final String PACKAGE_FILE_NAME = "package.jar";
   private Deployment deploymentSpy;

@@ -99,7 +99,8 @@ public class WindowsController extends AbstractOSController {
     super.restart(args);
   }
 
-  private void install(String... args) {
+  @VisibleForTesting
+  protected void install(String... args) {
     if (!executeCmd("sc query \"mule_ee\" ").contains("FAILED")) {
       executeCmd("sc delete \"mule_ee\" ");
     }

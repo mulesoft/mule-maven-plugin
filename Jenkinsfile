@@ -1,13 +1,17 @@
-@Library('lifecycle-utils@master') _
-//Library code can be found at https://github.com/mulesoft/lifecycle-pipeline-utils
+    @Library('lifecycle-utils@master') _
 
+    Map pipelineParams = [
+            "agent": "ubuntu-14.04",
+            "jdk": "JDK8",
+            "maven": "Maven (latest)",
+            "projectKey": "mule-maven-plugin",
+            "mavenAdditionalArgs": "",
+            "deployArtifacts": true,
+            "binariesScan": true,
+            "skipTestsArgs": "-DskipIntegrationTests"
+    ]
 
-def pipelineParams = [
-  "agent": "ubuntu-14.04",
-  "jdk": "JDK8",
-  "maven": "M3"
-]
-
+    def CURRENT_STAGE
 
     pipeline {
         options {
@@ -25,25 +29,43 @@ def pipelineParams = [
         }
 
         stages {
-            stage('Prepare env') {
+            stage('Build') {
                 steps {
-                    buildWithMaven("install -DskipTests")
+                    script {
+                        CURRENT_STAGE = env.STAGE_NAME
+                        buildWithMaven("clean install ${pipelineParams.skipTestsArgs} ${pipelineParams.mavenAdditionalArgs}")
+                    }
                 }
             }
-            stage('Deployer IT') {
+            stage('Binaries Scan') {
+                when {
+                  expression { pipelineParams.binariesScan }
+                }
                 steps {
-                    script{
-                        try {
-                            withCredentials([usernamePassword(credentialsId: 'mmp-tests-credentials', passwordVariable: 'mmp_password', usernameVariable: 'mmp_user')]) {
-                                buildWithMaven("test -X -U -PdeployerIT -pl :mule-deployer-it -Dusername=$mmp_user -Dpassword=$mmp_password")
-                            }
-                        }
-                        catch (Exception e) {
-                            currentBuild.result = 'UNSTABLE'
-                            notifyBuildToSlack(env.STAGE_NAME)
+                    script {
+                        CURRENT_STAGE = env.STAGE_NAME
+                        scanSonarQube(pipelineParams.projectKey)
+                        scanNexusIQ()
+                    }
+                }
+            }
+            stage('Deploy Artifacts') {
+                steps {
+                    script {
+                        CURRENT_STAGE = env.STAGE_NAME
+                        if (isUnix() && !isDevBranch()) {
+                            echo "Performing artifacts deployment..."
+                            buildWithMaven("clean deploy -DskipTests -P '!default'")
+                        } else {
+                            echo "Artifacts deployment skipped..."
                         }
                     }
                 }
+            }
+        }
+        post {
+            failure {
+                notifyBuildToSlack(CURRENT_STAGE)
             }
         }
     }

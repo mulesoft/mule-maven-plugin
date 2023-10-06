@@ -23,6 +23,12 @@
         <dependency>
             <groupId>com.mulesoft.mule.runtime</groupId>
             <artifactId>mule-core-ee</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.mulesoft.licm</groupId>
+                    <artifactId>licm</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>

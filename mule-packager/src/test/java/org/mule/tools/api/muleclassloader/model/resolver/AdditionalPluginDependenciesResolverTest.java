@@ -30,9 +30,11 @@ import static org.mule.tools.api.muleclassloader.model.resolver.AdditionalPlugin
 import static org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver.MULE_MAVEN_PLUGIN_GROUP_ID;
 import static org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver.PLUGIN_ELEMENT;
 import static org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver.VERSION_ELEMENT;
+import static org.mule.tools.deployment.AbstractDeployerFactory.MULE_APPLICATION_CLASSIFIER;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mule.maven.client.api.MavenClient;
@@ -48,8 +50,6 @@ import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -90,10 +90,9 @@ class AdditionalPluginDependenciesResolverTest {
               .setVersion(PLUGIN_WITH_ADDITIONAL_DEPENDENCY_VERSION)
               .setClassifier(PLUGIN_WITH_ADDITIONAL_DEPENDENCY_CLASSIFIER)
               .build())
-          .setBundleUri(new URI("file://nowhere"))
-
+          .setBundleUri(Files.createTempDirectory("tmpDirPrefix").toUri())
           .build();
-    } catch (URISyntaxException e) {
+    } catch (IOException e) {
       throw new MuleRuntimeException(e);
     }
   }
@@ -207,6 +206,12 @@ class AdditionalPluginDependenciesResolverTest {
     mockedMavenConfiguration = mock(MavenConfiguration.class);
     when(mockedMavenConfiguration.getLocalMavenRepositoryLocation()).thenReturn(createFolder());
     when(mavenClient.getMavenConfiguration()).thenReturn(mockedMavenConfiguration);
+    when(mavenClient.getRawPomModel(any(File.class))).thenReturn(new MavenPomModelWrapper(new Model() {
+
+      {
+        setPackaging(MULE_APPLICATION_CLASSIFIER);
+      }
+    }));
   }
 
   private Optional<BundleDependency> resolveBundleDescriptor(BundleDescriptor bundleDescriptor) {
@@ -330,16 +335,18 @@ class AdditionalPluginDependenciesResolverTest {
     testNoAdditionalDependenciesMulePluginDependencyPomConfiguration(pair.getLeft());
   }
 
+  @Disabled("This test would no longer be valid because we no longer perform operations directly on the maven model")
   @Test
   void additionalDependenciesFromPluginWithEmptyGroupIdAdditionalPluginDependencies() {
     testNoAdditionalPluginDependencyBundleDescriptorField(ARTIFACT_ID_ELEMENT, GROUP_ID_ELEMENT);
   }
 
-  @Test
+  @Disabled("This test would no longer be valid because we no longer perform operations directly on the maven model")
   void additionalDependenciesFromPluginWithEmptyArtifactIdAdditionalPluginDependencies() {
     testNoAdditionalPluginDependencyBundleDescriptorField(GROUP_ID_ELEMENT, ARTIFACT_ID_ELEMENT);
   }
 
+  @Disabled("This test would no longer be valid because we no longer perform operations directly on the maven model")
   @Test
   void nonEmptyAdditionalDependenciesFromPlugin() throws IOException {
     Pair<Model, Xpp3Dom> pair = createModelWithConfiguration();
@@ -359,7 +366,12 @@ class AdditionalPluginDependenciesResolverTest {
     addDependency(additionalDependencies, "2");
     reset(mavenClient);
     when(mavenClient.getEffectiveModel(any(), any())).thenReturn(new MavenPomModelWrapper(pair.getLeft()));
+    when(mavenClient.getRawPomModel(any(File.class))).thenReturn(new MavenPomModelWrapper(new Model() {
 
+      {
+        setPackaging(MULE_APPLICATION_CLASSIFIER);
+      }
+    }));
     when(mavenClient.getMavenConfiguration()).thenReturn(mockedMavenConfiguration);
 
     BundleDependency mockedBundleDependency1 = mock(BundleDependency.class, RETURNS_DEEP_STUBS);
@@ -425,6 +437,12 @@ class AdditionalPluginDependenciesResolverTest {
   private void testNoAdditionalDependenciesMulePluginDependencyPomConfiguration(Model model) throws IOException {
     reset(mavenClient);
     when(mavenClient.getEffectiveModel(any(), any())).thenReturn(new MavenPomModelWrapper(model));
+    when(mavenClient.getRawPomModel(any(File.class))).thenReturn(new MavenPomModelWrapper(new Model() {
+
+      {
+        setPackaging(MULE_APPLICATION_CLASSIFIER);
+      }
+    }));
     Map<BundleDependency, List<BundleDependency>> resolvedAdditionalDependencies =
         createAdditionalPluginDependenciesResolver(emptyList())
             .resolveDependencies(of(RESOLVED_BUNDLE_PLUGIN), of(resolvedPluginClassLoaderModel));

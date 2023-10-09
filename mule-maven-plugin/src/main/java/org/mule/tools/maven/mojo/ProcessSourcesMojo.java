@@ -62,7 +62,6 @@ public class ProcessSourcesMojo extends AbstractMuleMojo {
     try {
       sourcesProcessor
           .process(prettyPrinting, lightweightPackage, useLocalRepository, testJar, outputDirectory,
-
                    getProjectInformation().getBuildDirectory().resolve(META_INF.value()).resolve(MULE_ARTIFACT.value()).toFile());
 
     } catch (Exception e) {

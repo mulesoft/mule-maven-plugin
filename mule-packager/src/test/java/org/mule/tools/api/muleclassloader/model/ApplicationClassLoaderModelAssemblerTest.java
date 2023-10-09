@@ -19,8 +19,6 @@ import org.mule.maven.client.internal.MuleMavenClient;
 import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.maven.pom.parser.internal.model.MavenPomModelWrapper;
-import org.mule.tools.api.classloader.model.*;
-import org.mule.tools.api.muleclassloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver;
 import org.mule.tools.api.muleclassloader.model.resolver.ApplicationDependencyResolver;
 import org.mule.tools.api.muleclassloader.model.resolver.MulePluginClassloaderModelResolver;
@@ -66,6 +64,7 @@ import static org.mule.tools.api.classloader.Constants.SHARED_LIBRARY_FIELD;
 import static org.mule.tools.api.muleclassloader.model.ApplicationClassLoaderModelAssembler.CLASSES;
 import static org.mule.tools.api.muleclassloader.model.util.ArtifactUtils.toArtifact;
 import static org.mule.tools.api.muleclassloader.model.util.ZipUtils.compress;
+import static org.mule.tools.deployment.AbstractDeployerFactory.MULE_APPLICATION_CLASSIFIER;
 
 class ApplicationClassLoaderModelAssemblerTest {
 
@@ -459,6 +458,7 @@ class ApplicationClassLoaderModelAssemblerTest {
 
   private MavenClient getMavenClientMock(List<BundleDependency> appDependencies,
                                          List<BundleDependency> appMulePluginDependencies) {
+
     MavenClient mavenClient = mock(MuleMavenClient.class);
     appDependencies.addAll(appMulePluginDependencies);
     when(mavenClient.resolveArtifactDependencies(any(File.class), anyBoolean(),
@@ -468,6 +468,12 @@ class ApplicationClassLoaderModelAssemblerTest {
     when(mavenClient.getEffectiveModel(any(), any()))
         .thenReturn(new MavenPomModelWrapper(new Model()));
 
+    when(mavenClient.getRawPomModel(any(File.class))).thenReturn(new MavenPomModelWrapper(new Model() {
+
+      {
+        setPackaging(MULE_APPLICATION_CLASSIFIER);
+      }
+    }));
     return mavenClient;
   }
 

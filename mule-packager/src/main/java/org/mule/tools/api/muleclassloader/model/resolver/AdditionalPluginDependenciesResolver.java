@@ -19,7 +19,15 @@ import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -54,8 +62,8 @@ public class AdditionalPluginDependenciesResolver {
   protected static final String PLUGIN_ELEMENT = "plugin";
   protected static final String DEPENDENCY_ELEMENT = "dependency";
   private final MavenClient mavenClient;
-  private final File temporaryFolder;
   private final List<AdditionalPluginDependencies> pluginsWithAdditionalDependencies;
+  private final File temporaryFolder;
 
   public AdditionalPluginDependenciesResolver(MavenClient mavenClient,
                                               List<Plugin> additionalPluginDependencies,
@@ -73,6 +81,7 @@ public class AdditionalPluginDependenciesResolver {
     for (AdditionalPluginDependencies pluginWithAdditionalDependencies : pluginsWithAdditionalDependencies) {
       BundleDependency pluginBundleDependency =
           getPluginBundleDependency(pluginWithAdditionalDependencies, applicationDependencies);
+
       List<Artifact> pluginDependencies =
           getPluginDependencies(pluginWithAdditionalDependencies, mulePluginsClassLoaderModels);
 
@@ -95,39 +104,6 @@ public class AdditionalPluginDependenciesResolver {
                                                    empty());
   }
 
-  private List<Artifact> getPluginDependencies(AdditionalPluginDependencies plugin,
-                                               Collection<ClassLoaderModel> mulePluginsClassLoaderModels) {
-    Predicate<ArtifactCoordinates> predicate = coordinates -> Stream.of(
-                                                                        Pair.of(coordinates.getGroupId(), plugin.getGroupId()),
-                                                                        Pair.of(coordinates.getArtifactId(),
-                                                                                plugin.getArtifactId()))
-        .allMatch(pair -> StringUtils.equals(pair.getLeft(), pair.getRight()));
-
-    Predicate<ClassLoaderModel> match = classLoaderModel -> Optional.ofNullable(classLoaderModel.getArtifactCoordinates())
-        .map(predicate::test)
-        .orElse(false);
-
-    return mulePluginsClassLoaderModels.stream()
-        .filter(match)
-        .findFirst()
-        .map(ClassLoaderModel::getDependencies)
-        .orElseThrow(() -> new MuleRuntimeException(createStaticMessage("Could not find ClassLoaderModel resolved for plugin: "
-            + plugin)));
-  }
-
-  private void addPluginDependenciesAdditionalLibraries(List<BundleDependency> applicationDependencies) {
-    List<BundleDependency> plugins = applicationDependencies
-        .stream()
-        .filter(bundleDependency -> bundleDependency.getDescriptor().getClassifier().map(MULE_PLUGIN::equals).orElse(false))
-        .collect(toList());
-
-    Collection<AdditionalPluginDependencies> additionalDependencies = resolveAdditionalDependenciesFromMulePlugins(plugins);
-
-    pluginsWithAdditionalDependencies.addAll(additionalDependencies.stream()
-        .filter(isNotRedefinedAtApplicationLevel())
-        .collect(toList()));
-  }
-
   private BundleDependency getPluginBundleDependency(AdditionalPluginDependencies plugin,
                                                      List<BundleDependency> mulePlugins) {
     Predicate<BundleDependency> match = dependency -> Stream.of(
@@ -147,10 +123,44 @@ public class AdditionalPluginDependenciesResolver {
             + plugin)));
   }
 
+  private List<Artifact> getPluginDependencies(AdditionalPluginDependencies plugin,
+                                               Collection<ClassLoaderModel> mulePluginsClassLoaderModels) {
+    Function<ArtifactCoordinates, Boolean> mapper = coordinates -> Stream.of(
+                                                                             Pair.of(coordinates.getGroupId(),
+                                                                                     plugin.getGroupId()),
+                                                                             Pair.of(coordinates.getArtifactId(),
+                                                                                     plugin.getArtifactId()))
+        .allMatch(pair -> StringUtils.equals(pair.getLeft(), pair.getRight()));
+
+    Predicate<ClassLoaderModel> match = classLoaderModel -> Optional.ofNullable(classLoaderModel.getArtifactCoordinates())
+        .map(mapper)
+        .orElse(false);
+
+    return mulePluginsClassLoaderModels.stream()
+        .filter(match)
+        .findFirst()
+        .map(ClassLoaderModel::getDependencies)
+        .orElseThrow(() -> new MuleRuntimeException(createStaticMessage("Could not find ClassLoaderModel resolved for plugin: "
+            + plugin)));
+  }
+
   private Predicate<Artifact> areSameArtifact(BundleDescriptor descriptor) {
     return artifact -> StringUtils.equals(descriptor.getArtifactId(), artifact.getArtifactCoordinates().getArtifactId())
         && StringUtils.equals(descriptor.getGroupId(), artifact.getArtifactCoordinates().getGroupId())
         && StringUtils.equals(descriptor.getVersion(), artifact.getArtifactCoordinates().getVersion());
+  }
+
+  private void addPluginDependenciesAdditionalLibraries(List<BundleDependency> applicationDependencies) {
+    List<BundleDependency> plugins = applicationDependencies
+        .stream()
+        .filter(bundleDependency -> bundleDependency.getDescriptor().getClassifier().map(MULE_PLUGIN::equals).orElse(false))
+        .collect(toList());
+
+    Collection<AdditionalPluginDependencies> additionalDependencies = resolveAdditionalDependenciesFromMulePlugins(plugins);
+
+    pluginsWithAdditionalDependencies.addAll(additionalDependencies.stream()
+        .filter(this::isNotRedefinedAtApplicationLevel)
+        .collect(toList()));
   }
 
   private Collection<AdditionalPluginDependencies> resolveAdditionalDependenciesFromMulePlugins(List<BundleDependency> mulePlugins) {
@@ -166,38 +176,36 @@ public class AdditionalPluginDependenciesResolver {
         .map(file -> mavenClient.getEffectiveModel(file, of(temporaryFolder)).getPomFile())
         .filter(Optional::isPresent)
         .map(Optional::get)
-        .forEach(pomFile -> {
-          discoverProvider()
-              .createMavenPomParserClient(pomFile.toPath()).getPomAdditionalPluginDependenciesForArtifacts().values()
-              .forEach(mavenPlugin -> {
-                String artifact = mavenPlugin.getGroupId() + ":" + mavenPlugin.getArtifactId();
-                AdditionalPluginDependencies alreadyDefinedDependencies = additionalDependencies.get(artifact);
-                if (Objects.nonNull(alreadyDefinedDependencies)) {
-                  List<BundleDescriptor> effectiveDependencies =
-                      new LinkedList<>(alreadyDefinedDependencies.getAdditionalDependencies());
-                  mavenPlugin.getAdditionalDependencies().forEach(additionalDependency -> {
-                    boolean addDependency = true;
-                    for (BundleDescriptor effectiveDependency : effectiveDependencies) {
-                      if (match.test(effectiveDependency, additionalDependency)) {
-                        if (isNewerVersion(additionalDependency.getVersion(), effectiveDependency.getVersion())) {
-                          effectiveDependencies.remove(effectiveDependency);
-                        } else {
-                          addDependency = false;
-                        }
-                        break;
+        .forEach(pomFile -> discoverProvider()
+            .createMavenPomParserClient(pomFile.toPath()).getPomAdditionalPluginDependenciesForArtifacts().values()
+            .forEach(mavenPlugin -> {
+              String artifact = mavenPlugin.getGroupId() + ":" + mavenPlugin.getArtifactId();
+              AdditionalPluginDependencies alreadyDefinedDependencies = additionalDependencies.get(artifact);
+              if (Objects.nonNull(alreadyDefinedDependencies)) {
+                List<BundleDescriptor> effectiveDependencies =
+                    new LinkedList<>(alreadyDefinedDependencies.getAdditionalDependencies());
+                mavenPlugin.getAdditionalDependencies().forEach(additionalDependency -> {
+                  boolean addDependency = true;
+                  for (BundleDescriptor effectiveDependency : effectiveDependencies) {
+                    if (match.test(effectiveDependency, additionalDependency)) {
+                      if (isNewerVersion(additionalDependency.getVersion(), effectiveDependency.getVersion())) {
+                        effectiveDependencies.remove(effectiveDependency);
+                      } else {
+                        addDependency = false;
                       }
+                      break;
                     }
-                    if (addDependency) {
-                      effectiveDependencies.add(additionalDependency);
-                    }
-                  });
-                  additionalDependencies
-                      .replace(artifact, new AdditionalPluginDependencies(alreadyDefinedDependencies, effectiveDependencies));
-                } else {
-                  additionalDependencies.put(mavenPlugin.getGroupId() + ":" + mavenPlugin.getArtifactId(), mavenPlugin);
-                }
-              });
-        });
+                  }
+                  if (addDependency) {
+                    effectiveDependencies.add(additionalDependency);
+                  }
+                });
+                additionalDependencies
+                    .replace(artifact, new AdditionalPluginDependencies(alreadyDefinedDependencies, effectiveDependencies));
+              } else {
+                additionalDependencies.put(mavenPlugin.getGroupId() + ":" + mavenPlugin.getArtifactId(), mavenPlugin);
+              }
+            }));
 
     return additionalDependencies.values();
   }
@@ -211,14 +219,14 @@ public class AdditionalPluginDependenciesResolver {
     }
   }
 
-  private Predicate<AdditionalPluginDependencies> isNotRedefinedAtApplicationLevel() {
+  private boolean isNotRedefinedAtApplicationLevel(AdditionalPluginDependencies additionalPluginDependencies) {
     BiPredicate<AdditionalPluginDependencies, AdditionalPluginDependencies> match = (obj00, obj01) -> Stream
         .<Function<AdditionalPluginDependencies, String>>of(AdditionalPluginDependencies::getGroupId,
                                                             AdditionalPluginDependencies::getArtifactId)
         .allMatch(getter -> StringUtils.equals(getter.apply(obj00), getter.apply(obj01)));
 
-    return dependency -> pluginsWithAdditionalDependencies.stream()
-        .noneMatch(additionalDependency -> match.test(dependency, additionalDependency));
+    return pluginsWithAdditionalDependencies.stream()
+        .noneMatch(additionalDependency -> match.test(additionalPluginDependencies, additionalDependency));
   }
 
   private AdditionalPluginDependencies toAdditionalPluginDependencies(Plugin plugin) {

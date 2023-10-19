@@ -6,7 +6,6 @@
  */
 package org.mule.tools.api.packager;
 
-import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 
 import java.io.IOException;

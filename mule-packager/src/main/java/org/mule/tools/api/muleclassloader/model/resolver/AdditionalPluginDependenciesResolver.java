@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.classloader.model.resolver;
+package org.mule.tools.api.muleclassloader.model.resolver;
 
 import com.vdurmont.semver4j.Semver;
 import org.apache.commons.lang3.ObjectUtils;
@@ -41,7 +41,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.toFile;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.tools.api.classloader.model.ArtifactCoordinates.DEFAULT_ARTIFACT_TYPE;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toBundleDescriptor;
+import static org.mule.tools.api.muleclassloader.model.util.ArtifactUtils.toBundleDescriptor;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
 
 /**

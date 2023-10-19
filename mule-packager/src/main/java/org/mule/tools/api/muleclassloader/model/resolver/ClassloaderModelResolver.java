@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.classloader.model.resolver;
+package org.mule.tools.api.muleclassloader.model.resolver;
 
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.pom.parser.api.model.BundleDependency;
@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler.CLASS_LOADER_MODEL_VERSION;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifactCoordinates;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifacts;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.updatePackagesResources;
+import static org.mule.tools.api.muleclassloader.model.ApplicationClassLoaderModelAssembler.CLASS_LOADER_MODEL_VERSION;
+import static org.mule.tools.api.muleclassloader.model.util.ArtifactUtils.toArtifactCoordinates;
+import static org.mule.tools.api.muleclassloader.model.util.ArtifactUtils.toArtifacts;
+import static org.mule.tools.api.muleclassloader.model.util.ArtifactUtils.updatePackagesResources;
 
 public abstract class ClassloaderModelResolver {
 

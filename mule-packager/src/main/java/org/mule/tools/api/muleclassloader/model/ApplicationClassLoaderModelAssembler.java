@@ -4,25 +4,26 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.classloader.model;
+package org.mule.tools.api.muleclassloader.model;
 
 import static java.nio.file.Paths.get;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static org.mule.maven.pom.parser.internal.util.MavenUtils.getPomModelFromFile;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toApplicationModelArtifacts;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.updateArtifactsSharedState;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.updatePackagesResources;
-import static org.mule.tools.api.classloader.model.util.PluginUtils.toPluginDependencies;
+import static org.mule.tools.api.muleclassloader.model.util.ArtifactUtils.toApplicationModelArtifacts;
+import static org.mule.tools.api.muleclassloader.model.util.ArtifactUtils.updateArtifactsSharedState;
+import static org.mule.tools.api.muleclassloader.model.util.ArtifactUtils.updatePackagesResources;
+import static org.mule.tools.api.muleclassloader.model.util.PluginUtils.toPluginDependencies;
 
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.MavenReactorResolver;
 import org.mule.maven.pom.parser.api.model.BundleDependency;
-import org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver;
-import org.mule.tools.api.classloader.model.resolver.ApplicationDependencyResolver;
-import org.mule.tools.api.classloader.model.resolver.ClassloaderModelResolver;
-import org.mule.tools.api.classloader.model.resolver.MulePluginClassloaderModelResolver;
-import org.mule.tools.api.classloader.model.util.ArtifactUtils;
+import org.mule.tools.api.classloader.model.*;
+import org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver;
+import org.mule.tools.api.muleclassloader.model.resolver.ApplicationDependencyResolver;
+import org.mule.tools.api.muleclassloader.model.resolver.ClassloaderModelResolver;
+import org.mule.tools.api.muleclassloader.model.resolver.MulePluginClassloaderModelResolver;
+import org.mule.tools.api.muleclassloader.model.util.ArtifactUtils;
 import org.mule.tools.api.util.JarExplorer;
 import org.mule.tools.api.util.JarInfo;
 

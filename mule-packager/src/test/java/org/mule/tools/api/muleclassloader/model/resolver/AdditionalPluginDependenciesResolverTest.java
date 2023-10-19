@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.classloader.model.resolver;
+package org.mule.tools.api.muleclassloader.model.resolver;
 
 import static com.google.common.collect.ImmutableList.of;
 import static java.util.Collections.emptyList;
@@ -19,17 +19,17 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.ADDITIONAL_DEPENDENCIES_ELEMENT;
-import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.ADDITIONAL_PLUGIN_DEPENDENCIES_ELEMENT;
-import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.ARTIFACT_ID_ELEMENT;
-import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.DEPENDENCY_ELEMENT;
-import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.GROUP_ID_ELEMENT;
-import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.MULE_EXTENSIONS_PLUGIN_ARTIFACT_ID;
-import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.MULE_EXTENSIONS_PLUGIN_GROUP_ID;
-import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.MULE_MAVEN_PLUGIN_ARTIFACT_ID;
-import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.MULE_MAVEN_PLUGIN_GROUP_ID;
-import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.PLUGIN_ELEMENT;
-import static org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver.VERSION_ELEMENT;
+import static org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver.ADDITIONAL_DEPENDENCIES_ELEMENT;
+import static org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver.ADDITIONAL_PLUGIN_DEPENDENCIES_ELEMENT;
+import static org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver.ARTIFACT_ID_ELEMENT;
+import static org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver.DEPENDENCY_ELEMENT;
+import static org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver.GROUP_ID_ELEMENT;
+import static org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver.MULE_EXTENSIONS_PLUGIN_ARTIFACT_ID;
+import static org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver.MULE_EXTENSIONS_PLUGIN_GROUP_ID;
+import static org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver.MULE_MAVEN_PLUGIN_ARTIFACT_ID;
+import static org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver.MULE_MAVEN_PLUGIN_GROUP_ID;
+import static org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver.PLUGIN_ELEMENT;
+import static org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver.VERSION_ELEMENT;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

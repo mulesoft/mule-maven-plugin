@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.classloader.model;
+package org.mule.tools.api.muleclassloader.model;
 
 import com.google.common.collect.Lists;
 import org.apache.maven.model.Build;
@@ -19,9 +19,11 @@ import org.mule.maven.client.internal.MuleMavenClient;
 import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.maven.pom.parser.internal.model.MavenPomModelWrapper;
-import org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver;
-import org.mule.tools.api.classloader.model.resolver.ApplicationDependencyResolver;
-import org.mule.tools.api.classloader.model.resolver.MulePluginClassloaderModelResolver;
+import org.mule.tools.api.classloader.model.*;
+import org.mule.tools.api.muleclassloader.model.ApplicationClassLoaderModelAssembler;
+import org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver;
+import org.mule.tools.api.muleclassloader.model.resolver.ApplicationDependencyResolver;
+import org.mule.tools.api.muleclassloader.model.resolver.MulePluginClassloaderModelResolver;
 import org.mule.tools.api.util.FileJarExplorer;
 import org.mule.tools.api.util.JarExplorer;
 import org.mule.tools.api.util.JarInfo;
@@ -61,9 +63,9 @@ import static org.mule.tools.api.classloader.Constants.MULE_MAVEN_PLUGIN_ARTIFAC
 import static org.mule.tools.api.classloader.Constants.MULE_MAVEN_PLUGIN_GROUP_ID;
 import static org.mule.tools.api.classloader.Constants.SHARED_LIBRARIES_FIELD;
 import static org.mule.tools.api.classloader.Constants.SHARED_LIBRARY_FIELD;
-import static org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler.CLASSES;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
-import static org.mule.tools.api.classloader.model.util.ZipUtils.compress;
+import static org.mule.tools.api.muleclassloader.model.ApplicationClassLoaderModelAssembler.CLASSES;
+import static org.mule.tools.api.muleclassloader.model.util.ArtifactUtils.toArtifact;
+import static org.mule.tools.api.muleclassloader.model.util.ZipUtils.compress;
 
 class ApplicationClassLoaderModelAssemblerTest {
 

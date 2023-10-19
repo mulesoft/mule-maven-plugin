@@ -18,7 +18,7 @@ import org.mule.tools.api.verifier.ProjectVerifyFactory;
 import org.mule.tools.api.repository.MuleMavenPluginClientBuilder;
 import org.mule.tools.api.validation.project.AbstractProjectValidator;
 import org.mule.tools.api.validation.project.ProjectValidatorFactory;
-import org.mule.tools.api.classloader.model.resolver.Plugin;
+import org.mule.tools.api.muleclassloader.model.resolver.Plugin;
 import org.mule.tools.api.util.ArtifactUtils;
 import org.mule.tools.api.util.MavenPackagerLog;
 import org.mule.tools.api.util.MavenProjectInformation;

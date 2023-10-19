@@ -10,14 +10,14 @@ import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.maven.pom.parser.api.model.BundleDescriptor;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.classloader.model.util.ArtifactUtils;
+import org.mule.tools.api.muleclassloader.model.util.ArtifactUtils;
 import org.mule.tools.api.packager.resources.content.DomainBundleProjectResourcesContent;
 import org.mule.tools.api.packager.resources.content.ResourcesContent;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toArtifact;
+import static org.mule.tools.api.muleclassloader.model.util.ArtifactUtils.toArtifact;
 
 /**
  * Generates the resources of a mule domain bundle, resolving the applications and domain locations.

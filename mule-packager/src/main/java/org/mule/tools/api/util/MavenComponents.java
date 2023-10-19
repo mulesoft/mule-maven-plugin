@@ -8,7 +8,7 @@ package org.mule.tools.api.util;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
-import org.mule.tools.api.classloader.model.resolver.Plugin;
+import org.mule.tools.api.muleclassloader.model.resolver.Plugin;
 
 import java.io.File;
 import java.util.List;

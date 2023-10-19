@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.classloader.model.util;
+package org.mule.tools.api.muleclassloader.model.util;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
@@ -17,9 +17,9 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedFileName;
-import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedOutputDirectory;
-import static org.mule.tools.api.classloader.model.util.DefaultMavenRepositoryLayoutUtils.getNormalizedVersion;
+import static org.mule.tools.api.muleclassloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedFileName;
+import static org.mule.tools.api.muleclassloader.model.util.DefaultMavenRepositoryLayoutUtils.getFormattedOutputDirectory;
+import static org.mule.tools.api.muleclassloader.model.util.DefaultMavenRepositoryLayoutUtils.getNormalizedVersion;
 
 class DefaultMavenRepositoryLayoutTest {
 

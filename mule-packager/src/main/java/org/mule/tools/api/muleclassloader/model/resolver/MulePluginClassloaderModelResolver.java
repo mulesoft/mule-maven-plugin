@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.classloader.model.resolver;
+package org.mule.tools.api.muleclassloader.model.resolver;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.mule.maven.client.internal.MuleMavenClient.MULE_PLUGIN_CLASSIFIER;

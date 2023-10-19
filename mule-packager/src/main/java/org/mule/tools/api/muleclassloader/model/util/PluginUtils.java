@@ -4,11 +4,11 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.classloader.model.util;
+package org.mule.tools.api.muleclassloader.model.util;
 
 import static java.util.stream.Collectors.toList;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.toApplicationModelArtifacts;
-import static org.mule.tools.api.classloader.model.util.ArtifactUtils.updatePackagesResources;
+import static org.mule.tools.api.muleclassloader.model.util.ArtifactUtils.toApplicationModelArtifacts;
+import static org.mule.tools.api.muleclassloader.model.util.ArtifactUtils.updatePackagesResources;
 
 import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.tools.api.classloader.model.Plugin;

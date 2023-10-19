@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.classloader.model.util;
+package org.mule.tools.api.muleclassloader.model.util;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;

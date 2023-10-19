@@ -10,21 +10,20 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
 
-import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.MavenReactorResolver;
 
 import org.mule.maven.client.internal.MuleMavenClient;
 import org.mule.maven.pom.parser.api.model.BundleDependency;
-import org.mule.tools.api.classloader.model.ApplicationClassLoaderModelAssembler;
+import org.mule.tools.api.muleclassloader.model.ApplicationClassLoaderModelAssembler;
 import org.mule.tools.api.classloader.model.ApplicationGAVModel;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
 import org.mule.tools.api.classloader.model.NotParameterizedClassLoaderModel;
 import org.mule.tools.api.classloader.model.SharedLibraryDependency;
-import org.mule.tools.api.classloader.model.resolver.AdditionalPluginDependenciesResolver;
-import org.mule.tools.api.classloader.model.resolver.ApplicationDependencyResolver;
-import org.mule.tools.api.classloader.model.resolver.MulePluginClassloaderModelResolver;
+import org.mule.tools.api.muleclassloader.model.resolver.AdditionalPluginDependenciesResolver;
+import org.mule.tools.api.muleclassloader.model.resolver.ApplicationDependencyResolver;
+import org.mule.tools.api.muleclassloader.model.resolver.MulePluginClassloaderModelResolver;
 import org.mule.tools.api.packager.ProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.packager.sources.ContentGenerator;

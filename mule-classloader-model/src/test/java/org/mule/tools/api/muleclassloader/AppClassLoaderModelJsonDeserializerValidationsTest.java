@@ -16,7 +16,7 @@ class AppClassLoaderModelJsonDeserializerValidationsTest extends ClassLoaderMode
 
   @Override
   protected ClassLoaderModel deserializeClassLoaderModel(File classloaderModelJsonFile) {
-    return deserialize(classloaderModelJsonFile);
+    return AppClassLoaderModelJsonSerializer.deserialize(classloaderModelJsonFile);
   }
 
 }

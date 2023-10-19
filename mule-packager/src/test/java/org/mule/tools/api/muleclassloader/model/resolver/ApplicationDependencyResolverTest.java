@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tools.api.classloader.model.resolver;
+package org.mule.tools.api.muleclassloader.model.resolver;
 
 import static java.util.Collections.emptyList;
 
@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.tools.api.classloader.model.resolver.ApplicationDependencyResolver.MULE_DOMAIN_CLASSIFIER;
+import static org.mule.tools.api.muleclassloader.model.resolver.ApplicationDependencyResolver.MULE_DOMAIN_CLASSIFIER;
 
 import com.google.common.collect.ImmutableList;
 

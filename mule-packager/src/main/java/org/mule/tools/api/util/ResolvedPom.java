@@ -11,7 +11,6 @@ import static java.util.stream.Collectors.toList;
 
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.packager.Pom;
-import org.mule.tools.api.util.ArtifactUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;

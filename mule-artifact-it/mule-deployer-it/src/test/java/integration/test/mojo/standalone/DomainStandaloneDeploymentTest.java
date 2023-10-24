@@ -7,7 +7,6 @@
 package integration.test.mojo.standalone;
 
 import org.apache.maven.it.VerificationException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -17,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-@Disabled
 public class DomainStandaloneDeploymentTest extends StandaloneDeploymentTest {
 
   private static final String DOMAIN = "empty-mule-deploy-standalone-domain-project";

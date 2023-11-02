@@ -38,7 +38,9 @@ public class DeployMojo extends AbstractMuleDeployerMojo {
   @Override
   public void doExecute() throws MojoFailureException, MojoExecutionException {
     try {
-      createDeploymentValidator(deploymentConfiguration).validateMuleVersionAgainstEnvironment();
+      if (deploymentConfiguration.validateVersion()) {
+        createDeploymentValidator(deploymentConfiguration).validateMuleVersionAgainstEnvironment();
+      }
       Deployer deployer = new DefaultDeployer(deploymentConfiguration, log);
       deployer.deploy();
     } catch (DeploymentException e) {

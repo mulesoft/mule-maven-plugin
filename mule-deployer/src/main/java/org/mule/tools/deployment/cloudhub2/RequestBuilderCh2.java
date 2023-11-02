@@ -19,11 +19,11 @@ import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestBuilder {
 
   public static final String ID = "id";
-  private static final String TAG_EXCEPTION = "Could not resolve tag for this mule version";
   public static final String RESOURCES_EXCEPTION = "instanceType and vCores can't be used in the same deployment";
 
   protected RequestBuilderCh2(Cloudhub2Deployment deployment, RuntimeFabricClient client) {
@@ -65,13 +65,10 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
       throws DeploymentException {
     RuntimeFabricDeploymentSettings resolvedDeploymentSettings =
         new Cloudhub2DeploymentSettings((Cloudhub2DeploymentSettings) settings);
-    String targetId = super.resolveTargetId();
+    String targetId = resolveTargetId();
     String muleVersion = deployment.getMuleVersion().get();
-    String tag = resolveTag(targetId, muleVersion);
-    if (tag == null) {
-      throw new DeploymentException(TAG_EXCEPTION);
-    }
-    resolvedDeploymentSettings.setRuntimeVersion(muleVersion + ":" + tag);
+    String tag = Optional.ofNullable(resolveTag(targetId, muleVersion)).orElseThrow(() -> new DeploymentException(TAG_EXCEPTION));
+    resolvedDeploymentSettings.setRuntimeVersion(getFullVersion(muleVersion, tag));
     String url = resolveUrl(settings, targetId);
 
     resolvedDeploymentSettings.getHttp().getInbound().setPublicUrl(url);

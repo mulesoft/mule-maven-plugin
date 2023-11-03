@@ -20,19 +20,14 @@ import org.mule.tools.client.fabric.model.DeploymentModify;
 import org.mule.tools.client.fabric.model.DeploymentRequest;
 import org.mule.tools.client.fabric.model.Deployments;
 import org.mule.tools.client.fabric.model.Target;
-import org.mule.tools.model.VersionChannel;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
 import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
 import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeploymentSettings;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 public class RequestBuilder {
-
-  protected static final String TAG_EXCEPTION = "Could not resolve tag for this mule version";
 
   public static final String ID = "id";
   protected RuntimeFabricDeployment deployment;
@@ -87,8 +82,12 @@ public class RequestBuilder {
         new RuntimeFabricOnPremiseDeploymentSettings((RuntimeFabricOnPremiseDeploymentSettings) settings);
     String targetId = resolveTargetId();
     String muleVersion = deployment.getMuleVersion().get();
-    String tag = Optional.ofNullable(resolveTag(targetId, muleVersion)).orElseThrow(() -> new DeploymentException(TAG_EXCEPTION));
-    resolvedDeploymentSettings.setRuntimeVersion(getFullVersion(muleVersion, tag));
+    String tag = resolveTag(targetId, muleVersion);
+    if (tag != null) {
+      resolvedDeploymentSettings.setRuntimeVersion(muleVersion + ":" + tag);
+    } else {
+      throw new DeploymentException("Could not resolve tag for this mule version");
+    }
     String url = resolveUrl(settings, targetId);
 
     resolvedDeploymentSettings.getHttp().getInbound().setPublicUrl(url);
@@ -115,20 +114,6 @@ public class RequestBuilder {
     return null;
   }
 
-  protected String getFullVersion(String muleVersion, String tag) {
-    if (Objects.isNull(tag) || Objects.isNull(muleVersion)) {
-      return muleVersion;
-    }
-
-    String suffix = ":" + tag;
-
-    if (muleVersion.endsWith(suffix)) {
-      return muleVersion;
-    }
-
-    return muleVersion + suffix;
-  }
-
   private String getTag(JsonArray runtimes, String muleVersion) {
     for (int i = 0; i < runtimes.size(); i++) {
       JsonObject runtime = runtimes.get(i).getAsJsonObject();
@@ -137,17 +122,8 @@ public class RequestBuilder {
         for (int j = 0; j < versions.size(); j++) {
           JsonObject version = versions.get(j).getAsJsonObject();
           if (version.has("baseVersion") && version.has("tag")) {
-            VersionChannel channel = Optional.ofNullable(version.get("channel")).map(JsonElement::getAsString)
-                .map(VersionChannel::fromString).orElse(VersionChannel.LEGACY);
-            String baseVersion = version.get("baseVersion").getAsString();
-            String tag = version.get("tag").getAsString();
-            if (StringUtils.equals(baseVersion, muleVersion)) {
-              return tag;
-            }
-            if (VersionChannel.EDGE == channel) {
-              if (StringUtils.equals(baseVersion + ":" + tag, muleVersion)) {
-                return tag;
-              }
+            if (StringUtils.equals(version.get("baseVersion").getAsString(), muleVersion)) {
+              return version.get("tag").getAsString();
             }
           }
         }

@@ -28,7 +28,9 @@ import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
 import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeploymentSettings;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class RequestBuilder {
 
@@ -142,6 +144,7 @@ public class RequestBuilder {
   }
 
   public static String getTargetId(JsonArray targets, String targetName) throws DeploymentException {
+	Set<String> currentTargetNames = new HashSet<>();
     for (JsonElement targetElement : targets) {
       JsonObject target = targetElement.getAsJsonObject();
       if (target != null) {
@@ -150,11 +153,13 @@ public class RequestBuilder {
           String currentTargetName = nameElement.getAsString();
           if (StringUtils.equals(targetName, currentTargetName)) {
             return target.get(ID).getAsString();
+          } else {
+        	currentTargetNames.add(currentTargetName);
           }
         }
       }
     }
-    throw new DeploymentException("Could not find target " + targetName);
+    throw new DeploymentException("Could not find target " + targetName + " in " + currentTargetNames);
   }
 
   protected ApplicationRequest buildApplicationRequest() {

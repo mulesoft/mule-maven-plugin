@@ -55,7 +55,11 @@ public abstract class Deployment {
   }
 
   public void setArtifact(File artifact) {
+	if (artifact == null) {
+		this.artifact = null;
+	} else {
     this.artifact = artifact.getPath();
+  }
   }
 
   public void setArtifact(String artifactPath) {

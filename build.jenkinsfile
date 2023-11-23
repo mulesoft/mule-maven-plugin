@@ -4,6 +4,8 @@
 properties([
     parameters([
         string(name: 'JDK', defaultValue: "JDK8", description: 'JDK Version to be used'),
+        string(name: 'releaseCandidate', defaultValue: "3.1.0-rc0", description: 'Used when deployReleaseCandidate is set to true'),
+        booleanParam(name: 'deployRelesaseCandidate', defaultValue: false, description: ""),
         string(name: 'maven', defaultValue: "Maven (latest)", description: 'Maven version to be used')
     ]),
 ])
@@ -12,8 +14,10 @@ def pipelineParams = [
   "agent": "ubuntu-14.04",
   "jdk": params.JDK,
   "maven": params.maven,
+  "releaseCandidate": params.releaseCandidate,
+  "deployReleaseCandidate": params.deployReleaseCandidate,
   "projectKey": "mule-maven-plugin",
   "protectedBranches" : ["support/3.x", "support/3.4.x", "support/3.3.x", "support/2.x", "support/3.8.x"]
 ]
 
-build(pipelineParams)
+buildMMP(pipelineParams)

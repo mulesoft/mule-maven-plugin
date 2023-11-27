@@ -17,6 +17,7 @@ import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.classloader.model.ClassLoaderModel;
+import org.mule.tools.api.muleclassloader.model.util.ArtifactUtils;
 
 import java.io.File;
 import java.util.ArrayList;

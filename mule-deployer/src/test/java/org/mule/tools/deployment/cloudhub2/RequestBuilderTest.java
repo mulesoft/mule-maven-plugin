@@ -70,7 +70,7 @@ public class RequestBuilderTest {
     runtimeFabricClientMock = mock(RuntimeFabricClient.class);
     cloudhub2Deployment = new Cloudhub2Deployment();
     cloudhub2Deployment.setArtifact((String) null);
-    cloudhub2Deployment.setMuleVersion("4.2.0");
+    cloudhub2Deployment.setMuleVersion("4.2.0:v1.2.28");
     cloudhub2Deployment.setApplicationName("test-app");
     cloudhub2Deployment.setTarget("fabric1");
     cloudhub2Deployment.setProvider("MC");

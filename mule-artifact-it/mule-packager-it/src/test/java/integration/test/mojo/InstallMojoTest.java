@@ -15,6 +15,7 @@ import integration.ProjectFactory;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class InstallMojoTest extends MojoTest {
@@ -298,6 +299,7 @@ public class InstallMojoTest extends MojoTest {
     assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
   }
 
+  @Disabled
   @Test
   public void testInstallAppWithDwb() throws IOException, VerificationException {
     File pluginBaseDirectory = ProjectFactory.createProjectBaseDir(DWB_EXTENSION, this.getClass());

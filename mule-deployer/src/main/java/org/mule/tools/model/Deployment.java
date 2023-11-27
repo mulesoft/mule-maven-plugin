@@ -196,4 +196,8 @@ public abstract class Deployment {
   public String getVersion() {
     return version;
   }
+
+  public boolean validateVersion() {
+    return true;
+  }
 }

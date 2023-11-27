@@ -17,7 +17,6 @@ import integration.ProjectFactory;
 import org.apache.maven.it.VerificationException;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
@@ -99,7 +98,6 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     verifier.verifyErrorFreeLog();
   }
 
-  @Disabled
   @Test
   public void testPackageMultiModuleAppModuleCorrectStructure() throws IOException, VerificationException {
     testPackageAppConfigFiles();
@@ -120,7 +118,6 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     verifier.verifyErrorFreeLog();
   }
 
-  @Disabled
   @Test
   public void testPackageMultiModulePolicyModuleCorrectStructure() throws IOException, VerificationException {
     testPackageAppConfigFiles();

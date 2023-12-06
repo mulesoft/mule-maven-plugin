@@ -20,13 +20,13 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-dwb-api</artifactId>
-            <version>2.5.1-SNAPSHOT</version>
+            <version>2.6.0-rc1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.mulesoft.services</groupId>
             <artifactId>mule-service-weave-ee</artifactId>
-            <version>2.5.1-SNAPSHOT</version>
+            <version>2.6.0-rc1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

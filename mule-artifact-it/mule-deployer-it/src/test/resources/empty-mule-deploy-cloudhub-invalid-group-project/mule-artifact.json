@@ -1,8 +1,6 @@
 {
-  "name": "dwb-app",
-  "minMuleVersion": "4.6.0",
-  "requiredProduct": "MULE_EE",
-  "redeploymentEnabled": "true",
+  "name": "new-package",
+  "minMuleVersion": "4.3.0-SNAPSHOT",
   "classLoaderModelLoaderDescriptor": {
     "id": "mule",
     "attributes": {
@@ -10,9 +8,12 @@
       "exportedResources": []
     }
   },
+  "requiredProduct": "MULE",
   "bundleDescriptorLoader": {
     "id": "mule",
-    "attributes": {
-    }
-  }
+    "attributes": {}
+  },
+  "configs": [
+    "mule-config.xml"
+  ]
 }

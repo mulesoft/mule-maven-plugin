@@ -46,10 +46,10 @@
         <java.target>1.8</java.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <dw.version>2.5.0</dw.version>
-        <mule.version>4.5.0</mule.version>
-        <mule.api.version>1.5.0</mule.api.version>
-        <mule.maven.client.impl.version>2.0.0</mule.maven.client.impl.version>
-        <mule.distribution.standalone.version>4.6.0-rc1</mule.distribution.standalone.version>
+        <mule.version>4.6.0-rc2</mule.version>
+        <mule.api.version>1.6.0-rc2</mule.api.version>
+        <mule.maven.client.impl.version>2.1.0-rc2</mule.maven.client.impl.version>
+        <mule.distribution.standalone.version>4.6.0-rc2</mule.distribution.standalone.version>
         <mule.mvel2.version>2.1.9-MULE-020</mule.mvel2.version>
         <gson.version>2.8.6</gson.version>
         <guava.version>32.1.2-jre</guava.version>
@@ -103,7 +103,7 @@
         <maven.plugin.annotations.version>3.8.1</maven.plugin.annotations.version>
         <exchange.plugin.version>0.0.23</exchange.plugin.version>
 
-        <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
+        <maven.surefire.plugin.version>3.0.0</maven.surefire.plugin.version>
         <maven.resources.plugin.version>2.7</maven.resources.plugin.version>
 
         <suite>standalone</suite>

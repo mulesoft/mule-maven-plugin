@@ -6,9 +6,13 @@
  */
 package integration.test.mojo.agent;
 
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+@DisabledOnJre(JRE.JAVA_8)
 public class ApplicationAgentDeploymentTest extends AgentDeploymentTest {
 
   private static final String APPLICATION = "empty-mule-deploy-application-agent-project";

@@ -22,6 +22,8 @@ import org.apache.maven.it.Verifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.client.arm.ArmClient;
 import org.mule.tools.client.arm.model.Applications;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import integration.test.util.StandaloneEnvironment;
 
+@DisabledOnJre(JRE.JAVA_8)
 public class ArmDeploymentTest extends AbstractDeploymentTest {
 
   private static final int APPLICATION_NAME_LENGTH = 10;

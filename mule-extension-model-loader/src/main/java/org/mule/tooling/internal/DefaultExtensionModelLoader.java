@@ -50,7 +50,7 @@ public class DefaultExtensionModelLoader implements ExtensionModelLoader {
 
     List<ModuleDiscoverer> result = new ArrayList<>();
     result.add(new JreModuleDiscoverer());
-    result.add(new ClasspathModuleDiscoverer(parentClassloader, workingDir.toFile()));
+    result.add(new ClasspathModuleDiscoverer(workingDir.toFile()));
     final ModuleRepository moduleRepository =
         new DefaultModuleRepository(new CompositeModuleDiscoverer(result.toArray(new ModuleDiscoverer[0])));
 

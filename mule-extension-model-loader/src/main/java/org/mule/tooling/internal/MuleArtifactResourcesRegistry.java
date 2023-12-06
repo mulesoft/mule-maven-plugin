@@ -62,6 +62,7 @@ public class MuleArtifactResourcesRegistry {
   }
 
   private void init() {
+    System.setProperty("mule.classloader.container.jpmsModuleLayer", "false");
     this.descriptorLoaderRepository = new ToolingDescriptorLoaderRepository(this.mavenClient);
     ArtifactDescriptorValidatorBuilder artifactDescriptorValidatorBuilder =
         ArtifactDescriptorValidatorBuilder.builder().validateMinMuleVersion().validateMinMuleVersion(() -> {

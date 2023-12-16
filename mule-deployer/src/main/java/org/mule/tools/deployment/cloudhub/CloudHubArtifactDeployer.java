@@ -9,9 +9,7 @@ package org.mule.tools.deployment.cloudhub;
 import org.mule.tools.client.arm.model.User;
 import org.mule.tools.client.cloudhub.CloudHubClient;
 import org.mule.tools.client.cloudhub.model.Application;
-import org.mule.tools.client.cloudhub.model.Environment;
 import org.mule.tools.client.cloudhub.model.MuleVersion;
-import org.mule.tools.client.cloudhub.model.SupportedVersion;
 import org.mule.tools.client.cloudhub.model.WorkerType;
 import org.mule.tools.client.cloudhub.model.Workers;
 import org.mule.tools.client.core.exception.DeploymentException;
@@ -233,7 +231,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
     application.setObjectStoreV1(!deployment.getObjectStoreV2());
     application.setPersistentQueues(deployment.getPersistentQueues());
-    application.setLoggingCustomLog4JEnabled(isLoggingCustomLog4JEnabled);
+    application.setLoggingCustomLog4JEnabled(Optional.ofNullable(isLoggingCustomLog4JEnabled).orElse(Boolean.FALSE));
 
     return application;
   }

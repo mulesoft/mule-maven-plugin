@@ -19,10 +19,12 @@ import org.mule.tooling.api.DynamicStructureException;
 import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.sources.MuleArtifactContentResolver;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
+import org.mule.tools.api.packager.structure.FolderNames;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
@@ -111,8 +113,11 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
 
   public ArtifactAst getArtifactAst()
       throws IOException, ConfigurationException, DynamicStructureException, MojoExecutionException {
+    Path mainPath = project.getBasedir().toPath().resolve(FolderNames.SRC.value()).resolve(FolderNames.MAIN.value());
     descriptor.getClassRealm()
-        .addURL(project.getBasedir().toPath().resolve("src").resolve("main").resolve("resources").toUri().toURL());
+        .addURL(mainPath.resolve(FolderNames.MULE.value()).toUri().toURL());
+    descriptor.getClassRealm()
+        .addURL(mainPath.resolve(FolderNames.RESOURCES.value()).toUri().toURL());
     MuleVersion appMinRuntimeVersion = new MuleVersion(this.getMuleApplicationModelLoader().getRuntimeVersion());
     MuleVersion runtimeVersion =
         appMinRuntimeVersion.newerThan(MIN_RUNTIME_AST_VERSION) ? appMinRuntimeVersion : MIN_RUNTIME_AST_VERSION;
@@ -127,9 +132,8 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
     ProjectStructure projectStructure = new ProjectStructure(projectBaseFolder.toPath(), false);
 
     ArtifactAst artifactAST = astGenerator.generateAST(contentResolver.getConfigs(), projectStructure.getConfigsPath());
-    String skipASTValidation = System.getProperty(SKIP_AST_VALIDATION);
     if (artifactAST != null && !this.getClassifier().equalsIgnoreCase(MULE_PLUGIN.toString())
-        && (skipASTValidation == null || skipASTValidation.equals("false"))) {
+        && !"true".equals(System.getProperty(SKIP_AST_VALIDATION))) {
       AstValidatonResult validationResult = astGenerator.validateAST(artifactAST);
       for (ValidationResultItem warning : validationResult.getWarnings()) {
         getLog().warn(warning.getMessage());

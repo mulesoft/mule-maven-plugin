@@ -12,6 +12,7 @@ import static org.mule.tools.api.packager.sources.DefaultValuesMuleArtifactJsonG
 import static org.mule.tools.api.packager.sources.DefaultValuesMuleArtifactJsonGenerator.EXPORTED_RESOURCES;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 import static org.mule.tools.api.packager.structure.FolderNames.MULE_ARTIFACT;
+import static org.mule.tools.api.packager.structure.FolderNames.TARGET;
 import static org.mule.tools.api.packager.structure.PackagerFiles.ARTIFACT_AST;
 import static org.mule.tools.api.packager.structure.PackagerFiles.MULE_ARTIFACT_JSON;
 
@@ -139,5 +140,60 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
     final String serializedAst = new String(readAllBytes(artifactAstTargetFile.toPath()));
     assertThat(serializedAst, containsString("config.property"));
     assertThat(serializedAst, containsString("errorType.property"));
+  }
+
+  @Test
+  public void testAstValidationWithImportTag() throws Exception {
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir("mule-application-with-import-file", this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+
+    verifier.executeGoal(GOAL);
+
+    File artifactAstTargetFile =
+        projectBaseDirectory.toPath().resolve(TARGET.value()).resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
+            .resolve(ARTIFACT_AST).toFile();
+    assertThat(artifactAstTargetFile.exists(), is(true));
+
+    final String serializedAst = new String(readAllBytes(artifactAstTargetFile.toPath()));
+
+    assertThat(serializedAst, containsString("\"resourceLocation\":\"configurations/local-config.xml\","));
+    assertThat(serializedAst, containsString("\"resourceLocation\":\"connectors/global-connectors.xml\","));
+  }
+
+  @Test
+  public void testAstValidationWithImportTagInvalidPath() throws Exception {
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir("mule-application-with-import-file-invalid-path", this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+
+    assertThatThrownBy(() -> verifier.executeGoal(GOAL)).isExactlyInstanceOf(VerificationException.class)
+        .hasMessageContaining("Caused by: org.mule.tooling.api.ConfigurationException: Could not find imported resource 'configurations/local-config.xml'");
+  }
+
+  @Test
+  public void testAstValidationWithImportTagInvalidPathSkipAST() throws Exception {
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir("mule-application-with-import-file-invalid-path", this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.addCliOption("-DskipAST");
+    verifier.executeGoal(GOAL);
+
+    File artifactAstTargetFile =
+        projectBaseDirectory.toPath().resolve(TARGET.value()).resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
+            .resolve(ARTIFACT_AST).toFile();
+
+    assertThat(artifactAstTargetFile.exists(), is(false));
+  }
+
+  @Test
+  public void testAstValidationWithImportTagInvalidPathSkipASTValidation() throws Exception {
+    projectBaseDirectory = ProjectFactory.createProjectBaseDir("mule-application-with-import-file-invalid-path", this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.addCliOption("-DskipASTValidation");
+    verifier.executeGoal(GOAL);
+
+    File artifactAstTargetFile =
+        projectBaseDirectory.toPath().resolve(TARGET.value()).resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
+            .resolve(ARTIFACT_AST).toFile();
+
+    assertThat(artifactAstTargetFile.exists(), is(true));
   }
 }

@@ -9,6 +9,9 @@ package org.mule.tools.deployment.cloudhub;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mule.tools.client.arm.model.User;
 import org.mule.tools.client.arm.model.UserInfo;
@@ -30,10 +33,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -410,6 +415,47 @@ public class CloudHubArtifactDeployerTest {
     ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
     verify(clientMock).createApplication(applicationCaptor.capture(), any());
     assertThat(applicationCaptor.getValue().getObjectStoreV1()).describedAs("ObjectStoreV1 must be true").isFalse();
+  }
+
+  private static Stream<Arguments> argumentsForDisableCloudHubLogs() {
+    return Stream.of(
+                     Arguments.of(null, null, false),
+                     Arguments.of(false, null, false),
+                     Arguments.of(true, null, true),
+                     Arguments.of(null, false, false),
+                     Arguments.of(false, false, false),
+                     Arguments.of(true, false, true),
+                     Arguments.of(null, true, true),
+                     Arguments.of(false, true, false),
+                     Arguments.of(true, true, true));
+  }
+
+  @ParameterizedTest
+  @MethodSource("argumentsForDisableCloudHubLogs")
+  public void testDisableCloudHubLogs(Boolean configured, Boolean current, Boolean expected) throws DeploymentException {
+    CloudHubDeployment deployment = new CloudHubDeployment();
+    deployment.setSkipDeploymentVerification(true);
+    deployment.setApplicationName(FAKE_APPLICATION_NAME);
+    deployment.setMuleVersion("4.0.0");
+    deployment.setArtifact(applicationFile);
+    deployment.setWorkers(1);
+    deployment.setWorkerType("Micro");
+    deployment.setDisableCloudHubLogs(configured);
+
+    Application application = new Application();
+    application.setLoggingCustomLog4JEnabled(current);
+
+    cloudHubArtifactDeployer = new CloudHubArtifactDeployer(deployment, clientMock, logMock);
+
+    when(clientMock.getApplications(anyString())).thenReturn(application);
+
+    cloudHubArtifactDeployer.deployApplication();
+
+    ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
+    verify(clientMock).updateApplication(applicationCaptor.capture(), any());
+
+    assertThat(applicationCaptor.getValue().getLoggingCustomLog4JEnabled()).describedAs("DisableCloudHubLogs must be " + expected)
+        .isEqualTo(expected);
   }
 
   private List<SupportedVersion> getObjectStoreV1Enabled(boolean enabled, String muleVersion) {

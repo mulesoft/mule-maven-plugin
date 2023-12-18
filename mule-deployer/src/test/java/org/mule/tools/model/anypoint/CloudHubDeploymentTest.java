@@ -56,8 +56,8 @@ public class CloudHubDeploymentTest {
 
   @Test
   public void defaultDisableCloudHubLogsValueIsFalse() {
-    assertThat(deploymentSpy.getDisableCloudHubLogs()).describedAs("The default value for Custom Log4J property is not false")
-        .isFalse();
+    assertThat(deploymentSpy.getDisableCloudHubLogs()).describedAs("Custom Log4J property is not null")
+        .isNull();
   }
 
   @Test

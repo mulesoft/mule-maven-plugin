@@ -34,7 +34,7 @@ public class CloudHubDeployment extends AnypointDeployment {
   protected Boolean persistentQueues = false;
 
   @Parameter
-  protected Boolean disableCloudHubLogs = false;
+  protected Boolean disableCloudHubLogs = null;
 
   @Parameter
   protected Integer waitBeforeValidation = 6000;

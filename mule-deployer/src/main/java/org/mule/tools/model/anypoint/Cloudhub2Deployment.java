@@ -74,9 +74,4 @@ public class Cloudhub2Deployment extends RuntimeFabricDeployment {
     getDeploymentSettings().setRuntimeVersion(muleVersion);
     getDeploymentSettings().setEnvironmentSpecificValues();
   }
-
-  @Override
-  public boolean validateVersion() {
-    return false;
-  }
 }

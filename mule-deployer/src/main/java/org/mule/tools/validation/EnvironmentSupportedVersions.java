@@ -6,6 +6,8 @@
  */
 package org.mule.tools.validation;
 
+import com.vdurmont.semver4j.SemverException;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -30,6 +32,10 @@ public class EnvironmentSupportedVersions {
     this.environmentSupportedVersions = newArrayList(environmentVersion);
   }
 
+  public List<String> getEnvironmentSupportedVersions() {
+    return environmentSupportedVersions;
+  }
+
   /**
    * Checks if a given mule runtime version is supported by the environment.
    * 
@@ -37,7 +43,11 @@ public class EnvironmentSupportedVersions {
    * @return true if the version is supported by the environment; false otherwise.
    */
   public boolean supports(String muleVersion) {
-    return environmentSupportedVersions.stream().anyMatch(v -> isSameVersion(v, muleVersion));
+    try {
+      return environmentSupportedVersions.stream().anyMatch(v -> isSameVersion(v, muleVersion));
+    } catch (SemverException semverException) {
+      return false;
+    }
   }
 
   @Override

@@ -37,7 +37,8 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
   private static Stream<Arguments> muleVersions() {
     return Stream.of(
-                     Arguments.of("4.4.0-SNAPSHOT"));
+                     Arguments.of("4.4.0"),
+                     Arguments.of("4.5"));
   }
 
   private Verifier verifier;

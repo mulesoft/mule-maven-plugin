@@ -198,6 +198,6 @@ public abstract class Deployment {
   }
 
   public boolean validateVersion() {
-    return true;
+    return false;
   }
 }

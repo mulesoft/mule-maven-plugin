@@ -6,6 +6,7 @@
  */
 package org.mule.tools.validation;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.Deployment;
 
@@ -40,7 +41,11 @@ public abstract class AbstractDeploymentValidator {
   public void validateMuleVersionAgainstEnvironment() throws DeploymentException {
     String deploymentMuleVersion = deployment.getMuleVersion().orElseThrow(deploymentExceptionSupplier);
     EnvironmentSupportedVersions environmentVersion = getEnvironmentSupportedVersions();
-    environmentVersion.supports(deploymentMuleVersion);
+    if (!environmentVersion.supports(deploymentMuleVersion)) {
+      throw new DeploymentException(String.format("muleVersion \"%s\" is not supported, supported versions: %s",
+                                                  deploymentMuleVersion,
+                                                  StringUtils.join(environmentVersion.getEnvironmentSupportedVersions(), ", ")));
+    }
   }
 
   /**

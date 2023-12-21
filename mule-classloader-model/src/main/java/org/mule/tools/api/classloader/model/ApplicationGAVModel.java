@@ -6,7 +6,7 @@
  */
 package org.mule.tools.api.classloader.model;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static org.mule.runtime.api.util.Preconditions.checkNotNull;
 
 public class ApplicationGAVModel {
 

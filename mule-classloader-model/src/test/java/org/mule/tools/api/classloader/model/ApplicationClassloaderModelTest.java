@@ -11,13 +11,13 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -70,7 +70,7 @@ class ApplicationClassloaderModelTest {
     ClassLoaderModel cl2 = buildMulePluginClassloaderModel(2);
     ClassLoaderModel cl3 = buildMulePluginClassloaderModel(3);
     ClassLoaderModel cl4 = buildMulePluginClassloaderModel(4);
-    return newArrayList(cl1, cl2, cl3, cl4);
+    return Arrays.asList(cl1, cl2, cl3, cl4);
   }
 
   private ClassLoaderModel buildMulePluginClassloaderModel(int i) {
@@ -86,7 +86,7 @@ class ApplicationClassloaderModelTest {
     Artifact a3 = new Artifact(buildMulePluginArtifactCoordinates(prefix + 3, "1.0.0"), URI.create("fake" + (prefix + 3)));
     Artifact a4 = new Artifact(buildMulePluginArtifactCoordinates(prefix + 4, "1.0.0"), URI.create("fake" + (prefix + 4)));
     Artifact a5 = new Artifact(buildMulePluginArtifactCoordinates(prefix + 5, "1.0.0"), URI.create("fake" + (prefix + 5)));
-    return newArrayList(a1, a2, a3, a4, a5);
+    return Arrays.asList(a1, a2, a3, a4, a5);
 
   }
 
@@ -100,7 +100,7 @@ class ApplicationClassloaderModelTest {
     ClassLoaderModel cl2 = buildRamlClassloaderModel(2);
     ClassLoaderModel cl3 = buildRamlClassloaderModel(3);
     ClassLoaderModel cl4 = buildRamlClassloaderModel(4);
-    return newArrayList(cl1, cl2, cl3, cl4);
+    return Arrays.asList(cl1, cl2, cl3, cl4);
   }
 
   private ClassLoaderModel buildRamlClassloaderModel(int i) {
@@ -116,7 +116,7 @@ class ApplicationClassloaderModelTest {
     Artifact a3 = new Artifact(buildRamlArtifactCoordinates(prefix + 3, "1.0.0", "-fragment"), URI.create("fake" + (prefix + 3)));
     Artifact a4 = new Artifact(buildRamlArtifactCoordinates(prefix + 4, "1.0.0", "-fragment"), URI.create("fake" + (prefix + 4)));
     Artifact a5 = new Artifact(buildRamlArtifactCoordinates(prefix + 5, "1.0.0", "-fragment"), URI.create("fake" + (prefix + 5)));
-    return newArrayList(a1, a2, a3, a4, a5);
+    return Arrays.asList(a1, a2, a3, a4, a5);
 
   }
 

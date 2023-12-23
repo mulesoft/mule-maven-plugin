@@ -6,7 +6,7 @@
  */
 package org.mule.tools.api.classloader.model;
 
-import static org.mule.runtime.api.util.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 

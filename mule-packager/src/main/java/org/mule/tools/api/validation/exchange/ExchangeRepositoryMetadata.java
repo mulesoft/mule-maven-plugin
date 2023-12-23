@@ -7,13 +7,11 @@
 package org.mule.tools.api.validation.exchange;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static org.mule.runtime.api.util.Preconditions.checkArgument;
 
 import com.mulesoft.exchange.mavenfacade.utils.ExchangeUriChecker;
 import org.mule.tools.client.authentication.model.Credentials;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * This class contains credentials, modified base baseUri of the repository (without the "maven" prefix) and the organizationId. It

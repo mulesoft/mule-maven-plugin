@@ -6,13 +6,13 @@
  */
 package org.mule.tools.api.muleclassloader.model.util;
 
+import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import static org.mule.maven.client.internal.MuleMavenClient.MULE_PLUGIN_CLASSIFIER;
-import static org.mule.runtime.api.util.Preconditions.checkState;
 import static org.mule.tools.api.classloader.Constants.ARTIFACT_ID;
 import static org.mule.tools.api.classloader.Constants.GROUP_ID;
 import static org.mule.tools.api.classloader.Constants.MULE_MAVEN_PLUGIN_ARTIFACT_ID;

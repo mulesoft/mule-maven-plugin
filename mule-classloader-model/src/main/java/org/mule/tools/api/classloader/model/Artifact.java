@@ -6,7 +6,7 @@
  */
 package org.mule.tools.api.classloader.model;
 
-import static org.mule.runtime.api.util.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.io.File.separatorChar;
 import static org.apache.commons.io.FilenameUtils.normalize;
 

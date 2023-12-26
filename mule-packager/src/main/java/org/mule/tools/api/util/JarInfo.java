@@ -6,9 +6,10 @@
  */
 package org.mule.tools.api.util;
 
-import static org.mule.runtime.api.util.Preconditions.checkArgument;
-
 import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkArgument;
+
 
 /**
  * Provides information about packages and resources found in a Java JAR.

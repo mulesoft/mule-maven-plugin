@@ -19,6 +19,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.mulesoft.anypoint</groupId>
+            <artifactId>api-gateway-api</artifactId>
+            <version>${mule.api.version}</version>
+        </dependency>
         <!-- Runtime -->
         <dependency>
             <groupId>com.mulesoft.mule.runtime</groupId>

@@ -34,7 +34,7 @@ public class MulePolicyArtifactContentResolverTest extends MuleArtifactContentRe
 
   @Test
   public void hasMuleAsRootElementWithNullDocument() {
-    assertThat(resolver.hasMuleAsRootElement(path)).describedAs("Method should have returned true");
+    assertThat(resolver.hasMuleAsRootElement(path)).describedAs("Method should have returned true").isTrue();
   }
 
   @Override

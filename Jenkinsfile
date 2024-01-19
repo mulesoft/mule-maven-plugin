@@ -38,6 +38,9 @@
                 }
             }
             stage('Binaries Scan') {
+                tools {
+                    jdk "adoptopenjdk-17"
+                }
                 when {
                   expression { pipelineParams.binariesScan }
                 }

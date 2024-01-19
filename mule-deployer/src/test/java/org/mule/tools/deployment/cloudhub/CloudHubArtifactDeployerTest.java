@@ -238,23 +238,17 @@ public class CloudHubArtifactDeployerTest {
 
   @Test
   public void deployApplicationVerificationStartedFail() throws DeploymentException {
+    CloudHubDeploymentVerification verificationMock = mock(CloudHubDeploymentVerification.class);
+    doThrow(DeploymentException.class).when(verificationMock).assertDeployment(deploymentMock);
+    when(clientMock.isDomainAvailable(any())).thenReturn(true);
+
     assertThatThrownBy(() -> {
-      when(clientMock.isDomainAvailable(any())).thenReturn(true);
-
-      CloudHubDeploymentVerification verificationMock = mock(CloudHubDeploymentVerification.class);
-      doThrow(DeploymentException.class).when(verificationMock).assertDeployment(deploymentMock);
       cloudHubArtifactDeployer.setDeploymentVerification(verificationMock);
-
       cloudHubArtifactDeployer.deployApplication();
-
-      verify(clientMock).isDomainAvailable(any());
-      verify(cloudHubArtifactDeployerSpy).createOrUpdateApplication();
-      verify(cloudHubArtifactDeployerSpy).createApplication();
-      verify(cloudHubArtifactDeployerSpy).startApplication();
-      verify(clientMock).startApplications(FAKE_APPLICATION_NAME);
-      verify(cloudHubArtifactDeployerSpy).checkApplicationHasStarted();
-      verify(verificationMock).assertDeployment(eq(deploymentMock));
     }).isExactlyInstanceOf(DeploymentException.class);
+
+    verify(clientMock).isDomainAvailable(any());
+    verify(verificationMock).assertDeployment(eq(deploymentMock));
   }
 
   @Test

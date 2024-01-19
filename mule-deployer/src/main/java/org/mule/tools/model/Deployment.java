@@ -55,7 +55,7 @@ public abstract class Deployment {
   }
 
   public void setArtifact(File artifact) {
-    this.artifact = artifact.getPath();
+    this.artifact = Optional.ofNullable(artifact).map(File::getPath).orElse(null);
   }
 
   public void setArtifact(String artifactPath) {

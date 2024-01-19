@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 public abstract class AbstractDeploymentTest {
 
   private static final String MAVEN_OPTS = "MAVEN_OPTS";
-  private static final String DEFAULT_MULE_VERSION = "4.6.0-rc3";
+  private static final String DEFAULT_MULE_VERSION = "4.6.0-SNAPSHOT";
   private static final String MAVEN_OPTS_PROPERTY_KEY = "argLine";
 
   protected static final String DEPLOY_GOAL = "deploy";

@@ -351,36 +351,36 @@ public class MuleArtifactContentResolverTest {
   @Test
   public void hasMuleAsRootElementMuleRoot() {
     when(rootElementMock.getTagName()).thenReturn("mule");
-    assertThat(resolver.hasMuleAsRootElement(documentMock)).describedAs("Method should have returned true");
+    assertThat(resolver.hasMuleAsRootElement(documentMock)).describedAs("Method should have returned true").isTrue();
   }
 
   @Test
   public void hasMuleAsRootElementMuleDomainRoot() {
     when(rootElementMock.getTagName()).thenReturn("domain:mule-domain");
-    assertThat(resolver.hasMuleAsRootElement(documentMock)).describedAs("Method should have returned true");
+    assertThat(resolver.hasMuleAsRootElement(documentMock)).describedAs("Method should have returned true").isTrue();
   }
 
   @Test
   public void hasMuleAsRootElementOtherThanMuleOrMuleDomainRoot() {
     when(rootElementMock.getTagName()).thenReturn("mulesoft");
-    assertThat(!resolver.hasMuleAsRootElement(documentMock)).describedAs("Method should have returned false");
+    assertThat(!resolver.hasMuleAsRootElement(documentMock)).describedAs("Method should have returned false").isTrue();
   }
 
   @Test
   public void hasMuleAsRootElementWithNullName() {
     when(rootElementMock.getTagName()).thenReturn(null);
-    assertThat(!resolver.hasMuleAsRootElement((Document) null)).describedAs("Method should have returned false");
+    assertThat(!resolver.hasMuleAsRootElement((Document) null)).describedAs("Method should have returned false").isTrue();
   }
 
   @Test
   public void hasMuleAsRootElementWithNoRoot() {
     when(documentMock.getDocumentElement()).thenReturn(null);
-    assertThat(!resolver.hasMuleAsRootElement(documentMock)).describedAs("Method should have returned false");
+    assertThat(!resolver.hasMuleAsRootElement(documentMock)).describedAs("Method should have returned false").isTrue();
   }
 
   @Test
   public void hasMuleAsRootElementWithNullDocument() {
-    assertThat(!resolver.hasMuleAsRootElement((Document) null)).describedAs("Method should have returned false");
+    assertThat(!resolver.hasMuleAsRootElement((Document) null)).describedAs("Method should have returned false").isTrue();
   }
 
   protected MuleArtifactContentResolver newResolver(ProjectStructure projectStructure, Pom pomMock,

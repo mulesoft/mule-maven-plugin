@@ -120,10 +120,11 @@ public class RequestBuilderTest {
   }
 
   @Test
-  public void requestBuildWithResourcesAndVCoresTest() {
+  public void requestBuildWithResourcesAndVCoresTest() throws Exception {
+    setUp(null);
+    ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setInstanceType("instanceValue");
+
     assertThatThrownBy(() -> {
-      setUp(null);
-      ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setInstanceType("instanceValue");
       requestBuilder.buildDeploymentRequest();
     }).isExactlyInstanceOf(DeploymentException.class);
 

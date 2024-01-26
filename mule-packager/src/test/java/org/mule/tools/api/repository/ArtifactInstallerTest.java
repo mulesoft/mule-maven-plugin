@@ -75,10 +75,10 @@ public class ArtifactInstallerTest {
         new File(outputFolder.toAbsolutePath().toFile(), OUTPUT_DIRECTORY + File.separator + GENERATED_PACKAGE_NAME);
     File pomFile = new File(outputFolder.toAbsolutePath().toFile(), OUTPUT_DIRECTORY + File.separator + POM_FILE_NAME);
 
-    assertThat(!installedFile.exists()).describedAs("File should not be installed yet");
+    assertThat(installedFile).describedAs("File should not be installed yet").doesNotExist();
     installer.installArtifact(outputFolder.toAbsolutePath().toFile(), artifact, Optional.empty());
-    assertThat(installedFile.exists()).describedAs("File was not installed");
-    assertThat(pomFile.exists()).describedAs("Pom file was not copied");
+    assertThat(installedFile).describedAs("File was not installed").exists();
+    assertThat(pomFile).describedAs("Pom file was not copied").exists();
   }
 
   @Test

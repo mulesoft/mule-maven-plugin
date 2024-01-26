@@ -30,7 +30,7 @@ import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.util.FileUtils;
 
-public class RepositoryGeneratorTest {
+class RepositoryGeneratorTest {
 
   private static final int NUMBER_ARTIFACTS = 10;
   private static final String GROUP_ID = "group.id";
@@ -71,32 +71,32 @@ public class RepositoryGeneratorTest {
 
 
   @Test
-  public void generateMarkerFileInRepositoryFolderTest() throws IOException {
+  void generateMarkerFileInRepositoryFolderTest() throws IOException {
     File generatedMarkerFile = temporaryFolder.resolve(".marker").toFile();
 
-    assertThat(!generatedMarkerFile.exists()).describedAs("Marker file already exists");
+    assertThat(generatedMarkerFile).describedAs("Marker file already exists").doesNotExist();
 
     repositoryGenerator.generateMarkerFileInRepositoryFolder(temporaryFolder.toFile());
 
-    assertThat(generatedMarkerFile.exists()).describedAs("Marker file was not generated");
+    assertThat(generatedMarkerFile).describedAs("Marker file was not generated").exists();
   }
 
   @Test
-  public void generateMarkerFileInRepositoryFolderWhenFolderIsNotWritableTest() throws IOException {
+  void generateMarkerFileInRepositoryFolderWhenFolderIsNotWritableTest() throws IOException {
+    File generatedMarkerFile = temporaryFolder.resolve(".marker").toFile();
+
+    assertThat(generatedMarkerFile).describedAs("Marker file already exists").doesNotExist();
+
+    File readOnlyFolder = temporaryFolder.toFile();
+    FileUtils.markAsReadOnly(readOnlyFolder);
+
     assertThatThrownBy(() -> {
-      File generatedMarkerFile = temporaryFolder.resolve(".marker").toFile();
-
-      assertThat(!generatedMarkerFile.exists()).describedAs("Marker file already exists");
-
-      File readOnlyFolder = temporaryFolder.toFile();
-      FileUtils.markAsReadOnly(readOnlyFolder);
-
       repositoryGenerator.generateMarkerFileInRepositoryFolder(readOnlyFolder);
     }).isExactlyInstanceOf(IOException.class);
   }
 
   @Test
-  public void installEmptySetArtifactsTest() throws IOException {
+  void installEmptySetArtifactsTest() throws IOException {
     File repositoryFolder = temporaryFolder.toFile();
     when(appModelMock.getArtifacts()).thenReturn(Collections.emptySet());
     repositoryGeneratorSpy.installArtifacts(repositoryFolder, artifactInstallerMock, appModelMock, false);
@@ -105,7 +105,7 @@ public class RepositoryGeneratorTest {
   }
 
   @Test
-  public void installArtifactsTest() throws IOException {
+  void installArtifactsTest() throws IOException {
     File repositoryFolder = temporaryFolder.toFile();
     buildArtifacts();
     when(appModelMock.getArtifacts()).thenReturn(artifacts);
@@ -115,17 +115,18 @@ public class RepositoryGeneratorTest {
   }
 
   @Test
-  public void getRepositoryFolderIfDoesNotExistTest() {
+  void getRepositoryFolderIfDoesNotExistTest() {
     File repositoryFolder = temporaryFolder.resolve(REPOSITORY_FOLDER).toFile();
-    assertThat(!repositoryFolder.exists()).describedAs("Repository folder already exists");
+    assertThat(repositoryFolder).describedAs("Repository folder already exists").doesNotExist();
     repositoryFolder = repositoryGenerator.getRepositoryFolder();
-    assertThat(repositoryFolder.exists()).describedAs("Repository folder was not created");
+    assertThat(repositoryFolder).describedAs("Repository folder was not created").exists();
   }
 
   @Test
-  public void getRepositoryFolderIfAlreadyExistsTest() throws IOException {
+  void getRepositoryFolderIfAlreadyExistsTest() throws IOException {
     File expectedRepositoryFolder = temporaryFolder.resolve(REPOSITORY_FOLDER).toFile();
-    assertThat(expectedRepositoryFolder.exists()).describedAs("Repository folder does not exist");
+    expectedRepositoryFolder.mkdirs();
+    assertThat(expectedRepositoryFolder).describedAs("Repository folder does not exist").exists();
     File actualRepositoryFolder = repositoryGenerator.getRepositoryFolder();
     assertThat(actualRepositoryFolder).describedAs("Repository folder was modified").isEqualTo(expectedRepositoryFolder);
   }

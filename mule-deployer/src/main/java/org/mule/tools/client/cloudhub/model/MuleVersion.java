@@ -20,6 +20,8 @@ public class MuleVersion {
   private Boolean persistentQueuesSupported;
   private String updateId;
   private String latestUpdateId;
+  private String javaVersion;
+  private String releaseChannel;
 
   public String getState() {
     return state;
@@ -83,5 +85,21 @@ public class MuleVersion {
 
   public void setLatestUpdateId(String latestUpdateId) {
     this.latestUpdateId = latestUpdateId;
+  }
+
+  public String getJavaVersion() {
+    return javaVersion;
+  }
+
+  public void setJavaVersion(String javaVersion) {
+    this.javaVersion = javaVersion;
+  }
+
+  public String getReleaseChannel() {
+    return releaseChannel;
+  }
+
+  public void setReleaseChannel(String releaseChannel) {
+    this.releaseChannel = releaseChannel;
   }
 }

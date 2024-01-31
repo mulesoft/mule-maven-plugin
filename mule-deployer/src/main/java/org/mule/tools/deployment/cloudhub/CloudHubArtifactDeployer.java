@@ -187,10 +187,12 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     Integer workersAmount;
     String workerType;
     MuleVersion muleVersion = new MuleVersion();
+    deployment.getMuleVersion().ifPresent(muleVersion::setVersion);
+    muleVersion.setJavaVersion(deployment.getJavaVersion());
+    muleVersion.setReleaseChannel(deployment.getReleaseChannel());
     Boolean isLoggingCustomLog4JEnabled = null;
 
     if (originalApplication != null) {
-      muleVersion.setVersion(deployment.getMuleVersion().get().split("-")[0]);
       Map<String, String> resolvedProperties = resolveProperties(originalApplication.getProperties(),
                                                                  deployment.getProperties(), deployment.overrideProperties());
       application.setProperties(resolvedProperties);
@@ -212,7 +214,6 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
       isLoggingCustomLog4JEnabled =
           Optional.ofNullable(deployment.getDisableCloudHubLogs()).orElse(originalApplication.getLoggingCustomLog4JEnabled());
     } else {
-      muleVersion.setVersion(deployment.getMuleVersion().get().split("-")[0]);
       application.setMonitoringAutoRestart(true);
       application.setProperties(deployment.getProperties());
 

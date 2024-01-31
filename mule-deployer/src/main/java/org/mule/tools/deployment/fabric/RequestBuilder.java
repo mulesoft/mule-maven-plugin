@@ -81,13 +81,8 @@ public class RequestBuilder {
     RuntimeFabricDeploymentSettings resolvedDeploymentSettings =
         new RuntimeFabricOnPremiseDeploymentSettings((RuntimeFabricOnPremiseDeploymentSettings) settings);
     String targetId = resolveTargetId();
-    String muleVersion = deployment.getMuleVersion().get();
-    String tag = resolveTag(targetId, muleVersion);
-    if (tag != null) {
-      resolvedDeploymentSettings.setRuntimeVersion(muleVersion + ":" + tag);
-    } else {
-      throw new DeploymentException("Could not resolve tag for this mule version");
-    }
+    resolvedDeploymentSettings.setRuntimeVersion(deployment.getMuleVersion().get());
+
     String url = resolveUrl(settings, targetId);
 
     resolvedDeploymentSettings.getHttp().getInbound().setPublicUrl(url);

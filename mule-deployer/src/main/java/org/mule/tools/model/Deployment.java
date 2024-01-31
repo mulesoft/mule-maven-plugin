@@ -31,6 +31,12 @@ public abstract class Deployment {
   @Parameter
   protected String muleVersion;
 
+  @Parameter
+  protected String javaVersion;
+
+  @Parameter
+  protected String releaseChannel;
+
   /**
    * The allowed elapsed time between the start of the deployment process and the confirmation that the artifact has been
    * deployed. In the case of the deployment to standalone, it is defined as the elapsed time between the instant when the
@@ -195,6 +201,22 @@ public abstract class Deployment {
 
   public String getVersion() {
     return version;
+  }
+
+  public String getJavaVersion() {
+    return javaVersion;
+  }
+
+  public void setJavaVersion(String javaVersion) {
+    this.javaVersion = javaVersion;
+  }
+
+  public String getReleaseChannel() {
+    return releaseChannel;
+  }
+
+  public void setReleaseChannel(String releaseChannel) {
+    this.releaseChannel = releaseChannel;
   }
 
   public boolean validateVersion() {

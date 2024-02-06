@@ -7,6 +7,7 @@
 package org.mule.tooling.api;
 
 import static org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor.MULE_PLUGIN_CLASSIFIER;
+import static org.mule.runtime.ast.internal.serialization.json.JsonArtifactAstSerializerFormat.JSON;
 
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.pom.parser.api.model.BundleDescriptor;
@@ -191,6 +192,6 @@ public class AstGenerator {
   }
 
   public static InputStream serialize(ArtifactAst artifactAst) {
-    return new ArtifactAstSerializerProvider().getSerializer(ArtifactAstSerializerFactory.JSON, "1.0").serialize(artifactAst);
+    return new ArtifactAstSerializerProvider().getSerializer(JSON, "1.0").serialize(artifactAst);
   }
 }

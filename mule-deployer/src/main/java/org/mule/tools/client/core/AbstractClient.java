@@ -17,6 +17,7 @@ import static org.glassfish.jersey.client.ClientProperties.DEFAULT_CHUNK_SIZE;
 import static org.glassfish.jersey.client.ClientProperties.REQUEST_ENTITY_PROCESSING;
 import static org.glassfish.jersey.client.HttpUrlConnectorProvider.SET_METHOD_WORKAROUND;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.LOGIN;
+import org.glassfish.jersey.jdk.connector.JdkConnectorProvider;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import org.mule.tools.client.core.exception.ClientException;
@@ -135,7 +137,11 @@ public abstract class AbstractClient {
   }
 
   protected WebTarget getTarget(String uri, String path) {
-    ClientBuilder builder = ClientBuilder.newBuilder();
+    ClientConfig configuration = new ClientConfig();
+    configuration.connectorProvider(new JdkConnectorProvider());
+    ClientBuilder builder = ClientBuilder.newBuilder().withConfig(configuration);
+
+
     configureSecurityContext(builder);
     Client client = builder.build().register(MultiPartFeature.class);
     if (log != null && log.isDebugEnabled() && !isLoginRequest(path)) {

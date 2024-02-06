@@ -77,7 +77,7 @@
         <plexus.component.annotations.version>2.1.0</plexus.component.annotations.version>
         <jsonassert.version>1.5.0</jsonassert.version>
 
-        <jersey.version>2.34</jersey.version>
+        <jersey.version>2.35</jersey.version>
         <jersey.media.moxy>2.31</jersey.media.moxy>
 
         <junit.version>4.13.2</junit.version>
@@ -132,6 +132,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.glassfish.jersey.connectors</groupId>
+                <artifactId>jersey-jdk-connector</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
             <!-- Runtime -->
             <dependency>
                 <groupId>org.mule.runtime</groupId>
@@ -315,6 +320,8 @@
                 <artifactId>jakarta.ws.rs-api</artifactId>
                 <version>2.1.6</version>
             </dependency>
+
+
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-archiver</artifactId>

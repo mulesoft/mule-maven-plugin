@@ -7,6 +7,7 @@
 package org.mule.tools.deployment.cloudhub;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -357,6 +358,7 @@ public class CloudHubArtifactDeployerTest {
     assertThat(applicationCaptor.getValue().getObjectStoreV1()).describedAs("ObjectStoreV1 must be false").isFalse();
   }
 
+  @Disabled("V1 is no longer used: https://docs.mulesoft.com/object-store/osv2-faq")
   @Test
   public void testObjectStorageV1FromEnvironment() throws DeploymentException {
     CloudHubDeployment deployment = new CloudHubDeployment();

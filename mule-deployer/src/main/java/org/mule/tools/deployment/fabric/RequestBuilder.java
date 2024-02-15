@@ -20,12 +20,15 @@ import org.mule.tools.client.fabric.model.DeploymentModify;
 import org.mule.tools.client.fabric.model.DeploymentRequest;
 import org.mule.tools.client.fabric.model.Deployments;
 import org.mule.tools.client.fabric.model.Target;
+import org.mule.tools.model.anypoint.Runtime;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
 import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
 import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeploymentSettings;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class RequestBuilder {
 
@@ -81,7 +84,17 @@ public class RequestBuilder {
     RuntimeFabricDeploymentSettings resolvedDeploymentSettings =
         new RuntimeFabricOnPremiseDeploymentSettings((RuntimeFabricOnPremiseDeploymentSettings) settings);
     String targetId = resolveTargetId();
-    resolvedDeploymentSettings.setRuntimeVersion(deployment.getMuleVersion().get());
+
+    if (Stream.of(deployment.getMuleVersion(), deployment.getJavaVersion(), deployment.getReleaseChannel())
+        .anyMatch(Optional::isPresent)) {
+      Runtime runtime = new Runtime();
+      deployment.getMuleVersion().ifPresent(runtime::setVersion);
+      deployment.getJavaVersion().ifPresent(runtime::setJava);
+      deployment.getReleaseChannel().ifPresent(runtime::setReleaseChannel);
+      resolvedDeploymentSettings.setRuntime(runtime);
+    }
+
+    deployment.getMuleVersion().ifPresent(resolvedDeploymentSettings::setRuntimeVersion);
 
     String url = resolveUrl(settings, targetId);
 

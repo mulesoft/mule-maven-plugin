@@ -15,10 +15,13 @@ import org.mule.tools.client.fabric.model.DeploymentRequest;
 import org.mule.tools.client.fabric.model.Target;
 import org.mule.tools.model.anypoint.Cloudhub2Deployment;
 import org.mule.tools.model.anypoint.Cloudhub2DeploymentSettings;
+import org.mule.tools.model.anypoint.Runtime;
 import org.mule.tools.model.anypoint.RuntimeFabricDeploymentSettings;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestBuilder {
 
@@ -65,7 +68,18 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
       throws DeploymentException {
     RuntimeFabricDeploymentSettings resolvedDeploymentSettings =
         new Cloudhub2DeploymentSettings((Cloudhub2DeploymentSettings) settings);
-    resolvedDeploymentSettings.setRuntimeVersion(deployment.getMuleVersion().get());
+
+    if (Stream.of(deployment.getMuleVersion(), deployment.getJavaVersion(), deployment.getReleaseChannel())
+        .anyMatch(Optional::isPresent)) {
+      Runtime runtime = new Runtime();
+      deployment.getMuleVersion().ifPresent(runtime::setVersion);
+      deployment.getJavaVersion().ifPresent(runtime::setJava);
+      deployment.getReleaseChannel().ifPresent(runtime::setReleaseChannel);
+      resolvedDeploymentSettings.setRuntime(runtime);
+    }
+
+    deployment.getMuleVersion().ifPresent(resolvedDeploymentSettings::setRuntimeVersion);
+
     String url = resolveUrl(settings, resolveTargetId());
 
     resolvedDeploymentSettings.getHttp().getInbound().setPublicUrl(url);

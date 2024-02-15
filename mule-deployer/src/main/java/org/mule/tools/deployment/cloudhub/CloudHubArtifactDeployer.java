@@ -188,8 +188,8 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     String workerType;
     MuleVersion muleVersion = new MuleVersion();
     deployment.getMuleVersion().ifPresent(muleVersion::setVersion);
-    muleVersion.setJavaVersion(deployment.getJavaVersion());
-    muleVersion.setReleaseChannel(deployment.getReleaseChannel());
+    deployment.getJavaVersion().ifPresent(muleVersion::setJavaVersion);
+    deployment.getReleaseChannel().ifPresent(muleVersion::setReleaseChannel);
     Boolean isLoggingCustomLog4JEnabled = null;
 
     if (originalApplication != null) {

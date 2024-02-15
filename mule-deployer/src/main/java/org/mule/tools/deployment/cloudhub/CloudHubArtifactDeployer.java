@@ -188,8 +188,8 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     String workerType;
     MuleVersion muleVersion = new MuleVersion();
     deployment.getMuleVersion().ifPresent(muleVersion::setVersion);
-    muleVersion.setJavaVersion(deployment.getJavaVersion());
-    muleVersion.setReleaseChannel(deployment.getReleaseChannel());
+    deployment.getJavaVersion().ifPresent(muleVersion::setJavaVersion);
+    deployment.getReleaseChannel().ifPresent(muleVersion::setReleaseChannel);
     Boolean isLoggingCustomLog4JEnabled = null;
 
     if (originalApplication != null) {
@@ -259,9 +259,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
   private void configureObjectStore() {
     if (deployment.getObjectStoreV2() == null) {
-      deployment.setObjectStoreV2(!(client.getSupportedMuleVersions().stream()
-          .anyMatch(version -> version.getVersion().equals(deployment.getMuleVersion().get())
-              && version.getLatestUpdate().getFlags().get(OBJECT_STOREV1))));
+      deployment.setObjectStoreV2(true);
     }
   }
 

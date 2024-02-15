@@ -203,16 +203,16 @@ public abstract class Deployment {
     return version;
   }
 
-  public String getJavaVersion() {
-    return javaVersion;
+  public Optional<String> getJavaVersion() {
+    return Optional.ofNullable(javaVersion);
   }
 
   public void setJavaVersion(String javaVersion) {
     this.javaVersion = javaVersion;
   }
 
-  public String getReleaseChannel() {
-    return releaseChannel;
+  public Optional<String> getReleaseChannel() {
+    return Optional.ofNullable(releaseChannel);
   }
 
   public void setReleaseChannel(String releaseChannel) {

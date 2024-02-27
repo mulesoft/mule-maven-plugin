@@ -1,6 +1,6 @@
 pipeline {
     parameters {
-        string(name: 'version_to', defaultValue: '4.0.0', description: 'Version of the plugin that will be released.')
+        string(name: 'version_to', defaultValue: '4.1.1', description: 'Version of the plugin that will be released.')
         string(name: 'jdk', defaultValue: 'JDK8', description: 'Version of Java to be used.')
         string(name: 'maven', defaultValue: 'Maven-3.9.4', description: 'Version of Maven to be used.')
      }
@@ -9,7 +9,7 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '10'))
     }
      tools {
-        jdk params.JDK
+        jdk params.jdk
         maven params.maven
     }
     agent {
@@ -23,7 +23,12 @@ pipeline {
         }
         stage('Perform release') {
             steps {
-              sh "mvn deploy -PfullIntegration -DskipTests -Prelease"
+                script {
+                    def mycfg_file = 'munit-maven-settings'
+                    configFileProvider([configFile(fileId: mycfg_file, variable: 'settingsxml')]) {
+                    sh "mvn --settings ${env.settingsxml} -Dmaven.repo.local='${WORKSPACE}/.repository' deploy -PfullIntegration -DskipTests -Prelease -Dmaven.settings=${env.settingsxml}"
+                    }
+                }
             }
         }
     }

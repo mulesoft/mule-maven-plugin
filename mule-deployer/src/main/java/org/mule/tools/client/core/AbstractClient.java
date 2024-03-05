@@ -17,7 +17,7 @@ import static org.glassfish.jersey.client.ClientProperties.DEFAULT_CHUNK_SIZE;
 import static org.glassfish.jersey.client.ClientProperties.REQUEST_ENTITY_PROCESSING;
 import static org.glassfish.jersey.client.HttpUrlConnectorProvider.SET_METHOD_WORKAROUND;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.LOGIN;
-import org.glassfish.jersey.jdk.connector.JdkConnectorProvider;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -138,7 +138,7 @@ public abstract class AbstractClient {
 
   protected WebTarget getTarget(String uri, String path) {
     ClientConfig configuration = new ClientConfig();
-    configuration.connectorProvider(new JdkConnectorProvider());
+    configuration.connectorProvider(new HttpUrlConnectorProvider());
     ClientBuilder builder = ClientBuilder.newBuilder().withConfig(configuration);
 
 

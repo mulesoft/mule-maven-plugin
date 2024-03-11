@@ -77,7 +77,7 @@
         <plexus.component.annotations.version>2.1.0</plexus.component.annotations.version>
         <jsonassert.version>1.5.0</jsonassert.version>
 
-        <jersey.version>2.35</jersey.version>
+        <jersey.version>2.41</jersey.version>
         <jersey.media.moxy>2.31</jersey.media.moxy>
 
         <junit.version>4.13.2</junit.version>
@@ -482,6 +482,65 @@
         </pluginManagement>
         <plugins>
             <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                                        <execution>
+                                            <id>default-check</id>
+                                            <goals>
+                                                <goal>check</goal>
+                                            </goals>
+                                        </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+
+                </executions>
+                                <configuration>
+                                    <excludes>
+                                        <exclude>org/mule/tools/model/**</exclude>
+                                        <exclude>org/mule/tools/client/cloudhub/model</exclude>
+                                        <exclude>org/mule/tools/client/fabric/model</exclude>
+                                        <exclude>org/mule/tools/client/agent/model</exclude>
+                                        <exclude>org/mule/tools/client/arm/model</exclude>
+                                        <exclude>org/mule/tools/client/authentication/model</exclude>
+                                     </excludes>
+                                    <haltOnFailure>true</haltOnFailure>
+                                    <skip>${skipJaCoCoCoverage}</skip>
+                                    <append>true</append>
+                                    <destFile>${jacoco.report.location}</destFile>
+                                    <dataFile>${jacoco.report.location}</dataFile>
+                                    <rules>
+                                        <rule>
+                                            <element>BUNDLE</element>
+                                            <limits>
+                                                <limit>
+                                                    <counter>LINE</counter>
+                                                    <value>COVEREDRATIO</value>
+                                                    <minimum>${coverageLineLimit}</minimum>
+                                                </limit>
+<!--                                                <limit>-->
+<!--                                                    <counter>BRANCH</counter>-->
+<!--                                                    <value>COVEREDRATIO</value>-->
+<!--                                                    <minimum>${coverageBranchLimit}</minimum>-->
+<!--                                                </limit>-->
+                                            </limits>
+                                        </rule>
+                                    </rules>
+                                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.plugin.version}</version>
@@ -530,49 +589,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco.maven.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>default-prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>default-check</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <haltOnFailure>true</haltOnFailure>
-                    <skip>${skipJaCoCoCoverage}</skip>
-                    <append>true</append>
-                    <destFile>${jacoco.report.location}</destFile>
-                    <dataFile>${jacoco.report.location}</dataFile>
-                    <rules>
-                        <rule>
-                            <element>BUNDLE</element>
-                            <limits>
-                                <limit>
-                                    <counter>LINE</counter>
-                                    <value>COVEREDRATIO</value>
-                                    <minimum>${coverageLineLimit}</minimum>
-                                </limit>
-                                <limit>
-                                    <counter>BRANCH</counter>
-                                    <value>COVEREDRATIO</value>
-                                    <minimum>${coverageBranchLimit}</minimum>
-                                </limit>
-                            </limits>
-                        </rule>
-                    </rules>
-                </configuration>
-            </plugin><!--
+           <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>

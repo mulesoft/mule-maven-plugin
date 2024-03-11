@@ -6,10 +6,7 @@
  */
 package org.mule.tools.api;
 
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.mule.tools.api.packager.structure.FolderNames.CLASSES;
 
@@ -23,6 +20,7 @@ import org.mule.tools.api.packager.PackagerTestUtils;
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
+import org.apache.maven.model.Parent;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,8 +65,28 @@ public class ContentGeneratorTest {
         .withDependencyProject(mock(Project.class))
         .withResolvedPom(mock(Pom.class))
         .build();
+
     contentGenerator = new MuleContentGenerator(info, null);
   }
+
+  //  @Test
+  //  public void generateContentWithParent() throws IOException {
+  //    DefaultProjectInformation info = new DefaultProjectInformation.Builder()
+  //        .withGroupId(GROUP_ID)
+  //        .withArtifactId(ARTIFACT_ID)
+  //        .withVersion(VERSION)
+  //        .withPackaging(packagingType.toString())
+  //        .withProjectBaseFolder(projectBaseFolder.toAbsolutePath())
+  //        .setTestProject(false)
+  //        .withBuildDirectory(projectTargetFolder.toPath())
+  //        .withDependencyProject(mock(Project.class))
+  //        .withResolvedPom(mock(Pom.class))
+  //        .build();
+  //    Parent parent = mock(Parent.class);
+  //    contentGenerator = new MuleContentGenerator(info, parent);
+  //    when(parent.getRelativePath()).thenReturn("");
+  //    contentGenerator.createDescriptors();
+  //  }
 
   @Test
   public void failCreationProjectBaseFolderNonExistent() {

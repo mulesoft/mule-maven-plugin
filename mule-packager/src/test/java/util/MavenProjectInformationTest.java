@@ -82,4 +82,19 @@ class MavenProjectInformationTest {
     assertThat(mavenProjectInformation.isDeployment()).as("The project information is for a deploy goal").isFalse();
   }
 
+  @Test
+  void assertProperties(@TempDir Path tempDir) {
+    when(buildMock.getDirectory()).thenReturn(tempDir.toAbsolutePath().toString());
+    when(mavenSessionMock.getGoals()).thenReturn(newArrayList("verify"));
+
+    mavenProjectInformation = getProjectInformation(mavenSessionMock, mavenProjectMock, tempDir.toAbsolutePath().toFile(), false,
+                                                    newArrayList(), "mule-application");
+    assertThat(mavenProjectInformation.getGroupId()).isEqualTo("com.plugin");
+    assertThat(mavenProjectInformation.getArtifactId()).isEqualTo("test");
+    assertThat(mavenProjectInformation.getVersion()).isEqualTo("1.0.0");
+    assertThat(mavenProjectInformation.getClassifier()).isEqualTo("mule-application");
+    assertThat(mavenProjectInformation.isTestProject()).isFalse();
+    assertThat(mavenProjectInformation.getExchangeRepositoryMetadata()).isEmpty();
+    assertThat(mavenProjectInformation.getDeployments()).isNull();
+  }
 }

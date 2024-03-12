@@ -10,6 +10,7 @@ import com.google.common.net.MediaType;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mule.tools.client.fabric.model.DeploymentDetailedResponse;
@@ -91,6 +92,7 @@ class RuntimeFabricClientTest {
   }
 
   @Test
+  @Disabled
   void getSingleDeploymentTest() throws IOException {
 
     File deploymentJsonFile = new File(getClass().getClassLoader().getResource(

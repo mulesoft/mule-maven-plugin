@@ -12,6 +12,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.integration.ClientAndServer;
+import org.mule.tools.client.fabric.model.DeploymentDetailedResponse;
 import org.mule.tools.client.fabric.model.DeploymentGenericResponse;
 import org.mule.tools.client.fabric.model.Deployments;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
@@ -46,6 +47,9 @@ class RuntimeFabricClientTest {
   public static final String FAKE_PASSWORD = "fakePassword";
   public static final int DEFAULT_PORT = 0;
   public static final String DEPLOYMENTS_JSON = "deployments.json";
+  public static final String SINGLE_DEPLOYMENT_JSON = "single-deployment.json";
+  public static final String DEPLOYMENT_ID = "7096496b-9407-4e67-9a38-8963c3727735";
+
   private ClientAndServer mockServer;
 
   private static final String ORG_ID = "abcdef";
@@ -84,6 +88,26 @@ class RuntimeFabricClientTest {
     }
 
     assertThat(verifiedIds).as("Verified ids should be empty").isEmpty();
+  }
+
+  @Test
+  void getSingleDeploymentTest() throws IOException {
+
+    File deploymentJsonFile = new File(getClass().getClassLoader().getResource(
+            SINGLE_DEPLOYMENT_JSON)
+        .getFile());
+    List<String> lines = Files.readAllLines(deploymentJsonFile.toPath());
+    String deploymentJsonContent = String.join(System.lineSeparator(), lines);
+
+    String singleDeploymentUrl = format(DEPLOYMENTS_PATH + "/%s", ORG_ID, ENV_ID, DEPLOYMENT_ID);
+
+    mockServer.when(request().withMethod(GET).withPath(singleDeploymentUrl))
+        .respond(response().withStatusCode(200).withBody(deploymentJsonContent, MediaType.JSON_UTF_8));
+
+    RuntimeFabricClient client = buildClientSpy();
+
+    DeploymentDetailedResponse response = client.getDeployment(DEPLOYMENT_ID);
+    assertThat(response.application.configuration).isNotNull();
   }
 
   private RuntimeFabricClient buildClientSpy() {

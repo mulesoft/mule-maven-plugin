@@ -1,0 +1,93 @@
+{
+  "id": "7096496b-9407-4e67-9a38-8963c3727735",
+  "name": "b2b-inbound-sftp-992y",
+  "creationDate": 1710182594930,
+  "lastModifiedDate": 1710182672821,
+  "target": {
+    "provider": "MC",
+    "targetId": "f7a00181-fbd0-499c-88ff-3ca802f5deb2",
+    "deploymentSettings": {
+      "clustered": false,
+      "enforceDeployingReplicasAcrossNodes": false,
+      "http": {
+        "inbound": {
+          "uniqueId": "gx6cb0"
+        }
+      },
+      "runtimeVersion": "4.4.0:20240219-7",
+      "runtimeReleaseChannel": "NONE",
+      "updateStrategy": "recreate",
+      "resources": {
+        "cpu": {
+          "limit": "1000m",
+          "reserved": "500m"
+        },
+        "memory": {
+          "limit": "1536Mi",
+          "reserved": "1536Mi"
+        }
+      },
+      "lastMileSecurity": false,
+      "disableAmLogForwarding": false,
+      "persistentObjectStore": true,
+      "anypointMonitoringScope": "app",
+      "sidecars": {
+        "anypoint-monitoring": {
+          "image": "auto",
+          "resources": {
+            "cpu": {
+              "limit": "50m",
+              "reserved": "0m"
+            },
+            "memory": {
+              "limit": "50Mi",
+              "reserved": "50Mi"
+            }
+          }
+        }
+      },
+      "forwardSslSession": false,
+      "generateDefaultPublicUrl": false,
+      "autoscaling": {
+        "enabled": false,
+        "minReplicas": 1,
+        "maxReplicas": 1
+      },
+      "runtime": {
+        "version": "4.4.0:20240219-7",
+        "releaseChannel": "NONE",
+        "java": "8"
+      }
+    },
+    "replicas": 1
+  },
+  "status": "APPLIED",
+  "application": {
+    "status": "RUNNING",
+    "desiredState": "STARTED",
+    "ref": {
+      "groupId": "41eb6190-b79e-4ba6-a053-8737c4349f23",
+      "artifactId": "b2b-inbound-sftp-992y",
+      "version": "1.0.0",
+      "packaging": "jar"
+    },
+    "configuration": {
+      "mule.agent.application.properties.service": {
+        "applicationName": "b2b-inbound-sftp-992y",
+        "properties": null,
+        "secureProperties": null
+      }
+    }
+  },
+  "desiredVersion": "de946b49-a3af-4f2e-b282-85fd0e5e1274",
+  "replicas": [
+    {
+      "id": "b2b-inbound-sftp-992y-944dbb7f9-2s9rk",
+      "state": "STARTED",
+      "deploymentLocation": "f7a00181-fbd0-499c-88ff-3ca802f5deb2",
+      "currentDeploymentVersion": "de946b49-a3af-4f2e-b282-85fd0e5e1274",
+      "reason": ""
+    }
+  ],
+  "lastSuccessfulVersion": "de946b49-a3af-4f2e-b282-85fd0e5e1274"
+}

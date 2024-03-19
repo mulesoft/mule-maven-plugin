@@ -69,25 +69,6 @@ public class ContentGeneratorTest {
     contentGenerator = new MuleContentGenerator(info, null);
   }
 
-  //  @Test
-  //  public void generateContentWithParent() throws IOException {
-  //    DefaultProjectInformation info = new DefaultProjectInformation.Builder()
-  //        .withGroupId(GROUP_ID)
-  //        .withArtifactId(ARTIFACT_ID)
-  //        .withVersion(VERSION)
-  //        .withPackaging(packagingType.toString())
-  //        .withProjectBaseFolder(projectBaseFolder.toAbsolutePath())
-  //        .setTestProject(false)
-  //        .withBuildDirectory(projectTargetFolder.toPath())
-  //        .withDependencyProject(mock(Project.class))
-  //        .withResolvedPom(mock(Pom.class))
-  //        .build();
-  //    Parent parent = mock(Parent.class);
-  //    contentGenerator = new MuleContentGenerator(info, parent);
-  //    when(parent.getRelativePath()).thenReturn("");
-  //    contentGenerator.createDescriptors();
-  //  }
-
   @Test
   public void failCreationProjectBaseFolderNonExistent() {
     assertThatThrownBy(() -> {

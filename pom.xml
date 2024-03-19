@@ -530,11 +530,11 @@
                                                     <value>COVEREDRATIO</value>
                                                     <minimum>${coverageLineLimit}</minimum>
                                                 </limit>
-<!--                                                <limit>-->
-<!--                                                    <counter>BRANCH</counter>-->
-<!--                                                    <value>COVEREDRATIO</value>-->
-<!--                                                    <minimum>${coverageBranchLimit}</minimum>-->
-<!--                                                </limit>-->
+                                                <limit>
+                                                    <counter>BRANCH</counter>
+                                                    <value>COVEREDRATIO</value>
+                                                    <minimum>${coverageBranchLimit}</minimum>
+                                                </limit>
                                             </limits>
                                         </rule>
                                     </rules>

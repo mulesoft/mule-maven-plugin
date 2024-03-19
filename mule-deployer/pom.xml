@@ -14,6 +14,7 @@
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
 
         <coverageLineLimit>0.46</coverageLineLimit>
+        <coverageBranchLimit>0.38</coverageBranchLimit>
     </properties>
 
     <build>

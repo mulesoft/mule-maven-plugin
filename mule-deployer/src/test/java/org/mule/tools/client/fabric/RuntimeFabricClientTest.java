@@ -6,12 +6,10 @@
  */
 package org.mule.tools.client.fabric;
 
-import com.google.common.collect.Maps;
 import com.google.common.net.MediaType;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mule.tools.client.fabric.model.DeploymentDetailedResponse;
@@ -93,7 +91,6 @@ class RuntimeFabricClientTest {
   }
 
   @Test
-  @Disabled
   void getSingleDeploymentTest() throws IOException {
     validateDeployment("single-deployment.json", deploymentDetailedResponse -> {
       assertThat(deploymentDetailedResponse.application.configuration).isNotNull();
@@ -109,7 +106,6 @@ class RuntimeFabricClientTest {
   }
 
   @Test
-  @Disabled
   void getSingleDeploymentTestWithEmptyPropertiesObject() throws IOException {
     validateDeployment("single-deployment-000.json", deploymentDetailedResponse -> {
       assertThat(deploymentDetailedResponse.application.configuration).isNotNull();
@@ -125,7 +121,6 @@ class RuntimeFabricClientTest {
   }
 
   @Test
-  @Disabled
   void getSingleDeploymentTestWithNullProperties() throws IOException {
     // can't see how to differentiate null from {}
     validateDeployment("single-deployment-001.json", deploymentDetailedResponse -> {
@@ -142,7 +137,6 @@ class RuntimeFabricClientTest {
   }
 
   @Test
-  @Disabled
   void getSingleDeploymentTestWithoutProperties() throws IOException {
     validateDeployment("single-deployment-002.json", deploymentDetailedResponse -> {
       assertThat(deploymentDetailedResponse.application.configuration).isNotNull();
@@ -153,7 +147,6 @@ class RuntimeFabricClientTest {
   }
 
   @Test
-  @Disabled
   void getSingleDeploymentTestWithInvalidProperties() throws IOException {
     // best effort unmarshalling, not validate invalid values. in adapter node value is null and text content retrieves traversal string chunks
     validateDeployment("single-deployment-003.json", deploymentDetailedResponse -> {

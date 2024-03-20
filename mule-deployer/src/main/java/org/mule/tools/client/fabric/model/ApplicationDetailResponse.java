@@ -14,6 +14,6 @@ public class ApplicationDetailResponse {
   public AssetReference ref;
   public String status;
   public String desiredState;
-  public Map<String, String> configuration;
+  public ApplicationConfiguration configuration;
   public List<AssetResponse> assets;
 }

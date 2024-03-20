@@ -12,6 +12,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.integration.ClientAndServer;
+import org.mule.tools.client.fabric.model.DeploymentDetailedResponse;
 import org.mule.tools.client.fabric.model.DeploymentGenericResponse;
 import org.mule.tools.client.fabric.model.Deployments;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
@@ -24,6 +25,7 @@ import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.String.format;
@@ -46,6 +48,8 @@ class RuntimeFabricClientTest {
   public static final String FAKE_PASSWORD = "fakePassword";
   public static final int DEFAULT_PORT = 0;
   public static final String DEPLOYMENTS_JSON = "deployments.json";
+  public static final String DEPLOYMENT_ID = "7096496b-9407-4e67-9a38-8963c3727735";
+
   private ClientAndServer mockServer;
 
   private static final String ORG_ID = "abcdef";
@@ -84,6 +88,98 @@ class RuntimeFabricClientTest {
     }
 
     assertThat(verifiedIds).as("Verified ids should be empty").isEmpty();
+  }
+
+  @Test
+  void getSingleDeploymentTest() throws IOException {
+    validateDeployment("single-deployment.json", deploymentDetailedResponse -> {
+      assertThat(deploymentDetailedResponse.application.configuration).isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.properties)
+          .isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.properties.size())
+          .isEqualTo(6);
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.secureProperties)
+          .isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.secureProperties
+          .size()).isEqualTo(7);
+    });
+  }
+
+  @Test
+  void getSingleDeploymentTestWithEmptyPropertiesObject() throws IOException {
+    validateDeployment("single-deployment-000.json", deploymentDetailedResponse -> {
+      assertThat(deploymentDetailedResponse.application.configuration).isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.properties)
+          .isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.properties.size())
+          .isEqualTo(0);
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.secureProperties)
+          .isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.secureProperties
+          .size()).isEqualTo(0);
+    });
+  }
+
+  @Test
+  void getSingleDeploymentTestWithNullProperties() throws IOException {
+    // can't see how to differentiate null from {}
+    validateDeployment("single-deployment-001.json", deploymentDetailedResponse -> {
+      assertThat(deploymentDetailedResponse.application.configuration).isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.properties)
+          .isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.properties.size())
+          .isEqualTo(0);
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.secureProperties)
+          .isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.secureProperties
+          .size()).isEqualTo(0);
+    });
+  }
+
+  @Test
+  void getSingleDeploymentTestWithoutProperties() throws IOException {
+    validateDeployment("single-deployment-002.json", deploymentDetailedResponse -> {
+      assertThat(deploymentDetailedResponse.application.configuration).isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.properties).isNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.secureProperties)
+          .isNull();
+    });
+  }
+
+  @Test
+  void getSingleDeploymentTestWithInvalidProperties() throws IOException {
+    // best effort unmarshalling, not validate invalid values. in adapter node value is null and text content retrieves traversal string chunks
+    validateDeployment("single-deployment-003.json", deploymentDetailedResponse -> {
+      assertThat(deploymentDetailedResponse.application.configuration).isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.properties)
+          .isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.properties.size())
+          .isEqualTo(0);
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.secureProperties)
+          .isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.secureProperties
+          .size()).isEqualTo(0);
+    });
+  }
+
+
+  private void validateDeployment(String testCase, Consumer<DeploymentDetailedResponse> consumer) throws IOException {
+    File deploymentJsonFile = new File(getClass().getClassLoader().getResource(
+                                                                               testCase)
+        .getFile());
+    List<String> lines = Files.readAllLines(deploymentJsonFile.toPath());
+    String deploymentJsonContent = String.join(System.lineSeparator(), lines);
+
+    String singleDeploymentUrl = format(DEPLOYMENTS_PATH + "/%s", ORG_ID, ENV_ID, DEPLOYMENT_ID);
+
+    mockServer.when(request().withMethod(GET).withPath(singleDeploymentUrl))
+        .respond(response().withStatusCode(200).withBody(deploymentJsonContent, MediaType.JSON_UTF_8));
+
+    RuntimeFabricClient client = buildClientSpy();
+
+    DeploymentDetailedResponse response = client.getDeployment(DEPLOYMENT_ID);
+
+    consumer.accept(response);
   }
 
   private RuntimeFabricClient buildClientSpy() {

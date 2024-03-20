@@ -11,16 +11,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.api.classloader.model.Artifact;
+import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.packager.resources.content.ResourcesContent;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
 
 public class DomainBundleProjectResourcesContentProcessorTest {
 
@@ -55,6 +59,15 @@ public class DomainBundleProjectResourcesContentProcessorTest {
     contentProcessorSpy.process(resourcesMock);
 
     verify(contentProcessorSpy, times(3)).copyAsDomainOrApplication(any());
+  }
+
+  @Test
+  public void copyAsDomainOrApplicationTest() throws IOException, URISyntaxException {
+    ArtifactCoordinates artifactCoordinates = new ArtifactCoordinates("org.mule.tools.maven", "mule-classloader-model", "4.1.0");
+    targetFolder.resolve("applications").toFile().mkdirs();
+    artifactCoordinates.setClassifier("classifier");
+    Artifact artifact = new Artifact(artifactCoordinates, targetFolder.toUri());
+    contentProcessor.copyAsDomainOrApplication(artifact);
   }
 
 }

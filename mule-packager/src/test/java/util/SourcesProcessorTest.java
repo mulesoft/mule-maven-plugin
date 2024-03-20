@@ -46,7 +46,7 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
 
-@Disabled
+
 class SourcesProcessorTest {
 
   @TempDir
@@ -88,6 +88,8 @@ class SourcesProcessorTest {
 
     this.sourcesProcessor = new SourcesProcessor(mavenComponents);
   }
+
+
 
   @Test
   void nullMavenComponents() {

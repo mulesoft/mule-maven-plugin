@@ -49,7 +49,8 @@ public class AstGenerator {
   public AstGenerator(MavenClient mavenClient, String runtimeVersion,
                       Set<Artifact> allDependencies, Path workingDir, ClassRealm classRealm,
                       List<Dependency> directDependencies) {
-    this(mavenClient, runtimeVersion, allDependencies, workingDir, classRealm, directDependencies, true, Classifier.MULE_APPLICATION.toString());
+    this(mavenClient, runtimeVersion, allDependencies, workingDir, classRealm, directDependencies, true,
+         Classifier.MULE_APPLICATION.toString());
   }
 
   public AstGenerator(MavenClient mavenClient, String runtimeVersion,
@@ -88,12 +89,21 @@ public class AstGenerator {
       emptyPropertyResolverBuilder.withoutFailuresIfPropertyNotPresent();
     }
 
-    if (Classifier.MULE_PLUGIN.toString().equals(classifier)){
+    if (Classifier.MULE_PLUGIN.toString().equals(classifier)) {
       emptyPropertyResolverBuilder.withoutFailuresIfPropertyNotPresent();
     }
 
     ConfigurationPropertiesResolver propertiesResolver = emptyPropertyResolverBuilder.build();
     builder.withExtensionModels(extensionModels);
+    //TODO - Delete this try catch when fix W-15556985 is implemented - Runtime Team
+    //See MMP Bug W-14998627 and UserStory W-15554719
+    builder.withPropertyResolver(propertyKey -> {
+      try {
+        return (String) propertiesResolver.resolveValue(propertyKey);
+      } catch (Throwable throwable) {
+        return propertyKey;
+      }
+    });
     builder.withPropertyResolver(propertyKey -> (String) propertiesResolver.resolveValue(propertyKey));
     xmlParser = builder.build();
   }

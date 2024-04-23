@@ -9,6 +9,7 @@ package org.mule.tooling.internal;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.mule.maven.client.api.MavenClient;
+import org.mule.maven.pom.parser.api.model.Classifier;
 import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.extension.api.model.construct.ImmutableConstructModel;
@@ -42,7 +43,19 @@ class AstGeneratorTest extends MavenClientTest {
         .isExactlyInstanceOf(ConfigurationException.class);
   }
 
+  @Test
+  void generateASTWithMissingProperty() throws Exception {
+    final Pair<AstGenerator, ArtifactAst> elements = getElements("mule-config3.xml", true,
+            Classifier.MULE_PLUGIN.toString());
+    elements.getLeft().validateAST(elements.getRight());
+  }
+
   private Pair<AstGenerator, ArtifactAst> getElements(String muleConfiguration) {
+    return getElements(muleConfiguration, true,
+                       Classifier.MULE_APPLICATION.toString());
+  }
+
+  private Pair<AstGenerator, ArtifactAst> getElements(String muleConfiguration, Boolean asApplication, String classifier) {
     try {
       final Path workingPath = Paths.get("src", "test", "resources", "test-project");
       final Path configsBasePath = workingPath.resolve("src/main/mule");
@@ -50,7 +63,8 @@ class AstGeneratorTest extends MavenClientTest {
       final MavenClient client =
           getMavenClientInstance(getMavenConfiguration(m2Repo, getUserSettings(m2Repo), getSettingsSecurity(m2Repo)));
       final AstGenerator generator =
-          new AstGenerator(client, "4.3.0", Collections.emptySet(), workingPath, null, Collections.emptyList());
+          new AstGenerator(client, "4.3.0", Collections.emptySet(), workingPath, null, Collections.emptyList(), asApplication,
+                           classifier);
       final ArtifactAst artifact =
           generator.generateAST(Collections.singletonList(configsBasePath.resolve(muleConfiguration).toFile().getAbsolutePath()),
                                 configsBasePath);

@@ -104,7 +104,6 @@ public class AstGenerator {
         return propertyKey;
       }
     });
-    builder.withPropertyResolver(propertyKey -> (String) propertiesResolver.resolveValue(propertyKey));
     xmlParser = builder.build();
   }
 

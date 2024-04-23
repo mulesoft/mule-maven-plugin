@@ -46,7 +46,7 @@
         <java.target>1.8</java.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <dw.version>2.5.0</dw.version>
-        <mule.version>4.7.0-SNAPSHOT</mule.version>
+        <mule.version>4.8.0-20240422</mule.version>
         <mule.api.version>1.7.0-SNAPSHOT</mule.api.version>
         <mule.maven.client.impl.version>2.1.0</mule.maven.client.impl.version>
         <mule.distribution.standalone.version>4.7.0-SNAPSHOT</mule.distribution.standalone.version>

@@ -51,7 +51,7 @@ public abstract class AbstractClient {
   protected DeployerLog log;
   protected static final String CONNECTOR_PROVIDER_PROPERTY = "connectorProvider";
   protected static final String APACHE_5 = "apache";
-  protected static final String HTTP_URL = "httpURL";
+  protected static final String HTTP_URL = "http";
   protected static final String JDK = "jdk";
 
 

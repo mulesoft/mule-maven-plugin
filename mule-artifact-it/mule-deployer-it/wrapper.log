@@ -1288,3 +1288,4 @@ WARN  2017-11-01 10:40:40,369 [pool-70-thread-1] com.mulesoft.agent.services.Kee
 WARN  2017-11-01 10:40:43,376 [pool-70-thread-1] com.mulesoft.agent.services.KeepAliveService: Ping service could not be completed, the channel is insecure: InsecureTransportException: The Web socket channel is not authorized.
 WARN  2017-11-01 10:40:46,389 [pool-70-thread-1] com.mulesoft.agent.services.KeepAliveService: Ping service could not be completed, the channel is insecure: InsecureTransportException: The Web socket channel is not authorized.
 WARN  2017-11-01 10:40:49,409 [pool-70-thread-1] com.mulesoft.agent.services.KeepAliveService: Ping service could not be completed, the channel is insecure: InsecureTransportException: The Web socket channel is not authorized.
+<-- Wrapper Stopped

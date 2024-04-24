@@ -18,6 +18,8 @@ import static org.glassfish.jersey.client.ClientProperties.REQUEST_ENTITY_PROCES
 import static org.glassfish.jersey.client.HttpUrlConnectorProvider.SET_METHOD_WORKAROUND;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.LOGIN;
 import org.glassfish.jersey.jdk.connector.JdkConnectorProvider;
+import org.glassfish.jersey.apache5.connector.Apache5ConnectorProvider;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -47,6 +49,11 @@ public abstract class AbstractClient {
   private String userAgent = "mule-deployer%s";
 
   protected DeployerLog log;
+  protected static final String CONNECTOR_PROVIDER_PROPERTY = "connectorProvider";
+  protected static final String APACHE_5 = "apache";
+  protected static final String HTTP_URL = "httpURL";
+  protected static final String JDK = "jdk";
+
 
   private boolean isClientInitialized = false;
 
@@ -138,7 +145,18 @@ public abstract class AbstractClient {
 
   protected WebTarget getTarget(String uri, String path) {
     ClientConfig configuration = new ClientConfig();
-    configuration.connectorProvider(new JdkConnectorProvider());
+    String connector = System.getProperty(CONNECTOR_PROVIDER_PROPERTY, JDK);
+    switch (connector) {
+      case JDK:
+        configuration.connectorProvider(new JdkConnectorProvider());
+        break;
+      case APACHE_5:
+        configuration.connectorProvider(new Apache5ConnectorProvider());
+        break;
+      case HTTP_URL:
+        configuration.connectorProvider(new HttpUrlConnectorProvider());
+        break;
+    }
     ClientBuilder builder = ClientBuilder.newBuilder().withConfig(configuration);
 
 

@@ -11,6 +11,7 @@ import static org.mule.runtime.ast.internal.serialization.json.JsonArtifactAstSe
 
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.pom.parser.api.model.BundleDescriptor;
+import org.mule.maven.pom.parser.api.model.Classifier;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.util.Pair;
 import org.mule.runtime.ast.api.ArtifactAst;
@@ -48,12 +49,13 @@ public class AstGenerator {
   public AstGenerator(MavenClient mavenClient, String runtimeVersion,
                       Set<Artifact> allDependencies, Path workingDir, ClassRealm classRealm,
                       List<Dependency> directDependencies) {
-    this(mavenClient, runtimeVersion, allDependencies, workingDir, classRealm, directDependencies, true);
+    this(mavenClient, runtimeVersion, allDependencies, workingDir, classRealm, directDependencies, true,
+         Classifier.MULE_APPLICATION.toString());
   }
 
   public AstGenerator(MavenClient mavenClient, String runtimeVersion,
                       Set<Artifact> allDependencies, Path workingDir, ClassRealm classRealm,
-                      List<Dependency> directDependencies, Boolean asApplication) {
+                      List<Dependency> directDependencies, Boolean asApplication, String classifier) {
     ClassLoader classloader = AstGenerator.class.getClassLoader();
     ExtensionModelLoader loader = ExtensionModelLoaderFactory.createLoader(mavenClient, workingDir, classloader, runtimeVersion);
     Set<ExtensionModel> extensionModels = new HashSet<>();
@@ -78,15 +80,22 @@ public class AstGenerator {
     Set<ExtensionModel> runtimeExtensionModels = loader.getRuntimeExtensionModels();
     extensionModels.addAll(runtimeExtensionModels);
     AstXmlParser.Builder builder = new AstXmlParser.Builder();
+    ConfigurationPropertiesHierarchyBuilder emptyPropertyResolverBuilder = new ConfigurationPropertiesHierarchyBuilder();
+    ConfigurationPropertiesResolver propertiesResolver = emptyPropertyResolverBuilder.build();
+
     if (!asApplication) {
       builder.withArtifactType(ArtifactType.DOMAIN);
     }
-    builder.withExtensionModels(extensionModels);
 
-    // Get a more specific error, so we can discriminate unresolved imports because the importFile has a property of because the
-    // file does not exist.
-    ConfigurationPropertiesResolver emptyPropertyResolver = new ConfigurationPropertiesHierarchyBuilder().build();
-    builder.withPropertyResolver(propertyKey -> (String) emptyPropertyResolver.resolveValue(propertyKey));
+    if (!asApplication || Classifier.MULE_PLUGIN.toString().equals(classifier)) {
+      emptyPropertyResolverBuilder.withoutFailuresIfPropertyNotPresent();
+    }
+    //TODO - Delete this "else" when fix W-15556985 is implemented - Runtime Team
+    // See MMP Bug W-14998627 and UserStory W-15554719
+    else {
+      builder.withPropertyResolver(propertyKey -> (String) propertiesResolver.resolveValue(propertyKey));
+    }
+    builder.withExtensionModels(extensionModels);
 
     xmlParser = builder.build();
   }

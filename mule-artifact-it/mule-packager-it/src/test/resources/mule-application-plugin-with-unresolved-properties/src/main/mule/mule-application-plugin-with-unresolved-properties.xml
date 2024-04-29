@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<!-- Properties -->
+	<configuration-properties file="config/common-config-${missing-property-1}.yaml" doc:description="common-config-${missing-property-2}.yaml" />
+	<import file="${env.dependant}"/>
+	
+</mule>

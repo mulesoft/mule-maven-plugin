@@ -6,12 +6,9 @@
  */
 package org.mule.tools.client.fabric;
 
-import com.google.common.collect.Maps;
 import com.google.common.net.MediaType;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mule.tools.client.fabric.model.DeploymentDetailedResponse;
@@ -93,7 +90,6 @@ class RuntimeFabricClientTest {
   }
 
   @Test
-  @Disabled
   void getSingleDeploymentTest() throws IOException {
     validateDeployment("single-deployment.json", deploymentDetailedResponse -> {
       assertThat(deploymentDetailedResponse.application.configuration).isNotNull();
@@ -109,7 +105,21 @@ class RuntimeFabricClientTest {
   }
 
   @Test
-  @Disabled
+  void getSingleDeploymentTWithNumbersTest() throws IOException {
+    validateDeployment("single-deployment-with-numbers.json", deploymentDetailedResponse -> {
+      assertThat(deploymentDetailedResponse.application.configuration).isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.properties)
+              .isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.properties.size())
+              .isEqualTo(7);
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.secureProperties)
+              .isNotNull();
+      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.secureProperties
+              .size()).isEqualTo(8);
+    });
+  }
+
+  @Test
   void getSingleDeploymentTestWithEmptyPropertiesObject() throws IOException {
     validateDeployment("single-deployment-000.json", deploymentDetailedResponse -> {
       assertThat(deploymentDetailedResponse.application.configuration).isNotNull();
@@ -125,24 +135,17 @@ class RuntimeFabricClientTest {
   }
 
   @Test
-  @Disabled
   void getSingleDeploymentTestWithNullProperties() throws IOException {
-    // can't see how to differentiate null from {}
     validateDeployment("single-deployment-001.json", deploymentDetailedResponse -> {
       assertThat(deploymentDetailedResponse.application.configuration).isNotNull();
       assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.properties)
-          .isNotNull();
-      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.properties.size())
-          .isEqualTo(0);
+          .isNull();
       assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.secureProperties)
-          .isNotNull();
-      assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.secureProperties
-          .size()).isEqualTo(0);
+          .isNull();
     });
   }
 
   @Test
-  @Disabled
   void getSingleDeploymentTestWithoutProperties() throws IOException {
     validateDeployment("single-deployment-002.json", deploymentDetailedResponse -> {
       assertThat(deploymentDetailedResponse.application.configuration).isNotNull();
@@ -153,7 +156,6 @@ class RuntimeFabricClientTest {
   }
 
   @Test
-  @Disabled
   void getSingleDeploymentTestWithInvalidProperties() throws IOException {
     // best effort unmarshalling, not validate invalid values. in adapter node value is null and text content retrieves traversal string chunks
     validateDeployment("single-deployment-003.json", deploymentDetailedResponse -> {

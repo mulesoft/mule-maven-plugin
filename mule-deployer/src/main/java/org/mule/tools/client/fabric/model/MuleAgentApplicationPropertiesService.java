@@ -17,6 +17,7 @@ import java.util.Map;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MuleAgentApplicationPropertiesService {
 
+  @XmlElement(name = "applicationName")
   public String applicationName;
 
   @XmlElement(name = "properties")

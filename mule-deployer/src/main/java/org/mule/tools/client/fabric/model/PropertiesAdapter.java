@@ -6,43 +6,53 @@
  */
 package org.mule.tools.client.fabric.model;
 
-import org.apache.commons.lang3.StringUtils;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.eclipse.persistence.oxm.annotations.XmlVariableNode;
 
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Map.Entry;
 
-public final class PropertiesAdapter extends XmlAdapter<Object, Map<String, String>> {
+public class PropertiesAdapter extends XmlAdapter<PropertiesAdapter.StringStringMap, Map<String, String>> {
 
-  @Override
-  public Object marshal(Map<String, String> v) throws Exception {
-    throw new UnsupportedOperationException();
+  public static class StringStringMap {
+    @XmlVariableNode("key")
+    List<MapEntry> entries = new ArrayList<>();
+  }
+
+  public static class MapEntry {
+    @XmlTransient
+    public String key;
+
+    @XmlValue
+    public String value;
   }
 
   @Override
-  public Map<String, String> unmarshal(Object value) throws Exception {
-    if (value == null) {
-      return null;
-    }
-    if (!(value instanceof Element)) {
-      throw new IllegalArgumentException(String.format("Unable to unmarshall value of type %s ", value.getClass().getTypeName()));
-    }
-    Element element = (Element) value;
-    Map<String, String> map = new HashMap<>();
-    NodeList childNodes = element.getChildNodes();
-    for (int i = 0; i < childNodes.getLength(); i++) {
-      Optional.ofNullable(childNodes.item(i)).ifPresent(node -> {
-        if (node.getNodeType() == Element.ELEMENT_NODE) {
-          if (node.getLocalName() != null && node.getTextContent() != null) {
-            map.put(node.getLocalName(), node.getTextContent());
-          }
-        }
-      });
-    }
+  public Map<String, String> unmarshal(StringStringMap stringLongMap) throws Exception {
+    Map<String, String> map = new HashMap<>(stringLongMap.entries.size());
+
+    for (MapEntry entry : stringLongMap.entries)
+      map.put(entry.key, entry.value);
+
     return map;
+  }
+
+  @Override
+  public StringStringMap marshal(Map<String, String> map) throws Exception {
+    StringStringMap output = new StringStringMap();
+
+    for (Entry<String, String> entry : map.entrySet()) {
+      MapEntry mapEntry = new MapEntry();
+      mapEntry.key = entry.getKey();
+      mapEntry.value = entry.getValue();
+      output.entries.add(mapEntry);
+    }
+
+    return output;
   }
 }

@@ -53,8 +53,9 @@ public class Application {
   // TODO a class VpnConfig
   private Map<String, String> vpnConfig;
 
-  public void setDeploymentUpdateStatus(String deploymentUpdateStatus) {
+  public Application setDeploymentUpdateStatus(String deploymentUpdateStatus) {
     this.deploymentUpdateStatus = deploymentUpdateStatus;
+    return this;
   }
 
   public String getDeploymentUpdateStatus() {
@@ -65,184 +66,207 @@ public class Application {
     return id;
   }
 
-  public void setId(String id) {
+  public Application setId(String id) {
     this.id = id;
+    return this;
   }
 
   public String getDomain() {
     return domain;
   }
 
-  public void setDomain(String domain) {
+  public Application setDomain(String domain) {
     this.domain = domain;
+    return this;
   }
 
   public String getFullDomain() {
     return fullDomain;
   }
 
-  public void setFullDomain(String fullDomain) {
+  public Application setFullDomain(String fullDomain) {
     this.fullDomain = fullDomain;
+    return this;
   }
 
   public String getDescription() {
     return description;
   }
 
-  public void setDescription(String description) {
+  public Application setDescription(String description) {
     this.description = description;
+    return this;
   }
 
   public Map<String, String> getProperties() {
     return properties;
   }
 
-  public void setProperties(Map<String, String> properties) {
+  public Application setProperties(Map<String, String> properties) {
     this.properties = properties;
+    return this;
   }
 
   public String getStatus() {
     return status;
   }
 
-  public void setStatus(String status) {
+  public Application setStatus(String status) {
     this.status = status;
+    return this;
   }
 
   public Long getLastUpdateTime() {
     return lastUpdateTime;
   }
 
-  public void setLastUpdateTime(Long lastUpdateTime) {
+  public Application setLastUpdateTime(Long lastUpdateTime) {
     this.lastUpdateTime = lastUpdateTime;
+    return this;
   }
 
   public String getFilename() {
     return filename;
   }
 
-  public void setFilename(String filename) {
+  public Application setFilename(String filename) {
     this.filename = filename;
+    return this;
   }
 
   public Integer getTentants() {
     return tentants;
   }
 
-  public void setTentants(Integer tentants) {
+  public Application setTentants(Integer tentants) {
     this.tentants = tentants;
+    return this;
   }
 
   public String getUserId() {
     return userId;
   }
 
-  public void setUserId(String userId) {
+  public Application setUserId(String userId) {
     this.userId = userId;
+    return this;
   }
 
   public String getUserName() {
     return userName;
   }
 
-  public void setUserName(String userName) {
+  public Application setUserName(String userName) {
     this.userName = userName;
+    return this;
   }
 
   public List<IpAddress> getIpAddresses() {
     return ipAddresses;
   }
 
-  public void setIpAddresses(List<IpAddress> ipAddresses) {
+  public Application setIpAddresses(List<IpAddress> ipAddresses) {
     this.ipAddresses = ipAddresses;
+    return this;
   }
 
   public List<LogLevelInfo> getLogLevels() {
     return logLevels;
   }
 
-  public void setLogLevels(List<LogLevelInfo> logLevels) {
+  public Application setLogLevels(List<LogLevelInfo> logLevels) {
     this.logLevels = logLevels;
+    return this;
   }
 
   public Boolean getPersistentQueues() {
     return persistentQueues;
   }
 
-  public void setPersistentQueues(Boolean persistentQueues) {
+  public Application setPersistentQueues(Boolean persistentQueues) {
     this.persistentQueues = persistentQueues;
+    return this;
   }
 
   public Boolean getPersistentQueuesEncryptionEnabled() {
     return persistentQueuesEncryptionEnabled;
   }
 
-  public void setPersistentQueuesEncryptionEnabled(Boolean persistentQueuesEncryptionEnabled) {
+  public Application setPersistentQueuesEncryptionEnabled(Boolean persistentQueuesEncryptionEnabled) {
     this.persistentQueuesEncryptionEnabled = persistentQueuesEncryptionEnabled;
+    return this;
   }
 
   public Boolean getPersistentQueuesEncrypted() {
     return persistentQueuesEncrypted;
   }
 
-  public void setPersistentQueuesEncrypted(Boolean persistentQueuesEncrypted) {
+  public Application setPersistentQueuesEncrypted(Boolean persistentQueuesEncrypted) {
     this.persistentQueuesEncrypted = persistentQueuesEncrypted;
+    return this;
   }
 
   public Boolean getLoggingCustomLog4JEnabled() {
     return loggingCustomLog4JEnabled;
   }
 
-  public void setLoggingCustomLog4JEnabled(Boolean loggingCustomLog4JEnabled) {
+  public Application setLoggingCustomLog4JEnabled(Boolean loggingCustomLog4JEnabled) {
     this.loggingCustomLog4JEnabled = loggingCustomLog4JEnabled;
+    return this;
   }
 
   public Boolean getMonitoringEnabled() {
     return monitoringEnabled;
   }
 
-  public void setMonitoringEnabled(Boolean monitoringEnabled) {
+  public Application setMonitoringEnabled(Boolean monitoringEnabled) {
     this.monitoringEnabled = monitoringEnabled;
+    return this;
   }
 
   public Boolean getMonitoringAutoRestart() {
     return monitoringAutoRestart;
   }
 
-  public void setMonitoringAutoRestart(Boolean monitoringAutoRestart) {
+  public Application setMonitoringAutoRestart(Boolean monitoringAutoRestart) {
     this.monitoringAutoRestart = monitoringAutoRestart;
+    return this;
   }
 
   public Boolean getStaticIPsEnabled() {
     return staticIPsEnabled;
   }
 
-  public void setStaticIPsEnabled(Boolean staticIPsEnabled) {
+  public Application setStaticIPsEnabled(Boolean staticIPsEnabled) {
     this.staticIPsEnabled = staticIPsEnabled;
+    return this;
   }
 
   public Boolean getMultitenanted() {
     return multitenanted;
   }
 
-  public void setMultitenanted(Boolean multitenanted) {
+  public Application setMultitenanted(Boolean multitenanted) {
     this.multitenanted = multitenanted;
+    return this;
   }
 
   public Boolean getHasFile() {
     return hasFile;
   }
 
-  public void setHasFile(Boolean hasFile) {
+  public Application setHasFile(Boolean hasFile) {
     this.hasFile = hasFile;
+    return this;
   }
 
   public Boolean getSecureDataGatewayEnabled() {
     return secureDataGatewayEnabled;
   }
 
-  public void setSecureDataGatewayEnabled(Boolean secureDataGatewayEnabled) {
+  public Application setSecureDataGatewayEnabled(Boolean secureDataGatewayEnabled) {
     this.secureDataGatewayEnabled = secureDataGatewayEnabled;
+    return this;
   }
 
   public Boolean getVpnEnabled() {
@@ -257,63 +281,71 @@ public class Application {
     return trackingSettings;
   }
 
-  public void setTrackingSettings(Map<String, String> trackingSettings) {
+  public Application setTrackingSettings(Map<String, String> trackingSettings) {
     this.trackingSettings = trackingSettings;
+    return this;
   }
 
   public MuleVersion getMuleVersion() {
     return muleVersion;
   }
 
-  public void setMuleVersion(MuleVersion muleVersion) {
+  public Application setMuleVersion(MuleVersion muleVersion) {
     this.muleVersion = muleVersion;
+    return this;
   }
 
   public MuleVersion getPreviousMuleVersion() {
     return previousMuleVersion;
   }
 
-  public void setPreviousMuleVersion(MuleVersion previousMuleVersion) {
+  public Application setPreviousMuleVersion(MuleVersion previousMuleVersion) {
     this.previousMuleVersion = previousMuleVersion;
+    return this;
   }
 
   public List<MuleVersion> getSupportedVersions() {
     return supportedVersions;
   }
 
-  public void setSupportedVersions(List<MuleVersion> supportedVersions) {
+  public Application setSupportedVersions(List<MuleVersion> supportedVersions) {
     this.supportedVersions = supportedVersions;
+    return this;
   }
 
   public Workers getWorkers() {
     return workers;
   }
 
-  public void setWorkers(Workers workers) {
+  public Application setWorkers(Workers workers) {
     this.workers = workers;
+    return this;
   }
 
   public Map<String, String> getVpnConfig() {
     return vpnConfig;
   }
 
-  public void setVpnConfig(Map<String, String> vpnConfig) {
+  public Application setVpnConfig(Map<String, String> vpnConfig) {
     this.vpnConfig = vpnConfig;
+    return this;
   }
 
   public String getRegion() {
     return region;
   }
 
-  public void setRegion(String region) {
+  public Application setRegion(String region) {
     this.region = region;
+    return this;
   }
 
   public Boolean getObjectStoreV1() {
     return objectStoreV1;
   }
 
-  public void setObjectStoreV1(Boolean objectStoreV1) {
+  public Application setObjectStoreV1(Boolean objectStoreV1) {
     this.objectStoreV1 = objectStoreV1;
+    return this;
   }
 }

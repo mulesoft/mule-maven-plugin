@@ -25,10 +25,7 @@ import org.mule.tools.api.packager.structure.ProjectStructure;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 
 public class DefaultValuesMuleArtifactJsonGeneratorTest {
@@ -65,9 +62,12 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
         .withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(ID, new HashMap<>()))
         .withBundleDescriptorLoader(new MuleArtifactLoaderDescriptor(MULE, new HashMap<>()));
     muleArtifact = defaultBuilder.build();
+
     builder = new MuleApplicationModel.MuleApplicationModelBuilder();
     builderSpy = spy(builder);
   }
+
+
 
   @Test
   public void setBuilderWithDefaultBundleDescriptorLoaderNullValueTest() {
@@ -194,6 +194,43 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
     assertThat(defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("exportedResources"))
         .describedAs("Exported resources are not the expected").isEqualTo(exportedResources);
   }
+
+  @Test
+  public void setBuilderWithoutclassLoaderModelLoaderDescriptorTest() throws IOException {
+    MuleArtifactContentResolver resolverMock = mock(MuleArtifactContentResolver.class);
+    doReturn(new ProjectStructure(temporaryFolder.toAbsolutePath(), true)).when(resolverMock).getProjectStructure();
+    muleArtifact = mock(MuleApplicationModel.class);
+    when(muleArtifact.getClassLoaderModelLoaderDescriptor()).thenReturn(null);
+    generator.setBuilderWithDefaultExportedResourcesValue(defaultBuilder, muleArtifact, resolverMock);
+
+  }
+
+
+
+  @Test
+  public void setBuilderWithDefaultExportedResourcesValueTestWithOriginalAttributes() throws IOException {
+    HashMap<String, Object> attributes = new HashMap<String, Object>();
+    List<String> exportedResources = new ArrayList<>();
+    exportedResources.add(JAR_1);
+    attributes.put("exportedResources", exportedResources);
+    generator = new DefaultValuesMuleArtifactJsonGenerator();
+    defaultBuilder = new MuleApplicationModel.MuleApplicationModelBuilder().setName(NAME).setMinMuleVersion(MIN_MULE_VERSION)
+        .withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(ID, attributes))
+        .withBundleDescriptorLoader(new MuleArtifactLoaderDescriptor(MULE, new HashMap<>()));
+    muleArtifact = defaultBuilder.build();
+
+    MuleArtifactContentResolver resolverMock = mock(MuleArtifactContentResolver.class);
+
+
+
+    when(resolverMock.getExportedResources()).thenReturn(exportedResources);
+
+    generator.setBuilderWithDefaultExportedResourcesValue(defaultBuilder, muleArtifact, resolverMock);
+
+    assertThat(defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("exportedResources"))
+        .describedAs("Exported resources are not the expected").isEqualTo(exportedResources);
+  }
+
 
   @Test
   public void setBuilderWithDefaultExportedResourcesValueIncludingTestResourcesTest() throws IOException {

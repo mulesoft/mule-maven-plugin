@@ -81,22 +81,19 @@ public class AstGenerator {
     extensionModels.addAll(runtimeExtensionModels);
     AstXmlParser.Builder builder = new AstXmlParser.Builder();
     ConfigurationPropertiesHierarchyBuilder emptyPropertyResolverBuilder = new ConfigurationPropertiesHierarchyBuilder();
-    ConfigurationPropertiesResolver propertiesResolver = emptyPropertyResolverBuilder.build();
 
     if (!asApplication) {
       builder.withArtifactType(ArtifactType.DOMAIN);
     }
 
-    if (!asApplication || Classifier.MULE_PLUGIN.toString().equals(classifier)) {
-      emptyPropertyResolverBuilder.withoutFailuresIfPropertyNotPresent();
-    }
-    //TODO - Delete this "else" when fix W-15556985 is implemented - Runtime Team
-    // See MMP Bug W-14998627 and UserStory W-15554719
-    else {
-      builder.withPropertyResolver(propertyKey -> (String) propertiesResolver.resolveValue(propertyKey));
-    }
     builder.withExtensionModels(extensionModels);
 
+    //TODO - Delete this "if-else" when fix W-15556985 is implemented - Runtime Team
+    // See MMP Bug W-14998627 and UserStory W-15554719
+    if (asApplication && !Classifier.MULE_PLUGIN.toString().equals(classifier)) {
+      ConfigurationPropertiesResolver propertiesResolver = emptyPropertyResolverBuilder.build();
+      builder.withPropertyResolver(propertyKey -> (String) propertiesResolver.resolveValue(propertyKey));
+    }
     xmlParser = builder.build();
   }
 

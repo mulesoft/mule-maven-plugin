@@ -128,7 +128,7 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
     AstGenerator astGenerator = new AstGenerator(getMavenClient(), runtimeVersion.toString(),
                                                  project.getArtifacts(), Paths.get(project.getBuild().getDirectory()),
                                                  descriptor.getClassRealm(), project.getDependencies(),
-                                                 contentResolver.isApplication());
+                                                 contentResolver.isApplication(), getClassifier());
     ProjectStructure projectStructure = new ProjectStructure(projectBaseFolder.toPath(), false);
 
     ArtifactAst artifactAST = astGenerator.generateAST(contentResolver.getConfigs(), projectStructure.getConfigsPath());

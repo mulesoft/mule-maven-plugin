@@ -196,4 +196,13 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
 
     assertThat(artifactAstTargetFile.exists(), is(true));
   }
+
+  @Test
+  public void astGenerationApplicationPluginWithUnresolvedPropertiesShouldNotFail() throws Exception {
+    projectBaseDirectory =
+        ProjectFactory.createProjectBaseDir("mule-application-plugin-with-unresolved-properties", this.getClass());
+    verifier = buildVerifier(projectBaseDirectory);
+    verifier.executeGoal(GOAL);
+    verifier.verifyErrorFreeLog();
+  }
 }

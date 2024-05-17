@@ -20,11 +20,13 @@ import java.util.Map.Entry;
 public class PropertiesAdapter extends XmlAdapter<PropertiesAdapter.StringStringMap, Map<String, String>> {
 
   public static class StringStringMap {
+
     @XmlVariableNode("key")
     List<MapEntry> entries = new ArrayList<>();
   }
 
   public static class MapEntry {
+
     @XmlTransient
     public String key;
 

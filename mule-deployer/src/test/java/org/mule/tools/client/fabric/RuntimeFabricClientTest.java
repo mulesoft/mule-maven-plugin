@@ -109,13 +109,13 @@ class RuntimeFabricClientTest {
     validateDeployment("single-deployment-with-numbers.json", deploymentDetailedResponse -> {
       assertThat(deploymentDetailedResponse.application.configuration).isNotNull();
       assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.properties)
-              .isNotNull();
+          .isNotNull();
       assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.properties.size())
-              .isEqualTo(7);
+          .isEqualTo(7);
       assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.secureProperties)
-              .isNotNull();
+          .isNotNull();
       assertThat(deploymentDetailedResponse.application.configuration.muleAgentApplicationPropertiesService.secureProperties
-              .size()).isEqualTo(8);
+          .size()).isEqualTo(8);
     });
   }
 

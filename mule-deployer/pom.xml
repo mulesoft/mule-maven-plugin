@@ -56,6 +56,10 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.connectors</groupId>
+            <artifactId>jersey-apache5-connector</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.connectors</groupId>
             <artifactId>jersey-jdk-connector</artifactId>
         </dependency>
         <dependency>

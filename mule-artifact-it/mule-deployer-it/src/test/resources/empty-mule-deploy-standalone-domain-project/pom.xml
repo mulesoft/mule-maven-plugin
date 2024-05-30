@@ -9,7 +9,7 @@
     <packaging>mule-domain</packaging>
 
     <properties>
-        <mule.http.connector.version>1.9.0-SNAPSHOT</mule.http.connector.version>
+        <mule.http.connector.version>1.9.0</mule.http.connector.version>
     </properties>
 
     <build>

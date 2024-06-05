@@ -13,17 +13,29 @@ import org.apache.maven.plugins.annotations.Parameter;
  */
 public class Cloudhub2DeploymentSettings extends RuntimeFabricDeploymentSettings {
 
+  public static class Environment {
+
+    protected Http http;
+
+    public Environment(Http http) {
+      this.http = http;
+    }
+  }
+
   @Parameter
   protected String instanceType;
+  protected Environment environment;
 
   public Cloudhub2DeploymentSettings() {
     super();
+    environment = buildEnvironment();
   }
 
 
   public Cloudhub2DeploymentSettings(Cloudhub2DeploymentSettings settings) {
     super(settings);
     instanceType = settings.instanceType;
+    environment = buildEnvironment();
   }
 
   public String getInstanceType() {
@@ -32,5 +44,9 @@ public class Cloudhub2DeploymentSettings extends RuntimeFabricDeploymentSettings
 
   public void setInstanceType(String instanceType) {
     this.instanceType = instanceType;
+  }
+
+  protected Environment buildEnvironment() {
+    return new Environment(http);
   }
 }

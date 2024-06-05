@@ -1,0 +1,64 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------< org.mule.tools.maven:mule-deployer >-----------------
+[INFO] Building Mule Deployer 4.3.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ mule-deployer ---
+[INFO] Deleting /Users/aguozden/REPO_MUnit/mule-maven-plugin/mule-deployer/target
+[INFO] 
+[INFO] --- jacoco-maven-plugin:0.8.11:prepare-agent (default-prepare-agent) @ mule-deployer ---
+[INFO] argLine set to -javaagent:/Users/aguozden/.m2/repository/org/jacoco/org.jacoco.agent/0.8.11/org.jacoco.agent-0.8.11-runtime.jar=destfile=/Users/aguozden/REPO_MUnit/mule-maven-plugin/target/jacoco.exec,append=true,excludes=org/mule/tools/model/**:org/mule/tools/client/cloudhub/model/*:org/mule/tools/client/fabric/model/*:org/mule/tools/client/agent/model/*:org/mule/tools/client/arm/model/*:org/mule/tools/client/authentication/model/*
+[INFO] 
+[INFO] --- maven-resources-plugin:2.7:resources (default-resources) @ mule-deployer ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/aguozden/REPO_MUnit/mule-maven-plugin/mule-deployer/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ mule-deployer ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 161 source files to /Users/aguozden/REPO_MUnit/mule-maven-plugin/mule-deployer/target/classes
+[INFO] /Users/aguozden/REPO_MUnit/mule-maven-plugin/mule-deployer/src/main/java/org/mule/tools/model/anypoint/MavenResolverMetadata.java: Some input files use or override a deprecated API.
+[INFO] /Users/aguozden/REPO_MUnit/mule-maven-plugin/mule-deployer/src/main/java/org/mule/tools/model/anypoint/MavenResolverMetadata.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- license-maven-plugin:4.2:check (default) @ mule-deployer ---
+[INFO] Checking licenses...
+[INFO] 
+[INFO] --- formatter-maven-plugin:1.9.2:validate (default) @ mule-deployer ---
+[INFO] Successfully formatted: 0 file(s)
+[INFO] Fail to format        : 0 file(s)
+[INFO] Skipped               : 217 file(s)
+[INFO] Approximate time taken: 0s
+[INFO] 
+[INFO] --- maven-resources-plugin:2.7:testResources (default-testResources) @ mule-deployer ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 9 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ mule-deployer ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 56 source files to /Users/aguozden/REPO_MUnit/mule-maven-plugin/mule-deployer/target/test-classes
+[INFO] /Users/aguozden/REPO_MUnit/mule-maven-plugin/mule-deployer/src/test/java/org/mule/tools/verification/fabric/RuntimeFabricDeploymentVerificationTest.java: Some input files use or override a deprecated API.
+[INFO] /Users/aguozden/REPO_MUnit/mule-maven-plugin/mule-deployer/src/test/java/org/mule/tools/verification/fabric/RuntimeFabricDeploymentVerificationTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] /Users/aguozden/REPO_MUnit/mule-maven-plugin/mule-deployer/src/test/java/org/mule/tools/client/cloudhub/CloudHubClientTestCase.java: /Users/aguozden/REPO_MUnit/mule-maven-plugin/mule-deployer/src/test/java/org/mule/tools/client/cloudhub/CloudHubClientTestCase.java uses unchecked or unsafe operations.
+[INFO] /Users/aguozden/REPO_MUnit/mule-maven-plugin/mule-deployer/src/test/java/org/mule/tools/client/cloudhub/CloudHubClientTestCase.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.0.0:test (default-test) @ mule-deployer ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running org.mule.tools.deployment.fabric.RequestBuilderTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.63 s - in org.mule.tools.deployment.fabric.RequestBuilderTest
+[INFO] Running org.mule.tools.deployment.cloudhub2.RequestBuilderTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s - in org.mule.tools.deployment.cloudhub2.RequestBuilderTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  5.381 s
+[INFO] Finished at: 2024-06-05T12:15:21-03:00
+[INFO] ------------------------------------------------------------------------

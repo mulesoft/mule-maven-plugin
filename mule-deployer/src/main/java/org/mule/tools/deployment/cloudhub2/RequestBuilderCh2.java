@@ -64,10 +64,11 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     return applicationModify;
   }
 
-  protected RuntimeFabricDeploymentSettings resolveDeploymentSettings(RuntimeFabricDeploymentSettings settings)
+  protected RuntimeFabricDeploymentSettings resolveDeploymentSettings(RuntimeFabricDeploymentSettings settings,
+                                                                      Boolean tracingEnabled)
       throws DeploymentException {
     RuntimeFabricDeploymentSettings resolvedDeploymentSettings =
-        new Cloudhub2DeploymentSettings((Cloudhub2DeploymentSettings) settings);
+        new Cloudhub2DeploymentSettings((Cloudhub2DeploymentSettings) settings, tracingEnabled);
 
     if (Stream.of(deployment.getMuleVersion(), deployment.getJavaVersion(), deployment.getReleaseChannel())
         .anyMatch(Optional::isPresent)) {

@@ -66,7 +66,7 @@ public class RequestBuilderTest {
   private RuntimeFabricClient runtimeFabricClientMock;
   private Cloudhub2Deployment cloudhub2Deployment;
 
-  public void setUp(Cloudhub2DeploymentSettings settings) throws DeploymentException {
+  public void setUp(Cloudhub2DeploymentSettings settings, Boolean tracingEnabled) throws DeploymentException {
     runtimeFabricClientMock = mock(RuntimeFabricClient.class);
     cloudhub2Deployment = new Cloudhub2Deployment();
     cloudhub2Deployment.setArtifact((String) null);
@@ -83,7 +83,7 @@ public class RequestBuilderTest {
     integrations.setServices(service);
     cloudhub2Deployment.setIntegrations(integrations);
     if (settings != null) {
-      cloudhub2Deployment.setDeploymentSettings(new Cloudhub2DeploymentSettings(settings));
+      cloudhub2Deployment.setDeploymentSettings(new Cloudhub2DeploymentSettings(settings, tracingEnabled));
     } else {
       cloudhub2Deployment.setDeploymentSettings(new Cloudhub2DeploymentSettings());
     }
@@ -105,23 +105,24 @@ public class RequestBuilderTest {
 
   @Test
   public void requestBuildTest() throws Exception {
-    setUp(null);
+    setUp(null, null);
     String request = new Gson().toJson(requestBuilder.buildDeploymentRequest());
     assertThat(DEPLOY_REQUEST).describedAs("request is not the expected").isEqualTo(request);
   }
 
   @Test
   public void requestBuildTestWthPublicURL() throws Exception {
+    Boolean tracingEnabled = false;
     Cloudhub2DeploymentSettings settings = new Cloudhub2DeploymentSettings();
     settings.setGenerateDefaultPublicUrl(true);
-    setUp(settings);
+    setUp(settings, tracingEnabled);
     String request = new Gson().toJson(requestBuilder.buildDeploymentRequest());
     assertThat(DEPLOY_REQUEST_WITH_PUBLIC_URL).describedAs("request is not the expected").isEqualTo(request);
   }
 
   @Test
   public void requestBuildWithResourcesAndVCoresTest() throws Exception {
-    setUp(null);
+    setUp(null, null);
     ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setInstanceType("instanceValue");
 
     assertThatThrownBy(() -> {
@@ -132,7 +133,7 @@ public class RequestBuilderTest {
 
   @Test
   public void requestBuildWithInstanceTypeTest() throws Exception {
-    setUp(null);
+    setUp(null, null);
     cloudhub2Deployment.setvCores(null);
     ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setInstanceType("instanceValue");
     String request = new Gson().toJson(requestBuilder.buildDeploymentRequest());

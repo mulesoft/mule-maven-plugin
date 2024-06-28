@@ -64,11 +64,10 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     return applicationModify;
   }
 
-  protected RuntimeFabricDeploymentSettings resolveDeploymentSettings(RuntimeFabricDeploymentSettings settings,
-                                                                      Boolean tracingEnabled)
+  protected RuntimeFabricDeploymentSettings resolveDeploymentSettings(RuntimeFabricDeploymentSettings settings)
       throws DeploymentException {
     RuntimeFabricDeploymentSettings resolvedDeploymentSettings =
-        new Cloudhub2DeploymentSettings((Cloudhub2DeploymentSettings) settings, tracingEnabled);
+        new Cloudhub2DeploymentSettings((Cloudhub2DeploymentSettings) settings);
 
     if (Stream.of(deployment.getMuleVersion(), deployment.getJavaVersion(), deployment.getReleaseChannel())
         .anyMatch(Optional::isPresent)) {
@@ -89,19 +88,16 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
   }
 
   public Object createConfiguration() {
-    Map<String, Object> properties = null;
-    if (deployment.getProperties() != null) {
-      properties = new HashMap<>();
-      properties.put("properties", deployment.getProperties());
-      properties.put("applicationName", deployment.getApplicationName());
-    }
-    if (deployment.getSecureProperties() != null) {
-      if (properties == null) {
-        properties = new HashMap<>();
-      }
-      properties.put("secureProperties", deployment.getSecureProperties());
-      properties.put("applicationName", deployment.getApplicationName());
-    }
+    Map<String, Object> properties = new HashMap<>();
+    properties.put("applicationName", deployment.getApplicationName());
+
+    Optional.ofNullable(deployment.getProperties())
+        .filter(values -> !values.isEmpty())
+        .ifPresent(values -> properties.put("properties", deployment.getProperties()));
+
+    Optional.ofNullable(deployment.getSecureProperties())
+        .filter(values -> !values.isEmpty())
+        .ifPresent(values -> properties.put("secureProperties", deployment.getProperties()));
 
     Map<String, Object> loggingServiceProperties = null;
     if (((Cloudhub2Deployment) deployment).getScopeLoggingConfigurations() != null) {

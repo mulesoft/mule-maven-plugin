@@ -17,17 +17,21 @@ public class Cloudhub2DeploymentSettings extends RuntimeFabricDeploymentSettings
   protected String instanceType;
 
   @Parameter
+  protected Autoscaling autoscaling;
+
+  @Parameter
   protected Boolean tracingEnabled;
 
   public Cloudhub2DeploymentSettings() {
     super();
+    autoscaling = new Autoscaling();
   }
-
 
   public Cloudhub2DeploymentSettings(Cloudhub2DeploymentSettings settings) {
     super(settings);
     instanceType = settings.instanceType;
     tracingEnabled = settings.tracingEnabled;
+    autoscaling = settings.autoscaling;
   }
 
   public String getInstanceType() {
@@ -45,4 +49,13 @@ public class Cloudhub2DeploymentSettings extends RuntimeFabricDeploymentSettings
   public void setTracingEnabled(Boolean tracingEnabled) {
     this.tracingEnabled = tracingEnabled;
   }
+
+  public Autoscaling getAutoscaling() {
+    return autoscaling;
+  }
+
+  public void setAutoscaling(Autoscaling autoscaling) {
+    this.autoscaling = autoscaling;
+  }
+
 }

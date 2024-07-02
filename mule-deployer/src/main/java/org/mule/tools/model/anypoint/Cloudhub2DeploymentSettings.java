@@ -24,7 +24,7 @@ public class Cloudhub2DeploymentSettings extends RuntimeFabricDeploymentSettings
 
   public Cloudhub2DeploymentSettings() {
     super();
-    autoscaling = new Autoscaling();
+    //autoscaling = new Autoscaling();
   }
 
   public Cloudhub2DeploymentSettings(Cloudhub2DeploymentSettings settings) {

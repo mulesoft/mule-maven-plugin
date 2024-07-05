@@ -17,6 +17,8 @@ import static org.glassfish.jersey.client.ClientProperties.DEFAULT_CHUNK_SIZE;
 import static org.glassfish.jersey.client.ClientProperties.REQUEST_ENTITY_PROCESSING;
 import static org.glassfish.jersey.client.HttpUrlConnectorProvider.SET_METHOD_WORKAROUND;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.LOGIN;
+
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jdk.connector.JdkConnectorProvider;
 import org.glassfish.jersey.apache5.connector.Apache5ConnectorProvider;
 import org.glassfish.jersey.client.HttpUrlConnectorProvider;
@@ -24,6 +26,7 @@ import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import javax.ws.rs.client.Client;
@@ -53,7 +56,9 @@ public abstract class AbstractClient {
   protected static final String APACHE_5 = "apache";
   protected static final String HTTP_URL = "http";
   protected static final String JDK = "jdk";
-
+  protected static final String HTTP_PROXY_URI = "http.proxyUri";
+  protected static final String HTTP_PROXY_USER = "http.proxyUser";
+  protected static final String HTTP_PROXY_PASSWORD = "http.proxyPassword";
 
   private boolean isClientInitialized = false;
 
@@ -145,6 +150,7 @@ public abstract class AbstractClient {
 
   protected WebTarget getTarget(String uri, String path) {
     ClientConfig configuration = new ClientConfig();
+    setProxyProperties(configuration);
     String connector = System.getProperty(CONNECTOR_PROVIDER_PROPERTY, JDK);
     switch (connector) {
       case JDK:
@@ -167,6 +173,21 @@ public abstract class AbstractClient {
     }
 
     return client.target(uri).path(path);
+  }
+
+  protected void setProxyProperties(ClientConfig configuration) {
+    Optional<String> uri = Optional.ofNullable(System.getProperty(HTTP_PROXY_URI));
+    Optional<String> user = Optional.ofNullable(System.getProperty(HTTP_PROXY_USER));
+    Optional<String> pass = Optional.ofNullable(System.getProperty(HTTP_PROXY_PASSWORD));
+
+    if (uri.isPresent()) {
+      configuration.property(ClientProperties.PROXY_URI, uri.get());
+
+      if (user.isPresent() && pass.isPresent()) {
+        configuration.property(ClientProperties.PROXY_USERNAME, user.get());
+        configuration.property(ClientProperties.PROXY_PASSWORD, pass.get());
+      }
+    }
   }
 
   // TODO find a more generic way of doing this

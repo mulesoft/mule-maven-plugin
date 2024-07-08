@@ -18,6 +18,13 @@ import static org.glassfish.jersey.client.ClientProperties.REQUEST_ENTITY_PROCES
 import static org.glassfish.jersey.client.HttpUrlConnectorProvider.SET_METHOD_WORKAROUND;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.LOGIN;
 
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.CredentialsProvider;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.auth.CredentialsProviderBuilder;
+import org.apache.hc.core5.http.HttpHost;
+import org.glassfish.jersey.apache5.connector.Apache5ClientProperties;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jdk.connector.JdkConnectorProvider;
 import org.glassfish.jersey.apache5.connector.Apache5ConnectorProvider;
@@ -59,6 +66,8 @@ public abstract class AbstractClient {
   protected static final String HTTP_PROXY_URI = "http.proxyUri";
   protected static final String HTTP_PROXY_USER = "http.proxyUser";
   protected static final String HTTP_PROXY_PASSWORD = "http.proxyPassword";
+  protected static final String HTTP_PROXY_PORT = "http.proxyPort";
+  protected static final String HTTP_PROXY_HOST = "http.proxyHost";
 
   private boolean isClientInitialized = false;
 
@@ -150,8 +159,8 @@ public abstract class AbstractClient {
 
   protected WebTarget getTarget(String uri, String path) {
     ClientConfig configuration = new ClientConfig();
-    setProxyProperties(configuration);
     String connector = System.getProperty(CONNECTOR_PROVIDER_PROPERTY, JDK);
+    setProxyProperties(connector, configuration);
     switch (connector) {
       case JDK:
         configuration.connectorProvider(new JdkConnectorProvider());
@@ -175,18 +184,39 @@ public abstract class AbstractClient {
     return client.target(uri).path(path);
   }
 
-  protected void setProxyProperties(ClientConfig configuration) {
+  protected void setProxyProperties(String connector, ClientConfig configuration) {
     Optional<String> uri = Optional.ofNullable(System.getProperty(HTTP_PROXY_URI));
+    Optional<String> host = Optional.ofNullable(System.getProperty(HTTP_PROXY_HOST));
+    Optional<String> port = Optional.ofNullable(System.getProperty(HTTP_PROXY_PORT));
     Optional<String> user = Optional.ofNullable(System.getProperty(HTTP_PROXY_USER));
     Optional<String> pass = Optional.ofNullable(System.getProperty(HTTP_PROXY_PASSWORD));
 
-    if (uri.isPresent()) {
-      configuration.property(ClientProperties.PROXY_URI, uri.get());
+    switch (connector) {
+      case APACHE_5:
+        if (host.isPresent() && port.isPresent()) {
+          RequestConfig.Builder requestConfig = RequestConfig.custom();
+          HttpHost httpHost = new HttpHost(host.get(), Integer.parseInt(port.get()));
+          requestConfig.setProxy(httpHost);
+          configuration.property(Apache5ClientProperties.REQUEST_CONFIG, requestConfig.build());
 
-      if (user.isPresent() && pass.isPresent()) {
-        configuration.property(ClientProperties.PROXY_USERNAME, user.get());
-        configuration.property(ClientProperties.PROXY_PASSWORD, pass.get());
-      }
+          if (user.isPresent() && pass.isPresent()) {
+            CredentialsProvider credentialsProvider = CredentialsProviderBuilder.create()
+                .add(new AuthScope(httpHost), new UsernamePasswordCredentials(user.get(), pass.get().toCharArray())).build();
+
+            configuration.property(Apache5ClientProperties.CREDENTIALS_PROVIDER, credentialsProvider);
+          }
+        }
+        break;
+      default:
+        if (uri.isPresent()) {
+          configuration.property(ClientProperties.PROXY_URI, uri.get());
+
+          if (user.isPresent() && pass.isPresent()) {
+            configuration.property(ClientProperties.PROXY_USERNAME, user.get());
+            configuration.property(ClientProperties.PROXY_PASSWORD, pass.get());
+          }
+        }
+        break;
     }
   }
 

@@ -26,6 +26,7 @@ import org.apache.hc.client5.http.impl.auth.CredentialsProviderBuilder;
 import org.apache.hc.core5.http.HttpHost;
 import org.glassfish.jersey.apache5.connector.Apache5ClientProperties;
 import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.jdk.connector.JdkConnectorProperties;
 import org.glassfish.jersey.jdk.connector.JdkConnectorProvider;
 import org.glassfish.jersey.apache5.connector.Apache5ConnectorProvider;
 import org.glassfish.jersey.client.HttpUrlConnectorProvider;
@@ -174,7 +175,6 @@ public abstract class AbstractClient {
     }
     ClientBuilder builder = ClientBuilder.newBuilder().withConfig(configuration);
 
-
     configureSecurityContext(builder);
     Client client = builder.build().register(MultiPartFeature.class);
     if (log != null && log.isDebugEnabled() && !isLoginRequest(path)) {
@@ -185,38 +185,38 @@ public abstract class AbstractClient {
   }
 
   protected void setProxyProperties(String connector, ClientConfig configuration) {
-    Optional<String> uri = Optional.ofNullable(System.getProperty(HTTP_PROXY_URI));
-    Optional<String> host = Optional.ofNullable(System.getProperty(HTTP_PROXY_HOST));
-    Optional<String> port = Optional.ofNullable(System.getProperty(HTTP_PROXY_PORT));
     Optional<String> user = Optional.ofNullable(System.getProperty(HTTP_PROXY_USER));
     Optional<String> pass = Optional.ofNullable(System.getProperty(HTTP_PROXY_PASSWORD));
 
-    switch (connector) {
-      case APACHE_5:
-        if (host.isPresent() && port.isPresent()) {
-          RequestConfig.Builder requestConfig = RequestConfig.custom();
-          HttpHost httpHost = new HttpHost(host.get(), Integer.parseInt(port.get()));
-          requestConfig.setProxy(httpHost);
-          configuration.property(Apache5ClientProperties.REQUEST_CONFIG, requestConfig.build());
+    if (APACHE_5.equals(connector)) {
+      Optional<String> host = Optional.ofNullable(System.getProperty(HTTP_PROXY_HOST));
+      Optional<String> port = Optional.ofNullable(System.getProperty(HTTP_PROXY_PORT));
 
-          if (user.isPresent() && pass.isPresent()) {
-            CredentialsProvider credentialsProvider = CredentialsProviderBuilder.create()
-                .add(new AuthScope(httpHost), new UsernamePasswordCredentials(user.get(), pass.get().toCharArray())).build();
+      if (host.isPresent() && port.isPresent()) {
+        RequestConfig.Builder requestConfig = RequestConfig.custom();
+        HttpHost httpHost = new HttpHost(host.get(), Integer.parseInt(port.get()));
+        requestConfig.setProxy(httpHost);
+        configuration.property(Apache5ClientProperties.REQUEST_CONFIG, requestConfig.build());
 
-            configuration.property(Apache5ClientProperties.CREDENTIALS_PROVIDER, credentialsProvider);
-          }
+        if (user.isPresent() && pass.isPresent()) {
+          CredentialsProvider credentialsProvider = CredentialsProviderBuilder.create()
+              .add(new AuthScope(httpHost), new UsernamePasswordCredentials(user.get(), pass.get().toCharArray())).build();
+
+          configuration.property(Apache5ClientProperties.CREDENTIALS_PROVIDER, credentialsProvider);
         }
-        break;
-      default:
-        if (uri.isPresent()) {
-          configuration.property(ClientProperties.PROXY_URI, uri.get());
+      }
+    } else if (JDK.equals(connector)) {
+      Optional<String> uri = Optional.ofNullable(System.getProperty(HTTP_PROXY_URI));
 
-          if (user.isPresent() && pass.isPresent()) {
-            configuration.property(ClientProperties.PROXY_USERNAME, user.get());
-            configuration.property(ClientProperties.PROXY_PASSWORD, pass.get());
-          }
+      if (uri.isPresent()) {
+        configuration.property(ClientProperties.PROXY_URI, uri.get());
+        configuration.property(JdkConnectorProperties.MAX_REDIRECTS, 10);
+
+        if (user.isPresent() && pass.isPresent()) {
+          configuration.property(ClientProperties.PROXY_USERNAME, user.get());
+          configuration.property(ClientProperties.PROXY_PASSWORD, pass.get());
         }
-        break;
+      }
     }
   }
 

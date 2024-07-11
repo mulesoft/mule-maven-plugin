@@ -82,6 +82,9 @@ public class ProxyConfiguration {
 
     setPropertyIfNotBlank(HTTP_PROXY_USER, proxy.getUsername());
     setPropertyIfNotBlank(HTTP_PROXY_PASSWORD, proxy.getPassword());
+
+    System.setProperty("jdk.http.auth.tunneling.disabledSchemes", "");
+    System.setProperty("jdk.http.auth.proxying.disabledSchemes", "");
   }
 
   private static boolean isProxyValid(final Proxy proxy) {

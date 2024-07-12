@@ -34,6 +34,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
   }
 
   public DeploymentRequest buildDeploymentRequest() throws DeploymentException {
+
     ApplicationRequest applicationRequest = buildApplicationRequest();
 
     Target target = buildTarget();
@@ -47,7 +48,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
         && ((Cloudhub2DeploymentSettings) target.deploymentSettings).getInstanceType() != null) {
       throw new DeploymentException(RESOURCES_EXCEPTION);
     }
-    applicationRequest.setConfiguration(createConfiguration());
+    applicationRequest.setConfiguration(createConfiguration(false));
     applicationRequest.setvCores(((Cloudhub2Deployment) deployment).getvCores());
     applicationRequest.setIntegrations(((Cloudhub2Deployment) deployment).getIntegrations());
     return deploymentRequest;
@@ -58,7 +59,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     AssetReference assetReference = buildAssetReference();
     ApplicationModify applicationModify = new ApplicationModify();
     applicationModify.setRef(assetReference);
-    applicationModify.setConfiguration(createConfiguration());
+    applicationModify.setConfiguration(createConfiguration(true));
     applicationModify.setvCores(((Cloudhub2Deployment) deployment).getvCores());
     applicationModify.setIntegrations(((Cloudhub2Deployment) deployment).getIntegrations());
     return applicationModify;
@@ -87,18 +88,35 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     return resolvedDeploymentSettings;
   }
 
-  public Object createConfiguration() {
-    Map<String, Object> properties = null;
-    if (deployment.getProperties() != null) {
-      properties = new HashMap<>();
-      properties.put("properties", deployment.getProperties());
-      properties.put("applicationName", deployment.getApplicationName());
+  public Object createConfiguration(Boolean isRedeploy) {
+    Map<String, Object> properties = new HashMap<>();
+    if (isRedeploy) {
+      properties = null;
     }
-    if (deployment.getSecureProperties() != null) {
-      if (properties == null) {
+
+    if (deployment.getProperties() != null) {
+      if (isRedeploy) {
         properties = new HashMap<>();
+        properties.put("properties", deployment.getProperties());
+        properties.put("applicationName", deployment.getApplicationName());
+      } else {
+        properties.put("properties", deployment.getProperties());
       }
-      properties.put("secureProperties", deployment.getSecureProperties());
+    }
+
+    if (deployment.getSecureProperties() != null) {
+      if (isRedeploy) {
+        if (properties == null) {
+          properties = new HashMap<>();
+        }
+        properties.put("secureProperties", deployment.getSecureProperties());
+        properties.put("applicationName", deployment.getApplicationName());
+      } else {
+        properties.put("secureProperties", deployment.getSecureProperties());
+      }
+    }
+
+    if (!isRedeploy) {
       properties.put("applicationName", deployment.getApplicationName());
     }
 
@@ -110,6 +128,5 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
                                    ((Cloudhub2Deployment) deployment).getScopeLoggingConfigurations());
     }
     return new Cloudhub2Configuration(properties, loggingServiceProperties);
-
   }
 }

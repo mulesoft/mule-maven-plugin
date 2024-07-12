@@ -126,7 +126,7 @@
         <skipJaCoCoCoverage>${skipTests}</skipJaCoCoCoverage>
 
         <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
-        <license.maven.plugin.version>4.2</license.maven.plugin.version>
+        <license.maven.plugin.version>4.5</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
         <licenseYear>2023</licenseYear>
     </properties>

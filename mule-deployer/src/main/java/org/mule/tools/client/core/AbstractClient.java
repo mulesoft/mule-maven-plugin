@@ -205,18 +205,6 @@ public abstract class AbstractClient {
           configuration.property(Apache5ClientProperties.CREDENTIALS_PROVIDER, credentialsProvider);
         }
       }
-    } else if (JDK.equals(connector)) {
-      Optional<String> uri = Optional.ofNullable(System.getProperty(HTTP_PROXY_URI));
-
-      if (uri.isPresent()) {
-        configuration.property(ClientProperties.PROXY_URI, uri.get());
-        configuration.property(JdkConnectorProperties.MAX_REDIRECTS, 10);
-
-        if (user.isPresent() && pass.isPresent()) {
-          configuration.property(ClientProperties.PROXY_USERNAME, user.get());
-          configuration.property(ClientProperties.PROXY_PASSWORD, pass.get());
-        }
-      }
     }
   }
 

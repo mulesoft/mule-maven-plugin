@@ -90,30 +90,13 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
 
   public Object createConfiguration(Boolean isRedeploy) {
     Map<String, Object> properties = new HashMap<>();
-    if (isRedeploy) {
-      properties = null;
-    }
 
     if (deployment.getProperties() != null) {
-      if (isRedeploy) {
-        properties = new HashMap<>();
-        properties.put("properties", deployment.getProperties());
-        properties.put("applicationName", deployment.getApplicationName());
-      } else {
-        properties.put("properties", deployment.getProperties());
-      }
+      properties.put("properties", deployment.getProperties());
     }
 
     if (deployment.getSecureProperties() != null) {
-      if (isRedeploy) {
-        if (properties == null) {
-          properties = new HashMap<>();
-        }
-        properties.put("secureProperties", deployment.getSecureProperties());
-        properties.put("applicationName", deployment.getApplicationName());
-      } else {
-        properties.put("secureProperties", deployment.getSecureProperties());
-      }
+      properties.put("secureProperties", deployment.getSecureProperties());
     }
 
     if (!isRedeploy) {
@@ -127,6 +110,6 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
       loggingServiceProperties.put("scopeLoggingConfigurations",
                                    ((Cloudhub2Deployment) deployment).getScopeLoggingConfigurations());
     }
-    return new Cloudhub2Configuration(properties, loggingServiceProperties);
+    return new Cloudhub2Configuration(properties.isEmpty() ? null : properties, loggingServiceProperties);
   }
 }

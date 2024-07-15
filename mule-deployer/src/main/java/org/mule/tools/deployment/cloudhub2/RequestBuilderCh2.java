@@ -48,7 +48,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
         && ((Cloudhub2DeploymentSettings) target.deploymentSettings).getInstanceType() != null) {
       throw new DeploymentException(RESOURCES_EXCEPTION);
     }
-    applicationRequest.setConfiguration(createConfiguration(false));
+    applicationRequest.setConfiguration(createConfiguration(true));
     applicationRequest.setvCores(((Cloudhub2Deployment) deployment).getvCores());
     applicationRequest.setIntegrations(((Cloudhub2Deployment) deployment).getIntegrations());
     return deploymentRequest;
@@ -59,7 +59,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     AssetReference assetReference = buildAssetReference();
     ApplicationModify applicationModify = new ApplicationModify();
     applicationModify.setRef(assetReference);
-    applicationModify.setConfiguration(createConfiguration(true));
+    applicationModify.setConfiguration(createConfiguration(false));
     applicationModify.setvCores(((Cloudhub2Deployment) deployment).getvCores());
     applicationModify.setIntegrations(((Cloudhub2Deployment) deployment).getIntegrations());
     return applicationModify;
@@ -99,7 +99,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
       properties.put("secureProperties", deployment.getSecureProperties());
     }
 
-    if (!isRedeploy) {
+    if (isRedeploy) {
       properties.put("applicationName", deployment.getApplicationName());
     }
 

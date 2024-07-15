@@ -88,7 +88,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     return resolvedDeploymentSettings;
   }
 
-  public Object createConfiguration(Boolean isRedeploy) {
+  public Object createConfiguration(Boolean isNotRedeploy) {
     Map<String, Object> properties = new HashMap<>();
 
     if (deployment.getProperties() != null) {
@@ -99,7 +99,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
       properties.put("secureProperties", deployment.getSecureProperties());
     }
 
-    if (isRedeploy) {
+    if (isNotRedeploy) {
       properties.put("applicationName", deployment.getApplicationName());
     }
 

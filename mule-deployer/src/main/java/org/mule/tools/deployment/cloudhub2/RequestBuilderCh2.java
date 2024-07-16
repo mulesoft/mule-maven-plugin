@@ -88,21 +88,21 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     return resolvedDeploymentSettings;
   }
 
-  public Object createConfiguration(Boolean newDeploy) {
+  /**
+   * @param isDeploy If true, the process is a new deploy; if false, the process is considered a redeploy.
+   */
+  public Object createConfiguration(Boolean isDeploy) {
     Map<String, Object> properties = new HashMap<>();
 
     if (deployment.getProperties() != null) {
       properties.put("properties", deployment.getProperties());
     }
-
     if (deployment.getSecureProperties() != null) {
       properties.put("secureProperties", deployment.getSecureProperties());
     }
-
-    if (newDeploy) {
+    if (isDeploy) {
       properties.put("applicationName", deployment.getApplicationName());
     }
-
     Map<String, Object> loggingServiceProperties = null;
     if (((Cloudhub2Deployment) deployment).getScopeLoggingConfigurations() != null) {
       loggingServiceProperties = new HashMap<>();

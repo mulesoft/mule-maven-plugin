@@ -34,7 +34,6 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
   }
 
   public DeploymentRequest buildDeploymentRequest() throws DeploymentException {
-
     ApplicationRequest applicationRequest = buildApplicationRequest();
 
     Target target = buildTarget();
@@ -97,12 +96,15 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     if (deployment.getProperties() != null) {
       properties.put("properties", deployment.getProperties());
     }
+
     if (deployment.getSecureProperties() != null) {
       properties.put("secureProperties", deployment.getSecureProperties());
     }
+
     if (isDeploy) {
       properties.put("applicationName", deployment.getApplicationName());
     }
+
     Map<String, Object> loggingServiceProperties = null;
     if (((Cloudhub2Deployment) deployment).getScopeLoggingConfigurations() != null) {
       loggingServiceProperties = new HashMap<>();

@@ -15,7 +15,7 @@
         "version": "1.0.0",
         "type": "jar"
       },
-      "uri": "file:${localRepository}/group/id/x/artifact-id-x/1.0.0/artifact-id-x-1.0.0.jar",
+      "uri": "${localRepository}group/id/x/artifact-id-x/1.0.0/artifact-id-x-1.0.0.jar",
       "resources": [
         "META-INF/MANIFEST.MF",
         "META-INF/maven/group.id.x/artifact-id-x/pom.properties",

@@ -11,7 +11,9 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.jupiter.api.AfterEach;
+import org.apache.maven.shared.verifier.VerificationException;
+import org.apache.maven.shared.verifier.Verifier;
+import org.apache.maven.shared.verifier.util.ResourceExtractor;
 import org.junit.jupiter.api.BeforeEach;
 import org.mule.tools.api.util.FileUtils;
 
@@ -20,13 +22,10 @@ import java.io.IOException;
 
 import integration.ProjectFactory;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
-import org.apache.maven.it.util.ResourceExtractor;
 
 public class MojoTest implements SettingsConfigurator {
 
-  protected static final String[] excludes = new String[] {".placeholder", "log.txt"};
+  protected static final String[] excludes = new String[] {".placeholder", "log.txt", ".mule"};
   protected static final String[] excludesCompile = ArrayUtils.addAll(excludes, "maven-status");
   protected static final String TARGET_FOLDER_NAME = "target";
   protected static final String EMPTY_PROJECT_NAME = "empty-project";
@@ -59,11 +58,6 @@ public class MojoTest implements SettingsConfigurator {
     if (targetFolder.exists()) {
       deleteDirectory(targetFolder);
     }
-  }
-
-  @AfterEach
-  public void after() {
-    verifier.resetStreams();
   }
 
   private void copyNecessaryDependencies(File localRepository) {

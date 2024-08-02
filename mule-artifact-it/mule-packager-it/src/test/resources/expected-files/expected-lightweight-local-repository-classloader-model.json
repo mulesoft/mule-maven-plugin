@@ -16,7 +16,7 @@
         "type": "jar",
         "classifier": "mule-plugin"
       },
-      "uri": "file:${localRepository}/org/mule/group/mule-plugin-a/1.0.0/mule-plugin-a-1.0.0-mule-plugin.jar"
+      "uri": "${localRepository}org/mule/group/mule-plugin-a/1.0.0/mule-plugin-a-1.0.0-mule-plugin.jar"
     },
     {
       "artifactCoordinates": {
@@ -26,7 +26,7 @@
         "type": "jar",
         "classifier": "mule-plugin"
       },
-      "uri": "file:${localRepository}/org/mule/group/mule-plugin-c/1.0.0/mule-plugin-c-1.0.0-mule-plugin.jar"
+      "uri": "${localRepository}org/mule/group/mule-plugin-c/1.0.0/mule-plugin-c-1.0.0-mule-plugin.jar"
     },
     {
       "artifactCoordinates": {
@@ -36,7 +36,7 @@
         "type": "jar",
         "classifier": "mule-plugin"
       },
-      "uri": "file:${localRepository}/org/mule/group/mule-plugin-b/1.1.0/mule-plugin-b-1.1.0-mule-plugin.jar"
+      "uri": "${localRepository}org/mule/group/mule-plugin-b/1.1.0/mule-plugin-b-1.1.0-mule-plugin.jar"
     }
   ]
 }

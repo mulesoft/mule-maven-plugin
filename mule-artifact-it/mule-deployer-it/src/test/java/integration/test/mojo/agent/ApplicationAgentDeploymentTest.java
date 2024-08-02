@@ -7,12 +7,14 @@
 package integration.test.mojo.agent;
 
 import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.condition.OS;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DisabledOnJre(JRE.JAVA_8)
+@DisabledOnOs(OS.WINDOWS)
 public class ApplicationAgentDeploymentTest extends AgentDeploymentTest {
 
   private static final String APPLICATION = "empty-mule-deploy-application-agent-project";
@@ -23,6 +25,6 @@ public class ApplicationAgentDeploymentTest extends AgentDeploymentTest {
 
   @Override
   public void assertDeployment() {
-    assertThat("Failed to deploy: " + APPLICATION, standaloneEnvironment.isDeployed(APPLICATION), is(true));
+    assertThat(standaloneEnvironment.isDeployed(APPLICATION)).describedAs("Failed to deploy: " + APPLICATION).isTrue();
   }
 }

@@ -1,0 +1,161 @@
+/*
+ * Copyright 2023 Salesforce, Inc. All rights reserved.
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+package integration.test.mojo;
+
+import org.apache.maven.shared.verifier.Verifier;
+import org.junit.jupiter.api.Test;
+import org.mule.tools.client.OperationRetrier;
+import org.mule.tools.client.OperationRetrier.RetriableOperation;
+import org.mule.tools.client.fabric.model.ApplicationDetailResponse;
+import org.mule.tools.client.fabric.model.DeploymentGenericResponse;
+import org.mule.tools.deployment.cloudhub2.Cloudhub2RuntimeFabricClient;
+import org.mule.tools.model.anypoint.Cloudhub2Deployment;
+
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
+
+public class Cloudhub2DeploymentTest extends AbstractDeploymentTest {
+
+  private static final int APPLICATION_NAME_LENGTH = 10;
+  private static final String EXPECTED_STATUS = "RUNNING";
+  private static final long RETRY_SLEEP_TIME = 60000;
+  private static final String TARGET = "Cloudhub-US-East-1";
+  private static final String SERVER = "anypoint-exchange-v3";
+  private static final String PROJECT_GROUP_ID = "e36d14d2-6767-44a8-a51d-b30c0e509141";
+  private static final String PROVIDER = "MC";
+  private static final String VCORES = "0.1";
+  private static final String REPLICAS = "1";
+
+  private Verifier verifier;
+  private String application;
+  private String applicationName;
+
+  public String getApplication() {
+    return application;
+  }
+
+  public void before(String muleVersion, String application) throws Exception {
+    LOG.info("Initializing context...");
+    this.application = application;
+    this.applicationName = randomAlphabetic(APPLICATION_NAME_LENGTH).toLowerCase();
+    verifier = buildBaseVerifier();
+    verifier.setEnvironmentVariable("target", TARGET);
+    verifier.setEnvironmentVariable("server", SERVER);
+    verifier.setEnvironmentVariable("mule.version", muleVersion);
+    verifier.setEnvironmentVariable("project.groupId", PROJECT_GROUP_ID);
+    verifier.setEnvironmentVariable("cloudhub2.application.name", applicationName);
+    verifier.setEnvironmentVariable("username", getUsername());
+    verifier.setEnvironmentVariable("password", getPassword());
+    verifier.setEnvironmentVariable("provider", PROVIDER);
+    verifier.setEnvironmentVariable("environment", PRODUCTION_ENVIRONMENT);
+    verifier.setEnvironmentVariable("vCores", VCORES);
+    verifier.setEnvironmentVariable("replicas", REPLICAS);
+  }
+
+  @Test
+  public void cloudhub2DeployTest() throws Exception {
+    before("4.7.1", "empty-mule-deploy-cloudhub2-project");
+    LOG.info("Executing mule:deploy goal...");
+    verifier.addCliOption("-DmuleDeploy");
+    verifier.executeGoal(DEPLOY_GOAL);
+    Cloudhub2RuntimeFabricClient cloudhub2Client = new Cloudhub2RuntimeFabricClient(getCloudhub2Deployment(), null);
+
+    String applicationId = null;
+    for (DeploymentGenericResponse deployment : cloudhub2Client.getDeployments().items) {
+      if (applicationName.equals(deployment.name)) {
+        applicationId = deployment.id;
+        break;
+      }
+    }
+
+    if (applicationId == null) {
+      throw new RuntimeException("Application not found");
+    }
+    String status = validateApplicationIsInStatus(cloudhub2Client, applicationName, applicationId, EXPECTED_STATUS);
+
+    assertThat(status).describedAs("Application was not deployed").isEqualTo(EXPECTED_STATUS);
+
+    verifier.verifyErrorFreeLog();
+  }
+
+  @Test
+  public void testCloudhub2DeployWithInvalidOrg() throws Exception {
+    before("4.7.1", "empty-mule-deploy-cloudhub2-invalid-group-project");
+    try {
+      LOG.info("Executing mule:deploy goal...");
+      verifier.addCliOption("-DmuleDeploy");
+      verifier.executeGoal(DEPLOY_GOAL);
+      fail("An exception must be thrown");
+    } catch (Exception exception) {
+      assertThat(exception.getMessage())
+          .contains("java.lang.IllegalStateException: Cannot get the environment, the business group is not valid");
+    }
+  }
+
+  private Cloudhub2Deployment getCloudhub2Deployment() {
+    Cloudhub2Deployment cloudhub2Deployment = new Cloudhub2Deployment();
+    cloudhub2Deployment.setUsername(getUsername());
+    cloudhub2Deployment.setPassword(getPassword());
+    cloudhub2Deployment.setEnvironment(PRODUCTION_ENVIRONMENT);
+    cloudhub2Deployment.setTarget(TARGET);
+    cloudhub2Deployment.setUri(DEFAULT_BASE_URL);
+    cloudhub2Deployment.setApplicationName(applicationName);
+    return cloudhub2Deployment;
+  }
+
+  private String validateApplicationIsInStatus(Cloudhub2RuntimeFabricClient cloudhub2Client, String applicationName,
+                                               String applicationId, String status)
+      throws Exception {
+    LOG.debug("Checking application " + applicationName + " for status " + status + "...");
+
+    ApplicationStatusRetriableOperation operation =
+        new ApplicationStatusRetriableOperation(cloudhub2Client, applicationName, applicationId, status);
+
+    OperationRetrier operationRetrier = new OperationRetrier();
+    operationRetrier.setSleepTime(RETRY_SLEEP_TIME);
+
+    operationRetrier.retry(operation);
+
+    return operation.getApplicationStatus();
+  }
+
+  private static class ApplicationStatusRetriableOperation implements RetriableOperation {
+
+    private String applicationStatus;
+
+    private final String expectedStatus;
+    private final String applicationName;
+    private final String applicationId;
+    private final Cloudhub2RuntimeFabricClient cloudhub2Client;
+
+    public ApplicationStatusRetriableOperation(Cloudhub2RuntimeFabricClient cloudhub2Client, String applicationName,
+                                               String applicationId,
+                                               String expectedStatus) {
+      this.expectedStatus = expectedStatus;
+      this.applicationName = applicationName;
+      this.applicationId = applicationId;
+      this.cloudhub2Client = cloudhub2Client;
+    }
+
+    public String getApplicationStatus() {
+      return applicationStatus;
+    }
+
+    @Override
+    public Boolean run() {
+      ApplicationDetailResponse application = cloudhub2Client.getDeployment(applicationId).application;
+      if (application != null) {
+        applicationStatus = cloudhub2Client.getDeployment(applicationId).application.status;
+        return !expectedStatus.equals(applicationStatus);
+      }
+      return true;
+    }
+  }
+}
+

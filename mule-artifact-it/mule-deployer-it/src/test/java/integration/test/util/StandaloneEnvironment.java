@@ -25,6 +25,12 @@ import org.slf4j.LoggerFactory;
 
 public class StandaloneEnvironment {
 
+  private static final String OS = System.getProperty("os.name").toLowerCase();
+
+  public static boolean isWindows() {
+    return OS.contains("win");
+  }
+
   private static final int NORMAL_TERMINATION = 0;
 
   public static final int UNPACK_AGENT_MAX_ATTEMPTS = 30;
@@ -40,10 +46,11 @@ public class StandaloneEnvironment {
 
   private static final String MULE_HOME_FOLDER_PREFIX = "mule-enterprise-standalone-";
 
+  private final MuleProcessController controller;
+
   protected Logger log;
 
-  private Path muleHome;
-  private static MuleProcessController controller;
+  private final Path muleHome;
 
 
   // TODO Be careful with this if we copy we'll copy for each test
@@ -91,33 +98,8 @@ public class StandaloneEnvironment {
     return controller.isDomainDeployed(domainName);
   }
 
-  private void killMuleProcesses() throws IOException {
-    List<String> commands = new ArrayList<>();
-
-    commands.clear();
-    commands.add("ps");
-    commands.add("-ax");
-    commands.add("|");
-    commands.add("grep");
-    commands.add("mule");
-    commands.add("|");
-    commands.add("grep");
-    commands.add("wrapper");
-    commands.add("|");
-    commands.add("cut");
-    commands.add("-c");
-    commands.add("1-5");
-    commands.add("|");
-    commands.add("xargs");
-    commands.add("kill");
-    commands.add("-9");
-    Runtime.getRuntime().exec(commands.toArray(new String[0]));
-
-    Runtime.getRuntime().exec("pkill -f \"mule\"");
-  }
-
   public void register(String token, String instanceName) throws IOException, InterruptedException {
-    String amcExecutable = getMuleHome() + AMC_SETUP_RELATIVE_FOLDER;
+    String amcExecutable = getMuleHome() + AMC_SETUP_RELATIVE_FOLDER + (isWindows() ? ".bat" : "");
     String[] commands = {amcExecutable, ARM_CONFIGURATION_OPTION, token, instanceName};
 
     executeAction(() -> {
@@ -127,7 +109,7 @@ public class StandaloneEnvironment {
   private void unpackAgent() throws InterruptedException, IOException {
     List<String> commands = new ArrayList<>();
 
-    String amcExecutable = muleHome + AMC_SETUP_RELATIVE_FOLDER;
+    String amcExecutable = muleHome + AMC_SETUP_RELATIVE_FOLDER + (isWindows() ? ".bat" : "");
 
     int tries = 0;
     Process applicationProcess;

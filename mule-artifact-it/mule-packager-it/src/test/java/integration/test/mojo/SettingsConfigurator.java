@@ -6,8 +6,8 @@
  */
 package integration.test.mojo;
 
-import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
+import org.apache.maven.shared.verifier.VerificationException;
+import org.apache.maven.shared.verifier.Verifier;
 
 import java.io.File;
 
@@ -16,7 +16,7 @@ public interface SettingsConfigurator {
   default void setSettings(Verifier verifier) {
     String mavenSettings = System.getenv("MAVEN_SETTINGS");
     if (mavenSettings != null) {
-      verifier.addCliOption("-s " + mavenSettings);
+      verifier.addCliArguments("-s " + mavenSettings);
     }
   }
 

@@ -8,7 +8,7 @@ package integration.test.mojo;
 
 import integration.ProjectFactory;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.it.VerificationException;
+import org.apache.maven.shared.verifier.VerificationException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.fail;

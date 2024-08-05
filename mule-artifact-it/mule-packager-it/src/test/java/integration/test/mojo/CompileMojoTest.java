@@ -12,7 +12,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.maven.it.VerificationException;
+import org.apache.maven.shared.verifier.VerificationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,13 +25,14 @@ class CompileMojoTest extends MojoTest implements SettingsConfigurator {
   }
 
   @BeforeEach
-  void before() throws IOException, VerificationException {
+  void before() throws IOException {
     clearResources();
   }
 
   @Test
   void testCompile() throws IOException, VerificationException {
-    verifier.executeGoal(GOAL);
+    verifier.addCliArguments(GOAL);
+    verifier.execute();
     File expectedStructure = getExpectedStructure();
     assertThat("The directory structure is different from the expected", targetFolder,
                hasSameTreeStructure(expectedStructure, excludesCompile));

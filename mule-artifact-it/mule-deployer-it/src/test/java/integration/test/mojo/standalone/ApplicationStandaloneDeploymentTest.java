@@ -6,15 +6,12 @@
  */
 package integration.test.mojo.standalone;
 
-import org.apache.maven.it.VerificationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApplicationStandaloneDeploymentTest extends StandaloneDeploymentTest {
 
@@ -26,8 +23,8 @@ public class ApplicationStandaloneDeploymentTest extends StandaloneDeploymentTes
 
   @Test
   @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-  public void standaloneApplicationDeploymentTest() throws IOException, VerificationException, InterruptedException {
+  public void standaloneApplicationDeploymentTest() throws Exception {
     deploy();
-    assertThat("Failed to deploy: " + APPLICATION, standaloneEnvironment.isDeployed(APPLICATION), is(true));
+    assertThat(standaloneEnvironment.isDeployed(APPLICATION)).describedAs("Failed to deploy: " + APPLICATION).isTrue();
   }
 }

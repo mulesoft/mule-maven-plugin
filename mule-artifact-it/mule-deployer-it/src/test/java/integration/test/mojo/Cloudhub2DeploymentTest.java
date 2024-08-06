@@ -40,22 +40,26 @@ public class Cloudhub2DeploymentTest extends AbstractDeploymentTest {
     return application;
   }
 
+  public String getApplicationName() {
+    return applicationName;
+  }
+
   public void before(String muleVersion, String application) throws Exception {
     LOG.info("Initializing context...");
     this.application = application;
     this.applicationName = randomAlphabetic(APPLICATION_NAME_LENGTH).toLowerCase();
     verifier = buildBaseVerifier();
-    verifier.setEnvironmentVariable("target", TARGET);
-    verifier.setEnvironmentVariable("server", SERVER);
-    verifier.setEnvironmentVariable("mule.version", muleVersion);
-    verifier.setEnvironmentVariable("project.groupId", PROJECT_GROUP_ID);
-    verifier.setEnvironmentVariable("cloudhub2.application.name", applicationName);
-    verifier.setEnvironmentVariable("username", getUsername());
-    verifier.setEnvironmentVariable("password", getPassword());
-    verifier.setEnvironmentVariable("provider", PROVIDER);
-    verifier.setEnvironmentVariable("environment", PRODUCTION_ENVIRONMENT);
-    verifier.setEnvironmentVariable("vCores", VCORES);
-    verifier.setEnvironmentVariable("replicas", REPLICAS);
+    verifier.setSystemProperty("target", TARGET);
+    verifier.setSystemProperty("server", SERVER);
+    verifier.setSystemProperty("mule.version", muleVersion);
+    verifier.setSystemProperty("project.groupId", PROJECT_GROUP_ID);
+    verifier.setSystemProperty("cloudhub2.application.name", applicationName);
+    verifier.setSystemProperty("username", getUsername());
+    verifier.setSystemProperty("password", getPassword());
+    verifier.setSystemProperty("provider", PROVIDER);
+    verifier.setSystemProperty("environment", PRODUCTION_ENVIRONMENT);
+    verifier.setSystemProperty("vCores", VCORES);
+    verifier.setSystemProperty("replicas", REPLICAS);
   }
 
   @Test
@@ -68,7 +72,7 @@ public class Cloudhub2DeploymentTest extends AbstractDeploymentTest {
 
     String applicationId = null;
     for (DeploymentGenericResponse deployment : cloudhub2Client.getDeployments().items) {
-      if (applicationName.equals(deployment.name)) {
+      if (getApplicationName().equals(deployment.name)) {
         applicationId = deployment.id;
         break;
       }
@@ -77,7 +81,7 @@ public class Cloudhub2DeploymentTest extends AbstractDeploymentTest {
     if (applicationId == null) {
       throw new RuntimeException("Application not found");
     }
-    String status = validateApplicationIsInStatus(cloudhub2Client, applicationName, applicationId, EXPECTED_STATUS);
+    String status = validateApplicationIsInStatus(cloudhub2Client, getApplicationName(), applicationId, EXPECTED_STATUS);
 
     assertThat(status).describedAs("Application was not deployed").isEqualTo(EXPECTED_STATUS);
 
@@ -105,7 +109,7 @@ public class Cloudhub2DeploymentTest extends AbstractDeploymentTest {
     cloudhub2Deployment.setEnvironment(PRODUCTION_ENVIRONMENT);
     cloudhub2Deployment.setTarget(TARGET);
     cloudhub2Deployment.setUri(DEFAULT_BASE_URL);
-    cloudhub2Deployment.setApplicationName(applicationName);
+    cloudhub2Deployment.setApplicationName(getApplicationName());
     return cloudhub2Deployment;
   }
 

@@ -70,17 +70,12 @@ public class Cloudhub2DeploymentTest extends AbstractDeploymentTest {
     verifier.executeGoal(DEPLOY_GOAL);
     Cloudhub2RuntimeFabricClient cloudhub2Client = new Cloudhub2RuntimeFabricClient(getCloudhub2Deployment(), null);
 
-    String applicationId = null;
-    for (DeploymentGenericResponse deployment : cloudhub2Client.getDeployments().items) {
-      if (getApplicationName().equals(deployment.name)) {
-        applicationId = deployment.id;
-        break;
-      }
-    }
+    String applicationId = cloudhub2Client.getDeployments().items.stream()
+        .filter(deployment -> applicationName.equals(deployment.name))
+        .map(deployment -> deployment.id)
+        .findFirst()
+        .orElseThrow(() -> new RuntimeException("Application not found"));
 
-    if (applicationId == null) {
-      throw new RuntimeException("Application not found");
-    }
     String status = validateApplicationIsInStatus(cloudhub2Client, getApplicationName(), applicationId, EXPECTED_STATUS);
 
     assertThat(status).describedAs("Application was not deployed").isEqualTo(EXPECTED_STATUS);

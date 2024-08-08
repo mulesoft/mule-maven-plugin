@@ -6,18 +6,17 @@
  */
 package integration.test.mojo;
 
+import org.apache.maven.shared.verifier.VerificationException;
 import org.apache.maven.shared.verifier.Verifier;
 import org.junit.jupiter.api.Test;
 import org.mule.tools.client.OperationRetrier;
 import org.mule.tools.client.OperationRetrier.RetriableOperation;
 import org.mule.tools.client.fabric.model.ApplicationDetailResponse;
-import org.mule.tools.client.fabric.model.DeploymentGenericResponse;
 import org.mule.tools.deployment.cloudhub2.Cloudhub2RuntimeFabricClient;
 import org.mule.tools.model.anypoint.Cloudhub2Deployment;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.*;
 import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
 
 public class Cloudhub2DeploymentTest extends AbstractDeploymentTest {
@@ -65,9 +64,9 @@ public class Cloudhub2DeploymentTest extends AbstractDeploymentTest {
   @Test
   public void cloudhub2DeployTest() throws Exception {
     before("4.7.1", "empty-mule-deploy-cloudhub2-project");
-    LOG.info("Executing mule:deploy goal...");
-    verifier.addCliOption("-DmuleDeploy");
-    verifier.executeGoal(DEPLOY_GOAL);
+    LOG.info("Executing deploy to CH2 integration test with an valid POM Project. It should deploy correctly");
+    verifier.addCliArguments(DEPLOY_GOAL, "-DmuleDeploy");
+    verifier.execute();
     Cloudhub2RuntimeFabricClient cloudhub2Client = new Cloudhub2RuntimeFabricClient(getCloudhub2Deployment(), null);
 
     String applicationId = cloudhub2Client.getDeployments().items.stream()
@@ -76,25 +75,20 @@ public class Cloudhub2DeploymentTest extends AbstractDeploymentTest {
         .findFirst()
         .orElseThrow(() -> new RuntimeException("Application not found"));
 
-    String status = validateApplicationIsInStatus(cloudhub2Client, getApplicationName(), applicationId, EXPECTED_STATUS);
-
+    String status = validateApplicationIsInStatus(cloudhub2Client, getApplicationName(), applicationId);
     assertThat(status).describedAs("Application was not deployed").isEqualTo(EXPECTED_STATUS);
-
     verifier.verifyErrorFreeLog();
   }
 
   @Test
   public void testCloudhub2DeployWithInvalidOrg() throws Exception {
-    before("4.7.1", "empty-mule-deploy-cloudhub2-invalid-group-project");
-    try {
-      LOG.info("Executing mule:deploy goal...");
-      verifier.addCliOption("-DmuleDeploy");
-      verifier.executeGoal(DEPLOY_GOAL);
-      fail("An exception must be thrown");
-    } catch (Exception exception) {
-      assertThat(exception.getMessage())
-          .contains("java.lang.IllegalStateException: Cannot get the environment, the business group is not valid");
-    }
+    assertThatThrownBy(() -> {
+      before("4.7.1", "empty-mule-deploy-cloudhub2-invalid-group-project");
+      LOG.debug("Executing deploy to CH2 integration test with an Invalid POM Project. It should not deploy");
+      verifier.addCliArguments(DEPLOY_GOAL, "-DmuleDeploy");
+      verifier.execute();
+    }).isExactlyInstanceOf(VerificationException.class)
+        .hasMessageContaining("java.lang.IllegalStateException: Cannot get the environment, the business group is not valid");
   }
 
   private Cloudhub2Deployment getCloudhub2Deployment() {
@@ -102,19 +96,18 @@ public class Cloudhub2DeploymentTest extends AbstractDeploymentTest {
     cloudhub2Deployment.setUsername(getUsername());
     cloudhub2Deployment.setPassword(getPassword());
     cloudhub2Deployment.setEnvironment(PRODUCTION_ENVIRONMENT);
-    cloudhub2Deployment.setTarget(TARGET);
     cloudhub2Deployment.setUri(DEFAULT_BASE_URL);
     cloudhub2Deployment.setApplicationName(getApplicationName());
     return cloudhub2Deployment;
   }
 
   private String validateApplicationIsInStatus(Cloudhub2RuntimeFabricClient cloudhub2Client, String applicationName,
-                                               String applicationId, String status)
+                                               String applicationId)
       throws Exception {
-    LOG.debug("Checking application " + applicationName + " for status " + status + "...");
+    LOG.debug("Checking application {} for status as " + EXPECTED_STATUS + "...", applicationName);
 
     ApplicationStatusRetriableOperation operation =
-        new ApplicationStatusRetriableOperation(cloudhub2Client, applicationName, applicationId, status);
+        new ApplicationStatusRetriableOperation(cloudhub2Client, applicationId);
 
     OperationRetrier operationRetrier = new OperationRetrier();
     operationRetrier.setSleepTime(RETRY_SLEEP_TIME);
@@ -128,16 +121,11 @@ public class Cloudhub2DeploymentTest extends AbstractDeploymentTest {
 
     private String applicationStatus;
 
-    private final String expectedStatus;
-    private final String applicationName;
     private final String applicationId;
     private final Cloudhub2RuntimeFabricClient cloudhub2Client;
 
-    public ApplicationStatusRetriableOperation(Cloudhub2RuntimeFabricClient cloudhub2Client, String applicationName,
-                                               String applicationId,
-                                               String expectedStatus) {
-      this.expectedStatus = expectedStatus;
-      this.applicationName = applicationName;
+    public ApplicationStatusRetriableOperation(Cloudhub2RuntimeFabricClient cloudhub2Client,
+                                               String applicationId) {
       this.applicationId = applicationId;
       this.cloudhub2Client = cloudhub2Client;
     }
@@ -151,7 +139,7 @@ public class Cloudhub2DeploymentTest extends AbstractDeploymentTest {
       ApplicationDetailResponse application = cloudhub2Client.getDeployment(applicationId).application;
       if (application != null) {
         applicationStatus = cloudhub2Client.getDeployment(applicationId).application.status;
-        return !expectedStatus.equals(applicationStatus);
+        return !EXPECTED_STATUS.equals(applicationStatus);
       }
       return true;
     }

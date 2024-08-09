@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>e36d14d2-6767-44a8-a51d-b30c0e509141</groupId>
+    <artifactId>ch2deploy</artifactId>
+    <version>1.1.0</version>
+    <packaging>mule-application</packaging>
+
+    <name>ch2deploy</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.mule.tools.maven</groupId>
+                <artifactId>mule-maven-plugin</artifactId>
+                <version>${muleMavenPluginVersion}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <cloudhub2Deployment>
+                        <uri>https://anypoint.mulesoft.com</uri>
+                        <businessGroupId>notValidOrg</businessGroupId>
+                        <provider>${provider}</provider>
+                        <environment>${environment}</environment>
+                        <target>${target}</target>
+                        <muleVersion>${mule.version}</muleVersion>
+                        <username>${username}</username>
+                        <password>${password}</password>
+                        <applicationName>${cloudhub2.application.name}</applicationName>
+                        <replicas>${replicas}</replicas>
+                        <vCores>${vCores}</vCores>
+                        <server>${server}</server>
+                        <deploymentSettings></deploymentSettings>
+                        <deploymentTimeout>${cloudhub2.deployment.timeout}</deploymentTimeout>
+                        <properties>
+                            <key>value</key>
+                        </properties>
+                    </cloudhub2Deployment>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <distributionManagement>
+        <repository>
+            <id>anypoint-exchange-v3</id>
+            <name>Anypoint Exchange V3</name>
+            <url>https://maven.anypoint.mulesoft.com/api/v3/organizations/${project.groupId}/maven</url>
+            <layout>default</layout>
+        </repository>
+    </distributionManagement>
+</project>

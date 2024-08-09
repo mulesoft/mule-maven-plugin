@@ -12,8 +12,8 @@ import java.io.File;
 import java.io.IOException;
 
 import integration.ProjectFactory;
-import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
+import org.apache.maven.shared.verifier.VerificationException;
+import org.apache.maven.shared.verifier.Verifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -51,13 +51,14 @@ public class InstallMojoTest extends MojoTest {
 
   @Test
   public void testInstall() throws IOException, VerificationException {
-    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.addCliArgument("-DattachMuleSources=true");
     verifier.deleteArtifacts(GROUP_ID, ARTIFACT_ID, VERSION);
     String artifactPath = verifier.getArtifactPath(GROUP_ID, ARTIFACT_ID, VERSION, EXT, MULE_APPLICATION_CLASSIFIER);
     File artifactFile = new File(artifactPath);
     assertThat("Artifact already exists", !artifactFile.exists());
 
-    verifier.executeGoal(INSTALL);
+    verifier.addCliArgument(INSTALL);
+    verifier.execute();
 
     verifier.verifyErrorFreeLog();
     assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
@@ -68,12 +69,13 @@ public class InstallMojoTest extends MojoTest {
     String artifactId = "empty-install-policy-project";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.addCliArgument("-DattachMuleSources=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
     String artifactPath = verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_POLICY_CLASSIFIER);
     File artifactFile = new File(artifactPath);
     assertThat("Artifact already exists", !artifactFile.exists());
-    verifier.executeGoal(INSTALL);
+    verifier.addCliArgument(INSTALL);
+    verifier.execute();
 
     verifier.verifyErrorFreeLog();
 
@@ -85,12 +87,13 @@ public class InstallMojoTest extends MojoTest {
     String artifactId = "custom-policy-test";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.addCliArgument("-DattachMuleSources=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
     String artifactPath = verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_POLICY_CLASSIFIER);
     File artifactFile = new File(artifactPath);
     assertThat("Artifact already exists", !artifactFile.exists());
-    verifier.executeGoal(INSTALL);
+    verifier.addCliArgument(INSTALL);
+    verifier.execute();
 
     verifier.verifyErrorFreeLog();
 
@@ -103,12 +106,13 @@ public class InstallMojoTest extends MojoTest {
     String artifactId = "empty-install-app-template-project";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.addCliArgument("-DattachMuleSources=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
     String artifactPath = verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_APPLICATION_TEMPLATE_CLASSIFIER);
     File artifactFile = new File(artifactPath);
     assertThat("Artifact already exists", !artifactFile.exists());
-    verifier.executeGoal(INSTALL);
+    verifier.addCliArgument(INSTALL);
+    verifier.execute();
 
     verifier.verifyErrorFreeLog();
 
@@ -120,12 +124,13 @@ public class InstallMojoTest extends MojoTest {
     String artifactId = "empty-install-app-example-project";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.addCliArgument("-DattachMuleSources=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
     String artifactPath = verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_APPLICATION_EXAMPLE_CLASSIFIER);
     File artifactFile = new File(artifactPath);
     assertThat("Artifact already exists", !artifactFile.exists());
-    verifier.executeGoal(INSTALL);
+    verifier.addCliArgument(INSTALL);
+    verifier.execute();
 
     verifier.verifyErrorFreeLog();
 
@@ -137,12 +142,13 @@ public class InstallMojoTest extends MojoTest {
     String artifactId = "empty-install-domain-project";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.addCliArgument("-DattachMuleSources=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
     String artifactPath = verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_DOMAIN_CLASSIFIER);
     File artifactFile = new File(artifactPath);
     assertThat("Artifact already exists", !artifactFile.exists());
-    verifier.executeGoal(INSTALL);
+    verifier.addCliArgument(INSTALL);
+    verifier.execute();
 
     verifier.verifyErrorFreeLog();
 
@@ -157,7 +163,7 @@ public class InstallMojoTest extends MojoTest {
     String policySubModule = "empty-policy";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-DattachMuleSources=true");
+    verifier.addCliArgument("-DattachMuleSources=true");
 
     verifier.deleteArtifacts(GROUP_ID, appSubModule, VERSION);
     String artifactPath = verifier.getArtifactPath(GROUP_ID, appSubModule, VERSION, EXT, MULE_APPLICATION_CLASSIFIER);
@@ -169,7 +175,8 @@ public class InstallMojoTest extends MojoTest {
     File artifactPolicyFile = new File(artifactPath);
     assertThat("Artifact already exists", !artifactPolicyFile.exists());
 
-    verifier.executeGoal(INSTALL);
+    verifier.addCliArgument(INSTALL);
+    verifier.execute();
 
     verifier.verifyErrorFreeLog();
 
@@ -179,15 +186,16 @@ public class InstallMojoTest extends MojoTest {
 
   @Test
   public void testInstallApplicationLightPackage() throws IOException, VerificationException {
-    verifier.addCliOption("-DattachMuleSources=true");
-    verifier.addCliOption("-DlightweightPackage=true");
+    verifier.addCliArgument("-DattachMuleSources=true");
+    verifier.addCliArgument("-DlightweightPackage=true");
     verifier.deleteArtifacts(GROUP_ID, ARTIFACT_ID, VERSION);
     String artifactPath =
         verifier.getArtifactPath(GROUP_ID, ARTIFACT_ID, VERSION, EXT, MULE_APPLICATION_CLASSIFIER_LIGHT_PACKAGE);
     File artifactFile = new File(artifactPath);
     assertThat("Artifact already exists", !artifactFile.exists());
 
-    verifier.executeGoal(INSTALL);
+    verifier.addCliArgument(INSTALL);
+    verifier.execute();
 
     verifier.verifyErrorFreeLog();
     assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
@@ -198,15 +206,16 @@ public class InstallMojoTest extends MojoTest {
     String artifactId = "empty-install-app-template-project";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-DattachMuleSources=true");
-    verifier.addCliOption("-DlightweightPackage=true");
+    verifier.addCliArgument("-DattachMuleSources=true");
+    verifier.addCliArgument("-DlightweightPackage=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
     String artifactPath =
         verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_APPLICATION_TEMPLATE_CLASSIFIER + LIGHT_PACKAGE_EXT);
     File artifactFile = new File(artifactPath);
     assertThat("Artifact already exists", !artifactFile.exists());
 
-    verifier.executeGoal(INSTALL);
+    verifier.addCliArgument(INSTALL);
+    verifier.execute();
 
     verifier.verifyErrorFreeLog();
     assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
@@ -217,15 +226,16 @@ public class InstallMojoTest extends MojoTest {
     String artifactId = "empty-install-app-example-project";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-DattachMuleSources=true");
-    verifier.addCliOption("-DlightweightPackage=true");
+    verifier.addCliArgument("-DattachMuleSources=true");
+    verifier.addCliArgument("-DlightweightPackage=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
     String artifactPath =
         verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_APPLICATION_EXAMPLE_CLASSIFIER + LIGHT_PACKAGE_EXT);
     File artifactFile = new File(artifactPath);
     assertThat("Artifact already exists", !artifactFile.exists());
 
-    verifier.executeGoal(INSTALL);
+    verifier.addCliArgument(INSTALL);
+    verifier.execute();
 
     verifier.verifyErrorFreeLog();
     assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
@@ -242,8 +252,10 @@ public class InstallMojoTest extends MojoTest {
     verifier.deleteArtifacts(GROUP_ID, MULE_APPLICATION_WITH_PLUGIN_DEP, VERSION);
     verifierPlugin.deleteArtifacts(GROUP_ID, MULE_PLUGIN, VERSION);
 
-    verifierPlugin.executeGoal(INSTALL);
-    verifier.executeGoal(INSTALL);
+    verifierPlugin.addCliArgument(INSTALL);
+    verifierPlugin.execute();
+    verifier.addCliArgument(INSTALL);
+    verifier.execute();
     verifier.verifyErrorFreeLog();
   }
 
@@ -262,9 +274,12 @@ public class InstallMojoTest extends MojoTest {
     verifier.deleteArtifacts(GROUP_ID, MULE_RELATIVE_PATH, VERSION);
 
 
-    verifierParent.executeGoal(INSTALL);
-    verifierChild.executeGoal(INSTALL);
-    verifier.executeGoal(INSTALL);
+    verifierParent.addCliArgument(INSTALL);
+    verifierParent.execute();
+    verifierChild.addCliArgument(INSTALL);
+    verifierChild.execute();
+    verifier.addCliArgument(INSTALL);
+    verifier.execute();
     verifier.verifyErrorFreeLog();
   }
 
@@ -274,8 +289,10 @@ public class InstallMojoTest extends MojoTest {
 
     Verifier verifierPlugin = buildVerifier(pluginBaseDirectory);
 
-    verifierPlugin.executeGoal(INSTALL);
-    verifier.executeGoal(INSTALL);
+    verifierPlugin.addCliArgument(INSTALL);
+    verifierPlugin.execute();
+    verifier.addCliArgument(INSTALL);
+    verifier.execute();
     verifier.verifyErrorFreeLog();
   }
 
@@ -284,15 +301,16 @@ public class InstallMojoTest extends MojoTest {
     String artifactId = "empty-install-domain-project";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-DattachMuleSources=true");
-    verifier.addCliOption("-DlightweightPackage=true");
+    verifier.addCliArgument("-DattachMuleSources=true");
+    verifier.addCliArgument("-DlightweightPackage=true");
     verifier.deleteArtifacts(GROUP_ID, artifactId, VERSION);
     String artifactPath =
         verifier.getArtifactPath(GROUP_ID, artifactId, VERSION, EXT, MULE_DOMAIN_CLASSIFIER + LIGHT_PACKAGE_EXT);
     File artifactFile = new File(artifactPath);
     assertThat("Artifact already exists", !artifactFile.exists());
 
-    verifier.executeGoal(INSTALL);
+    verifier.addCliArgument(INSTALL);
+    verifier.execute();
 
     verifier.verifyErrorFreeLog();
     assertThat("Artifact was not installed in the .m2 repository", artifactFile.exists());
@@ -309,8 +327,10 @@ public class InstallMojoTest extends MojoTest {
     verifier.deleteArtifacts(GROUP_ID, DWB_EXTENSION, VERSION);
     verifierPlugin.deleteArtifacts(GROUP_ID, DWB_APP, VERSION);
 
-    verifierPlugin.executeGoal(INSTALL);
-    verifier.executeGoal(INSTALL);
+    verifierPlugin.addCliArgument(INSTALL);
+    verifierPlugin.execute();
+    verifier.addCliArgument(INSTALL);
+    verifier.execute();
     verifier.verifyErrorFreeLog();
   }
 }

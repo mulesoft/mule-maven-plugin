@@ -9,12 +9,13 @@ package integration.test.mojo;
 import static integration.FileTreeMatcher.hasSameTreeStructure;
 import static org.apache.commons.lang3.ArrayUtils.addAll;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 import java.io.File;
 import java.io.IOException;
 
 import integration.ProjectFactory;
-import org.apache.maven.it.VerificationException;
+import org.apache.maven.shared.verifier.VerificationException;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,8 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
 
   @Test
   public void testPackageApp() throws IOException, VerificationException {
-    verifier.executeGoal(PACKAGE);
+    verifier.addCliArgument(PACKAGE);
+    verifier.execute();
 
     File expectedStructure = getExpectedStructure();
     assertThat("The directory structure is different from the expected", targetFolder,
@@ -48,10 +50,11 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     String artifactId = "empty-lightweight-local-repository-classloader-model-project";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
-    verifier.addCliOption("-DlightweightPackage=true");
-    verifier.addCliOption("-DuseLocalRepository=true");
-    verifier.executeGoal(PACKAGE);
+    verifier.addCliArgument("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.addCliArgument("-DlightweightPackage=true");
+    verifier.addCliArgument("-DuseLocalRepository=true");
+    verifier.addCliArgument(PACKAGE);
+    verifier.execute();
 
     File expectedStructure = getExpectedStructure("/expected-lightweight-local-repository-classloader-model-project");
     File targetStructure = new File(verifier.getBasedir() + File.separator + TARGET_FOLDER_NAME);
@@ -69,9 +72,10 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     String artifactId = "validate-shared-libraries-project";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
-    verifier.setMavenDebug(true);
-    verifier.executeGoal(PACKAGE);
+    verifier.addCliArgument("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.addCliArgument("-X");
+    verifier.addCliArgument(PACKAGE);
+    verifier.execute();
 
     File expectedStructure = getExpectedStructure("/expected-package-app-shared-libraries");
     File targetStructure = new File(verifier.getBasedir() + File.separator + TARGET_FOLDER_NAME);
@@ -86,9 +90,10 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     String artifactId = "empty-package-policy-project";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
-    verifier.setMavenDebug(true);
-    verifier.executeGoal(PACKAGE);
+    verifier.addCliArgument("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.addCliArgument("-X");
+    verifier.addCliArgument(PACKAGE);
+    verifier.execute();
 
     File expectedStructure = getExpectedStructure("/expected-package-policy-structure");
     File targetStructure = new File(verifier.getBasedir() + File.separator + TARGET_FOLDER_NAME);
@@ -104,9 +109,10 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     String artifactId = "multi-module-application";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
-    verifier.setMavenDebug(true);
-    verifier.executeGoal(PACKAGE);
+    verifier.addCliArgument("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.addCliArgument("-X");
+    verifier.addCliArgument(PACKAGE);
+    verifier.execute();
 
     String moduleName = "empty-app";
     File expectedStructure = getExpectedStructure("/multi-module-application" + File.separator + moduleName
@@ -124,9 +130,10 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     String artifactId = "multi-module-application";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
-    verifier.setMavenDebug(true);
-    verifier.executeGoal(PACKAGE);
+    verifier.addCliArgument("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.addCliArgument("-X");
+    verifier.addCliArgument(PACKAGE);
+    verifier.execute();
 
     String moduleName = "empty-policy";
     File expectedStructure = getExpectedStructure("/multi-module-application" + File.separator + moduleName
@@ -143,11 +150,13 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     String artifactId = "check-finalName-package-project";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
-    verifier.setMavenDebug(true);
-    verifier.executeGoal(PACKAGE);
+    verifier.addCliArgument("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.addCliArgument("-X");
+    verifier.addCliArgument(PACKAGE);
+    verifier.execute();
 
-    verifier.assertFilePresent("target/testApp-mule-application.jar");
+    assertThat("File exists", projectBaseDirectory.toPath().resolve("target/testApp-mule-application.jar").toFile().exists(),
+               is(true));
     verifier.verifyErrorFreeLog();
   }
 
@@ -156,19 +165,20 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     String artifactId = "config-files-package-project";
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(artifactId, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
-    verifier.setMavenDebug(true);
-    verifier.addCliOption("-N");
-    verifier.executeGoal(INSTALL);
-    verifier.executeGoal(PACKAGE);
+    verifier.addCliArgument("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.addCliArgument("-X");
+    verifier.addCliArgument("-N");
+    verifier.addCliArgument(INSTALL);
+    verifier.addCliArgument(PACKAGE);
+    verifier.execute();
     File sourceJar = new File(projectBaseDirectory, "target/config-files-package-project-1.0.0-SNAPSHOT-mule-application.jar");
     File destinationDirectory = new File(getFile("/expected-files"), "extracted-config-files-project-jar-content");
     destinationDirectory.mkdir();
     unpackJar(sourceJar, destinationDirectory);
-    File epectedJarStructure = new File(getFile("/expected-files"), "expected-config-files-project-jar-content");
+    File expectedJarStructure = new File(getFile("/expected-files"), "expected-config-files-project-jar-content");
 
     assertThat("The directory structure is different from the expected", destinationDirectory,
-               hasSameTreeStructure(epectedJarStructure, excludes));
+               hasSameTreeStructure(expectedJarStructure, excludes));
 
     verifier.verifyErrorFreeLog();
   }

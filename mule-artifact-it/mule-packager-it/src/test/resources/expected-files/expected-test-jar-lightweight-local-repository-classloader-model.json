@@ -15,7 +15,7 @@
         "version": "1.0.0-SNAPSHOT",
         "type": "jar"
       },
-      "uri": "file:${localRepository}/group/id/a/artifact-id-a/1.0.0-SNAPSHOT/artifact-id-a-1.0.0-SNAPSHOT.jar",
+      "uri": "${localRepository}group/id/a/artifact-id-a/1.0.0-SNAPSHOT/artifact-id-a-1.0.0-SNAPSHOT.jar",
       "packages": [
         "group.id.a.artifactIdA"
       ],
@@ -33,7 +33,7 @@
         "type": "jar",
         "classifier": "mule-plugin"
       },
-      "uri": "file:${localRepository}/org/mule/group/mule-plugin-a/1.0.0/mule-plugin-a-1.0.0-mule-plugin.jar"
+      "uri": "${localRepository}org/mule/group/mule-plugin-a/1.0.0/mule-plugin-a-1.0.0-mule-plugin.jar"
     },
     {
       "artifactCoordinates": {
@@ -43,7 +43,7 @@
         "type": "jar",
         "classifier": "mule-plugin"
       },
-      "uri": "file:${localRepository}/org/mule/group/mule-plugin-b/1.0.0/mule-plugin-b-1.0.0-mule-plugin.jar"
+      "uri": "${localRepository}org/mule/group/mule-plugin-b/1.0.0/mule-plugin-b-1.0.0-mule-plugin.jar"
     },
     {
       "artifactCoordinates": {
@@ -52,7 +52,7 @@
         "version": "1.0.0",
         "type": "jar"
       },
-      "uri": "file:${localRepository}/group/id/b/artifact-id-b/1.0.0/artifact-id-b-1.0.0.jar",
+      "uri": "${localRepository}group/id/b/artifact-id-b/1.0.0/artifact-id-b-1.0.0.jar",
       "packages": [
         "group.id.b.artifactIdB",
         "group.id.b.artifactIdB.model"
@@ -71,7 +71,7 @@
         "type": "jar",
         "classifier": "mule-plugin"
       },
-      "uri": "file:${localRepository}/org/mule/group/mule-plugin-d/1.0.0/mule-plugin-d-1.0.0-mule-plugin.jar"
+      "uri": "${localRepository}org/mule/group/mule-plugin-d/1.0.0/mule-plugin-d-1.0.0-mule-plugin.jar"
     }
   ]
 }

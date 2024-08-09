@@ -12,14 +12,12 @@ import java.net.PasswordAuthentication;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 
 public class ProxyConfiguration {
 
-  public static final String HTTP_PROXY_URI = "http.proxyUri";
   public static final String HTTP_PROXY_HOST = "http.proxyHost";
   private static final String HTTP_PROXY_PORT = "http.proxyPort";
   public static final String HTTPS_PROXY_HOST = "https.proxyHost";
@@ -69,12 +67,6 @@ public class ProxyConfiguration {
   }
 
   private void setupProxyProperties(final Proxy proxy) {
-    URIBuilder uriBuilder = new URIBuilder();
-    uriBuilder.setScheme(proxy.getProtocol());
-    uriBuilder.setHost(proxy.getHost());
-    uriBuilder.setPort(proxy.getPort());
-
-    System.setProperty(HTTP_PROXY_URI, uriBuilder.toString());
     System.setProperty(HTTP_PROXY_HOST, proxy.getHost());
     System.setProperty(MAVEN_PROXY_HOST, proxy.getHost());
     System.setProperty(HTTP_PROXY_PORT, String.valueOf(proxy.getPort()));

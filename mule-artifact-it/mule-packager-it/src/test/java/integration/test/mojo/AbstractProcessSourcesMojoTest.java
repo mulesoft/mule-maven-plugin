@@ -7,7 +7,7 @@
 package integration.test.mojo;
 
 import integration.ProjectFactory;
-import org.apache.maven.shared.verifier.VerificationException;
+import org.apache.maven.it.VerificationException;
 import org.junit.jupiter.api.BeforeEach;
 
 import static integration.FileTreeMatcher.hasSameTreeStructure;
@@ -48,11 +48,10 @@ abstract class AbstractProcessSourcesMojoTest extends MojoTest {
       throws IOException, VerificationException {
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(applicationName, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliArgument("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
-    verifier.addCliArgument("-DskipValidation=true");
-    cliOptions.forEach(verifier::addCliArgument);
-    verifier.addCliArgument(PROCESS_SOURCES);
-    verifier.execute();
+    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.addCliOption("-DskipValidation=true");
+    cliOptions.forEach(option -> verifier.addCliOption(option));
+    verifier.executeGoal(PROCESS_SOURCES);
   }
 
   protected String getFileContent(String path) throws IOException {

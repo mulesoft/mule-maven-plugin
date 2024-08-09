@@ -16,7 +16,7 @@
         "type": "jar",
         "classifier": "mule-plugin"
       },
-      "uri": "${localRepository}org/mule/group/mule-plugin-b/1.1.0/mule-plugin-b-1.1.0-mule-plugin.jar"
+      "uri": "file:${localRepository}/org/mule/group/mule-plugin-b/1.1.0/mule-plugin-b-1.1.0-mule-plugin.jar"
     }
   ],
   "packages": [

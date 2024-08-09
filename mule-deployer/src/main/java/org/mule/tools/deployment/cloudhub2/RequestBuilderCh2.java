@@ -47,7 +47,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
         && ((Cloudhub2DeploymentSettings) target.deploymentSettings).getInstanceType() != null) {
       throw new DeploymentException(RESOURCES_EXCEPTION);
     }
-    applicationRequest.setConfiguration(createConfiguration(true));
+    applicationRequest.setConfiguration(createConfiguration());
     applicationRequest.setvCores(((Cloudhub2Deployment) deployment).getvCores());
     applicationRequest.setIntegrations(((Cloudhub2Deployment) deployment).getIntegrations());
     return deploymentRequest;
@@ -58,7 +58,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     AssetReference assetReference = buildAssetReference();
     ApplicationModify applicationModify = new ApplicationModify();
     applicationModify.setRef(assetReference);
-    applicationModify.setConfiguration(createConfiguration(false));
+    applicationModify.setConfiguration(createConfiguration());
     applicationModify.setvCores(((Cloudhub2Deployment) deployment).getvCores());
     applicationModify.setIntegrations(((Cloudhub2Deployment) deployment).getIntegrations());
     return applicationModify;
@@ -87,21 +87,18 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
     return resolvedDeploymentSettings;
   }
 
-  /**
-   * @param isDeploy If true, the process is a new deploy; if false, the process is considered a redeploy.
-   */
-  public Object createConfiguration(Boolean isDeploy) {
-    Map<String, Object> properties = new HashMap<>();
-
+  public Object createConfiguration() {
+    Map<String, Object> properties = null;
     if (deployment.getProperties() != null) {
+      properties = new HashMap<>();
       properties.put("properties", deployment.getProperties());
+      properties.put("applicationName", deployment.getApplicationName());
     }
-
     if (deployment.getSecureProperties() != null) {
+      if (properties == null) {
+        properties = new HashMap<>();
+      }
       properties.put("secureProperties", deployment.getSecureProperties());
-    }
-
-    if (isDeploy) {
       properties.put("applicationName", deployment.getApplicationName());
     }
 
@@ -112,6 +109,7 @@ public class RequestBuilderCh2 extends org.mule.tools.deployment.fabric.RequestB
       loggingServiceProperties.put("scopeLoggingConfigurations",
                                    ((Cloudhub2Deployment) deployment).getScopeLoggingConfigurations());
     }
-    return new Cloudhub2Configuration(properties.isEmpty() ? null : properties, loggingServiceProperties);
+    return new Cloudhub2Configuration(properties, loggingServiceProperties);
+
   }
 }

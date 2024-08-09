@@ -10,8 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import org.apache.maven.it.util.ResourceExtractor;
 import org.apache.maven.shared.utils.io.FileUtils;
-import org.apache.maven.shared.verifier.util.ResourceExtractor;
 
 public class ProjectFactory {
 

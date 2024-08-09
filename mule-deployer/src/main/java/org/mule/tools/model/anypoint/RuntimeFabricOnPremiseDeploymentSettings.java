@@ -22,6 +22,9 @@ public class RuntimeFabricOnPremiseDeploymentSettings extends RuntimeFabricDeplo
   @Parameter
   protected Jvm jvm;
 
+  @Parameter
+  protected boolean persistentObjectStore;
+
   public RuntimeFabricOnPremiseDeploymentSettings() {
     http = new Http();
     resources = new Resources();
@@ -30,6 +33,7 @@ public class RuntimeFabricOnPremiseDeploymentSettings extends RuntimeFabricDeplo
   public RuntimeFabricOnPremiseDeploymentSettings(RuntimeFabricOnPremiseDeploymentSettings settings) {
     super(settings);
     resources = settings.resources;
+    persistentObjectStore = settings.persistentObjectStore;
     if (settings.jvm != null) {
       jvm = settings.jvm;
     }
@@ -61,6 +65,14 @@ public class RuntimeFabricOnPremiseDeploymentSettings extends RuntimeFabricDeplo
     if (isEmpty(getResources().getCpu().getLimit())) {
       getResources().getCpu().setLimit(getResources().getCpu().getReserved());
     }
+  }
+
+  public boolean isPersistentObjectStore() {
+    return persistentObjectStore;
+  }
+
+  public void setPersistentObjectStore(boolean persistentObjectStore) {
+    this.persistentObjectStore = persistentObjectStore;
   }
 
 }

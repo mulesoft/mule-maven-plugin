@@ -17,16 +17,6 @@ import static org.glassfish.jersey.client.ClientProperties.DEFAULT_CHUNK_SIZE;
 import static org.glassfish.jersey.client.ClientProperties.REQUEST_ENTITY_PROCESSING;
 import static org.glassfish.jersey.client.HttpUrlConnectorProvider.SET_METHOD_WORKAROUND;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.LOGIN;
-
-import org.apache.hc.client5.http.auth.AuthScope;
-import org.apache.hc.client5.http.auth.CredentialsProvider;
-import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
-import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.client5.http.impl.auth.CredentialsProviderBuilder;
-import org.apache.hc.core5.http.HttpHost;
-import org.glassfish.jersey.apache5.connector.Apache5ClientProperties;
-import org.glassfish.jersey.client.ClientProperties;
-import org.glassfish.jersey.jdk.connector.JdkConnectorProperties;
 import org.glassfish.jersey.jdk.connector.JdkConnectorProvider;
 import org.glassfish.jersey.apache5.connector.Apache5ConnectorProvider;
 import org.glassfish.jersey.client.HttpUrlConnectorProvider;
@@ -34,7 +24,6 @@ import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import javax.ws.rs.client.Client;
@@ -64,11 +53,7 @@ public abstract class AbstractClient {
   protected static final String APACHE_5 = "apache";
   protected static final String HTTP_URL = "http";
   protected static final String JDK = "jdk";
-  protected static final String HTTP_PROXY_URI = "http.proxyUri";
-  protected static final String HTTP_PROXY_USER = "http.proxyUser";
-  protected static final String HTTP_PROXY_PASSWORD = "http.proxyPassword";
-  protected static final String HTTP_PROXY_PORT = "http.proxyPort";
-  protected static final String HTTP_PROXY_HOST = "http.proxyHost";
+
 
   private boolean isClientInitialized = false;
 
@@ -161,7 +146,6 @@ public abstract class AbstractClient {
   protected WebTarget getTarget(String uri, String path) {
     ClientConfig configuration = new ClientConfig();
     String connector = System.getProperty(CONNECTOR_PROVIDER_PROPERTY, JDK);
-    setProxyProperties(connector, configuration);
     switch (connector) {
       case JDK:
         configuration.connectorProvider(new JdkConnectorProvider());
@@ -175,6 +159,7 @@ public abstract class AbstractClient {
     }
     ClientBuilder builder = ClientBuilder.newBuilder().withConfig(configuration);
 
+
     configureSecurityContext(builder);
     Client client = builder.build().register(MultiPartFeature.class);
     if (log != null && log.isDebugEnabled() && !isLoginRequest(path)) {
@@ -182,30 +167,6 @@ public abstract class AbstractClient {
     }
 
     return client.target(uri).path(path);
-  }
-
-  protected void setProxyProperties(String connector, ClientConfig configuration) {
-    Optional<String> user = Optional.ofNullable(System.getProperty(HTTP_PROXY_USER));
-    Optional<String> pass = Optional.ofNullable(System.getProperty(HTTP_PROXY_PASSWORD));
-
-    if (APACHE_5.equals(connector)) {
-      Optional<String> host = Optional.ofNullable(System.getProperty(HTTP_PROXY_HOST));
-      Optional<String> port = Optional.ofNullable(System.getProperty(HTTP_PROXY_PORT));
-
-      if (host.isPresent() && port.isPresent()) {
-        RequestConfig.Builder requestConfig = RequestConfig.custom();
-        HttpHost httpHost = new HttpHost(host.get(), Integer.parseInt(port.get()));
-        requestConfig.setProxy(httpHost);
-        configuration.property(Apache5ClientProperties.REQUEST_CONFIG, requestConfig.build());
-
-        if (user.isPresent() && pass.isPresent()) {
-          CredentialsProvider credentialsProvider = CredentialsProviderBuilder.create()
-              .add(new AuthScope(httpHost), new UsernamePasswordCredentials(user.get(), pass.get().toCharArray())).build();
-
-          configuration.property(Apache5ClientProperties.CREDENTIALS_PROVIDER, credentialsProvider);
-        }
-      }
-    }
   }
 
   // TODO find a more generic way of doing this

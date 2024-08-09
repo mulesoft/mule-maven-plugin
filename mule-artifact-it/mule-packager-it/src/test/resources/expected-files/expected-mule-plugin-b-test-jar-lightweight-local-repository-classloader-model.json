@@ -15,7 +15,7 @@
         "version": "1.0.0-SNAPSHOT",
         "type": "jar"
       },
-      "uri": "${localRepository}group/id/c/artifact-id-c/1.0.0-SNAPSHOT/artifact-id-c-1.0.0-SNAPSHOT.jar",
+      "uri": "file:${localRepository}/group/id/c/artifact-id-c/1.0.0-SNAPSHOT/artifact-id-c-1.0.0-SNAPSHOT.jar",
       "resources": [
         "META-INF/MANIFEST.MF",
         "META-INF/maven/group.id.c/artifact-id-c/pom.properties",
@@ -29,7 +29,7 @@
         "version": "1.0.0",
         "type": "jar"
       },
-      "uri": "${localRepository}group/id/d/artifact-id-d/1.0.0/artifact-id-d-1.0.0.jar",
+      "uri": "file:${localRepository}/group/id/d/artifact-id-d/1.0.0/artifact-id-d-1.0.0.jar",
       "resources": [
         "META-INF/MANIFEST.MF",
         "META-INF/maven/group.id.d/artifact-id-d/pom.properties",

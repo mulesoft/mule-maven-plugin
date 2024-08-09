@@ -6,19 +6,22 @@
  */
 package integration.test.mojo.standalone;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeoutException;
 
 import integration.test.mojo.AbstractDeploymentTest;
-import org.apache.maven.shared.verifier.VerificationException;
-import org.apache.maven.shared.verifier.Verifier;
+import org.apache.maven.it.VerificationException;
+import org.apache.maven.it.Verifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.LoggerFactory;
 
 import integration.test.util.StandaloneEnvironment;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class StandaloneDeploymentTest extends AbstractDeploymentTest {
 
@@ -31,7 +34,7 @@ public class StandaloneDeploymentTest extends AbstractDeploymentTest {
   public Path environmentWorkingDir;
 
   private Verifier verifier;
-  private final String application;
+  private String application;
 
   public StandaloneDeploymentTest(String application) {
     this.application = application;
@@ -42,31 +45,32 @@ public class StandaloneDeploymentTest extends AbstractDeploymentTest {
   }
 
   @BeforeEach
-  public void before() throws Exception {
-    LOG.info("Initializing context...");
+  public void before() throws VerificationException, InterruptedException, IOException, TimeoutException {
+    log = LoggerFactory.getLogger(this.getClass());
+    log.info("Initializing context...");
 
     standaloneEnvironment = new StandaloneEnvironment(environmentWorkingDir.toFile(), getMuleVersion());
     standaloneEnvironment.start(false);
 
     verifier = buildBaseVerifier();
-    verifier.setSystemProperty(VERIFIER_MULE_VERSION, getMuleVersion());
-    verifier.setSystemProperty(VERIFIER_MULE_TIMEOUT, System.getProperty("mule.timeout"));
+    verifier.setEnvironmentVariable(VERIFIER_MULE_VERSION, getMuleVersion());
+    verifier.setEnvironmentVariable(VERIFIER_MULE_TIMEOUT, System.getProperty("mule.timeout"));
     // TODO find out why we need this
-    verifier.setSystemProperty(VERIFIER_MULE_HOME_TEST, standaloneEnvironment.getMuleHome());
+    verifier.setEnvironmentVariable(VERIFIER_MULE_HOME_TEST, standaloneEnvironment.getMuleHome());
   }
 
   @AfterEach
   public void after() throws InterruptedException, TimeoutException {
     standaloneEnvironment.stop();
+    verifier.resetStreams();
     environmentWorkingDir.toFile().delete();
   }
 
   protected void deploy() throws VerificationException {
-    LOG.info("Executing mule:deploy goal...");
-    verifier.addCliArguments(DEPLOY_GOAL, "-DmuleDeploy");
-    verifier.execute();
+    log.info("Executing mule:deploy goal...");
+    verifier.addCliOption("-DmuleDeploy");
+    verifier.executeGoal(DEPLOY_GOAL);
 
-    assertThat(standaloneEnvironment.isRunning())
-        .describedAs("Standalone should be running ").isTrue();
+    assertThat("Standalone should be running ", standaloneEnvironment.isRunning(), is(true));
   }
 }

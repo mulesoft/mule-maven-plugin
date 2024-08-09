@@ -7,14 +7,12 @@
 package integration.test.mojo.agent;
 
 import org.junit.jupiter.api.condition.DisabledOnJre;
-import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.JRE;
-import org.junit.jupiter.api.condition.OS;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 @DisabledOnJre(JRE.JAVA_8)
-@DisabledOnOs(OS.WINDOWS)
 public class DomainAgentDeploymentTest extends AgentDeploymentTest {
 
   private static final String DOMAIN = "empty-mule-deploy-domain-agent-project";
@@ -25,6 +23,6 @@ public class DomainAgentDeploymentTest extends AgentDeploymentTest {
 
   @Override
   public void assertDeployment() {
-    assertThat(standaloneEnvironment.isDomainDeployed(DOMAIN)).describedAs("Failed to deploy: " + DOMAIN).isTrue();
+    assertThat("Failed to deploy: " + DOMAIN, standaloneEnvironment.isDomainDeployed(DOMAIN), is(true));
   }
 }

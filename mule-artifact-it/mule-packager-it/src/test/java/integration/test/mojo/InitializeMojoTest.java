@@ -12,6 +12,7 @@ import static integration.FileTreeMatcher.hasSameTreeStructure;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.maven.it.VerificationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +25,7 @@ class InitializeMojoTest extends MojoTest implements SettingsConfigurator {
   }
 
   @BeforeEach
-  void before() throws IOException {
+  void before() throws IOException, VerificationException {
     clearResources();
     verifier.setSystemProperty(PROJECT_BASE_DIR_PROPERTY, projectBaseDirectory.getAbsolutePath());
     verifier.setSystemProperty(PROJECT_BUILD_DIRECTORY_PROPERTY, targetFolder.getAbsolutePath());
@@ -33,8 +34,7 @@ class InitializeMojoTest extends MojoTest implements SettingsConfigurator {
 
   @Test
   void testInitializeOnEmptyProject() throws Exception {
-    verifier.addCliArgument(INITIALIZE);
-    verifier.execute();
+    verifier.executeGoal(INITIALIZE);
 
     File expectedStructure = getExpectedStructure();
     assertThat("The directory structure is different from the expected", targetFolder,

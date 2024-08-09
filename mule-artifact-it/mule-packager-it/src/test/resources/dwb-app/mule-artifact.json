@@ -1,6 +1,6 @@
 {
   "name": "dwb-app",
-  "minMuleVersion": "4.7.0",
+  "minMuleVersion": "4.6.0",
   "requiredProduct": "MULE_EE",
   "redeploymentEnabled": "true",
   "classLoaderModelLoaderDescriptor": {

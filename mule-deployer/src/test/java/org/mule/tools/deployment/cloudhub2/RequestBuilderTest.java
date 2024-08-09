@@ -19,7 +19,6 @@ import org.mule.tools.model.anypoint.LogLevel;
 import org.mule.tools.model.anypoint.ObjectStoreV2;
 import org.mule.tools.model.anypoint.ScopeLoggingConfiguration;
 import org.mule.tools.model.anypoint.Service;
-import org.mule.tools.model.anypoint.Autoscaling;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,15 +57,11 @@ public class RequestBuilderTest {
       "   ]\n" +
       "}";
   private static final String DEPLOY_REQUEST =
-      "{\"name\":\"test-app\",\"application\":{\"ref\":{\"packaging\":\"jar\"},\"desiredState\":\"STARTED\",\"configuration\":{\"mule.agent.application.properties.service\":{\"applicationName\":\"test-app\"},\"mule.agent.logging.service\":{\"artifactName\":\"test-app\",\"scopeLoggingConfigurations\":[{\"scope\":\"com.pkg.debug\",\"logLevel\":\"INFO\"}]}},\"vCores\":\"0.5\",\"integrations\":{\"services\":{\"objectStoreV2\":{\"enabled\":true}}}},\"target\":{\"targetId\":\"sampleId\",\"provider\":\"MC\",\"deploymentSettings\":{\"persistentObjectStore\":false,\"runtimeVersion\":\"4.2.0:v1.2.28\",\"lastMileSecurity\":false,\"clustered\":false,\"enforceDeployingReplicasAcrossNodes\":false,\"http\":{\"inbound\":{\"publicUrl\":\"test-app.mydomain.com\"}},\"forwardSslSession\":false,\"disableAmLogForwarding\":false,\"generateDefaultPublicUrl\":false,\"runtime\":{\"version\":\"4.2.0:v1.2.28\"}}}}";
+      "{\"name\":\"test-app\",\"application\":{\"ref\":{\"packaging\":\"jar\"},\"desiredState\":\"STARTED\",\"configuration\":{\"mule.agent.logging.service\":{\"artifactName\":\"test-app\",\"scopeLoggingConfigurations\":[{\"scope\":\"com.pkg.debug\",\"logLevel\":\"INFO\"}]}},\"vCores\":\"0.5\",\"integrations\":{\"services\":{\"objectStoreV2\":{\"enabled\":true}}}},\"target\":{\"targetId\":\"sampleId\",\"provider\":\"MC\",\"deploymentSettings\":{\"runtimeVersion\":\"4.2.0:v1.2.28\",\"lastMileSecurity\":false,\"clustered\":false,\"enforceDeployingReplicasAcrossNodes\":false,\"http\":{\"inbound\":{\"publicUrl\":\"test-app.mydomain.com\"}},\"forwardSslSession\":false,\"disableAmLogForwarding\":false,\"generateDefaultPublicUrl\":false,\"runtime\":{\"version\":\"4.2.0:v1.2.28\"}}}}";
   private static final String DEPLOY_REQUEST_WITH_INSTANCE_TYPE =
-      "{\"name\":\"test-app\",\"application\":{\"ref\":{\"packaging\":\"jar\"},\"desiredState\":\"STARTED\",\"configuration\":{\"mule.agent.application.properties.service\":{\"applicationName\":\"test-app\"},\"mule.agent.logging.service\":{\"artifactName\":\"test-app\",\"scopeLoggingConfigurations\":[{\"scope\":\"com.pkg.debug\",\"logLevel\":\"INFO\"}]}},\"integrations\":{\"services\":{\"objectStoreV2\":{\"enabled\":true}}}},\"target\":{\"targetId\":\"sampleId\",\"provider\":\"MC\",\"deploymentSettings\":{\"instanceType\":\"instanceValue\",\"persistentObjectStore\":false,\"runtimeVersion\":\"4.2.0:v1.2.28\",\"lastMileSecurity\":false,\"clustered\":false,\"enforceDeployingReplicasAcrossNodes\":false,\"http\":{\"inbound\":{\"publicUrl\":\"test-app.mydomain.com\"}},\"forwardSslSession\":false,\"disableAmLogForwarding\":false,\"generateDefaultPublicUrl\":false,\"runtime\":{\"version\":\"4.2.0:v1.2.28\"}}}}";
+      "{\"name\":\"test-app\",\"application\":{\"ref\":{\"packaging\":\"jar\"},\"desiredState\":\"STARTED\",\"configuration\":{\"mule.agent.logging.service\":{\"artifactName\":\"test-app\",\"scopeLoggingConfigurations\":[{\"scope\":\"com.pkg.debug\",\"logLevel\":\"INFO\"}]}},\"integrations\":{\"services\":{\"objectStoreV2\":{\"enabled\":true}}}},\"target\":{\"targetId\":\"sampleId\",\"provider\":\"MC\",\"deploymentSettings\":{\"instanceType\":\"instanceValue\",\"runtimeVersion\":\"4.2.0:v1.2.28\",\"lastMileSecurity\":false,\"clustered\":false,\"enforceDeployingReplicasAcrossNodes\":false,\"http\":{\"inbound\":{\"publicUrl\":\"test-app.mydomain.com\"}},\"forwardSslSession\":false,\"disableAmLogForwarding\":false,\"generateDefaultPublicUrl\":false,\"runtime\":{\"version\":\"4.2.0:v1.2.28\"}}}}";
   private static final String DEPLOY_REQUEST_WITH_PUBLIC_URL =
-      "{\"name\":\"test-app\",\"application\":{\"ref\":{\"packaging\":\"jar\"},\"desiredState\":\"STARTED\",\"configuration\":{\"mule.agent.application.properties.service\":{\"applicationName\":\"test-app\"},\"mule.agent.logging.service\":{\"artifactName\":\"test-app\",\"scopeLoggingConfigurations\":[{\"scope\":\"com.pkg.debug\",\"logLevel\":\"INFO\"}]}},\"vCores\":\"0.5\",\"integrations\":{\"services\":{\"objectStoreV2\":{\"enabled\":true}}}},\"target\":{\"targetId\":\"sampleId\",\"provider\":\"MC\",\"deploymentSettings\":{\"persistentObjectStore\":false,\"runtimeVersion\":\"4.2.0:v1.2.28\",\"lastMileSecurity\":false,\"clustered\":false,\"enforceDeployingReplicasAcrossNodes\":false,\"http\":{\"inbound\":{\"publicUrl\":\"test-app.mydomain.com\"}},\"forwardSslSession\":false,\"disableAmLogForwarding\":false,\"generateDefaultPublicUrl\":true,\"runtime\":{\"version\":\"4.2.0:v1.2.28\"}}}}";
-  private static final String DEPLOY_REQUEST_WITH_AUTOSCALING_AND_TRACING_ENABLED =
-      "{\"name\":\"test-app\",\"application\":{\"ref\":{\"packaging\":\"jar\"},\"desiredState\":\"STARTED\",\"configuration\":{\"mule.agent.application.properties.service\":{\"applicationName\":\"test-app\"},\"mule.agent.logging.service\":{\"artifactName\":\"test-app\",\"scopeLoggingConfigurations\":[{\"scope\":\"com.pkg.debug\",\"logLevel\":\"INFO\"}]}},\"vCores\":\"0.5\",\"integrations\":{\"services\":{\"objectStoreV2\":{\"enabled\":true}}}},\"target\":{\"targetId\":\"sampleId\",\"provider\":\"MC\",\"deploymentSettings\":{\"autoscaling\":{\"enabled\":true,\"minReplicas\":1,\"maxReplicas\":3},\"tracingEnabled\":true,\"persistentObjectStore\":false,\"runtimeVersion\":\"4.2.0:v1.2.28\",\"lastMileSecurity\":false,\"clustered\":false,\"enforceDeployingReplicasAcrossNodes\":false,\"http\":{\"inbound\":{\"publicUrl\":\"test-app.mydomain.com\"}},\"forwardSslSession\":false,\"disableAmLogForwarding\":false,\"generateDefaultPublicUrl\":false,\"runtime\":{\"version\":\"4.2.0:v1.2.28\"}}}}";
-  private static final String DEPLOY_REQUEST_WITH_PERSISTENT_OBJECT_STORE_TRUE =
-      "{\"name\":\"test-app\",\"application\":{\"ref\":{\"packaging\":\"jar\"},\"desiredState\":\"STARTED\",\"configuration\":{\"mule.agent.application.properties.service\":{\"applicationName\":\"test-app\"},\"mule.agent.logging.service\":{\"artifactName\":\"test-app\",\"scopeLoggingConfigurations\":[{\"scope\":\"com.pkg.debug\",\"logLevel\":\"INFO\"}]}},\"vCores\":\"0.5\",\"integrations\":{\"services\":{\"objectStoreV2\":{\"enabled\":true}}}},\"target\":{\"targetId\":\"sampleId\",\"provider\":\"MC\",\"deploymentSettings\":{\"persistentObjectStore\":true,\"runtimeVersion\":\"4.2.0:v1.2.28\",\"lastMileSecurity\":false,\"clustered\":false,\"enforceDeployingReplicasAcrossNodes\":false,\"http\":{\"inbound\":{\"publicUrl\":\"test-app.mydomain.com\"}},\"forwardSslSession\":false,\"disableAmLogForwarding\":false,\"generateDefaultPublicUrl\":false,\"runtime\":{\"version\":\"4.2.0:v1.2.28\"}}}}";
+      "{\"name\":\"test-app\",\"application\":{\"ref\":{\"packaging\":\"jar\"},\"desiredState\":\"STARTED\",\"configuration\":{\"mule.agent.logging.service\":{\"artifactName\":\"test-app\",\"scopeLoggingConfigurations\":[{\"scope\":\"com.pkg.debug\",\"logLevel\":\"INFO\"}]}},\"vCores\":\"0.5\",\"integrations\":{\"services\":{\"objectStoreV2\":{\"enabled\":true}}}},\"target\":{\"targetId\":\"sampleId\",\"provider\":\"MC\",\"deploymentSettings\":{\"runtimeVersion\":\"4.2.0:v1.2.28\",\"lastMileSecurity\":false,\"clustered\":false,\"enforceDeployingReplicasAcrossNodes\":false,\"http\":{\"inbound\":{\"publicUrl\":\"test-app.mydomain.com\"}},\"forwardSslSession\":false,\"disableAmLogForwarding\":false,\"generateDefaultPublicUrl\":true,\"runtime\":{\"version\":\"4.2.0:v1.2.28\"}}}}";
   private RequestBuilderCh2 requestBuilder;
   private RuntimeFabricClient runtimeFabricClientMock;
   private Cloudhub2Deployment cloudhub2Deployment;
@@ -142,26 +137,5 @@ public class RequestBuilderTest {
     ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setInstanceType("instanceValue");
     String request = new Gson().toJson(requestBuilder.buildDeploymentRequest());
     assertThat(DEPLOY_REQUEST_WITH_INSTANCE_TYPE).describedAs("request is not the expected").isEqualTo(request);
-  }
-
-  @Test
-  public void requestBuildWithAutoscalingAndTracingEnabledTest() throws Exception {
-    setUp(null);
-    Boolean enableAutoscaling = true;
-    Integer minReplicas = 1;
-    Integer maxReplicas = 3;
-    Autoscaling autoscaling = new Autoscaling(enableAutoscaling, minReplicas, maxReplicas);
-    ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setAutoscaling(autoscaling);
-    ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setTracingEnabled(true);
-    String request = new Gson().toJson(requestBuilder.buildDeploymentRequest());
-    assertThat(DEPLOY_REQUEST_WITH_AUTOSCALING_AND_TRACING_ENABLED).describedAs("request is not the expected").isEqualTo(request);
-  }
-
-  @Test
-  public void requestBuildWithPersistentObjectStoreSetTrueTest() throws Exception {
-    setUp(null);
-    ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setPersistentObjectStore(true);
-    String request = new Gson().toJson(requestBuilder.buildDeploymentRequest());
-    assertThat(DEPLOY_REQUEST_WITH_PERSISTENT_OBJECT_STORE_TRUE).describedAs("request is not the expected").isEqualTo(request);
   }
 }

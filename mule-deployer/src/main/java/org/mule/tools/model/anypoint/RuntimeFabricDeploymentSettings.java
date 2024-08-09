@@ -31,11 +31,7 @@ public class RuntimeFabricDeploymentSettings {
     disableAmLogForwarding = settings.disableAmLogForwarding;
     generateDefaultPublicUrl = settings.generateDefaultPublicUrl;
     runtime = settings.runtime;
-    persistentObjectStore = settings.persistentObjectStore;
   }
-
-  @Parameter
-  protected boolean persistentObjectStore;
 
   @Parameter
   protected String runtimeVersion;
@@ -153,13 +149,4 @@ public class RuntimeFabricDeploymentSettings {
   public void setRuntime(Runtime runtime) {
     this.runtime = runtime;
   }
-
-  public boolean isPersistentObjectStore() {
-    return persistentObjectStore;
-  }
-
-  public void setPersistentObjectStore(boolean persistentObjectStore) {
-    this.persistentObjectStore = persistentObjectStore;
-  }
-
 }

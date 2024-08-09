@@ -25,7 +25,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 import integration.ProjectFactory;
-import org.apache.maven.shared.verifier.VerificationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mule.runtime.api.deployment.meta.MuleApplicationModel;
@@ -35,6 +34,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+
+import org.apache.maven.it.VerificationException;
 
 @SuppressWarnings("unchecked")
 public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigurator {
@@ -52,8 +53,7 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
 
   @Test
   public void testProcessClasses() throws IOException, VerificationException {
-    verifier.addCliArgument(GOAL);
-    verifier.execute();
+    verifier.executeGoal(GOAL);
     File expectedStructure = getExpectedStructure();
     assertThat("The directory structure is different from the expected", targetFolder,
                hasSameTreeStructure(expectedStructure, excludesCompile));
@@ -74,30 +74,21 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
   public void testFailOnEmptyPolicyProject() throws Exception {
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(EMPTY_POLICY_NAME, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    assertThatThrownBy(() -> {
-      verifier.addCliArgument(GOAL);
-      verifier.execute();
-    }).isExactlyInstanceOf(VerificationException.class);
+    assertThatThrownBy(() -> verifier.executeGoal(GOAL)).isExactlyInstanceOf(VerificationException.class);
   }
 
   @Test
   public void testFailOnEmptyDomainProject() throws Exception {
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(EMPTY_DOMAIN_NAME, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    assertThatThrownBy(() -> {
-      verifier.addCliArgument(GOAL);
-      verifier.execute();
-    }).isExactlyInstanceOf(VerificationException.class);
+    assertThatThrownBy(() -> verifier.executeGoal(GOAL)).isExactlyInstanceOf(VerificationException.class);
   }
 
   @Test
   public void testFailOnEmptyProject() throws Exception {
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(EMPTY_PROJECT_NAME, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    assertThatThrownBy(() -> {
-      verifier.addCliArgument(GOAL);
-      verifier.execute();
-    }).isExactlyInstanceOf(VerificationException.class);
+    assertThatThrownBy(() -> verifier.executeGoal(GOAL)).isExactlyInstanceOf(VerificationException.class);
   }
 
   @Test
@@ -105,8 +96,7 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
     projectBaseDirectory = ProjectFactory.createProjectBaseDir(SEMVER_CHECK, this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
-    verifier.addCliArgument(GOAL);
-    verifier.execute();
+    verifier.executeGoal(GOAL);
   }
 
   @Test
@@ -116,8 +106,7 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
         ProjectFactory.createProjectBaseDir("mule-application-structure-dependant-on-properties", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
-    verifier.addCliArgument(GOAL);
-    verifier.execute();
+    verifier.executeGoal(GOAL);
 
     verifier
         .verifyTextInLog("Could not resolve imported resource '${env.dependant}': Couldn't find configuration property value for key ${env.dependant}");
@@ -136,8 +125,7 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
     projectBaseDirectory = ProjectFactory.createProjectBaseDir("mule-application-with-unresolved-properties", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
-    verifier.addCliArgument(GOAL);
-    verifier.execute();
+    verifier.executeGoal(GOAL);
 
     verifier
         .verifyTextInLog("'http:listener' has 'config-ref' '${config.property}' which is resolved with a property and may cause the artifact to have different behavior on different environments.");
@@ -159,8 +147,7 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
     projectBaseDirectory = ProjectFactory.createProjectBaseDir("mule-application-with-import-file", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
-    verifier.addCliArgument(GOAL);
-    verifier.execute();
+    verifier.executeGoal(GOAL);
 
     File artifactAstTargetFile =
         projectBaseDirectory.toPath().resolve(TARGET.value()).resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
@@ -178,10 +165,7 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
     projectBaseDirectory = ProjectFactory.createProjectBaseDir("mule-application-with-import-file-invalid-path", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
 
-    assertThatThrownBy(() -> {
-      verifier.addCliArgument(GOAL);
-      verifier.execute();
-    }).isExactlyInstanceOf(VerificationException.class)
+    assertThatThrownBy(() -> verifier.executeGoal(GOAL)).isExactlyInstanceOf(VerificationException.class)
         .hasMessageContaining("Caused by: org.mule.tooling.api.ConfigurationException: Could not find imported resource 'configurations/local-config.xml'");
   }
 
@@ -189,9 +173,8 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
   public void testAstValidationWithImportTagInvalidPathSkipAST() throws Exception {
     projectBaseDirectory = ProjectFactory.createProjectBaseDir("mule-application-with-import-file-invalid-path", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliArgument("-DskipAST");
-    verifier.addCliArgument(GOAL);
-    verifier.execute();
+    verifier.addCliOption("-DskipAST");
+    verifier.executeGoal(GOAL);
 
     File artifactAstTargetFile =
         projectBaseDirectory.toPath().resolve(TARGET.value()).resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
@@ -204,9 +187,8 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
   public void testAstValidationWithImportTagInvalidPathSkipASTValidation() throws Exception {
     projectBaseDirectory = ProjectFactory.createProjectBaseDir("mule-application-with-import-file-invalid-path", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliArgument("-DskipASTValidation");
-    verifier.addCliArgument(GOAL);
-    verifier.execute();
+    verifier.addCliOption("-DskipASTValidation");
+    verifier.executeGoal(GOAL);
 
     File artifactAstTargetFile =
         projectBaseDirectory.toPath().resolve(TARGET.value()).resolve(META_INF.value()).resolve(MULE_ARTIFACT.value())
@@ -220,8 +202,7 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
     projectBaseDirectory =
         ProjectFactory.createProjectBaseDir("mule-application-plugin-with-unresolved-properties", this.getClass());
     verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliArgument(GOAL);
-    verifier.execute();
+    verifier.executeGoal(GOAL);
     verifier.verifyErrorFreeLog();
   }
 }

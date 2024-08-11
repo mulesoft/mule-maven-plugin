@@ -25,8 +25,6 @@ import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.auth.CredentialsProviderBuilder;
 import org.apache.hc.core5.http.HttpHost;
 import org.glassfish.jersey.apache5.connector.Apache5ClientProperties;
-import org.glassfish.jersey.client.ClientProperties;
-import org.glassfish.jersey.jdk.connector.JdkConnectorProperties;
 import org.glassfish.jersey.jdk.connector.JdkConnectorProvider;
 import org.glassfish.jersey.apache5.connector.Apache5ConnectorProvider;
 import org.glassfish.jersey.client.HttpUrlConnectorProvider;
@@ -64,7 +62,6 @@ public abstract class AbstractClient {
   protected static final String APACHE_5 = "apache";
   protected static final String HTTP_URL = "http";
   protected static final String JDK = "jdk";
-  protected static final String HTTP_PROXY_URI = "http.proxyUri";
   protected static final String HTTP_PROXY_USER = "http.proxyUser";
   protected static final String HTTP_PROXY_PASSWORD = "http.proxyPassword";
   protected static final String HTTP_PROXY_PORT = "http.proxyPort";

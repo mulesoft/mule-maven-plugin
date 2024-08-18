@@ -69,7 +69,7 @@
         <javax.activation.api.version>1.2.0</javax.activation.api.version>
         <jaxb.api.version>2.4.0-b180830.0359</jaxb.api.version>
 
-        <maven.version>3.9.6</maven.version>
+        <maven.version>3.9.9</maven.version>
         <maven.compat.version>3.9.6</maven.compat.version>
         <maven.verifier.version>2.0.0-M1</maven.verifier.version>
         <maven.dependency.tree.version>1.2</maven.dependency.tree.version>

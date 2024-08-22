@@ -7,13 +7,12 @@
 package integration.test.mojo;
 
 import integration.test.util.ProjectFactory;
-import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
+import org.apache.maven.shared.verifier.VerificationException;
+import org.apache.maven.shared.verifier.Verifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -24,6 +23,8 @@ import java.util.stream.Stream;
  */
 public abstract class AbstractDeploymentTest {
 
+  protected static final Logger LOG = LoggerFactory.getLogger(AbstractDeploymentTest.class);
+
   private static final String MAVEN_OPTS = "MAVEN_OPTS";
   private static final String DEFAULT_MULE_VERSION = "4.7.0-rc4";
   private static final String MAVEN_OPTS_PROPERTY_KEY = "argLine";
@@ -33,12 +34,8 @@ public abstract class AbstractDeploymentTest {
   protected static final String USERNAME_ENVIRONMENT_VARIABLE = "username";
   protected static final String PASSWORD_ENVIRONMENT_VARIABLE = "password";
 
-  protected static final String DEFAULT_DEBUG_ARG_LINE = "-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=y";
-
-  protected Logger log = LoggerFactory.getLogger(this.getClass());
-
-  protected String username = System.getProperty(USERNAME_ENVIRONMENT_VARIABLE);
-  protected String password = System.getProperty(PASSWORD_ENVIRONMENT_VARIABLE);
+  private static final String USERNAME = System.getProperty(USERNAME_ENVIRONMENT_VARIABLE);
+  private static final String PASSWORD = System.getProperty(PASSWORD_ENVIRONMENT_VARIABLE);
 
   public abstract String getApplication();
 
@@ -46,24 +43,23 @@ public abstract class AbstractDeploymentTest {
     return System.getProperty("mule.version", DEFAULT_MULE_VERSION);
   }
 
-  protected Verifier buildBaseVerifier(Boolean remoteDebug) throws IOException, VerificationException {
-    if (remoteDebug) {
-      System.setProperty(MAVEN_OPTS_PROPERTY_KEY, DEFAULT_DEBUG_ARG_LINE);
-    }
-
-    return buildBaseVerifier();
+  protected String getUsername() {
+    return USERNAME;
   }
 
-  protected Verifier buildBaseVerifier() throws IOException, VerificationException {
-    File projectBaseDirectory = ProjectFactory.createProjectBaseDir(getApplication(), this.getClass());
+  public String getPassword() {
+    return PASSWORD;
+  }
+
+  protected Verifier buildBaseVerifier() throws Exception {
+    File projectBaseDirectory = ProjectFactory.createProjectBaseDir(getApplication());
     Verifier verifier = buildVerifier(projectBaseDirectory);
-    verifier.addCliOption("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
-    verifier.setMavenDebug(true);
-    verifier.setDebug(true);
+    verifier.addCliArgument("-Dproject.basedir=" + projectBaseDirectory.getAbsolutePath());
+    verifier.addCliArgument("-X");
     return verifier;
   }
 
-  protected Verifier buildVerifier(File projectBaseDirectory) throws VerificationException {
+  private Verifier buildVerifier(File projectBaseDirectory) throws VerificationException {
     Verifier verifier = new Verifier(projectBaseDirectory.getAbsolutePath());
     setSettings(verifier);
     setMuleMavenPluginVersion(verifier);
@@ -75,7 +71,7 @@ public abstract class AbstractDeploymentTest {
     Stream.of("MAVEN_SETTINGS", "settingsxml", "maven.settings")
         .map(key -> Optional.ofNullable(System.getenv(key)).orElseGet(() -> System.getenv(key)))
         .filter(Objects::nonNull)
-        .findFirst().ifPresent(mavenSettings -> verifier.addCliOption("-s " + mavenSettings));
+        .findFirst().ifPresent(mavenSettings -> verifier.addCliArguments("-s " + mavenSettings));
   }
 
   private void setMuleMavenPluginVersion(Verifier verifier) {
@@ -89,7 +85,7 @@ public abstract class AbstractDeploymentTest {
     String mavenOpts = System.getProperty(MAVEN_OPTS_PROPERTY_KEY);
     if (mavenOpts != null) {
       verifier.setEnvironmentVariable(MAVEN_OPTS, mavenOpts);
+      verifier.setSystemProperty(MAVEN_OPTS, mavenOpts);
     }
   }
-
 }

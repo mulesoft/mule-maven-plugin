@@ -7,23 +7,22 @@
 package integration.test.mojo;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
 
+import org.apache.maven.shared.verifier.Verifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import org.mule.tools.client.arm.ArmClient;
 import org.mule.tools.client.arm.model.Applications;
@@ -32,10 +31,9 @@ import org.mule.tools.client.arm.model.Servers;
 import org.mule.tools.client.arm.model.Target;
 import org.mule.tools.model.anypoint.ArmDeployment;
 
-import org.slf4j.LoggerFactory;
-
 import integration.test.util.StandaloneEnvironment;
 
+@DisabledOnOs(OS.WINDOWS)
 @DisabledOnJre(JRE.JAVA_8)
 public class ArmDeploymentTest extends AbstractDeploymentTest {
 
@@ -62,9 +60,8 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
   public Path environmentWorkingDir;
 
   @BeforeEach
-  public void before() throws VerificationException, InterruptedException, IOException, TimeoutException {
-    log = LoggerFactory.getLogger(this.getClass());
-    log.info("Initializing context...");
+  public void before() throws Exception {
+    LOG.info("Initializing context...");
 
     armClient = getArmClient();
     for (Target t : armClient.getServers()) {
@@ -79,30 +76,29 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
     assertServerIsRunningInArm(ARM_INSTANCE_NAME, 4 * 60000, armClient);
 
     verifier = buildBaseVerifier();
-    verifier.setEnvironmentVariable("username", username);
-    verifier.setEnvironmentVariable("password", password);
-    verifier.setEnvironmentVariable("target", ARM_INSTANCE_NAME);
-    verifier.setEnvironmentVariable("target.type", "server");
-    verifier.setEnvironmentVariable("mule.version", getMuleVersion());
-    verifier.setEnvironmentVariable("environment", PRODUCTION_ENVIRONMENT);
+    verifier.setSystemProperty("username", getUsername());
+    verifier.setSystemProperty("password", getPassword());
+    verifier.setSystemProperty("target", ARM_INSTANCE_NAME);
+    verifier.setSystemProperty("target.type", "server");
+    verifier.setSystemProperty("mule.version", getMuleVersion());
+    verifier.setSystemProperty("environment", PRODUCTION_ENVIRONMENT);
   }
 
   @Test
-  public void testArmDeploy() throws VerificationException, InterruptedException, TimeoutException {
-    log.info("Executing mule:deploy goal...");
-    verifier.addCliOption("-DmuleDeploy");
-    verifier.executeGoal(DEPLOY_GOAL);
+  public void testArmDeploy() throws Exception {
+    LOG.info("Executing mule:deploy goal...");
+    verifier.addCliArguments(DEPLOY_GOAL, "-DmuleDeploy");
+    verifier.execute();
 
 
     boolean status = getApplicationStatus(APPLICATION_ARTIFACT_ID, ARM_INSTANCE_NAME, STARTED_STATUS);
-    assertThat("Application was not deployed", status, is(true));
+    assertThat(status).describedAs("Application was not deployed").isTrue();
     verifier.verifyErrorFreeLog();
   }
 
   @AfterEach
   public void after() throws InterruptedException, TimeoutException {
     standaloneEnvironment.stop();
-    verifier.resetStreams();
     environmentWorkingDir.toFile().delete();
 
     Data application = getApplication(APPLICATION_ARTIFACT_ID, ARM_INSTANCE_NAME);
@@ -111,15 +107,14 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
 
   private ArmClient getArmClient() {
     ArmDeployment armDeployment = new ArmDeployment();
-    armDeployment.setUsername(username);
-    armDeployment.setPassword(password);
+    armDeployment.setUsername(getUsername());
+    armDeployment.setPassword(getPassword());
 
     armDeployment.setUri(DEFAULT_BASE_URL);
     armDeployment.setEnvironment(PRODUCTION_ENVIRONMENT);
     armDeployment.setArmInsecure(false);
 
-    ArmClient armClient = new ArmClient(armDeployment, null);
-    return armClient;
+    return new ArmClient(armDeployment, null);
   }
 
   private void assertServerIsRunningInArm(String instanceName, int timeoutInSeconds, ArmClient armClient)

@@ -6,20 +6,17 @@
  */
 package integration.test.mojo.agent;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeoutException;
 
 import integration.test.mojo.AbstractDeploymentTest;
-import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
 
 import integration.test.util.StandaloneEnvironment;
+import org.apache.maven.shared.verifier.Verifier;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public abstract class AgentDeploymentTest extends AbstractDeploymentTest {
 
@@ -28,7 +25,7 @@ public abstract class AgentDeploymentTest extends AbstractDeploymentTest {
 
   protected StandaloneEnvironment standaloneEnvironment;
   protected Verifier verifier;
-  private String application;
+  private final String application;
 
   public AgentDeploymentTest(String application) {
     this.application = application;
@@ -39,8 +36,8 @@ public abstract class AgentDeploymentTest extends AbstractDeploymentTest {
   }
 
   @BeforeEach
-  public void before() throws VerificationException, InterruptedException, IOException, TimeoutException {
-    log.info("Initializing context...");
+  public void before() throws Exception {
+    LOG.info("Initializing context...");
 
     standaloneEnvironment = new StandaloneEnvironment(environmentWorkingDir.toFile(), getMuleVersion());
     standaloneEnvironment.start(true);
@@ -51,24 +48,23 @@ public abstract class AgentDeploymentTest extends AbstractDeploymentTest {
   @AfterEach
   public void after() throws InterruptedException, TimeoutException {
     standaloneEnvironment.stop();
-    verifier.resetStreams();
     environmentWorkingDir.toFile().delete();
   }
 
-  protected void deploy() throws VerificationException, InterruptedException {
-    log.info("Executing mule:deploy goal...");
+  protected void deploy() throws Exception {
+    LOG.info("Executing mule:deploy goal...");
 
     // TODO check why we have this sleep here
     Thread.sleep(30000);
 
-    verifier.setEnvironmentVariable("mule.version", getMuleVersion());
+    verifier.setSystemProperty("mule.version", getMuleVersion());
     verifier.setSystemProperty("applicationName", getApplication());
-    verifier.addCliOption("-DmuleDeploy");
-    verifier.executeGoal(DEPLOY_GOAL);
+    verifier.addCliArguments(DEPLOY_GOAL, "-DmuleDeploy");
+    verifier.execute();
   }
 
-  protected void assertAndVerify() throws VerificationException {
-    assertThat("Standalone should be running ", standaloneEnvironment.isRunning(), is(true));
+  protected void assertAndVerify() throws Exception {
+    assertThat(standaloneEnvironment.isRunning()).describedAs("Standalone should be running ").isTrue();
     assertDeployment();
     verifier.verifyErrorFreeLog();
   }
@@ -76,7 +72,7 @@ public abstract class AgentDeploymentTest extends AbstractDeploymentTest {
   public abstract void assertDeployment();
 
   @Test
-  public void testAgentDeploy() throws IOException, VerificationException, InterruptedException {
+  public void testAgentDeploy() throws Exception {
     deploy();
     assertAndVerify();
   }

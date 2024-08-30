@@ -6,6 +6,7 @@
  */
 package org.mule.tools.maven.mojo;
 
+import static org.mule.tooling.api.AstGenerator.validationResultItemToString;
 import static org.mule.tools.api.packager.packaging.Classifier.MULE_PLUGIN;
 import static org.mule.tools.maven.mojo.model.lifecycle.MavenLifecyclePhase.VALIDATE;
 
@@ -136,11 +137,11 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
         && !"true".equals(System.getProperty(SKIP_AST_VALIDATION))) {
       AstValidatonResult validationResult = astGenerator.validateAST(artifactAST);
       for (ValidationResultItem warning : validationResult.getWarnings()) {
-        getLog().warn(warning.getMessage());
+        getLog().warn(validationResultItemToString(warning));
       }
       if (!validationResult.getDynamicStructureErrors().isEmpty()) {
         for (ValidationResultItem dynamicStructureError : validationResult.getDynamicStructureErrors()) {
-          getLog().warn(dynamicStructureError.getMessage());
+          getLog().warn(validationResultItemToString(dynamicStructureError));
         }
         throw new DynamicStructureException();
       }

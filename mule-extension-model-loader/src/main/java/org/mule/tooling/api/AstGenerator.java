@@ -6,8 +6,10 @@
  */
 package org.mule.tooling.api;
 
-import static org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor.MULE_PLUGIN_CLASSIFIER;
 import static org.mule.runtime.ast.internal.serialization.json.JsonArtifactAstSerializerFormat.JSON;
+import static org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor.MULE_PLUGIN_CLASSIFIER;
+
+import static java.util.stream.Collectors.joining;
 
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.pom.parser.api.model.BundleDescriptor;
@@ -22,7 +24,6 @@ import org.mule.runtime.ast.api.validation.Validation.Level;
 import org.mule.runtime.ast.api.validation.ValidationResult;
 import org.mule.runtime.ast.api.validation.ValidationResultItem;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
-import org.mule.runtime.ast.internal.serialization.ArtifactAstSerializerFactory;
 import org.mule.runtime.config.api.properties.ConfigurationPropertiesHierarchyBuilder;
 import org.mule.runtime.config.api.properties.ConfigurationPropertiesResolver;
 import org.mule.tooling.internal.PluginResources;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
@@ -192,9 +194,17 @@ public class AstGenerator {
       }
     });
     if (errors.size() > 0) {
-      throw new ConfigurationException(errors.get(0).getMessage());
+      throw new ConfigurationException(errors.stream().map(AstGenerator::validationResultItemToString)
+          .collect(Collectors.joining(System.lineSeparator(), System.lineSeparator(), System.lineSeparator())));
     }
     return new AstValidatonResult(errors, warnings, dynamicStructureErrors);
+  }
+
+  public static String validationResultItemToString(ValidationResultItem v) {
+    return v.getComponents().stream()
+        .map(component -> component.getMetadata().getFileName().orElse("unknown") + ":"
+            + component.getMetadata().getStartLine().orElse(-1))
+        .collect(joining("; ", "[", "]")) + ": " + v.getMessage();
   }
 
   public static InputStream serialize(ArtifactAst artifactAst) {

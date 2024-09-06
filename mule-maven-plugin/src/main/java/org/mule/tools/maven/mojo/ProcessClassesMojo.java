@@ -132,7 +132,8 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
                                                  contentResolver.isApplication(), getClassifier());
     ProjectStructure projectStructure = new ProjectStructure(projectBaseFolder.toPath(), false);
 
-    ArtifactAst artifactAST = astGenerator.generateAST(contentResolver.getConfigs(), projectStructure.getConfigsPath());
+    ArtifactAst artifactAST =
+        astGenerator.generateAST(project.getArtifactId(), contentResolver.getConfigs(), projectStructure.getConfigsPath());
     if (artifactAST != null && !this.getClassifier().equalsIgnoreCase(MULE_PLUGIN.toString())
         && !"true".equals(System.getProperty(SKIP_AST_VALIDATION))) {
       AstValidatonResult validationResult = astGenerator.validateAST(artifactAST);

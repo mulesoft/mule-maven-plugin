@@ -137,12 +137,12 @@ public class AstGenerator {
         .setType(dependency.getType()).build();
   }
 
-  public ArtifactAst generateAST(List<String> configs, Path configsPath) throws FileNotFoundException {
+  public ArtifactAst generateAST(String artifactName, List<String> configs, Path configsPath) throws FileNotFoundException {
     List<Pair<String, InputStream>> appXmlConfigInputStreams = new ArrayList<>();
     for (String config : configs) {
       appXmlConfigInputStreams.add(new Pair(config, new FileInputStream(configsPath.resolve(config).toFile())));
     }
-    return appXmlConfigInputStreams.isEmpty() ? null : xmlParser.parse(appXmlConfigInputStreams);
+    return appXmlConfigInputStreams.isEmpty() ? null : xmlParser.parse(artifactName, appXmlConfigInputStreams);
   }
 
   public void processDependency(Dependency dependency, ClassLoader classloader, MavenClient mavenClient, String runtimeVersion,

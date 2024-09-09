@@ -6,8 +6,9 @@
  */
 package org.mule.tooling.internal;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.mule.maven.client.api.MavenClient;
 import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.ast.api.ArtifactAst;
@@ -20,8 +21,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.apache.commons.lang3.tuple.Pair;
+
+import org.junit.jupiter.api.Test;
 
 class AstGeneratorTest extends MavenClientTest {
 
@@ -52,7 +54,8 @@ class AstGeneratorTest extends MavenClientTest {
       final AstGenerator generator =
           new AstGenerator(client, "4.3.0", Collections.emptySet(), workingPath, null, Collections.emptyList());
       final ArtifactAst artifact =
-          generator.generateAST(Collections.singletonList(configsBasePath.resolve(muleConfiguration).toFile().getAbsolutePath()),
+          generator.generateAST("test-project",
+                                Collections.singletonList(configsBasePath.resolve(muleConfiguration).toFile().getAbsolutePath()),
                                 configsBasePath);
       return Pair.of(generator, artifact);
     } catch (Exception exception) {

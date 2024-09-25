@@ -39,6 +39,7 @@
         <module>mule-packager</module>
         <module>mule-maven-plugin</module>
         <module>mule-artifact-it</module>
+        <module>mmp-sonar</module>
     </modules>
 
     <properties>
@@ -117,10 +118,8 @@
         <formatterConfigPath>formatter.xml</formatterConfigPath>
 
         <skipTests>false</skipTests>
-        <jacoco.report.location>${session.executionRootDirectory}/target/jacoco.exec</jacoco.report.location>
-        <jacoco.agent.argLine>
-            -javaagent:'${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.maven.plugin.version}/org.jacoco.agent-${jacoco.maven.plugin.version}-runtime.jar'=destfile='${session.executionRootDirectory}/target/jacoco.exec'
-        </jacoco.agent.argLine>
+        <jacoco.report.location>${session.executionRootDirectory}/target/site/jacoco.xml</jacoco.report.location>
+        <sonar.coverage.jacoco.xmlReportPaths>${session.executionRootDirectory}/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <coverageLineLimit>0.99</coverageLineLimit>
         <coverageBranchLimit>0.99</coverageBranchLimit>
         <skipJaCoCoCoverage>${skipTests}</skipJaCoCoCoverage>
@@ -493,71 +492,58 @@
                 <version>${jacoco.maven.plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>default-prepare-agent</id>
+                        <id>prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-                                        <execution>
-                                            <id>default-check</id>
-                                            <goals>
-                                                <goal>check</goal>
-                                            </goals>
-                                        </execution>
                     <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
+                        <id>default-report</id>
+                        <phase>test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
                     </execution>
-
                 </executions>
-                                <configuration>
-                                    <excludes>
-                                        <exclude>org/mule/tools/model/**</exclude>
-                                        <exclude>org/mule/tools/client/cloudhub/model/*</exclude>
-                                        <exclude>org/mule/tools/client/fabric/model/*</exclude>
-                                        <exclude>org/mule/tools/client/agent/model/*</exclude>
-                                        <exclude>org/mule/tools/client/arm/model/*</exclude>
-                                        <exclude>org/mule/tools/client/authentication/model/*</exclude>
-                                    </excludes>
-                                    <haltOnFailure>true</haltOnFailure>
-                                    <skip>${skipJaCoCoCoverage}</skip>
-                                    <append>true</append>
-                                    <destFile>${jacoco.report.location}</destFile>
-                                    <dataFile>${jacoco.report.location}</dataFile>
-                                    <rules>
-                                        <rule>
-                                            <element>BUNDLE</element>
-                                            <limits>
-                                                <limit>
-                                                    <counter>LINE</counter>
-                                                    <value>COVEREDRATIO</value>
-                                                    <minimum>${coverageLineLimit}</minimum>
-                                                </limit>
-                                                <limit>
-                                                    <counter>BRANCH</counter>
-                                                    <value>COVEREDRATIO</value>
-                                                    <minimum>${coverageBranchLimit}</minimum>
-                                                </limit>
-                                            </limits>
-                                        </rule>
-                                    </rules>
-                                </configuration>
+                <configuration>
+                    <excludes>
+                        <exclude>org/mule/tools/model/**</exclude>
+                        <exclude>org/mule/tools/client/cloudhub/model/*</exclude>
+                        <exclude>org/mule/tools/client/fabric/model/*</exclude>
+                        <exclude>org/mule/tools/client/agent/model/*</exclude>
+                        <exclude>org/mule/tools/client/arm/model/*</exclude>
+                        <exclude>org/mule/tools/client/authentication/model/*</exclude>
+                    </excludes>
+                    <haltOnFailure>true</haltOnFailure>
+                    <skip>${skipJaCoCoCoverage}</skip>
+                    <append>true</append>
+                    <rules>
+                        <rule>
+                            <element>BUNDLE</element>
+                            <limits>
+                                <limit>
+                                    <counter>LINE</counter>
+                                    <value>COVEREDRATIO</value>
+                                    <minimum>${coverageLineLimit}</minimum>
+                                </limit>
+                                <limit>
+                                    <counter>BRANCH</counter>
+                                    <value>COVEREDRATIO</value>
+                                    <minimum>${coverageBranchLimit}</minimum>
+                                </limit>
+                            </limits>
+                        </rule>
+                    </rules>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.plugin.version}</version>
                 <configuration>
-                    <argLine>${jacoco.agent.argLine}</argLine>
                     <systemPropertyVariables>
                         <mule.maven.plugin.version>${project.version}</mule.maven.plugin.version>
                         <mule.home.test>${project.build.directory}</mule.home.test>
-                        <argLine>
-                            -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.maven.plugin.version}/org.jacoco.agent-${jacoco.maven.plugin.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco-it.exec
-                        </argLine>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

@@ -6,7 +6,8 @@ properties([
         string(name: 'JDK', defaultValue: "JDK8", description: 'JDK Version to be used'),
         string(name: 'releaseCandidate', defaultValue: "3.1.0-rc0", description: 'Used when deployReleaseCandidate is set to true'),
         booleanParam(name: 'deployRelesaseCandidate', defaultValue: false, description: ""),
-        string(name: 'maven', defaultValue: "Maven (latest)", description: 'Maven version to be used')
+        string(name: 'maven', defaultValue: "Maven (latest)", description: 'Maven version to be used'),
+        booleanParam(name: 'binariesScan', defaultValue: true, description: "")
     ]),
 ])
 
@@ -16,7 +17,9 @@ def pipelineParams = [
   "maven": params.maven,
   "releaseCandidate": params.releaseCandidate,
   "deployReleaseCandidate": params.deployReleaseCandidate,
+  "sonarFolder": "mmp-sonar"
   "projectKey": "mule-maven-plugin",
+  "binariesScan": params.binariesScan,
   "protectedBranches" : ["main"]
 ]
 

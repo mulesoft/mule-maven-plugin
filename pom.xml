@@ -99,7 +99,7 @@
 
         <maven.plugin.plugin.version>3.5</maven.plugin.plugin.version>
         <maven.invoker.plugin.version>2.0.0</maven.invoker.plugin.version>
-        <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
         <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
         <maven.plugin.annotations.version>3.8.1</maven.plugin.annotations.version>
         <exchange.plugin.version>0.0.23</exchange.plugin.version>

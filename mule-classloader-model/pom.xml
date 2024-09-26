@@ -12,7 +12,7 @@
 
     <properties>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-
+        <jacoco.report.location>${session.executionRootDirectory}/target/jacoco.exec</jacoco.report.location>
         <coverageLineLimit>0.59</coverageLineLimit>
         <coverageBranchLimit>0.47</coverageBranchLimit>
 

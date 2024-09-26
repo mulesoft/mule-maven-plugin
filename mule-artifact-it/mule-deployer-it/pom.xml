@@ -11,6 +11,7 @@
     <name>Mule Deployer Integration Tests</name>
 
     <properties>
+        <jacoco.report.location>${session.executionRootDirectory}/target/jacoco.exec</jacoco.report.location>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
     </properties>
 

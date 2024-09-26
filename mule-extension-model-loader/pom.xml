@@ -14,6 +14,7 @@
     <properties>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <!-- The extension model loader is tested with integration tests mostly. It has no sense to track the coverage here -->
+        <jacoco.report.location>${session.executionRootDirectory}/target/jacoco.exec</jacoco.report.location>
         <coverageLineLimit>0</coverageLineLimit>
         <coverageBranchLimit>0</coverageBranchLimit>
     </properties>

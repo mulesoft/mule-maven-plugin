@@ -17,7 +17,7 @@ def pipelineParams = [
   "maven": params.maven,
   "releaseCandidate": params.releaseCandidate,
   "deployReleaseCandidate": params.deployReleaseCandidate,
-  "sonarFolder": "mmp-sonar"
+  "sonarFolder": "mmp-sonar",
   "projectKey": "mule-maven-plugin",
   "binariesScan": params.binariesScan,
   "protectedBranches" : ["main"]

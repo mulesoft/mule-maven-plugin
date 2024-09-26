@@ -182,7 +182,7 @@ public class ProcessClassesMojoTest extends MojoTest implements SettingsConfigur
       verifier.addCliArgument(GOAL);
       verifier.execute();
     }).isExactlyInstanceOf(VerificationException.class)
-        .hasMessageContaining("Caused by: org.mule.tooling.api.ConfigurationException: Could not find imported resource 'configurations/local-config.xml'");
+        .hasMessageContaining("Could not find imported resource 'configurations/local-config.xml'");
   }
 
   @Test

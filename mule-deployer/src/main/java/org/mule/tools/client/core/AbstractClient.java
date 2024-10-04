@@ -25,8 +25,6 @@ import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.auth.CredentialsProviderBuilder;
 import org.apache.hc.core5.http.HttpHost;
 import org.glassfish.jersey.apache5.connector.Apache5ClientProperties;
-import org.glassfish.jersey.client.ClientProperties;
-import org.glassfish.jersey.jdk.connector.JdkConnectorProperties;
 import org.glassfish.jersey.jdk.connector.JdkConnectorProvider;
 import org.glassfish.jersey.apache5.connector.Apache5ConnectorProvider;
 import org.glassfish.jersey.client.HttpUrlConnectorProvider;
@@ -35,17 +33,23 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.SyncInvoker;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.media.multipart.Boundary;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import org.mule.tools.client.core.exception.ClientException;
@@ -80,7 +84,7 @@ public abstract class AbstractClient {
 
   protected Response post(String uri, String path, Entity entity) {
     initialize();
-    return builder(uri, path).post(entity);
+    return doRequest(builder(uri, path), entity, SyncInvoker::post);
   }
 
   protected Response post(String uri, String path, Object entity) {
@@ -95,7 +99,7 @@ public abstract class AbstractClient {
 
   protected Response put(String uri, String path, Entity entity) {
     initialize();
-    return builder(uri, path).put(entity);
+    return doRequest(builder(uri, path), entity, SyncInvoker::put);
   }
 
   protected Response put(String uri, String path, Object entity) {
@@ -137,9 +141,21 @@ public abstract class AbstractClient {
     initialize();
     Invocation.Builder builder = builder(uri, path);
     builder.property(SET_METHOD_WORKAROUND, true);
-    return builder.method("PATCH", entity);
+    return doRequest(builder(uri, path), entity,
+                     (currentBuilder, currentEntity) -> currentBuilder.method("PATCH", currentEntity));
   }
 
+  private Response doRequest(Invocation.Builder builder, Entity entity, BiFunction<Invocation.Builder, Entity, Response> action) {
+    if (entity != null && entity.getEntity() instanceof FormDataMultiPart) {
+      MediaType boundaryMediaType = Boundary.addBoundary(entity.getMediaType());
+      ((FormDataMultiPart) entity.getEntity()).setMediaType(boundaryMediaType);
+      builder.header(HttpHeaders.CONTENT_TYPE, boundaryMediaType.toString());
+      builder.header("MIME-Version", "1.0");
+      return action.apply(builder, Entity.entity(entity.getEntity(), boundaryMediaType));
+    }
+
+    return action.apply(builder, entity);
+  }
 
   public synchronized void initialize() {
     if (!isClientInitialized) {

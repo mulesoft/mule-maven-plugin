@@ -45,7 +45,7 @@ class ClientExceptionTest {
 
   @Test
   void clientExceptionResponseMockTest() {
-    testException(new ClientException(responseMock));
+    testException(new ClientException(responseMock, URI));
   }
 
   @Test

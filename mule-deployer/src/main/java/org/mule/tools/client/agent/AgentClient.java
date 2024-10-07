@@ -117,7 +117,7 @@ public class AgentClient extends AbstractClient {
    * @return An {@link Application} instance
    */
   public Application getApplication(String appName) {
-    return get(uri, APPLICATIONS_PATH + appName).readEntity(Application.class);
+    return readEntityWithTimeout(() -> get(uri, APPLICATIONS_PATH + appName).readEntity(Application.class));
   }
 
   /**
@@ -126,6 +126,6 @@ public class AgentClient extends AbstractClient {
    * @return An {@link AgentInfo} instance
    */
   public AgentInfo getAgentInfo() {
-    return get(uri, AGENT_INFO_PATH).readEntity(AgentInfo.class);
+    return readEntityWithTimeout(() -> get(uri, AGENT_INFO_PATH).readEntity(AgentInfo.class));
   }
 }

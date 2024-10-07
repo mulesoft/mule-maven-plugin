@@ -353,7 +353,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
     if (response.getStatus() != 200) {
       throw new IllegalStateException("Cannot get the environment, the business group is not valid");
     }
-    return response.readEntity(Environments.class);
+    return readEntityWithTimeout(() -> response.readEntity(Environments.class));
   }
 
   public Set<String> getSuborganizationIds(JsonObject organizationJson) {

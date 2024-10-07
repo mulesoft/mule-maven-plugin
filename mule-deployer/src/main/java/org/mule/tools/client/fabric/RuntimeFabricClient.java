@@ -51,7 +51,7 @@ public class RuntimeFabricClient extends AbstractMuleClient {
   public Deployments getDeployments() {
     Response response = get(baseUri, getPathSupplier());
     checkResponseStatus(response, OK);
-    return response.readEntity(Deployments.class);
+    return readEntityWithTimeout(() -> response.readEntity(Deployments.class));
   }
 
   /**
@@ -63,7 +63,7 @@ public class RuntimeFabricClient extends AbstractMuleClient {
     log.info("Deploying " + request.name);
     Response response = post(baseUri, getPathSupplier(), new Gson().toJson(request));
     checkResponseStatus(response, ACCEPTED);
-    return response.readEntity(DeploymentDetailedResponse.class);
+    return readEntityWithTimeout(() -> response.readEntity(DeploymentDetailedResponse.class));
   }
 
   /**
@@ -75,7 +75,7 @@ public class RuntimeFabricClient extends AbstractMuleClient {
     log.info("Redeploying...");
     Response response = patch(baseUri, getDeploymentPathSupplier(deploymentId), new Gson().toJson(modify));
     checkResponseStatus(response, OK);
-    return response.readEntity(DeploymentDetailedResponse.class);
+    return readEntityWithTimeout(() -> response.readEntity(DeploymentDetailedResponse.class));
   }
 
   /**
@@ -86,7 +86,7 @@ public class RuntimeFabricClient extends AbstractMuleClient {
   public DeploymentDetailedResponse getDeployment(String deploymentId) {
     Response response = get(baseUri, getDeploymentPathSupplier(deploymentId));
     checkResponseStatus(response, OK);
-    return response.readEntity(DeploymentDetailedResponse.class);
+    return readEntityWithTimeout(() -> response.readEntity(DeploymentDetailedResponse.class));
   }
 
   /**
@@ -98,7 +98,7 @@ public class RuntimeFabricClient extends AbstractMuleClient {
   public DeploymentDetailedResponse deleteDeployment(String deploymentId) {
     Response response = delete(baseUri, getDeploymentPathSupplier(deploymentId));
     checkResponseStatus(response, NO_CONTENT);
-    return response.readEntity(DeploymentDetailedResponse.class);
+    return readEntityWithTimeout(() -> response.readEntity(DeploymentDetailedResponse.class));
   }
 
 
@@ -118,19 +118,21 @@ public class RuntimeFabricClient extends AbstractMuleClient {
 
     Response response = get(baseUri, getAgentsPathSupplier());
     checkResponseStatus(response, OK);
-    return new Gson().fromJson(response.readEntity(String.class), JsonElement.class).getAsJsonArray();
+    return new Gson().fromJson(readEntityWithTimeout(() -> response.readEntity(String.class)), JsonElement.class)
+        .getAsJsonArray();
   }
 
   public JsonObject getTargetInfo(String targetId) {
     Response response = get(baseUri, format(RUNTIME_FABRIC_TARGET_INFO, getOrgId(), targetId));
     checkResponseStatus(response, OK);
-    return new Gson().fromJson(response.readEntity(String.class), JsonElement.class).getAsJsonObject();
+    return new Gson().fromJson(readEntityWithTimeout(() -> response.readEntity(String.class)), JsonElement.class)
+        .getAsJsonObject();
   }
 
   public JsonArray getDomainInfo(String targetId) {
     Response response = get(baseUri, format(RUNTIME_FABRIC_DOMAIN_INFO, getOrgId(), targetId, getEnvId()));
     checkResponseStatus(response, OK);
-    return new Gson().fromJson(response.readEntity(String.class), JsonArray.class).getAsJsonArray();
+    return new Gson().fromJson(readEntityWithTimeout(() -> response.readEntity(String.class)), JsonArray.class).getAsJsonArray();
   }
 
   protected String getDeploymentsPath() {

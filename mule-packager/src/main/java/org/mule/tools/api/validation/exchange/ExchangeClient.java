@@ -55,7 +55,7 @@ public class ExchangeClient extends AbstractClient {
     checkResponseStatus(response);
 
     Type listType = new TypeToken<ArrayList<Group>>() {}.getType();
-    List<Group> groupList = new Gson().fromJson(response.readEntity(String.class), listType);
+    List<Group> groupList = new Gson().fromJson(readEntityWithTimeout(() -> response.readEntity(String.class)), listType);
 
     return groupList.get(0).getGroupId();
   }

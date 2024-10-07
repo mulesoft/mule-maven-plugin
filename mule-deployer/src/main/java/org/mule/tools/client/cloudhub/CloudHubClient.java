@@ -78,7 +78,7 @@ public class CloudHubClient extends AbstractMuleClient {
 
     checkResponseStatus(response, OK);
 
-    return response.readEntity(new GenericType<List<Application>>() {});
+    return readEntityWithTimeout(() -> response.readEntity(new GenericType<List<Application>>() {}));
   }
 
   /**
@@ -118,7 +118,7 @@ public class CloudHubClient extends AbstractMuleClient {
 
     checkResponseStatus(response, OK);
 
-    return response.readEntity(Application.class);
+    return readEntityWithTimeout(() -> response.readEntity(Application.class));
   }
 
   /**
@@ -139,7 +139,7 @@ public class CloudHubClient extends AbstractMuleClient {
 
     checkResponseStatus(response, OK);
 
-    return response.readEntity(Application.class);
+    return readEntityWithTimeout(() -> response.readEntity(Application.class));
   }
 
   /**
@@ -200,7 +200,7 @@ public class CloudHubClient extends AbstractMuleClient {
 
     checkResponseStatus(response, OK);
 
-    DomainAvailability availability = response.readEntity(DomainAvailability.class);
+    DomainAvailability availability = readEntityWithTimeout(() -> response.readEntity(DomainAvailability.class));
     return availability.isAvailable();
   }
 
@@ -254,7 +254,7 @@ public class CloudHubClient extends AbstractMuleClient {
 
     checkResponseStatus(response, OK);
 
-    return response.readEntity(new GenericType<List<LogRecord>>() {});
+    return readEntityWithTimeout(() -> response.readEntity(new GenericType<List<LogRecord>>() {}));
   }
 
   /**
@@ -272,7 +272,7 @@ public class CloudHubClient extends AbstractMuleClient {
 
     checkResponseStatus(response, OK);
 
-    return response.readEntity(InputStream.class);
+    return readEntityWithTimeout(() -> response.readEntity(InputStream.class));
   }
 
   private Entity<MultiPart> getMultiPartEntity(Application application, File file) {
@@ -288,6 +288,6 @@ public class CloudHubClient extends AbstractMuleClient {
     Response response = get(baseUri, APPLICATION_ENVIRONMENT);
 
     checkResponseStatus(response, OK);
-    return response.readEntity(Environment.class);
+    return readEntityWithTimeout(() -> response.readEntity(Environment.class));
   }
 }

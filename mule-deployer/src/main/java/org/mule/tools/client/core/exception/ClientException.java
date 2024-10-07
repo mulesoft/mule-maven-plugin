@@ -6,7 +6,6 @@
  */
 package org.mule.tools.client.core.exception;
 
-
 import javax.ws.rs.core.Response;
 
 public class ClientException extends RuntimeException {
@@ -22,12 +21,8 @@ public class ClientException extends RuntimeException {
 
   }
 
-  public ClientException(Response response, String uri) {
-    this(uri, response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
-  }
-
-  public ClientException(Response response) {
-    this(response.readEntity(String.class), response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
+  public ClientException(Response response, String message) {
+    this(message, response.getStatusInfo().getStatusCode(), response.getStatusInfo().getReasonPhrase());
   }
 
   public int getStatusCode() {

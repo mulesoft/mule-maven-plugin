@@ -33,7 +33,12 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.ws.rs.client.Client;
@@ -75,6 +80,8 @@ public abstract class AbstractClient {
   protected static final String HTTP_PROXY_HOST = "http.proxyHost";
 
   private boolean isClientInitialized = false;
+  private Consumer<ClientBuilder> clientBuilderConfigurer;
+  private Long readEntityTimeout;
 
   public AbstractClient() {}
 
@@ -129,7 +136,7 @@ public abstract class AbstractClient {
 
   protected <T> T get(String uri, String path, Class<T> clazz) {
     initialize();
-    return get(uri, path).readEntity(clazz);
+    return readEntityWithTimeout(() -> get(uri, path).readEntity(clazz));
   }
 
   protected Response patch(String uri, Supplier<String> path, Object entity) {
@@ -157,6 +164,23 @@ public abstract class AbstractClient {
     return action.apply(builder, entity);
   }
 
+  protected <T> T readEntityWithTimeout(Supplier<T> supplier) {
+    if (readEntityTimeout == null || readEntityTimeout < 1) {
+      return supplier.get();
+    }
+
+    ExecutorService executorService = Executors.newSingleThreadExecutor();
+    try {
+      Future<T> future = executorService.submit(supplier::get);
+      T response = future.get(readEntityTimeout, TimeUnit.MILLISECONDS);
+      executorService.shutdownNow();
+      return response;
+    } catch (Exception e) {
+      executorService.shutdownNow();
+      throw new RuntimeException(e);
+    }
+  }
+
   public synchronized void initialize() {
     if (!isClientInitialized) {
       isClientInitialized = true;
@@ -172,6 +196,14 @@ public abstract class AbstractClient {
     setBuilderProperties(builder);
     configureRequest(builder);
     return builder;
+  }
+
+  public void setClientBuilderConfigurer(Consumer<ClientBuilder> clientBuilderConfigurer) {
+    this.clientBuilderConfigurer = clientBuilderConfigurer;
+  }
+
+  public void setReadEntityTimeout(Long readEntityTimeout) {
+    this.readEntityTimeout = readEntityTimeout;
   }
 
   protected WebTarget getTarget(String uri, String path) {
@@ -190,7 +222,7 @@ public abstract class AbstractClient {
         break;
     }
     ClientBuilder builder = ClientBuilder.newBuilder().withConfig(configuration);
-
+    Optional.ofNullable(clientBuilderConfigurer).ifPresent(configurer -> configurer.accept(builder));
     configureSecurityContext(builder);
     Client client = builder.build().register(MultiPartFeature.class);
     if (log != null && log.isDebugEnabled() && !isLoginRequest(path)) {
@@ -252,7 +284,7 @@ public abstract class AbstractClient {
 
   protected void checkResponseStatus(Response response) {
     if (familyOf(response.getStatus()) != SUCCESSFUL) {
-      throw new ClientException(response);
+      throw new ClientException(response, readEntityWithTimeout(() -> response.readEntity(String.class)));
     }
   }
 
@@ -265,13 +297,13 @@ public abstract class AbstractClient {
 
     Integer statusCode = response.getStatus();
     if (!success.contains(statusCode)) {
-      throw new ClientException(response);
+      throw new ClientException(response, readEntityWithTimeout(() -> response.readEntity(String.class)));
     }
   }
 
   // TODO find a way to dec
   protected <T> T readJsonEntity(Response response, Type type) {
-    String jsonResponse = response.readEntity(String.class);
+    String jsonResponse = readEntityWithTimeout(() -> response.readEntity(String.class));
     return new Gson().fromJson(jsonResponse, type);
   }
 

@@ -72,6 +72,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
     super(log);
     this.baseUri = anypointDeployment.getUri();
 
+    setReadEntityTimeout(anypointDeployment.getReadResponseTimeout());
     if (!isEmpty(anypointDeployment.getAuthToken())) {
       this.credentials = new AnypointToken(anypointDeployment.getAuthToken());
     } else if (!emptyConnectedAppsCredentials(anypointDeployment)) {
@@ -83,6 +84,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
     }
 
     this.authenticationServiceClient = new AuthenticationServiceClient(baseUri);
+    this.authenticationServiceClient.setReadEntityTimeout(anypointDeployment.getReadResponseTimeout());
 
     this.environmentName = anypointDeployment.getEnvironment();
     this.businessGroupName = anypointDeployment.getBusinessGroup();

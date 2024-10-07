@@ -72,6 +72,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
     super(log);
     this.baseUri = anypointDeployment.getUri();
 
+    setReadEntityTimeout(anypointDeployment.getReadResponseTimeout());
     if (!isEmpty(anypointDeployment.getAuthToken())) {
       this.credentials = new AnypointToken(anypointDeployment.getAuthToken());
     } else if (!emptyConnectedAppsCredentials(anypointDeployment)) {
@@ -83,6 +84,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
     }
 
     this.authenticationServiceClient = new AuthenticationServiceClient(baseUri);
+    this.authenticationServiceClient.setReadEntityTimeout(anypointDeployment.getReadResponseTimeout());
 
     this.environmentName = anypointDeployment.getEnvironment();
     this.businessGroupName = anypointDeployment.getBusinessGroup();
@@ -353,7 +355,7 @@ public abstract class AbstractMuleClient extends AbstractClient {
     if (response.getStatus() != 200) {
       throw new IllegalStateException("Cannot get the environment, the business group is not valid");
     }
-    return response.readEntity(Environments.class);
+    return readEntityWithTimeout(() -> response.readEntity(Environments.class));
   }
 
   public Set<String> getSuborganizationIds(JsonObject organizationJson) {

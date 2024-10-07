@@ -46,6 +46,9 @@ public abstract class Deployment {
   @Parameter
   protected Long deploymentTimeout;
 
+  @Parameter
+  protected Long readResponseTimeout;
+
   private String packaging;
 
   private String artifactId;
@@ -221,5 +224,9 @@ public abstract class Deployment {
 
   public boolean validateVersion() {
     return false;
+  }
+
+  public Long getReadResponseTimeout() {
+    return readResponseTimeout;
   }
 }

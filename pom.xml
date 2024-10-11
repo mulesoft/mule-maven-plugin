@@ -84,7 +84,7 @@
         <junit.version>4.13.2</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
         <mockito.core.version>2.23.4</mockito.core.version>
-        <mockserver.netty.version>5.7.2</mockserver.netty.version>
+        <mockserver.netty.version>5.15.0</mockserver.netty.version>
 
         <!-- Plugin Versions -->
         <maven.plugin.version>3.6.0</maven.plugin.version>

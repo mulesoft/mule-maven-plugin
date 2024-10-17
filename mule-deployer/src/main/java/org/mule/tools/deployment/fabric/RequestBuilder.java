@@ -182,14 +182,19 @@ public class RequestBuilder {
   }
 
   public String getDeploymentId(Target target) {
+    return getOptionalDeploymentId(target)
+        .orElseThrow(() -> new IllegalStateException("Could not find deployment ID. Please check if there is an application with the same name under a different environment."));
+  }
+
+  public Optional<String> getOptionalDeploymentId(Target target) {
     Deployments deployments = client.getDeployments();
     for (DeploymentGenericResponse deployment : deployments) {
       if (StringUtils.equals(deployment.name, this.deployment.getApplicationName()) &&
           StringUtils.equals(deployment.target.targetId, target.targetId)) {
-        return deployment.id;
+        return Optional.of(deployment.id);
       }
     }
-    throw new IllegalStateException("Could not find deployment ID. Please check if there is an application with the same name under a different environment.");
+    return Optional.empty();
   }
 
   public DeploymentModify buildDeploymentModify() throws DeploymentException {

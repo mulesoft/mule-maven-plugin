@@ -6,7 +6,6 @@
  */
 package org.mule.tools.deployment.fabric;
 
-import org.apache.commons.lang3.StringUtils;
 import org.mule.tools.client.core.exception.ClientException;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.client.fabric.RuntimeFabricClient;
@@ -20,14 +19,13 @@ import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.fabric.RuntimeFabricDeploymentVerification;
 
+import java.util.Optional;
+
 import static com.google.common.base.Preconditions.checkArgument;
 
 public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
 
   private static final Long DEFAULT_RUNTIME_FABRIC_DEPLOYMENT_TIMEOUT = 1200000L;
-  private static final String RTF_DEPLOY_ERROR_MESSAGE =
-      "This target has an application with the same name already deployed. Please delete it in order to create a new deployment.";
-  public static final int BAD_REQUEST = 400;
   private DeploymentVerification deploymentVerification;
   private RequestBuilder requestBuilder;
   protected RuntimeFabricClient client;
@@ -59,33 +57,20 @@ public class RuntimeFabricArtifactDeployer implements ArtifactDeployer {
   public void deployApplication() throws DeploymentException {
     try {
       log.info("Starting deployment to " + deployment.getTarget());
-      DeploymentRequest request = requestBuilder.buildDeploymentRequest();
-      client.deploy(request);
-    } catch (ClientException e) {
-      if (isAlreadyDeployed(e)) {
-        redeployApplication();
+      log.info("Checking app " + deployment.getApplicationName());
+      DeploymentModify modify = requestBuilder.buildDeploymentModify();
+      Optional<String> deploymentId = requestBuilder.getOptionalDeploymentId(modify.target);
+      if (deploymentId.isPresent()) {
+        client.redeploy(modify, deploymentId.get());
       } else {
-        throw new DeploymentException("Could not deploy application.", e);
+        client.deploy(requestBuilder.buildDeploymentRequest());
       }
+    } catch (ClientException e) {
+      throw new DeploymentException("Could not deploy application.", e);
     }
     if (!deployment.getSkipDeploymentVerification()) {
       checkApplicationHasStarted();
     }
-  }
-
-  protected boolean isAlreadyDeployed(ClientException e) {
-    return e.getStatusCode() == BAD_REQUEST && StringUtils.containsIgnoreCase(e.getMessage(), RTF_DEPLOY_ERROR_MESSAGE);
-  }
-
-  private void redeployApplication() throws DeploymentException {
-    try {
-      DeploymentModify modify = requestBuilder.buildDeploymentModify();
-      String deploymentId = requestBuilder.getDeploymentId(modify.target);
-      client.redeploy(modify, deploymentId);
-    } catch (IllegalStateException e) {
-      throw new DeploymentException("Could not redeploy application.", e);
-    }
-
   }
 
   @Override

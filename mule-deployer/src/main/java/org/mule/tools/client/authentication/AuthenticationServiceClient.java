@@ -106,7 +106,8 @@ public class AuthenticationServiceClient extends AbstractClient {
     Response response = get(baseUri, ORGANIZATIONS);
 
     Type listType = new TypeToken<ArrayList<Organization>>() {}.getType();
-    List<Organization> organizationList = new Gson().fromJson(response.readEntity(String.class), listType);
+    List<Organization> organizationList =
+        new Gson().fromJson(readEntityWithTimeout(() -> response.readEntity(String.class)), listType);
 
     return organizationList;
   }
@@ -130,7 +131,7 @@ public class AuthenticationServiceClient extends AbstractClient {
 
     checkResponseStatus(response);
 
-    return response.readEntity(AuthorizationResponse.class);
+    return readEntityWithTimeout(() -> response.readEntity(AuthorizationResponse.class));
   }
 
   /*
@@ -148,7 +149,7 @@ public class AuthenticationServiceClient extends AbstractClient {
 
     checkResponseStatus(response);
 
-    return response.readEntity(AuthorizationResponse.class);
+    return readEntityWithTimeout(() -> response.readEntity(AuthorizationResponse.class));
   }
 
 }

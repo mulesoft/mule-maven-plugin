@@ -147,9 +147,9 @@ public abstract class AbstractClient {
   protected Response patch(String uri, String path, Entity entity) {
     initialize();
     Invocation.Builder builder = builder(uri, path);
-    builder.property(SET_METHOD_WORKAROUND, true);
     return doRequest(builder(uri, path), entity,
-                     (currentBuilder, currentEntity) -> currentBuilder.method("PATCH", currentEntity));
+                     (currentBuilder, currentEntity) -> currentBuilder.property(SET_METHOD_WORKAROUND, true)
+                         .method("PATCH", currentEntity));
   }
 
   private Response doRequest(Invocation.Builder builder, Entity entity, BiFunction<Invocation.Builder, Entity, Response> action) {
@@ -208,7 +208,7 @@ public abstract class AbstractClient {
 
   protected WebTarget getTarget(String uri, String path) {
     ClientConfig configuration = new ClientConfig();
-    String connector = System.getProperty(CONNECTOR_PROVIDER_PROPERTY, JDK);
+    String connector = System.getProperty(CONNECTOR_PROVIDER_PROPERTY, APACHE_5);
     setProxyProperties(connector, configuration);
     switch (connector) {
       case JDK:

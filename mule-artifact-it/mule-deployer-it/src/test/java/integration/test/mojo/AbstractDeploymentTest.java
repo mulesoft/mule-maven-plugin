@@ -26,16 +26,20 @@ public abstract class AbstractDeploymentTest {
   protected static final Logger LOG = LoggerFactory.getLogger(AbstractDeploymentTest.class);
 
   private static final String MAVEN_OPTS = "MAVEN_OPTS";
-  private static final String DEFAULT_MULE_VERSION = "4.7.4";
+  private static final String DEFAULT_MULE_VERSION = "4.8.0";
   private static final String MAVEN_OPTS_PROPERTY_KEY = "argLine";
 
   protected static final String DEPLOY_GOAL = "deploy";
   protected static final String PRODUCTION_ENVIRONMENT = "Production";
   protected static final String USERNAME_ENVIRONMENT_VARIABLE = "username";
   protected static final String PASSWORD_ENVIRONMENT_VARIABLE = "password";
+  protected static final String USERNAME_UBP_ENVIRONMENT_VARIABLE = "usernameUBP";
+  protected static final String PASSWORD_UBP_ENVIRONMENT_VARIABLE = "passwordUBP";
 
   private static final String USERNAME = System.getProperty(USERNAME_ENVIRONMENT_VARIABLE);
   private static final String PASSWORD = System.getProperty(PASSWORD_ENVIRONMENT_VARIABLE);
+  private static final String USERNAME_UBP = System.getProperty(USERNAME_UBP_ENVIRONMENT_VARIABLE);
+  private static final String PASSWORD_UBP = System.getProperty(PASSWORD_UBP_ENVIRONMENT_VARIABLE);
 
   public abstract String getApplication();
 
@@ -47,8 +51,16 @@ public abstract class AbstractDeploymentTest {
     return USERNAME;
   }
 
+  protected String getUsernameUBP() {
+    return USERNAME_UBP;
+  }
+
   public String getPassword() {
     return PASSWORD;
+  }
+
+  public String getPasswordUBP() {
+    return PASSWORD_UBP;
   }
 
   protected Verifier buildBaseVerifier() throws Exception {

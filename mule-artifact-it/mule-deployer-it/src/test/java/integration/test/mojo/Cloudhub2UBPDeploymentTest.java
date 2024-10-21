@@ -20,12 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
 
-import org.mule.tools.model.anypoint.Autoscaling;
-
-import org.mule.tools.model.anypoint.Cloudhub2DeploymentSettings;
-
-
-
 public class Cloudhub2UBPDeploymentTest extends AbstractDeploymentTest {
 
   private static final int APPLICATION_NAME_LENGTH = 10;
@@ -46,7 +40,6 @@ public class Cloudhub2UBPDeploymentTest extends AbstractDeploymentTest {
   private Verifier verifier;
   private String application;
   private String applicationName;
-  Autoscaling autoscaling = new Autoscaling(A_ENABLED, MIN_REPLICAS, MAX_REPLICAS);
 
   public String getApplication() {
     return application;
@@ -65,8 +58,8 @@ public class Cloudhub2UBPDeploymentTest extends AbstractDeploymentTest {
     verifier.setSystemProperty("mule.version", muleVersion);
     verifier.setSystemProperty("project.groupId", PROJECT_GROUP_ID);
     verifier.setSystemProperty("cloudhub2.application.name", applicationName);
-    verifier.setSystemProperty("username", "munitUBPaccount");
-    verifier.setSystemProperty("password", "MunitUBPclient1!");
+    verifier.setSystemProperty("username", getUsernameUBP());
+    verifier.setSystemProperty("password", getPasswordUBP());
     verifier.setSystemProperty("provider", PROVIDER);
     verifier.setSystemProperty("environment", SANDBOX_ENVIRONMENT);
     verifier.setSystemProperty("instanceType", INSTANCETYPE);

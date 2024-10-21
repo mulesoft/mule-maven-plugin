@@ -3,12 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>e36d14d2-6767-44a8-a51d-b30c0e509141</groupId>
-    <artifactId>ch2deploy</artifactId>
-    <version>1.1.0</version>
+    <groupId>9cd3ec6f-e4d1-45a4-a83a-769586f86222</groupId>
+    <artifactId>ch2UBPdeploy</artifactId>
+    <version>1.0.1</version>
     <packaging>mule-application</packaging>
-
-    <name>ch2deploy</name>
+    <name>ch2UBPdeploy</name>
 
     <build>
         <plugins>
@@ -20,18 +19,26 @@
                 <configuration>
                     <cloudhub2Deployment>
                         <uri>https://anypoint.mulesoft.com</uri>
-                        <businessGroupId>notValidOrg</businessGroupId>
+                        <businessGroupId>${project.groupId}</businessGroupId>
                         <provider>${provider}</provider>
                         <environment>${environment}</environment>
                         <target>${target}</target>
                         <muleVersion>${mule.version}</muleVersion>
                         <username>${username}</username>
                         <password>${password}</password>
+                        <replicas>${replicas}</replicas>
                         <applicationName>${cloudhub2.application.name}</applicationName>
-                        <vCores>${vCores}</vCores>
-                        <server>${server}</server>
-                        <deploymentSettings></deploymentSettings>
-                        <deploymentTimeout>${cloudhub2.deployment.timeout}</deploymentTimeout>
+                        <deploymentSettings>
+                            <instanceType>${instanceType}</instanceType>
+                            <persistentObjectStore>${persistentObjectStore}</persistentObjectStore>
+                            <tracingEnabled>${tracingEnabled}</tracingEnabled>
+                            <autoscaling>
+                                <enabled>${autoscalingEnabled}</enabled>
+                                <minReplicas>${minReplicas}</minReplicas>
+                                <maxReplicas>${maxReplicas}</maxReplicas>
+                            </autoscaling>
+                            <http></http>
+                        </deploymentSettings>
                         <properties>
                             <key>value</key>
                         </properties>

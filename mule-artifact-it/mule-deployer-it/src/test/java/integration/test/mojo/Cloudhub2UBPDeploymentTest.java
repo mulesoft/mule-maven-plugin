@@ -27,7 +27,6 @@ public class Cloudhub2UBPDeploymentTest extends AbstractDeploymentTest {
   private static final long RETRY_SLEEP_TIME = 60000;
   private static final String TARGET = "Cloudhub-US-East-2";
   private static final String SANDBOX_ENVIRONMENT = "Sandbox";
-  private static final String SERVER = "anypoint-exchange-v3";
   private static final String PROJECT_GROUP_ID = "9cd3ec6f-e4d1-45a4-a83a-769586f8618d";
   private static final String PROVIDER = "MC";
   private static final String INSTANCETYPE = "mule.micro";
@@ -72,13 +71,14 @@ public class Cloudhub2UBPDeploymentTest extends AbstractDeploymentTest {
 
   @Test
   public void cloudhub2UBPDeployTest() throws Exception {
-    before("4.7.1", "empty-mule-deploy-cloudhub2-UBP-project");
+    before("4.8.0", "empty-mule-deploy-cloudhub2-UBP-project");
     LOG.info("Executing deploy to CH2 integration test with an valid UBP POM Project. It should deploy correctly");
     verifier.addCliArguments(DEPLOY_GOAL, "-DmuleDeploy");
     verifier.execute();
     Cloudhub2RuntimeFabricClient cloudhub2Client = new Cloudhub2RuntimeFabricClient(getCloudhub2Deployment(), null);
 
     String applicationId = cloudhub2Client.getDeployments().items.stream()
+
         .filter(deployment -> applicationName.equals(deployment.name))
         .map(deployment -> deployment.id)
         .findFirst()
@@ -92,7 +92,7 @@ public class Cloudhub2UBPDeploymentTest extends AbstractDeploymentTest {
   @Test
   public void testCloudhub2UBPDeployWithInvalidOrg() throws Exception {
     assertThatThrownBy(() -> {
-      before("4.7.1", "empty-mule-deploy-cloudhub2-UBP-invalid-group-project");
+      before("4.8.0", "empty-mule-deploy-cloudhub2-UBP-invalid-group-project");
       LOG.debug("Executing deploy to CH2 integration test with an Invalid UBP POM Project. It should not deploy");
       verifier.addCliArguments(DEPLOY_GOAL, "-DmuleDeploy");
       verifier.execute();
@@ -102,8 +102,8 @@ public class Cloudhub2UBPDeploymentTest extends AbstractDeploymentTest {
 
   private Cloudhub2Deployment getCloudhub2Deployment() {
     Cloudhub2Deployment cloudhub2Deployment = new Cloudhub2Deployment();
-    cloudhub2Deployment.setUsername(getUsername());
-    cloudhub2Deployment.setPassword(getPassword());
+    cloudhub2Deployment.setUsername(getUsernameUBP());
+    cloudhub2Deployment.setPassword(getPasswordUBP());
     cloudhub2Deployment.setEnvironment(SANDBOX_ENVIRONMENT);
     cloudhub2Deployment.setUri(DEFAULT_BASE_URL);
     cloudhub2Deployment.setApplicationName(getApplicationName());

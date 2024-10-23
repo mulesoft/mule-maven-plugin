@@ -63,7 +63,7 @@ public class Cloudhub2DeploymentTest extends AbstractDeploymentTest {
 
   @Test
   public void cloudhub2DeployTest() throws Exception {
-    before("4.7.1", "empty-mule-deploy-cloudhub2-project");
+    before("4.8.0", "empty-mule-deploy-cloudhub2-project");
     LOG.info("Executing deploy to CH2 integration test with an valid POM Project. It should deploy correctly");
     verifier.addCliArguments(DEPLOY_GOAL, "-DmuleDeploy");
     verifier.execute();
@@ -83,7 +83,7 @@ public class Cloudhub2DeploymentTest extends AbstractDeploymentTest {
   @Test
   public void testCloudhub2DeployWithInvalidOrg() throws Exception {
     assertThatThrownBy(() -> {
-      before("4.7.1", "empty-mule-deploy-cloudhub2-invalid-group-project");
+      before("4.8.0", "empty-mule-deploy-cloudhub2-invalid-group-project");
       LOG.debug("Executing deploy to CH2 integration test with an Invalid POM Project. It should not deploy");
       verifier.addCliArguments(DEPLOY_GOAL, "-DmuleDeploy");
       verifier.execute();

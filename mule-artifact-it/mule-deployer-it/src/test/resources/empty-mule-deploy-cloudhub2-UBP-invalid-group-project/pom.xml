@@ -26,7 +26,6 @@
                         <muleVersion>${mule.version}</muleVersion>
                         <username>${username}</username>
                         <password>${password}</password>
-                        <replicas>${replicas}</replicas>
                         <applicationName>${cloudhub2.application.name}</applicationName>
                         <deploymentSettings>
                             <instanceType>${instanceType}</instanceType>

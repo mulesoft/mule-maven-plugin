@@ -30,7 +30,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
   private static final String STARTED_STATUS = "STARTED";
 
   private static Stream<Arguments> muleVersions() {
-    return Stream.of(Arguments.of("4.7"));
+    return Stream.of(Arguments.of("4.8"));
   }
 
   private Verifier verifier;

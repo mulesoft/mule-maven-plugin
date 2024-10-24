@@ -33,9 +33,13 @@ public abstract class AbstractDeploymentTest {
   protected static final String PRODUCTION_ENVIRONMENT = "Production";
   protected static final String USERNAME_ENVIRONMENT_VARIABLE = "username";
   protected static final String PASSWORD_ENVIRONMENT_VARIABLE = "password";
+  protected static final String USERNAME_UBP_ENVIRONMENT_VARIABLE = "usernameUbp";
+  protected static final String PASSWORD_UBP_ENVIRONMENT_VARIABLE = "passwordUbp";
 
   private static final String USERNAME = System.getProperty(USERNAME_ENVIRONMENT_VARIABLE);
   private static final String PASSWORD = System.getProperty(PASSWORD_ENVIRONMENT_VARIABLE);
+  private static final String USERNAME_UBP = System.getProperty(USERNAME_UBP_ENVIRONMENT_VARIABLE);
+  private static final String PASSWORD_UBP = System.getProperty(PASSWORD_UBP_ENVIRONMENT_VARIABLE);
 
   public abstract String getApplication();
 
@@ -47,8 +51,16 @@ public abstract class AbstractDeploymentTest {
     return USERNAME;
   }
 
+  protected String getUsernameUBP() {
+    return USERNAME_UBP;
+  }
+
   public String getPassword() {
     return PASSWORD;
+  }
+
+  public String getPasswordUBP() {
+    return PASSWORD_UBP;
   }
 
   protected Verifier buildBaseVerifier() throws Exception {

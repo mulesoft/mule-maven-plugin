@@ -64,6 +64,6 @@ class AbstractClientTest {
     System.clearProperty(CONNECTOR_PROVIDER_PROPERTY);
     AbstractClient client = new TesteableClient();
     assertThat(((ClientConfig) client.getTarget("", "").getConfiguration()).getConnectorProvider().getClass())
-        .isEqualTo(JdkConnectorProvider.class);
+        .isEqualTo(Apache5ConnectorProvider.class);
   }
 }

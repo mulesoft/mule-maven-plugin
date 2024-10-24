@@ -43,7 +43,7 @@ import org.apache.maven.lifecycle.mapping.Lifecycle;
 
 class MuleLifecycleMappingMavenVersionlessTest {
 
-  private final String DEFAULT_LIFECYCLE = DefaultLifecycles.STANDARD_LIFECYCLES[0];
+  private final String DEFAULT_LIFECYCLE = DefaultLifecycles.STANDARD_LIFECYCLES[1];
 
   @Test
   void getLifecyclePhases() {

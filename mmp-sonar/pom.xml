@@ -30,16 +30,6 @@
     </dependency>
     <dependency>
         <groupId>org.mule.tools.maven</groupId>
-        <artifactId>mule-extension-model-loader</artifactId>
-        <version>${project.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.mule.tools.maven</groupId>
-        <artifactId>mule-extension-model-loader</artifactId>
-        <version>${project.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.mule.tools.maven</groupId>
         <artifactId>mule-maven-plugin</artifactId>
         <version>${project.version}</version>
     </dependency>

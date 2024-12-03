@@ -33,7 +33,15 @@
                 steps {
                     script {
                         CURRENT_STAGE = env.STAGE_NAME
-                        buildWithMaven("clean install ${pipelineParams.skipTestsArgs} ${pipelineParams.mavenAdditionalArgs}")
+                        buildWithMaven("clean install ${pipelineParams.skipTestsArgs} ${pipelineParams.mavenAdditionalArgs} -pl '!:mmp-sonar'")
+                    }
+                }
+            }
+            stage('MMP Sonar') {
+                steps {
+                    script {
+                        CURRENT_STAGE = env.STAGE_NAME
+                        buildWithMaven("clean install ${pipelineParams.skipTestsArgs} ${pipelineParams.mavenAdditionalArgs} -pl ':mmp-sonar'")
                     }
                 }
             }

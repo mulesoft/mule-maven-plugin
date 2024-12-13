@@ -1,4 +1,4 @@
-    @Library('lifecycle-utils@master') _
+    @Library('lifecycle-utils@main') _
 
     Map pipelineParams = [
             "agent": "ubuntu-14.04",

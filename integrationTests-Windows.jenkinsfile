@@ -1,4 +1,4 @@
-@Library('lifecycle-utils@master') _
+@Library('lifecycle-utils@main') _
 //Library code can be found at https://github.com/mulesoft/lifecycle-pipeline-utils
 
 properties([

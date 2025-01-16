@@ -20,7 +20,7 @@ import java.util.zip.ZipOutputStream;
 public class DefaultExtensionModelServiceTest extends MavenClientTest {
 
     @Test
-    void gqetPomModelFromJarTest(@TempDir Path tempDir) throws IOException {
+    void qetPomModelFromJarTest(@TempDir Path tempDir) throws IOException {
         File m2Home = getM2Home();
         File m2Repo = getM2Repo(m2Home);
         File userSettings = getUserSettings(m2Repo);

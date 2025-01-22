@@ -7,6 +7,7 @@
 package org.mule.tools.api.validation.deployment;
 
 import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -49,7 +50,6 @@ public class ProjectDeploymentValidatorTest {
   @TempDir
   public Path projectBuildFolder;
 
-
   private Deployment deploymentConfigurationMock;
   private DefaultProjectInformation.Builder projectInformationBuilder;
 
@@ -71,6 +71,12 @@ public class ProjectDeploymentValidatorTest {
   }
 
   @Test
+  void constructorTest() {
+    assertThatThrownBy(() -> new ProjectDeploymentValidator(null))
+        .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("The project information must not be null");
+  }
+
+  @Test
   public void isDeployableMuleApplication() throws ValidationException {
     projectInformationBuilder
         .withPackaging(MULE_APPLICATION.toString())
@@ -78,9 +84,10 @@ public class ProjectDeploymentValidatorTest {
         .isDeployment(true)
         .withDeployments(singletonList(deploymentConfigurationMock));
 
-
-    validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
+    DefaultProjectInformation projectInformation = projectInformationBuilder.build();
+    validator = new ProjectDeploymentValidator(projectInformation);
     validator.isDeployable();
+    assertThat(projectInformation).isEqualTo(validator.getDefaultProjectInformation());
   }
 
   @Test
@@ -149,6 +156,17 @@ public class ProjectDeploymentValidatorTest {
     }).isExactlyInstanceOf(ValidationException.class);
   }
 
+  @Test
+  public void isNotDeployableMuleDomainBundle() throws ValidationException {
+    projectInformationBuilder
+        .withPackaging(MULE_DOMAIN_BUNDLE.toString())
+        .withClassifier(MULE_DOMAIN_BUNDLE.toString())
+        .isDeployment(false)
+        .withDeployments(singletonList(deploymentConfigurationMock));
+
+    validator = new ProjectDeploymentValidator(projectInformationBuilder.build());
+    validator.isDeployable();
+  }
 
   @Test
   public void isDeployableMuleApplicationFromArtifact() {

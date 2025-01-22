@@ -13,6 +13,8 @@ import java.nio.file.Path;
 
 public class ExtensionModelLoaderFactory {
 
+  private ExtensionModelLoaderFactory() {}
+
   public static ExtensionModelLoader createLoader(MavenClient mavenClient, Path workingDir, ClassLoader parentClassloader,
                                                   String toolingVersion) {
     return new DefaultExtensionModelLoader(mavenClient, workingDir, parentClassloader, toolingVersion);

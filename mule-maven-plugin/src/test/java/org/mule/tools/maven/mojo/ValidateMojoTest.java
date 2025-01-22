@@ -8,6 +8,7 @@ package org.mule.tools.maven.mojo;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -38,6 +39,20 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
   private MavenExecutionRequest mavenExecutionRequestMock;
 
   private AbstractProjectValidator validatorMock;
+
+  static class CustomValidateMojo extends ValidateMojo {
+
+    public void setSkipValidation(boolean skipValidation) {
+      this.skipValidation = skipValidation;
+    }
+
+    @Override
+    protected void validateMavenEnvironment() throws ValidationException {
+      throw new ValidationException();
+    }
+  }
+
+  private final CustomValidateMojo mojo = new CustomValidateMojo();
 
   @BeforeEach
   public void before() {
@@ -209,4 +224,18 @@ public class ValidateMojoTest extends AbstractMuleMojoTest {
     mojoMock.validateNotAllowedDependencies();
   }
 
+  @Test
+  void doExecuteExceptions() throws MojoExecutionException {
+    mojo.setSkipValidation(false);
+    assertThatThrownBy(mojo::doExecute).isExactlyInstanceOf(MojoExecutionException.class)
+        .hasMessageContaining("Validation exception");
+
+    mojo.setSkipValidation(true);
+    mojo.doExecute();
+  }
+
+  @Test
+  void getPreviousRunPlaceholder() {
+    assertThat(mojo.getPreviousRunPlaceholder()).isEqualTo("MULE_MAVEN_PLUGIN_VALIDATE_PREVIOUS_RUN_PLACEHOLDER");
+  }
 }

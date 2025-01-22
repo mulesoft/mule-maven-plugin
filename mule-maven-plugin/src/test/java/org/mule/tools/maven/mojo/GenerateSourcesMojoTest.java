@@ -6,22 +6,42 @@
  */
 package org.mule.tools.maven.mojo;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.maven.plugin.MojoFailureException;
 import org.junit.jupiter.api.Test;
+import org.mule.tools.api.packager.sources.ContentGenerator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 
-class GenerateSourcesMojoTest extends AbstractMuleMojoTest {
+class GenerateSourcesMojoTest {
 
-  private TestCompileMojo mojo;
+  static class GenerateSourcesMojoImpl extends GenerateSourcesMojo {
 
-  @BeforeEach
-  void before() {
-    mojo = new TestCompileMojo();
+    public GenerateSourcesMojoImpl() {
+      this.contentGenerator = mock(ContentGenerator.class);
+    }
+  }
+
+  private final GenerateSourcesMojoImpl mojo = new GenerateSourcesMojoImpl();
+
+  @Test
+  void doExecuteTest() throws Exception {
+    reset(mojo.getContentGenerator());
+
+    doThrow(new IllegalArgumentException()).when(mojo.getContentGenerator()).createContent();
+    assertThatThrownBy(mojo::doExecute).isExactlyInstanceOf(MojoFailureException.class)
+        .hasMessageContaining("Fail to generate sources");
+
+    doNothing().when(mojo.getContentGenerator()).createContent();
+    mojo.doExecute();
   }
 
   @Test
   void getPreviousRunPlaceholder() {
-    assertThat(mojo.getPreviousRunPlaceholder()).isEqualTo("MULE_MAVEN_PLUGIN_TEST_COMPILE_PREVIOUS_RUN_PLACEHOLDER");
+    assertThat(mojo.getPreviousRunPlaceholder()).isEqualTo("MULE_MAVEN_PLUGIN_GENERATE_SOURCES_PREVIOUS_RUN_PLACEHOLDER");
   }
 }

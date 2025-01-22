@@ -24,4 +24,9 @@ class GenerateTestResourcesMojoTest extends AbstractMuleMojoTest {
   void getPreviousRunPlaceholder() {
     assertThat(mojo.getPreviousRunPlaceholder()).isEqualTo("MULE_MAVEN_PLUGIN_GENERATE_TEST_RESOURCES_PREVIOUS_RUN_PLACEHOLDER");
   }
+
+  @Test
+  void doExecute() {
+    mojo.doExecute();
+  }
 }

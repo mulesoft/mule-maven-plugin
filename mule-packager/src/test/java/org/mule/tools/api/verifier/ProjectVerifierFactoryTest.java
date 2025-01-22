@@ -11,6 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mule.tools.api.packager.packaging.PackagingType.MULE_POLICY;
 
+import org.mule.tools.api.exception.ValidationException;
 import org.mule.tools.api.packager.DefaultProjectInformation;
 import org.mule.tools.api.packager.packaging.PackagingType;
 import org.mule.tools.api.verifier.policy.MulePolicyVerifier;
@@ -38,5 +39,10 @@ public class ProjectVerifierFactoryTest {
             .isInstanceOf(MuleProjectVerifier.class);
       }
     }
+  }
+
+  @Test
+  void dummyTest() throws ValidationException {
+    new MuleProjectVerifier().verify();
   }
 }

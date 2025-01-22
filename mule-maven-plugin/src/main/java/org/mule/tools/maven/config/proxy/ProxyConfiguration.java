@@ -21,7 +21,7 @@ public class ProxyConfiguration {
 
   public static final String HTTP_PROXY_URI = "http.proxyUri";
   public static final String HTTP_PROXY_HOST = "http.proxyHost";
-  private static final String HTTP_PROXY_PORT = "http.proxyPort";
+  public static final String HTTP_PROXY_PORT = "http.proxyPort";
   public static final String HTTPS_PROXY_HOST = "https.proxyHost";
   public static final String HTTPS_PROXY_PORT = "https.proxyPort";
   public static final String HTTP_NO_PROXY = "http.nonProxyHosts";

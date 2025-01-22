@@ -6,6 +6,7 @@
  */
 package org.mule.tools.api.util.exclude;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class GlobMatcherTest {
 
@@ -47,5 +49,17 @@ public class GlobMatcherTest {
     assertThat(matcher.matches(path))
         .describedAs("The matcher should have returned " + !expectedResult + " to path " + path.toString())
         .isEqualTo(expectedResult);
+  }
+
+  @Test
+  void constructorTest() {
+    assertThatThrownBy(() -> new GlobMatcher(null))
+        .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("Pattern should not be null");
+  }
+
+  @Test
+  public void matchNullFileTest() {
+    GlobMatcher matcher = new GlobMatcher("*");
+    assertThat(matcher.matches(null)).isTrue();
   }
 }

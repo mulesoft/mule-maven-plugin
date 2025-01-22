@@ -23,4 +23,6 @@ public class LifecycleMappingMavenFactory {
   protected static void loadClass() throws ClassNotFoundException {
     Class.forName("org.apache.maven.lifecycle.mapping.LifecyclePhase");
   }
+
+  private LifecycleMappingMavenFactory() {}
 }

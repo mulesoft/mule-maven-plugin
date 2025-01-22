@@ -17,11 +17,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mule.tools.api.packager.sources.MuleContentGenerator;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class CompileMojoTest extends AbstractMuleMojoTest {
 
+  private final CompileMojo mojo = new CompileMojo();
   private CompileMojo mojoMock;
 
   @BeforeEach
@@ -75,5 +83,10 @@ class CompileMojoTest extends AbstractMuleMojoTest {
     doCallRealMethod().when(mojoMock).execute();
     doCallRealMethod().when(mojoMock).doExecute();
     assertThatThrownBy(() -> mojoMock.execute()).isExactlyInstanceOf(MojoFailureException.class);
+  }
+
+  @Test
+  void getPreviousRunPlaceholder() {
+    assertThat(mojo.getPreviousRunPlaceholder()).isEqualTo("MULE_MAVEN_PLUGIN_COMPILE_PREVIOUS_RUN_PLACEHOLDER");
   }
 }

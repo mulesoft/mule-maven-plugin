@@ -6,6 +6,7 @@
  */
 package org.mule.tools.client.standalone.controller;
 
+import org.apache.commons.io.file.Counters;
 import org.junit.jupiter.api.Test;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,16 +27,9 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import static org.mockito.Mockito.*;
 
 
 public class ControllerTest {
@@ -47,7 +41,7 @@ public class ControllerTest {
   public void testController() throws IOException {
     temporaryFolder.toPath().resolve("conf").toFile().mkdirs();
     temporaryFolder.toPath().resolve("lib").resolve("user").toFile().mkdirs();
-    //temporaryFolder.toPath().resolve("conf").resolve("wrapper.conf").toFile().createNewFile();
+    temporaryFolder.toPath().resolve("conf").resolve("wrapper.conf").toFile().createNewFile();
     temporaryFolder.toPath().resolve("mule-app").toFile().createNewFile();
     temporaryFolder.toPath().resolve("mule-invalid-app").toFile().createNewFile();
     temporaryFolder.toPath().resolve("lib.jar").toFile().createNewFile();
@@ -215,5 +209,26 @@ public class ControllerTest {
                      Arguments.of(jarFile, "Cannot write on lib dir", false),
                      Arguments.of(jarFile, null, true));
   }
+
+  @Test
+  void stopAnddeleteAnchorsTest() {
+    temporaryFolder.toPath().resolve("conf").toFile();
+    File arg2Dir = new File(temporaryFolder, "arg2");
+    arg2Dir.mkdirs();
+
+    File appsDir = new File(temporaryFolder, "apps");
+    appsDir.mkdirs();
+    File anchorFile = new File(temporaryFolder, "anchor.txt");
+    XController controller = new XController(osController, temporaryFolder.getAbsolutePath());
+
+    when(osController.stop(any(String[].class))).thenReturn(0);
+
+    int result = controller.stop("arg1Dir", "arg2Dir");
+
+    assertEquals(0, result);
+    assertFalse(anchorFile.exists(), "Anchor file should have been deleted by deleteAnchors");
+  }
+
+
 
 }

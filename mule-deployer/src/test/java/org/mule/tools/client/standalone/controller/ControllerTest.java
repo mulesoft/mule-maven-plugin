@@ -36,17 +36,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+
+
 public class ControllerTest {
 
   @TempDir
   public File temporaryFolder;
-  public File invalidMuleApp;
 
   @Test
   public void testController() throws IOException {
     temporaryFolder.toPath().resolve("conf").toFile().mkdirs();
     temporaryFolder.toPath().resolve("lib").resolve("user").toFile().mkdirs();
-    temporaryFolder.toPath().resolve("conf").resolve("wrapper.conf").toFile().createNewFile();
+    //temporaryFolder.toPath().resolve("conf").resolve("wrapper.conf").toFile().createNewFile();
     temporaryFolder.toPath().resolve("mule-app").toFile().createNewFile();
     temporaryFolder.toPath().resolve("mule-invalid-app").toFile().createNewFile();
     temporaryFolder.toPath().resolve("lib.jar").toFile().createNewFile();
@@ -58,6 +59,7 @@ public class ControllerTest {
     Controller controller = new Controller(abstractOSController, temporaryFolder.getAbsolutePath());
     controller.addConfProperty("2");
     controller.deploy(temporaryFolder.toPath().resolve("mule-app").toString());
+    controller.addLibrary(temporaryFolder.toPath().resolve("lib.jar").toFile());
     controller.deployDomain(temporaryFolder.toPath().resolve("mule-app").toString());
     controller.deployDomain(temporaryFolder.toPath().resolve("conf").toFile().getAbsolutePath().toString());
 
@@ -67,8 +69,6 @@ public class ControllerTest {
     assertThrows(MuleControllerException.class, () -> {
       controller.deployDomain(muleInvalidAppFile.getAbsolutePath());
     });
-
-    controller.addLibrary(temporaryFolder.toPath().resolve("lib.jar").toFile());
   }
 
   private static class XController extends Controller {
@@ -115,6 +115,55 @@ public class ControllerTest {
 
     //VALIDATION
     verify(osController, times(1)).start(any());
+    assertThat(args.getValue()).hasSize(1).containsExactly(value);
+  }
+
+  @Test
+  void restartTest() {
+    String value = UUID.randomUUID().toString();
+
+    ArgumentCaptor<String[]> args = ArgumentCaptor.forClass(String[].class);
+    doNothing().when(osController).restart(args.capture());
+
+    controller.restart(value);
+
+    verify(osController, times(1)).restart(any());
+    assertThat(args.getValue()).hasSize(1).containsExactly(value);
+  }
+
+  @Test
+  void statusTest() {
+    // VALUES
+    String value = UUID.randomUUID().toString();
+
+    //CONFIG
+    ArgumentCaptor<String[]> args = ArgumentCaptor.forClass(String[].class);
+    doNothing().when(osController).start(args.capture());
+    when(osController.status(any())).thenReturn(0);
+
+    controller.start(value);
+    controller.status(value);
+
+    //VALIDATION
+    verify(osController, times(1)).status(any());
+    assertThat(args.getValue()).hasSize(1).containsExactly(value);
+  }
+
+  @Test
+  void getProcessIdTest() {
+    // VALUES
+    String value = UUID.randomUUID().toString();
+
+    //CONFIG
+    ArgumentCaptor<String[]> args = ArgumentCaptor.forClass(String[].class);
+    doNothing().when(osController).start(args.capture());
+    when(osController.getProcessId()).thenReturn(0);
+
+    controller.start(value);
+    controller.getProcessId();
+
+    //VALIDATION
+    verify(osController, times(1)).getProcessId();
     assertThat(args.getValue()).hasSize(1).containsExactly(value);
   }
 

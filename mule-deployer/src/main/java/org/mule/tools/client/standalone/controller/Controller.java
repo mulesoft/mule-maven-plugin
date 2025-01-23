@@ -121,7 +121,7 @@ public class Controller {
     verify(jar.exists(), "Jar file does not exist: %s", jar);
     verify("jar".equals(getExtension(jar.getAbsolutePath())), "Library [%s] don't have .jar extension.", jar);
     verify(jar.canRead(), "Cannot read jar file: %s", jar);
-    verify(libsDir.canWrite(), "Cannot write on lib dir: %", libsDir);
+    verify(libsDir.canWrite(), "Cannot write on lib dir: %s", libsDir);
     try {
       copyFileToDirectory(jar, libsDir);
     } catch (IOException e) {

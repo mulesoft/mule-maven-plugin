@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -39,6 +40,7 @@ public class ControllerTest {
 
   @TempDir
   public File temporaryFolder;
+  public File invalidMuleApp;
 
   @Test
   public void testController() throws IOException {
@@ -46,6 +48,7 @@ public class ControllerTest {
     temporaryFolder.toPath().resolve("lib").resolve("user").toFile().mkdirs();
     temporaryFolder.toPath().resolve("conf").resolve("wrapper.conf").toFile().createNewFile();
     temporaryFolder.toPath().resolve("mule-app").toFile().createNewFile();
+    temporaryFolder.toPath().resolve("mule-invalid-app").toFile().createNewFile();
     temporaryFolder.toPath().resolve("lib.jar").toFile().createNewFile();
     BufferedWriter writer =
         new BufferedWriter(new FileWriter(temporaryFolder.toPath().resolve("conf").resolve("wrapper.conf").toFile()));
@@ -57,6 +60,14 @@ public class ControllerTest {
     controller.deploy(temporaryFolder.toPath().resolve("mule-app").toString());
     controller.deployDomain(temporaryFolder.toPath().resolve("mule-app").toString());
     controller.deployDomain(temporaryFolder.toPath().resolve("conf").toFile().getAbsolutePath().toString());
+
+    File muleInvalidAppFile = temporaryFolder.toPath().resolve("mule-invalid-app").toFile();
+    muleInvalidAppFile.setReadable(false);
+    muleInvalidAppFile.setWritable(false);
+    assertThrows(MuleControllerException.class, () -> {
+      controller.deployDomain(muleInvalidAppFile.getAbsolutePath());
+    });
+
     controller.addLibrary(temporaryFolder.toPath().resolve("lib.jar").toFile());
   }
 

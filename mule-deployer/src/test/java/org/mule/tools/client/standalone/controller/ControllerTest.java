@@ -24,9 +24,6 @@ import java.nio.file.Path;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.nio.file.Files.createFile;
-import static java.nio.file.StandardOpenOption.APPEND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,6 +32,8 @@ import static org.mockito.Mockito.*;
 
 
 public class ControllerTest {
+
+  protected static final String ANCHOR_SUFFIX = "-anchor.txt";
 
   @TempDir
   public File temporaryFolder;
@@ -321,5 +320,108 @@ public class ControllerTest {
       controller.uninstallLicense();
     });
     assertEquals("Could not uninstall license", uninstallException.getMessage());
+  }
+
+  @Test
+  public void undeployApplicationTest() throws IOException {
+    temporaryFolder.toPath().resolve("apps").toFile().mkdirs();
+    temporaryFolder.toPath().resolve("logs").toFile().mkdirs();
+
+    String applicationName = "testApp";
+    File appFile = temporaryFolder.toPath().resolve("apps").resolve(applicationName + ANCHOR_SUFFIX).toFile();
+    assertTrue(appFile.createNewFile()); // Create the application file
+
+
+    AbstractOSController abstractOSController = new WindowsController(temporaryFolder.getAbsolutePath(), 20000);
+    Controller controller = new Controller(abstractOSController, temporaryFolder.getAbsolutePath());
+
+    controller.undeploy(applicationName);
+
+    assertFalse(appFile.exists(), "The application file should be deleted after undeploy.");
+
+    MuleControllerException exception = assertThrows(MuleControllerException.class, () -> {
+      controller.undeploy("nonExistentApp");
+    });
+    assertTrue(exception.getMessage().contains("Couldn't undeploy application"));
+  }
+
+  @Test
+  public void undeployDomainTest() throws IOException {
+    temporaryFolder.toPath().resolve("domains").toFile().mkdirs();
+
+    String domainName = "testDomain";
+    File domainFile = temporaryFolder.toPath().resolve("domains").resolve(domainName + ANCHOR_SUFFIX).toFile();
+    assertTrue(domainFile.createNewFile());
+
+    AbstractOSController abstractOSController = new WindowsController(temporaryFolder.getAbsolutePath(), 20000);
+    Controller controller = new Controller(abstractOSController, temporaryFolder.getAbsolutePath());
+
+
+    controller.undeployDomain(domainName);
+    assertFalse(domainFile.exists(), "The domain file should be deleted after undeployDomain.");
+
+    MuleControllerException exception = assertThrows(MuleControllerException.class, () -> {
+      controller.undeployDomain("nonExistentDomain");
+    });
+    assertTrue(exception.getMessage().contains("Couldn't undeploy domain"));
+    File nonDeletableFile = temporaryFolder.toPath().resolve("domains").resolve(domainName + ANCHOR_SUFFIX).toFile();
+    nonDeletableFile.setReadable(false);
+    nonDeletableFile.setWritable(false);
+
+    MuleControllerException deleteException = assertThrows(MuleControllerException.class, () -> {
+      controller.undeployDomain(domainName);
+    });
+    assertTrue(deleteException.getMessage().contains("Couldn't undeploy domain"));
+  }
+
+  @Test
+  public void undeployAllTest() throws IOException {
+    temporaryFolder.toPath().resolve("apps").toFile().mkdirs();
+
+    String applicationName = "testApp";
+    File appFile = temporaryFolder.toPath().resolve("apps").resolve(applicationName + ANCHOR_SUFFIX).toFile();
+    assertTrue(appFile.createNewFile()); // Create the application file
+
+    AbstractOSController abstractOSController = new WindowsController(temporaryFolder.getAbsolutePath(), 20000);
+    Controller controller = new Controller(abstractOSController, temporaryFolder.getAbsolutePath());
+
+    controller.undeployAll();
+    assertEquals(0, temporaryFolder.toPath().resolve("apps").toFile().listFiles().length, "The apps directory should be empty.");
+  }
+
+  @Test
+  public void isDeployedTest() throws IOException {
+    String appName = "testApp";
+    File appFile = temporaryFolder.toPath().resolve("apps").resolve(appName + ANCHOR_SUFFIX).toFile();
+    appFile.getParentFile().mkdirs();
+    assertTrue(appFile.createNewFile());
+
+    assertFalse(controller.isDeployed("nonExistentApp"));
+  }
+
+  @Test
+  public void isDomainDeployedTest() throws IOException {
+    String domainName = "testDomain";
+    File domainFile = temporaryFolder.toPath().resolve("domains").resolve(domainName + ANCHOR_SUFFIX).toFile();
+    domainFile.getParentFile().mkdirs();
+    assertTrue(domainFile.createNewFile());
+
+    assertFalse(controller.isDomainDeployed("nonExistentDomain"));
+  }
+
+  @Test
+  public void getArtifactInternalRepositoryTest() {
+    String artifactName = "testArtifact";
+    File artifactDir = temporaryFolder.toPath().resolve("apps").resolve(artifactName).toFile();
+    artifactDir.mkdir();
+
+    File repoDir = controller.getArtifactInternalRepository(artifactName);
+    assertNotNull(repoDir);
+  }
+
+  @Test
+  public void getRuntimeInternalRepositoryTest() {
+    File repoDir = controller.getRuntimeInternalRepository();
+    assertNotNull(repoDir);
   }
 }

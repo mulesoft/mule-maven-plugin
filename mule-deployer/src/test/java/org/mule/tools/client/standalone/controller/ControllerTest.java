@@ -18,13 +18,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.Files.createFile;
+import static java.nio.file.StandardOpenOption.APPEND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,17 +54,23 @@ public class ControllerTest {
     AbstractOSController abstractOSController = new WindowsController(temporaryFolder.getAbsolutePath(), 20000);
     Controller controller = new Controller(abstractOSController, temporaryFolder.getAbsolutePath());
     controller.addConfProperty("2");
+    Path muleInvalidAppPath = temporaryFolder.toPath().resolve("mule-invalid-app1");
+    Files.createFile(muleInvalidAppPath);
+    muleInvalidAppPath.toFile().setWritable(false);
+    muleInvalidAppPath.toFile().setReadable(false);
+    controller.wrapperConf = muleInvalidAppPath;
+    assertThrows(UncheckedIOException.class, () -> controller.addConfProperty("newProperty"));
+
     controller.deploy(temporaryFolder.toPath().resolve("mule-app").toString());
     controller.addLibrary(temporaryFolder.toPath().resolve("lib.jar").toFile());
     controller.deployDomain(temporaryFolder.toPath().resolve("mule-app").toString());
     controller.deployDomain(temporaryFolder.toPath().resolve("conf").toFile().getAbsolutePath().toString());
 
-    File muleInvalidAppFile = temporaryFolder.toPath().resolve("mule-invalid-app").toFile();
+    File muleInvalidAppFile = temporaryFolder.toPath().resolve("mule-invalid-app2").toFile();
     muleInvalidAppFile.setReadable(false);
     muleInvalidAppFile.setWritable(false);
-    assertThrows(MuleControllerException.class, () -> {
-      controller.deployDomain(muleInvalidAppFile.getAbsolutePath());
-    });
+    assertThrows(MuleControllerException.class, () -> controller.deployDomain(muleInvalidAppFile.getAbsolutePath()));
+
   }
 
   private static class XController extends Controller {
@@ -236,6 +244,34 @@ public class ControllerTest {
     assertTrue(controller.isRunning());
     when(controller.status()).thenReturn(999);
     assertFalse(controller.isRunning());
+  }
+
+  @Test
+  void getLogTest() throws IOException {
+    File muleHome = temporaryFolder;
+    File logsFolder = new File(muleHome, "logs");
+    logsFolder.mkdir();
+
+    File muleLog = new File(logsFolder, "mule.log");
+    assertTrue(muleLog.createNewFile());
+    when(osController.getMuleHome()).thenReturn(muleHome.getAbsolutePath());
+    File log = controller.getLog();
+    assertEquals(muleLog.getAbsolutePath(), log.getAbsolutePath());
+    muleLog.delete();
+
+    File muleEELog = new File(logsFolder, "mule_ee.log");
+    assertTrue(muleEELog.createNewFile());
+    when(osController.getMuleHome()).thenReturn(muleHome.getAbsolutePath());
+    File log2 = controller.getLog();
+    assertEquals(muleEELog.getAbsolutePath(), log2.getAbsolutePath());
+    muleEELog.delete();
+
+
+    when(osController.getMuleHome()).thenReturn(muleHome.getAbsolutePath());
+    MuleControllerException exception = assertThrows(MuleControllerException.class, () -> {
+      controller.getLog();
+    });
+    assertTrue(exception.getMessage().contains("There is no mule log available"));
   }
 
 }

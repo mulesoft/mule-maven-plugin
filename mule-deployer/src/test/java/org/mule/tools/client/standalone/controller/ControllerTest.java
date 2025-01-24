@@ -299,4 +299,27 @@ public class ControllerTest {
                                                String.format("There is no app log available at %s/logs/mule-app-%s",
                                                              muleHome.getAbsolutePath(), nonExistentAppName)));
   }
+
+  @Test
+  void installAndUninstallLicenseTest() {
+    String licensePath = "/path/to/license.lic";
+
+    when(osController.runSync(null, "--installLicense", licensePath, "-M-client")).thenReturn(0);
+    assertDoesNotThrow(() -> controller.installLicense(licensePath));
+
+    when(osController.runSync(null, "--installLicense", licensePath, "-M-client")).thenReturn(1);
+    MuleControllerException installException = assertThrows(MuleControllerException.class, () -> {
+      controller.installLicense(licensePath);
+    });
+    assertEquals("Could not install license " + licensePath, installException.getMessage());
+
+    when(osController.runSync(null, "--unInstallLicense", "-M-client")).thenReturn(0);
+    assertDoesNotThrow(() -> controller.uninstallLicense());
+
+    when(osController.runSync(null, "--unInstallLicense", "-M-client")).thenReturn(1);
+    MuleControllerException uninstallException = assertThrows(MuleControllerException.class, () -> {
+      controller.uninstallLicense();
+    });
+    assertEquals("Could not uninstall license", uninstallException.getMessage());
+  }
 }

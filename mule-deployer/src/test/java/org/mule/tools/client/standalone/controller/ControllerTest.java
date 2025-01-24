@@ -274,4 +274,29 @@ public class ControllerTest {
     assertTrue(exception.getMessage().contains("There is no mule log available"));
   }
 
+  @Test
+  void getLogWithAppNameTest() throws IOException {
+    File muleHome = temporaryFolder;
+    File logsFolder = new File(muleHome, "logs");
+    logsFolder.mkdir();
+
+    // Case: Log file for the application exists
+    String appName = "testApp";
+    File appLog = new File(logsFolder, "mule-app-" + appName + ".log");
+    assertTrue(appLog.createNewFile()); // Crear archivo de log
+    when(osController.getMuleHome()).thenReturn(muleHome.getAbsolutePath());
+
+    File log = controller.getLog(appName);
+    assertEquals(appLog.getAbsolutePath(), log.getAbsolutePath());
+    appLog.delete();
+
+    // Case: Log file does not exist, exception is thrown
+    String nonExistentAppName = "nonExistentApp";
+    MuleControllerException exception = assertThrows(MuleControllerException.class, () -> {
+      controller.getLog(nonExistentAppName);
+    });
+    assertTrue(exception.getMessage().contains(
+                                               String.format("There is no app log available at %s/logs/mule-app-%s",
+                                                             muleHome.getAbsolutePath(), nonExistentAppName)));
+  }
 }

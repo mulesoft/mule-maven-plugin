@@ -229,6 +229,13 @@ public class ControllerTest {
     assertFalse(anchorFile.exists(), "Anchor file should have been deleted by deleteAnchors");
   }
 
-
+  @Test
+  void isRunningTest() {
+    int IS_RUNNING_STATUS_CODE = 0;
+    when(controller.status()).thenReturn(IS_RUNNING_STATUS_CODE);
+    assertTrue(controller.isRunning());
+    when(controller.status()).thenReturn(999);
+    assertFalse(controller.isRunning());
+  }
 
 }

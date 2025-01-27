@@ -6,7 +6,6 @@
  */
 package org.mule.tools.client.standalone.controller;
 
-import org.apache.commons.io.file.Counters;
 import org.junit.jupiter.api.Test;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,12 +14,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.ArgumentCaptor;
+
 import org.mockito.MockedStatic;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -424,4 +424,17 @@ public class ControllerTest {
     File repoDir = controller.getRuntimeInternalRepository();
     assertNotNull(repoDir);
   }
+
+  @Test
+  void RunSyncWithOutputStreamTest() {
+    String command = "--someCommand";
+    String[] args = {"arg1", "arg2"};
+    OutputStream outputStream = new ByteArrayOutputStream();
+    doReturn(0).when(osController).runSync(eq(command), eq(outputStream), eq(args));
+    int result = osController.runSync(command, outputStream, args);
+
+    assertEquals(0, result);
+    verify(osController).runSync(eq(command), eq(outputStream), eq(args));
+  }
+
 }

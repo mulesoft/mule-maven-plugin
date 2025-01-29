@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 //@Disabled("I suspect that there should be a server for the requests.")
 class ArmClientTestCase {
+
   private static final String USERNAME = System.getProperty("username");
   private static final String PASSWORD = System.getProperty("password");
 
@@ -50,25 +51,25 @@ class ArmClientTestCase {
     assertThat(apps).isNotNull();
   }
 
- /* @Test
+  /* @Test
   public void findEnvironmentByNameTest() {
     Environment environment = armClient.findEnvironmentByName("Production");
     assertThat(environment.name).isEqualTo("Production");
   }*/
 
-/*  @Test
+  /*  @Test
   public void failToFindFakeEnvironmentTest() {
     assertThatThrownBy(() -> armClient.findEnvironmentByName("notProduction"))
         .isExactlyInstanceOf(RuntimeException.class);
   }*/
 
-/*  @Test
+  /*  @Test
   public void findServerByNameTest() {
     Target target = armClient.findServerByName("server-name");
     assertThat(target.name).isEqualTo("server-name");
   }*/
 
-/*  @Test
+  /*  @Test
   public void findServerGroupByNameTest() {
     Target target = armClient.findServerGroupByName("my-server-group-name");
     assertTrue(target.name.contains("/serverGroups"));

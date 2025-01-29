@@ -6,6 +6,7 @@
  */
 package org.mule.tools.maven.mojo;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
@@ -29,6 +30,7 @@ import org.mule.tools.api.packager.sources.MuleContentGenerator;
 class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
 
   private GenerateTestSourcesMojo mojoMock;
+  private final GenerateTestSourcesMojo mojo = new GenerateTestSourcesMojo();
 
   @BeforeEach
   void before() {
@@ -83,4 +85,8 @@ class GenerateTestSourcesMojoTest extends AbstractMuleMojoTest {
     assertThatThrownBy(() -> mojoMock.execute()).isExactlyInstanceOf(MojoFailureException.class);
   }
 
+  @Test
+  void getPreviousRunPlaceholder() {
+    assertThat(mojo.getPreviousRunPlaceholder()).isEqualTo("MULE_MAVEN_PLUGIN_GENERATE_TEST_SOURCES_PREVIOUS_RUN_PLACEHOLDER");
+  }
 }

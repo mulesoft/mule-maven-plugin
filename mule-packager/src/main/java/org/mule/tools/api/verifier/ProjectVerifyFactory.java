@@ -14,6 +14,8 @@ import org.mule.tools.api.verifier.policy.MulePolicyVerifier;
 
 public class ProjectVerifyFactory {
 
+  private ProjectVerifyFactory() {}
+
   public static ProjectVerifier create(ProjectInformation defaultProjectInformation) {
 
     if (PackagingType.fromString(defaultProjectInformation.getPackaging()).equals(MULE_POLICY)) {

@@ -9,18 +9,31 @@ package org.mule.tools.maven.mojo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.MojoExecutionException;
 
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedStatic;
 import org.mule.tools.api.packager.builder.PackageBuilder;
 import org.mule.tools.api.packager.packaging.Classifier;
 import org.mule.tools.api.packager.packaging.PackagingType;
@@ -144,7 +157,60 @@ public class PackageMojoTest extends AbstractMuleMojoTest {
         .as("Packaging options should have attachMuleSources property set to true").isTrue();
   }
 
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void doExecuteTests(boolean policy) throws MojoExecutionException, IOException {
+    ArtifactHandlerManager artifactHandlerManager = mock(ArtifactHandlerManager.class);
+    MavenProject project = mock(MavenProject.class);
+    PackageMojoImpl mojo = new PackageMojoImpl() {
+
+      @Override
+      protected PackagingType getPackagingType() {
+        return policy ? PackagingType.MULE_POLICY : PackagingType.MULE_DOMAIN;
+      }
+    };
+    setProject(project, MULE_APPLICATION, false);
+
+    if (policy) {
+      when(project.getPackaging()).thenReturn(PackagingType.MULE_POLICY.toString());
+    }
+
+    mojo.setProject(project);
+    mojo.setArtifactHandlerManager(artifactHandlerManager);
+    // IO EXCEPTION
+    try (MockedStatic<Files> mock = mockStatic(Files.class)) {
+      mock.when(() -> Files.deleteIfExists(any(Path.class)))
+          .thenThrow(new IOException());
+
+      assertThatThrownBy(mojo::doExecute).isInstanceOf(MojoExecutionException.class)
+          .hasMessageContaining("Exception deleting the file");
+    }
+
+    ArtifactHandler artifactHandler = mock(ArtifactHandler.class);
+    when(artifactHandler.getClassifier()).thenReturn(MULE_APPLICATION);
+    when(artifactHandlerManager.getArtifactHandler(anyString())).thenReturn(artifactHandler);
+    doThrow(new IOException()).when(mojo.getPackageBuilder()).createPackage(any(Path.class), any(Path.class));
+    assertThatThrownBy(mojo::doExecute).isInstanceOf(MojoExecutionException.class)
+        .hasMessageContaining("Exception creating the Mule App");
+    reset(mojo.getPackageBuilder());
+
+    mojo.doExecute();
+  }
+
+  @Test
+  void getPreviousRunPlaceholder() {
+    assertThat(mojo.getPreviousRunPlaceholder()).isEqualTo("MULE_MAVEN_PLUGIN_PACKAGE_PREVIOUS_RUN_PLACEHOLDER");
+  }
+
   private class PackageMojoImpl extends PackageMojo {
+
+    public PackageMojoImpl() {
+      helper = mock(MavenProjectHelper.class);
+    }
+
+    void setArtifactHandlerManager(ArtifactHandlerManager artifactHandlerManager) {
+      this.artifactHandlerManager = artifactHandlerManager;
+    }
 
     @Override
     public PackageBuilder getPackageBuilder() {

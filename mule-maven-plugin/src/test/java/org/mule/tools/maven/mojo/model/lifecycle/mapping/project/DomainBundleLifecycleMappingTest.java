@@ -9,6 +9,8 @@ package org.mule.tools.maven.mojo.model.lifecycle.mapping.project;
 import org.apache.commons.lang3.StringUtils;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mule.tools.maven.mojo.model.lifecycle.mapping.version.LifecycleMappingMavenVersionless;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,12 +18,33 @@ import static org.mule.tools.maven.mojo.model.lifecycle.mapping.version.Lifecycl
 
 class DomainBundleLifecycleMappingTest {
 
-  @Test
-  void getPhases() {
+  private static final String MULE_DEPLOY = "muleDeploy";
+
+  private final DomainBundleLifecycleMapping mapping = new DomainBundleLifecycleMapping();
+
+  @ParameterizedTest
+  @ValueSource(strings = {"XXX", "false", "true"})
+  void getPhases(String isMuleDeploy) {
+    if ("XXX".equals(isMuleDeploy)) {
+      System.clearProperty(MULE_DEPLOY);
+    } else {
+      System.setProperty(MULE_DEPLOY, isMuleDeploy);
+    }
+
     DomainBundleLifecycleMapping mapping = new DomainBundleLifecycleMapping();
     LifecycleMappingMavenVersionless lifecycleMapping = buildLifecycleMappingMaven(mapping);
     assertThat(mapping.getPhases(StringUtils.EMPTY).keySet())
         .as("Phases should be the same")
         .isEqualTo(mapping.getLifecyclePhases(lifecycleMapping).keySet());
+  }
+
+  @Test
+  void getOptionalMojosTest() {
+    assertThat(mapping.getOptionalMojos(StringUtils.EMPTY)).isNull();
+  }
+
+  @Test
+  void getLifecycles() {
+    assertThat(mapping.getLifecycles()).containsKey("default").hasSize(1);
   }
 }

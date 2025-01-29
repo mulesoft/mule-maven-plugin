@@ -6,9 +6,12 @@
  */
 package org.mule.tools.maven.mojo;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,11 +22,22 @@ import org.apache.maven.plugin.logging.Log;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mule.tools.api.packager.MuleProjectFoldersGenerator;
+import org.mule.tools.api.packager.ProjectFoldersGeneratorFactory;
+import org.mule.tools.api.packager.ProjectInformation;
 
 class InitializeMojoTest extends AbstractMuleMojoTest {
 
   private InitializeMojo mojoMock;
+
+  private final InitializeMojo mojo = new InitializeMojo() {
+
+    @Override
+    protected ProjectInformation getProjectInformation() {
+      return mock(ProjectInformation.class);
+    }
+  };
 
   @BeforeEach
   void before() {
@@ -49,4 +63,19 @@ class InitializeMojoTest extends AbstractMuleMojoTest {
     verify(projectFoldersGeneratorMock, times(1)).generate(projectBaseFolder);
   }
 
+  @Test
+  void getProjectFoldersGeneratorTest() {
+    try (MockedStatic<ProjectFoldersGeneratorFactory> factory = mockStatic(ProjectFoldersGeneratorFactory.class)) {
+      factory.when(() -> ProjectFoldersGeneratorFactory.create(any(ProjectInformation.class)))
+          .thenReturn(mock(MuleProjectFoldersGenerator.class));
+
+      assertThat(mojo.getProjectFoldersGenerator()).isNotNull();
+      factory.verify(() -> ProjectFoldersGeneratorFactory.create(any(ProjectInformation.class)));
+    }
+  }
+
+  @Test
+  void getPreviousRunPlaceholder() {
+    assertThat(mojo.getPreviousRunPlaceholder()).isEqualTo("MULE_MAVEN_PLUGIN_INITIALIZE_PREVIOUS_RUN_PLACEHOLDER");
+  }
 }

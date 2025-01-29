@@ -10,34 +10,33 @@ package org.mule.tools.api.packager.resources.processor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
 import org.mule.tools.api.packager.resources.content.ResourcesContent;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.mule.tools.api.packager.packaging.PackagingType.MULE_DOMAIN;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class DomainBundleProjectResourcesContentProcessorTest {
 
   @TempDir
   public Path targetFolder;
-  private File domainFolder;
-  private File applicationsFolder;
   private DomainBundleProjectResourcesContentProcessor contentProcessor;
 
   @BeforeEach
   public void setUp() throws IOException {
-    domainFolder = targetFolder.resolve("domain").toFile();
-    applicationsFolder = targetFolder.resolve("applications").toFile();
     contentProcessor = new DomainBundleProjectResourcesContentProcessor(targetFolder.toAbsolutePath());
   }
 
@@ -61,11 +60,13 @@ public class DomainBundleProjectResourcesContentProcessorTest {
     verify(contentProcessorSpy, times(3)).copyAsDomainOrApplication(any());
   }
 
-  @Test
-  public void copyAsDomainOrApplicationTest() throws IOException, URISyntaxException {
+  @ParameterizedTest
+  @ValueSource(strings = {"mule-domain", "mule-application"})
+  public void copyAsDomainOrApplicationTest(String packagingType) throws IOException {
     ArtifactCoordinates artifactCoordinates = new ArtifactCoordinates("org.mule.tools.maven", "mule-classloader-model", "4.1.0");
     targetFolder.resolve("applications").toFile().mkdirs();
-    artifactCoordinates.setClassifier("classifier");
+    targetFolder.resolve("domain").toFile().mkdirs();
+    artifactCoordinates.setClassifier(packagingType);
     Artifact artifact = new Artifact(artifactCoordinates, targetFolder.toUri());
     contentProcessor.copyAsDomainOrApplication(artifact);
   }

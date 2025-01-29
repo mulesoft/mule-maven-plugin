@@ -33,6 +33,7 @@ public class TestCompileMojoTest extends AbstractMuleMojoTest {
   private MavenExecutionRequest mavenExecutionRequestMock;
 
   private AbstractProjectValidator validatorMock;
+  private final TestCompileMojo mojo = new TestCompileMojo();
 
   @BeforeEach
   void before() {
@@ -134,4 +135,8 @@ public class TestCompileMojoTest extends AbstractMuleMojoTest {
     assertThatThrownBy(() -> mojoMock.validateNotAllowedDependencies()).isExactlyInstanceOf(ValidationException.class);
   }
 
+  @Test
+  void doExecute() {
+    mojo.doExecute();
+  }
 }

@@ -51,7 +51,7 @@ public class PackageMojo extends AbstractMuleMojo {
   protected MavenProjectHelper helper;
 
   @Component
-  private ArtifactHandlerManager artifactHandlerManager;
+  protected ArtifactHandlerManager artifactHandlerManager;
 
   @Parameter(defaultValue = "${onlyMuleSources}")
   protected boolean onlyMuleSources = false;

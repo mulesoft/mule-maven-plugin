@@ -7,7 +7,9 @@
 package org.mule.tools.maven.mojo;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
+import static org.mule.tools.api.classloader.model.Artifact.MULE_DOMAIN;
 import static org.mule.tools.api.packager.structure.FolderNames.META_INF;
 
 import java.io.ByteArrayOutputStream;
@@ -16,11 +18,16 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 
 import com.google.common.collect.Lists;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Build;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -104,5 +111,38 @@ class AbstractMuleMojoTest {
 
   protected File createFolder(Path file) throws IOException {
     return Files.createDirectories(file).toFile();
+  }
+
+  protected void setProject(MavenProject project, String packaging, Boolean withDomains) {
+    Build build = mock(Build.class);
+    reset(project);
+
+    when(build.getDirectory()).thenReturn(projectBaseFolder.toFile().getAbsolutePath());
+    when(project.getPackaging()).thenReturn(packaging);
+    when(project.getBasedir()).thenReturn(projectBaseFolder.toFile());
+    when(project.getBuild()).thenReturn(build);
+    when(project.getModel()).thenReturn(mock(Model.class));
+    when(project.getGroupId()).thenReturn(UUID.randomUUID().toString());
+    when(project.getArtifactId()).thenReturn(UUID.randomUUID().toString());
+    when(project.getVersion()).thenReturn(UUID.randomUUID().toString());
+
+    if (withDomains == null) {
+      when(project.getDependencies()).thenReturn(null);
+    } else if (withDomains) {
+      List<Dependency> dependencies = new ArrayList<>(3);
+      dependencies.add(createDependency(null));
+      dependencies.add(createDependency(MULE_APPLICATION));
+      dependencies.add(createDependency(MULE_DOMAIN));
+      when(project.getDependencies()).thenReturn(dependencies);
+    } else {
+      when(project.getDependencies()).thenReturn(Collections.emptyList());
+    }
+
+  }
+
+  private Dependency createDependency(String classifier) {
+    Dependency dependency = mock(Dependency.class);
+    when(dependency.getClassifier()).thenReturn(classifier);
+    return dependency;
   }
 }

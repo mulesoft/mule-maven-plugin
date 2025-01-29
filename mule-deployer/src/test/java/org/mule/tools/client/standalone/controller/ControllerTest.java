@@ -13,9 +13,11 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 import java.io.*;
 import java.nio.file.Files;
@@ -24,6 +26,7 @@ import java.nio.file.Path;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static org.apache.commons.io.FileUtils.forceDelete;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -64,6 +67,15 @@ public class ControllerTest {
     controller.addLibrary(temporaryFolder.toPath().resolve("lib.jar").toFile());
     controller.deployDomain(temporaryFolder.toPath().resolve("mule-app").toString());
     controller.deployDomain(temporaryFolder.toPath().resolve("conf").toFile().getAbsolutePath().toString());
+    assertThatThrownBy(() -> controller.deployDomain(temporaryFolder.toPath().resolve("mule-invalid-app1").toString()))
+        .isInstanceOf(MuleControllerException.class);
+    File domainFileMock = Mockito.mock(File.class);
+    Mockito.when(domainFileMock.exists()).thenReturn(false);
+    Mockito.when(domainFileMock.getPath()).thenReturn("fake/domain/path");
+
+    assertThatThrownBy(() -> controller.deployDomain(domainFileMock.getPath()))
+        .isInstanceOf(MuleControllerException.class)
+        .hasMessageContaining("Domain does not exist");
   }
 
   private static class XController extends Controller {
@@ -368,8 +380,9 @@ public class ControllerTest {
     assertTrue(deleteException.getMessage().contains("Couldn't undeploy domain"));
   }
 
-  @Test
-  public void undeployAllTest() throws IOException {
+  @ParameterizedTest
+  @ValueSource(ints = {0, 1})
+  public void undeployAllTest(int index) throws IOException {
     temporaryFolder.toPath().resolve("apps").toFile().mkdirs();
 
     String applicationName = "testApp";
@@ -378,9 +391,19 @@ public class ControllerTest {
 
     AbstractOSController abstractOSController = new WindowsController(temporaryFolder.getAbsolutePath(), 20000);
     Controller controller = new Controller(abstractOSController, temporaryFolder.getAbsolutePath());
+    if (index == 0) {
+      controller.undeployAll();
+      assertEquals(0, temporaryFolder.toPath().resolve("apps").toFile().listFiles().length,
+                   "The apps directory should be empty.");
+    } else if (index == 1) {
+      try (MockedStatic<FileUtils> mockedFileUtils = Mockito.mockStatic(FileUtils.class)) {
+        mockedFileUtils.when(() -> FileUtils.forceDelete(Mockito.any())).thenThrow(new IOException("Forced delete failed"));
 
-    controller.undeployAll();
-    assertEquals(0, temporaryFolder.toPath().resolve("apps").toFile().listFiles().length, "The apps directory should be empty.");
+        assertThatThrownBy(() -> controller.undeployAll())
+            .isInstanceOf(MuleControllerException.class)
+            .hasMessageContaining("Could not delete directory");
+      }
+    }
   }
 
   @Test

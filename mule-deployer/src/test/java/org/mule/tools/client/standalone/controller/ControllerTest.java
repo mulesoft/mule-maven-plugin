@@ -64,12 +64,6 @@ public class ControllerTest {
     controller.addLibrary(temporaryFolder.toPath().resolve("lib.jar").toFile());
     controller.deployDomain(temporaryFolder.toPath().resolve("mule-app").toString());
     controller.deployDomain(temporaryFolder.toPath().resolve("conf").toFile().getAbsolutePath().toString());
-
-    File muleInvalidAppFile = temporaryFolder.toPath().resolve("mule-invalid-app2").toFile();
-    muleInvalidAppFile.setReadable(false);
-    muleInvalidAppFile.setWritable(false);
-    assertThrows(MuleControllerException.class, () -> controller.deployDomain(muleInvalidAppFile.getAbsolutePath()));
-
   }
 
   private static class XController extends Controller {

@@ -16,6 +16,8 @@ import static com.vdurmont.semver4j.Semver.SemverType.LOOSE;
  */
 public class VersionUtils {
 
+  private VersionUtils() {}
+
   /**
    * <p>
    * Compares two versions, returning {@code true} if they represent the same version.

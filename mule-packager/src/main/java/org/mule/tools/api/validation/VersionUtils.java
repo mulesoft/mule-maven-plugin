@@ -27,6 +27,8 @@ public class VersionUtils {
 
   private static final String NULL_VERSION = "0.0.0";
 
+  private VersionUtils() {}
+
   /**
    * Validates if a version complies with semantic versioning specification
    *

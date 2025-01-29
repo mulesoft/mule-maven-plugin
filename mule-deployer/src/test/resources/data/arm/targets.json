@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "id": "111",
+      "name": "APP-000"
+    },
+    {
+      "id": "{{APPLICATION_ID}}",
+      "name": "{{APPLICATION_NAME}}"
+    },
+    {
+      "id": "222",
+      "name": "APP-001"
+    }
+  ]
+}

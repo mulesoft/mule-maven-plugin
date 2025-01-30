@@ -157,7 +157,7 @@ public class WindowsControllerTest {
     try {
       WindowsController controller = new WindowsController("C:\\user\\mule", 3000);
       String output = controller.executeCmd("dummy");
-      assertThat(output).isEmpty();
+      assertThat(output).isEqualTo("");
 
       String errorOutput = errorStream.toString();
       assertThat(errorOutput)

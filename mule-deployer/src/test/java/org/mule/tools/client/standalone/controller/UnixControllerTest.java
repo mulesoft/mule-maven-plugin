@@ -141,7 +141,7 @@ public class UnixControllerTest {
     Method method = UnixController.class.getDeclaredMethod("getExecuteWatchdog", int.class);
     method.setAccessible(true);
     ExecuteWatchdog watchdog = (ExecuteWatchdog) method.invoke(controllerSpy, 3000);
-    assertThat(watchdog).isNotNull();
+    assertThat(watchdog).toString().contains("org.apache.commons.exec.ExecuteWatchdog@");
   }
 
 }

@@ -18,7 +18,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 import static org.mockito.Mockito.*;
 
 import org.apache.commons.exec.*;
@@ -50,30 +49,23 @@ class AbstractOSControllerTest {
 
   @Test
   void getMuleHomeTest() {
-    //assertEquals(muleHome, controller.getMuleHome());
     assertThat(muleHome).isEqualTo(controller.getMuleHome());
     assertThat(controller.getMuleBin()).contains(controller.getMuleHome());
   }
 
   @ParameterizedTest
   @ValueSource(ints = {0, 1, 2})
-  void startTest(int index) throws Exception {
-    MockedConstruction<DefaultExecutor> mockDefaultExecutor;
-    MockedConstruction<ExecuteWatchdog> mockExecuteWatchdog;
-    try {
-      Mockito.framework().clearInlineMocks();
-      mockDefaultExecutor =
-          Mockito.mockConstruction(DefaultExecutor.class, (DefaultExecutor mock, MockedConstruction.Context context) -> {
-            if (index == 1) {
-              when(mock.execute(Mockito.any(CommandLine.class), anyMap())).thenThrow(new IOException());
-            }
-            if (index == 2) {
-              when(mock.execute(Mockito.any(CommandLine.class), anyMap())).thenThrow(new ExecuteException("OKOKO", 12));
-            }
-          });
-      mockExecuteWatchdog =
-          Mockito.mockConstruction(ExecuteWatchdog.class, (ExecuteWatchdog mock, MockedConstruction.Context context) -> {
-          });
+  void startTest(int index) {
+    try ( MockedConstruction<DefaultExecutor> defaultExecutor = Mockito.mockConstruction(DefaultExecutor.class, (mock, context) -> {
+      if (index == 1) {
+        when(mock.execute(Mockito.any(CommandLine.class), anyMap())).thenThrow(new IOException());
+      }
+      if (index == 2) {
+        when(mock.execute(Mockito.any(CommandLine.class), anyMap())).thenThrow(new ExecuteException("BLABLA", 123));
+      }
+    }); MockedConstruction<ExecuteWatchdog> executeWatchdog = Mockito.mockConstruction(ExecuteWatchdog.class, (mock, context) -> {
+
+    }); ) {
 
       if (index == 0) {
         controller.start("start", "ok");
@@ -84,11 +76,6 @@ class AbstractOSControllerTest {
         assertThatThrownBy(() -> controller.restart("restart", "ok")).isInstanceOf(MuleControllerException.class);
 
       }
-
-    } finally {
-
-    }
-    mockDefaultExecutor.close();
-    mockExecuteWatchdog.close();
+  }
   }
 }

@@ -78,16 +78,14 @@ public class DefaultExtensionModelServiceTest {
         void getPomModelFromJarTest() throws Exception {
             // Arrange
             File artifactFile = mock(File.class);
-            String pomContent = """
-                <project xmlns="http://maven.apache.org/POM/4.0.0"
-                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-                    <modelVersion>4.0.0</modelVersion>
-                    <groupId>com.example</groupId>
-                    <artifactId>test-artifact</artifactId>
-                    <version>1.0.0</version>
-                </project>
-            """;
+            String pomContent = "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n" +
+                    " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                    " xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n" +
+                    "    <modelVersion>4.0.0</modelVersion>\n" +
+                    "    <groupId>com.example</groupId>\n" +
+                    "    <artifactId>test-artifact</artifactId>\n" +
+                    "    <version>1.0.0</version>\n" +
+                    "</project>";
 
             URL mockPomUrl = mock(URL.class);
             JarURLConnection mockJarConnection = mock(JarURLConnection.class);

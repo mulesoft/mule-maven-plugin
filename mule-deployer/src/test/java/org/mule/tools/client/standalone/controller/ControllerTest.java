@@ -330,7 +330,7 @@ public class ControllerTest {
 
 
     controller.undeployDomain(domainName);
-    assertThat(domainFile.exists()).isFalse().withFailMessage("The domain file should be deleted after undeployDomain.");
+    assertThat(domainFile.exists()).isFalse();
     assertThatThrownBy(() -> controller.undeployDomain(domainName))
         .isInstanceOf(MuleControllerException.class)
         .hasMessageContaining("Couldn't undeploy domain");
@@ -355,8 +355,7 @@ public class ControllerTest {
     Controller controller = new Controller(abstractOSController, temporaryFolder.getAbsolutePath());
     if (index == 0) {
       controller.undeployAll();
-      assertThat(temporaryFolder.toPath().resolve("apps").toFile().listFiles().length).isEqualTo(0)
-          .withFailMessage("The apps directory should be empty.");
+      assertThat(temporaryFolder.toPath().resolve("apps").toFile().listFiles().length).isEqualTo(0);
     } else if (index == 1) {
       try (MockedStatic<FileUtils> mockedFileUtils = Mockito.mockStatic(FileUtils.class)) {
         mockedFileUtils.when(() -> FileUtils.forceDelete(Mockito.any())).thenThrow(new IOException("Forced delete failed"));

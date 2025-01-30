@@ -56,16 +56,18 @@ class AbstractOSControllerTest {
   @ParameterizedTest
   @ValueSource(ints = {0, 1, 2})
   void startTest(int index) {
-    try ( MockedConstruction<DefaultExecutor> defaultExecutor = Mockito.mockConstruction(DefaultExecutor.class, (mock, context) -> {
-      if (index == 1) {
-        when(mock.execute(Mockito.any(CommandLine.class), anyMap())).thenThrow(new IOException());
-      }
-      if (index == 2) {
-        when(mock.execute(Mockito.any(CommandLine.class), anyMap())).thenThrow(new ExecuteException("BLABLA", 123));
-      }
-    }); MockedConstruction<ExecuteWatchdog> executeWatchdog = Mockito.mockConstruction(ExecuteWatchdog.class, (mock, context) -> {
+    try (
+        MockedConstruction<DefaultExecutor> defaultExecutor = Mockito.mockConstruction(DefaultExecutor.class, (mock, context) -> {
+          if (index == 1) {
+            when(mock.execute(Mockito.any(CommandLine.class), anyMap())).thenThrow(new IOException());
+          }
+          if (index == 2) {
+            when(mock.execute(Mockito.any(CommandLine.class), anyMap())).thenThrow(new ExecuteException("BLABLA", 123));
+          }
+        });
+        MockedConstruction<ExecuteWatchdog> executeWatchdog = Mockito.mockConstruction(ExecuteWatchdog.class, (mock, context) -> {
 
-    }); ) {
+        });) {
 
       if (index == 0) {
         controller.start("start", "ok");
@@ -76,6 +78,6 @@ class AbstractOSControllerTest {
         assertThatThrownBy(() -> controller.restart("restart", "ok")).isInstanceOf(MuleControllerException.class);
 
       }
-  }
+    }
   }
 }

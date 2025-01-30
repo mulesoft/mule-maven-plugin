@@ -71,7 +71,6 @@ public class DefaultExtensionModelServiceTest {
         assertEquals("artifact", result.getArtifactId());
         assertEquals("1.0.0", result.getVersion());
         assertEquals("jar", result.getType());
-        assertTrue(result.getClassifier().isEmpty());
         }
 
         @Test

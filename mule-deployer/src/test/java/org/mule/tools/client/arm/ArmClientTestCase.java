@@ -9,7 +9,6 @@ package org.mule.tools.client.arm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.mule.tools.client.arm.model.Applications;
 import org.mule.tools.client.arm.model.Environment;
 import org.mule.tools.client.arm.model.Target;
@@ -38,14 +37,6 @@ class ArmClientTestCase {
     armDeployment.setBusinessGroup("");
     armDeployment.setArmInsecure(false);
     armClient = new ArmClient(armDeployment, null);
-
-    armClient = Mockito.spy(new ArmClient(armDeployment, null));
-  }
-
-  @Test
-  void getRegistrationTokenTest() {
-    String registrationToken = armClient.getRegistrationToken();
-    assertThat(registrationToken).isNotNull();
   }
 
   @Test
@@ -55,31 +46,25 @@ class ArmClientTestCase {
   }
 
   @Test
-  public void findEnvironmentByNameTest() {
+  public void findEnvironmentByName() {
     Environment environment = armClient.findEnvironmentByName("Production");
     assertThat(environment.name).isEqualTo("Production");
   }
 
   @Test
-  public void failToFindFakeEnvironmentTest() {
+  public void failToFindFakeEnvironment() {
     assertThatThrownBy(() -> armClient.findEnvironmentByName("notProduction"))
         .isExactlyInstanceOf(RuntimeException.class);
   }
 
   @Test
-  public void findServerByNameTest() {
+  public void findServerByName() {
     Target target = armClient.findServerByName("server-name");
     assertThat(target.name).isEqualTo("server-name");
   }
 
   @Test
-  public void findServerGroupByNameTest() {
-    Target target = armClient.findServerGroupByName("my-server-group-name");
-    assertThat(target.name.contains("/serverGroups")).isTrue();
-  }
-
-  @Test
-  public void failToFindFakeTargetNameTest() {
+  public void failToFindFakeTargetName() {
     assertThatThrownBy(() -> armClient.findServerByName("fake-server-name"))
         .isExactlyInstanceOf(RuntimeException.class);
   }

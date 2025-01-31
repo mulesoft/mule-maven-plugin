@@ -17,7 +17,6 @@ import org.mule.tools.model.anypoint.ArmDeployment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Disabled("I suspect that there should be a server for the requests.")
 class ArmClientTestCase {
@@ -76,7 +75,7 @@ class ArmClientTestCase {
   @Test
   public void findServerGroupByNameTest() {
     Target target = armClient.findServerGroupByName("my-server-group-name");
-    assertTrue(target.name.contains("/serverGroups"));
+    assertThat(target.name.contains("/serverGroups")).isTrue();
   }
 
   @Test

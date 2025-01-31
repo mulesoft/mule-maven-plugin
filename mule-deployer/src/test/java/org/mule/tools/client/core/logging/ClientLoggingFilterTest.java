@@ -6,9 +6,8 @@
  */
 package org.mule.tools.client.core.logging;
 
-
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -106,7 +105,7 @@ class ClientLoggingFilterTest {
   @ValueSource(ints = {0, 1})
   void shouldLogEntityTest(int index) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     System.setProperty(ClientLoggingFilter.CLIENT_LOGGING_LOG_MULTIPART, "true");
-    Object result = null;
+    Boolean result = false;
     ClientLoggingFilter filter = new ClientLoggingFilter(log);
 
     Method method = ClientLoggingFilter.class.getDeclaredMethod("shouldLogEntity", Type.class);
@@ -114,13 +113,15 @@ class ClientLoggingFilterTest {
 
     if (index == 0) {
       Type entityType = String.class;
-      result = method.invoke(filter, entityType);
+      result = (Boolean) method.invoke(filter, entityType);
     } else if (index == 1) {
       Type entityType = FormDataMultiPart.class;
-      result = method.invoke(filter, entityType);
+      result = (Boolean) method.invoke(filter, entityType);
+
     }
 
-    assertTrue((Boolean) result);
+    assertThat(result).isInstanceOf(Boolean.class).isTrue();
+
   }
 
   @Test
@@ -133,7 +134,8 @@ class ClientLoggingFilterTest {
     method.setAccessible(true);
 
     Boolean result = (Boolean) method.invoke(filter);
-    assertTrue(result);
+
+    assertThat(result).isInstanceOf(Boolean.class).isTrue();
   }
 
   @Test

@@ -532,7 +532,6 @@
                         <exclude>org/mule/tools/client/agent/model/*</exclude>
                         <exclude>org/mule/tools/client/arm/model/*</exclude>
                         <exclude>org/mule/tools/client/authentication/model/*</exclude>
-                        <exclude>org/mule/tools/client/standalone/deployment/*</exclude>
                     </excludes>
                     <haltOnFailure>true</haltOnFailure>
                     <skip>${skipJaCoCoCoverage}</skip>

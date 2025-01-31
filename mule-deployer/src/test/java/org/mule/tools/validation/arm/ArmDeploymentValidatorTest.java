@@ -124,17 +124,4 @@ public class ArmDeploymentValidatorTest {
         .describedAs("The runtime versions should match the expected Mule version")
         .isEqualTo(expectedVersions);
   }
-
-  @Test
-  void testGetArmClient() {
-    armDeployment.setUri(BASE_URI);
-    armDeployment.setArmInsecure(true);
-    validator = new ArmDeploymentValidator(armDeployment);
-    ArmDeploymentValidator validatorSpy = spy(validator);
-    ArmClient clientSpy = spy(new ArmClient(armDeployment, LOG_MOCK));
-    doReturn(clientSpy).when(validatorSpy).getArmClient();
-    ArmClient clientReturned = validatorSpy.getArmClient();
-    assertThat(clientReturned).isEqualTo(clientSpy);
-    verify(validatorSpy).getArmClient();
-  }
 }

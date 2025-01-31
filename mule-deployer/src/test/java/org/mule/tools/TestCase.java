@@ -149,8 +149,8 @@ public class TestCase {
     SERVER.when(httpRequest).respond(httpResponse);
   }
 
-  protected static void setStringResponse(String method, String value, String path, String contentType) {
-    HttpResponse httpResponse = HttpResponse.response().withStatusCode(200);
+  protected static void setStringResponse(String method, String value, String path, String contentType, int statusCode) {
+    HttpResponse httpResponse = HttpResponse.response().withStatusCode(statusCode);
     if (contentType != null) {
       httpResponse
           .withHeader("Content-Type", contentType)
@@ -160,12 +160,24 @@ public class TestCase {
     setRequest(method, path, httpResponse);
   }
 
+  protected static void setStringResponse(String method, String value, String path, String contentType) {
+    setStringResponse(method, value, path, contentType, 200);
+  }
+
   protected static void setStringResponse(String method, String value, String path) {
     setStringResponse(method, value, path, "application/json");
   }
 
+  protected static void setStringResponse(String method, String value, String path, int statusCode) {
+    setStringResponse(method, value, path, "application/json", statusCode);
+  }
+
+  protected static void setVoidResponse(String method, String path, int statusCode) {
+    setStringResponse(method, null, path, "application/json", statusCode);
+  }
+
   protected static void setVoidResponse(String method, String path) {
-    setStringResponse(method, null, path, "application/json");
+    setVoidResponse(method, path, 200);
   }
 
   protected static void setTemplateResponse(String method, String file, String path, Map<String, Object> data) {

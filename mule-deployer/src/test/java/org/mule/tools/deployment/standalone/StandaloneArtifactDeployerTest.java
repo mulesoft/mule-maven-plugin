@@ -20,12 +20,19 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Files;
-import java.util.UUID;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class StandaloneArtifactDeployerTest {
 
@@ -67,7 +74,7 @@ public class StandaloneArtifactDeployerTest {
   @Test
   public void undeployDomainTest() {
     assertThatThrownBy(() -> deployer.undeployDomain())
-        .isExactlyInstanceOf(DeploymentException.class);;
+        .isExactlyInstanceOf(DeploymentException.class);
   }
 
   @Test
@@ -153,4 +160,25 @@ public class StandaloneArtifactDeployerTest {
       verify(controllerMock, times(1)).isRunning();
     }).isExactlyInstanceOf(MuleControllerException.class);
   }
+
+  @Test
+  void waitForDeploymentsTest() throws DeploymentException {
+    File artifact = mock(File.class);
+    when(deploymentMock.getArtifact()).thenReturn(artifact);
+    when(deploymentMock.getPackaging()).thenReturn("mule-application");
+    when(deploymentMock.getDeploymentTimeout()).thenReturn(Optional.of(10L));
+    when(artifact.exists()).thenReturn(true);
+    when(artifact.getName()).thenReturn("artifact.jar");
+    // TIMEOUT
+    StandaloneArtifactDeployer deployer00 = new StandaloneArtifactDeployer(deploymentMock, logMock);
+    assertThatThrownBy(deployer00::waitForDeployments).isExactlyInstanceOf(DeploymentException.class)
+        .hasMessageContaining("Application deployment timeout");
+
+    // ARTIFACT NOT EXISTS
+    when(artifact.exists()).thenReturn(false);
+    StandaloneArtifactDeployer deployer01 = new StandaloneArtifactDeployer(deploymentMock, logMock);
+    assertThatThrownBy(deployer01::waitForDeployments).isExactlyInstanceOf(DeploymentException.class)
+        .hasMessageContaining("Application does not exist: ");
+  }
+
 }

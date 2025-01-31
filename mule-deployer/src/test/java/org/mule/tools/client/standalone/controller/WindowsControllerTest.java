@@ -11,6 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -39,7 +42,10 @@ public class WindowsControllerTest {
     doReturn(RUN_SYNC_START_RETURN_VALUE).when(controllerSpy).runSync("start", CONTROLLER_ARGUMENTS);
     doReturn(RUN_SYNC_START_RETURN_VALUE).when(controllerSpy).runSync("restart", CONTROLLER_ARGUMENTS);
     doNothing().when(controllerSpy).install(CONTROLLER_ARGUMENTS);
+    reset(osController);
   }
+
+  private final AbstractOSController osController = mock(AbstractOSController.class);
 
   @Test
   public void getMuleBinTest() {
@@ -47,8 +53,9 @@ public class WindowsControllerTest {
   }
 
   @Test
-  public void startTest() throws Exception {
+  public void startTest() {
     controllerSpy.start(CONTROLLER_ARGUMENTS);
+    verify(controllerSpy, times(1)).install(CONTROLLER_ARGUMENTS);
     controllerSpy.install(CONTROLLER_ARG);
     verify(controllerSpy, times(1)).runSync("start", CONTROLLER_ARGUMENTS);
   }
@@ -141,4 +148,33 @@ public class WindowsControllerTest {
     verify(controllerSpy, times(1)).runSync("restart", CONTROLLER_ARGUMENTS);
   }
 
+  @Test
+  public void executeCmdTest() throws Exception {
+    ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+    PrintStream originalErr = System.err;
+    System.setErr(new PrintStream(errorStream));
+
+    try {
+      WindowsController controller = new WindowsController("C:\\user\\mule", 3000);
+      String output = controller.executeCmd("dummy");
+      assertThat(output).isEqualTo("");
+
+      String errorOutput = errorStream.toString();
+      assertThat(errorOutput)
+          .contains("Cannot run program \"dummy\"")
+          .contains("No such file or directory");
+    } finally {
+      System.setErr(originalErr);
+    }
+  }
+
+  @Test
+  public void executeCmdTryTest() {
+    String validCommand = "echo Hello, World!";
+
+    WindowsController controller = new WindowsController("C:\\user\\mule", 3000);
+
+    String output = controller.executeCmd(validCommand);
+    assertThat(output.trim()).isEqualTo("Hello, World!");
+  }
 }

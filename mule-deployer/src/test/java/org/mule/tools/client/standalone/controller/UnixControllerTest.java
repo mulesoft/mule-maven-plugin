@@ -6,6 +6,8 @@
  */
 package org.mule.tools.client.standalone.controller;
 
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.Executor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.mule.tools.client.standalone.exception.MuleControllerException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -114,4 +117,31 @@ public class UnixControllerTest {
     outputStream.write(status.getBytes(StandardCharsets.UTF_8));
     when(controllerSpy.getOutputStream()).thenReturn(outputStream);
   }
+
+  @Test
+  public void getExecutorTest() throws Exception {
+    Method method = UnixController.class.getDeclaredMethod("getExecutor");
+    method.setAccessible(true);
+
+    Executor executor = (Executor) method.invoke(controllerSpy);
+    assertThat(executor).isNotNull();
+  }
+
+  @Test
+  public void isMuleRunningTest() {
+    doReturn(0).when(controllerSpy).doExecution(any(), any(), anyMap());
+    assertThat(controllerSpy.isMuleRunning()).isTrue();
+
+    doReturn(1).when(controllerSpy).doExecution(any(), any(), anyMap());
+    assertThat(controllerSpy.isMuleRunning()).isFalse();
+  }
+
+  @Test
+  public void getExecuteWatchdogTest() throws Exception {
+    Method method = UnixController.class.getDeclaredMethod("getExecuteWatchdog", int.class);
+    method.setAccessible(true);
+    ExecuteWatchdog watchdog = (ExecuteWatchdog) method.invoke(controllerSpy, 3000);
+    assertThat(watchdog).toString().contains("org.apache.commons.exec.ExecuteWatchdog@");
+  }
+
 }

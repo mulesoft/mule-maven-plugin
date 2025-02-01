@@ -1,0 +1,8 @@
+[
+  {
+    "id":"{{TARGET_ID}}",
+    "name":"{{APPLICATION_NAME}}",
+    "organizationId":"orgId",
+    "status":"Connected"
+  }
+]

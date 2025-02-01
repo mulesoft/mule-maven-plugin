@@ -6,9 +6,6 @@
  */
 package org.mule.tools;
 
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.MustacheFactory;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,25 +18,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.ENVIRONMENTS;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.LOGIN;
 import static org.mule.tools.client.authentication.AuthenticationServiceClient.ME;
 
-public class TestCase {
+public class TestCase extends TestBase {
 
   protected static final String APPLICATION_FILE_NAME = "rick1-1.0.0-SNAPSHOT-mule-application-light-package.jar";
   protected static final File APPLICATION_FILE;
-  protected static final MustacheFactory MUSTACHE = new DefaultMustacheFactory();
   protected static final String GET = "GET";
   protected static final String POST = "POST";
   protected static final String PATCH = "PATCH";
@@ -56,33 +49,36 @@ public class TestCase {
   protected static final String ENVIRONMENT = "Sandbox";
   protected static final DeployerLog DEPLOYER_LOG = new DeployerLog() {
 
+    private final Consumer<String> write = s -> {
+    }; //System.out::println;
+
     @Override
     public void info(String s) {
-      System.out.println(s);
+      write.accept(s);
       LOGGER.info(s);
     }
 
     @Override
     public void error(String s) {
-      System.out.println(s);
+      write.accept(s);
       LOGGER.error(s);
     }
 
     @Override
     public void warn(String s) {
-      System.out.println(s);
+      write.accept(s);
       LOGGER.warn(s);
     }
 
     @Override
     public void debug(String s) {
-      System.out.println(s);
+      write.accept(s);
       LOGGER.debug(s);
     }
 
     @Override
     public void error(String s, Throwable e) {
-      System.out.println(s);
+      write.accept(s);
       LOGGER.error(s, e);
     }
 
@@ -123,20 +119,6 @@ public class TestCase {
 
   protected static String getURI() {
     return String.format("http://127.0.0.1:%d", SERVER.getLocalPort());
-  }
-
-  protected static String readFile(String file) {
-    try {
-      return IOUtils.toString(Objects.requireNonNull(TestCase.class.getResource("/" + file)), StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  protected static String template(String file, Map<String, Object> data) {
-    Writer writer = new StringWriter();
-    MUSTACHE.compile(file).execute(writer, data);
-    return writer.toString();
   }
 
   protected static void clearRequest(String method, String path) {

@@ -20,8 +20,6 @@ import org.mule.tools.client.fabric.model.DeploymentRequest;
 import org.mule.tools.model.anypoint.RuntimeFabricDeployment;
 import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeployment;
 
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mule.tools.client.fabric.RuntimeFabricClient.DEPLOYMENTS_PATH;
@@ -30,9 +28,6 @@ import static org.mule.tools.client.fabric.RuntimeFabricClient.RUNTIME_FABRIC_TA
 import static org.mule.tools.client.fabric.RuntimeFabricClient.RUNTIME_FABRIC_TARGET_INFO;
 
 public class RuntimeFabricClientTestCase extends TestCase {
-
-  protected static final String APPLICATION_ID = UUID.randomUUID().toString();
-  protected static final String APPLICATION_NAME = UUID.randomUUID().toString();
 
   protected static RuntimeFabricDeployment createDeployment() {
     RuntimeFabricDeployment deployment = new RuntimeFabricOnPremiseDeployment();

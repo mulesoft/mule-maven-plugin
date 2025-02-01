@@ -1,0 +1,11 @@
+{
+  "items": [
+    {
+      "id": "{{DEPLOYMENT_ID}}",
+      "name": "{{DEPLOYMENT_NAME}}",
+      "target": {
+        "targetId": "{{TARGET_ID}}"
+      }
+    }
+  ]
+}

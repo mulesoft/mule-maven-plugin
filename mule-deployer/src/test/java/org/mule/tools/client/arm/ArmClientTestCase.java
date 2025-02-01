@@ -33,7 +33,6 @@ class ArmClientTestCase extends TestCase {
   private static final int SERVER_ID = 666;
   private static final int SERVER_GROUP_ID = 333;
   private static final int APPLICATION_ID = 8908;
-  private static final String APPLICATION_NAME = "APPLICATION_NAME - 8908 - " + UUID.randomUUID();
 
   private static final String API_VERSION = "v1";
   private static final String BASE_HYBRID_API_PATH = "/hybrid/api";

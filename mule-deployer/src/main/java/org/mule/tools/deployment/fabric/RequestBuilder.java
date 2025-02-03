@@ -39,8 +39,6 @@ public class RequestBuilder {
   private static final String NAME = "name";
   private static final String DOMAIN_WILDCARD = "*";
 
-  public RequestBuilder() {}
-
   public RequestBuilder(RuntimeFabricDeployment deployment, RuntimeFabricClient client) {
     this.deployment = deployment;
     this.client = client;

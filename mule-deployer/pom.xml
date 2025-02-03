@@ -143,5 +143,9 @@
             <artifactId>mockserver-netty</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.spullara.mustache.java</groupId>
+            <artifactId>compiler</artifactId>
+        </dependency>
     </dependencies>
 </project>

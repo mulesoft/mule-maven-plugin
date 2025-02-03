@@ -1,0 +1,15 @@
+{
+  "id":"{{TARGET_ID}}",
+  "name":"{{APPLICATION_NAME}}",
+  "runtimes":[
+    {
+      "type":"mule",
+      "versions":[
+        {
+          "baseVersion":"{{BASE_VERSION}}",
+          "tag":"{{TAG}}"
+        }
+      ]
+    }
+  ]
+}

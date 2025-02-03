@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -29,6 +30,9 @@ import org.mockito.MockedStatic;
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.pom.parser.api.model.BundleDependency;
 import org.mule.maven.pom.parser.api.model.BundleDescriptor;
+import org.mule.runtime.api.artifact.ArtifactCoordinates;
+import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.api.meta.model.XmlDslModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.serialization.ArtifactAstSerializer;
@@ -39,12 +43,15 @@ import org.mule.tooling.api.ConfigurationException;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -83,7 +90,7 @@ class AstGeneratorTest extends MavenClientTest {
 
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
-  void constructorTests(boolean asApplication) {
+  void constructorTests(boolean asApplication) throws MalformedURLException {
     try (MockedStatic<ExtensionModelLoaderFactory> extensionModelLoaderFactory = mockStatic(ExtensionModelLoaderFactory.class)) {
       ExtensionModelLoader extensionModelLoader = mock(ExtensionModelLoader.class);
       PluginResources pluginResources = mock(PluginResources.class);
@@ -98,7 +105,10 @@ class AstGeneratorTest extends MavenClientTest {
 
       ////
       BundleDependency bundleDependency = mock(BundleDependency.class);
-      when(bundleDependency.getBundleUri()).thenReturn(mock(URI.class));
+      URL url = mock(URL.class);
+      URI uri = mock(URI.class);
+      when(uri.toURL()).thenReturn(url);
+      when(bundleDependency.getBundleUri()).thenReturn(uri);
       when(mavenClient.resolveBundleDescriptor(any(BundleDescriptor.class))).thenReturn(bundleDependency);
 
       doThrow(new RuntimeException()).when(classRealm).addURL(nullable(URL.class));
@@ -106,6 +116,50 @@ class AstGeneratorTest extends MavenClientTest {
       ///
       reset(classRealm);
       createAstGenerator(getArtifacts(), getDependencies(), asApplication, "mule-application");
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {0, 1})
+  void generalTest(int type) throws MalformedURLException {
+    Set<ExtensionModel> extensionModels = extensionModels();
+    List<String> values = Arrays.asList(
+                                        "jar:file:///C:/proj/parser/jar/parser.jar!/test.xml",
+                                        "jar:mule-config.xml",
+                                        "/mule-config.xml",
+                                        "jar::///C:/proj/parser/jar/parser.jar!/test.xml");
+    List<URL> resources = IntStream.range(0, 4).mapToObj(index -> {
+      URL url = mock(URL.class);
+      when(url.toExternalForm()).thenReturn(values.get(index));
+      return url;
+    }).collect(Collectors.toList());
+
+    try (MockedStatic<ExtensionModelLoaderFactory> extensionModelLoaderFactory = mockStatic(ExtensionModelLoaderFactory.class)) {
+      ExtensionModelLoader extensionModelLoader = mock(ExtensionModelLoader.class);
+      PluginResources pluginResources = mock(PluginResources.class);
+
+      when(extensionModelLoader.getRuntimeExtensionModels()).thenReturn(Collections.emptySet());
+      when(extensionModelLoader.load(any(BundleDescriptor.class))).thenReturn(pluginResources);
+      when(pluginResources.getExportedResources()).thenReturn(resources);
+      when(pluginResources.getExtensionModels()).thenReturn(extensionModels);
+      extensionModelLoaderFactory
+          .when(() -> ExtensionModelLoaderFactory.createLoader(nullable(MavenClient.class), nullable(Path.class),
+                                                               any(ClassLoader.class), anyString()))
+          .thenReturn(extensionModelLoader);
+      ////
+      URL url = mock(URL.class);
+      URI uri = mock(URI.class);
+      if (type == 0) {
+        when(uri.toURL()).thenReturn(url);
+      } else {
+        when(uri.toURL()).thenThrow(new MalformedURLException());
+      }
+
+      BundleDependency bundleDependency = mock(BundleDependency.class);
+      when(bundleDependency.getBundleUri()).thenReturn(uri);
+      when(mavenClient.resolveBundleDescriptor(any(BundleDescriptor.class))).thenReturn(bundleDependency);
+
+      createAstGenerator(getArtifacts(), getDependencies(), true, "mule-application");
     }
   }
 
@@ -163,6 +217,34 @@ class AstGeneratorTest extends MavenClientTest {
       when(artifact.getClassifier()).thenReturn(index < 4 ? null : "mule-plugin");
       when(artifact.getType()).thenReturn(index < 4 ? null : "jar");
       return artifact;
+    }).collect(Collectors.toSet());
+  }
+
+  private Set<ExtensionModel> extensionModels() {
+    return IntStream.range(0, 2).mapToObj(index -> {
+      ArtifactCoordinates artifact = new org.mule.runtime.core.api.artifact.ArtifactCoordinates() {
+
+        @Override
+        public String getGroupId() {
+          return "org.mule";
+        }
+
+        @Override
+        public String getArtifactId() {
+          return "mule-config" + index;
+        }
+
+        @Override
+        public String getVersion() {
+          return "";
+        }
+      };
+
+      XmlDslModel xmlDslModel = mock(XmlDslModel.class);
+      ExtensionModel extensionModel = mock(ExtensionModel.class);
+      doReturn(Optional.of(artifact)).when(extensionModel).getArtifactCoordinates();
+      doReturn(xmlDslModel).when(extensionModel).getXmlDslModel();
+      return extensionModel;
     }).collect(Collectors.toSet());
   }
 

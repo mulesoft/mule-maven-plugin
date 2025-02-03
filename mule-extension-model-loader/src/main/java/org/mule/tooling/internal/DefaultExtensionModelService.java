@@ -148,7 +148,6 @@ public class DefaultExtensionModelService implements ExtensionModelService {
 
     BundleDescriptor pluginDescriptor = new BundleDescriptor.Builder()
         .setGroupId(bundleDescriptor.getGroupId())
-        .setGroupId(bundleDescriptor.getGroupId())
         .setArtifactId(bundleDescriptor.getArtifactId())
         .setVersion(bundleDescriptor.getVersion())
         .setClassifier(bundleDescriptor.getClassifier().orElse(null))

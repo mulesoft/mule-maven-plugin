@@ -1,0 +1,428 @@
+{
+  "user": {
+    "id": "a674e7f5-a29e-4525-92d8-fb992f28e6ed",
+    "createdAt": "2025-01-30T18:42:37.999Z",
+    "updatedAt": "2025-01-31T04:30:53.324Z",
+    "organizationId": "83c9625f-9372-4408-8ba0-de7980a04fae",
+    "firstName": "Jose",
+    "lastName": "Perez",
+    "email": "rodriguez.jorge+dummy@gmail.com",
+    "phoneNumber": "54113344785509",
+    "username": "dummy007",
+    "idprovider_id": "mulesoft",
+    "enabled": true,
+    "deleted": false,
+    "lastLogin": "2025-01-31T04:30:00.000Z",
+    "mfaVerificationExcluded": false,
+    "mfaVerifiersConfigured": "false",
+    "isFederated": false,
+    "emailVerifiedAt": null,
+    "gdouId": null,
+    "previousLastLogin": "2025-01-30T21:12:00.000Z",
+    "lastShoPermissionCheck": null,
+    "disabledReason": null,
+    "type": "host",
+    "organizationPreferences": {},
+    "organization": {
+      "name": "SALESFORCE",
+      "id": "83c9625f-9372-4408-8ba0-de7980a04fae",
+      "createdAt": "2025-01-30T18:42:37.999Z",
+      "updatedAt": "2025-01-31T04:31:39.071Z",
+      "ownerId": "a674e7f5-a29e-4525-92d8-fb992f28e6ed",
+      "clientId": "5878994b742642a7ab84d168d38d083d",
+      "idprovider_id": "mulesoft",
+      "isFederated": false,
+      "parentOrganizationIds": [],
+      "subOrganizationIds": [
+        "faa05fdd-dd75-4e5f-9092-62a23f6cc5f2"
+      ],
+      "tenantOrganizationIds": [],
+      "mfaRequired": "mandatory",
+      "isAutomaticAdminPromotionExempt": false,
+      "orgType": "anypoint",
+      "gdotId": null,
+      "deletedAt": null,
+      "domain": "salesforce-682",
+      "isRoot": true,
+      "isMaster": true,
+      "subscription": {
+        "category": "Developer",
+        "type": "Trial",
+        "expiration": "2025-03-01T18:42:38.369Z",
+        "justification": null
+      },
+      "properties": {
+        "internal": {},
+        "defaultAccessManagementUi": "authentication-server-ui"
+      },
+      "entitlements": {
+        "createEnvironments": true,
+        "globalDeployment": false,
+        "createSubOrgs": true,
+        "hybrid": {
+          "enabled": true
+        },
+        "hybridInsight": true,
+        "hybridAutoDiscoverProperties": true,
+        "vCoresProduction": {
+          "assigned": 0,
+          "reassigned": 0
+        },
+        "vCoresSandbox": {
+          "assigned": 1,
+          "reassigned": 0.1
+        },
+        "vCoresDesign": {
+          "assigned": 1,
+          "reassigned": 0.1
+        },
+        "staticIps": {
+          "assigned": 0,
+          "reassigned": 0
+        },
+        "vpcs": {
+          "assigned": 0,
+          "reassigned": 0
+        },
+        "vpns": {
+          "assigned": 0,
+          "reassigned": 0
+        },
+        "networkConnections": {
+          "assigned": 0,
+          "reassigned": 0
+        },
+        "workerLoggingOverride": {
+          "enabled": false
+        },
+        "mqMessages": {
+          "base": 0,
+          "addOn": 0
+        },
+        "mqRequests": {
+          "base": 0,
+          "addOn": 0
+        },
+        "objectStoreRequestUnits": {
+          "base": 0,
+          "addOn": 0
+        },
+        "objectStoreKeys": {
+          "base": 0,
+          "addOn": 0
+        },
+        "mqAdvancedFeatures": {
+          "enabled": false
+        },
+        "gateways": {
+          "assigned": 1
+        },
+        "designCenter": {
+          "mozart": false,
+          "api": true,
+          "apiVisual": false,
+          "apiExample": false
+        },
+        "partnersProduction": {
+          "assigned": 0
+        },
+        "partnersSandbox": {
+          "assigned": 0
+        },
+        "tradingPartnersProduction": {
+          "assigned": 0
+        },
+        "tradingPartnersSandbox": {
+          "assigned": 0
+        },
+        "loadBalancer": {
+          "assigned": 0,
+          "reassigned": 0
+        },
+        "externalIdentity": true,
+        "autoscaling": false,
+        "armAlerts": true,
+        "apis": {
+          "enabled": true
+        },
+        "apiMonitoring": {
+          "schedules": 0
+        },
+        "apiCommunityManager": {
+          "enabled": false
+        },
+        "apiExperienceHub": {
+          "enabled": true
+        },
+        "monitoringCenter": {
+          "productSKU": 3,
+          "rawStorageOverrideGB": 0,
+          "dataRegion": "us-east-1",
+          "productionUnits": 0,
+          "preProductionUnits": 0,
+          "storageBase": 0,
+          "storageAddOn": 0
+        },
+        "apiQuery": {
+          "enabled": true,
+          "productSKU": 1,
+          "production": 0,
+          "sandbox": 1
+        },
+        "apiQueryC360": {
+          "enabled": false
+        },
+        "rpa": {
+          "enabled": false,
+          "active": false,
+          "composerVersion": ""
+        },
+        "idp": {
+          "enabled": true
+        },
+        "apiGovernance": {
+          "enabled": true,
+          "apisPerMonth": -1
+        },
+        "apiGovernanceDomain": {
+          "domain": "API"
+        },
+        "crowd": {
+          "hideApiManagerDesigner": true,
+          "hideFormerApiPlatform": true,
+          "environments": true
+        },
+        "cam": {
+          "enabled": false
+        },
+        "exchange2": {
+          "enabled": false,
+          "assetUsageAndEngagement": {
+            "enabled": false
+          }
+        },
+        "crowdSelfServiceMigration": {
+          "enabled": false
+        },
+        "kpiDashboard": {
+          "enabled": false
+        },
+        "pcf": false,
+        "appViz": false,
+        "runtimeFabric": false,
+        "anypointSecurityTokenization": {
+          "enabled": false
+        },
+        "anypointSecurityEdgePolicies": {
+          "enabled": false
+        },
+        "runtimeFabricCloud": {
+          "enabled": true
+        },
+        "serviceMesh": {
+          "enabled": true
+        },
+        "flexGateway": {
+          "enabled": true
+        },
+        "managedGatewaySmall": {
+          "assigned": 0,
+          "reassigned": 0
+        },
+        "managedGatewayLarge": {
+          "assigned": 0,
+          "reassigned": 0
+        },
+        "apiCatalog": {
+          "enabled": true
+        },
+        "apiManager": {
+          "governance": {
+            "enabled": false
+          },
+          "usageBasedPricing": {
+            "api": {
+              "production": {
+                "amount": 0
+              },
+              "sandbox": {
+                "amount": 0
+              }
+            }
+          }
+        },
+        "composer": {
+          "enabled": false,
+          "tasksPerMonth": 0,
+          "maxConnectors": 0,
+          "unlimitedConnectors": false,
+          "isHyperAutomation": false
+        },
+        "muleDxWebIde": {
+          "enabled": true
+        },
+        "muleDxGenAI": {
+          "enabled": true
+        },
+        "muleDxEDA": {
+          "enabled": true
+        },
+        "usageBasedPricing": {
+          "muleRuntimeIntegration": {
+            "enabled": false,
+            "flows": 0,
+            "messages": 0,
+            "throughput": 0
+          }
+        },
+        "usageBasedPricingLimits": {
+          "cpu": {
+            "base": 0,
+            "extra": 0
+          },
+          "memory": {
+            "base": 0,
+            "extra": 0
+          }
+        },
+        "highAvailability": {
+          "clustering": false
+        },
+        "cloudhub1": {
+          "enabled": false
+        },
+        "messaging": {
+          "assigned": 0
+        },
+        "workerClouds": {
+          "assigned": 0,
+          "reassigned": 0
+        },
+        "telemetryExporter": {
+          "enabled": false
+        }
+      }
+    },
+    "properties": {
+      "cs_auth": {
+        "activeOrganizationId": "83c9625f-9372-4408-8ba0-de7980a04fae"
+      }
+    },
+    "memberOfOrganizations": [
+      {
+        "parentName": null,
+        "parentId": null,
+        "domain": "salesforce-682",
+        "name": "SALESFORCE",
+        "id": "83c9625f-9372-4408-8ba0-de7980a04fae",
+        "createdAt": "2025-01-30T18:42:37.999Z",
+        "updatedAt": "2025-01-31T04:31:39.071Z",
+        "ownerId": "a674e7f5-a29e-4525-92d8-fb992f28e6ed",
+        "clientId": "5878994b742642a7ab84d168d38d083d",
+        "idprovider_id": "mulesoft",
+        "isFederated": false,
+        "parentOrganizationIds": [],
+        "subOrganizationIds": [
+          "faa05fdd-dd75-4e5f-9092-62a23f6cc5f2"
+        ],
+        "tenantOrganizationIds": [],
+        "mfaRequired": "mandatory",
+        "isAutomaticAdminPromotionExempt": false,
+        "orgType": "anypoint",
+        "gdotId": null,
+        "deletedAt": null,
+        "isRoot": true,
+        "isMaster": true,
+        "subscription": {
+          "category": "Developer",
+          "type": "Trial",
+          "expiration": "2025-03-01T18:42:38.369Z",
+          "justification": null
+        }
+      },
+      {
+        "parentName": "SALESFORCE",
+        "parentId": "83c9625f-9372-4408-8ba0-de7980a04fae",
+        "domain": null,
+        "name": "NESTED",
+        "id": "faa05fdd-dd75-4e5f-9092-62a23f6cc5f2",
+        "createdAt": "2025-01-31T04:31:39.071Z",
+        "updatedAt": "2025-01-31T04:31:39.071Z",
+        "ownerId": "a674e7f5-a29e-4525-92d8-fb992f28e6ed",
+        "clientId": "6ce38313f8964dd081c988befb5fbd9a",
+        "idprovider_id": "mulesoft",
+        "isFederated": false,
+        "parentOrganizationIds": [
+          "83c9625f-9372-4408-8ba0-de7980a04fae"
+        ],
+        "subOrganizationIds": [],
+        "tenantOrganizationIds": [],
+        "mfaRequired": null,
+        "isAutomaticAdminPromotionExempt": false,
+        "orgType": "anypoint",
+        "gdotId": null,
+        "deletedAt": null,
+        "isRoot": false,
+        "isMaster": false
+      }
+    ],
+    "contributorOfOrganizations": [
+      {
+        "parentName": null,
+        "parentId": null,
+        "domain": "salesforce-682",
+        "name": "SALESFORCE",
+        "id": "83c9625f-9372-4408-8ba0-de7980a04fae",
+        "createdAt": "2025-01-30T18:42:37.999Z",
+        "updatedAt": "2025-01-31T04:31:39.071Z",
+        "ownerId": "a674e7f5-a29e-4525-92d8-fb992f28e6ed",
+        "clientId": "5878994b742642a7ab84d168d38d083d",
+        "idprovider_id": "mulesoft",
+        "isFederated": false,
+        "parentOrganizationIds": [],
+        "subOrganizationIds": [
+          "faa05fdd-dd75-4e5f-9092-62a23f6cc5f2"
+        ],
+        "tenantOrganizationIds": [],
+        "mfaRequired": "mandatory",
+        "isAutomaticAdminPromotionExempt": false,
+        "orgType": "anypoint",
+        "gdotId": null,
+        "deletedAt": null,
+        "isRoot": true,
+        "isMaster": true,
+        "subscription": {
+          "category": "Developer",
+          "type": "Trial",
+          "expiration": "2025-03-01T18:42:38.369Z",
+          "justification": null
+        }
+      },
+      {
+        "parentName": "SALESFORCE",
+        "parentId": "83c9625f-9372-4408-8ba0-de7980a04fae",
+        "domain": null,
+        "name": "NESTED",
+        "id": "faa05fdd-dd75-4e5f-9092-62a23f6cc5f2",
+        "createdAt": "2025-01-31T04:31:39.071Z",
+        "updatedAt": "2025-01-31T04:31:39.071Z",
+        "ownerId": "a674e7f5-a29e-4525-92d8-fb992f28e6ed",
+        "clientId": "6ce38313f8964dd081c988befb5fbd9a",
+        "idprovider_id": "mulesoft",
+        "isFederated": false,
+        "parentOrganizationIds": [
+          "83c9625f-9372-4408-8ba0-de7980a04fae"
+        ],
+        "subOrganizationIds": [],
+        "tenantOrganizationIds": [],
+        "mfaRequired": null,
+        "isAutomaticAdminPromotionExempt": false,
+        "orgType": "anypoint",
+        "gdotId": null,
+        "deletedAt": null,
+        "isRoot": false,
+        "isMaster": false
+      }
+    ]
+  }
+}

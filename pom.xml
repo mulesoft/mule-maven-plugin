@@ -54,7 +54,7 @@
         <mule.mvel2.version>2.1.9-MULE-020</mule.mvel2.version>
         <gson.version>2.8.9</gson.version>
         <guava.version>32.1.2-jre</guava.version>
-        <snakeyaml.version>2.0</snakeyaml.version>
+        <snakeyaml.version>2.3</snakeyaml.version>
         <semver4j.version>3.1.0</semver4j.version>
         <semantic.version.version>1.2.0</semantic.version.version>
         <log4j.version>2.22.1</log4j.version>

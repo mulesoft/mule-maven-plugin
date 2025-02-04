@@ -5,7 +5,7 @@ properties([
     parameters([
         string(name: 'JDK', defaultValue: "JDK8", description: 'JDK Version to be used'),
         string(name: 'releaseCandidate', defaultValue: "3.1.0-rc0", description: 'Used when deployReleaseCandidate is set to true'),
-        booleanParam(name: 'deployRelesaseCandidate', defaultValue: false, description: ""),
+        booleanParam(name: 'deployReleaseCandidate', defaultValue: false, description: ""),
         string(name: 'maven', defaultValue: "Maven-3.9.4", description: 'Maven version to be used'),
         booleanParam(name: 'binariesScan', defaultValue: true, description: ""),
         booleanParam(name: 'deployArtifacts', defaultValue: true, description: "Used when we want to deploy the artifact")

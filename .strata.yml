@@ -1,0 +1,12 @@
+global:
+  email-reply-to: rodriguez.jorge@salesforce.com
+  email-only-last-committer-on-dev-branch: false
+  production-branches:
+    - main
+  image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
+stages:
+  build:
+    - step:
+        name: run-unit-tests
+        commands:
+          - mvn clean install test

@@ -655,26 +655,10 @@
         <snapshotRepository>
             <id>mule-snapshots</id>
             <name>Mule Snapshot Repository</name>
-            <url>https://repository-master.mulesoft.org/nexus/content/repositories/snapshots</url>
+            <url>https://repository-master.mulesoft.org/nexus/content/repositories/ci-snapshots</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
-
-    <profiles>
-        <profile>
-            <id>release</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <distributionManagement>
-                <repository>
-                    <id>mule-releases</id>
-                    <name>MuleSoft Releases Repository</name>
-                    <url>https://repository-master.mulesoft.org/nexus/content/repositories/releases</url>
-                </repository>
-            </distributionManagement>
-        </profile>
-    </profiles>
 
     <scm>
         <connection>scm:git:git://github.com/mulesoft/mule-maven-plugin.git</connection>

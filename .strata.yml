@@ -1,0 +1,77 @@
+global:
+  email-reply-to: rodriguez.jorge@salesforce.com
+  email-only-last-committer-on-dev-branch: false
+  parameters:
+    - name: "JAVA_VERSION"
+      default: "onejdk17"
+      description: "Java version to be used"
+      type: "choice"
+      choices:
+        - onejdk8_basic
+        - onejdk11
+        - onejdk17
+        - onejdk21
+      required: true
+    - name: "MAVEN_VERSION"
+      default: "MVN-3.9.4"
+      description: "Maven version to be used"
+      type: "choice"
+      choices:
+        - MVN-3.8.8
+        - MVN-3.9.0
+        - MVN-3.9.4
+        - MVN-3.9.6
+        - MVN-3.9.9
+      required: true
+    - name: "VERSION"
+      type: "string"
+      description: "Version used in the release"
+    - name: "RELEASE_AS_RC"
+      default: "false"
+      description: "Indicates if the deploy will be a release candidate"
+      type: "boolean"
+  production-branches:
+    - main
+stages:
+  build:
+    # Take the Maven settings and add the required repositories and servers in the following steps.
+    - step:
+        name: configure-workspace
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
+        commands:
+          - chmod +x setup.sh
+          - ./setup.sh -s settings.xml "/cix/tmp/.m2/repository"
+          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml
+    # Performs the build and execution of the unit-tests
+    - step:
+        name: build-artifacts
+        image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_$$PARAMETERS_JAVA_VERSION
+        environment:
+          - name: PARAMETERS_MAVEN_VERSION
+        commands:
+          - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
+          - ./setup.sh -c settings.xml
+          - mvn clean install -pl '!:mule-packager-it' -DskipTests
+  integration-test:
+    # Runs the integrations test
+    # In this stage the coverage is reported to Sonarqube
+    # https://sonarqube.sfcq.buildndeliver-s.aws-esvc1-useast2.aws.sfdc.cl/dashboard?id=mulesoft.mule-maven-plugin.gec
+    - step:
+        name: mmp-integration-tests
+        image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_$$PARAMETERS_JAVA_VERSION
+        environment:
+          - name: PARAMETERS_MAVEN_VERSION
+        commands:
+          - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
+          - ./setup.sh -c settings.xml
+          - source $integration_test_secrets_file_path
+          - mvn clean test -U -PpackagerIT -pl ':mule-packager-it'
+          - mvn clean test -U -PdeployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD -Dgroups=service
+  publish:
+    - step:
+        name: mmp-publish-artifacts
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
+        commands:
+          - ./setup.sh -c settings.xml
+          - source $publish_secrets_file_path
+          - mvn clean deploy -P '!default' -DskipTests -Dmaven.test.skip=true

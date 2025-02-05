@@ -9,6 +9,7 @@ package integration.test.mojo;
 import org.apache.maven.shared.verifier.VerificationException;
 import org.apache.maven.shared.verifier.Verifier;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.mule.tools.client.OperationRetrier;
 import org.mule.tools.client.OperationRetrier.RetriableOperation;
 import org.mule.tools.client.fabric.model.ApplicationDetailResponse;
@@ -20,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
 
+@Tag("service")
 public class Cloudhub2UBPDeploymentTest extends AbstractDeploymentTest {
 
   private static final int APPLICATION_NAME_LENGTH = 10;
@@ -71,7 +73,7 @@ public class Cloudhub2UBPDeploymentTest extends AbstractDeploymentTest {
 
   @Test
   public void cloudhub2UBPDeployTest() throws Exception {
-    before("4.8.0", "empty-mule-deploy-cloudhub2-UBP-project");
+    before("4.9.2", "empty-mule-deploy-cloudhub2-UBP-project");
     LOG.info("Executing deploy to CH2 integration test with an valid UBP POM Project. It should deploy correctly");
     verifier.addCliArguments(DEPLOY_GOAL, "-DmuleDeploy");
     verifier.execute();
@@ -92,7 +94,7 @@ public class Cloudhub2UBPDeploymentTest extends AbstractDeploymentTest {
   @Test
   public void testCloudhub2UBPDeployWithInvalidOrg() throws Exception {
     assertThatThrownBy(() -> {
-      before("4.8.0", "empty-mule-deploy-cloudhub2-UBP-invalid-group-project");
+      before("4.9.2", "empty-mule-deploy-cloudhub2-UBP-invalid-group-project");
       LOG.debug("Executing deploy to CH2 integration test with an Invalid UBP POM Project. It should not deploy");
       verifier.addCliArguments(DEPLOY_GOAL, "-DmuleDeploy");
       verifier.execute();

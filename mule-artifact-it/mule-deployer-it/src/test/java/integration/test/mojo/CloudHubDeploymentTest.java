@@ -7,6 +7,7 @@
 package integration.test.mojo;
 
 import org.apache.maven.shared.verifier.Verifier;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -22,6 +23,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.*;
 import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
 
+@Tag("service")
 public class CloudHubDeploymentTest extends AbstractDeploymentTest {
 
   private static final long RETRY_SLEEP_TIME = 30000;
@@ -30,7 +32,7 @@ public class CloudHubDeploymentTest extends AbstractDeploymentTest {
   private static final String STARTED_STATUS = "STARTED";
 
   private static Stream<Arguments> muleVersions() {
-    return Stream.of(Arguments.of("4.8"));
+    return Stream.of(Arguments.of("4.9-java17"));
   }
 
   private Verifier verifier;

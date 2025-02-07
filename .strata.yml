@@ -1,6 +1,34 @@
 global:
   email-reply-to: rodriguez.jorge@salesforce.com
   email-only-last-committer-on-dev-branch: false
+  parameters:
+    - name: "JAVA_VERSION"
+      default: "JDK-17"
+      description: "Java version to be used"
+      type: "choice"
+      choices:
+        - JDK-1.8
+        - JDK-11
+        - JDK-17
+      required: true
+    - name: "MAVEN_VERSION"
+      default: "MVN-3.9.4"
+      description: "Maven version to be used"
+      type: "choice"
+      choices:
+        - MVN-3.8.8
+        - MVN-3.9.0
+        - MVN-3.9.4
+        - MVN-3.9.8
+        - MVN-3.9.9
+      required: true
+    - name: "VERSION"
+      type: "string"
+      description: "Version used in the release"
+    - name: "RELEASE_AS_RC"
+      default: "false"
+      description: "Indicates if the deploy will be a release candidate"
+      type: "boolean"
   production-branches:
     - main
 stages:
@@ -8,5 +36,14 @@ stages:
     - step:
         name: run-unit-tests
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
+        environment:
+          - name: PARAMETERS_JAVA_VERSION
+          - name: PARAMETERS_MAVEN_VERSION
+          - name: PARAMETERS_VERSION
+          - name: PARAMETERS_RELEASE_AS_RC
         commands:
-          - mvn clean install test
+          - echo "Accessing build parameters with prefix"
+          - echo " PARAMETERS_JAVA_VERSION - $PARAMETERS_JAVA_VERSION"
+          - echo " PARAMETERS_MAVEN_VERSION - $PARAMETERS_MAVEN_VERSION"
+          - echo " PARAMETERS_VERSION - $PARAMETERS_VERSION"
+          - echo " PARAMETERS_RELEASE_AS_RC- $PARAMETERS_RELEASE_AS_RC"

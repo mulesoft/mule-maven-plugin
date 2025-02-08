@@ -34,7 +34,7 @@ global:
 stages:
   build:
     - step:
-        name: run-unit-tests
+        name: build-artifacts
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
         environment:
           - name: PARAMETERS_JAVA_VERSION
@@ -47,3 +47,6 @@ stages:
           - echo " PARAMETERS_MAVEN_VERSION - $PARAMETERS_MAVEN_VERSION"
           - echo " PARAMETERS_VERSION - $PARAMETERS_VERSION"
           - echo " PARAMETERS_RELEASE_AS_RC- $PARAMETERS_RELEASE_AS_RC"
+          - mvn -v
+          - mvn -X clean | grep "settings"
+          - mvn clean install -DskipTests -DskipIntegrationTests

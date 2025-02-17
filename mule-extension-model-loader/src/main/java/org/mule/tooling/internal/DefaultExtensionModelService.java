@@ -6,6 +6,10 @@
  */
 package org.mule.tooling.internal;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singletonList;
 import static java.util.Optional.of;
 import static org.mule.maven.client.internal.util.FileUtils.loadFileContentFrom;
 import static org.mule.maven.pom.parser.api.model.MavenModelBuilderProvider.discoverProvider;
@@ -28,10 +32,6 @@ import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
 import static java.lang.System.nanoTime;
 import static java.nio.file.Files.createTempDirectory;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
-import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
@@ -70,12 +70,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -296,18 +291,24 @@ public class DefaultExtensionModelService implements ExtensionModelService {
           artifactClassLoaderResolver.createApplicationClassLoader(applicationDescriptor,
                                                                    muleArtifactResourcesRegistry::getContainerArtifactClassLoader);
 
-      try {
-        ArtifactPluginDescriptor artifactPluginDescriptor = artifactClassLoader.getArtifactPluginClassLoaders().stream()
-            .filter(artifactPluginClassLoader -> artifactPluginClassLoader.getArtifactDescriptor().getBundleDescriptor()
-                .getGroupId()
-                .equals(pluginDescriptor.getGroupId())
-                && artifactPluginClassLoader.getArtifactDescriptor().getBundleDescriptor().getArtifactId()
-                    .equals(pluginDescriptor.getArtifactId()))
-            .findFirst().orElseThrow(() -> new IllegalStateException(format("Couldn't find plugin descriptor: %s",
-                                                                            pluginDescriptor)))
-            .getArtifactDescriptor();
+      Set <String> localResources = applicationDescriptor.getClassLoaderConfiguration()!=null? applicationDescriptor.getClassLoaderConfiguration().getLocalResources() : new HashSet<String>();
 
-        return action.call(artifactPluginDescriptor, artifactClassLoader, pluginDescriptor.getProperties());
+
+      try {
+        if(pluginDescriptor.isPlugin()) {
+          ArtifactPluginDescriptor artifactPluginDescriptor = artifactClassLoader.getArtifactPluginClassLoaders().stream()
+                  .filter(artifactPluginClassLoader -> artifactPluginClassLoader.getArtifactDescriptor().getBundleDescriptor()
+                          .getGroupId()
+                          .equals(pluginDescriptor.getGroupId())
+                          && artifactPluginClassLoader.getArtifactDescriptor().getBundleDescriptor().getArtifactId()
+                          .equals(pluginDescriptor.getArtifactId()))
+                  .findFirst().orElseThrow(() -> new IllegalStateException(format("Couldn't find plugin descriptor: %s",
+                          pluginDescriptor)))
+                  .getArtifactDescriptor();
+          return action.call(artifactPluginDescriptor, artifactClassLoader, pluginDescriptor.getProperties()).setDwlFiles(localResources.stream().filter(file -> file.endsWith(".dwl")).collect(toSet()));
+        }else{
+          return new PluginResources(emptySet(),emptyList()).setDwlFiles(localResources.stream().filter(file -> file.endsWith(".dwl")).collect(toSet()));
+        }
       } catch (Exception e) {
         throw new ToolingException(e);
       } finally {

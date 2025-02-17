@@ -308,6 +308,8 @@ class ProcessClassesMojoTest {
     // RESOURCES
     Utils.copyResource("mule-artifact-" + (minVersion ? "4.3.0" : "4.6.0") + ".json",
                        new File(projectBaseFolder, MULE_ARTIFACT_JSON));
+    MuleContentGenerator contentGenerator = mock(MuleContentGenerator.class);
+    mojo.setContentGenerator(contentGenerator);
     // VALUES
     Optional.ofNullable(skipASTValidation).ifPresent(value -> System.setProperty(SKIP_AST_VALIDATION, String.valueOf(value)));
     // WHEN

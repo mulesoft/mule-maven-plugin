@@ -18,10 +18,7 @@ import org.mule.runtime.deployment.model.api.plugin.resolver.PluginDependenciesR
 import org.mule.runtime.module.artifact.activation.api.classloader.ArtifactClassLoaderResolver;
 import org.mule.runtime.module.artifact.api.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.classloader.MuleDeployableArtifactClassLoader;
-import org.mule.runtime.module.artifact.api.descriptor.ApplicationDescriptor;
-import org.mule.runtime.module.artifact.api.descriptor.ArtifactDescriptorCreateException;
-import org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor;
-import org.mule.runtime.module.artifact.api.descriptor.BundleDescriptor;
+import org.mule.runtime.module.artifact.api.descriptor.*;
 import org.mule.runtime.module.deployment.impl.internal.application.ApplicationDescriptorFactory;
 import org.mule.runtime.module.deployment.impl.internal.plugin.ArtifactPluginDescriptorLoader;
 import org.mule.tooling.api.ToolingException;
@@ -31,7 +28,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -47,7 +46,7 @@ import static org.mockito.Mockito.when;
 class DefaultExtensionModelServiceTest {
 
   private final BundleDescriptor bundleDescriptor =
-      new BundleDescriptor.Builder().setGroupId(UUID.getUUID()).setArtifactId(UUID.getUUID()).setVersion(UUID.getUUID()).build();
+      new BundleDescriptor.Builder().setGroupId(UUID.getUUID()).setArtifactId(UUID.getUUID()).setVersion(UUID.getUUID()).setClassifier("mule-plugin").build();
   private final MuleArtifactResourcesRegistry resourcesRegistry = mock(MuleArtifactResourcesRegistry.class);
   private final DefaultExtensionModelService extensionModelService = new DefaultExtensionModelService(resourcesRegistry);
 
@@ -96,7 +95,11 @@ class DefaultExtensionModelServiceTest {
     ApplicationDescriptor applicationDescriptor = mock(ApplicationDescriptor.class);
     ArtifactClassLoaderResolver artifactClassLoaderResolverMock = mock(ArtifactClassLoaderResolver.class);
     MuleDeployableArtifactClassLoader muleDeployableArtifactClassLoader = mock(MuleDeployableArtifactClassLoader.class);
-
+    ClassLoaderConfiguration classLoaderConfiguration = mock(ClassLoaderConfiguration.class);
+    Set<String> localResources = new HashSet<String>();
+    localResources.add("file.dwl");
+    when(classLoaderConfiguration.getLocalResources()).thenReturn(localResources);
+    when(applicationDescriptor.getClassLoaderConfiguration()).thenReturn(classLoaderConfiguration);
     if (type == 0) {
       when(loader.load(any(File.class))).thenThrow(new IOException());
     } else {
@@ -113,6 +116,7 @@ class DefaultExtensionModelServiceTest {
     when(muleDeployableArtifactClassLoader.getArtifactPluginClassLoaders()).thenReturn(Collections.emptyList());
     when(artifactClassLoaderResolverMock.createApplicationClassLoader(any(ApplicationDescriptor.class), any(Supplier.class)))
         .thenReturn(muleDeployableArtifactClassLoader);
+
 
     //
     if (type == 0) {
@@ -137,7 +141,6 @@ class DefaultExtensionModelServiceTest {
             when(mavenPomModel.getVersion()).thenReturn(bundleDescriptor.getVersion());
             when(mock.getModel()).thenReturn(mavenPomModel);
           })) {
-
         URL artifactURL = mock(URL.class);
         artifactClassLoader
             .when(() -> ArtifactClassLoaderResolver.classLoaderResolver(any(ArtifactClassLoader.class),

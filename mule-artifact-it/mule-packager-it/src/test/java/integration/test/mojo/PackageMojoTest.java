@@ -56,7 +56,7 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     verifier.addCliArgument(PACKAGE);
     verifier.execute();
 
-    File expectedStructure = getExpectedStructure("/expected-lightweight-local-repository-classloader-model-project");
+    File expectedStructure = getExpectedStructure("/expected-lightweight-local-repository-classloader-model-project-with-dwl");
     File targetStructure = new File(verifier.getBasedir() + File.separator + TARGET_FOLDER_NAME);
 
     assertThat("The directory structure is different from the expected", targetStructure,

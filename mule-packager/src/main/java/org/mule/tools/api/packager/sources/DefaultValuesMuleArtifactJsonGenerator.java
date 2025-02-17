@@ -18,8 +18,14 @@ import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptor;
 import org.mule.runtime.api.deployment.meta.MuleArtifactLoaderDescriptorBuilder;
 import org.mule.runtime.api.deployment.meta.Product;
 import org.mule.tools.api.util.XmlFactoryUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -27,6 +33,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -168,7 +175,7 @@ public class DefaultValuesMuleArtifactJsonGenerator extends AbstractDefaultValue
         exportedResources.addAll(muleArtifactContentResolver.getExportedResources());
       }
       exportedResources.addAll(muleArtifactContentResolver.getTestExportedResources());
-
+      exportedResources.addAll(readDwlFiles(muleArtifactContentResolver.getProjectStructure().getprojectBuildDirectory()));
       Map<String, Object> attributesCopy =
           getUpdatedAttributes(originalMuleArtifact.getClassLoaderModelLoaderDescriptor(), "exportedResources",
                                new ArrayList<>(exportedResources));
@@ -204,6 +211,8 @@ public class DefaultValuesMuleArtifactJsonGenerator extends AbstractDefaultValue
           .map(Path::toString)
           .map(MuleArtifactContentResolver::escapeSlashes)
           .collect(toList());
+      resources.addAll(readDwlFiles(muleArtifactContentResolver.getProjectStructure().getprojectBuildDirectory()));
+
       // being consistent with old behaviour, check this later
       resources.addAll(muleArtifactContentResolver.getTestExportedResources());
       // assembly the classLoaderModelDescriptor
@@ -213,6 +222,27 @@ public class DefaultValuesMuleArtifactJsonGenerator extends AbstractDefaultValue
           .addProperty(EXPORTED_RESOURCES, resources).build();
     }
     builder.withClassLoaderModelDescriptorLoader(classLoaderModelLoaderDescriptor);
+  }
+
+  private Collection<String> readDwlFiles(Path projectBuildDirectory) {
+    Set<String> dwlFiles = new HashSet<String>();
+    try {
+      File initialFile = projectBuildDirectory.resolve("dwlFile").toFile();
+      InputStream stream = new FileInputStream(initialFile);
+
+      StringBuilder resultStringBuilder = new StringBuilder();
+      try (BufferedReader br = new BufferedReader(new InputStreamReader(stream))) {
+        String line;
+        while ((line = br.readLine()) != null) {
+          dwlFiles.add(line);
+        }
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    } catch (Exception e) {
+
+    }
+    return dwlFiles;
   }
 
   @Override

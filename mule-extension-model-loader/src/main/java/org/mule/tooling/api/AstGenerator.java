@@ -47,6 +47,7 @@ import org.codehaus.plexus.classworlds.realm.ClassRealm;
 public class AstGenerator {
 
   AstXmlParser xmlParser;
+  Set<String> dwlFiles = new HashSet<String>();
 
   public AstGenerator(MavenClient mavenClient, String runtimeVersion,
                       Set<Artifact> allDependencies, Path workingDir, ClassRealm classRealm,
@@ -61,16 +62,17 @@ public class AstGenerator {
     ClassLoader classloader = AstGenerator.class.getClassLoader();
     ExtensionModelLoader loader = ExtensionModelLoaderFactory.createLoader(mavenClient, workingDir, classloader, runtimeVersion);
     Set<ExtensionModel> extensionModels = new HashSet<>();
+
     ArrayList<URL> dependenciesURL = new ArrayList<>();
     for (Dependency dependency : directDependencies) {
       removeExtModelIfExists(extensionModels, dependency);
       processDependency(dependency, classloader, mavenClient, runtimeVersion, workingDir, extensionModels, dependenciesURL,
-                        loader);
+                        loader,dwlFiles);
     }
     allDependencies.stream().map(this::createDependency)
         .filter(dependency -> !directDependencies.contains(dependency))
         .forEach(dependency -> processDependency(dependency, classloader, mavenClient, runtimeVersion, workingDir,
-                                                 extensionModels, dependenciesURL, loader));
+                                                 extensionModels, dependenciesURL, loader, dwlFiles));
     dependenciesURL.forEach(url -> {
       try {
         classRealm.addURL(url);
@@ -147,10 +149,12 @@ public class AstGenerator {
 
   public void processDependency(Dependency dependency, ClassLoader classloader, MavenClient mavenClient, String runtimeVersion,
                                 Path workingDir, Set<ExtensionModel> extensionModels, ArrayList<URL> dependenciesURL,
-                                ExtensionModelLoader loader) {
-    if (dependency.getClassifier() != null && dependency.getClassifier().equals(MULE_PLUGIN_CLASSIFIER)) {
+                                ExtensionModelLoader loader, Set<String> dwlFiles) {
+    if (dependency.getClassifier() != null && (dependency.getClassifier().equals(MULE_PLUGIN_CLASSIFIER) || dependency.getClassifier().equals("custom")) ) {
       PluginResources extensionInformation = loader.load(toBundleDescriptor(dependency));
-      extensionModels.addAll(extensionInformation.getExtensionModels());
+      if(extensionInformation!=null){
+        extensionModels.addAll(extensionInformation.getExtensionModels());
+
       extensionInformation.getExportedResources().forEach(resource -> {
         try {
           if (resourceInJar(resource)) {
@@ -160,6 +164,9 @@ public class AstGenerator {
           e.printStackTrace();
         }
       });
+
+      dwlFiles.addAll(extensionInformation.getDwlFiles());
+     }
     } else {
       if (("jar").equals(dependency.getType())) {
         try {
@@ -170,6 +177,10 @@ public class AstGenerator {
         }
       }
     }
+  }
+
+  public Set<String> getDwlFiles() {
+    return dwlFiles;
   }
 
   public AstValidatonResult validateAST(ArtifactAst artifactAst) throws ConfigurationException {

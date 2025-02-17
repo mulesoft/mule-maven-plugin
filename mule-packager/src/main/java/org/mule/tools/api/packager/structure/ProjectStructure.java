@@ -83,4 +83,8 @@ public class ProjectStructure {
   public Path getOutputDirectory() {
     return projectBuildDirectory.resolve(CLASSES.value());
   }
+
+  public Path getprojectBuildDirectory() {
+    return projectBuildDirectory;
+  }
 }

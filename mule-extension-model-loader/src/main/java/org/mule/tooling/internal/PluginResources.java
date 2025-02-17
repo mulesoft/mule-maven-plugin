@@ -16,8 +16,9 @@ public class PluginResources {
 
   private Set<ExtensionModel> extensionModels;
   private List<URL> exportedResources;
+  private Set<String> dwlFiles;
 
-  public PluginResources(Set<ExtensionModel> extensionModels, List<URL> exportedResources) {
+  public PluginResources(Set<ExtensionModel> extensionModels,  List<URL> exportedResources) {
     super();
     this.extensionModels = extensionModels;
     this.exportedResources = exportedResources;
@@ -30,5 +31,14 @@ public class PluginResources {
 
   public Set<ExtensionModel> getExtensionModels() {
     return extensionModels;
+  }
+
+  public  Set<String> getDwlFiles(){
+    return dwlFiles;
+  }
+
+  public  PluginResources setDwlFiles(Set<String> dwlFiles){
+     this.dwlFiles=dwlFiles;
+     return this;
   }
 }

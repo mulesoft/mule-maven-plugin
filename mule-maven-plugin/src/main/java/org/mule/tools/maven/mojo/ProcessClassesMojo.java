@@ -130,6 +130,8 @@ public class ProcessClassesMojo extends AbstractMuleMojo {
                                                  project.getArtifacts(), Paths.get(project.getBuild().getDirectory()),
                                                  descriptor.getClassRealm(), project.getDependencies(),
                                                  contentResolver.isApplication(), getClassifier());
+
+    ((MuleContentGenerator) getContentGenerator()).createDwlFile(astGenerator.getDwlFiles());
     ProjectStructure projectStructure = new ProjectStructure(projectBaseFolder.toPath(), false);
 
     ArtifactAst artifactAST =

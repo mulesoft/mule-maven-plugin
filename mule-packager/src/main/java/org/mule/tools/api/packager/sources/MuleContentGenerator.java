@@ -25,14 +25,13 @@ import org.mule.tools.api.packager.structure.ProjectStructure;
 import org.mule.tools.api.util.CopyFileVisitor;
 import org.mule.tools.api.util.exclude.MuleExclusionMatcher;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.Parent;
@@ -78,6 +77,20 @@ public class MuleContentGenerator extends ContentGenerator {
         .resolve(ARTIFACT_AST).toFile();
 
     FileUtils.copyInputStreamToFile(inputStream, targetFile);
+  }
+
+  public void createDwlFile(Set<String> dwlFiles) throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    dwlFiles.stream().forEach(file -> {
+      try {
+        baos.write((file + "\n").getBytes());
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
+
+    File targetFile = projectInformation.getBuildDirectory().resolve("dwlFile").toFile();
+    FileUtils.copyInputStreamToFile(new ByteArrayInputStream(baos.toByteArray()), targetFile);
   }
 
   /**

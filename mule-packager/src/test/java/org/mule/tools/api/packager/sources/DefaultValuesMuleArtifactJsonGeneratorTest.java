@@ -14,6 +14,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -23,6 +24,9 @@ import org.mule.runtime.api.deployment.persistence.MuleApplicationModelJsonSeria
 import org.mule.tools.api.packager.Pom;
 import org.mule.tools.api.packager.structure.ProjectStructure;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -62,7 +66,21 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
         .withClassLoaderModelDescriptorLoader(new MuleArtifactLoaderDescriptor(ID, new HashMap<>()))
         .withBundleDescriptorLoader(new MuleArtifactLoaderDescriptor(MULE, new HashMap<>()));
     muleArtifact = defaultBuilder.build();
+    Set<String> dwlFiles = new HashSet<String>();
+    dwlFiles.add("file.dwl");
+    ProjectStructure structure = new ProjectStructure(temporaryFolder.toAbsolutePath(), true);
+    structure.getprojectBuildDirectory().toFile();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    dwlFiles.stream().forEach(file -> {
+      try {
+        baos.write((file + "\n").getBytes());
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
 
+    File targetFile = structure.getprojectBuildDirectory().resolve("dwlFile").toFile();
+    FileUtils.copyInputStreamToFile(new ByteArrayInputStream(baos.toByteArray()), targetFile);
     builder = new MuleApplicationModel.MuleApplicationModelBuilder();
     builderSpy = spy(builder);
   }
@@ -187,9 +205,12 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
     exportedResources.add(JAR_2);
     exportedResources.add(JAR_3);
 
+
     when(resolverMock.getExportedResources()).thenReturn(exportedResources);
 
+    doReturn(new ProjectStructure(temporaryFolder.toAbsolutePath(), true)).when(resolverMock).getProjectStructure();
     generator.setBuilderWithDefaultExportedResourcesValue(defaultBuilder, muleArtifact, resolverMock);
+    exportedResources.add("file.dwl");
 
     assertThat(defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("exportedResources"))
         .describedAs("Exported resources are not the expected").isEqualTo(exportedResources);
@@ -222,11 +243,11 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
     MuleArtifactContentResolver resolverMock = mock(MuleArtifactContentResolver.class);
 
 
-
+    doReturn(new ProjectStructure(temporaryFolder.toAbsolutePath(), true)).when(resolverMock).getProjectStructure();
     when(resolverMock.getExportedResources()).thenReturn(exportedResources);
 
     generator.setBuilderWithDefaultExportedResourcesValue(defaultBuilder, muleArtifact, resolverMock);
-
+    exportedResources.add("file.dwl");
     assertThat(defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes().get("exportedResources"))
         .describedAs("Exported resources are not the expected").isEqualTo(exportedResources);
   }
@@ -248,7 +269,7 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
 
     when(resolverMock.getExportedResources()).thenReturn(exportedResources);
     when(resolverMock.getTestExportedResources()).thenReturn(testExportedResources);
-
+    doReturn(new ProjectStructure(temporaryFolder.toAbsolutePath(), true)).when(resolverMock).getProjectStructure();
     generator.setBuilderWithDefaultExportedResourcesValue(defaultBuilder, muleArtifact, resolverMock);
 
     assertThat((List<String>) defaultBuilder.build().getClassLoaderModelLoaderDescriptor().getAttributes()
@@ -265,7 +286,7 @@ public class DefaultValuesMuleArtifactJsonGeneratorTest {
     testExportedResources.add(JAR_4);
     testExportedResources.add(JAR_5);
     testExportedResources.add(JAR_6);
-
+    doReturn(new ProjectStructure(temporaryFolder.toAbsolutePath(), true)).when(resolverMock).getProjectStructure();
     when(resolverMock.getExportedResources()).thenReturn(exportedResources);
     when(resolverMock.getTestExportedResources()).thenReturn(testExportedResources);
 

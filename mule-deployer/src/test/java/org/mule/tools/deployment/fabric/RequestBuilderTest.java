@@ -17,6 +17,7 @@ import org.mule.tools.client.fabric.model.DeploymentModify;
 import org.mule.tools.client.fabric.model.DeploymentRequest;
 import org.mule.tools.client.fabric.model.Deployments;
 import org.mule.tools.client.fabric.model.Target;
+import org.mule.tools.model.anypoint.Autoscaling;
 import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeployment;
 import org.mule.tools.model.anypoint.RuntimeFabricOnPremiseDeploymentSettings;
 
@@ -68,7 +69,13 @@ public class RequestBuilderTest extends TestBase {
     deployment.setTarget(APPLICATION_NAME);
     deployment.setProvider("MC");
     deployment.setProperties(new HashMap<>());
-    deployment.setDeploymentSettings(new RuntimeFabricOnPremiseDeploymentSettings());
+    RuntimeFabricOnPremiseDeploymentSettings deploymentSettings = new RuntimeFabricOnPremiseDeploymentSettings();
+    Autoscaling autoscaling = new Autoscaling();
+    autoscaling.setEnabled(true);
+    autoscaling.setMaxReplicas(2);
+    autoscaling.setMinReplicas(1);
+    deploymentSettings.setAutoscaling(autoscaling);
+    deployment.setDeploymentSettings(deploymentSettings);
   }
 
   @Test
@@ -99,6 +106,9 @@ public class RequestBuilderTest extends TestBase {
     assertThat(deploymentRequest.application.ref.groupId).isEqualTo(GROUP_ID);
     assertThat(deploymentRequest.application.ref.artifactId).isEqualTo(ARTIFACT_ID);
     assertThat(deploymentRequest.application.ref.version).isEqualTo(VERSION);
+    assertThat(deploymentRequest.target.deploymentSettings.getAutoscaling().getEnabled());
+    assertThat(deploymentRequest.target.deploymentSettings.getAutoscaling().getMaxReplicas()).isEqualTo(2);
+    assertThat(deploymentRequest.target.deploymentSettings.getAutoscaling().getMinReplicas()).isEqualTo(1);
   }
 
   @Test
@@ -144,5 +154,8 @@ public class RequestBuilderTest extends TestBase {
     assertThat(deploymentRequest.application.ref.groupId).isEqualTo(GROUP_ID);
     assertThat(deploymentRequest.application.ref.artifactId).isEqualTo(ARTIFACT_ID);
     assertThat(deploymentRequest.application.ref.version).isEqualTo(VERSION);
+    assertThat(deploymentRequest.target.deploymentSettings.getAutoscaling().getEnabled());
+    assertThat(deploymentRequest.target.deploymentSettings.getAutoscaling().getMaxReplicas()).isEqualTo(2);
+    assertThat(deploymentRequest.target.deploymentSettings.getAutoscaling().getMinReplicas()).isEqualTo(1);
   }
 }

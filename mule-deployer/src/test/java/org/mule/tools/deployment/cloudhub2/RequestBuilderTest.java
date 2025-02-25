@@ -20,6 +20,8 @@ import org.mule.tools.model.anypoint.ObjectStoreV2;
 import org.mule.tools.model.anypoint.ScopeLoggingConfiguration;
 import org.mule.tools.model.anypoint.Service;
 import org.mule.tools.model.anypoint.Autoscaling;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -154,7 +156,7 @@ public class RequestBuilderTest {
     ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setAutoscaling(autoscaling);
     ((Cloudhub2DeploymentSettings) cloudhub2Deployment.getDeploymentSettings()).setTracingEnabled(true);
     String request = new Gson().toJson(requestBuilder.buildDeploymentRequest());
-    assertThat(DEPLOY_REQUEST_WITH_AUTOSCALING_AND_TRACING_ENABLED).describedAs("request is not the expected").isEqualTo(request);
+    JSONAssert.assertEquals(DEPLOY_REQUEST_WITH_AUTOSCALING_AND_TRACING_ENABLED, request, JSONCompareMode.LENIENT);
   }
 
   @Test

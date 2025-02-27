@@ -32,6 +32,8 @@ public class RuntimeFabricDeploymentSettings {
     generateDefaultPublicUrl = settings.generateDefaultPublicUrl;
     runtime = settings.runtime;
     persistentObjectStore = settings.persistentObjectStore;
+    autoscaling = settings.autoscaling;
+    tracingEnabled = settings.tracingEnabled;
   }
 
   @Parameter
@@ -39,6 +41,9 @@ public class RuntimeFabricDeploymentSettings {
 
   @Parameter
   protected String runtimeVersion;
+
+  @Parameter
+  protected Autoscaling autoscaling;
 
   @Parameter
   protected boolean lastMileSecurity;
@@ -65,6 +70,9 @@ public class RuntimeFabricDeploymentSettings {
   protected boolean generateDefaultPublicUrl;
 
   protected Runtime runtime;
+
+  @Parameter
+  protected Boolean tracingEnabled;
 
   public boolean getGenerateDefaultPublicUrl() {
     return generateDefaultPublicUrl;
@@ -160,6 +168,22 @@ public class RuntimeFabricDeploymentSettings {
 
   public void setPersistentObjectStore(boolean persistentObjectStore) {
     this.persistentObjectStore = persistentObjectStore;
+  }
+
+  public Autoscaling getAutoscaling() {
+    return autoscaling;
+  }
+
+  public void setAutoscaling(Autoscaling autoscaling) {
+    this.autoscaling = autoscaling;
+  }
+
+  public Boolean getTracingEnabled() {
+    return tracingEnabled;
+  }
+
+  public void setTracingEnabled(Boolean tracingEnabled) {
+    this.tracingEnabled = tracingEnabled;
   }
 
 }

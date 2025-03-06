@@ -21,8 +21,8 @@
         </server>
         <server>
             <id>mule-snapshots</id>
-            <username>{env.MULESOFT_PUBLIC_NEXUS_USER}</username>
-            <password>{env.MULESOFT_PUBLIC_NEXUS_PASS}</password>
+            <username>${env.MULESOFT_PUBLIC_NEXUS_USER}</username>
+            <password>${env.MULESOFT_PUBLIC_NEXUS_PASS}</password>
         </server>
     </servers>
     <mirrors>

@@ -6,6 +6,11 @@
     <pluginGroups/>
     <servers>
         <server>
+            <id>nexus</id>
+            <username>${NEXUS_USERNAME}</username>
+            <password>${NEXUS_PASSWORD}</password>
+        </server>
+        <server>
             <id>mule-releases</id>
             <username>${MULESOFT_PUBLIC_NEXUS_USER}</username>
             <password>{MULESOFT_PUBLIC_NEXUS_PASS}</password>

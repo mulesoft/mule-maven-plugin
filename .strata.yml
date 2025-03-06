@@ -1,5 +1,5 @@
 global:
-  email-reply-to: munit.eng@salesforce.com
+  email-reply-to: rodriguez.jorge@salesforce.com
   email-only-last-committer-on-dev-branch: false
   parameters:
     - name: "JAVA_VERSION"

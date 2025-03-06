@@ -43,5 +43,6 @@ stages:
         name: publish-artifacts
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
         commands:
+          - ls -l
           - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml
           - mvn clean deploy -P '!default' -DskipTests -Dmaven.test.skip=true -s settings.xml

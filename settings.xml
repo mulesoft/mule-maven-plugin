@@ -1,0 +1,29 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <localRepository/>
+    <interactiveMode/>
+    <offline/>
+    <pluginGroups/>
+    <servers>
+        <server>
+            <id>mule-releases</id>
+            <username>${MULESOFT_PUBLIC_NEXUS_USER}</username>
+            <password>{MULESOFT_PUBLIC_NEXUS_PASS}</password>
+        </server>
+        <server>
+            <id>mule-snapshots</id>
+            <username>{MULESOFT_PUBLIC_NEXUS_USER}</username>
+            <password>{MULESOFT_PUBLIC_NEXUS_PASS}</password>
+        </server>
+    </servers>
+    <mirrors>
+      <mirror>
+        <mirrorOf>*,!project,!repo.jenkins-ci.org,!mule-releases,!mule-snapshots</mirrorOf>
+        <url>https://nexus-proxy.repo.local.sfdc.net/nexus/content/groups/public</url>
+        <id>nexus</id>
+      </mirror>
+    </mirrors>
+    <proxies/>
+    <profiles/>
+    <activeProfiles/>
+</settings>

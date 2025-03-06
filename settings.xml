@@ -1,34 +1,69 @@
-<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
-    <localRepository/>
-    <interactiveMode/>
-    <offline/>
-    <pluginGroups/>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
     <servers>
         <server>
             <id>nexus</id>
-            <username>${NEXUS_USERNAME}</username>
-            <password>${NEXUS_PASSWORD}</password>
+            <username>${env.NEXUS_USERNAME}</username>
+            <password>${env.NEXUS_PASSWORD}</password>
+        </server>
+        <server>
+            <id>project</id>
+            <username>${env.NEXUS_USERNAME}</username>
+            <password>${env.NEXUS_PASSWORD}</password>
         </server>
         <server>
             <id>mule-releases</id>
-            <username>${MULESOFT_PUBLIC_NEXUS_USER}</username>
-            <password>${MULESOFT_PUBLIC_NEXUS_PASS}</password>
+            <username>${env.MULESOFT_PUBLIC_NEXUS_USER}</username>
+            <password>${env.MULESOFT_PUBLIC_NEXUS_PASS}</password>
         </server>
         <server>
             <id>mule-snapshots</id>
-            <username>{MULESOFT_PUBLIC_NEXUS_USER}</username>
-            <password>{MULESOFT_PUBLIC_NEXUS_PASS}</password>
+            <username>{env.MULESOFT_PUBLIC_NEXUS_USER}</username>
+            <password>{env.MULESOFT_PUBLIC_NEXUS_PASS}</password>
         </server>
     </servers>
     <mirrors>
-      <mirror>
-        <mirrorOf>*,!project,!repo.jenkins-ci.org,!mule-releases,!mule-snapshots</mirrorOf>
-        <url>https://nexus-proxy.repo.local.sfdc.net/nexus/content/groups/public</url>
-        <id>nexus</id>
-      </mirror>
+        <mirror>
+            <!-- This sends everything else to /public -->
+            <id>nexus</id>
+            <mirrorOf>*,!project,!repo.jenkins-ci.org,!mule-releases,!mule-snapshots</mirrorOf>
+            <url>${env.NEXUS_BASE_URL}/groups/public</url>
+        </mirror>
     </mirrors>
-    <proxies/>
-    <profiles/>
-    <activeProfiles/>
+    <profiles>
+        <profile>
+            <id>nexus</id>
+            <!-- Enable snapshots for the built in central repo to direct -->
+            <!-- all requests to nexus via the mirror -->
+            <repositories>
+                <repository>
+                    <id>central</id>
+                    <url>http://central</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>central</id>
+                    <url>http://central</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <!-- make the profile active all the time -->
+        <activeProfile>nexus</activeProfile>
+    </activeProfiles>
+
+    <pluginGroups>
+        <!-- define the sonatype plugin group, so the nexus plugins will work without typing the groupId -->
+        <pluginGroup>org.sonatype.plugins</pluginGroup>
+    </pluginGroups>
+
 </settings>

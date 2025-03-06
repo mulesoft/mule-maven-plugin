@@ -47,6 +47,8 @@ stages:
         user: 'root'
         workspace-mount-point: /tmp/project
         commands:
-          - source $publish_secrets_file_path
+          - sed 's/ = /=/' $publish_secrets_file_path > temp.txt
+          - source temp.txt
+          - rm temp.txt
           - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml
           - mvn clean deploy -P '!default' -DskipTests -Dmaven.test.skip=true -s settings.xml

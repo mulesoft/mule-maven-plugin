@@ -36,17 +36,5 @@ stages:
     - step:
         name: build-artifacts
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
-        user: 'root'
-        workspace-mount-point: /tmp/project
         commands:
-          - mvn clean install test -DskipTests -Dmaven.test.skip=true
-  publish:
-    - step:
-        name: publish-artifacts
-        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
-        user: 'root'
-        workspace-mount-point: /tmp/project
-        commands:
-          - source $publish_secrets_file_path
-          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml
-          - mvn clean deploy -P '!default' -DskipTests -Dmaven.test.skip=true -s settings.xml
+          - cat $HOME/.m2/settings.xml

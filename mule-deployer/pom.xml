@@ -138,6 +138,10 @@
             <artifactId>mockito-inline</artifactId>
             <scope>test</scope>
         </dependency>
+                <dependency>
+                    <groupId>org.mule</groupId>
+                    <artifactId>mule-maven-client-impl</artifactId>
+                </dependency>
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-netty</artifactId>

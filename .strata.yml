@@ -34,9 +34,38 @@ global:
 stages:
   build:
     - step:
-        name: build-artifacts
+        name: configure-workspace
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9
+        commands:
+          - chmod +x settings.sh
+          - ./settings.sh
+    - step:
+        name: build-artifacts-java-1.8
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java8
+        commands:
+          - echo "Using Java 1.8"
+          - java --version
+        when:
+          - operator: EQ
+            value: $$PARAMETERS_JAVA_VERSION
+            other: "JDK-1.8"
+    - step:
+        name: build-artifacts-java-11
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
         commands:
-          - chmod +x settings.sh && ./settings.sh
-          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings-all.xml
-          - mvn -s settings-all.xml clean install test -DskipTests -Dmaven.test.skip=true
+          - echo "Using Java 11"
+          - java --version
+        when:
+          - operator: EQ
+            value: $$PARAMETERS_JAVA_VERSION
+            other: "JDK-11"
+    - step:
+        name: build-artifacts-java-17
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java17
+        commands:
+          - echo "Using Java 17"
+          - java --version
+        when:
+          - operator: EQ
+            value: $$PARAMETERS_JAVA_VERSION
+            other: "JDK-17"

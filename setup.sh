@@ -13,12 +13,17 @@ function EditMavenSettings() {
   local SETTINGS="$HOME/.m2/settings.xml"
   local NEW_SETTINGS="$DIRNAME/$FILENAME"
   # XPATH expressions
+  local XPATH_REPOSITORIES="//_:profile/_:id[contains(text(),'nexus')]/../_:profile/repositories"
   local XPATH_SERVER='//_:servers'
-  local XPATH_MIRROR_OF='//_:mirror/_:id[contains(text(),'nexus')]/../_:mirrorOf'
+  local XPATH_MIRROR_OF="//_:mirror/_:id[contains(text(),'nexus')]/../_:mirrorOf"
   #Repositories that will be added, format: (repository id)||(username)||(password)
-  local REPOSITORIES=(
+  local SERVERS=(
     'mule-releases||${env.MULESOFT_PUBLIC_NEXUS_USER}||${env.MULESOFT_PUBLIC_NEXUS_PASS}'
     'mule-snapshots||${env.MULESOFT_PUBLIC_NEXUS_USER}||${env.MULESOFT_PUBLIC_NEXUS_PASS}'
+    'mule-ci-releases||${env.MULESOFT_PUBLIC_NEXUS_USER}||${env.MULESOFT_PUBLIC_NEXUS_PASS}'
+  )
+  local REPOSITORIES=(
+    'mule-ci-releases||https://repository-master.mulesoft.org/nexus/content/repositories/ci-releases'
   )
 
   echo "Coping $SETTINGS to $NEW_SETTINGS"
@@ -27,9 +32,20 @@ function EditMavenSettings() {
   echo "Editing $NEW_SETTINGS"
   for REPOSITORY in "${REPOSITORIES[@]}"; do
     DATA=(${REPOSITORY//\|\|/ })
-    echo "  - Adding ${DATA[0]}"
+    echo "  - Adding Repository ${DATA[0]}"
     xmlstarlet ed -L\
-      -s $XPATH_SERVER -t elem -n server \
+      -s "$XPATH_REPOSITORIES" -t elem -n repository \
+      -s "$XPATH_REPOSITORIES/repository[last()]" -t elem -n id -v "${DATA[0]}" \
+      -s "$XPATH_REPOSITORIES/repository[last()]" -t elem -n name -v "${DATA[0]}" \
+      -s "$XPATH_REPOSITORIES/repository[last()]" -t elem -n url -v "${DATA[1]}" \
+      "$NEW_SETTINGS"
+  done
+
+  for SERVER in "${SERVERS[@]}"; do
+    DATA=(${SERVER//\|\|/ })
+    echo "  - Adding Server ${DATA[0]}"
+    xmlstarlet ed -L\
+      -s "$XPATH_SERVER" -t elem -n server \
       -s "$XPATH_SERVER/server[last()]" -t elem -n id -v "${DATA[0]}" \
       -s "$XPATH_SERVER/server[last()]" -t elem -n username -v "${DATA[1]}" \
       -s "$XPATH_SERVER/server[last()]" -t elem -n password -v "${DATA[2]}" \

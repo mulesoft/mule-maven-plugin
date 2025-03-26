@@ -49,4 +49,4 @@ stages:
         commands:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - source $integration_test_secrets_file_path
-          - mvn test -U -PdeployerIT -pl ':mule-deployer-it,:mule-packager-it'-Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD
+          - mvn test -U -PdeployerIT -pl ':mule-deployer-it,:mule-packager-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD

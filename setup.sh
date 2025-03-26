@@ -58,13 +58,6 @@ function InstallMaven() {
   ####
   echo "Installing Maven $VERSION"
 
-  dnf install -y git gzip zip unzip \
-      make \
-      ant \
-      wget \
-      && dnf clean all \
-      && rm -rf /var/cache/dnf/*
-
   mkdir -p /usr/share/maven /usr/share/maven/ref \
     && curl -fsSL -o /tmp/apache-maven.tar.gz https://archive.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz \
     && echo "${SHA}  /tmp/apache-maven.tar.gz" | sha512sum -c - \

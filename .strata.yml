@@ -56,5 +56,5 @@ stages:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
-          - source $integration-test_secrets_file_path
+          - source $integration_test_secrets_file_path
           - mvn test -U -PdeployerIT -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD

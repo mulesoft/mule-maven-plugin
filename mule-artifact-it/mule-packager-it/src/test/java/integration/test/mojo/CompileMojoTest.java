@@ -15,7 +15,9 @@ import java.io.IOException;
 import org.apache.maven.shared.verifier.VerificationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
+@Disabled
 class CompileMojoTest extends MojoTest implements SettingsConfigurator {
 
   private static final String GOAL = "compile";

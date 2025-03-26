@@ -42,7 +42,7 @@ stages:
           - chmod +x setup.sh && ./setup.sh -s settings.xml
     - step:
         name: build-artifacts-java-8
-        image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/${PARAMETERS_JAVA_VERSION}
+        image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/$$PARAMETERS_JAVA_VERSION
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:

@@ -47,4 +47,4 @@ stages:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
-          - mvn clean install -pl '!:mule-artifact-it'
+          - mvn clean install -pl '!:mule-packager-it'

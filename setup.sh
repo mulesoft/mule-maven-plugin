@@ -58,7 +58,6 @@ function InstallMaven() {
   ####
   echo "Installing Maven $VERSION"
 
-  dnf remove maven -y
   dnf install -y git gzip zip unzip \
       make \
       ant \

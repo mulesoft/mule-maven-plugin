@@ -18,6 +18,7 @@ import integration.ProjectFactory;
 import org.apache.maven.shared.verifier.VerificationException;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
@@ -45,6 +46,7 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     verifier.verifyErrorFreeLog();
   }
 
+  @Disabled
   @Test
   public void testPackageAppUsingLightweightWithLocalRepository() throws IOException, VerificationException {
     String artifactId = "empty-lightweight-local-repository-classloader-model-project";

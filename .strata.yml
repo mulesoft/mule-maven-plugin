@@ -3,15 +3,14 @@ global:
   email-only-last-committer-on-dev-branch: false
   parameters:
     - name: "JAVA_VERSION"
-      default: "sfdc_rhel9_onejdk8_basic"
+      default: "onejdk17"
       description: "Java version to be used"
       type: "choice"
       choices:
-        - sfdc_rhel9_onejdk8_basic
-        - JDK-1.8|sfdc_rhel9_onejdk8_basic
-        - JDK-11
-        - JDK-17
-        - JDK-21
+        - onejdk8_basic
+        - onejdk11
+        - onejdk17
+        - onejdk21
       required: true
     - name: "MAVEN_VERSION"
       default: "MVN-3.9.4"
@@ -39,11 +38,13 @@ stages:
         name: configure-workspace
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
         commands:
-          - chmod +x setup.sh && ./setup.sh -s settings.xml
+          - chmod +x setup.sh
+          - ./setup.sh -s settings.xml
     - step:
-        name: build-artifacts-java-8
-        image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/$$PARAMETERS_JAVA_VERSION
+        name: build-artifacts
+        image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_$$PARAMETERS_JAVA_VERSION
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
-          - ./setup.sh e
+          - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
+          - java --version

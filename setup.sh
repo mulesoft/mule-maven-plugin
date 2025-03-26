@@ -75,11 +75,6 @@ function InstallMaven() {
   export MAVEN_HOME=/usr/share/maven
   mvn -v
 }
-###############################################################################
-function SetupAll() {
-  InstallMaven "$PARAMETERS_MAVEN_VERSION"
-  java --version
-}
 ############################################################
 ############################################################
 # Main program                                             #
@@ -91,8 +86,6 @@ case $option in
      EditMavenSettings "$2";;
   m) # Install Maven
      InstallMaven "$2";;
-  e) # Setup all maven environment
-     SetupAll;;
  \?) # Invalid option
      echo "Error: Invalid option"
      exit;;

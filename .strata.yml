@@ -10,6 +10,7 @@ global:
         - JDK-1.8
         - JDK-11
         - JDK-17
+        - JDK-21
       required: true
     - name: "MAVEN_VERSION"
       default: "MVN-3.9.4"
@@ -35,37 +36,54 @@ stages:
   build:
     - step:
         name: configure-workspace
-        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
         commands:
-          - chmod +x settings.sh
-          - ./settings.sh
+          - chmod +x setup.sh && ./setup.sh -s settings.xml
     - step:
         name: build-artifacts-java-1.8
-        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java8
+        image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_onejdk8_basic
+        environment:
+          - name: PARAMETERS_JAVA_VERSION
+          - name: PARAMETERS_MAVEN_VERSION
         commands:
-          - echo "Using Java 1.8"
-          - java --version
+          - ./setup.sh e
         when:
           - operator: EQ
             value: $$PARAMETERS_JAVA_VERSION
             other: "JDK-1.8"
     - step:
         name: build-artifacts-java-11
-        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
+        image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_onejdk11
+        environment:
+          - name: PARAMETERS_JAVA_VERSION
+          - name: PARAMETERS_MAVEN_VERSION
         commands:
-          - echo "Using Java 11"
-          - java --version
+          - ./setup.sh e
         when:
           - operator: EQ
             value: $$PARAMETERS_JAVA_VERSION
             other: "JDK-11"
     - step:
         name: build-artifacts-java-17
-        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java17
+        image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_onejdk17
+        environment:
+          - name: PARAMETERS_JAVA_VERSION
+          - name: PARAMETERS_MAVEN_VERSION
         commands:
-          - echo "Using Java 17"
-          - java --version
+          - ./setup.sh e
         when:
           - operator: EQ
             value: $$PARAMETERS_JAVA_VERSION
             other: "JDK-17"
+    - step:
+        name: build-artifacts-java-21
+        image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_onejdk21
+        environment:
+          - name: PARAMETERS_JAVA_VERSION
+          - name: PARAMETERS_MAVEN_VERSION
+        commands:
+          - ./setup.sh e
+        when:
+          - operator: EQ
+            value: $$PARAMETERS_JAVA_VERSION
+            other: "JDK-21"

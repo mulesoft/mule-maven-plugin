@@ -2,14 +2,14 @@
 ###############################################################################
 DIRNAME=$(dirname $0)
 ###############################################################################
-function EditMavenSettings {
+function EditMavenSettings() {
   echo "Installing xmlstarlet"
   dnf update -y --setopt=tsflags=nodocs
   dnf install --setopt=tsflags=nodocs -y xmlstarlet
   dnf clean all
   rm -rf /var/cache/dnf/*
   ###############################################################################
-  local FILENAME="${2:-settings-all.xml}";
+  local FILENAME="${1:-settings-all.xml}";
   local SETTINGS="$HOME/.m2/settings.xml"
   local NEW_SETTINGS="$DIRNAME/$FILENAME"
   # XPATH expressions
@@ -44,7 +44,7 @@ function EditMavenSettings {
 }
 ###############################################################################
 function InstallMaven() {
-  local VERSION="${2/MVN-/}"
+  local VERSION="${1/MVN-/}"
   ####
   case $VERSION in
     3.8.8) local SHA=332088670d14fa9ff346e6858ca0acca304666596fec86eea89253bd496d3c90deae2be5091be199f48e09d46cec817c6419d5161fb4ee37871503f472765d00;;
@@ -58,6 +58,12 @@ function InstallMaven() {
   echo "Installing Maven $VERSION"
 
   dnf remove maven -y
+  dnf install -y git gzip zip unzip \
+      make \
+      ant \
+      wget \
+      && dnf clean all \
+      && rm -rf /var/cache/dnf/*
 
   mkdir -p /usr/share/maven /usr/share/maven/ref \
     && curl -fsSL -o /tmp/apache-maven.tar.gz https://dlcdn.apache.org/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz \
@@ -68,17 +74,24 @@ function InstallMaven() {
 
   export MAVEN_HOME=/usr/share/maven
 }
+###############################################################################
+function SetupAll() {
+  InstallMaven "$PARAMETERS_MAVEN_VERSION"
+  java --version
+}
 ############################################################
 ############################################################
 # Main program                                             #
 ############################################################
 ############################################################
-getopts ":sm:" option
+getopts ":sme" option
 case $option in
   s) # Create Maven setting file
-     EditMavenSettings "$@";;
+     EditMavenSettings "$2";;
   m) # Install Maven
-     InstallMaven "$@";;
+     InstallMaven "$2";;
+  e) # Setup all maven environment
+     SetupAll;;
  \?) # Invalid option
      echo "Error: Invalid option"
      exit;;

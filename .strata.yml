@@ -45,8 +45,9 @@ stages:
         image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_$$PARAMETERS_JAVA_VERSION
         environment:
           - name: PARAMETERS_MAVEN_VERSION
+        volumes:
+          - /tmp:/tmp
+          - /root/.m2:/root/.m2
         commands:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - mvn clean install
-          -
-

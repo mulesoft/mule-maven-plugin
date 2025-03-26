@@ -49,4 +49,5 @@ stages:
         commands:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - source $integration_test_secrets_file_path
+          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml
           - mvn test -s settings.xml -U -PfullIntegration -pl ':mule-deployer-it,:mule-packager-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD

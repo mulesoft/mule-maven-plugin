@@ -66,5 +66,6 @@ stages:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
           - source $integration_test_secrets_file_path
-          - mvn clean install -pl '!:mule-packager-it'
-          - mvn test -U -PfullIntegration -pl ':mule-deployer-it,:mule-packager-it' -Dmaven.home=$MAVEN_HOME -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD
+          - mvn clean install -DskipTests -pl '!:mule-artifact-it'
+          - mvn test -U -PpackagerIT
+          - mvn test -U -PdeployerIT -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD

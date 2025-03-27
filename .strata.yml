@@ -39,10 +39,8 @@ stages:
         name: configure-workspace
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
         commands:
-          - pwd
-          - ls -l $BUILD_WORKSPACE
           - chmod +x setup.sh
-          - ./setup.sh -s settings.xml "$BUILD_WORKSPACE/repository"
+          - ./setup.sh -s settings.xml "/tmp/.m2/repository"
           - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml
     # Performs the build and execution of the unit-tests
     - step:
@@ -54,10 +52,6 @@ stages:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
           - mvn clean install -pl '!:mule-artifact-it'
-        when:
-          - operator: EQ
-            value: "0"
-            other: "1"
   integration-test:
     - step:
         name: mmp-integration-tests
@@ -70,7 +64,3 @@ stages:
           - source $integration_test_secrets_file_path
           - mvn test -U -PpackagerIT -pl ':mule-artifact-it'
           - mvn test -U -PdeployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD -Dgroups=service
-        when:
-          - operator: EQ
-            value: "0"
-            other: "1"

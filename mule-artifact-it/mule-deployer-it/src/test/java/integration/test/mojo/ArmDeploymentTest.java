@@ -19,6 +19,7 @@ import org.apache.maven.shared.verifier.Verifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.JRE;
@@ -33,7 +34,7 @@ import org.mule.tools.model.anypoint.ArmDeployment;
 
 import integration.test.util.StandaloneEnvironment;
 
-@org.junit.jupiter.api.Disabled
+@Tag("standalone")
 @DisabledOnOs(OS.WINDOWS)
 @DisabledOnJre(JRE.JAVA_8)
 public class ArmDeploymentTest extends AbstractDeploymentTest {

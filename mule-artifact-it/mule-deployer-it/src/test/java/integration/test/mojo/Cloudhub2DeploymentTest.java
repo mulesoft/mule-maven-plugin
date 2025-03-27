@@ -9,6 +9,7 @@ package integration.test.mojo;
 import org.apache.maven.shared.verifier.VerificationException;
 import org.apache.maven.shared.verifier.Verifier;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.mule.tools.client.OperationRetrier;
 import org.mule.tools.client.OperationRetrier.RetriableOperation;
 import org.mule.tools.client.fabric.model.ApplicationDetailResponse;
@@ -19,6 +20,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.*;
 import static org.mule.tools.client.AbstractMuleClient.DEFAULT_BASE_URL;
 
+@Tag("service")
 public class Cloudhub2DeploymentTest extends AbstractDeploymentTest {
 
   private static final int APPLICATION_NAME_LENGTH = 10;

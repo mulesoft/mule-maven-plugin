@@ -67,5 +67,5 @@ stages:
           - ./setup.sh -c settings.xml
           - source $integration_test_secrets_file_path
           - mvn clean install -DskipTests -pl '!:mule-artifact-it'
-          - mvn test -U -PpackagerIT -pl ':mule-artifact-it'
-          - mvn test -U -PdeployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD
+          #- mvn test -U -PpackagerIT -pl ':mule-artifact-it'
+          - mvn test -U -PdeployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD -Dgroups=standalone

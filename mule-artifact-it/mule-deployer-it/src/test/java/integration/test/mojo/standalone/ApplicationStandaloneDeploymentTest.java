@@ -7,13 +7,14 @@
 package integration.test.mojo.standalone;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Timeout;
 
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@org.junit.jupiter.api.Disabled
+@Tag("standalone")
 public class ApplicationStandaloneDeploymentTest extends StandaloneDeploymentTest {
 
   private static final String APPLICATION = "empty-mule-deploy-standalone-application-project";

@@ -7,13 +7,14 @@
 package integration.test.mojo.standalone;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Timeout;
 
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@org.junit.jupiter.api.Disabled
+@Tag("standalone")
 public class DomainStandaloneDeploymentTest extends StandaloneDeploymentTest {
 
   private static final String DOMAIN = "empty-mule-deploy-standalone-domain-project";

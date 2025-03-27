@@ -10,10 +10,11 @@ import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.Tag;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@org.junit.jupiter.api.Disabled
+@Tag("standalone")
 @DisabledOnJre(JRE.JAVA_8)
 @DisabledOnOs(OS.WINDOWS)
 public class ApplicationAgentDeploymentTest extends AgentDeploymentTest {

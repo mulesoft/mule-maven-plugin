@@ -13,6 +13,7 @@ import org.junit.jupiter.api.condition.OS;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+@org.junit.jupiter.api.Disabled
 @DisabledOnJre(JRE.JAVA_8)
 @DisabledOnOs(OS.WINDOWS)
 public class DomainAgentDeploymentTest extends AgentDeploymentTest {

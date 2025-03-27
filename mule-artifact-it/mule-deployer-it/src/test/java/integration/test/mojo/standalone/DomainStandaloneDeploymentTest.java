@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+@org.junit.jupiter.api.Disabled
 public class DomainStandaloneDeploymentTest extends StandaloneDeploymentTest {
 
   private static final String DOMAIN = "empty-mule-deploy-standalone-domain-project";

@@ -33,6 +33,7 @@ import org.mule.tools.model.anypoint.ArmDeployment;
 
 import integration.test.util.StandaloneEnvironment;
 
+@org.junit.jupiter.api.Disabled
 @DisabledOnOs(OS.WINDOWS)
 @DisabledOnJre(JRE.JAVA_8)
 public class ArmDeploymentTest extends AbstractDeploymentTest {

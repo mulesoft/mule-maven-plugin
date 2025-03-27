@@ -51,7 +51,7 @@ stages:
         commands:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
-          - mvn clean install -pl '!:mule-artifact-it'
+          - mvn clean install -pl '!:mule-packager-it'
   integration-test:
     - step:
         name: mmp-integration-tests
@@ -62,5 +62,5 @@ stages:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
           - source $integration_test_secrets_file_path
-          - mvn install -U -PpackagerIT -pl ':mule-artifact-it'
+          - mvn test -U -PpackagerIT -pl ':mule-packager-it'
           - mvn test -U -PdeployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD -Dgroups=service

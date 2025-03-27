@@ -32,6 +32,10 @@ function EditMavenSettings() {
   cp $SETTINGS $NEW_SETTINGS
 
   echo "Editing $NEW_SETTINGS"
+
+  echo "Set localRepository to $2"
+  xmlstarlet ed -L -s "/_:settings" -t elem -n localRepository -v "$2" "$NEW_SETTINGS"
+
   for REPOSITORY in "${REPOSITORIES[@]}"; do
     DATA=(${REPOSITORY//\|\|/ })
     echo "  - Adding Repository ${DATA[0]}"
@@ -107,10 +111,10 @@ function CopySettings() {
 getopts ":smc" option
 case $option in
   s) # Create Maven setting file
-     EditMavenSettings "$2";;
+     EditMavenSettings "$2" "$3";;
   m) # Install Maven
      InstallMaven "$2";;
-  c) # Install Maven
+  c) # Copy maven settings to the user home
      CopySettings "$2";;
  \?) # Invalid option
      echo "Error: Invalid option"

@@ -59,6 +59,8 @@ stages:
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
+          - ls -l /tmp/.m2/repository
+          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
           - source $integration_test_secrets_file_path

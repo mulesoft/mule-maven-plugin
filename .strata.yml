@@ -54,6 +54,11 @@ stages:
           - ./setup.sh -c settings.xml
           - mvn clean install -pl '!:mule-packager-it' -DskipTests
     # This is to avoid scan the pom.xml in the tests
+    - step:
+        name: snyk-scan-container
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
+        commands:
+          - echo 'snyk-scan'
     - snyk-scan:
         snyk-scan-detection-depth: 4
   integration-test:

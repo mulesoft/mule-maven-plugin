@@ -22,6 +22,8 @@ function EditMavenSettings() {
     'mule-snapshots||${env.MULESOFT_PUBLIC_NEXUS_USER}||${env.MULESOFT_PUBLIC_NEXUS_PASS}'
     'mule-ci-releases||${env.MULESOFT_PUBLIC_NEXUS_USER}||${env.MULESOFT_PUBLIC_NEXUS_PASS}'
     'anypoint-exchange-v3||${env.MMP_USERNAME}||${env.MMP_PASSWORD}'
+    'sfci-mule-releases||${env.NEXUS_USERNAME}||${env.NEXUS_PASSWORD}'
+    'sfci-mule-snapshots||${env.NEXUS_USERNAME}||${env.NEXUS_PASSWORD}'
   )
   #Repositories that will be added, format: (id)||(url)||(release)||(snapshot)
   local REPOSITORIES=(

@@ -674,6 +674,25 @@
                 </repository>
             </distributionManagement>
         </profile>
+        <profile>
+            <id>release-sfci</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>sfci-mule-releases</id>
+                    <name>MuleSoft Releases Repository [SFCI]</name>
+                    <url>${env.NEXUS_BASE_URL}/groups/mulesoft-maven-all</url>
+                </repository>
+                <snapshotRepository>
+                    <id>sfci-mule-snapshots</id>
+                    <name>Mule Snapshot Repository [SFCI]</name>
+                    <url>${env.NEXUS_BASE_URL}/groups/mulesoft-maven-all</url>
+                    <uniqueVersion>false</uniqueVersion>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
     </profiles>
 
     <scm>

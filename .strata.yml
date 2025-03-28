@@ -51,7 +51,7 @@ stages:
         commands:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
-          - mvn clean install -pl '!:mule-packager-it'
+          - mvn clean install -pl '!:mule-packager-it' -DskipTests
   integration-test:
     # Runs the integrations test
     # In this stage the coverage is reported to Sonarqube
@@ -67,6 +67,10 @@ stages:
           - source $integration_test_secrets_file_path
           - mvn clean test -U -PpackagerIT -pl ':mule-packager-it'
           - mvn clean test -U -PdeployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD -Dgroups=service
+        when:
+          - operator: EQ
+            value: "0"
+            other: "1"
   publish:
     - step:
         name: mmp-publish-artifacts
@@ -80,3 +84,4 @@ stages:
           - echo "PARAMETERS_RELEASE_AS_RC = $PARAMETERS_RELEASE_AS_RC"
           - echo "PARAMETERS_VERSION = $PARAMETERS_VERSION\"
           - echo "VALIDATE SNAPSHOT/RC/GA AND PUBLISH"
+          - mvn clean deploy -P 'release-sfci' -DskipTests -Dmaven.test.skip=true

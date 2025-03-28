@@ -92,6 +92,7 @@ function InstallMaven() {
     && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 
   export MAVEN_HOME=/usr/share/maven
+  export PATH=$PATH:/usr/share/maven/bin/mvn
   mvn -v
 }
 ###############################################################################

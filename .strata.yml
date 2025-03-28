@@ -52,17 +52,31 @@ stages:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
           - mvn clean install -pl '!:mule-packager-it'
-          - ls -l /cix/tmp/.m2/repository
   integration-test:
+    # Runs the integrations test
+    # In this stage the coverage is reported to Sonarqube
+    # https://sonarqube.sfcq.buildndeliver-s.aws-esvc1-useast2.aws.sfdc.cl/dashboard?id=mulesoft.mule-maven-plugin.gec
     - step:
         name: mmp-integration-tests
         image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_$$PARAMETERS_JAVA_VERSION
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
-          - ls -l /cix/tmp/.m2/repository
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
           - source $integration_test_secrets_file_path
-          - mvn test -U -PpackagerIT -pl ':mule-packager-it'
-          - mvn test -U -PdeployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD -Dgroups=service
+          - mvn clean test -U -PpackagerIT -pl ':mule-packager-it'
+          - mvn clean test -U -PdeployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD -Dgroups=service
+  publish:
+    - step:
+        name: mmp-publish-artifacts
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
+        environment:
+          - name: PARAMETERS_VERSION
+          - name: PARAMETERS_RELEASE_AS_RC
+        commands:
+          - ./setup.sh -c settings.xml
+          - source $publish_test_secrets_file_path
+          - echo "PARAMETERS_RELEASE_AS_RC: $PARAMETERS_RELEASE_AS_RC"
+          - echo "PARAMETERS_VERSION: $PARAMETERS_VERSION"
+          - echo "VALIDATE SNAPSHOT/RC/GA AND PUBLISH"

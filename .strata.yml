@@ -51,7 +51,7 @@ stages:
         commands:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
-          - mvn clean install -pl '!:mule-packager-it' -DskipTests
+          - mvn clean install -pl '!:mule-packager-it'
   integration-test:
     # Runs the integrations test
     # In this stage the coverage is reported to Sonarqube

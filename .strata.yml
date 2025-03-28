@@ -67,21 +67,10 @@ stages:
           - source $integration_test_secrets_file_path
           - mvn clean test -U -PpackagerIT -pl ':mule-packager-it'
           - mvn clean test -U -PdeployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD -Dgroups=service
-        when:
-          - operator: EQ
-            value: "0"
-            other: "1"
   publish:
     - step:
         name: mmp-publish-artifacts
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
-        environment:
-          - name: PARAMETERS_VERSION
-          - name: PARAMETERS_RELEASE_AS_RC
-          - name: NEXUS_USERNAME_RW
-            value: $$cred.NEXUS_USERNAME_RW
-          - name: NEXUS_PASSWORD_RW
-            value: $$cred.NEXUS_PASSWORD_RW
         commands:
           - ./setup.sh -c settings.xml
-          - mvn clean deploy -P 'release-sfci' -DskipTests -Dmaven.test.skip=true
+          - mvn clean deploy -P '!default' -DskipTests -Dmaven.test.skip=true

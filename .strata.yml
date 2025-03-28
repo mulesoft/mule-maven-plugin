@@ -78,6 +78,10 @@ stages:
         environment:
           - name: PARAMETERS_VERSION
           - name: PARAMETERS_RELEASE_AS_RC
+          - name: NEXUS_USERNAME_RW
+            value: $$cred.NEXUS_USERNAME_RW
+          - name: NEXUS_PASSWORD_RW
+            value: $$cred.NEXUS_PASSWORD_RW
         commands:
           - ./setup.sh -c settings.xml
           - mvn clean deploy -P 'release-sfci' -DskipTests -Dmaven.test.skip=true

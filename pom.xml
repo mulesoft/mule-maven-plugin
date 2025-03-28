@@ -648,15 +648,14 @@
 
     <distributionManagement>
         <repository>
-            <id>mule-releases</id>
-            <name>Mule Release Repository</name>
-            <url>https://repository-master.mulesoft.org/nexus/content/repositories/ci-releases</url>
+            <id>nexus</id>
+            <name>SFCI Releases</name>
+            <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-releases</url>
         </repository>
         <snapshotRepository>
-            <id>mule-snapshots</id>
-            <name>Mule Snapshot Repository</name>
-            <url>https://repository-master.mulesoft.org/nexus/content/repositories/ci-snapshots</url>
-            <uniqueVersion>false</uniqueVersion>
+            <id>nexus</id>
+            <name>SFCI Snapshots</name>
+            <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 

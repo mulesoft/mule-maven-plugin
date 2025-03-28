@@ -67,11 +67,11 @@ stages:
           - source $integration_test_secrets_file_path
           - mvn clean test -U -PpackagerIT -pl ':mule-packager-it'
           - mvn clean test -U -PdeployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD -Dgroups=service
+        when:
+          - operator: EQ
+            value: "0"
+            other: "1"
   publish:
-    - step:
-        name: mmp-publish-artifacts
-        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
-        commands:
-          - ./setup.sh -c settings.xml
-          - source $publish_secrets_file_path
-          - mvn clean deploy -P '!default' -DskipTests -Dmaven.test.skip=true
+    - maven-publish:
+        auto-versioning-publish: false
+        maven-publish-jar-args: -P '!default' -DskipTests -Dmaven.test.skip=true

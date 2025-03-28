@@ -77,6 +77,6 @@ stages:
         commands:
           - ./setup.sh -c settings.xml
           - source $publish_test_secrets_file_path
-          - echo "PARAMETERS_RELEASE_AS_RC: $PARAMETERS_RELEASE_AS_RC"
-          - echo "PARAMETERS_VERSION: $PARAMETERS_VERSION"
+          - echo "PARAMETERS_RELEASE_AS_RC = $PARAMETERS_RELEASE_AS_RC"
+          - echo "PARAMETERS_VERSION = $PARAMETERS_VERSION\"
           - echo "VALIDATE SNAPSHOT/RC/GA AND PUBLISH"

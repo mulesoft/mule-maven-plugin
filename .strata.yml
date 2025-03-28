@@ -53,6 +53,9 @@ stages:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
           - mvn clean install -pl '!:mule-packager-it' -DskipTests
+    # This is to avoid scan the pom.xml in the tests
+    - snyk-scan:
+        snyk-scan-detection-depth: 4
   integration-test:
     # Runs the integrations test
     # In this stage the coverage is reported to Sonarqube

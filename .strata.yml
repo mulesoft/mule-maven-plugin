@@ -51,7 +51,9 @@ stages:
         commands:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
+          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings
           - mvn clean install -pl '!:mule-packager-it'
+          - ls -l /tmp/.m2/repository
   integration-test:
     - step:
         name: mmp-integration-tests

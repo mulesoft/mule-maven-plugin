@@ -80,8 +80,4 @@ stages:
           - name: PARAMETERS_RELEASE_AS_RC
         commands:
           - ./setup.sh -c settings.xml
-          - source $publish_secrets_file_path
-          - echo "PARAMETERS_RELEASE_AS_RC = $PARAMETERS_RELEASE_AS_RC"
-          - echo "PARAMETERS_VERSION = $PARAMETERS_VERSION\"
-          - echo "VALIDATE SNAPSHOT/RC/GA AND PUBLISH"
           - mvn clean deploy -P 'release-sfci' -DskipTests -Dmaven.test.skip=true

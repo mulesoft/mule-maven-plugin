@@ -57,7 +57,7 @@ stages:
           - mvn clean install -pl '!:mule-packager-it' -DskipTests
     # This is to avoid scan the pom.xml in the tests
     - snyk-scan:
-        snyk-scan-detection-depth: 4
+        snyk-scan-detection-depth: -1
   integration-test:
     # Runs the integrations test
     # In this stage the coverage is reported to Sonarqube

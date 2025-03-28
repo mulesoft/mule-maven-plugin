@@ -40,7 +40,7 @@ stages:
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
         commands:
           - chmod +x setup.sh
-          - ./setup.sh -s settings.xml "/tmp/.m2/repository"
+          - ./setup.sh -s settings.xml "/cix/tmp/.m2/repository"
           - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml
     # Performs the build and execution of the unit-tests
     - step:
@@ -49,12 +49,10 @@ stages:
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
-          - whoami
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
-          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings
           - mvn clean install -pl '!:mule-packager-it'
-          - ls -l /tmp/.m2/repository
+          - ls -l /cix/tmp/.m2/repository
   integration-test:
     - step:
         name: mmp-integration-tests
@@ -62,8 +60,7 @@ stages:
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
-          - ls -l /tmp/.m2/repository
-          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings
+          - ls -l /cix/tmp/.m2/repository
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
           - source $integration_test_secrets_file_path

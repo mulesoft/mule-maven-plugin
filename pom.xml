@@ -681,15 +681,14 @@
             </activation>
             <distributionManagement>
                 <repository>
-                    <id>sfci-mule-releases</id>
-                    <name>MuleSoft Releases Repository [SFCI]</name>
-                    <url>${env.NEXUS_BASE_URL}/groups/mulesoft-maven-all</url>
+                    <id>nexus</id>
+                    <name>SFCI Releases</name>
+                    <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-releases</url>
                 </repository>
                 <snapshotRepository>
-                    <id>sfci-mule-snapshots</id>
-                    <name>Mule Snapshot Repository [SFCI]</name>
-                    <url>${env.NEXUS_BASE_URL}/groups/mulesoft-maven-all</url>
-                    <uniqueVersion>false</uniqueVersion>
+                    <id>nexus</id>
+                    <name>SFCI Snapshots</name>
+                    <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-snapshots/</url>
                 </snapshotRepository>
             </distributionManagement>
         </profile>

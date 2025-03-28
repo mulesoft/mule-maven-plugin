@@ -136,6 +136,8 @@
             <url>https://repository.mulesoft.org/nexus/content/repositories/releases-ee/</url>
             <releases>
                 <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
             </releases>
         </repository>
         <repository>

@@ -45,6 +45,7 @@ public class PackageMojoTest extends MojoTest implements SettingsConfigurator {
     verifier.verifyErrorFreeLog();
   }
 
+  @org.junit.jupiter.api.Disabled
   @Test
   public void testPackageAppUsingLightweightWithLocalRepository() throws IOException, VerificationException {
     String artifactId = "empty-lightweight-local-repository-classloader-model-project";

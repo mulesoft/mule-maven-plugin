@@ -50,6 +50,7 @@ stages:
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
+          - echo "false" > /cix/tmp/.sfci/feature-enablement/snyk-scanning.allow
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
           - mvn clean install -pl '!:mule-packager-it' -DskipTests

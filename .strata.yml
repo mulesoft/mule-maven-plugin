@@ -32,6 +32,7 @@ global:
       type: "boolean"
   production-branches:
     - main
+    - tasks/poc-sfci-v6
 stages:
   build:
     # Take the Maven settings and add the required repositories and servers in the following steps.

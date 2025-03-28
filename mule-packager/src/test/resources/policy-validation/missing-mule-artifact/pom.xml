@@ -121,6 +121,8 @@
             <url>https://repository.mulesoft.org/nexus/content/repositories/snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
             </snapshots>
         </repository>
         <repository>
@@ -129,6 +131,8 @@
             <url>https://repository.mulesoft.org/nexus/content/repositories/ci-snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
             </snapshots>
         </repository>
         <repository>

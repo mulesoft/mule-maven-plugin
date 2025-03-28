@@ -30,9 +30,6 @@ global:
       default: "false"
       description: "Indicates if the deploy will be a release candidate"
       type: "boolean"
-  production-branches:
-    - main
-    - tasks/poc-sfci-v6
 stages:
   build:
     # Take the Maven settings and add the required repositories and servers in the following steps.

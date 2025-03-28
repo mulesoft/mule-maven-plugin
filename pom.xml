@@ -681,12 +681,12 @@
             </activation>
             <distributionManagement>
                 <repository>
-                    <id>nexus</id>
+                    <id>sfci-mule-releases</id>
                     <name>SFCI Releases</name>
                     <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-releases</url>
                 </repository>
                 <snapshotRepository>
-                    <id>nexus</id>
+                    <id>sfci-mule-snapshots</id>
                     <name>SFCI Snapshots</name>
                     <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-snapshots/</url>
                 </snapshotRepository>

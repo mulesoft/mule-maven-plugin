@@ -34,15 +34,17 @@ global:
     - main
     - tasks/poc-sfci-v6
 stages:
-  build:
+  precheck:
     # Take the Maven settings and add the required repositories and servers in the following steps.
     - step:
         name: configure-workspace
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
         commands:
+          - mkdir -p /cix/tmp/.sfci/feature-enablement && echo "false" > /cix/tmp/.sfci/feature-enablement/snyk-scanning.allow
           - chmod +x setup.sh
           - ./setup.sh -s settings.xml "/cix/tmp/.m2/repository"
           - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml
+  build:
     # Performs the build and execution of the unit-tests
     - step:
         name: build-artifacts
@@ -50,7 +52,6 @@ stages:
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
-          - mkdir -p /cix/tmp/.sfci/feature-enablement && echo "false" > /cix/tmp/.sfci/feature-enablement/snyk-scanning.allow
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
           - mvn clean install -pl '!:mule-packager-it' -DskipTests

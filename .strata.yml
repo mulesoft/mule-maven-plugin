@@ -56,7 +56,7 @@ stages:
     # This is to avoid scan the pom.xml in the tests
     - snyk-scan:
         snyk-scan-detection-depth: 4
-        snyk-cmd-args: --all-projects --exclude=mule-artifact-tools,mmp-sonar,mule-artifact-it,mule-deployer-it,mule-packager-it,mule-classloader-model,mule-deployer,mule-extension-model-loader,mule-maven-plugin,mule-packager
+        snyk-cmd-args: --all-projects --exclude=./,mule-artifact-tools,mmp-sonar,mule-artifact-it,mule-deployer-it,mule-packager-it,mule-classloader-model,mule-deployer,mule-extension-model-loader,mule-maven-plugin,mule-packager
   integration-test:
     # Runs the integrations test
     # In this stage the coverage is reported to Sonarqube

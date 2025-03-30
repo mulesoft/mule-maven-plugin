@@ -41,7 +41,7 @@ stages:
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
         commands:
           - cat /cix/tmp/.sfci/feature-enablement/allFeatureRolloutResults.yaml
-          - sed -i -e "s/allowFeatureToRun_snyk-scanning“:“ true/allowFeatureToRun_snyk-scanning“:“ false/" /cix/tmp/.sfci/feature-enablement/allFeatureRolloutResults.yaml
+          - sed -i -e "s/allowFeatureToRun_snyk-scanning":" true/allowFeatureToRun_snyk-scanning":" false/" /cix/tmp/.sfci/feature-enablement/allFeatureRolloutResults.yaml
           - cat /cix/tmp/.sfci/feature-enablement/allFeatureRolloutResults.yaml
           - chmod +x setup.sh
           - ./setup.sh -s settings.xml "/cix/tmp/.m2/repository"

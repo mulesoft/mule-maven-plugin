@@ -83,4 +83,4 @@ stages:
   publish:
     - maven-publish:
         auto-versioning-publish: false
-        maven-publish-jar-args: -P '!default' -DskipTests -Dmaven.test.skip=true -pl ':mule-extension-model-loader,:mule-classloader-model,:mule-deployer,:mule-packager,mule-maven-plugin'
+        maven-publish-jar-args: -P '!default' -DskipTests -Dmaven.test.skip=true

@@ -40,8 +40,9 @@ stages:
         name: configure-workspace
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
         commands:
+          - ln -s /cix/tmp/.strata/.m2/repository /root/.m2/repository
           - chmod +x setup.sh
-          - ./setup.sh -s settings.xml "/cix/tmp/.m2/repository"
+          - ./setup.sh -s settings.xml
           - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml
   build:
     # Performs the build and execution of the unit-tests
@@ -52,6 +53,7 @@ stages:
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
+          - ln -s /cix/tmp/.strata/.m2/repository /root/.m2/repository
           #-  ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
           - mvn clean install -pl '!:mule-packager-it' -DskipTests
@@ -68,6 +70,7 @@ stages:
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
+          - ln -s /cix/tmp/.strata/.m2/repository /root/.m2/repository
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml
           - source $integration_test_secrets_file_path

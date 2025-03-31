@@ -81,15 +81,6 @@ stages:
             value: "0"
             other: "2"
   publish:
-    - publish-jar:
-        artifacts:
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-extension-model-loader"
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-classloader-model"
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-deployer"
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-packager"
-          - groupId: "org.mule.tools.maven"
-            artifactId:  "mule-maven-plugin"
+    - maven-publish:
+        auto-versioning-publish: false
+        maven-publish-jar-args: -P '!default' -DskipTests -Dmaven.test.skip=true -pl ':mule-extension-model-loader,:mule-classloader-model,:mule-deployer,:mule-packager,mule-maven-plugin'

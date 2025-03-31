@@ -15,12 +15,16 @@ import static org.mockito.Mockito.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.FileStore;
+import java.nio.file.FileSystem;
 import java.nio.file.Path;
+import java.nio.file.attribute.DosFileAttributeView;
+import java.nio.file.attribute.DosFileAttributes;
+import java.nio.file.spi.FileSystemProvider;
 import java.util.*;
 
 import org.apache.maven.project.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Spy;
@@ -29,7 +33,6 @@ import org.mule.tools.api.classloader.model.ApplicationClassloaderModel;
 import org.mule.tools.api.classloader.model.ApplicationGAVModel;
 import org.mule.tools.api.classloader.model.Artifact;
 import org.mule.tools.api.classloader.model.ArtifactCoordinates;
-import org.mule.tools.api.util.FileUtils;
 
 class RepositoryGeneratorTest {
 
@@ -82,18 +85,14 @@ class RepositoryGeneratorTest {
     assertThat(generatedMarkerFile).describedAs("Marker file was not generated").exists();
   }
 
-  @Disabled
   @Test
   void generateMarkerFileInRepositoryFolderWhenFolderIsNotWritableTest() throws IOException {
     File generatedMarkerFile = temporaryFolder.resolve(".marker").toFile();
 
     assertThat(generatedMarkerFile).describedAs("Marker file already exists").doesNotExist();
 
-    File readOnlyFolder = temporaryFolder.toFile();
-    FileUtils.markAsReadOnly(readOnlyFolder);
-
     assertThatThrownBy(() -> {
-      repositoryGenerator.generateMarkerFileInRepositoryFolder(readOnlyFolder);
+      repositoryGenerator.generateMarkerFileInRepositoryFolder(mockReadOnlyFolder(true));
     }).isExactlyInstanceOf(IOException.class);
   }
 
@@ -144,5 +143,33 @@ class RepositoryGeneratorTest {
     return new Artifact(new ArtifactCoordinates(GROUP_ID + "." + i, ARTIFACT_ID + "-" + i, VERSION, TYPE,
                                                 CLASSIFIER),
                         URI.create("/"));
+  }
+
+  public static File mockReadOnlyFolder(boolean readOnly) throws IOException {
+    Path path = mock(Path.class);
+    FileSystem fileSystem = mock(FileSystem.class);
+    FileSystemProvider fileSystemProvider = mock(FileSystemProvider.class);
+    FileStore fileStore = mock(FileStore.class);
+    DosFileAttributeView dosFileAttributeView = mock(DosFileAttributeView.class);
+    DosFileAttributes dosFileAttributes = mock(DosFileAttributes.class);
+
+    File file = new File("") {
+
+      @Override
+      public Path toPath() {
+        return path;
+      }
+    };
+
+    when(path.getFileSystem()).thenReturn(fileSystem);
+    when(fileSystem.provider()).thenReturn(fileSystemProvider);
+    when(fileSystemProvider.getFileStore(any(Path.class))).thenReturn(fileStore);
+    when(fileStore.supportsFileAttributeView(DosFileAttributeView.class)).thenReturn(true);
+    when(fileSystemProvider.getFileAttributeView(any(Path.class), eq(DosFileAttributeView.class), any()))
+        .thenReturn(dosFileAttributeView);
+    when(dosFileAttributeView.readAttributes()).thenReturn(dosFileAttributes);
+    when(dosFileAttributes.isReadOnly()).thenReturn(readOnly);
+
+    return file;
   }
 }

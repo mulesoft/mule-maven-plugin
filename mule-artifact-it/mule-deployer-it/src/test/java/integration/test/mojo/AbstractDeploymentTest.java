@@ -6,6 +6,8 @@
  */
 package integration.test.mojo;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import integration.test.util.ProjectFactory;
 import org.apache.maven.shared.verifier.VerificationException;
 import org.apache.maven.shared.verifier.Verifier;
@@ -23,6 +25,7 @@ import java.util.stream.Stream;
  */
 public abstract class AbstractDeploymentTest {
 
+  protected static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
   protected static final Logger LOG = LoggerFactory.getLogger(AbstractDeploymentTest.class);
 
   private static final String MAVEN_OPTS = "MAVEN_OPTS";

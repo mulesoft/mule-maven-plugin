@@ -4,6 +4,7 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedConstruction;
@@ -50,9 +51,13 @@ class DefaultExtensionModelServiceTest {
   private final MuleArtifactResourcesRegistry resourcesRegistry = mock(MuleArtifactResourcesRegistry.class);
   private final DefaultExtensionModelService extensionModelService = new DefaultExtensionModelService(resourcesRegistry);
 
+  @TempDir
+  private File tempDir;
+
   @BeforeEach
   void setUp() {
     reset(resourcesRegistry);
+    when(resourcesRegistry.getWorkingDirectory()).thenReturn(tempDir);
   }
 
   @ParameterizedTest

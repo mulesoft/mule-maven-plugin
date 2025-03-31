@@ -38,8 +38,6 @@
         <module>mule-deployer</module>
         <module>mule-packager</module>
         <module>mule-maven-plugin</module>
-        <module>mule-artifact-it</module>
-        <module>mmp-sonar</module>
     </modules>
 
     <properties>
@@ -648,17 +646,49 @@
 
     <distributionManagement>
         <repository>
-            <id>nexus</id>
-            <name>SFCI Releases</name>
-            <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-releases</url>
+            <id>mule-releases</id>
+            <name>MuleSoft Releases Repository</name>
+            <url>file://${settings.localRepository}</url>
         </repository>
         <snapshotRepository>
-            <id>nexus</id>
-            <name>SFCI Snapshots</name>
-            <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-snapshots/</url>
+            <id>mule-snapshots</id>
+            <name>MuleSoft Snapshots Repository</name>
+            <url>file://${settings.localRepository}</url>
         </snapshotRepository>
     </distributionManagement>
 
+    <profiles>
+        <profile>
+            <id>integration</id>
+            <modules>
+                <module>mule-artifact-it</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>sonar</id>
+            <modules>
+                <module>mmp-sonar</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>release</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>mulesoft-master</id>
+                    <name>SFCI Releases</name>
+                    <url>https://repository-master.mulesoft.org/nexus/content/repositories/ci-releases/</url>
+                </repository>
+                <snapshotRepository>
+                    <id>mulesoft-master</id>
+                    <name>SFCI Snapshots</name>
+                    <url>https://repository-master.mulesoft.org/nexus/content/repositories/ci-snapshots/</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+    </profiles>
     <scm>
         <connection>scm:git:git://github.com/mulesoft/mule-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:mulesoft/mule-maven-plugin.git</developerConnection>

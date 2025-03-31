@@ -9,8 +9,10 @@ package integration.test.util;
 import static org.assertj.core.api.Fail.fail;
 import static org.mule.tools.api.util.FileUtils.copyDirectoryRecursively;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ public class StandaloneEnvironment {
   private static final String ARM_CONFIGURATION_OPTION = "-H";
   private static final String UNENCRYPTED_CONNECTION_OPTION = "-I";
 
+  private static final String MULE_COMMAND_PATH = "/bin/mule";
   private static final String AMC_SETUP_RELATIVE_FOLDER = "/bin/amc_setup";
   private static final String AGENT_JKS_RELATIVE_PATH = "/conf/mule-agent.jks";
   private static final String AGENT_YMS_RELATIVE_PATH = "/conf/mule-agent.yml";
@@ -96,6 +99,14 @@ public class StandaloneEnvironment {
 
   public Boolean isDomainDeployed(String domainName) {
     return controller.isDomainDeployed(domainName);
+  }
+
+  public void verifyLicense() throws IOException, InterruptedException {
+    String muleExecutable = getMuleHome() + MULE_COMMAND_PATH + (isWindows() ? ".bat" : "");
+    String[] commands = {muleExecutable, "-verifyLicense"};
+
+    executeAction(() -> {
+    }, "verify mule license", 5, commands);
   }
 
   public void register(String token, String instanceName) throws IOException, InterruptedException {
@@ -173,13 +184,28 @@ public class StandaloneEnvironment {
         log.info("Failed to " + action + " mule. Trying to " + action + " again...");
         onRestart.run();
       }
+      log.info("Attempt " + tries + "/" + attempts);
       applicationProcess = Runtime.getRuntime().exec(commands);
+      BufferedReader stdInput = new BufferedReader(new InputStreamReader(applicationProcess.getInputStream()));
+      BufferedReader stdError = new BufferedReader(new InputStreamReader(applicationProcess.getErrorStream()));
       applicationProcess.waitFor();
+
+      write(stdInput, "InputStream");
+      write(stdError, "ErrorStream");
       tries++;
       if (tries == attempts) {
         fail("Could not " + action + " mule");
       }
     } while (applicationProcess.exitValue() != NORMAL_TERMINATION);
     log.info("Mule successfully stopped.");
+  }
+
+  private void write(BufferedReader bufferedReader, String section) throws IOException {
+    System.out.println(section + ":\n");
+    String line = null;
+    while ((line = bufferedReader.readLine()) != null) {
+      log.info(line);
+    }
+    System.out.println(section + "\n END\n");
   }
 }

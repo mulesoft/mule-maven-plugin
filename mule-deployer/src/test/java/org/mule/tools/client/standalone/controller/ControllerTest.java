@@ -6,7 +6,6 @@
  */
 package org.mule.tools.client.standalone.controller;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +37,6 @@ public class ControllerTest {
   @TempDir
   public File temporaryFolder;
 
-  @Disabled
   @Test
   public void testController() throws IOException {
     temporaryFolder.toPath().resolve("conf").toFile().mkdirs();
@@ -59,14 +57,19 @@ public class ControllerTest {
     muleInvalidAppPath.toFile().setWritable(false);
     muleInvalidAppPath.toFile().setReadable(false);
     controller.wrapperConf = muleInvalidAppPath;
-    assertThatThrownBy(() -> controller.addConfProperty("newProperty"))
-        .isInstanceOf(UncheckedIOException.class);
+
+    try (MockedStatic<Files> files = mockStatic(Files.class)) {
+      files.when(() -> Files.lines(any(Path.class))).thenThrow(IOException.class);
+
+      assertThatThrownBy(() -> controller.addConfProperty("newProperty"))
+          .isInstanceOf(UncheckedIOException.class);
+    }
 
     controller.deploy(temporaryFolder.toPath().resolve("mule-app").toString());
     controller.addLibrary(temporaryFolder.toPath().resolve("lib.jar").toFile());
     controller.deployDomain(temporaryFolder.toPath().resolve("mule-app").toString());
     controller.deployDomain(temporaryFolder.toPath().resolve("conf").toFile().getAbsolutePath().toString());
-    assertThatThrownBy(() -> controller.deployDomain(temporaryFolder.toPath().resolve("mule-invalid-app1").toString()))
+    assertThatThrownBy(() -> controller.deployDomain(temporaryFolder.toPath().resolve("mule-invalid-app2").toString()))
         .isInstanceOf(MuleControllerException.class);
     File domainFileMock = Mockito.mock(File.class);
     Mockito.when(domainFileMock.exists()).thenReturn(false);

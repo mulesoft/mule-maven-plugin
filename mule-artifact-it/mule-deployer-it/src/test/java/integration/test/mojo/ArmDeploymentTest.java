@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.JRE;
@@ -33,10 +34,12 @@ import org.mule.tools.client.arm.model.Target;
 import org.mule.tools.model.anypoint.ArmDeployment;
 
 import integration.test.util.StandaloneEnvironment;
+import org.mule.tools.utils.DeployerLog;
 
 @Tag("standalone")
 @DisabledOnOs(OS.WINDOWS)
 @DisabledOnJre(JRE.JAVA_8)
+@DisabledIfSystemProperty(named = "isSFCI", matches = "true")
 public class ArmDeploymentTest extends AbstractDeploymentTest {
 
   private static final int APPLICATION_NAME_LENGTH = 10;
@@ -68,15 +71,15 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
     armClient = getArmClient();
     for (Target t : armClient.getServers()) {
       if (t.name.startsWith(APPLICATION)) {
+        LOG.info("Deleting Server:" + GSON.toJson(t));
         armClient.deleteServer(Integer.valueOf(t.id));
       }
     }
     standaloneEnvironment = new StandaloneEnvironment(environmentWorkingDir.toFile(), getMuleVersion());
-
+    standaloneEnvironment.verifyLicense();
     standaloneEnvironment.register(armClient.getRegistrationToken(), ARM_INSTANCE_NAME);
     standaloneEnvironment.start(false);
     assertServerIsRunningInArm(ARM_INSTANCE_NAME, 4 * 60000, armClient);
-
     verifier = buildBaseVerifier();
     verifier.setSystemProperty("username", getUsername());
     verifier.setSystemProperty("password", getPassword());
@@ -116,7 +119,38 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
     armDeployment.setEnvironment(PRODUCTION_ENVIRONMENT);
     armDeployment.setArmInsecure(false);
 
-    return new ArmClient(armDeployment, null);
+    return new ArmClient(armDeployment, new DeployerLog() {
+
+      @Override
+      public void info(String s) {
+        LOG.info(s);
+      }
+
+      @Override
+      public void error(String s) {
+        LOG.info(s);
+      }
+
+      @Override
+      public void warn(String s) {
+        LOG.info(s);
+      }
+
+      @Override
+      public void debug(String s) {
+        LOG.info(s);
+      }
+
+      @Override
+      public void error(String s, Throwable e) {
+        LOG.info(s, e);
+      }
+
+      @Override
+      public boolean isDebugEnabled() {
+        return true;
+      }
+    });
   }
 
   private void assertServerIsRunningInArm(String instanceName, int timeoutInSeconds, ArmClient armClient)
@@ -132,7 +166,7 @@ public class ArmDeploymentTest extends AbstractDeploymentTest {
       count++;
 
       Servers server = armClient.getServer(serverId);
-      if (StringUtils.equals(server.data[0].status, RUNNING_STATUS)) {
+      if (server.data != null && StringUtils.equals(server.data[0].status, RUNNING_STATUS)) {
         return;
       }
     }

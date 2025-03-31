@@ -1,19 +1,30 @@
 global:
   email-reply-to: rodriguez.jorge@salesforce.com
   email-only-last-committer-on-dev-branch: false
+  log-level: debug
   parameters:
-    - name: "JAVA_VERSION"
-      default: "onejdk17"
-      description: "Java version to be used"
+    - name: "ACTION"
+      default: "Build Snapshot"
+      description: "Indicates the action that the pipeline will perform"
       type: "choice"
       choices:
-        - onejdk8_basic
-        - onejdk11
-        - onejdk17
-        - onejdk21
+        - "Build Snapshot"
+        - "Run Integrations Tests"
+        - "Publish RC"
+        - "Release"
+      required: true
+    - name: "JAVA_VERSION"
+      default: "java_build"
+      description: "Java version to be used (java_build is java 17) (the build is made always with Java 17)"
+      type: "choice"
+      choices:
+        - java_build
+        - java_build/java8
+        - java_build/java11
+        - java_build/java21
       required: true
     - name: "MAVEN_VERSION"
-      default: "MVN-3.9.4"
+      default: "MVN-3.9.9"
       description: "Maven version to be used"
       type: "choice"
       choices:
@@ -23,70 +34,103 @@ global:
         - MVN-3.9.6
         - MVN-3.9.9
       required: true
-    - name: "VERSION"
+    - name: "PUBLISH_VERSION"
       type: "string"
-      description: "Version used in the release"
-    - name: "RELEASE_AS_RC"
-      default: "false"
-      description: "Indicates if the deploy will be a release candidate"
-      type: "boolean"
+      description: "Version to be used to publish"
   production-branches:
     - main
-    - tasks/poc-sfci-v6
 stages:
   precheck:
     # Take the Maven settings and add the required repositories and servers in the following steps.
     - step:
-        name: configure-workspace
-        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
+        name: munit-configure-workspace
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build:latest
+        environment:
+          - name: NEXUS_BASE_URL
+          - name: NEXUS_USERNAME
+          - name: NEXUS_PASSWORD
+          - name: M2_SETTINGS
+            value: $$m2_settings
         commands:
           - chmod +x setup.sh
-          - ./setup.sh -s settings.xml "/cix/tmp/.m2/repository"
-          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml
+          - ./setup.sh -s "$M2_SETTINGS" "settings-local.xml" "/cix/tmp/.strata/.m2/repository"
+          - cp "settings-local.xml" "$M2_SETTINGS"
+          - rm "settings-local.xml"
+          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings
   build:
     # Performs the build and execution of the unit-tests
     - step:
-        name: build-artifacts
-        #image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_$$PARAMETERS_JAVA_VERSION
-        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
+        name: munit-build-artifacts
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build:latest
         environment:
+          - name: NEXUS_BASE_URL
+          - name: NEXUS_USERNAME
+          - name: NEXUS_PASSWORD
           - name: PARAMETERS_MAVEN_VERSION
         commands:
-          #-  ./setup.sh -m $PARAMETERS_MAVEN_VERSION
-          - ./setup.sh -c settings.xml
-          - mvn clean install -pl '!:mule-packager-it' -DskipTests
-    # This is to avoid scan the pom.xml in the tests
+          - ./setup.sh -m "$PARAMETERS_MAVEN_VERSION"
+          - echo "[MULESOFT][MUNIT] Build MMP"
+          - mvn clean install -DskipTests
+          - echo "[MULESOFT][MUNIT] Unit Tests"
+          - mvn clean install -Psonar
     - snyk-scan:
-        snyk-scan-detection-depth: 4
+        snyk-scan-detection-depth: 4 # This is to avoid scan the pom.xml in the tests
   integration-test:
     # Runs the integrations test
-    # In this stage the coverage is reported to Sonarqube
-    # https://sonarqube.sfcq.buildndeliver-s.aws-esvc1-useast2.aws.sfdc.cl/dashboard?id=mulesoft.mule-maven-plugin.gec
     - step:
-        name: mmp-integration-tests
-        image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_$$PARAMETERS_JAVA_VERSION
+        name: munit-integration-tests
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_$$PARAMETERS_JAVA_VERSION
         environment:
+          - name: NEXUS_BASE_URL
+          - name: NEXUS_USERNAME
+          - name: NEXUS_PASSWORD
           - name: PARAMETERS_MAVEN_VERSION
         commands:
-          - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
-          - ./setup.sh -c settings.xml
+          - ./setup.sh -m "$PARAMETERS_MAVEN_VERSION"
           - source $integration_test_secrets_file_path
-          - mvn clean test -U -PpackagerIT -pl ':mule-packager-it'
-          - mvn clean test -U -PdeployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD -Dgroups=service
+          - mvn clean test -U -Pintegration,packagerIT -pl ':mule-packager-it'
+          - mvn clean test -U -Pintegration,deployerIT -pl ':mule-deployer-it' -Dusername="$MMP_USERNAME" -Dpassword="$MMP_PASSWORD" -DusernameUbp="$MMP_UBP_USERNAME" -DpasswordUbp="$MMP_UBP_PASSWORD" -Dgroups=standalone -X -DisSFCI=true
+          - mvn clean test -U -Pintegration,deployerIT -pl ':mule-deployer-it' -Dusername="$MMP_USERNAME" -Dpassword="$MMP_PASSWORD" -DusernameUbp="$MMP_UBP_USERNAME" -DpasswordUbp="$MMP_UBP_PASSWORD" -Dgroups=service -X
         when:
-          - operator: EQ
-            value: "0"
-            other: "2"
+          - operator: NEQ
+            value: $$PARAMETERS_ACTION
+            other: "Build Snapshot"
   publish:
-    - publish-jar:
-        artifacts:
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-extension-model-loader"
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-classloader-model"
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-deployer"
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-packager"
-          - groupId: "org.mule.tools.maven"
-            artifactId:  "mule-maven-plugin"
+    - step:
+        name: munit-prepare-publish
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build:latest
+        environment:
+          - name: PARAMETERS_ACTION
+          - name: PARAMETERS_PUBLISH_VERSION
+        commands:
+          - export MVN_CONFIG_FILE=".mvn/maven.config"
+          - echo "Adding maven properties"
+          - mkdir -p ".mvn"
+          - echo "-DallowSnapshots" >> "$MVN_CONFIG_FILE"
+          - echo "-DskipTests" >> "$MVN_CONFIG_FILE"
+          - |
+            VALUES=("Build Snapshot" "Publish RC" "Release")
+            if [[ ${VALUES[@]} =~ "$PARAMETERS_ACTION" ]]; then 
+              source $publish_secrets_file_path
+              echo "[MULESOFT][MUNIT] Remote Publish: Adding release profile" 
+              echo "-DMULESOFT_USERNAME=$MULESOFT_PUBLIC_NEXUS_USER" >> "$MVN_CONFIG_FILE"
+              echo "-DMULESOFT_PASSWORD=$MULESOFT_PUBLIC_NEXUS_PASS" >> "$MVN_CONFIG_FILE"
+              echo "-Prelease" >> "$MVN_CONFIG_FILE"
+            else 
+              echo "[MULESOFT][MUNIT] Local Publish"
+            fi
+          - |
+            VALUES=("Publish RC" "Release")
+            if [[ ${VALUES[@]} =~ "$PARAMETERS_ACTION"  ]] ; then 
+              echo "[MULESOFT][MUNIT] $PARAMETERS_ACTION: $PARAMETERS_PUBLISH_VERSION" 
+              mvn org.codehaus.mojo:versions-maven-plugin:2.7:set -DnewVersion="$PARAMETERS_PUBLISH_VERSION" -DgenerateBackupPoms=false
+            fi
+          - mvn --quiet --also-make exec:exec -Dexec.executable="pwd" # To list the GAVs that will be validated
+    - maven-publish:
+        auto-versioning-publish: false
+  post-publish:
+    - step:
+        name: munit-clean-workspace
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build:latest
+        commands:
+          - rm ".mvn/maven.config"

@@ -76,7 +76,7 @@ stages:
         when:
           - operator: EQ
             value: "0"
-            other: "1"
+            other: "2"
   publish:
     - publish-jar:
         artifacts:

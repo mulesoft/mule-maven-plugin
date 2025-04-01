@@ -43,6 +43,7 @@ stages:
           - name: M2_SETTINGS
             value: $$m2_settings
         commands:
+          - echo $M2_SETTINGS
           - chmod +x setup.sh
           - ./setup.sh -s settings.xml "/cix/tmp/.m2/repository"
           - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml

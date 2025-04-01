@@ -40,12 +40,13 @@ stages:
         name: configure-workspace
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
         environment:
-          - name: $$m2_settings
+          - name: M2_SETTINGS
+            value: $$m2_settings
         commands:
           - chmod +x setup.sh
           - ./setup.sh -s settings.xml "/cix/tmp/.m2/repository"
           - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml
-          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s $m2_settings
+          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s $M2_SETTINGS
   build:
     # Performs the build and execution of the unit-tests
     - step:

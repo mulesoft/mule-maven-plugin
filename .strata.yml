@@ -40,10 +40,13 @@ stages:
     - step:
         name: configure-workspace
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
+        volumes:
+          - $$m2_settings:/root/.m2/settings.xml
         commands:
           - ln -s /cix/tmp/.strata/.m2/repository /root/.m2/repository
           - chmod +x setup.sh
-          - ./setup.sh -s settings.xml
+          - ./setup.sh -s settings.xml  "/cix/tmp/.strata/.m2/repository"
+          - ./setup.sh -c settings.xml
           - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml
   build:
     # Performs the build and execution of the unit-tests
@@ -51,11 +54,11 @@ stages:
         name: build-artifacts
         #image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_$$PARAMETERS_JAVA_VERSION
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
+        volumes:
+          - $$m2_settings:/root/.m2/settings.xml
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
-          - ln -s /cix/tmp/.strata/.m2/repository /root/.m2/repository
-          - ./setup.sh -c settings.xml
           - mvn clean install -DskipTests
           - mvn clean test -Psonar #Just unit tests
     # This is to avoid scan the pom.xml in the tests
@@ -68,11 +71,12 @@ stages:
     - step:
         name: mmp-integration-tests
         image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_$$PARAMETERS_JAVA_VERSION
+        volumes:
+          - $$m2_settings:/root/.m2/settings.xml
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
-          - ./setup.sh -c settings.xml
           - source $integration_test_secrets_file_path
           - mvn clean test -U -PpackagerIT -pl ':mule-packager-it'
           - mvn clean test -U -PdeployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD -Dgroups=service

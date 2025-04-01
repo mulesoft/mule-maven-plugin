@@ -43,6 +43,7 @@ stages:
           - chmod +x setup.sh
           - ./setup.sh -s settings.xml "/cix/tmp/.m2/repository"
           - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml
+          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s $m2_settings
   build:
     # Performs the build and execution of the unit-tests
     - step:

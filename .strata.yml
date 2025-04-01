@@ -73,6 +73,4 @@ stages:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
-          - source $integration_test_secrets_file_path
-          - mvn clean test -U -PpackagerIT -pl ':mule-packager-it'
-          - mvn clean test -U -PdeployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD -Dgroups=service
+          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings

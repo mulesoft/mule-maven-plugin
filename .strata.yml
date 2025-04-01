@@ -1,7 +1,7 @@
 global:
   email-reply-to: rodriguez.jorge@salesforce.com
   email-only-last-committer-on-dev-branch: false
-  log-level: info
+  log-level: debug
   parameters:
     - name: "JAVA_VERSION"
       default: "onejdk17"

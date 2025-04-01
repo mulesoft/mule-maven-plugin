@@ -653,7 +653,7 @@
         <snapshotRepository>
             <id>nexus</id>
             <name>SFCI Snapshots</name>
-            <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-snapshots/</url>
+            <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 

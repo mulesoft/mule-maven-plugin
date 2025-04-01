@@ -95,28 +95,17 @@ function InstallMaven() {
   export PATH=$PATH:/usr/share/maven/bin/mvn
   mvn -v
 }
-###############################################################################
-function CopySettings() {
-  local SETTINGS="$HOME/.m2/settings.xml"
-  local FILENAME="${1:-settings-all.xml}";
-  local NEW_SETTINGS="$DIRNAME/$FILENAME"
-
-  echo "Coping maven settings from $NEW_SETTINGS to $SETTINGS"
-  cp "$NEW_SETTINGS" "$SETTINGS"
-}
 ############################################################
 ############################################################
 # Main program                                             #
 ############################################################
 ############################################################
-getopts ":smc" option
+getopts ":sm" option
 case $option in
   s) # Create Maven setting file
      EditMavenSettings "$2" "$3";;
   m) # Install Maven
      InstallMaven "$2";;
-  c) # Copy maven settings to the user home
-     CopySettings "$2";;
  \?) # Invalid option
      echo "Error: Invalid option"
      exit;;

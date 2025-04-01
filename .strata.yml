@@ -40,12 +40,14 @@ stages:
     - step:
         name: configure-workspace
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
+        environment:
+          - name: M2_SETTINGS
+            value: $$m2_settings
         commands:
-          - ln -s /cix/tmp/.strata/.m2/repository /root/.m2/repository
           - chmod +x setup.sh
-          - ./setup.sh -s settings.xml  "/cix/tmp/.strata/.m2/repository"
-          - ./setup.sh -c settings.xml
-          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml
+          - ./setup.sh -s settings.xml "/cix/tmp/.strata/.m2/repository"
+          - cp settings.xml $M2_SETTINGS
+          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings
   build:
     # Performs the build and execution of the unit-tests
     - step:
@@ -57,9 +59,8 @@ stages:
         commands:
           - mvn clean install -DskipTests
           - mvn clean test -Psonar #Just unit tests
-    # This is to avoid scan the pom.xml in the tests
     - snyk-scan:
-        snyk-scan-detection-depth: 4
+        snyk-scan-detection-depth: 4 # This is to avoid scan the pom.xml in the tests
   integration-test:
     # Runs the integrations test
     # In this stage the coverage is reported to Sonarqube
@@ -67,8 +68,6 @@ stages:
     - step:
         name: mmp-integration-tests
         image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_$$PARAMETERS_JAVA_VERSION
-        volumes:
-          - $$m2_settings:/root/.m2/settings.xml
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
@@ -83,4 +82,4 @@ stages:
   publish:
     - maven-publish:
         auto-versioning-publish: false
-        maven-publish-jar-args: -P '!default' -DskipTests -Dmaven.test.skip=true
+        maven-publish-jar-args: -P'!default,!integration,!sonar' -DskipTests -Dmaven.test.skip=true

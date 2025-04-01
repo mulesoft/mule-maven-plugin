@@ -38,8 +38,6 @@
         <module>mule-deployer</module>
         <module>mule-packager</module>
         <module>mule-maven-plugin</module>
-        <module>mule-artifact-it</module>
-        <module>mmp-sonar</module>
     </modules>
 
     <properties>
@@ -659,6 +657,20 @@
         </snapshotRepository>
     </distributionManagement>
 
+    <profiles>
+        <profile>
+            <id>integration</id>
+            <modules>
+                <module>mule-artifact-it</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>sonar</id>
+            <modules>
+                <module>mmp-sonar</module>
+            </modules>
+        </profile>
+    </profiles>
     <scm>
         <connection>scm:git:git://github.com/mulesoft/mule-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:mulesoft/mule-maven-plugin.git</developerConnection>

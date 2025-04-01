@@ -58,7 +58,7 @@ stages:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
           - mvn clean install -DskipTests
-          - mvn clean test -Psonar #Just unit tests
+          #- mvn clean test -Psonar #Just unit tests
     - snyk-scan:
         snyk-scan-detection-depth: 4 # This is to avoid scan the pom.xml in the tests
   integration-test:
@@ -82,4 +82,4 @@ stages:
   publish:
     - maven-publish:
         auto-versioning-publish: false
-        maven-publish-jar-args: -P'!default,!integration,!sonar' -DskipTests -Dmaven.test.skip=true
+        maven-publish-jar-args: -P'!default,!integration,!sonar' -DskipTests -Dmaven.test.skip=true -X

@@ -43,11 +43,10 @@ stages:
           - name: M2_SETTINGS
             value: $$m2_settings
         commands:
-          - echo $M2_SETTINGS
           - chmod +x setup.sh
-          - ./setup.sh -s settings.xml "/cix/tmp/.m2/repository"
-          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings.xml
-          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s $M2_SETTINGS
+          - ./setup.sh -s settings.xml "/cix/tmp/.strata/.m2/repository"
+          - cp settings.xml $M2_SETTINGS
+          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings
   build:
     # Performs the build and execution of the unit-tests
     - step:
@@ -74,24 +73,6 @@ stages:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
           - ./setup.sh -m $PARAMETERS_MAVEN_VERSION
-          - ./setup.sh -c settings.xml
           - source $integration_test_secrets_file_path
           - mvn clean test -U -PpackagerIT -pl ':mule-packager-it'
           - mvn clean test -U -PdeployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD -Dgroups=service
-        when:
-          - operator: EQ
-            value: "0"
-            other: "2"
-  publish:
-    - publish-jar:
-        artifacts:
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-extension-model-loader"
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-classloader-model"
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-deployer"
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-packager"
-          - groupId: "org.mule.tools.maven"
-            artifactId:  "mule-maven-plugin"

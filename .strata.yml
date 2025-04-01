@@ -40,8 +40,6 @@ stages:
     - step:
         name: configure-workspace
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
-        volumes:
-          - $$m2_settings:/root/.m2/settings.xml
         commands:
           - ln -s /cix/tmp/.strata/.m2/repository /root/.m2/repository
           - chmod +x setup.sh
@@ -54,8 +52,6 @@ stages:
         name: build-artifacts
         #image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_$$PARAMETERS_JAVA_VERSION
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
-        volumes:
-          - $$m2_settings:/root/.m2/settings.xml
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:

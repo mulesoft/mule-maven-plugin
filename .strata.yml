@@ -39,6 +39,8 @@ stages:
     - step:
         name: configure-workspace
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
+        environment:
+          - name: $$m2_settings
         commands:
           - chmod +x setup.sh
           - ./setup.sh -s settings.xml "/cix/tmp/.m2/repository"

@@ -82,4 +82,3 @@ stages:
   publish:
     - maven-publish:
         auto-versioning-publish: false
-        maven-publish-jar-args: "-P'!default,!integration,!sonar'"

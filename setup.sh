@@ -18,7 +18,6 @@ function EditMavenSettings() {
   local XPATH_MIRROR_OF="//_:mirror/_:id[contains(text(),'nexus')]/../_:mirrorOf"
   #Servers that will be added, format: (repository id)||(username)||(password)
   local SERVERS=(
-    'internal-nexus||${env.NEXUS_USERNAME}||${env.NEXUS_PASSWORD}'
     'mule-releases||${env.MULESOFT_PUBLIC_NEXUS_USER}||${env.MULESOFT_PUBLIC_NEXUS_PASS}'
     'mule-snapshots||${env.MULESOFT_PUBLIC_NEXUS_USER}||${env.MULESOFT_PUBLIC_NEXUS_PASS}'
     'mule-ci-releases||${env.MULESOFT_PUBLIC_NEXUS_USER}||${env.MULESOFT_PUBLIC_NEXUS_PASS}'

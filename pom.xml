@@ -646,14 +646,14 @@
 
     <distributionManagement>
         <repository>
-            <id>nexus</id>
+            <id>internal-nexus</id>
             <name>SFCI Releases</name>
-            <url>https://nexus-proxy.repo.local.sfdc.net/nexus/service/rest/repository/browse/mulesoft-maven-releases/</url>
+            <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-releases</url>
         </repository>
         <snapshotRepository>
-            <id>nexus</id>
+            <id>internal-nexus</id>
             <name>SFCI Snapshots</name>
-            <url>https://nexus-proxy.repo.local.sfdc.net/nexus/service/rest/repository/browse/mulesoft-maven-snapshots/</url>
+            <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 

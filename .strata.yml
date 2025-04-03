@@ -81,6 +81,5 @@ stages:
             other: "2"
   publish:
     - maven-publish:
-        maven-publish-jar-image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
         auto-versioning-publish: false
-        maven-publish-jar-args: -P\u0027!default\u002C!integration\u002C!sonar\u0027
+        maven-publish-jar-args: -P\u0027!default\u002C!integration\u002C!sonar\u0027 -Dmaven.repo.local=/cix/tmp/.strata/.m2/repository

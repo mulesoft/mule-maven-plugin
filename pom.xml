@@ -646,12 +646,12 @@
 
     <distributionManagement>
         <repository>
-            <id>nexus</id>
+            <id>project</id>
             <name>SFCI Releases</name>
             <url>${env.NEXUS_BASE_URL}/repositories/mulesoft-maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>nexus</id>
+            <id>project</id>
             <name>SFCI Snapshots</name>
             <url>${env.NEXUS_BASE_URL}/repositories/mulesoft-maven-snapshots/</url>
         </snapshotRepository>

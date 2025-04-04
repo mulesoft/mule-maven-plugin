@@ -82,4 +82,4 @@ stages:
   publish:
     - maven-publish:
         auto-versioning-publish: false
-        maven-publish-jar-args: "-P'!default,!integration,!sonar' -Dmaven.repo.local=/cix/tmp/.strata/.m2/repository"
+        maven-publish-jar-args: "-Dmaven.repo.local=/cix/tmp/.strata/.m2/repository"

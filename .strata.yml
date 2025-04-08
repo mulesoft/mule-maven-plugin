@@ -52,7 +52,7 @@ stages:
     # Performs the build and execution of the unit-tests
     - step:
         name: build-artifacts
-        image: docker.repo.local.sfdc.net:sfci:docker-images:sfdc_rhel9_java_build
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build:latest
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:

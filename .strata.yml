@@ -52,13 +52,12 @@ stages:
     # Performs the build and execution of the unit-tests
     - step:
         name: build-artifacts
-        #image: docker.repo.local.sfdc.net/sfci/onejdk/salesforcejdk/sfdc_rhel9_$$PARAMETERS_JAVA_VERSION
-        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
+        image: docker.repo.local.sfdc.net:sfci:docker-images:sfdc_rhel9_java_build
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
           - mvn clean install -DskipTests
-          - mvn clean test -Psonar #Just unit tests
+          - mvn clean test -Psonar
     - snyk-scan:
         snyk-scan-detection-depth: 4 # This is to avoid scan the pom.xml in the tests
   integration-test:
@@ -79,6 +78,3 @@ stages:
           - operator: EQ
             value: "0"
             other: "2"
-  publish:
-    - maven-publish:
-        auto-versioning-publish: false

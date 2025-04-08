@@ -55,6 +55,10 @@ stages:
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
         environment:
           - name: PARAMETERS_MAVEN_VERSION
+          - name: NEXUS_USERNAME
+            value: $$cred.NEXUS_USERNAME_RW
+          - name: NEXUS_PASSWORD
+            value: $$cred.NEXUS_PASSWORD_RW
         commands:
           #-  ./setup.sh -m $PARAMETERS_MAVEN_VERSION
           - ./setup.sh -c settings.xml

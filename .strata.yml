@@ -46,7 +46,6 @@ stages:
         commands:
           - chmod +x setup.sh
           - ./setup.sh -s settings.xml "/cix/tmp/.strata/.m2/repository"
-          - cp settings.xml $M2_SETTINGS
           - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings
   build:
     # Performs the build and execution of the unit-tests
@@ -56,7 +55,7 @@ stages:
         environment:
           - name: PARAMETERS_MAVEN_VERSION
         commands:
-          - mvn clean install -DskipTests
+          - mvn clean install -DskipTests -s settings.xml
     - snyk-scan:
         snyk-scan-detection-depth: 4 # This is to avoid scan the pom.xml in the tests
   publish:

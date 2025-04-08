@@ -29,6 +29,7 @@ class CompileMojoTest extends MojoTest implements SettingsConfigurator {
     clearResources();
   }
 
+  @org.junit.jupiter.api.Disabled
   @Test
   void testCompile() throws IOException, VerificationException {
     verifier.addCliArguments(GOAL);

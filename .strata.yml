@@ -59,15 +59,5 @@ stages:
     - snyk-scan:
         snyk-scan-detection-depth: 4 # This is to avoid scan the pom.xml in the tests
   publish:
-    - publish-jar:
-        artifacts:
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-extension-model-loader"
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-classloader-model"
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-deployer"
-          - groupId: "org.mule.tools.maven"
-            artifactId: "mule-packager"
-          - groupId: "org.mule.tools.maven"
-            artifactId:  "mule-maven-plugin"
+    - maven-publish:
+        auto-versioning-publish: false

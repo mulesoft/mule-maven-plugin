@@ -648,12 +648,12 @@
         <repository>
             <id>project</id>
             <name>SFCI Releases</name>
-            <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-releases/</url>
+            <url>${env.NEXUS_BASE_URL}/repositories/mulesoft-maven-releases/</url>
         </repository>
         <snapshotRepository>
             <id>project</id>
             <name>SFCI Snapshots</name>
-            <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-snapshots/</url>
+            <url>${env.NEXUS_BASE_URL}/repositories/mulesoft-maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 

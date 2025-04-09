@@ -1,7 +1,13 @@
 #!/bin/bash
+set -e # Exit immediately if a command exits with a non-zero status.
 ###############################################################################
 DIRNAME=$(dirname $0)
+CWD=$(pwd)
 ###############################################################################
+# Arguments:
+# - $1: Original setting.xml path
+# - $2: Name of the final file
+# - $3: Path of the repository
 function EditMavenSettings() {
   echo "Installing xmlstarlet"
   dnf update -y --setopt=tsflags=nodocs
@@ -9,8 +15,8 @@ function EditMavenSettings() {
   dnf clean all
   rm -rf /var/cache/dnf/*
   ###############################################################################
-  local FILENAME="${1:-settings-all.xml}";
-  local SETTINGS="$HOME/.m2/settings.xml"
+  local FILENAME="${2:-settings-all.xml}";
+  local SETTINGS="$1"
   local NEW_SETTINGS="$DIRNAME/$FILENAME"
   # XPATH expressions
   local XPATH_REPOSITORIES="//_:profile/_:id[contains(text(),'nexus')]/../_:repositories"
@@ -18,26 +24,35 @@ function EditMavenSettings() {
   local XPATH_MIRROR_OF="//_:mirror/_:id[contains(text(),'nexus')]/../_:mirrorOf"
   #Servers that will be added, format: (repository id)||(username)||(password)
   local SERVERS=(
-    'mule-releases||${env.MULESOFT_PUBLIC_NEXUS_USER}||${env.MULESOFT_PUBLIC_NEXUS_PASS}'
-    'mule-snapshots||${env.MULESOFT_PUBLIC_NEXUS_USER}||${env.MULESOFT_PUBLIC_NEXUS_PASS}'
-    'mule-ci-releases||${env.MULESOFT_PUBLIC_NEXUS_USER}||${env.MULESOFT_PUBLIC_NEXUS_PASS}'
+    'mulesoft-maven-all||${env.NEXUS_USERNAME}||${env.NEXUS_PASSWORD}'
+    'mulesoft-maven-external-releases||${env.NEXUS_USERNAME}||${env.NEXUS_PASSWORD}'
+    'mulesoft-maven-external-snapshots||${env.NEXUS_USERNAME}||${env.NEXUS_PASSWORD}'
     'anypoint-exchange-v3||${env.MMP_USERNAME}||${env.MMP_PASSWORD}'
   )
   #Repositories that will be added, format: (id)||(url)||(release)||(snapshot)
   local REPOSITORIES=(
-    'mule-ci-releases||https://repository-master.mulesoft.org/nexus/content/repositories/ci-releases||true||false'
+    'mulesoft-maven-all||${env.NEXUS_BASE_URL}/groups/mulesoft-maven-all/||true||true'
+    'mulesoft-maven-external-releases||${env.NEXUS_BASE_URL}/repositories/mulesoft-maven-external-releases/||true||false'
+    'mulesoft-maven-external-snapshots||${env.NEXUS_BASE_URL}/repositories/mulesoft-maven-external-snapshots/||false||true'
   )
-
+  # Repositories that will be excluded from the SF mirror
+  local EXCLUSIONS=(
+    'mulesoft-maven-all'
+    'mulesoft-maven-external-releases'
+    'mulesoft-maven-external-snapshots'
+    'anypoint-exchange-v3'
+  )
+  ##
   echo "Coping $SETTINGS to $NEW_SETTINGS"
   cp $SETTINGS $NEW_SETTINGS
 
   echo "Editing $NEW_SETTINGS"
-
-  echo "Set localRepository to $2"
-  xmlstarlet ed -L -s "/_:settings" -t elem -n localRepository -v "$2" "$NEW_SETTINGS"
-
+  ##
+  echo "Set localRepository to $3"
+  xmlstarlet ed -L -s "/_:settings" -t elem -n localRepository -v "$3" "$NEW_SETTINGS"
+  ##
   for REPOSITORY in "${REPOSITORIES[@]}"; do
-    DATA=(${REPOSITORY//\|\|/ })
+    local DATA=(${REPOSITORY//\|\|/ })
     echo "  - Adding Repository ${DATA[0]}"
     xmlstarlet ed -L\
       -s "$XPATH_REPOSITORIES" -t elem -n repository \
@@ -45,14 +60,18 @@ function EditMavenSettings() {
       -s "$XPATH_REPOSITORIES/repository[last()]" -t elem -n name -v "${DATA[0]}" \
       -s "$XPATH_REPOSITORIES/repository[last()]" -t elem -n url -v "${DATA[1]}" \
       -s "$XPATH_REPOSITORIES/repository[last()]" -t elem -n releases \
-      -s "$XPATH_REPOSITORIES/repository[last()]/releases[last()]" -t elem -n enabled -v "${DATA[2]}" \
+      -s "$XPATH_REPOSITORIES/repository[last()]/releases[last()]" -t elem -n enabled -v "${DATA[2]}"\
+      -s "$XPATH_REPOSITORIES/repository[last()]/releases[last()]" -t elem -n updatePolicy -v "always" \
+      -s "$XPATH_REPOSITORIES/repository[last()]/releases[last()]" -t elem -n checksumPolicy -v "warn" \
       -s "$XPATH_REPOSITORIES/repository[last()]" -t elem -n snapshots \
       -s "$XPATH_REPOSITORIES/repository[last()]/snapshots[last()]" -t elem -n enabled -v "${DATA[3]}" \
+      -s "$XPATH_REPOSITORIES/repository[last()]/snapshots[last()]" -t elem -n updatePolicy -v "never" \
+      -s "$XPATH_REPOSITORIES/repository[last()]/snapshots[last()]" -t elem -n checksumPolicy -v "fail" \
       "$NEW_SETTINGS"
   done
-
+  ##
   for SERVER in "${SERVERS[@]}"; do
-    DATA=(${SERVER//\|\|/ })
+    local DATA=(${SERVER//\|\|/ })
     echo "  - Adding Server ${DATA[0]}"
     xmlstarlet ed -L\
       -s "$XPATH_SERVER" -t elem -n server \
@@ -60,17 +79,24 @@ function EditMavenSettings() {
       -s "$XPATH_SERVER/server[last()]" -t elem -n username -v "${DATA[1]}" \
       -s "$XPATH_SERVER/server[last()]" -t elem -n password -v "${DATA[2]}" \
       "$NEW_SETTINGS"
-
-    MIRROR_OF=$(xmlstarlet sel -t -v "$XPATH_MIRROR_OF/text()" "$NEW_SETTINGS")
-    echo "  - Updating mirror with id: nexus, from '$MIRROR_OF' to '$MIRROR_OF,!${DATA[0]}'"
-    xmlstarlet ed -L -u "$XPATH_MIRROR_OF" -v "$MIRROR_OF,!${DATA[0]}" "$NEW_SETTINGS"
   done
-
+  ##
+  for EXCLUSION in "${EXCLUSIONS[@]}"; do
+      local DATA=(${EXCLUSION//\|\|/ })
+      MIRROR_OF=$(xmlstarlet sel -t -v "$XPATH_MIRROR_OF/text()" "$NEW_SETTINGS")
+      echo "  - Updating mirror with id: nexus, from '$MIRROR_OF' to '$MIRROR_OF,!${DATA[0]}'"
+      xmlstarlet ed -L -u "$XPATH_MIRROR_OF" -v "$MIRROR_OF,!${DATA[0]}" "$NEW_SETTINGS"
+  done
+  ##
   echo "New settings file: $NEW_SETTINGS"
 }
 ###############################################################################
+# Arguments:
+# - $1: Maven Version
 function InstallMaven() {
   local VERSION="${1/MVN-/}"
+  local NEXUS_URL="${NEXUS_BASE_URL:-https://nexus-proxy.repo.local.sfdc.net/nexus/content}";
+  local FULL_URL="${NEXUS_URL}/repositories/central/org/apache/maven/apache-maven/${VERSION}/apache-maven-${VERSION}-bin.tar.gz"
   ####
   case $VERSION in
     3.8.8) local SHA=332088670d14fa9ff346e6858ca0acca304666596fec86eea89253bd496d3c90deae2be5091be199f48e09d46cec817c6419d5161fb4ee37871503f472765d00;;
@@ -83,9 +109,10 @@ function InstallMaven() {
   esac
   ####
   echo "Installing Maven $VERSION"
-
+  dnf remove -y maven
+  echo "Download maven from: ${FULL_URL}"
   mkdir -p /usr/share/maven /usr/share/maven/ref \
-    && curl -fsSL -o /tmp/apache-maven.tar.gz https://archive.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz \
+    && curl -fsSL -u ${NEXUS_USERNAME}:${NEXUS_PASSWORD} -o /tmp/apache-maven.tar.gz ${FULL_URL}\
     && echo "${SHA}  /tmp/apache-maven.tar.gz" | sha512sum -c - \
     && tar -xzf /tmp/apache-maven.tar.gz -C /usr/share/maven --strip-components=1 \
     && rm -f /tmp/apache-maven.tar.gz \
@@ -103,7 +130,7 @@ function InstallMaven() {
 getopts ":sm" option
 case $option in
   s) # Create Maven setting file
-     EditMavenSettings "$2" "$3";;
+     EditMavenSettings "$2" "$3" "$4";;
   m) # Install Maven
      InstallMaven "$2";;
  \?) # Invalid option

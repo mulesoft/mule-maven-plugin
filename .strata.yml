@@ -3,15 +3,24 @@ global:
   email-only-last-committer-on-dev-branch: false
   log-level: debug
   parameters:
-    - name: "JAVA_VERSION"
-      default: "onejdk17"
-      description: "Java version to be used"
+    - name: "ACTION"
+      default: "Build Snapshot"
+      description: "Indicates the action that the pipeline will perform"
       type: "choice"
       choices:
-        - onejdk8_basic
-        - onejdk11
-        - onejdk17
-        - onejdk21
+        - "Build Snapshot"
+        - "Run Integrations Tests"
+        - "Publish RC"
+        - "Release"
+    - name: "JAVA_VERSION"
+      default: "java_build"
+      description: "Java version to be used (java_build is java 17) (the build is made only with Java 17)"
+      type: "choice"
+      choices:
+        - java_build
+        - java_build/java8
+        - java_build/java11
+        - java_build/java21
       required: true
     - name: "MAVEN_VERSION"
       default: "MVN-3.9.4"
@@ -27,10 +36,6 @@ global:
     - name: "VERSION"
       type: "string"
       description: "Version used in the release"
-    - name: "RELEASE_AS_RC"
-      default: "false"
-      description: "Indicates if the deploy will be a release candidate"
-      type: "boolean"
   production-branches:
     - main
     - tasks/poc-sfci-v8
@@ -39,26 +44,58 @@ stages:
     # Take the Maven settings and add the required repositories and servers in the following steps.
     - step:
         name: configure-workspace
-        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build/java11
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build:latest
         environment:
+          - name: NEXUS_BASE_URL
+          - name: NEXUS_USERNAME
+          - name: NEXUS_PASSWORD
           - name: M2_SETTINGS
             value: $$m2_settings
         commands:
           - chmod +x setup.sh
-          - ./setup.sh -s settings.xml "/cix/tmp/.strata/.m2/repository"
-          - cp settings.xml $M2_SETTINGS
-          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings
+          - ./setup.sh -s "$M2_SETTINGS" "settings-local.xml" "/cix/tmp/.strata/.m2/repository"
+          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings-local.xml
   build:
     # Performs the build and execution of the unit-tests
     - step:
         name: build-artifacts
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build:latest
         environment:
+          - name: NEXUS_BASE_URL
+          - name: NEXUS_USERNAME
+          - name: NEXUS_PASSWORD
           - name: PARAMETERS_MAVEN_VERSION
         commands:
-          - mvn clean install -DskipTests
+          - ./setup.sh -m "$PARAMETERS_MAVEN_VERSION"
+          - echo "[MULESOFT][MUNIT] Build MMP"
+          - mvn clean install -DskipTests -s "settings-local.xml"
+          - echo "[MULESOFT][MUNIT] Unit Tests"
+          - mvn clean test -Psonar -s settings.xml
     - snyk-scan:
         snyk-scan-detection-depth: 4 # This is to avoid scan the pom.xml in the tests
+  integration-test:
+    # Runs the integrations test
+    - step:
+        name: munit-integration-tests
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_$$PARAMETERS_JAVA_VERSION
+        environment:
+          - name: NEXUS_BASE_URL
+          - name: NEXUS_USERNAME
+          - name: NEXUS_PASSWORD
+          - name: PARAMETERS_MAVEN_VERSION
+        commands:
+          - ./setup.sh -m "$PARAMETERS_MAVEN_VERSION"
+          - source $integration_test_secrets_file_path
+          - mvn clean test -U -Pintegration,packagerIT -pl ':mule-packager-it'
+          - mvn clean test -U -Pintegration,deployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD -Dgroups=service
+        when:
+          - operator: NEQ
+            value: $$PARAMETERS_ACTION
+            other: "Build Snapshot"
   publish:
     - maven-publish:
         auto-versioning-publish: false
+        when:
+          - operator: NEQ
+            value: $$PARAMETERS_ACTION
+            other: "Run Integrations Tests"

@@ -38,7 +38,6 @@ global:
       description: "Version used in the release"
   production-branches:
     - main
-    - tasks/poc-sfci-v8
 stages:
   precheck:
     # Take the Maven settings and add the required repositories and servers in the following steps.
@@ -92,10 +91,3 @@ stages:
           - operator: NEQ
             value: $$PARAMETERS_ACTION
             other: "Build Snapshot"
-  publish:
-    - maven-publish:
-        auto-versioning-publish: false
-        when:
-          - operator: NEQ
-            value: $$PARAMETERS_ACTION
-            other: "Run Integrations Tests"

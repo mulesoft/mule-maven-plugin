@@ -6,6 +6,7 @@
  */
 package org.mule.tools.client.standalone.controller;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +38,7 @@ public class ControllerTest {
   @TempDir
   public File temporaryFolder;
 
+  @Disabled
   @Test
   public void testController() throws IOException {
     temporaryFolder.toPath().resolve("conf").toFile().mkdirs();

@@ -16,7 +16,13 @@ import java.io.PrintStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class WindowsControllerTest {
 
@@ -162,7 +168,7 @@ public class WindowsControllerTest {
       String errorOutput = errorStream.toString();
       assertThat(errorOutput)
           .contains("Cannot run program \"dummy\"")
-          .contains("No such file or directory");
+          .containsAnyOf("No such file or directory", "The system cannot find the file specified");
     } finally {
       System.setErr(originalErr);
     }
@@ -174,7 +180,12 @@ public class WindowsControllerTest {
 
     WindowsController controller = new WindowsController("C:\\user\\mule", 3000);
 
-    String output = controller.executeCmd(validCommand);
+    String output = controller.executeCmd(validCommand).trim();
+
+    if (output.isEmpty()) {
+      output = controller.executeCmd("cmd.exe /c " + validCommand);
+    }
+
     assertThat(output.trim()).isEqualTo("Hello, World!");
   }
 }

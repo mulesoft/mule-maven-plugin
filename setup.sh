@@ -64,10 +64,6 @@ function EditMavenSettings() {
       -s "$XPATH_REPOSITORIES/repository[last()]/snapshots[last()]" -t elem -n updatePolicy -v "never" \
       -s "$XPATH_REPOSITORIES/repository[last()]/snapshots[last()]" -t elem -n checksumPolicy -v "fail" \
       "$NEW_SETTINGS"
-
-      MIRROR_OF=$(xmlstarlet sel -t -v "$XPATH_MIRROR_OF/text()" "$NEW_SETTINGS")
-      echo "  - Updating mirror with id: nexus, from '$MIRROR_OF' to '$MIRROR_OF,!${DATA[0]}'"
-      xmlstarlet ed -L -u "$XPATH_MIRROR_OF" -v "$MIRROR_OF,!${DATA[0]}" "$NEW_SETTINGS"
   done
   ##
   for SERVER in "${SERVERS[@]}"; do
@@ -79,6 +75,10 @@ function EditMavenSettings() {
       -s "$XPATH_SERVER/server[last()]" -t elem -n username -v "${DATA[1]}" \
       -s "$XPATH_SERVER/server[last()]" -t elem -n password -v "${DATA[2]}" \
       "$NEW_SETTINGS"
+
+      MIRROR_OF=$(xmlstarlet sel -t -v "$XPATH_MIRROR_OF/text()" "$NEW_SETTINGS")
+      echo "  - Updating mirror with id: nexus, from '$MIRROR_OF' to '$MIRROR_OF,!${DATA[0]}'"
+      xmlstarlet ed -L -u "$XPATH_MIRROR_OF" -v "$MIRROR_OF,!${DATA[0]}" "$NEW_SETTINGS"
   done
   ##
   echo "New settings file: $NEW_SETTINGS"

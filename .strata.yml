@@ -55,6 +55,7 @@ stages:
           - chmod +x setup.sh
           - ./setup.sh -s "$M2_SETTINGS" "settings-local.xml" "/cix/tmp/.strata/.m2/repository"
           - cp "settings-local.xml" "$M2_SETTINGS"
+          - rm "settings-local.xml"
           - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings
   build:
     # Performs the build and execution of the unit-tests

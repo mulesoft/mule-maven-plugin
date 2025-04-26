@@ -14,7 +14,7 @@ global:
         - "Release"
     - name: "JAVA_VERSION"
       default: "java_build"
-      description: "Java version to be used (java_build is java 17) (the build is made only with Java 17)"
+      description: "Java version to be used (java_build is java 17) (the build is made always with Java 17)"
       type: "choice"
       choices:
         - java_build
@@ -33,9 +33,9 @@ global:
         - MVN-3.9.6
         - MVN-3.9.9
       required: true
-    - name: "VERSION"
+    - name: "PUBLISH_VERSION"
       type: "string"
-      description: "Version used in the release"
+      description: "Version to be used to publish"
   production-branches:
     - main
     - tasks/poc-sfci-v8
@@ -54,7 +54,8 @@ stages:
         commands:
           - chmod +x setup.sh
           - ./setup.sh -s "$M2_SETTINGS" "settings-local.xml" "/cix/tmp/.strata/.m2/repository"
-          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings -s settings-local.xml
+          - cp "settings-local.xml" "$M2_SETTINGS"
+          - mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-settings
   build:
     # Performs the build and execution of the unit-tests
     - step:
@@ -68,9 +69,9 @@ stages:
         commands:
           - ./setup.sh -m "$PARAMETERS_MAVEN_VERSION"
           - echo "[MULESOFT][MUNIT] Build MMP"
-          - mvn clean install -DskipTests -s "settings-local.xml"
+          - mvn clean install -DskipTests
           - echo "[MULESOFT][MUNIT] Unit Tests"
-          - mvn clean test -Psonar -s "settings-local.xml"
+          - mvn clean test -Psonar
     - snyk-scan:
         snyk-scan-detection-depth: 4 # This is to avoid scan the pom.xml in the tests
   integration-test:
@@ -87,15 +88,50 @@ stages:
           - ./setup.sh -m "$PARAMETERS_MAVEN_VERSION"
           - source $integration_test_secrets_file_path
           - mvn clean test -U -Pintegration,packagerIT -pl ':mule-packager-it'
-          - mvn clean test -U -Pintegration,deployerIT -pl ':mule-deployer-it' -Dusername=$MMP_USERNAME -Dpassword=$MMP_PASSWORD -DusernameUbp=$MMP_UBP_USERNAME -DpasswordUbp=$MMP_UBP_PASSWORD -Dgroups=service
+          - mvn clean test -U -Pintegration,deployerIT -pl ':mule-deployer-it' -Dusername="$MMP_USERNAME" -Dpassword="$MMP_PASSWORD" -DusernameUbp="$MMP_UBP_USERNAME" -DpasswordUbp="$MMP_UBP_PASSWORD" -Dgroups=service
         when:
           - operator: NEQ
             value: $$PARAMETERS_ACTION
             other: "Build Snapshot"
   publish:
+    - step:
+        name: munit-prepare-publish
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build:latest
+        environment:
+          - name: PARAMETERS_ACTION
+          - name: PARAMETERS_PUBLISH_VERSION
+        commands:
+          - source $publish_secrets_file_path
+          - echo "Adding maven properties"
+          - mkdir -p ".mvn"
+          - export MVN_CONFIG_FILE=".mvn/maven.config"
+          - export MAVEN_REPO_LOCAL=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=settings.localRepository -q -DforceStdout)
+          - echo "-Dmaven.repo.local=\"$MAVEN_REPO_LOCAL\"" >> "$MVN_CONFIG_FILE"
+          - echo "-Dsettings.localRepository=\"$MAVEN_REPO_LOCAL\"" >> "$MVN_CONFIG_FILE"
+          - echo "-PfullIntegration" >> "$MVN_CONFIG_FILE"
+          - echo "-DallowSnapshots" >> "$MVN_CONFIG_FILE"
+          - echo "-DskipTests" >> "$MVN_CONFIG_FILE"
+          - |
+            VALUES=("Build Snapshot" "Publish RC" "Release")
+            if [[ ${VALUES[@]} =~ "$PARAMETERS_ACTION" ]]; then 
+              echo "[MULESOFT][MUNIT] Remote Publish: Adding release profile" 
+              echo "-DMULESOFT_USERNAME=$MULESOFT_PUBLIC_NEXUS_USER" >> "$MVN_CONFIG_FILE"
+              echo "-DMULESOFT_PASSWORD=$MULESOFT_PUBLIC_NEXUS_PASS" >> "$MVN_CONFIG_FILE"
+              echo "-Prelease" >> "$MVN_CONFIG_FILE"
+            else 
+              echo "[MULESOFT][MUNIT] Local Publish"
+            fi
+          - |
+            VALUES=("Publish RC" "Release")
+            if [[ ${VALUES[@]} =~ "$PARAMETERS_ACTION"  ]] ; then 
+              echo "[MULESOFT][MUNIT] $PARAMETERS_ACTION: $PARAMETERS_PUBLISH_VERSION" 
+              mvn org.codehaus.mojo:versions-maven-plugin:2.7:set -DnewVersion="$PARAMETERS_PUBLISH_VERSION" -DgenerateBackupPoms=false
+            fi
     - maven-publish:
         auto-versioning-publish: false
-        when:
-          - operator: NEQ
-            value: $$PARAMETERS_ACTION
-            other: "Run Integrations Tests"
+  post-publish:
+    - step:
+        name: munit-clean-workspace
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_java_build:latest
+        commands:
+          - rm ".mvn/maven.config"

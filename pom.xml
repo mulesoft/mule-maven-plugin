@@ -646,14 +646,14 @@
 
     <distributionManagement>
         <repository>
-            <id>project</id>
-            <name>SFCI Releases</name>
-            <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-releases/</url>
+            <id>mule-releases</id>
+            <name>MuleSoft Releases Repository</name>
+            <url>file://${settings.localRepository}</url>
         </repository>
         <snapshotRepository>
-            <id>project</id>
-            <name>SFCI Snapshots</name>
-            <url>https://nexus-proxy.repo.local.sfdc.net/nexus/repository/mulesoft-maven-snapshots/</url>
+            <id>mule-snapshots</id>
+            <name>MuleSoft Snapshots Repository</name>
+            <url>file://${settings.localRepository}</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -669,6 +669,24 @@
             <modules>
                 <module>mmp-sonar</module>
             </modules>
+        </profile>
+        <profile>
+            <id>release</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>mulesoft-master</id>
+                    <name>SFCI Releases</name>
+                    <url>https://repository-master.mulesoft.org/nexus/content/repositories/ci-releases/</url>
+                </repository>
+                <snapshotRepository>
+                    <id>mulesoft-master</id>
+                    <name>SFCI Snapshots</name>
+                    <url>https://repository-master.mulesoft.org/nexus/content/repositories/ci-snapshots/</url>
+                </snapshotRepository>
+            </distributionManagement>
         </profile>
     </profiles>
     <scm>

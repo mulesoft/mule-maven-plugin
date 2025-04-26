@@ -2,7 +2,6 @@
 set -e # Exit immediately if a command exits with a non-zero status.
 ###############################################################################
 DIRNAME=$(dirname $0)
-CWD=$(pwd)
 ###############################################################################
 # Arguments:
 # - $1: Original setting.xml path
@@ -24,23 +23,20 @@ function EditMavenSettings() {
   local XPATH_MIRROR_OF="//_:mirror/_:id[contains(text(),'nexus')]/../_:mirrorOf"
   #Servers that will be added, format: (repository id)||(username)||(password)
   local SERVERS=(
+    # Internal repositories (SF) to resolve dependencies
     'mulesoft-maven-all||${env.NEXUS_USERNAME}||${env.NEXUS_PASSWORD}'
     'mulesoft-maven-external-releases||${env.NEXUS_USERNAME}||${env.NEXUS_PASSWORD}'
     'mulesoft-maven-external-snapshots||${env.NEXUS_USERNAME}||${env.NEXUS_PASSWORD}'
+    # Exchange repositories required for the integrations tests
     'anypoint-exchange-v3||${env.MMP_USERNAME}||${env.MMP_PASSWORD}'
+    # External repository for publish
+    'mulesoft-master||${MULESOFT_USERNAME}||${MULESOFT_PASSWORD}'
   )
   #Repositories that will be added, format: (id)||(url)||(release)||(snapshot)
   local REPOSITORIES=(
     'mulesoft-maven-all||${env.NEXUS_BASE_URL}/groups/mulesoft-maven-all/||true||true'
     'mulesoft-maven-external-releases||${env.NEXUS_BASE_URL}/repositories/mulesoft-maven-external-releases/||true||false'
     'mulesoft-maven-external-snapshots||${env.NEXUS_BASE_URL}/repositories/mulesoft-maven-external-snapshots/||false||true'
-  )
-  # Repositories that will be excluded from the SF mirror
-  local EXCLUSIONS=(
-    'mulesoft-maven-all'
-    'mulesoft-maven-external-releases'
-    'mulesoft-maven-external-snapshots'
-    'anypoint-exchange-v3'
   )
   ##
   echo "Coping $SETTINGS to $NEW_SETTINGS"
@@ -68,6 +64,10 @@ function EditMavenSettings() {
       -s "$XPATH_REPOSITORIES/repository[last()]/snapshots[last()]" -t elem -n updatePolicy -v "never" \
       -s "$XPATH_REPOSITORIES/repository[last()]/snapshots[last()]" -t elem -n checksumPolicy -v "fail" \
       "$NEW_SETTINGS"
+
+      MIRROR_OF=$(xmlstarlet sel -t -v "$XPATH_MIRROR_OF/text()" "$NEW_SETTINGS")
+      echo "  - Updating mirror with id: nexus, from '$MIRROR_OF' to '$MIRROR_OF,!${DATA[0]}'"
+      xmlstarlet ed -L -u "$XPATH_MIRROR_OF" -v "$MIRROR_OF,!${DATA[0]}" "$NEW_SETTINGS"
   done
   ##
   for SERVER in "${SERVERS[@]}"; do
@@ -79,13 +79,6 @@ function EditMavenSettings() {
       -s "$XPATH_SERVER/server[last()]" -t elem -n username -v "${DATA[1]}" \
       -s "$XPATH_SERVER/server[last()]" -t elem -n password -v "${DATA[2]}" \
       "$NEW_SETTINGS"
-  done
-  ##
-  for EXCLUSION in "${EXCLUSIONS[@]}"; do
-      local DATA=(${EXCLUSION//\|\|/ })
-      MIRROR_OF=$(xmlstarlet sel -t -v "$XPATH_MIRROR_OF/text()" "$NEW_SETTINGS")
-      echo "  - Updating mirror with id: nexus, from '$MIRROR_OF' to '$MIRROR_OF,!${DATA[0]}'"
-      xmlstarlet ed -L -u "$XPATH_MIRROR_OF" -v "$MIRROR_OF,!${DATA[0]}" "$NEW_SETTINGS"
   done
   ##
   echo "New settings file: $NEW_SETTINGS"

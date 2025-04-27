@@ -128,6 +128,7 @@ stages:
               echo "[MULESOFT][MUNIT] $PARAMETERS_ACTION: $PARAMETERS_PUBLISH_VERSION" 
               mvn org.codehaus.mojo:versions-maven-plugin:2.7:set -DnewVersion="$PARAMETERS_PUBLISH_VERSION" -DgenerateBackupPoms=false
             fi
+          - mvn --quiet --also-make exec:exec -Dexec.executable="pwd"
     - maven-publish:
         auto-versioning-publish: false
   post-publish:

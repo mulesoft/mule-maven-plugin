@@ -107,6 +107,8 @@ stages:
           - echo "Adding maven properties"
           - mkdir -p ".mvn"
           - export MVN_CONFIG_FILE=".mvn/maven.config"
+          - mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=settings.localRepository -q -DforceStdout
+          - echo "$MVN_CONFIG_FILE"
           - export MAVEN_REPO_LOCAL=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=settings.localRepository -q -DforceStdout)
           - echo "-Dmaven.repo.local=\"$MAVEN_REPO_LOCAL\"" >> "$MVN_CONFIG_FILE"
           - echo "-Dsettings.localRepository=\"$MAVEN_REPO_LOCAL\"" >> "$MVN_CONFIG_FILE"

@@ -72,7 +72,7 @@ stages:
           - echo "[MULESOFT][MUNIT] Build MMP"
           - mvn clean install -DskipTests
           - echo "[MULESOFT][MUNIT] Unit Tests"
-          - mvn clean test -Psonar
+          - mvn clean install -Psonar
     - snyk-scan:
         snyk-scan-detection-depth: 4 # This is to avoid scan the pom.xml in the tests
   integration-test:

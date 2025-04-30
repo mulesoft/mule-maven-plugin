@@ -95,7 +95,7 @@ public class MuleArtifactJsonValidatorTest {
       muleArtifactJsonFile = projectBaseFolder.resolve(MULE_ARTIFACT_JSON).toFile();
       isMuleArtifactJsonValid(projectBaseFolder.toAbsolutePath(), Optional.empty());
     }).isExactlyInstanceOf(ValidationException.class)
-        .hasMessageContaining("java.io.FileNotFoundException");
+        .hasMessageContaining("java.nio.file.NoSuchFileException");
   }
 
   @Test

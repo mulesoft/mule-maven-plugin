@@ -215,7 +215,7 @@ class ProcessClassesMojoTest {
     when(descriptor.getClassRealm()).thenReturn(classRealm);
     when(session.getRequest()).thenReturn(mavenExecutionRequest);
     // RESOURCES
-    Utils.copyResource(MULE_ARTIFACT_JSON, new File(projectBaseFolder, MULE_ARTIFACT_JSON));
+    Utils.copyResource("mule-artifact-4.6.0.json", new File(projectBaseFolder, MULE_ARTIFACT_JSON));
     //
     mojo.setException(null);
     mojo.setNullPointerException(null);

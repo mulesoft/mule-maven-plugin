@@ -15,7 +15,8 @@
         <jacoco.report.location>${session.executionRootDirectory}/target/jacoco.exec</jacoco.report.location>
         <coverageLineLimit>0.59</coverageLineLimit>
         <coverageBranchLimit>0.47</coverageBranchLimit>
-
+        
+        <javaModuleName>org.mule.tools.api.classloader</javaModuleName>
     </properties>
 
     <build>
@@ -29,6 +30,31 @@
                 <artifactId>formatter-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <!-- The maven-jar-plugin generates the MANIFEST.MF for all modules
+                    where <packaging>jar</packaging> is used. -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>default-jar</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                            <configuration>
+                                <archive>
+                                    <manifestEntries>
+                                        <Automatic-Module-Name>${javaModuleName}</Automatic-Module-Name>
+                                    </manifestEntries>
+                                </archive>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <dependencies>

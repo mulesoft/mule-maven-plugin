@@ -18,6 +18,11 @@ public class AppClassLoaderModel extends ClassLoaderModel {
 
   private List<Plugin> additionalPluginDependencies = new ArrayList<>();
 
+  private AppClassLoaderModel() {
+    // Nothing to do, this is just for allowing instantiation to GSON
+    super();
+  }
+
   public AppClassLoaderModel(String version, ArtifactCoordinates artifactCoordinates) {
     super(version, artifactCoordinates);
   }

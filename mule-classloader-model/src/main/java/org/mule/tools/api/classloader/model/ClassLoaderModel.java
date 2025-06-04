@@ -6,9 +6,10 @@
  */
 package org.mule.tools.api.classloader.model;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,10 @@ public class ClassLoaderModel {
 
   private String[] packages;
   private String[] resources;
+
+  protected ClassLoaderModel() {
+    // Nothing to do, this is just for allowing instantiation to GSON
+  }
 
   public ClassLoaderModel(String version, ArtifactCoordinates artifactCoordinates) {
     setArtifactCoordinates(artifactCoordinates);

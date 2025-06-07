@@ -72,7 +72,7 @@
 
         <maven.version>3.9.6</maven.version>
         <maven.compat.version>3.9.6</maven.compat.version>
-        <maven.verifier.version>2.0.0-M1</maven.verifier.version>
+        <maven.verifier.version>2.0.0-SNAPSHOT</maven.verifier.version>
         <maven.dependency.tree.version>1.2</maven.dependency.tree.version>
         <plexus.container.default.version>1.7.1</plexus.container.default.version>
         <plexus.component.annotations.version>2.1.0</plexus.component.annotations.version>

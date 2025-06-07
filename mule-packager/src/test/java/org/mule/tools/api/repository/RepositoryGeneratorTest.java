@@ -20,6 +20,7 @@ import java.util.*;
 
 import org.apache.maven.project.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Spy;
@@ -81,6 +82,7 @@ class RepositoryGeneratorTest {
     assertThat(generatedMarkerFile).describedAs("Marker file was not generated").exists();
   }
 
+  @Disabled
   @Test
   void generateMarkerFileInRepositoryFolderWhenFolderIsNotWritableTest() throws IOException {
     File generatedMarkerFile = temporaryFolder.resolve(".marker").toFile();

@@ -6,6 +6,9 @@
     "id": "mule",
     "attributes": {}
   },
+  "javaSpecificationVersions": [
+    "17"
+  ],
   "bundleDescriptorLoader": {
     "id": "mule",
     "attributes": {

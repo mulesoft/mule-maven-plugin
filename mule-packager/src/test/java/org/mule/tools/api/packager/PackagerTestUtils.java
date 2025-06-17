@@ -7,6 +7,8 @@
 
 package org.mule.tools.api.packager;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -68,5 +70,17 @@ public class PackagerTestUtils {
     assertThat(path.toFile().exists()).describedAs("The file" + path.toString() + " should not not exits").isFalse();
   }
 
+  public static void assertFileContains(Path path, String content) {
+    StringBuilder stringBuilder = new StringBuilder();
+    try (BufferedReader reader = new BufferedReader(new FileReader(path.toFile()))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        stringBuilder.append(line).append(System.lineSeparator());
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    assertThat(stringBuilder.toString().contains(content)).isTrue();
+  }
 
 }

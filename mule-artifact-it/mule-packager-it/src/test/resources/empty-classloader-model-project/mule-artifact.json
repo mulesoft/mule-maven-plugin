@@ -2,6 +2,9 @@
   "name": "example-package",
   "minMuleVersion": "4.0.0",
   "redeploymentEnabled": "true",
+  "javaSpecificationVersions": [
+    "17"
+  ],
   "classLoaderModelLoaderDescriptor": {
     "id": "mule",
     "attributes": {

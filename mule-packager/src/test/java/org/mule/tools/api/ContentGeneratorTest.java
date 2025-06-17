@@ -349,7 +349,9 @@ public class ContentGeneratorTest {
     PackagerTestUtils.createFolder(sourceFolderPath, POM_FILE_NAME, true);
     PackagerTestUtils.createFolder(sourceFolderPath, descriptorFileName, true);
     FileUtils.writeStringToFile(new File(sourceFolderPath.toFile(), descriptorFileName),
-                                "{ name: lala, minMuleVersion: 4.0.0, classLoaderModelLoaderDescriptor: { id: mule } }",
+                                "{ name: lala, minMuleVersion: 4.0.0,\"javaSpecificationVersions\": [\n" +
+                                    "    \"17\",\"17\"\n" +
+                                    "  ], classLoaderModelLoaderDescriptor: { id: mule } }",
                                 (String) null);
 
     Path pomPropertiesDestinationPath =
@@ -368,6 +370,7 @@ public class ContentGeneratorTest {
     PackagerTestUtils.assertFileExists(pomPropertiesDestinationPath.resolve(POM_FILE_NAME));
     PackagerTestUtils.assertFileExists(pomPropertiesDestinationPath.resolve(PackagerTestUtils.POM_PROPERTIES));
     PackagerTestUtils.assertFileExists(descriptorDestinationPath.resolve(descriptorFileName));
+    PackagerTestUtils.assertFileContains(descriptorDestinationPath.resolve(descriptorFileName), "javaSpecificationVersions");
   }
 
   @Test

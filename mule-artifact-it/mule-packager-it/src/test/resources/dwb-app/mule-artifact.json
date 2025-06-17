@@ -3,6 +3,9 @@
   "minMuleVersion": "4.7.0",
   "requiredProduct": "MULE_EE",
   "redeploymentEnabled": "true",
+  "javaSpecificationVersions": [
+    "17"
+  ],
   "classLoaderModelLoaderDescriptor": {
     "id": "mule",
     "attributes": {

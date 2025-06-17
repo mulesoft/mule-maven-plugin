@@ -25,8 +25,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 
 /**
  * Generates default value for any non-defined fields in a mule-artifact.json file
@@ -35,6 +41,7 @@ public abstract class AbstractDefaultValuesMuleArtifactJsonGenerator {
 
   protected static final String MULE_ID = "mule";
   protected static final MuleApplicationModelJsonSerializer serializer = new MuleApplicationModelJsonSerializer();
+
 
   /**
    * Generates the default value for every non-defined fields in a mule-artifact.json file during build time and updates
@@ -58,12 +65,14 @@ public abstract class AbstractDefaultValuesMuleArtifactJsonGenerator {
   public void generate(Path originFolder, Path destinationFolder,
                        MuleArtifactContentResolver muleArtifactContentResolver)
       throws IOException {
-    MuleApplicationModel originalMuleArtifact = getOriginalMuleArtifact(originFolder);
+    MuleApplicationModelExtended originalMuleArtifactExtended = getOriginalMuleArtifact(originFolder);
 
     MuleApplicationModel generatedMuleArtifact =
-        generateMuleArtifactWithDefaultValues(originalMuleArtifact, muleArtifactContentResolver);
+        generateMuleArtifactWithDefaultValues(originalMuleArtifactExtended.getModel(), muleArtifactContentResolver);
 
-    writeMuleArtifactToFile(generatedMuleArtifact, destinationFolder);
+    writeMuleArtifactExtendedToFile(new MuleApplicationModelExtended(generatedMuleArtifact,
+                                                                     originalMuleArtifactExtended.getJavaSpecificationVersions()),
+                                    destinationFolder);
   }
 
   /**
@@ -93,9 +102,41 @@ public abstract class AbstractDefaultValuesMuleArtifactJsonGenerator {
    *
    * @param originFolder folder path where the mule-artifact.json is located
    */
-  private MuleApplicationModel getOriginalMuleArtifact(Path originFolder) throws IOException {
+  private MuleApplicationModelExtended getOriginalMuleArtifact(Path originFolder) throws IOException {
     File originalMuleArtifactJsonFile = originFolder.resolve(MULE_ARTIFACT_JSON).toFile();
-    return serializer.deserialize(FileUtils.readFileToString(originalMuleArtifactJsonFile, (String) null));
+    String jsonContent = FileUtils.readFileToString(originalMuleArtifactJsonFile, (String) null);
+    Set<String> javaSpecificationVersions;
+    // Extract javaSpecificationVersions property independently because is not part of the model
+    try {
+      JsonObject jsonObject = JsonParser.parseString(jsonContent).getAsJsonObject();
+      if (jsonObject.has("javaSpecificationVersions")) {
+        JsonElement element = jsonObject.get("javaSpecificationVersions");
+        javaSpecificationVersions = new HashSet<>();
+
+        if (element.isJsonArray()) {
+          // Handle JSON array format: ["11", "17", "21"]
+          JsonArray jsonArray = element.getAsJsonArray();
+          for (JsonElement arrayElement : jsonArray) {
+            javaSpecificationVersions.add(arrayElement.getAsString());
+          }
+        } else if (element.isJsonPrimitive()) {
+          // Handle string format: "11,17,21" or single value "11"
+          String stringValue = element.getAsString();
+          if (stringValue.contains(",")) {
+            javaSpecificationVersions.addAll(Arrays.asList(stringValue.split("\\s*,\\s*")));
+          } else {
+            javaSpecificationVersions.add(stringValue.trim());
+          }
+        }
+      } else {
+        javaSpecificationVersions = null;
+      }
+    } catch (Exception e) {
+      // If JSON parsing fails, set to null and continue with normal deserialization
+      javaSpecificationVersions = null;
+    }
+
+    return new MuleApplicationModelExtended(serializer.deserialize(jsonContent), javaSpecificationVersions);
   }
 
   /**
@@ -294,5 +335,46 @@ public abstract class AbstractDefaultValuesMuleArtifactJsonGenerator {
     }
     attributesCopy.put(attribute, value);
     return attributesCopy;
+  }
+
+  /**
+   * Writes the extended mule artifact (including javaSpecificationVersions) to the corresponding file
+   *
+   * @param extendedMuleArtifact extended mule artifact that contains both the model and javaSpecificationVersions
+   * @param destinationFolder destination folder where the mule-artifact.json file is going to be created
+   */
+  public void writeMuleArtifactExtendedToFile(MuleApplicationModelExtended extendedMuleArtifact, Path destinationFolder)
+      throws IOException {
+    // Serialize the original MuleApplicationModel to JSON string
+    String originalJsonContent = serializer.serialize(extendedMuleArtifact.getModel());
+
+    // Parse the JSON to add the javaSpecificationVersions property
+    String finalJsonContent;
+    try {
+      JsonObject jsonObject = JsonParser.parseString(originalJsonContent).getAsJsonObject();
+
+      // Add javaSpecificationVersions property if it exists
+      if (extendedMuleArtifact.getJavaSpecificationVersions() != null &&
+          !extendedMuleArtifact.getJavaSpecificationVersions().isEmpty()) {
+
+        // Convert Set<String> to JsonArray
+        JsonArray jsonArray = new JsonArray();
+        for (String version : extendedMuleArtifact.getJavaSpecificationVersions()) {
+          jsonArray.add(version);
+        }
+        jsonObject.add("javaSpecificationVersions", jsonArray);
+      }
+
+      // Convert back to pretty-printed JSON string
+      Gson gson = new Gson().newBuilder().setPrettyPrinting().create();
+      finalJsonContent = gson.toJson(jsonObject);
+    } catch (Exception e) {
+      // If JSON manipulation fails, fall back to original content
+      finalJsonContent = originalJsonContent;
+    }
+
+    // Write to file
+    File generatedMuleArtifactJson = new File(destinationFolder.toFile(), MULE_ARTIFACT_JSON);
+    FileUtils.writeStringToFile(generatedMuleArtifactJson, finalJsonContent, (String) null);
   }
 }

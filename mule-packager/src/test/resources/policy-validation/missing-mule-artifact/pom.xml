@@ -141,7 +141,17 @@
             <url>https://repository.mulesoft.org/nexus/content/repositories/releases-ee/</url>
             <releases>
                 <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+        </repository>
+        <repository>
+            <id>mule-releases</id>
+            <name>Mule Release Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
                 <checksumPolicy>warn</checksumPolicy>
             </releases>
         </repository>

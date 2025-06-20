@@ -38,8 +38,6 @@
         <module>mule-deployer</module>
         <module>mule-packager</module>
         <module>mule-maven-plugin</module>
-        <module>mule-artifact-it</module>
-        <module>mmp-sonar</module>
     </modules>
 
     <properties>
@@ -648,34 +646,31 @@
 
     <distributionManagement>
         <repository>
-            <id>mule-releases</id>
-            <name>Mule Release Repository</name>
-            <url>https://repository-master.mulesoft.org/nexus/content/repositories/ci-releases</url>
+            <id>project</id>
+            <name>SFCI Releases</name>
+            <url>${env.NEXUS_BASE_URL}/repositories/mulesoft-maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>mule-snapshots</id>
-            <name>Mule Snapshot Repository</name>
-            <url>https://repository-master.mulesoft.org/nexus/content/repositories/snapshots</url>
-            <uniqueVersion>false</uniqueVersion>
+            <id>project</id>
+            <name>SFCI Snapshots</name>
+            <url>${env.NEXUS_BASE_URL}/repositories/mulesoft-maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
     <profiles>
         <profile>
-            <id>release</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <distributionManagement>
-                <repository>
-                    <id>mule-releases</id>
-                    <name>MuleSoft Releases Repository</name>
-                    <url>https://repository-master.mulesoft.org/nexus/content/repositories/releases</url>
-                </repository>
-            </distributionManagement>
+            <id>integration</id>
+            <modules>
+                <module>mule-artifact-it</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>sonar</id>
+            <modules>
+                <module>mmp-sonar</module>
+            </modules>
         </profile>
     </profiles>
-
     <scm>
         <connection>scm:git:git://github.com/mulesoft/mule-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:mulesoft/mule-maven-plugin.git</developerConnection>

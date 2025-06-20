@@ -19,16 +19,30 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mule.tools.client.standalone.exception.MuleControllerException;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ControllerTest {
 
@@ -52,11 +66,7 @@ public class ControllerTest {
     AbstractOSController abstractOSController = new WindowsController(temporaryFolder.getAbsolutePath(), 20000);
     Controller controller = new Controller(abstractOSController, temporaryFolder.getAbsolutePath());
     controller.addConfProperty("2");
-    Path muleInvalidAppPath = temporaryFolder.toPath().resolve("mule-invalid-app1");
-    Files.createFile(muleInvalidAppPath);
-    muleInvalidAppPath.toFile().setWritable(false);
-    muleInvalidAppPath.toFile().setReadable(false);
-    controller.wrapperConf = muleInvalidAppPath;
+    controller.wrapperConf = temporaryFolder.toPath().resolve("mule-invalid-app1");
     assertThatThrownBy(() -> controller.addConfProperty("newProperty"))
         .isInstanceOf(UncheckedIOException.class);
 

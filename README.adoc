@@ -1,3 +1,8 @@
+= Obsolete / Archived
+
+MuleSoft organization has recently transitioned to GitHub EMU (Enterprise Managed Users) for repository management. As part of this change, our public repositories are no longer being maintained.
+
+
 = Mule Artifact Tools
 
 The project contains all the modules required to create Mule artifacts and to deploy them to the different environments of the Anypoint Platform.
